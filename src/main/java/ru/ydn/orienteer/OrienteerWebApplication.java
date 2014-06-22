@@ -1,7 +1,20 @@
 package ru.ydn.orienteer;
 
+import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
+
+import ru.ydn.orienteer.web.LoginPage;
+import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 /**
  * Application object for your web application.
@@ -9,11 +22,19 @@ import org.apache.wicket.protocol.http.WebApplication;
  * 
  * @see ru.ydn.orienteer.Start#main(String[])
  */
-public class OrienteerWebApplication extends WebApplication
+public class OrienteerWebApplication extends OrientDbWebApplication
 {
-	/**
-	 * @see org.apache.wicket.Application#getHomePage()
-	 */
+	private boolean embedded;
+	@Inject
+	public OrienteerWebApplication(@Named("orientdb.embedded") boolean embedded, @Named("orientdb.url") String url, 
+									@Named("orientdb.username") String userName, @Named("orientdb.password") String password)
+	{
+		this.embedded = embedded;
+		getOrientDbSettings().setDBUrl(url);
+		getOrientDbSettings().setDefaultUserName(userName);
+		getOrientDbSettings().setDefaultUserPassword(password);
+	}
+	
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{
@@ -27,7 +48,33 @@ public class OrienteerWebApplication extends WebApplication
 	public void init()
 	{
 		super.init();
-
-		// add your configuration here
+		if(embedded)
+		{
+			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml")));
+		}
+		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
+		getMarkupSettings().setStripWicketTags(true);
+		getResourceSettings().setThrowExceptionOnMissingResource(false);
 	}
+
+	@Override
+	protected Class<? extends WebPage> getSignInPageClass() {
+		return LoginPage.class;
+	}
+	
+	public Injector getInjector()
+	{
+		return getMetaData(GuiceInjectorHolder.INJECTOR_KEY).getInjector();
+	}
+	
+	public <T> T getServiceInstance(Class<T> serviceType)
+	{
+		return getInjector().getInstance(serviceType);
+	}
+	
+	public ODatabaseRecord getDatabase()
+	{
+		return OrientDbWebSession.get().getDatabase();
+	}
+	
 }
