@@ -109,12 +109,15 @@
 			<version>${orientdb.version}</version>
 			<type>bundle</type>
 		</dependency>
-		
-		
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 			<version>3.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>com.google.guava</groupId>
+		    <artifactId>guava</artifactId>
+		    <version>17.0</version>
 		</dependency>
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>

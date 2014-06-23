@@ -27,7 +27,5 @@ public abstract class OrienteerBasePage extends BasePage
 		super.initialize();
 		add(new Label("pageHeader", getTitleModel()));
 	}
-	
-	
 
 }

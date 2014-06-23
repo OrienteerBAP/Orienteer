@@ -5,6 +5,7 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.settings.IJavaScriptLibrarySettings;
 
@@ -52,6 +53,9 @@ public abstract class BasePage extends WebPage
 		return OrientDbWebSession.get().getDatabase();
 	}
 	
-	public abstract IModel<String> getTitleModel();
+	public IModel<String> getTitleModel()
+	{
+		return new ResourceModel("default.title");
+	}
 
 }
