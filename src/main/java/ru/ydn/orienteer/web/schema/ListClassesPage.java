@@ -22,8 +22,10 @@ import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.components.table.DocumentPropertyColumn;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 @MountPath("/classes")
+@RequiredOrientResource("database.schema")
 public class ListClassesPage extends OrienteerBasePage {
 
 	public ListClassesPage()

@@ -12,7 +12,7 @@ public class LoginPage extends BasePage
 	public LoginPage()
 	{
 		super();
-		add(new SignInPanel("signInPanel"));
+		add(new SignInPanel("signInPanel", false));
 	}
 
 	@Override

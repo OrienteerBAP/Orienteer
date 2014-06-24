@@ -214,8 +214,12 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                        </li>
+                        <wicket:enclosure>
+                        	<li><a wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a></li>
+                        </wicket:enclosure>
+                        <wicket:enclosure>
+                        	<li><a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a></li>
+                        </wicket:enclosure>
                     </ul>
                     <!-- /.dropdown-user -->
                 </li>
