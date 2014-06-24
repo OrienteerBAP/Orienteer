@@ -11,6 +11,7 @@ import org.apache.wicket.settings.IJavaScriptLibrarySettings;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 public abstract class BasePage extends WebPage
@@ -51,6 +52,11 @@ public abstract class BasePage extends WebPage
 	public ODatabaseRecord getDatabase()
 	{
 		return OrientDbWebSession.get().getDatabase();
+	}
+	
+	public ODatabaseDocument getDatabaseDocument()
+	{
+		return (ODatabaseDocument) getDatabase().getDatabaseOwner();
 	}
 	
 	public IModel<String> getTitleModel()
