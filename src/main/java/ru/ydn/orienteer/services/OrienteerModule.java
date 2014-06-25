@@ -11,8 +11,11 @@ import org.apache.wicket.protocol.http.WebApplication;
 import ru.ydn.orienteer.OrienteerWebApplication;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.ProvisionException;
 import com.google.inject.name.Names;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 public class OrienteerModule extends AbstractModule
 {
@@ -47,6 +50,12 @@ public class OrienteerModule extends AbstractModule
 			file = new File(dir, PROPERTIES_FILE_NAME);
 		}
 		return file;
+	}
+	
+	@Provides
+	public ODatabaseRecord getDatabaseRecord()
+	{
+		return ODatabaseRecordThreadLocal.INSTANCE.get();
 	}
 
 }
