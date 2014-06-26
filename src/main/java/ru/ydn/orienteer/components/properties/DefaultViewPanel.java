@@ -7,7 +7,7 @@ import org.apache.wicket.model.IModel;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class DefaultViewPanel extends PropertyPanel<Object> {
+public class DefaultViewPanel extends PropertyViewPanel<Object> {
 
 	public DefaultViewPanel(String id, IModel<ODocument> documentModel,
 			IModel<OProperty> propertyModel) {

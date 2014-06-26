@@ -6,12 +6,15 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.properties.DefaultViewPanel;
-import ru.ydn.orienteer.components.properties.MetaViewPanel;
+import ru.ydn.orienteer.components.properties.MetaPanel;
+import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.model.DocumentNameModel;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 
 import com.orientechnologies.common.thread.OPollerThread;
@@ -21,6 +24,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @MountPath("/view/#{rid}")
 public class ViewDocumentPage extends DocumentPage {
 
+	private static final IModel<DisplayMode> DISPLAY_MODE_MODEL = Model.of(DisplayMode.VIEW);
+	
 	public ViewDocumentPage(IModel<ODocument> model) {
 		super(model);
 	}
@@ -39,11 +44,18 @@ public class ViewDocumentPage extends DocumentPage {
 			protected void populateItem(
 					ListItem<OProperty> item) {
 				item.add(new Label("name", new PropertyModel<String>(item.getModel(), "name")));
-				item.add(new MetaViewPanel<Object>("value", getDocumentModel(), item.getModel()));
+				item.add(new MetaPanel<Object>("value", getDocumentModel(), item.getModel(), DISPLAY_MODE_MODEL));
 			}
 		};
 		add(properties);
 	}
+
+	@Override
+	public IModel<String> getTitleModel() {
+		return new DocumentNameModel(getDocumentModel());
+	}
+	
+	
 	
 	
 

@@ -8,21 +8,21 @@ import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class PropertyPanel<T> extends GenericPanel<ODocument>
+public class PropertyViewPanel<T> extends GenericPanel<T> implements IPropertyDisplayPanel<T>
 {
+	private IModel<ODocument> documentModel;
 	private IModel<OProperty> propertyModel;
-	private IModel<T> valueModel;
 	
-	public PropertyPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
+	public PropertyViewPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
 	{
-		super(id, documentModel);
+		super(id, new DynamicPropertyValueModel<T>(documentModel, propertyModel));
+		this.documentModel = documentModel;
 		this.propertyModel = propertyModel;
-		valueModel = new DynamicPropertyValueModel<T>(documentModel, propertyModel);
 	}
 	
 	public IModel<ODocument> getDocumentModel()
 	{
-		return getModel();
+		return documentModel;
 	}
 	
 	public IModel<OProperty> getPropertyModel()
@@ -32,15 +32,14 @@ public class PropertyPanel<T> extends GenericPanel<ODocument>
 	
 	public IModel<T> getValueModel()
 	{
-		return valueModel;
+		return getModel();
 	}
 	
 	@Override
-	public void detachModel() {
-		super.detachModel();
-		valueModel.detach();
+	public void detachModels() {
+		super.detachModels();
+		documentModel.detach();
 		propertyModel.detach();
 	}
-	
-	
+
 }
