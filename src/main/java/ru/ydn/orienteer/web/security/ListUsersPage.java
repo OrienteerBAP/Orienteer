@@ -14,6 +14,8 @@ import org.wicketstuff.annotation.mount.MountPath;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.orienteer.components.table.OEntityColumn;
+import ru.ydn.orienteer.components.table.OPropertyColumn;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.components.table.DocumentPropertyColumn;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
@@ -34,8 +36,8 @@ public class ListUsersPage extends OrienteerBasePage
 	public void initialize() {
 		super.initialize();
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
-		columns.add(new DocumentPropertyColumn(new ResourceModel("user.name"), "name", "name"));
-		columns.add(new DocumentPropertyColumn(new ResourceModel("user.status"), "status", "status"));
+		columns.add(new OEntityColumn(new ResourceModel("user.name"), "OUser"));
+		columns.add(new OPropertyColumn(new ResourceModel("user.status"), "status"));
 		
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from OUser");
 		

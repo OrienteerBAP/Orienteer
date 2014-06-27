@@ -14,6 +14,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class ODocumentPageLink extends BookmarkablePageLink<OIdentifiable>
 {
+	private boolean propogateDisplayMode = true;
+	private IModel<DisplayMode> displayModeModel;
 	public ODocumentPageLink(String id, IModel<OIdentifiable> docModel, PageParameters parameters)
 	{
 		this(id, docModel, DisplayMode.VIEW, parameters);
@@ -26,22 +28,25 @@ public class ODocumentPageLink extends BookmarkablePageLink<OIdentifiable>
 	
 	public ODocumentPageLink(String id, IModel<OIdentifiable> docModel, DisplayMode mode, PageParameters parameters)
 	{
-		this(id, docModel, mode.getDefaultPageClass(), parameters);
+		this(id, docModel, mode.getDefaultPageClass(), mode.asModel(), parameters);
 	}
 	
 	public ODocumentPageLink(String id, IModel<OIdentifiable> docModel, DisplayMode mode)
 	{
-		this(id, docModel, mode.getDefaultPageClass());
+		this(id, docModel, mode.getDefaultPageClass(), mode.asModel());
 	}
-	public <C extends Page> ODocumentPageLink(String id, IModel<OIdentifiable> docModel, Class<C> pageClass,
-			PageParameters parameters) {
+	public <C extends Page> ODocumentPageLink(String id, IModel<OIdentifiable> docModel, Class<C> pageClass, 
+			IModel<DisplayMode> displayModeModel, PageParameters parameters) {
 		super(id, pageClass, parameters);
 		setModel(docModel);
+		this.displayModeModel = displayModeModel;
 	}
 
-	public <C extends Page> ODocumentPageLink(String id, IModel<OIdentifiable> docModel, Class<C> pageClass) {
+	public <C extends Page> ODocumentPageLink(String id, IModel<OIdentifiable> docModel, Class<C> pageClass,
+			IModel<DisplayMode> displayModeModel) {
 		super(id, pageClass);
 		setModel(docModel);
+		this.displayModeModel = displayModeModel;
 	}
 	
 	@Override
@@ -55,10 +60,22 @@ public class ODocumentPageLink extends BookmarkablePageLink<OIdentifiable>
 		setBody(docNameAsBody?new DocumentNameModel(getModel()):null);
 		return this;
 	}
-
+	
+	public ODocumentPageLink setPropogateDisplayMode(boolean propogateDisplayMode)
+	{
+		this.propogateDisplayMode = propogateDisplayMode;
+		return this;
+	}
+	
 	@Override
 	public PageParameters getPageParameters() {
-		return super.getPageParameters().add("rid", buitifyRid(getModelObject()));
+		PageParameters pageParameters = super.getPageParameters();
+		pageParameters.add("rid", buitifyRid(getModelObject()));
+		if(propogateDisplayMode)
+		{
+			pageParameters.add("mode", displayModeModel.getObject().getName());
+		}
+		return pageParameters;
 	}
 	
 	public String buitifyRid(OIdentifiable identifiable)

@@ -28,49 +28,20 @@ public class DocumentNameModel implements IModel<String>
 		OIdentifiable identifiable = documentModel.getObject();
 		if(identifiable==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
 		ODocument doc = identifiable.getRecord();
-		String nameProp = resolveNameProperty();
+		String nameProp = SchemaHelper.resolveNameProperty(doc.getSchemaClass());
 		return nameProp!=null?Strings.toString(doc.field(nameProp)):doc.toString();
 	}
 
 	@Override
 	public void setObject(String object) {
-		String nameProp = resolveNameProperty();
+		ODocument doc = documentModel.getObject().getRecord();
+		String nameProp = doc!=null?SchemaHelper.resolveNameProperty(doc.getSchemaClass()):null;
 		if(nameProp!=null)
 		{
-			ODocument doc = documentModel.getObject().getRecord();
 			doc.field(nameProp, object);
 		}
 	}
 	
-	protected String resolveNameProperty()
-	{
-		ODocument doc = documentModel.getObject().getRecord();
-		OClass oClass = doc.getSchemaClass();
-		String ret = SchemaHelper.getCustomAttr(oClass, CustomAttributes.PROP_NAME);
-		if(ret==null || !oClass.existsProperty(ret))
-		{
-			if(oClass.existsProperty("name"))
-			{
-				ret = "name";
-			}
-			else
-			{
-				for(OProperty p: oClass.properties())
-				{
-					if(OType.STRING.equals(p.getType()))
-					{
-						ret = p.getName();
-						break;
-					}
-					else if(!p.getType().isMultiValue())
-					{
-						ret = p.getName();
-					}
-				}
-			}
-		}
-		return ret;
-	}
 	
 	@Override
 	public void detach() {

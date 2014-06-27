@@ -7,7 +7,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
-public abstract class OrienteerBasePage extends BasePage
+public abstract class OrienteerBasePage<T> extends BasePage<T>
 {
 
 	public OrienteerBasePage()
@@ -15,7 +15,7 @@ public abstract class OrienteerBasePage extends BasePage
 		super();
 	}
 
-	public OrienteerBasePage(IModel<?> model)
+	public OrienteerBasePage(IModel<T> model)
 	{
 		super(model);
 	}

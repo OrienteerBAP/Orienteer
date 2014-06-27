@@ -1,10 +1,18 @@
 package ru.ydn.orienteer.schema;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.util.string.Strings;
+import org.springframework.util.StringUtils;
 
 import ru.ydn.orienteer.CustomAttributes;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Converter;
+import com.google.common.base.Enums;
+import com.google.common.base.Function;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
@@ -17,6 +25,23 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class SchemaHelper 
 {
+	public static final Function<Object, String> BUITIFY_NAME_FUNCTION = new Function<Object, String>()
+	{
+		private final Pattern WORD_START = Pattern.compile("\\b(\\w)(\\w*)", Pattern.CASE_INSENSITIVE);
+		@Override
+		public String apply(Object input) {
+			if(input==null) return null;
+			String ret = input.toString().trim().toLowerCase();
+			StringBuffer sb = new StringBuffer();
+		    Matcher m = WORD_START.matcher(ret);
+		    while (m.find()) {
+		      m.appendReplacement(sb, m.group(1).toUpperCase()+m.group(2));
+		    }
+		    return m.appendTail(sb).toString(); 
+		}
+		
+	};
+	
 	public static boolean isPropertyCalculable(OProperty property)
 	{
 		if(property==null) return false;
@@ -36,6 +61,40 @@ public class SchemaHelper
 		{
 			oClass = oClass.getSuperClass();
 			if(oClass!=null) ret = oClass.getCustom(attr);
+		}
+		return ret;
+	}
+	
+	public static String resolveNameProperty(String oClass)
+	{
+		return resolveNameProperty(getDatabase().getMetadata().getSchema().getClass(oClass));
+	}
+	
+	public static String resolveNameProperty(OClass oClass)
+	{
+		if(oClass==null) return null;
+		String ret = SchemaHelper.getCustomAttr(oClass, CustomAttributes.PROP_NAME);
+		if(ret==null || !oClass.existsProperty(ret))
+		{
+			if(oClass.existsProperty("name"))
+			{
+				ret = "name";
+			}
+			else
+			{
+				for(OProperty p: oClass.properties())
+				{
+					if(OType.STRING.equals(p.getType()))
+					{
+						ret = p.getName();
+						break;
+					}
+					else if(!p.getType().isMultiValue())
+					{
+						ret = p.getName();
+					}
+				}
+			}
 		}
 		return ret;
 	}

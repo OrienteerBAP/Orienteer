@@ -6,7 +6,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import ru.ydn.orienteer.components.ODocumentPageLink;
 import ru.ydn.orienteer.model.DocumentNameModel;
-import ru.ydn.orienteer.web.ViewDocumentPage;
+import ru.ydn.orienteer.web.DocumentPage;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;

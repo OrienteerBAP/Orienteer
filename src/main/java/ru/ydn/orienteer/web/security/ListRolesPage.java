@@ -13,6 +13,8 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.orienteer.components.table.OEntityColumn;
+import ru.ydn.orienteer.components.table.OPropertyColumn;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.components.table.DocumentPropertyColumn;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
@@ -32,9 +34,9 @@ public class ListRolesPage extends OrienteerBasePage {
 	public void initialize() {
 		super.initialize();
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
-		columns.add(new DocumentPropertyColumn(new ResourceModel("role.name"), "name", "name"));
-		columns.add(new DocumentPropertyColumn(new ResourceModel("role.mode"), "mode"));
-		columns.add(new DocumentPropertyColumn(new ResourceModel("role.parentRole"), "parentRole.name", "parentRole.name"));
+		columns.add(new OEntityColumn(new ResourceModel("role.name"), "ORole"));
+		columns.add(new OPropertyColumn(new ResourceModel("role.mode"), "mode"));
+		columns.add(new OPropertyColumn(new ResourceModel("role.parentRole"), "inheritedRole"));
 		
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from ORole");
 		

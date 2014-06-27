@@ -1,69 +1,71 @@
 package ru.ydn.orienteer.web;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.util.SetModel;
-import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.string.Strings;
+import org.wicketstuff.annotation.mount.MountPath;
 
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+import ru.ydn.orienteer.components.StructureTable;
+import ru.ydn.orienteer.components.properties.DefaultViewPanel;
+import ru.ydn.orienteer.components.properties.MetaPanel;
+import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.model.DocumentNameModel;
+import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 
-import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.common.thread.OPollerThread;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class DocumentPage extends OrienteerBasePage 
-{
-	public DocumentPage() {
-		super();
-	}
+@MountPath("/doc/#{rid}/#{mode}")
+public class DocumentPage extends AbstractDocumentPage {
 
+	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
+	
 	public DocumentPage(IModel<ODocument> model) {
 		super(model);
 	}
 
 	public DocumentPage(PageParameters parameters) {
-		super(resolveDocument(parameters));
-		getPageParameters().mergeWith(parameters);
-	}
-	
-	private static IModel<ODocument> resolveDocument(PageParameters parameters)
-	{
-		String rid = parameters.get("rid").toOptionalString();
-		if(rid!=null)
-		{
-			return new ODocumentModel(new ORecordId(rid));
-		}
-		else
-		{
-			return new ODocumentModel((ODocument)null);
-		}
+		super(parameters);
+		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
+		if(mode!=null) displayMode.setObject(mode);
 	}
 
-	
 	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		ODocument doc = getDocument();
-		if(doc==null || Strings.isEmpty(doc.getClassName()))
-        {
-            throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
-        }
+	public void initialize() {
+		super.initialize();
+		StructureTable<OProperty> properties = new StructureTable<OProperty>("properties", 
+				new PropertyModel<List<? extends OProperty>>(getDocumentModel(), "schemaClass.properties()")) {
+
+					@Override
+					protected IModel<?> getLabelModel(IModel<OProperty> rowModel) {
+						return new PropertyModel<String>(rowModel, "name");
+					}
+
+					@Override
+					protected Component getValueComponent(String id,
+							IModel<OProperty> rowModel) {
+						return new MetaPanel<Object>(id, getDocumentModel(), rowModel, displayMode);
+					}
+		};
+		
+		add(properties);
+	}
+
+	@Override
+	public IModel<String> getTitleModel() {
+		return new DocumentNameModel(getDocumentModel());
 	}
 	
-	@SuppressWarnings("unchecked")
-	public IModel<ODocument> getDocumentModel()
-	{
-		return (IModel<ODocument>) getDefaultModel();
-	}
-	
-	public ODocument getDocument()
-	{
-		return getDocumentModel().getObject();
-	}
 	
 	
 	
+
 }

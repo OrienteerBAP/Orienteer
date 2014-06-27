@@ -16,16 +16,19 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
+import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.orienteer.components.table.OClassColumn;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.components.table.DocumentPropertyColumn;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 @MountPath("/classes")
-@RequiredOrientResource("database.schema")
+@RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
 public class ListClassesPage extends OrienteerBasePage {
 
 	public ListClassesPage()
@@ -39,8 +42,8 @@ public class ListClassesPage extends OrienteerBasePage {
 	public void initialize() {
 		super.initialize();
 		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
-		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.name"), "name", "name"));
-		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.superClass"), "superClass.name", "superClass.name"));
+		columns.add(new OClassColumn(new ResourceModel("class.name"), "name", ""));
+		columns.add(new OClassColumn(new ResourceModel("class.superClass"), "superClass.name", "superClass"));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.abstract"), "abstract"));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.strictMode"), "strictMode"));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.javaClass"), "javaClass", "javaClass"));

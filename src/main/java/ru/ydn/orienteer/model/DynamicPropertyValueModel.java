@@ -2,6 +2,7 @@ package ru.ydn.orienteer.model;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.util.lang.Args;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -13,6 +14,7 @@ public class DynamicPropertyValueModel<T> extends LoadableDetachableModel<T>
 	
 	public DynamicPropertyValueModel(IModel<ODocument> docModel, IModel<OProperty> propertyModel)
 	{
+		Args.notNull(docModel, "documentModel");
 		this.docModel = docModel;
 		this.propertyModel = propertyModel;
 	}
@@ -21,15 +23,16 @@ public class DynamicPropertyValueModel<T> extends LoadableDetachableModel<T>
 	@Override
 	protected T load() {
 		ODocument doc = docModel.getObject();
-		OProperty prop = propertyModel.getObject();
-		if(doc==null || prop==null) return null;
+		OProperty prop = propertyModel!=null?propertyModel.getObject():null;
+		if(doc==null) return null;
+		if(prop==null) return (T) doc;
 		return (T) doc.field(prop.getName());
 	}
 
 	@Override
 	protected void onDetach() {
 		docModel.detach();
-		propertyModel.detach();
+		if(propertyModel!=null) propertyModel.detach();
 	}
 	
 	

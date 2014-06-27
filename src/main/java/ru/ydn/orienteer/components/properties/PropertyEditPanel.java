@@ -38,7 +38,7 @@ public class PropertyEditPanel<T> extends FormComponentPanel<T>
 	@Override
 	public void detachModel() {
 		super.detachModel();
-		documentModel.detach();
-		propertyModel.detach();
+		if(documentModel!=null)documentModel.detach();
+		if(propertyModel!=null)propertyModel.detach();
 	}
 }

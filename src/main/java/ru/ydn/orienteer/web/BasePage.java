@@ -2,6 +2,7 @@ package ru.ydn.orienteer.web;
 
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -14,7 +15,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
-public abstract class BasePage extends WebPage
+public abstract class BasePage<T> extends GenericWebPage<T>
 {
 
 	public BasePage()
@@ -23,7 +24,7 @@ public abstract class BasePage extends WebPage
 		initialize();
 	}
 
-	public BasePage(IModel<?> model)
+	public BasePage(IModel<T> model)
 	{
 		super(model);
 		initialize();
@@ -32,7 +33,17 @@ public abstract class BasePage extends WebPage
 	public BasePage(PageParameters parameters)
 	{
 		super(parameters);
+		if(parameters!=null && !parameters.isEmpty())
+		{
+			IModel<T> model = resolveByPageParameters(parameters);
+			if(model!=null) setModel(model);
+		}
 		initialize();
+	}
+	
+	protected IModel<T> resolveByPageParameters(PageParameters pageParameters)
+	{
+		return null;
 	}
 	
 	public void initialize()

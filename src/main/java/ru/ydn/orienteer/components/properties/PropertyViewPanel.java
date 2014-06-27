@@ -38,8 +38,8 @@ public class PropertyViewPanel<T> extends GenericPanel<T> implements IPropertyDi
 	@Override
 	public void detachModels() {
 		super.detachModels();
-		documentModel.detach();
-		propertyModel.detach();
+		if(documentModel!=null) documentModel.detach();
+		if(propertyModel!=null) propertyModel.detach();
 	}
 
 }

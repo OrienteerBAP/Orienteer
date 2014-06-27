@@ -30,12 +30,13 @@ public class MetaPanel<T> extends PropertyViewPanel<T> {
 	
 	protected String calcSignature(OProperty property, DisplayMode mode)
 	{
-		return property.getType()+"|"+mode;
+		return (property!=null?property.getType():"null")+"|"+mode;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected PropertyViewPanel<T> resolvePanel(OProperty property, DisplayMode mode)
 	{
+		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
 		if(DisplayMode.VIEW.equals(mode))
 		{
 			switch(property.getType())
@@ -49,7 +50,7 @@ public class MetaPanel<T> extends PropertyViewPanel<T> {
 					return (PropertyViewPanel<T>)new DefaultViewPanel(PANEL_ID, getDocumentModel(), getPropertyModel());
 			}
 		}
-		else if(DisplayMode.VIEW.equals(mode))
+		else if(DisplayMode.EDIT.equals(mode))
 		{
 			switch(property.getType())
 			{
