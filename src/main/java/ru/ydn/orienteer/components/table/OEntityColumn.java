@@ -24,7 +24,7 @@ public class OEntityColumn extends AbstractColumn<ODocument, String>
 	@Override
 	public void populateItem(Item<ICellPopulator<ODocument>> cellItem,
 			String componentId, IModel<ODocument> rowModel) {
-		cellItem.add(new LinkViewPanel(componentId, rowModel, null));
+		cellItem.add(new LinkViewPanel(componentId, rowModel));
 	}
 
 }

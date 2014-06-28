@@ -12,37 +12,37 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class ODocumentPageLink extends BookmarkablePageLink<OIdentifiable>
+public class ODocumentPageLink<M extends OIdentifiable> extends BookmarkablePageLink<M>
 {
 	private boolean propogateDisplayMode = true;
 	private IModel<DisplayMode> displayModeModel;
-	public ODocumentPageLink(String id, IModel<OIdentifiable> docModel, PageParameters parameters)
+	public ODocumentPageLink(String id, IModel<M> docModel, PageParameters parameters)
 	{
 		this(id, docModel, DisplayMode.VIEW, parameters);
 	}
 	
-	public ODocumentPageLink(String id, IModel<OIdentifiable> docModel)
+	public ODocumentPageLink(String id, IModel<M> docModel)
 	{
 		this(id, docModel, DisplayMode.VIEW);
 	}
 	
-	public ODocumentPageLink(String id, IModel<OIdentifiable> docModel, DisplayMode mode, PageParameters parameters)
+	public ODocumentPageLink(String id, IModel<M> docModel, DisplayMode mode, PageParameters parameters)
 	{
 		this(id, docModel, mode.getDefaultPageClass(), mode.asModel(), parameters);
 	}
 	
-	public ODocumentPageLink(String id, IModel<OIdentifiable> docModel, DisplayMode mode)
+	public ODocumentPageLink(String id, IModel<M> docModel, DisplayMode mode)
 	{
 		this(id, docModel, mode.getDefaultPageClass(), mode.asModel());
 	}
-	public <C extends Page> ODocumentPageLink(String id, IModel<OIdentifiable> docModel, Class<C> pageClass, 
+	public <C extends Page> ODocumentPageLink(String id, IModel<M> docModel, Class<C> pageClass, 
 			IModel<DisplayMode> displayModeModel, PageParameters parameters) {
 		super(id, pageClass, parameters);
 		setModel(docModel);
 		this.displayModeModel = displayModeModel;
 	}
 
-	public <C extends Page> ODocumentPageLink(String id, IModel<OIdentifiable> docModel, Class<C> pageClass,
+	public <C extends Page> ODocumentPageLink(String id, IModel<M> docModel, Class<C> pageClass,
 			IModel<DisplayMode> displayModeModel) {
 		super(id, pageClass);
 		setModel(docModel);

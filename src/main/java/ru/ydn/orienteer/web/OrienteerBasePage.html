@@ -209,16 +209,16 @@
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        <wicket:enclosure child="logout">
+                        <li><a wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
                         </li>
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <wicket:enclosure>
-                        	<li><a wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a></li>
+                        	<li><a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a></li>
                         </wicket:enclosure>
                         <wicket:enclosure>
-                        	<li><a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a></li>
+                        	<li><a wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a></li>
                         </wicket:enclosure>
                     </ul>
                     <!-- /.dropdown-user -->

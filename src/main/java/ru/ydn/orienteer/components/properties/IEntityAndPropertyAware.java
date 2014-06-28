@@ -6,11 +6,11 @@ import org.apache.wicket.model.IModel;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public interface IPropertyDisplayPanel<T>
+public interface IEntityAndPropertyAware<E, P, V>
 {
-	public IModel<ODocument> getDocumentModel();
+	public IModel<E> getEntityModel();
 	
-	public IModel<OProperty> getPropertyModel();
+	public IModel<P> getPropertyModel();
 	
-	public IModel<T> getValueModel();
+	public IModel<V> getValueModel();
 }

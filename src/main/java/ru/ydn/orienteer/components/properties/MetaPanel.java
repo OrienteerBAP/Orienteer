@@ -1,11 +1,16 @@
 package ru.ydn.orienteer.components.properties;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 
+import ru.ydn.orienteer.model.DynamicPropertyValueModel;
+
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class MetaPanel<T> extends PropertyViewPanel<T> {
+public class MetaPanel<V> extends AbstractEntityAndPropertyAwarePanel<ODocument, OProperty, V> {
 	private static final String PANEL_ID = "panel";
 	private String stateSignature;
 	private IModel<DisplayMode> modeModel;
@@ -14,6 +19,13 @@ public class MetaPanel<T> extends PropertyViewPanel<T> {
 		super(id, documentModel, propertyModel);
 		this.modeModel = modeModel;
 	}
+	
+	@Override
+	protected IModel<V> resolveValueModel() {
+		return new DynamicPropertyValueModel<V>(getEntityModel(), getPropertyModel());
+	}
+
+
 
 	@Override
 	protected void onConfigure() {
@@ -34,7 +46,7 @@ public class MetaPanel<T> extends PropertyViewPanel<T> {
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected PropertyViewPanel<T> resolvePanel(OProperty property, DisplayMode mode)
+	protected Component resolvePanel(OProperty property, DisplayMode mode)
 	{
 		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
 		if(DisplayMode.VIEW.equals(mode))
@@ -42,12 +54,12 @@ public class MetaPanel<T> extends PropertyViewPanel<T> {
 			switch(property.getType())
 			{
 				case LINK:
-					return (PropertyViewPanel<T>)new LinkViewPanel(PANEL_ID, getDocumentModel(), getPropertyModel());
+					return new LinkViewPanel(PANEL_ID, (IModel<OIdentifiable>)getValueModel());
 				case LINKLIST:
 				case LINKSET:
-					return (PropertyViewPanel<T>)new LinksCollectionViewPanel(PANEL_ID, getDocumentModel(), getPropertyModel());
+					return new LinksCollectionViewPanel(PANEL_ID, getValueModel());
 				default:
-					return (PropertyViewPanel<T>)new DefaultViewPanel(PANEL_ID, getDocumentModel(), getPropertyModel());
+					return new Label(PANEL_ID, getValueModel());
 			}
 		}
 		else if(DisplayMode.EDIT.equals(mode))
@@ -55,12 +67,12 @@ public class MetaPanel<T> extends PropertyViewPanel<T> {
 			switch(property.getType())
 			{
 				default:
-					return (PropertyViewPanel<T>)new DefaultViewPanel(PANEL_ID, getDocumentModel(), getPropertyModel());
+					return new Label(PANEL_ID, getValueModel());
 			}
 		}
 		else
 		{
-			return (PropertyViewPanel<T>)new DefaultViewPanel(PANEL_ID, getDocumentModel(), getPropertyModel());
+			return new Label(PANEL_ID, getValueModel());
 		}
 	}
 	

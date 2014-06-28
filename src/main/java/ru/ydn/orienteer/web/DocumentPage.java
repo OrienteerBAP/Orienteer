@@ -13,7 +13,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.StructureTable;
-import ru.ydn.orienteer.components.properties.DefaultViewPanel;
 import ru.ydn.orienteer.components.properties.MetaPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.model.DocumentNameModel;
