@@ -8,6 +8,7 @@ import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class MetaPanel<V> extends AbstractEntityAndPropertyAwarePanel<ODocument, OProperty, V> {
@@ -49,9 +50,10 @@ public class MetaPanel<V> extends AbstractEntityAndPropertyAwarePanel<ODocument,
 	protected Component resolvePanel(OProperty property, DisplayMode mode)
 	{
 		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
+		OType oType = property.getType();
 		if(DisplayMode.VIEW.equals(mode))
 		{
-			switch(property.getType())
+			switch(oType)
 			{
 				case LINK:
 					return new LinkViewPanel(PANEL_ID, (IModel<OIdentifiable>)getValueModel());
@@ -64,10 +66,10 @@ public class MetaPanel<V> extends AbstractEntityAndPropertyAwarePanel<ODocument,
 		}
 		else if(DisplayMode.EDIT.equals(mode))
 		{
-			switch(property.getType())
+			switch(oType)
 			{
 				default:
-					return new Label(PANEL_ID, getValueModel());
+					return new TextFieldEditPanel<V>(PANEL_ID, getValueModel()).setType(oType.getDefaultJavaType());
 			}
 		}
 		else

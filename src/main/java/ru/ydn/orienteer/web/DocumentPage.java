@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
@@ -12,9 +13,14 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
-import ru.ydn.orienteer.components.StructureTable;
+import ru.ydn.orienteer.components.BootstrapType;
+import ru.ydn.orienteer.components.commands.EditCommand;
+import ru.ydn.orienteer.components.commands.SaveCommand;
 import ru.ydn.orienteer.components.properties.MetaPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.structuretable.DefaultStructureTable;
+import ru.ydn.orienteer.components.structuretable.StructureTable;
+import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.model.DocumentNameModel;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 
@@ -25,6 +31,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @MountPath("/doc/#{rid}/#{mode}")
 public class DocumentPage extends AbstractDocumentPage {
 
+	private DefaultStructureTable<OProperty> propertiesStructureTable;
+	
 	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
 	
 	public DocumentPage(IModel<ODocument> model) {
@@ -40,7 +48,8 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	public void initialize() {
 		super.initialize();
-		StructureTable<OProperty> properties = new StructureTable<OProperty>("properties", 
+		Form<ODocument> form = new Form<ODocument>("form", getModel());
+		propertiesStructureTable = new DefaultStructureTable<OProperty>("properties", 
 				new PropertyModel<List<? extends OProperty>>(getDocumentModel(), "schemaClass.properties()")) {
 
 					@Override
@@ -55,7 +64,15 @@ public class DocumentPage extends AbstractDocumentPage {
 					}
 		};
 		
-		add(properties);
+		form.add(propertiesStructureTable);
+		add(form);
+	}
+	
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+		propertiesStructureTable.addCommand(new EditCommand(propertiesStructureTable.getCommandsToolbar(), displayMode).setBootstrapType(BootstrapType.PRIMARY));
+		propertiesStructureTable.addCommand(new SaveCommand(propertiesStructureTable.getCommandsToolbar(), displayMode, getModel()).setBootstrapType(BootstrapType.PRIMARY));
 	}
 
 	@Override

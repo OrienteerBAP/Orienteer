@@ -34,12 +34,15 @@ public abstract class AbstractDocumentPage extends OrienteerBasePage<ODocument>
 		String rid = parameters.get("rid").toOptionalString();
 		if(rid!=null)
 		{
-			return new ODocumentModel(new ORecordId(rid));
+			try
+			{
+				return new ODocumentModel(new ORecordId(rid));
+			} catch (IllegalArgumentException e)
+			{
+				//NOP Support of case with wrong rid
+			}
 		}
-		else
-		{
-			return new ODocumentModel((ODocument)null);
-		}
+		return new ODocumentModel((ODocument)null);
 	}
 
 	
@@ -47,10 +50,13 @@ public abstract class AbstractDocumentPage extends OrienteerBasePage<ODocument>
 	protected void onConfigure() {
 		super.onConfigure();
 		ODocument doc = getDocument();
-		if(doc==null || Strings.isEmpty(doc.getClassName()))
-        {
-            throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
-        }
+		if(doc==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+		//Support of case when metadata was changed in parallel
+		else if(Strings.isEmpty(doc.getClassName()) && doc.getIdentity().isValid())
+		{
+			getDatabase().reload();
+			if(Strings.isEmpty(doc.getClassName()))  throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")

@@ -8,6 +8,7 @@ import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 import ru.ydn.orienteer.web.LoginPage;
 import ru.ydn.orienteer.web.security.ListUsersPage;
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
@@ -26,16 +27,19 @@ import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 public class OrienteerWebApplication extends OrientDbWebApplication
 {
 	private boolean embedded;
+	
 	@Inject
-	public OrienteerWebApplication(@Named("orientdb.embedded") boolean embedded, @Named("orientdb.url") String url, 
-									@Named("orientdb.username") String userName, @Named("orientdb.password") String password)
+	public OrienteerWebApplication(@Named("orientdb.embedded") boolean embedded)
 	{
 		this.embedded = embedded;
-		getOrientDbSettings().setDBUrl(url);
-		getOrientDbSettings().setDefaultUserName(userName);
-		getOrientDbSettings().setDefaultUserPassword(password);
 	}
 	
+	@Inject
+	@Override
+	public void setOrientDbSettings(IOrientDbSettings orientDbSettings) {
+		super.setOrientDbSettings(orientDbSettings);
+	}
+
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{

@@ -19,7 +19,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.ATTRIBUTES;
 import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
 
-import ru.ydn.orienteer.components.StructureTable;
+import ru.ydn.orienteer.components.structuretable.StructureTable;
 import ru.ydn.orienteer.schema.SchemaHelper;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.FunctionModel;

@@ -1,0 +1,65 @@
+package ru.ydn.orienteer.components.table;
+
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
+
+import ru.ydn.orienteer.components.commands.Command;
+
+import com.google.common.primitives.Booleans;
+
+
+public class DataTableCommandsToolbar extends AbstractToolbar
+{
+    private RepeatingView commands;
+    public DataTableCommandsToolbar(DataTable<?, ?> table)
+    {
+        super(table);
+        WebMarkupContainer span = new WebMarkupContainer("span");
+        span.add(new AttributeModifier("colspan", new Model(String.valueOf(table.getColumns().size()))));
+        commands = new RepeatingView("commands");
+        span.add(commands);
+        add(span);
+    }
+
+    public DataTableCommandsToolbar add(Command command)
+    {
+        commands.add(command);
+        return this;
+    }
+
+    public String newChildId()
+    {
+        return commands.newChildId();
+    }
+    
+    
+
+    @Override
+	protected void onConfigure() {
+		super.onConfigure();
+		Boolean ret = commands.visitChildren(new IVisitor<Component, Boolean>()
+		        {
+		            public void component(Component component, IVisit<Boolean> visit)
+		            {
+		            	component.configure();
+		                if(component.determineVisibility())
+		                {
+		                    visit.stop(true);
+		                }
+		                else
+		                {
+		                	visit.dontGoDeeper();
+		                }
+		            }
+		        });
+		setVisible(ret!=null?ret:false);
+	}
+
+}
