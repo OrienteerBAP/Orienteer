@@ -76,13 +76,15 @@ public abstract class Command extends Panel implements IBootstrapTypeAware
 		return icon;
 	}
 
-	public void setIcon(String icon) {
+	public Command setIcon(String icon) {
 		this.icon = icon;
+		return this;
 	}
 	
-	public void setIcon(FAIconType type)
+	public Command setIcon(FAIconType type)
 	{
 		this.icon = type.getCssClass();
+		return this;
 	}
 
 	AbstractLink getLink()

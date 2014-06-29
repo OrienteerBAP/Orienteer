@@ -5,9 +5,11 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColu
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.MetaPanel;
+import ru.ydn.wicket.wicketorientdb.model.AutoResourceModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 
@@ -18,6 +20,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class OPropertyColumn extends AbstractColumn<ODocument, String>
 {
 	private String property;
+	
+	public OPropertyColumn(OProperty property)
+	{
+		this(new AutoResourceModel(property), property.getName());
+	}
+	
 	public OPropertyColumn(IModel<String> displayModel, String property) {
 		super(displayModel, property);
 		this.property = property;

@@ -7,6 +7,7 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.LinkViewPanel;
 import ru.ydn.orienteer.schema.SchemaHelper;
+import ru.ydn.wicket.wicketorientdb.model.AutoResourceModel;
 
 import com.google.common.collect.Sets;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -14,11 +15,20 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class OEntityColumn extends AbstractColumn<ODocument, String>
 {
+	public OEntityColumn(OClass oClass)
+	{
+		this(new AutoResourceModel(oClass), oClass);
+	}
 	public OEntityColumn(IModel<String> displayModel, OClass oClass) {
 		super(displayModel, SchemaHelper.resolveNameProperty(oClass));
 	}
 	public OEntityColumn(IModel<String> displayModel, String oClass) {
 		super(displayModel, SchemaHelper.resolveNameProperty(oClass));
+	}
+	
+	public String getNameProperty()
+	{
+		return getSortProperty();
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
 import ru.ydn.orienteer.web.LoginPage;
-import ru.ydn.orienteer.web.security.ListUsersPage;
+import ru.ydn.orienteer.web.schema.ListClassesPage;
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
@@ -43,7 +43,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{
-		return ListUsersPage.class;
+		return ListClassesPage.class;
 	}
 
 	/**

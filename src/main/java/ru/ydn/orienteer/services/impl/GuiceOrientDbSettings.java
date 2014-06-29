@@ -1,4 +1,4 @@
-package ru.ydn.orienteer.services;
+package ru.ydn.orienteer.services.impl;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;

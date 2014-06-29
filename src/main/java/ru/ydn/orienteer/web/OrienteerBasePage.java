@@ -12,6 +12,7 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 
 import ru.ydn.orienteer.components.ODocumentPageLink;
 import ru.ydn.orienteer.components.OrienteerFeedbackPanel;
+import ru.ydn.orienteer.web.schema.ListClassesPage;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 public abstract class OrienteerBasePage<T> extends BasePage<T>
@@ -39,6 +40,10 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
+		add(new BookmarkablePageLink<T>("usersLink", BrowseClassPage.class, new PageParameters().add("className", "OUser")));
+		add(new BookmarkablePageLink<T>("rolesLink", BrowseClassPage.class, new PageParameters().add("className", "ORole")));
+		add(new BookmarkablePageLink<T>("classesLink", ListClassesPage.class));
+		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
 		add(new ODocumentPageLink("myProfile", new PropertyModel<OIdentifiable>(this, "session.user.document")));
 	}

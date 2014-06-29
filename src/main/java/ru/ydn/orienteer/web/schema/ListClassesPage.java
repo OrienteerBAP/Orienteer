@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -19,7 +22,11 @@ import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.orienteer.components.BootstrapType;
+import ru.ydn.orienteer.components.FAIconType;
+import ru.ydn.orienteer.components.commands.Command;
 import ru.ydn.orienteer.components.table.OClassColumn;
+import ru.ydn.orienteer.web.BrowseClassPage;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.components.table.DocumentPropertyColumn;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
@@ -48,6 +55,21 @@ public class ListClassesPage extends OrienteerBasePage {
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.strictMode"), "strictMode"));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.javaClass"), "javaClass", "javaClass"));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.count"), "count", "count"));
+		columns.add(new AbstractColumn<OClass, String>(new ResourceModel("class.browse")) {
+
+			@Override
+			public void populateItem(Item<ICellPopulator<OClass>> cellItem,
+					String componentId, final IModel<OClass> rowModel) {
+				cellItem.add(new Command(componentId, "class.browse") {
+					
+					@Override
+					public void onClick() {
+						setResponsePage(new BrowseClassPage(rowModel));
+					}
+				}.setIcon(FAIconType.angle_double_down).setBootstrapType(BootstrapType.INFO));
+				
+			}
+		});
 		OClassesDataProvider provider = new OClassesDataProvider();
 		provider.setSort("name", SortOrder.ASCENDING);
 		DefaultDataTable<OClass, String> table = new DefaultDataTable<OClass, String>("table", columns, provider ,20);

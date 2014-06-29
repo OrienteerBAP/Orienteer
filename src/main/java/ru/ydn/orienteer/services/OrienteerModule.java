@@ -9,6 +9,8 @@ import java.util.Properties;
 import org.apache.wicket.protocol.http.WebApplication;
 
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.services.impl.GuiceOrientDbSettings;
+import ru.ydn.orienteer.services.impl.OClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 
 import com.google.inject.AbstractModule;
@@ -40,6 +42,7 @@ public class OrienteerModule extends AbstractModule
 		Names.bindProperties(binder(), properties);
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
+		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
 	}
 	
 	private File lookupPropertiesFile()

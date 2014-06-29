@@ -46,11 +46,17 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		return null;
 	}
 	
+	
 	public void initialize()
 	{
-		add(new Label("title", getTitleModel()));
 	}
 	
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+		if(get("title")==null) add(new Label("title", getTitleModel()));
+	}
+
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
