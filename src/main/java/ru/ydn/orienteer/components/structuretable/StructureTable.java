@@ -60,6 +60,7 @@ public abstract class StructureTable<T> extends GenericPanel<List<? extends T>>
 				item.add(label, value);
 			}
 		};
+		listView.setReuseItems(true);
 		add(listView);
 	}
 	

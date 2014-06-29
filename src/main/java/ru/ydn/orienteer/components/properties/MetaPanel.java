@@ -34,7 +34,7 @@ public class MetaPanel<V> extends AbstractEntityAndPropertyAwarePanel<ODocument,
 		OProperty property = getPropertyModel().getObject();
 		DisplayMode mode = modeModel.getObject();
 		String newSignature = calcSignature(property, mode);
-		if(newSignature.equals(stateSignature) || get(PANEL_ID)==null)
+		if(!newSignature.equals(stateSignature) || get(PANEL_ID)==null)
 		{
 			stateSignature = newSignature;
 			addOrReplace(resolvePanel(property, mode).setRenderBodyOnly(true));
