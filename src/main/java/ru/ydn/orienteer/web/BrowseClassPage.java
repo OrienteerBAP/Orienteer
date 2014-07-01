@@ -7,6 +7,8 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.StringValue;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.commands.CreateCommand;
+import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -55,6 +57,9 @@ public class BrowseClassPage extends OrienteerBasePage<OClass>
 			};
 		
 		DefaultDataTable<ODocument, String> table = new DefaultDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject()), provider, 20);
+		DataTableCommandsToolbar commandsToolbar = new DataTableCommandsToolbar(table);
+		table.addTopToolbar(commandsToolbar);
+		commandsToolbar.add(new CreateCommand(commandsToolbar, getModel()));
 		add(table);
 	}
 
@@ -62,11 +67,6 @@ public class BrowseClassPage extends OrienteerBasePage<OClass>
 	public IModel<String> getTitleModel() {
 		return new StringResourceModel("class.browse.title", getModel());
 	}
-	
-	
-	
-	
-	
 	
 
 }

@@ -9,9 +9,10 @@ import org.apache.wicket.model.ResourceModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.MetaPanel;
-import ru.ydn.wicket.wicketorientdb.model.AutoResourceModel;
+import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -23,7 +24,7 @@ public class OPropertyColumn extends AbstractColumn<ODocument, String>
 	
 	public OPropertyColumn(OProperty property)
 	{
-		this(new AutoResourceModel(property), property.getName());
+		this(new OPropertyNamingModel(property), property.getName());
 	}
 	
 	public OPropertyColumn(IModel<String> displayModel, String property) {

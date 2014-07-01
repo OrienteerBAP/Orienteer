@@ -101,7 +101,7 @@ public abstract class StructureTable<T> extends GenericPanel<List<? extends T>>
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
 		checkComponentTag(tag, "table");
-		tag.append("class", "table", " ");
+		tag.append("class", "table table-condensed", " ");
 		super.onComponentTag(tag);
 	}
 	

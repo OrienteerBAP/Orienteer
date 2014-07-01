@@ -3,12 +3,8 @@ package ru.ydn.orienteer.web;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
@@ -16,15 +12,13 @@ import org.wicketstuff.annotation.mount.MountPath;
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SaveCommand;
-import ru.ydn.orienteer.components.properties.MetaPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.MetaPanel;
 import ru.ydn.orienteer.components.structuretable.DefaultStructureTable;
-import ru.ydn.orienteer.components.structuretable.StructureTable;
-import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.model.DocumentNameModel;
-import ru.ydn.orienteer.model.DynamicPropertyValueModel;
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
-import com.orientechnologies.common.thread.OPollerThread;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -34,6 +28,11 @@ public class DocumentPage extends AbstractDocumentPage {
 	private DefaultStructureTable<OProperty> propertiesStructureTable;
 	
 	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
+	
+	public DocumentPage(ODocument doc)
+	{
+		this(new ODocumentModel(doc));
+	}
 	
 	public DocumentPage(IModel<ODocument> model) {
 		super(model);
@@ -54,7 +53,7 @@ public class DocumentPage extends AbstractDocumentPage {
 
 					@Override
 					protected IModel<?> getLabelModel(IModel<OProperty> rowModel) {
-						return new PropertyModel<String>(rowModel, "name");
+						return new OPropertyNamingModel(rowModel);
 					}
 
 					@Override
@@ -66,6 +65,17 @@ public class DocumentPage extends AbstractDocumentPage {
 		
 		form.add(propertiesStructureTable);
 		add(form);
+	}
+	
+	public DisplayMode getDisplayMode()
+	{
+		return displayMode.getObject();
+	}
+	
+	public DocumentPage setDisplayMode(DisplayMode displayMode)
+	{
+		this.displayMode.setObject(displayMode);
+		return this;
 	}
 	
 	@Override
