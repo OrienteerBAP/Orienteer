@@ -68,6 +68,8 @@ public class MetaPanel<V> extends AbstractEntityAndPropertyAwarePanel<ODocument,
 		{
 			switch(oType)
 			{
+				case BOOLEAN:
+					return new BooleanEditPanel(PANEL_ID, (IModel<Boolean>)getValueModel());
 				default:
 					return new TextFieldEditPanel<V>(PANEL_ID, getValueModel()).setType(oType.getDefaultJavaType());
 			}
