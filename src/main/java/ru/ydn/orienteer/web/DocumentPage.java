@@ -14,7 +14,7 @@ import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SaveCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.MetaPanel;
-import ru.ydn.orienteer.components.structuretable.DefaultStructureTable;
+import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.model.DocumentNameModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
@@ -25,7 +25,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @MountPath("/doc/#{rid}/#{mode}")
 public class DocumentPage extends AbstractDocumentPage {
 
-	private DefaultStructureTable<OProperty> propertiesStructureTable;
+	private OrienteerStructureTable<OProperty> propertiesStructureTable;
 	
 	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
 	
@@ -48,7 +48,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	public void initialize() {
 		super.initialize();
 		Form<ODocument> form = new Form<ODocument>("form", getModel());
-		propertiesStructureTable = new DefaultStructureTable<OProperty>("properties", 
+		propertiesStructureTable = new OrienteerStructureTable<OProperty>("properties", 
 				new PropertyModel<List<? extends OProperty>>(getDocumentModel(), "schemaClass.properties()")) {
 
 					@Override

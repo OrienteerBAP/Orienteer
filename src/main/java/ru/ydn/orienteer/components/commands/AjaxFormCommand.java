@@ -8,20 +8,33 @@ import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
+import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
+import ru.ydn.orienteer.components.table.OrienteerDataTable;
 
-public class AjaxFormCommand extends AjaxCommand
+public class AjaxFormCommand<T> extends AjaxCommand<T>
 {
 
+	public AjaxFormCommand(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
+	{
+		super(labelModel, table);
+	}
+
 	public AjaxFormCommand(IModel<?> labelModel,
-			DataTableCommandsToolbar toolbar)
+			OrienteerStructureTable<T> table)
+	{
+		super(labelModel, table);
+	}
+
+	public AjaxFormCommand(IModel<?> labelModel,
+			DataTableCommandsToolbar<T> toolbar)
 	{
 		super(labelModel, toolbar);
 	}
 
 	public AjaxFormCommand(IModel<?> labelModel,
-			StructureTableCommandsToolbar toolbar)
+			StructureTableCommandsToolbar<T> toolbar)
 	{
 		super(labelModel, toolbar);
 	}

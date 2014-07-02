@@ -6,7 +6,7 @@ import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 @MountPath("/logout")
-public class LogoutPage extends BasePage {
+public class LogoutPage extends BasePage<Object> {
 	public LogoutPage()
 	{
 		OrientDbWebSession session = OrientDbWebSession.get();

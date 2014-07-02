@@ -11,6 +11,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.html.link.AbstractLink;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.model.IModel;
@@ -24,8 +26,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
+import ru.ydn.orienteer.components.OClassPageLink;
 import ru.ydn.orienteer.components.commands.Command;
+import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.OClassColumn;
+import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.web.BrowseClassPage;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.components.table.DocumentPropertyColumn;
@@ -63,8 +68,13 @@ public class ListClassesPage extends OrienteerBasePage {
 				cellItem.add(new Command(componentId, "class.browse") {
 					
 					@Override
+					protected AbstractLink newLink(String id) {
+						return new OClassPageLink(id, rowModel, BrowseClassPage.class, DisplayMode.VIEW.asModel());
+					}
+
+					@Override
 					public void onClick() {
-						setResponsePage(new BrowseClassPage(rowModel));
+						//We should not be here
 					}
 				}.setIcon(FAIconType.angle_double_down).setBootstrapType(BootstrapType.INFO));
 				
@@ -72,7 +82,7 @@ public class ListClassesPage extends OrienteerBasePage {
 		});
 		OClassesDataProvider provider = new OClassesDataProvider();
 		provider.setSort("name", SortOrder.ASCENDING);
-		DefaultDataTable<OClass, String> table = new DefaultDataTable<OClass, String>("table", columns, provider ,20);
+		OrienteerDataTable<OClass, String> table = new OrienteerDataTable<OClass, String>("table", columns, provider ,20);
 		add(table);
 	}
 

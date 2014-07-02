@@ -14,19 +14,19 @@ import org.apache.wicket.util.visit.IVisitor;
 import ru.ydn.orienteer.components.commands.Command;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 
-public class StructureTableCommandsToolbar extends
-		AbstractStructureTableToolbar
+public class StructureTableCommandsToolbar<T> extends
+		AbstractStructureTableToolbar<T>
 {
 	private RepeatingView commands;
 
-	public StructureTableCommandsToolbar(StructureTable<?> table)
+	public StructureTableCommandsToolbar(StructureTable<T> table)
 	{
 		super(table);
         commands = new RepeatingView("commands");
         add(commands);
 	}
 	
-	public StructureTableCommandsToolbar add(Command command)
+	public StructureTableCommandsToolbar<T> add(Command<T> command)
     {
         commands.add(command);
         return this;

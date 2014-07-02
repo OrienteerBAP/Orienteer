@@ -1,0 +1,44 @@
+package ru.ydn.orienteer.components.table;
+
+import java.util.List;
+
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.event.IEvent;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
+
+import ru.ydn.orienteer.components.commands.Command;
+
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
+public class OrienteerDataTable<T, S> extends DefaultDataTable<T, S>
+{
+	private DataTableCommandsToolbar<T> commandsToolbar;
+	
+	public OrienteerDataTable(String id, List<? extends IColumn<T, S>> columns,
+			ISortableDataProvider<T, S> dataProvider, int rowsPerPage)
+	{
+		super(id, columns, dataProvider, rowsPerPage);
+		addTopToolbar(commandsToolbar=new DataTableCommandsToolbar<T>(this));
+		setOutputMarkupPlaceholderTag(true);
+	}
+
+	public DataTableCommandsToolbar<T> getCommandsToolbar() {
+		return commandsToolbar;
+	}
+	
+	public OrienteerDataTable<T, S> addCommand(Command<T> command)
+	{
+		commandsToolbar.add(command);
+		return this;
+	}
+	
+	@Override
+	public void onEvent(IEvent<?> event) {
+		if(event.getPayload() instanceof AjaxRequestTarget)
+		{
+			((AjaxRequestTarget)event.getPayload()).add(this);
+		}
+	}
+}

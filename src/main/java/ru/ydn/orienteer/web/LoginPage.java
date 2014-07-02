@@ -6,7 +6,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.wicketstuff.annotation.mount.MountPath;
 
 @MountPath("/login")
-public class LoginPage extends BasePage
+public class LoginPage extends BasePage<Object>
 {
 	
 	public LoginPage()

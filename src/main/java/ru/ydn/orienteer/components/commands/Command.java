@@ -10,28 +10,43 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 
+import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIcon;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.IBootstrapTypeAware;
+import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
+import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 
-public abstract class Command extends Panel implements IBootstrapTypeAware
+public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 {
 	private String icon;
 	private AbstractLink link;
 	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
 	
-	public Command(IModel<?> labelModel, StructureTableCommandsToolbar toolbar)
+	public Command(IModel<?> labelModel, StructureTableCommandsToolbar<T> toolbar)
     {
         this(toolbar.newChildId(), labelModel);
     }
 	
-    public Command(IModel<?> labelModel, DataTableCommandsToolbar toolbar)
+    public Command(IModel<?> labelModel, DataTableCommandsToolbar<T> toolbar)
     {
         this(toolbar.newChildId(), labelModel);
+    }
+    
+    public Command(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
+    {
+        this(labelModel, table.getCommandsToolbar());
+    }
+    
+    public Command(IModel<?> labelModel, OrienteerStructureTable<T> table)
+    {
+        this(labelModel, table.getCommandsToolbar());
     }
 
     public Command(String labelKey)
@@ -102,6 +117,11 @@ public abstract class Command extends Panel implements IBootstrapTypeAware
 	@Override
 	public BootstrapType getBootstrapType() {
 		return bootstrapType;
+	}
+	
+	public ODatabaseRecord	getDatabase()
+	{
+		return OrientDbWebSession.get().getDatabase();
 	}
 
 	public abstract void onClick();

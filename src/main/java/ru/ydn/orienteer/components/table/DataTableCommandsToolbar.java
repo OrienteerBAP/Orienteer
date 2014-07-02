@@ -15,10 +15,10 @@ import ru.ydn.orienteer.components.commands.Command;
 import com.google.common.primitives.Booleans;
 
 
-public class DataTableCommandsToolbar extends AbstractToolbar
+public class DataTableCommandsToolbar<T> extends AbstractToolbar
 {
     private RepeatingView commands;
-    public DataTableCommandsToolbar(DataTable<?, ?> table)
+    public DataTableCommandsToolbar(DataTable<T, ?> table)
     {
         super(table);
         WebMarkupContainer span = new WebMarkupContainer("span");
@@ -28,7 +28,7 @@ public class DataTableCommandsToolbar extends AbstractToolbar
         add(span);
     }
 
-    public DataTableCommandsToolbar add(Command command)
+    public DataTableCommandsToolbar<T> add(Command<T> command)
     {
         commands.add(command);
         return this;
@@ -40,8 +40,15 @@ public class DataTableCommandsToolbar extends AbstractToolbar
     }
     
     
+    
 
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
+	public DataTable<T, ?> getTable() {
+		return (DataTable<T, ?>)super.getTable();
+	}
+
+	@Override
 	protected void onConfigure() {
 		super.onConfigure();
 		Boolean ret = commands.visitChildren(new IVisitor<Component, Boolean>()

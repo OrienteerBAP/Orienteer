@@ -1,6 +1,7 @@
 package ru.ydn.orienteer.web;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -8,7 +9,9 @@ import org.apache.wicket.util.string.StringValue;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.CreateCommand;
+import ru.ydn.orienteer.components.commands.DeleteCommand;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
+import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -47,6 +50,7 @@ public class BrowseClassPage extends OrienteerBasePage<OClass>
 	@Override
 	public void initialize() {
 		super.initialize();
+		Form<ODocument> form = new Form<ODocument>("form");
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+getModelObject().getName())
 			{
 			//To optimize number of queries
@@ -56,11 +60,11 @@ public class BrowseClassPage extends OrienteerBasePage<OClass>
 				}
 			};
 		
-		DefaultDataTable<ODocument, String> table = new DefaultDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject()), provider, 20);
-		DataTableCommandsToolbar commandsToolbar = new DataTableCommandsToolbar(table);
-		table.addTopToolbar(commandsToolbar);
-		commandsToolbar.add(new CreateCommand(commandsToolbar, getModel()));
-		add(table);
+		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject()), provider, 20);
+		table.addCommand(new CreateCommand(table, getModel()));
+		table.addCommand(new DeleteCommand(table));
+		form.add(table);
+		add(form);
 	}
 
 	@Override

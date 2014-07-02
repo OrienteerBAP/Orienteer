@@ -12,7 +12,7 @@ import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 
-public class SaveCommand extends AjaxFormCommand
+public class SaveCommand extends AjaxFormCommand<ODocument>
 {
 	private IModel<DisplayMode> displayModeModel;
 	private IModel<? extends OIdentifiable> documentModel;

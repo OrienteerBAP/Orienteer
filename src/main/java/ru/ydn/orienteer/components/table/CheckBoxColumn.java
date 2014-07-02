@@ -12,22 +12,20 @@ import org.apache.wicket.model.IModel;
 
 import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.orienteer.components.properties.BooleanEditPanel;
-import ru.ydn.wicket.wicketorientdb.utils.GetObjectFunction;
+import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
-public class CheckBoxColumn<T, S> extends AbstractColumn<T, S>
+public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColumn<T, S>
 {
-	private List<Serializable> selected = new ArrayList<Serializable>();
-	private Converter<T, Serializable> converterToPK;
+	private List<PK> selected = new ArrayList<PK>();
+	private Converter<T, PK> converterToPK;
 
-	public CheckBoxColumn(IModel<String> displayModel, S sortProperty, Converter<T, Serializable> converterToPK) {
-		super(displayModel, sortProperty);
-		this.converterToPK = converterToPK;
-	}
-
-	public CheckBoxColumn(IModel<String> displayModel) {
+	public CheckBoxColumn(IModel<String> displayModel, Converter<T, PK> converterToPK) {
 		super(displayModel);
+		this.converterToPK = converterToPK;
 	}
 
 	@Override
@@ -61,5 +59,12 @@ public class CheckBoxColumn<T, S> extends AbstractColumn<T, S>
 	{
 		return Lists.transform(selected, converterToPK.reverse());
 	}
+
+	@Override
+	public String getCssClass() {
+		return "checkbox-column";
+	}
+	
+	
 	
 }

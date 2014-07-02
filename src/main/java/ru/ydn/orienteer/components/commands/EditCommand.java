@@ -11,7 +11,7 @@ import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 
-public class EditCommand extends AjaxCommand
+public class EditCommand<T> extends AjaxCommand<T>
 {
 	private IModel<DisplayMode> displayModeModel;
 

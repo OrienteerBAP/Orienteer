@@ -105,17 +105,17 @@ public abstract class StructureTable<T> extends GenericPanel<List<? extends T>>
 		super.onComponentTag(tag);
 	}
 	
-	public void addBottomToolbar(final AbstractStructureTableToolbar toolbar)
+	public void addBottomToolbar(final AbstractStructureTableToolbar<T> toolbar)
 	{
 		addToolbar(toolbar, bottomToolbars);
 	}
 
-	public void addTopToolbar(final AbstractStructureTableToolbar toolbar)
+	public void addTopToolbar(final AbstractStructureTableToolbar<T> toolbar)
 	{
 		addToolbar(toolbar, topToolbars);
 	}
 	
-	private void addToolbar(final AbstractStructureTableToolbar toolbar, final ToolbarsContainer container)
+	private void addToolbar(final AbstractStructureTableToolbar<T> toolbar, final ToolbarsContainer container)
 	{
 		Args.notNull(toolbar, "toolbar");
 

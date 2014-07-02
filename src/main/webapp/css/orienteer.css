@@ -13,3 +13,14 @@
 {
 	background-color: #eee
 }
+
+tr.commandstoolbar a.btn
+{
+	margin-left:0.5em;
+	margin-right:0.5em;
+}
+
+td.checkbox-column
+{
+	width: 15px;
+}

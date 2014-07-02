@@ -12,14 +12,17 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OEntityColumn;
 import ru.ydn.orienteer.components.table.OPropertyColumn;
 import ru.ydn.orienteer.services.IOClassIntrospector;
+import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
 public class OClassIntrospector implements IOClassIntrospector
 {
@@ -62,7 +65,8 @@ public class OClassIntrospector implements IOClassIntrospector
 	@Override
 	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass) {
 		List<OProperty> properties = getDisplayableProperties(oClass);
-		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+1);
+		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+2);
+		columns.add(new CheckBoxColumn<ODocument, ORID, String>(null, ODocumentORIDConverter.INSTANCE));
 		OEntityColumn entityColumn = new OEntityColumn(oClass);
 		String nameProperty = entityColumn.getNameProperty();
 		columns.add(entityColumn);
