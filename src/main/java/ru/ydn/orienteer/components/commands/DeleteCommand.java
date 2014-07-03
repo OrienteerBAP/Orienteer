@@ -67,6 +67,7 @@ public class DeleteCommand extends AjaxFormCommand<ODocument>
 			docToDelete.delete();
 		}
 		getDatabase().commit();
+		checkboxColumn.resetSelection();
 		this.send(this, Broadcast.BUBBLE, target);
 	}
 

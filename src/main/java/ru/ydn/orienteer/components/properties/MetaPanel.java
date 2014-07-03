@@ -1,9 +1,13 @@
 package ru.ydn.orienteer.components.properties;
 
+import java.io.Serializable;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.lang.Objects;
 
+import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
@@ -11,81 +15,81 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class MetaPanel<V> extends AbstractEntityAndPropertyAwarePanel<ODocument, OProperty, V> {
-	private static final String PANEL_ID = "panel";
-	private String stateSignature;
-	private IModel<DisplayMode> modeModel;
-	public MetaPanel(String id, IModel<ODocument> documentModel,
-			IModel<OProperty> propertyModel, IModel<DisplayMode> modeModel) {
-		super(id, documentModel, propertyModel);
-		this.modeModel = modeModel;
-	}
-	
-	@Override
-	protected IModel<V> resolveValueModel() {
-		return new DynamicPropertyValueModel<V>(getEntityModel(), getPropertyModel());
-	}
-
-
-
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		OProperty property = getPropertyModel().getObject();
-		DisplayMode mode = modeModel.getObject();
-		String newSignature = calcSignature(property, mode);
-		if(!newSignature.equals(stateSignature) || get(PANEL_ID)==null)
-		{
-			stateSignature = newSignature;
-			addOrReplace(resolvePanel(property, mode).setRenderBodyOnly(true));
-		}
-	}
-	
-	protected String calcSignature(OProperty property, DisplayMode mode)
-	{
-		return (property!=null?property.getType():"null")+"|"+mode;
-	}
-	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected Component resolvePanel(OProperty property, DisplayMode mode)
-	{
-		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
-		OType oType = property.getType();
-		if(DisplayMode.VIEW.equals(mode))
-		{
+public class MetaPanel<V> extends AbstractMetaPanel<OProperty, V> {
+	private IMetaComponentResolver<OProperty> viewResolver = new IMetaComponentResolver<OProperty>() {
+		@Override
+		public Component resolve(String id, OProperty property) {
+			OType oType = property.getType();
 			switch(oType)
 			{
 				case LINK:
-					return new LinkViewPanel(PANEL_ID, (IModel<OIdentifiable>)getValueModel());
+					return new LinkViewPanel(id, (IModel<OIdentifiable>)getModel());
 				case LINKLIST:
 				case LINKSET:
-					return new LinksCollectionViewPanel(PANEL_ID, getValueModel());
+					return new LinksCollectionViewPanel(id, getModel());
 				default:
-					return new Label(PANEL_ID, getValueModel());
+					return new Label(id, getModel());
 			}
 		}
-		else if(DisplayMode.EDIT.equals(mode))
-		{
+
+		@Override
+		public Serializable getSignature(OProperty critery) {
+			return critery.getFullName();
+		}
+	};
+	
+	private IMetaComponentResolver<OProperty> editResolver = new IMetaComponentResolver<OProperty>() {
+		@Override
+		public Component resolve(String id, OProperty property) {
+			OType oType = property.getType();
 			switch(oType)
 			{
 				case BOOLEAN:
-					return new BooleanEditPanel(PANEL_ID, (IModel<Boolean>)getValueModel());
+					return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
 				default:
-					return new TextFieldEditPanel<V>(PANEL_ID, getValueModel()).setType(oType.getDefaultJavaType());
+					return new TextFieldEditPanel<V>(id, getModel()).setType(oType.getDefaultJavaType());
 			}
 		}
-		else
-		{
-			return new Label(PANEL_ID, getValueModel());
+
+		@Override
+		public Serializable getSignature(OProperty critery) {
+			return critery.getFullName();
 		}
-	}
+	};
 	
+	private IModel<DisplayMode> modeModel;
+	
+	public MetaPanel(String id, IModel<ODocument> documentModel,
+			IModel<OProperty> propertyModel, IModel<DisplayMode> modeModel) {
+		super(id, propertyModel, new DynamicPropertyValueModel<V>(documentModel, propertyModel));
+		this.modeModel = modeModel;
+	}
+
+	
+	@Override
+	protected Serializable subSign(Serializable thisSignature) {
+		return Objects.hashCode(modeModel.getObject(), thisSignature);
+	}
+
 	@Override
 	public void detachModels() {
 		super.detachModels();
 		modeModel.detach();
 	}
-	
+
+
+	@Override
+	protected IMetaComponentResolver<OProperty> getComponentResolver(OProperty property) {
+		DisplayMode mode = modeModel.getObject();
+		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
+		switch (mode) {
+		case EDIT:
+			return editResolver;
+		case VIEW:
+		default:
+			return viewResolver;
+		}
+	}
 	
 	
 }

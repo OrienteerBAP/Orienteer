@@ -8,6 +8,7 @@ import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+@Deprecated
 public abstract class AbstractEntityAndPropertyAwarePanel<E, P, V> extends GenericPanel<V> implements IEntityAndPropertyAware<E, P, V>
 {
 	private IModel<E> entityModel;

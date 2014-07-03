@@ -40,19 +40,36 @@ public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColum
 			
 			@Override
 			public void unselect() {
-				selected.remove(converterToPK.convert(rowModel.getObject()));
+				CheckBoxColumn.this.unselect(rowModel.getObject());
 			}
 			
 			@Override
 			public void select() {
-				selected.add(converterToPK.convert(rowModel.getObject()));
+				CheckBoxColumn.this.select(rowModel.getObject());
 			}
 			
 			@Override
 			public boolean isSelected() {
-				return selected.contains(converterToPK.convert(rowModel.getObject()));
+				return CheckBoxColumn.this.isSelected(rowModel.getObject());
 			}
 		};
+	}
+	
+	public void resetSelection()
+	{
+		selected.clear();
+	}
+	
+	public void unselect(T object) {
+		selected.remove(converterToPK.convert(object));
+	}
+	
+	public void select(T object) {
+		selected.add(converterToPK.convert(object));
+	}
+	
+	public boolean isSelected(T object) {
+		return selected.contains(converterToPK.convert(object));
 	}
 	
 	public List<T> getSelected()
