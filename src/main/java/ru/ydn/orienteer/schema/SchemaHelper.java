@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.schema;
 
+import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,11 +26,13 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class SchemaHelper 
 {
-	public static final Function<Object, String> BUITIFY_NAME_FUNCTION = new Function<Object, String>()
+	public static class BuitifyNamefunction<T> implements Function<T, String>, Serializable
 	{
+		private static final BuitifyNamefunction<Object> INSTANCE = new BuitifyNamefunction<Object>();
+		
 		private final Pattern WORD_START = Pattern.compile("\\b(\\w)(\\w*)", Pattern.CASE_INSENSITIVE);
 		@Override
-		public String apply(Object input) {
+		public String apply(T input) {
 			if(input==null) return null;
 			String ret = input.toString().trim().toLowerCase();
 			StringBuffer sb = new StringBuffer();
@@ -38,6 +41,12 @@ public class SchemaHelper
 		      m.appendReplacement(sb, m.group(1).toUpperCase()+m.group(2));
 		    }
 		    return m.appendTail(sb).toString(); 
+		}
+		
+		@SuppressWarnings("unchecked")
+		public static <T> BuitifyNamefunction<T> getInstance()
+		{
+			return (BuitifyNamefunction<T>)INSTANCE;
 		}
 		
 	};

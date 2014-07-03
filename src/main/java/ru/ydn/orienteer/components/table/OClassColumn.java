@@ -13,7 +13,7 @@ import ru.ydn.orienteer.components.properties.OClassViewPanel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
-public class OClassColumn extends PropertyColumn<OClass, String>
+public class OClassColumn<T> extends PropertyColumn<T, String>
 {
 	public OClassColumn(IModel<String> displayModel, final String propertyExpression) {
 		super(displayModel, propertyExpression);
@@ -22,16 +22,17 @@ public class OClassColumn extends PropertyColumn<OClass, String>
 	public OClassColumn(IModel<String> displayModel, String sortingProperty, final String propertyExpression) {
 		super(displayModel, sortingProperty, propertyExpression);
 	}
-
+	
 	@Override
-	public void populateItem(Item<ICellPopulator<OClass>> cellItem,
-			String componentId, IModel<OClass> rowModel) {
+	public void populateItem(Item<ICellPopulator<T>> cellItem,
+			String componentId, IModel<T> rowModel) {
 		cellItem.add(new OClassViewPanel(componentId, getClassModel(rowModel)));
 	}
 	
-	public IModel<OClass> getClassModel(IModel<OClass> rowModel)
+	@SuppressWarnings("unchecked")
+	public IModel<OClass> getClassModel(IModel<T> rowModel)
 	{
-		if(Strings.isEmpty(getPropertyExpression())) return rowModel;
+		if(Strings.isEmpty(getPropertyExpression())) return (IModel<OClass>)rowModel;
 		else return new PropertyModel<OClass>(rowModel, getPropertyExpression());
 	}
 }
