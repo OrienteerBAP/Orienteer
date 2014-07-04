@@ -27,7 +27,7 @@ public abstract class AjaxCommand<T> extends Command<T>
 		super(labelModel, table);
 	}
 
-	public AjaxCommand(IModel<?> labelModel, OrienteerStructureTable<T> table)
+	public AjaxCommand(IModel<?> labelModel, OrienteerStructureTable<T, ?> table)
 	{
 		super(labelModel, table);
 	}

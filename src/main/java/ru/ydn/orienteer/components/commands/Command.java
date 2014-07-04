@@ -44,7 +44,7 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
         this(labelModel, table.getCommandsToolbar());
     }
     
-    public Command(IModel<?> labelModel, OrienteerStructureTable<T> table)
+    public Command(IModel<?> labelModel, OrienteerStructureTable<T, ?> table)
     {
         this(labelModel, table.getCommandsToolbar());
     }

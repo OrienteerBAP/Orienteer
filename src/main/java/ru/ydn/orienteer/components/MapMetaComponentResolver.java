@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.lang.Args;
 
 import com.google.common.base.Objects;
 
@@ -22,15 +23,23 @@ public abstract class MapMetaComponentResolver<C, K> implements IMetaComponentRe
 
 	@Override
 	public final Component resolve(String id, C critery) {
-		IMetaComponentResolver<C> resolver = map.get(getKey());
+		K key = getKey(critery);
+		IMetaComponentResolver<C> resolver = map.get(key);
+		if(resolver==null)
+		{
+			resolver = newResolver(key);
+			if(resolver!=null) map.put(key, resolver);
+		}
 		return resolver!=null?resolver.resolve(id, critery):null;
 	}
 	
 	@Override
 	public Serializable getSignature(C critery) {
-		return Objects.hashCode(getKey(), critery);
+		return Objects.hashCode(getKey(critery), critery);
 	}
 
-	public abstract K getKey();
+	public abstract K getKey(C critery);
+	
+	protected abstract IMetaComponentResolver<C> newResolver(K key);
 
 }

@@ -9,7 +9,7 @@ import ru.ydn.orienteer.components.IMetaComponentResolver;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
-public abstract class AbstractMetaPanel<C, V> extends GenericPanel<V>
+public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V>
 {
 	private static final String PANEL_ID = "panel";
 	
@@ -29,7 +29,7 @@ public abstract class AbstractMetaPanel<C, V> extends GenericPanel<V>
 	protected void onConfigure() {
 		super.onConfigure();
 		C critery = criteryModel.getObject();
-		IMetaComponentResolver<C> resolver = getComponentResolver(critery);
+		IMetaComponentResolver<C> resolver = getComponentResolver();
 		Serializable newSignature = subSign(resolver.getSignature(critery));
 		if(!newSignature.equals(stateSignature) || get(PANEL_ID)==null)
 		{
@@ -43,6 +43,6 @@ public abstract class AbstractMetaPanel<C, V> extends GenericPanel<V>
 		return thisSignature;
 	}
 	
-	protected abstract IMetaComponentResolver<C> getComponentResolver(C critry);
+	protected abstract IMetaComponentResolver<C> getComponentResolver();
 
 }

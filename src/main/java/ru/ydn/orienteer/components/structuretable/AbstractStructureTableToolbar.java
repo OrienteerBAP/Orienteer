@@ -4,11 +4,11 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
-public class AbstractStructureTableToolbar<T> extends Panel
+public class AbstractStructureTableToolbar<P> extends Panel
 {
 	private static final long serialVersionUID = 1L;
 
-	private final StructureTable<T> table;
+	private final StructureTable<P, ?> table;
 
 	/**
 	 * Constructor
@@ -18,7 +18,7 @@ public class AbstractStructureTableToolbar<T> extends Panel
 	 * @param table
 	 *            data table this toolbar will be attached to
 	 */
-	public AbstractStructureTableToolbar(final IModel<?> model, final StructureTable<T> table)
+	public AbstractStructureTableToolbar(final IModel<?> model, final StructureTable<P, ?> table)
 	{
 		super(table.newToolbarId(), model);
 		this.table = table;
@@ -30,7 +30,7 @@ public class AbstractStructureTableToolbar<T> extends Panel
 	 * @param table
 	 *            data table this toolbar will be attached to
 	 */
-	public AbstractStructureTableToolbar(final StructureTable<T> table)
+	public AbstractStructureTableToolbar(final StructureTable<P, ?> table)
 	{
 		this(null, table);
 	}
@@ -38,7 +38,7 @@ public class AbstractStructureTableToolbar<T> extends Panel
 	/**
 	 * @return DataTable this toolbar is attached to
 	 */
-	protected StructureTable<?> getTable()
+	protected StructureTable<P, ?> getTable()
 	{
 		return table;
 	}

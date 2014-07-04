@@ -7,17 +7,17 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.commands.Command;
 
-public abstract class OrienteerStructureTable<T> extends StructureTable<T>
+public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 {
 	private StructureTableCommandsToolbar<T> commandsToolbar;
 
-	public OrienteerStructureTable(String id, IModel<List<? extends T>> model)
+	public OrienteerStructureTable(String id, IModel<List<? extends C>> model)
 	{
 		super(id, model);
 		initialize();
 	}
 
-	public OrienteerStructureTable(String id, List<? extends T> list)
+	public OrienteerStructureTable(String id, List<? extends C> list)
 	{
 		super(id, list);
 		initialize();
@@ -39,7 +39,7 @@ public abstract class OrienteerStructureTable<T> extends StructureTable<T>
 		return commandsToolbar;
 	}
 	
-	public OrienteerStructureTable<T> addCommand(Command<T> command)
+	public OrienteerStructureTable<T, C> addCommand(Command<T> command)
 	{
 		getCommandsToolbar().add(command);
 		return this;

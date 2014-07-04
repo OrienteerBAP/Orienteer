@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.validation.IValidator;
 
 import com.google.common.reflect.TypeToken;
 
@@ -38,6 +39,12 @@ public class TextFieldEditPanel<T> extends GenericPanel<T>
 	public TextFieldEditPanel<T> setType(Class<?> type)
 	{
 		textField.setType(type);
+		return this;
+	}
+	
+	public TextFieldEditPanel<T> addValidator(IValidator<T> validator)
+	{
+		textField.add(validator);
 		return this;
 	}
 	

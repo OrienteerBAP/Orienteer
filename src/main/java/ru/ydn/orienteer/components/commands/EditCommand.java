@@ -6,8 +6,10 @@ import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
+import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 
@@ -19,6 +21,11 @@ public class EditCommand<T> extends AjaxCommand<T>
 	{
 		super(new ResourceModel("command.edit"), toolbar);
 		this.displayModeModel = displayModeModel;
+	}
+	
+	public EditCommand(OrienteerStructureTable<T, ?> structureTable, IModel<DisplayMode> displayModeModel)
+	{
+		this(structureTable.getCommandsToolbar(), displayModeModel);
 	}
 
 	public EditCommand(StructureTableCommandsToolbar toolbar, IModel<DisplayMode> displayModeModel)
@@ -33,6 +40,7 @@ public class EditCommand<T> extends AjaxCommand<T>
 	protected void initialize(String commandId, IModel<?> labelModel) {
 		super.initialize(commandId, labelModel);
 		setIcon(FAIconType.edit);
+		setBootstrapType(BootstrapType.PRIMARY);
 	}
 
 	@Override

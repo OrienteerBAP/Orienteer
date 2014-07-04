@@ -22,7 +22,7 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 	}
 
 	public AjaxFormCommand(IModel<?> labelModel,
-			OrienteerStructureTable<T> table)
+			OrienteerStructureTable<T, ?> table)
 	{
 		super(labelModel, table);
 	}

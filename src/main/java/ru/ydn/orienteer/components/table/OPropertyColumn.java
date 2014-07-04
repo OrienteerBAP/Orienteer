@@ -8,7 +8,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
-import ru.ydn.orienteer.components.properties.MetaPanel;
+import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
@@ -37,7 +37,7 @@ public class OPropertyColumn extends AbstractColumn<ODocument, String>
 	public void populateItem(Item<ICellPopulator<ODocument>> cellItem,
 			String componentId, IModel<ODocument> rowModel) {
 		IModel<OProperty> propertyModel = new OPropertyModel(new OClassModel((IModel<ODocument>)rowModel), property);
-		cellItem.add(new MetaPanel<Object>(componentId, rowModel, propertyModel, DisplayMode.VIEW.asModel()));
+		cellItem.add(new ODocumentMetaPanel<Object>(componentId, DisplayMode.VIEW.asModel(), rowModel, propertyModel));
 	}
 
 

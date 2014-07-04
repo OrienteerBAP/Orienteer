@@ -20,7 +20,7 @@ import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 
-public abstract class StructureTable<T> extends GenericPanel<List<? extends T>> 
+public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C>> 
 {
 	private static final String LABEL_CELL_ID = "label";
 	private static final String VALUE_CELL_ID = "value";
@@ -30,29 +30,29 @@ public abstract class StructureTable<T> extends GenericPanel<List<? extends T>>
 
 	private final ToolbarsContainer bottomToolbars;
 	
-	private ListView<T> listView;
+	private ListView<C> listView;
 	private long toolbarIdCounter;
 	
 	public StructureTable(String id) {
-		this(id, (IModel<List<? extends T>>)null);
+		this(id, (IModel<List<? extends C>>)null);
 	}
 	
-	public StructureTable(String id, List<? extends T> list) {
+	public StructureTable(String id, List<? extends C> list) {
 		this(id, Model.ofList(list));
 	}
 
-	public StructureTable(String id, IModel<List<? extends T>> model) {
+	public StructureTable(String id, IModel<List<? extends C>> model) {
 		super(id, model);
 		setOutputMarkupPlaceholderTag(true);
 		caption = new Caption("caption", getCaptionModel());
 		topToolbars = new ToolbarsContainer("topToolbars");
 		bottomToolbars = new ToolbarsContainer("bottomToolbars");
 		add(caption, topToolbars, bottomToolbars);
-		this.listView = new ListView<T>("rows", getModel()) {
+		this.listView = new ListView<C>("rows", getModel()) {
 
 			@Override
-			protected void populateItem(ListItem<T> item) {
-				IModel<T> rowModel = item.getModel();
+			protected void populateItem(ListItem<C> item) {
+				IModel<C> rowModel = item.getModel();
 				Component label = getLabelComponent(LABEL_CELL_ID, rowModel);
 				if(!LABEL_CELL_ID.equals(label.getId())) throw new WicketRuntimeException("Wrong component id '"+label.getId()+"'. Should be '"+LABEL_CELL_ID+"'.");
 				Component value = getValueComponent(VALUE_CELL_ID, rowModel);
@@ -64,19 +64,19 @@ public abstract class StructureTable<T> extends GenericPanel<List<? extends T>>
 		add(listView);
 	}
 	
-	protected abstract Component getValueComponent(String id, IModel<T> rowModel);
+	protected abstract Component getValueComponent(String id, IModel<C> rowModel);
 	
-	protected Component getLabelComponent(String id, IModel<T> rowModel)
+	protected Component getLabelComponent(String id, IModel<C> rowModel)
 	{
 		return new Label(id, getLabelModel(rowModel));
 	}
 	
-	protected IModel<?> getLabelModel(IModel<T> rowModel)
+	protected IModel<?> getLabelModel(IModel<C> rowModel)
 	{
 		return rowModel;
 	}
 	
-	public StructureTable<T> setReuseItems(boolean reuseItems)
+	public StructureTable<T, C> setReuseItems(boolean reuseItems)
 	{
 		listView.setReuseItems(reuseItems);
 		return this;
