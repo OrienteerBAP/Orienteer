@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.components.properties;
 
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -13,13 +14,19 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class LinkViewPanel<M extends OIdentifiable> extends GenericPanel<M> {
+public class LinkViewPanel<M extends OIdentifiable> extends AbstractLinkViewPanel<M> {
 
 	public LinkViewPanel(
 			String id,
 			IModel<M> valueModel) {
 		super(id, valueModel);
-		add(new ODocumentPageLink("link", getModel()).setDocumentNameAsBody(true));
+		add(newLink("link"));
+	}
+	
+	@Override
+	protected AbstractLink newLink(String id)
+	{
+		return new ODocumentPageLink(id, getModel()).setDocumentNameAsBody(true);
 	}
 
 }

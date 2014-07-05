@@ -13,11 +13,11 @@ import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 
-public class SaveCommand extends SimpleSaveCommand<ODocument>
+public class ODocumentSaveCommand extends SimpleSaveCommand<ODocument>
 {
 	private IModel<? extends OIdentifiable> documentModel;
 
-	public SaveCommand(StructureTableCommandsToolbar toolbar, IModel<DisplayMode> displayModeModel, IModel<? extends OIdentifiable> documentModel)
+	public ODocumentSaveCommand(StructureTableCommandsToolbar toolbar, IModel<DisplayMode> displayModeModel, IModel<? extends OIdentifiable> documentModel)
 	{
 		super(toolbar, displayModeModel);
 		this.documentModel = documentModel;

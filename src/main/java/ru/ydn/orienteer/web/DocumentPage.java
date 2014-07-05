@@ -11,7 +11,7 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.commands.EditCommand;
-import ru.ydn.orienteer.components.commands.SaveCommand;
+import ru.ydn.orienteer.components.commands.ODocumentSaveCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -82,7 +82,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	protected void onInitialize() {
 		super.onInitialize();
 		propertiesStructureTable.addCommand(new EditCommand(propertiesStructureTable.getCommandsToolbar(), displayMode));
-		propertiesStructureTable.addCommand(new SaveCommand(propertiesStructureTable.getCommandsToolbar(), displayMode, getModel()));
+		propertiesStructureTable.addCommand(new ODocumentSaveCommand(propertiesStructureTable.getCommandsToolbar(), displayMode, getModel()));
 	}
 
 	@Override

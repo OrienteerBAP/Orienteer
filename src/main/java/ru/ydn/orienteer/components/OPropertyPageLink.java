@@ -8,32 +8,34 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.web.schema.ClassPage;
+import ru.ydn.orienteer.web.schema.PropertyPage;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
-public class OClassPageLink extends BookmarkablePageLink<OClass>
+public class OPropertyPageLink extends BookmarkablePageLink<OProperty>
 {
 	private IModel<DisplayMode> displayModeModel;
-	public OClassPageLink(String id, IModel<OClass> oClassModel, PageParameters parameters)
+	public OPropertyPageLink(String id, IModel<OProperty> oClassModel, PageParameters parameters)
 	{
 		this(id, oClassModel, DisplayMode.VIEW, parameters);
 	}
 	
-	public OClassPageLink(String id, IModel<OClass> oClassModel)
+	public OPropertyPageLink(String id, IModel<OProperty> oClassModel)
 	{
 		this(id, oClassModel, DisplayMode.VIEW);
 	}
 	
-	public OClassPageLink(String id, IModel<OClass> oClassModel, DisplayMode mode, PageParameters parameters)
+	public OPropertyPageLink(String id, IModel<OProperty> oClassModel, DisplayMode mode, PageParameters parameters)
 	{
 		this(id, oClassModel, resolvePageClass(mode), mode.asModel(), parameters);
 	}
 	
-	public OClassPageLink(String id, IModel<OClass> oClassModel, DisplayMode mode)
+	public OPropertyPageLink(String id, IModel<OProperty> oClassModel, DisplayMode mode)
 	{
 		this(id, oClassModel, resolvePageClass(mode), mode.asModel());
 	}
-	public <C extends Page> OClassPageLink(String id, IModel<OClass> oClassModel, Class<C> pageClass, 
+	public <C extends Page> OPropertyPageLink(String id, IModel<OProperty> oClassModel, Class<C> pageClass, 
 			IModel<DisplayMode> displayModeModel, PageParameters parameters) {
 		super(id, pageClass, parameters);
 		setModel(oClassModel);
@@ -41,7 +43,7 @@ public class OClassPageLink extends BookmarkablePageLink<OClass>
 	}
 	
 
-	public <C extends Page> OClassPageLink(String id, IModel<OClass> oClassModel, Class<C> pageClass,
+	public <C extends Page> OPropertyPageLink(String id, IModel<OProperty> oClassModel, Class<C> pageClass,
 			IModel<DisplayMode> displayModeModel) {
 		super(id, pageClass);
 		setModel(oClassModel);
@@ -52,11 +54,11 @@ public class OClassPageLink extends BookmarkablePageLink<OClass>
 	{
 		switch (mode) {
 		case VIEW:
-			return ClassPage.class;
+			return PropertyPage.class;
 		case EDIT:
-			return ClassPage.class;
+			return PropertyPage.class;
 		default:
-			return ClassPage.class;
+			return PropertyPage.class;
 		}
 	}
 	
@@ -66,7 +68,7 @@ public class OClassPageLink extends BookmarkablePageLink<OClass>
 		setVisible(getModelObject()!=null);
 	}
 
-	public OClassPageLink setClassNameAsBody(boolean classNameAsBody)
+	public OPropertyPageLink setPropertyNameAsBody(boolean classNameAsBody)
 	{
 		setBody(classNameAsBody?new PropertyModel<String>(getModel(), "name"):null);
 		return this;
@@ -75,6 +77,6 @@ public class OClassPageLink extends BookmarkablePageLink<OClass>
 	
 	@Override
 	public PageParameters getPageParameters() {
-		return super.getPageParameters().add("className", getModelObject().getName());
+		return super.getPageParameters().add("className", getModelObject().getOwnerClass().getName()).add("propertyName", getModelObject().getName());
 	}
 }
