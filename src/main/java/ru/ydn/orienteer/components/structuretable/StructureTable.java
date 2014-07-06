@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -217,7 +218,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C
 	
 	@Override
 	public void onEvent(IEvent<?> event) {
-		if(event.getPayload() instanceof AjaxRequestTarget)
+		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))
 		{
 			((AjaxRequestTarget)event.getPayload()).add(this);
 		}

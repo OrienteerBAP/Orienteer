@@ -68,7 +68,7 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
     protected void initialize(String commandId, IModel<?> labelModel)
     {
         link = newLink("command");
-        link.setMarkupId(commandId.replace(".","_"));
+//        link.setMarkupId(commandId.replace(".","_"));
         link.setOutputMarkupId(true);
         link.add(new AttributeAppender("class", new PropertyModel<String>(this, "bootstrapType.btnCssClass"), " "));
         link.add(new Label("label", labelModel).setRenderBodyOnly(true));

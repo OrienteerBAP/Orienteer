@@ -29,10 +29,12 @@ import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
@@ -46,6 +48,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 	
 	private IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 	private IModel<Boolean> showParentPropertiesModel = Model.<Boolean>of(true);
+	private IModel<Boolean> showParentIndexesModel = Model.<Boolean>of(true);
 	
 	public ClassPage(IModel<OClass> model) {
 		super(model);
@@ -92,23 +95,40 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		
 		form.add(structureTable);
 		
-		List<IColumn<OProperty, String>> columns = new ArrayList<IColumn<OProperty,String>>();
-		columns.add(new OPropertyDefinitionColumn<OProperty>(new ResourceModel("property.name"), "name", ""));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.type"), "type", "type"));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.linkedType"), "linkedType", "linkedType"));
-		columns.add(new OClassColumn<OProperty>(new ResourceModel("property.linkedClass"), "linkedClass.name", "linkedClass"));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.notNull"), "notNull", "notNull"));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.collate"), "collate.name", "collate.name"));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.mandatory"), "mandatory", "mandatory"));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.readonly"), "readonly", "readonly"));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.min"), "min", "min"));
-		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.max"), "max", "max"));
+		List<IColumn<OProperty, String>> pColumns = new ArrayList<IColumn<OProperty,String>>();
+		pColumns.add(new OPropertyDefinitionColumn<OProperty>(new ResourceModel("property.name"), "name", ""));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.type"), "type", "type"));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.linkedType"), "linkedType", "linkedType"));
+		pColumns.add(new OClassColumn<OProperty>(new ResourceModel("property.linkedClass"), "linkedClass.name", "linkedClass"));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.notNull"), "notNull", "notNull"));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.collate"), "collate.name", "collate.name"));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.mandatory"), "mandatory", "mandatory"));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.readonly"), "readonly", "readonly"));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.min"), "min", "min"));
+		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.max"), "max", "max"));
 		
-		OPropertiesDataProvider provider = new OPropertiesDataProvider(getModel(), showParentPropertiesModel);
-		provider.setSort("name", SortOrder.ASCENDING);
-		OrienteerDataTable<OProperty, String> table = new OrienteerDataTable<OProperty, String>("properties", columns, provider ,20);
-		table.addCommand(new ShowHideParentsCommand<OProperty>(table, showParentPropertiesModel));
-		form.add(table);
+		OPropertiesDataProvider pProvider = new OPropertiesDataProvider(getModel(), showParentPropertiesModel);
+		pProvider.setSort("name", SortOrder.ASCENDING);
+		OrienteerDataTable<OProperty, String> pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
+		pTable.addCommand(new ShowHideParentsCommand<OProperty>(pTable, showParentPropertiesModel));
+		form.add(pTable);
+		
+		
+		List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.name"), "name", "name"));
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.type"), "type", "type"));
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.fields"), "definition.fields"));
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.fieldsToIndex"), "definition.fieldsToIndex"));
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.collate"), "definition.collate.name", "definition.collate.name"));
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.nullValuesIgnored"), "definition.nullValuesIgnored", "definition.nullValuesIgnored"));
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.size"), "size", "size"));
+		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.keySize"), "keySize", "keySize"));
+		
+		OIndexiesDataProvider iProvider = new OIndexiesDataProvider(getModel(), showParentIndexesModel);
+		iProvider.setSort("name", SortOrder.ASCENDING);
+		OrienteerDataTable<OIndex<?>, String> iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
+		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(iTable, showParentIndexesModel));
+		form.add(iTable);
 		add(form);
 	
 	}

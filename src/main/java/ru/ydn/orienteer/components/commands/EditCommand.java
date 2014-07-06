@@ -17,7 +17,7 @@ public class EditCommand<T> extends AjaxCommand<T>
 {
 	private IModel<DisplayMode> displayModeModel;
 
-	public EditCommand(DataTableCommandsToolbar toolbar, IModel<DisplayMode> displayModeModel)
+	public EditCommand(DataTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
 	{
 		super(new ResourceModel("command.edit"), toolbar);
 		this.displayModeModel = displayModeModel;
@@ -28,7 +28,7 @@ public class EditCommand<T> extends AjaxCommand<T>
 		this(structureTable.getCommandsToolbar(), displayModeModel);
 	}
 
-	public EditCommand(StructureTableCommandsToolbar toolbar, IModel<DisplayMode> displayModeModel)
+	public EditCommand(StructureTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
 	{
 		super(new ResourceModel("command.edit"), toolbar);
 		this.displayModeModel = displayModeModel;

@@ -69,7 +69,7 @@ public class OrienteerFeedbackPanel extends FeedbackPanel
 		super.onEvent(event);
 		if(event.getPayload() instanceof AjaxRequestHandler)
 		{
-			((AjaxRequestHandler)event.getPayload()).add(this);
+			if(anyMessage()) ((AjaxRequestHandler)event.getPayload()).add(this);
 		}
 	}
 

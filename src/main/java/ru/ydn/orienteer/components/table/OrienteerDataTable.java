@@ -3,6 +3,7 @@ package ru.ydn.orienteer.components.table;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -36,7 +37,7 @@ public class OrienteerDataTable<T, S> extends DefaultDataTable<T, S>
 	
 	@Override
 	public void onEvent(IEvent<?> event) {
-		if(event.getPayload() instanceof AjaxRequestTarget)
+		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))
 		{
 			((AjaxRequestTarget)event.getPayload()).add(this);
 		}
