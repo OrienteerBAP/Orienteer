@@ -19,6 +19,7 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SchemaSaveCommand;
+import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -44,6 +45,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 	private OrienteerStructureTable<OClass, String> structureTable;
 	
 	private IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
+	private IModel<Boolean> showParentPropertiesModel = Model.<Boolean>of(true);
 	
 	public ClassPage(IModel<OClass> model) {
 		super(model);
@@ -60,9 +62,12 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		return Strings.isEmpty(className)?null:new OClassModel(className);
 	}
 
+	
+	
 	@Override
-	public void initialize() {
-		super.initialize();
+	protected void onInitialize() 
+	{
+		super.onInitialize();
 		Form<OClass> form = new Form<OClass>("form");
 		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", Arrays.asList(ATTRS_TO_VIEW)) {
 
@@ -82,6 +87,8 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 				return new OClassMetaPanel<Object>(id, modeModel, rowModel, new PropertyModel<Object>(ClassPage.this.getModel(), rowModel.getObject()));
 			}
 		};
+		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
+		structureTable.addCommand(new SchemaSaveCommand<OClass>(structureTable, modeModel));
 		
 		form.add(structureTable);
 		
@@ -97,18 +104,13 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.min"), "min", "min"));
 		columns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.max"), "max", "max"));
 		
-		OPropertiesDataProvider provider = new OPropertiesDataProvider(getModel(), Model.<Boolean>of(true));
+		OPropertiesDataProvider provider = new OPropertiesDataProvider(getModel(), showParentPropertiesModel);
 		provider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OProperty, String> table = new OrienteerDataTable<OProperty, String>("properties", columns, provider ,20);
+		table.addCommand(new ShowHideParentsCommand<OProperty>(table, showParentPropertiesModel));
 		form.add(table);
 		add(form);
-	}
 	
-	@Override
-	protected void onInitialize() {
-		super.onInitialize();
-		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
-		structureTable.addCommand(new SchemaSaveCommand<OClass>(structureTable, modeModel));
 	}
 
 	@Override
