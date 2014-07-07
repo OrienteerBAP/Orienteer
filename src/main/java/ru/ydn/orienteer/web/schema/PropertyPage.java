@@ -2,10 +2,13 @@ package ru.ydn.orienteer.web.schema;
 
 import java.util.Arrays;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
@@ -83,6 +86,12 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 		super.onInitialize();
 		structureTable.addCommand(new EditCommand<OProperty>(structureTable, modeModel));
 		structureTable.addCommand(new SchemaSaveCommand<OProperty>(structureTable, modeModel));
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	@Override

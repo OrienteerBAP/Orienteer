@@ -20,7 +20,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OEntityColumn;
-import ru.ydn.orienteer.components.table.OPropertyColumn;
+import ru.ydn.orienteer.components.table.OPropertyValueColumn;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
@@ -72,7 +72,7 @@ public class OClassIntrospector implements IOClassIntrospector
 		columns.add(entityColumn);
 		for (OProperty oProperty : properties)
 		{
-			if(nameProperty==null || !nameProperty.equals(oProperty.getName()))columns.add(new OPropertyColumn(oProperty));
+			if(nameProperty==null || !nameProperty.equals(oProperty.getName()))columns.add(new OPropertyValueColumn(oProperty));
 		}
 		return columns;
 	}

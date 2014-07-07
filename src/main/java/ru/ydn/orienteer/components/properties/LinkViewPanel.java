@@ -20,7 +20,6 @@ public class LinkViewPanel<M extends OIdentifiable> extends AbstractLinkViewPane
 			String id,
 			IModel<M> valueModel) {
 		super(id, valueModel);
-		add(newLink("link"));
 	}
 	
 	@Override

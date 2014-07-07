@@ -7,6 +7,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
+import ru.ydn.orienteer.components.properties.AbstractMetaPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
@@ -18,27 +19,23 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class OPropertyColumn extends AbstractColumn<ODocument, String>
+public class OPropertyValueColumn extends AbstractMetaColumn<ODocument, OProperty, String>
 {
-	private String property;
-	
-	public OPropertyColumn(OProperty property)
+	public OPropertyValueColumn(OProperty property)
 	{
-		this(new OPropertyNamingModel(property), property.getName());
+		this(new OPropertyModel(property));
 	}
 	
-	public OPropertyColumn(IModel<String> displayModel, String property) {
-		super(displayModel, property);
-		this.property = property;
+	public OPropertyValueColumn(IModel<OProperty> propertyModel)
+	{
+		super(new OPropertyNamingModel(propertyModel), propertyModel);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void populateItem(Item<ICellPopulator<ODocument>> cellItem,
-			String componentId, IModel<ODocument> rowModel) {
-		IModel<OProperty> propertyModel = new OPropertyModel(new OClassModel((IModel<ODocument>)rowModel), property);
-		cellItem.add(new ODocumentMetaPanel<Object>(componentId, DisplayMode.VIEW.asModel(), rowModel, propertyModel));
+	protected <V> AbstractMetaPanel<ODocument, OProperty, V> newMetaPanel(
+			String componentId, IModel<OProperty> criteryModel,
+			IModel<ODocument> rowModel) {
+		return new ODocumentMetaPanel<V>(componentId, DisplayMode.VIEW.asModel(), rowModel, criteryModel);
 	}
-
 
 }
