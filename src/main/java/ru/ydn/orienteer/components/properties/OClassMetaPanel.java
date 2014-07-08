@@ -22,6 +22,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalancedClusterSelectionStrategy;
+import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 
@@ -70,7 +71,8 @@ public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, Disp
 	protected V getValue(OClass entity, String critery) {
 		if("clusterSelection".equals(critery))
 		{
-			return (V)entity.getClusterSelection().getName();
+			OClusterSelectionStrategy strategy = entity.getClusterSelection();
+			return (V)(strategy!=null?strategy.getName():null);
 		}
 		else
 		{

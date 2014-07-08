@@ -21,6 +21,7 @@ import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.EditCommand;
+import ru.ydn.orienteer.components.commands.OClassSaveCommand;
 import ru.ydn.orienteer.components.commands.SchemaSaveCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
@@ -50,7 +51,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static String[] ATTRS_TO_VIEW = new String[]{"name", "shortName", "superClass", "overSizeInternal", "strictMode", "abstract", "clusterSelection"};
+	private static String[] ATTRS_TO_VIEW = new String[]{"name", "shortName", "superClass", "overSize", "strictMode", "abstract", "clusterSelection"};
 	
 	private OrienteerStructureTable<OClass, String> structureTable;
 	
@@ -64,6 +65,8 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 
 	public ClassPage(PageParameters parameters) {
 		super(parameters);
+		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
+		if(mode!=null) modeModel.setObject(mode);
 	}
 
 	@Override
@@ -71,6 +74,23 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 			PageParameters pageParameters) {
 		String className = pageParameters.get("className").toOptionalString();
 		return Strings.isEmpty(className)?null:new OClassModel(className);
+	}
+	
+	
+
+	public IModel<DisplayMode> getDisplayModeModel() {
+		return modeModel;
+	}
+	
+	public DisplayMode getDisplayMode()
+	{
+		return modeModel.getObject();
+	}
+	
+	public ClassPage setDisplayMode(DisplayMode mode)
+	{
+		modeModel.setObject(mode);
+		return this;
 	}
 
 	@Override
@@ -113,7 +133,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 			}
 		};
 		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
-		structureTable.addCommand(new SchemaSaveCommand<OClass>(structureTable, modeModel));
+		structureTable.addCommand(new OClassSaveCommand(structureTable, modeModel, getModel()));
 		
 		form.add(structureTable);
 		

@@ -18,6 +18,7 @@ import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.OClassPageLink;
 import ru.ydn.orienteer.components.commands.Command;
+import ru.ydn.orienteer.components.commands.OClassCreateCommand;
 import ru.ydn.orienteer.components.commands.OMetadataReloadCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.OClassColumn;
@@ -92,6 +93,7 @@ public class ListClassesPage extends OrienteerBasePage<Object> {
 		OClassesDataProvider provider = new OClassesDataProvider();
 		provider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OClass, String> table = new OrienteerDataTable<OClass, String>("table", columns, provider ,20);
+		table.addCommand(new OClassCreateCommand(table));
 		table.addCommand(new OMetadataReloadCommand(table));
 		add(table);
 	}

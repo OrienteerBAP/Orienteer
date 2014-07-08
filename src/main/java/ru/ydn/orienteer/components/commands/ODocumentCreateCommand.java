@@ -19,7 +19,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class CreateCommand extends Command<ODocument> implements ISecuredComponent{
+public class ODocumentCreateCommand extends SimpleCreateCommand<ODocument> implements ISecuredComponent{
 	
 	/**
 	 * 
@@ -29,37 +29,30 @@ public class CreateCommand extends Command<ODocument> implements ISecuredCompone
 	public IModel<ODocument> documentModel;
 	public IModel<OProperty> propertyModel;
 	
-	public CreateCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel) {
-		super(new ResourceModel("command.create"), table);
+	public ODocumentCreateCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel) {
+		super(table);
 		this.classModel = classModel;
 	}
 	
-	public CreateCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
-		super(new ResourceModel("command.create"), table);
+	public ODocumentCreateCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+		super(table);
 		this.documentModel = documentModel;
 		this.propertyModel = propertyModel;
 		this.classModel = new PropertyModel<OClass>(propertyModel, "linkedClass");
 	}
 
-	public CreateCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<OClass> classModel) {
-		super(new ResourceModel("command.create"), toolbar);
+	public ODocumentCreateCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<OClass> classModel) {
+		super(toolbar);
 		this.classModel = classModel;
 	}
 	
-	public CreateCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
-		super(new ResourceModel("command.create"), toolbar);
+	public ODocumentCreateCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+		super(toolbar);
 		this.documentModel = documentModel;
 		this.propertyModel = propertyModel;
 		this.classModel = new PropertyModel<OClass>(propertyModel, "linkedClass");
 	}
 	
-	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
-		setIcon(FAIconType.plus);
-		setBootstrapType(BootstrapType.PRIMARY);
-	}
-
 	@Override
 	public void onClick() {
 		ODocument doc = new ODocument(classModel.getObject());

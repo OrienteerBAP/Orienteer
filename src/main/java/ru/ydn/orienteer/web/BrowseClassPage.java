@@ -6,7 +6,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
-import ru.ydn.orienteer.components.commands.CreateCommand;
+import ru.ydn.orienteer.components.commands.ODocumentCreateCommand;
 import ru.ydn.orienteer.components.commands.DeleteCommand;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
@@ -67,7 +67,7 @@ public class BrowseClassPage extends OrienteerBasePage<OClass>
 			};
 		
 		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject()), provider, 20);
-		table.addCommand(new CreateCommand(table, getModel()));
+		table.addCommand(new ODocumentCreateCommand(table, getModel()));
 		table.addCommand(new DeleteCommand(table));
 		form.add(table);
 		add(form);
