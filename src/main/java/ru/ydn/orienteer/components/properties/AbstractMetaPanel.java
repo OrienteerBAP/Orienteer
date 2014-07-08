@@ -51,8 +51,15 @@ public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V>
 		return thisSignature;
 	}
 	
+	public IModel<C> getCriteryModel() {
+		return criteryModel;
+	}
 	
-	
+	public C getCriteryObject()
+	{
+		return getCriteryModel().getObject();
+	}
+
 	@Override
 	public IMarkupFragment getMarkup(Component child) {
 		if(child==null) return super.getMarkup(child);

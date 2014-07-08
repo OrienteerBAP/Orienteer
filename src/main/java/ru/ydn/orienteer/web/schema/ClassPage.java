@@ -94,7 +94,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
-				return new OClassMetaPanel<Object>(id, modeModel, rowModel, new PropertyModel<Object>(ClassPage.this.getModel(), rowModel.getObject()));
+				return new OClassMetaPanel<Object>(id, modeModel, ClassPage.this.getModel(), rowModel);
 			}
 		};
 		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));

@@ -4,6 +4,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
+@Deprecated
 public class BooleanEditPanel extends GenericPanel<Boolean>
 {
 
