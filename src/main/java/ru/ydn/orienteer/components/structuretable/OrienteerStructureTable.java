@@ -2,13 +2,16 @@ package ru.ydn.orienteer.components.structuretable;
 
 import java.util.List;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.commands.Command;
 
 public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private StructureTableCommandsToolbar<T> commandsToolbar;
 
 	public OrienteerStructureTable(String id, IModel<List<? extends C>> model)

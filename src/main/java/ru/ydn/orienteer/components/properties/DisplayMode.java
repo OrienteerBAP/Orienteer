@@ -4,8 +4,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-import com.google.common.base.Enums;
-
 import ru.ydn.orienteer.web.DocumentPage;
 
 public enum DisplayMode {

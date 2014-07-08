@@ -1,6 +1,5 @@
 package ru.ydn.orienteer.components.commands;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
@@ -25,6 +24,10 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String icon;
 	private AbstractLink link;
 	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
@@ -80,7 +83,12 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
     {
     	return new Link<Object>(id)
         {
-            public void onClick()
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void onClick()
             {
                 Command.this.onClick();
             }
@@ -91,12 +99,12 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 		return icon;
 	}
 
-	public Command setIcon(String icon) {
+	public Command<T> setIcon(String icon) {
 		this.icon = icon;
 		return this;
 	}
 	
-	public Command setIcon(FAIconType type)
+	public Command<T> setIcon(FAIconType type)
 	{
 		this.icon = type.getCssClass();
 		return this;
@@ -109,7 +117,7 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 	
 
     @Override
-	public Command setBootstrapType(BootstrapType type) {
+	public Command<T> setBootstrapType(BootstrapType type) {
     	this.bootstrapType = type;
 		return this;
 	}

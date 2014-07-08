@@ -21,6 +21,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class CreateCommand extends Command<ODocument> implements ISecuredComponent{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public IModel<OClass> classModel;
 	public IModel<ODocument> documentModel;
 	public IModel<OProperty> propertyModel;

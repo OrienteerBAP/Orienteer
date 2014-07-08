@@ -11,10 +11,12 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDat
 
 import ru.ydn.orienteer.components.commands.Command;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 public class OrienteerDataTable<T, S> extends DefaultDataTable<T, S>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private DataTableCommandsToolbar<T> commandsToolbar;
 	
 	public OrienteerDataTable(String id, List<? extends IColumn<T, S>> columns,

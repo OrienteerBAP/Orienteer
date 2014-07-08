@@ -12,17 +12,19 @@ import org.apache.wicket.util.visit.IVisitor;
 
 import ru.ydn.orienteer.components.commands.Command;
 
-import com.google.common.primitives.Booleans;
-
 
 public class DataTableCommandsToolbar<T> extends AbstractToolbar
 {
-    private RepeatingView commands;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private RepeatingView commands;
     public DataTableCommandsToolbar(DataTable<T, ?> table)
     {
         super(table);
         WebMarkupContainer span = new WebMarkupContainer("span");
-        span.add(new AttributeModifier("colspan", new Model(String.valueOf(table.getColumns().size()))));
+        span.add(new AttributeModifier("colspan", new Model<String>(String.valueOf(table.getColumns().size()))));
         commands = new RepeatingView("commands");
         span.add(commands);
         add(span);

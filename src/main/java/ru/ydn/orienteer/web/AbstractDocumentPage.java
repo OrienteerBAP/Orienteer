@@ -3,12 +3,10 @@ package ru.ydn.orienteer.web;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.util.SetModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 import com.orientechnologies.orient.core.id.ORecordId;
@@ -16,6 +14,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public abstract class AbstractDocumentPage extends OrienteerBasePage<ODocument> 
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public AbstractDocumentPage() {
 		super();
 	}

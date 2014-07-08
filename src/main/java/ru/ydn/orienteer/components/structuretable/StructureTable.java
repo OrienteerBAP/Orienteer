@@ -23,6 +23,10 @@ import org.apache.wicket.util.visit.IVisitor;
 
 public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C>> 
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final String LABEL_CELL_ID = "label";
 	private static final String VALUE_CELL_ID = "value";
 	
@@ -50,6 +54,11 @@ public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C
 		bottomToolbars = new ToolbarsContainer("bottomToolbars");
 		add(caption, topToolbars, bottomToolbars);
 		this.listView = new ListView<C>("rows", getModel()) {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void populateItem(ListItem<C> item) {

@@ -3,7 +3,6 @@ package ru.ydn.orienteer.web;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.GenericWebPage;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -17,6 +16,11 @@ import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 public abstract class BasePage<T> extends GenericWebPage<T>
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public BasePage()
 	{

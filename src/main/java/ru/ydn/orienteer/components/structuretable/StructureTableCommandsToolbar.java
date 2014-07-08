@@ -1,22 +1,19 @@
 package ru.ydn.orienteer.components.structuretable;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.event.IEvent;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 
 import ru.ydn.orienteer.components.commands.Command;
-import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 
 public class StructureTableCommandsToolbar<P> extends
 		AbstractStructureTableToolbar<P>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
 
 	public StructureTableCommandsToolbar(StructureTable<P, ?> table)

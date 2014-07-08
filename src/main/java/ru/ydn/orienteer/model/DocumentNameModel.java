@@ -4,17 +4,17 @@ import org.apache.wicket.Application;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 
-import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.schema.SchemaHelper;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class DocumentNameModel implements IModel<String>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<? extends OIdentifiable> documentModel;
 	
 	public DocumentNameModel(IModel<? extends OIdentifiable> documentModel)

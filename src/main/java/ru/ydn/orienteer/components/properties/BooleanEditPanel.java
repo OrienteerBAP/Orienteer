@@ -4,9 +4,13 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
-@Deprecated
 public class BooleanEditPanel extends GenericPanel<Boolean>
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public BooleanEditPanel(String id, IModel<Boolean> model) {
 		super(id, model);

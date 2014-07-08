@@ -9,6 +9,10 @@ import ru.ydn.orienteer.components.properties.AbstractMetaPanel;
 
 public abstract class AbstractMetaColumn<T, C, S> extends AbstractColumn<T, S>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<C> criteryModel;
 	
 	public AbstractMetaColumn(IModel<String> displayModel, IModel<C> criteryModel) {

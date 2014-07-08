@@ -1,11 +1,13 @@
 package ru.ydn.orienteer.components.properties;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Objects;
 
 import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
@@ -18,6 +20,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class ODocumentMetaPanel<V> extends AbstractMapMetaPanel<ODocument, DisplayMode, OProperty, V> {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public ODocumentMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
 		super(id, modeModel, propertyModel, new DynamicPropertyValueModel<V>(documentModel, propertyModel));
@@ -43,16 +50,22 @@ public class ODocumentMetaPanel<V> extends AbstractMapMetaPanel<ODocument, Displ
 		if(DisplayMode.VIEW.equals(key))
 		{
 			return new IMetaComponentResolver<OProperty>() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@SuppressWarnings("unchecked")
 				@Override
 				public Component resolve(String id, OProperty property) {
 					OType oType = property.getType();
 					switch(oType)
 					{
 						case LINK:
-							return new LinkViewPanel(id, (IModel<OIdentifiable>)getModel());
+							return new LinkViewPanel<OIdentifiable>(id, (IModel<OIdentifiable>)getModel());
 						case LINKLIST:
 						case LINKSET:
-							return new LinksCollectionViewPanel(id, getModel());
+							return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, (IModel<Collection<OIdentifiable>>)getModel());
 						default:
 							return new Label(id, getModel());
 					}
@@ -67,15 +80,21 @@ public class ODocumentMetaPanel<V> extends AbstractMapMetaPanel<ODocument, Displ
 		else if(DisplayMode.EDIT.equals(key))
 		{
 			return new IMetaComponentResolver<OProperty>() {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@SuppressWarnings("unchecked")
 				@Override
 				public Component resolve(String id, OProperty property) {
 					OType oType = property.getType();
 					switch(oType)
 					{
 						case BOOLEAN:
-							return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
+							return new CheckBox(id, (IModel<Boolean>)getModel());
 						default:
-							return new TextFieldEditPanel<V>(id, getModel()).setType(oType.getDefaultJavaType());
+							return new TextField<V>(id, getModel()).setType(oType.getDefaultJavaType());
 					}
 				}
 

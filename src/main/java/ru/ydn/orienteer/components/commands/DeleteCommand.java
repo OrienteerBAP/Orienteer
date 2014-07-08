@@ -8,7 +8,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
-import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.orienteer.components.BootstrapType;
@@ -19,6 +18,10 @@ import ru.ydn.orienteer.components.table.OrienteerDataTable;
 
 public class DeleteCommand extends AjaxFormCommand<ODocument>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private DataTable<ODocument, ?> table;
 	private CheckBoxColumn<ODocument, ?, ?> checkboxColumn;
 	

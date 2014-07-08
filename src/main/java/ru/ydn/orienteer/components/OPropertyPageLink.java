@@ -7,14 +7,16 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
-import ru.ydn.orienteer.web.schema.ClassPage;
 import ru.ydn.orienteer.web.schema.PropertyPage;
 
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
 public class OPropertyPageLink extends BookmarkablePageLink<OProperty>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 	public OPropertyPageLink(String id, IModel<OProperty> oClassModel, PageParameters parameters)
 	{

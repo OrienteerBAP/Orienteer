@@ -9,6 +9,11 @@ import org.wicketstuff.annotation.mount.MountPath;
 public class LoginPage extends BasePage<Object>
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public LoginPage()
 	{
 		super();

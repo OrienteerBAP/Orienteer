@@ -7,6 +7,11 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 @MountPath("/logout")
 public class LogoutPage extends BasePage<Object> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public LogoutPage()
 	{
 		OrientDbWebSession session = OrientDbWebSession.get();

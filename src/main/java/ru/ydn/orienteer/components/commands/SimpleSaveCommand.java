@@ -5,8 +5,6 @@ import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.properties.DisplayMode;
@@ -14,9 +12,13 @@ import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 
 public class SimpleSaveCommand<T> extends AjaxFormCommand<T> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 	
-	public SimpleSaveCommand(StructureTableCommandsToolbar toolbar, IModel<DisplayMode> displayModeModel)
+	public SimpleSaveCommand(StructureTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
 	{
 		super(new ResourceModel("command.save"), toolbar);
 		this.displayModeModel = displayModeModel;

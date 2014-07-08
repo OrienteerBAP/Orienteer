@@ -2,8 +2,6 @@ package ru.ydn.orienteer.services;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
-import org.apache.wicket.markup.Markup;
-
 import ru.ydn.orienteer.services.impl.MarkupProvider;
 
 import com.google.inject.ImplementedBy;

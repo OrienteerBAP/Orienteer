@@ -13,6 +13,10 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 public class OClassPageLink extends BookmarkablePageLink<OClass>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 	public OClassPageLink(String id, IModel<OClass> oClassModel, PageParameters parameters)
 	{

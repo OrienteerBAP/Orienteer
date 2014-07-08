@@ -4,7 +4,6 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.html.link.AbstractLink;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -16,6 +15,11 @@ public abstract class AjaxCommand<T> extends Command<T>
 {
 	
 	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public AjaxCommand(IModel<?> labelModel, DataTableCommandsToolbar<T> toolbar)
 	{
@@ -63,6 +67,11 @@ public abstract class AjaxCommand<T> extends Command<T>
 	protected AbstractLink newLink(String id) {
 		return new AjaxFallbackLink<Object>(id)
         {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				AjaxCommand.this.onClick(target);

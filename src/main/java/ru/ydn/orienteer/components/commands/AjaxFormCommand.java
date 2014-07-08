@@ -1,11 +1,9 @@
 package ru.ydn.orienteer.components.commands;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.AbstractLink;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -15,6 +13,11 @@ import ru.ydn.orienteer.components.table.OrienteerDataTable;
 
 public class AjaxFormCommand<T> extends AjaxCommand<T>
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public AjaxFormCommand(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
 	{
@@ -58,6 +61,11 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 	protected AbstractLink newLink(String id) {
 		return new AjaxSubmitLink(id)
 		{
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {

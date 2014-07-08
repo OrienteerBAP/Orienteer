@@ -23,6 +23,11 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, DisplayMode, String, V>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public OPropertyMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<String> criteryModel, IModel<V> model) {
 		super(id, modeModel, criteryModel, model);
@@ -38,6 +43,11 @@ public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, Displ
 		if(DisplayMode.VIEW.equals(key))
 		{
 			return new IMetaComponentResolver<String>() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
 
 				@SuppressWarnings("unchecked")
 				@Override
@@ -62,12 +72,17 @@ public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, Displ
 		{
 			return new IMetaComponentResolver<String>() {
 
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@SuppressWarnings("unchecked")
 				@Override
 				public Component resolve(String id, String critery) {
 					if("name".equals(critery))
 					{
-						return new TextFieldEditPanel<V>(id, getModel()).addValidator((IValidator<V>)OSchemaNamesValidator.INSTANCE).setType(String.class);
+						return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE);
 					}
 					else if("type".equals(critery) || "linkedType".equals(critery))
 					{
@@ -76,6 +91,11 @@ public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, Displ
 					else if("linkedClass".equals(critery))
 					{
 						return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListClassesModel(), new IChoiceRenderer<OClass>() {
+
+							/**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
 
 							@Override
 							public Object getDisplayValue(OClass object) {

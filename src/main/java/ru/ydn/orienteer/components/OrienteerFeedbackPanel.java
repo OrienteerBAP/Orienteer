@@ -11,9 +11,18 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 
 public class OrienteerFeedbackPanel extends FeedbackPanel
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static class UniqueMessageFilter implements IFeedbackMessageFilter
 	  {
-	    List<FeedbackMessage> messages = new ArrayList<FeedbackMessage>();
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		List<FeedbackMessage> messages = new ArrayList<FeedbackMessage>();
 	 
 	    public void clearMessages()
 	    {

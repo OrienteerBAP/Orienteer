@@ -3,14 +3,13 @@ package ru.ydn.orienteer.components.properties;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
-import ru.ydn.orienteer.model.DynamicPropertyValueModel;
-
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 @Deprecated
 public abstract class AbstractEntityAndPropertyAwarePanel<E, P, V> extends GenericPanel<V> implements IEntityAndPropertyAware<E, P, V>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<E> entityModel;
 	private IModel<P> propertyModel;
 	

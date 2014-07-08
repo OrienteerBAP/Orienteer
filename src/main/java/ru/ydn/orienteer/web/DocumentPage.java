@@ -9,7 +9,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
-import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.ODocumentSaveCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
@@ -24,6 +23,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @MountPath("/doc/#{rid}/#{mode}")
 public class DocumentPage extends AbstractDocumentPage {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
 	
@@ -50,6 +54,11 @@ public class DocumentPage extends AbstractDocumentPage {
 		Form<ODocument> form = new Form<ODocument>("form", getModel());
 		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", 
 				new PropertyModel<List<? extends OProperty>>(getDocumentModel(), "schemaClass.properties()")) {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					protected IModel<?> getLabelModel(IModel<OProperty> rowModel) {
@@ -81,7 +90,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		propertiesStructureTable.addCommand(new EditCommand(propertiesStructureTable.getCommandsToolbar(), displayMode));
+		propertiesStructureTable.addCommand(new EditCommand<ODocument>(propertiesStructureTable.getCommandsToolbar(), displayMode));
 		propertiesStructureTable.addCommand(new ODocumentSaveCommand(propertiesStructureTable.getCommandsToolbar(), displayMode, getModel()));
 	}
 

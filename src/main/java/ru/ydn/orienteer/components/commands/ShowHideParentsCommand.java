@@ -11,6 +11,10 @@ import ru.ydn.orienteer.components.table.OrienteerDataTable;
 
 public class ShowHideParentsCommand<T> extends AjaxCommand<T>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<Boolean> showHideParentModel;
 
 	public ShowHideParentsCommand(

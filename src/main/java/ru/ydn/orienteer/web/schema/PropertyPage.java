@@ -31,6 +31,11 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 @RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
 public class PropertyPage extends OrienteerBasePage<OProperty>
 {
+/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType", "linkedClass", "mandatory", "readonly", "notNull", "min", "max", "collate"};
 	
 	private OrienteerStructureTable<OProperty, String> structureTable;
@@ -59,9 +64,19 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 		Form<OProperty> form = new Form<OProperty>("form");
 		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", Arrays.asList(ATTRS_TO_VIEW)) {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected IModel<?> getLabelModel(IModel<String> rowModel) {
 				return new AbstractNamingModel<String>(rowModel) {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					public String getResourceKey(String object) {

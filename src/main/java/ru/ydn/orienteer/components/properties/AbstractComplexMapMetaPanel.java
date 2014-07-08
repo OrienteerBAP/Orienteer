@@ -3,10 +3,12 @@ package ru.ydn.orienteer.components.properties;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 
-import ru.ydn.orienteer.components.IMetaComponentResolver;
-
 public abstract class AbstractComplexMapMetaPanel<T, K, C, V> extends AbstractMapMetaPanel<T, K, C, V> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<T> entityModel;
 	public AbstractComplexMapMetaPanel(String id, IModel<K> modeModel, IModel<T> entityModel,
 			IModel<C> criteryModel) {
@@ -14,6 +16,11 @@ public abstract class AbstractComplexMapMetaPanel<T, K, C, V> extends AbstractMa
 		this.entityModel = entityModel;
 		
 		setModel(new LoadableDetachableModel<V>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected V load() {

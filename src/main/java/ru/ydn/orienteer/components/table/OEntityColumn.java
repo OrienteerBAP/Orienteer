@@ -7,15 +7,18 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.LinkViewPanel;
 import ru.ydn.orienteer.schema.SchemaHelper;
-import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 
-import com.google.common.collect.Sets;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class OEntityColumn extends AbstractColumn<ODocument, String>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public OEntityColumn(OClass oClass)
 	{
 		this(new OClassNamingModel(oClass), oClass);
@@ -35,7 +38,7 @@ public class OEntityColumn extends AbstractColumn<ODocument, String>
 	@Override
 	public void populateItem(Item<ICellPopulator<ODocument>> cellItem,
 			String componentId, IModel<ODocument> rowModel) {
-		cellItem.add(new LinkViewPanel(componentId, rowModel));
+		cellItem.add(new LinkViewPanel<ODocument>(componentId, rowModel));
 	}
 
 }

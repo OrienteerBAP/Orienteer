@@ -10,6 +10,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class DynamicPropertyValueModel<T> extends LoadableDetachableModel<T>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private final IModel<ODocument> docModel;
 	private final IModel<OProperty> propertyModel;
 	

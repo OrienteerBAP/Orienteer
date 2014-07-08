@@ -14,19 +14,27 @@ import ru.ydn.orienteer.components.ODocumentPageLink;
 
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class LinksCollectionViewPanel<M extends Collection<OIdentifiable>> extends GenericPanel<M>
+public class LinksCollectionViewPanel<T extends OIdentifiable, M extends Collection<T>> extends GenericPanel<M>
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public LinksCollectionViewPanel(String id, IModel<M> valueModel) {
 		super(id, valueModel);
 		add(new ListView<OIdentifiable>("links", getListModel()) {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected void populateItem(ListItem<OIdentifiable> item) {
-				item.add(new ODocumentPageLink("link", item.getModel()).setDocumentNameAsBody(true));
+				item.add(new ODocumentPageLink<OIdentifiable>("link", item.getModel()).setDocumentNameAsBody(true));
 			}
 		});
 	}
@@ -34,6 +42,11 @@ public class LinksCollectionViewPanel<M extends Collection<OIdentifiable>> exten
 	protected IModel<List<OIdentifiable>> getListModel()
 	{
 		return new LoadableDetachableModel<List<OIdentifiable>>() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@SuppressWarnings("unchecked")
 			@Override
 			protected List<OIdentifiable> load() {

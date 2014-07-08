@@ -6,13 +6,8 @@ import java.util.regex.Pattern;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.util.string.Strings;
-import org.springframework.util.StringUtils;
-
 import ru.ydn.orienteer.CustomAttributes;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Converter;
-import com.google.common.base.Enums;
 import com.google.common.base.Function;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
@@ -28,6 +23,11 @@ public class SchemaHelper
 {
 	public static class BuitifyNamefunction<T> implements Function<T, String>, Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		private static final BuitifyNamefunction<Object> INSTANCE = new BuitifyNamefunction<Object>();
 		
 		private final Pattern WORD_START = Pattern.compile("\\b(\\w)(\\w*)", Pattern.CASE_INSENSITIVE);

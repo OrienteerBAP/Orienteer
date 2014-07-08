@@ -10,8 +10,17 @@ import ru.ydn.orienteer.components.MapMetaComponentResolver;
 
 public abstract class AbstractMapMetaPanel<T, K, C, V> extends AbstractMetaPanel<T, C, V> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<K> modeModel;
 	private MapMetaComponentResolver<C, K> resolver = new MapMetaComponentResolver<C, K>() {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public K getKey(C critery) {

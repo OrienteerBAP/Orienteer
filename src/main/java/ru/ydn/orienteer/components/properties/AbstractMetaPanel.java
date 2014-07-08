@@ -11,10 +11,14 @@ import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.orienteer.services.IMarkupProvider;
 
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
 public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final String PANEL_ID = "panel";
 	
 	private Serializable stateSignature;

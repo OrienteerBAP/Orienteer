@@ -12,14 +12,14 @@ import org.apache.wicket.model.IModel;
 
 import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.orienteer.components.properties.BooleanEditPanel;
-import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
 public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColumn<T, S>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<PK> selected = new ArrayList<PK>();
 	private Converter<T, PK> converterToPK;
 
@@ -38,6 +38,11 @@ public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColum
 	{
 		return new AbstractCheckBoxModel() {
 			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void unselect() {
 				CheckBoxColumn.this.unselect(rowModel.getObject());

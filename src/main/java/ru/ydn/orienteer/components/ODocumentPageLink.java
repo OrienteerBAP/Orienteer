@@ -10,10 +10,13 @@ import ru.ydn.orienteer.model.DocumentNameModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class ODocumentPageLink<M extends OIdentifiable> extends BookmarkablePageLink<M>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean propogateDisplayMode = true;
 	private IModel<DisplayMode> displayModeModel;
 	public ODocumentPageLink(String id, IModel<M> docModel, PageParameters parameters)
@@ -55,13 +58,13 @@ public class ODocumentPageLink<M extends OIdentifiable> extends BookmarkablePage
 		setVisible(getModelObject()!=null);
 	}
 
-	public ODocumentPageLink setDocumentNameAsBody(boolean docNameAsBody)
+	public ODocumentPageLink<M> setDocumentNameAsBody(boolean docNameAsBody)
 	{
 		setBody(docNameAsBody?new DocumentNameModel(getModel()):null);
 		return this;
 	}
 	
-	public ODocumentPageLink setPropogateDisplayMode(boolean propogateDisplayMode)
+	public ODocumentPageLink<M> setPropogateDisplayMode(boolean propogateDisplayMode)
 	{
 		this.propogateDisplayMode = propogateDisplayMode;
 		return this;

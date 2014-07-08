@@ -5,12 +5,14 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 public class SchemaSaveCommand<T> extends SimpleSaveCommand<T>
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public SchemaSaveCommand(OrienteerStructureTable<T, ?> structureTable,
 			IModel<DisplayMode> displayModeModel)

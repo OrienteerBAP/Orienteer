@@ -1,10 +1,7 @@
 package ru.ydn.orienteer.components.commands;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.ResourceModel;
-
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -15,9 +12,13 @@ import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 
 public class ODocumentSaveCommand extends SimpleSaveCommand<ODocument>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<? extends OIdentifiable> documentModel;
 
-	public ODocumentSaveCommand(StructureTableCommandsToolbar toolbar, IModel<DisplayMode> displayModeModel, IModel<? extends OIdentifiable> documentModel)
+	public ODocumentSaveCommand(StructureTableCommandsToolbar<ODocument> toolbar, IModel<DisplayMode> displayModeModel, IModel<? extends OIdentifiable> documentModel)
 	{
 		super(toolbar, displayModeModel);
 		this.documentModel = documentModel;

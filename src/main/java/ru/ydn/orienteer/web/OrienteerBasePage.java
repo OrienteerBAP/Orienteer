@@ -9,7 +9,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
-
 import ru.ydn.orienteer.components.ODocumentPageLink;
 import ru.ydn.orienteer.components.OrienteerFeedbackPanel;
 import ru.ydn.orienteer.web.schema.ListClassesPage;
@@ -17,6 +16,10 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 public abstract class OrienteerBasePage<T> extends BasePage<T>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private OrienteerFeedbackPanel feedbacks;
 	public OrienteerBasePage()
 	{
@@ -45,7 +48,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		add(new BookmarkablePageLink<T>("classesLink", ListClassesPage.class));
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
-		add(new ODocumentPageLink("myProfile", new PropertyModel<OIdentifiable>(this, "session.user.document")));
+		add(new ODocumentPageLink<OIdentifiable>("myProfile", new PropertyModel<OIdentifiable>(this, "session.user.document")));
 	}
 
 	@Override

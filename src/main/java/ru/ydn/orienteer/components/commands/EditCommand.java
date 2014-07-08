@@ -15,6 +15,10 @@ import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 
 public class EditCommand<T> extends AjaxCommand<T>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 
 	public EditCommand(DataTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)

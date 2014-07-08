@@ -13,10 +13,9 @@ import org.apache.wicket.core.util.lang.PropertyResolverConverter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.validation.IValidator;
 
 import com.google.common.base.Function;
@@ -28,16 +27,22 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORound
 
 import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
-import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, DisplayMode, String, V>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final List<String> CLUSTER_SELECTIONS = Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
 	public static class ListClassesModel extends LoadableDetachableModel<List<OClass>>
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private static final Ordering<OClass> ordering = Ordering.natural().nullsFirst().onResultOf(new Function<OClass, String>() {
 
 			@Override
@@ -96,6 +101,11 @@ public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, Disp
 		{
 			return new IMetaComponentResolver<String>() {
 
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				public Component resolve(String id, String critery) {
 					return new Label(id, getModel());
@@ -111,12 +121,17 @@ public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, Disp
 		{
 			return new IMetaComponentResolver<String>() {
 
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@SuppressWarnings("unchecked")
 				@Override
 				public Component resolve(String id, String critery) {
 					if("name".equals(critery) || "shortName".equals(critery))
 					{
-						return new TextFieldEditPanel<V>(id, getModel()).addValidator((IValidator<V>)OSchemaNamesValidator.INSTANCE).setType(String.class);
+						return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE);
 					}
 					else if("abstract".equals(critery) || "strictMode".equals(critery))
 					{
@@ -125,6 +140,11 @@ public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, Disp
 					else if("superClass".equals(critery))
 					{
 						return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListClassesModel(), new IChoiceRenderer<OClass>() {
+
+							/**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
 
 							@Override
 							public Object getDisplayValue(OClass object) {

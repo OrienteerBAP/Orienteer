@@ -13,6 +13,11 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
 public class OPropertyDefinitionColumn<T> extends PropertyColumn<T, String>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public OPropertyDefinitionColumn(IModel<String> displayModel, final String propertyExpression) {
 		super(displayModel, propertyExpression);
 	}

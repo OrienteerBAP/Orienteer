@@ -1,20 +1,23 @@
 package ru.ydn.orienteer.components.table;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 
-import ru.ydn.orienteer.components.OClassPageLink;
 import ru.ydn.orienteer.components.properties.OClassViewPanel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 public class OClassColumn<T> extends PropertyColumn<T, String>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public OClassColumn(IModel<String> displayModel, final String propertyExpression) {
 		super(displayModel, propertyExpression);
 	}

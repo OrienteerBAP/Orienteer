@@ -2,7 +2,6 @@ package ru.ydn.orienteer;
 
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.protocol.http.WebApplication;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
 import ru.ydn.orienteer.web.LoginPage;
@@ -15,7 +14,6 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 /**

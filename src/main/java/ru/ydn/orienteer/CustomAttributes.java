@@ -1,7 +1,5 @@
 package ru.ydn.orienteer;
 
-import java.io.Serializable;
-
 public enum CustomAttributes
 {
 	/**

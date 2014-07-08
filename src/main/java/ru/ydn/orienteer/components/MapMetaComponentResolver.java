@@ -5,15 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Args;
-
 import com.google.common.base.Objects;
-
-import ru.ydn.orienteer.components.properties.DisplayMode;
 
 public abstract class MapMetaComponentResolver<C, K> implements IMetaComponentResolver<C>
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Map<K, IMetaComponentResolver<C>> map = new HashMap<K, IMetaComponentResolver<C>>();
 	
 	public void put(K key, IMetaComponentResolver<C> resolver)

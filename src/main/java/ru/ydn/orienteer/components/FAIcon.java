@@ -4,12 +4,16 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 
 public class FAIcon extends WebMarkupContainer
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public FAIcon(String id, FAIconType iconType)
 	{
 		this(id, Model.of(iconType.getCssClass()));

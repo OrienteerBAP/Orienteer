@@ -45,6 +45,11 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 @MountPath("/class/${className}")
 @RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
 public class ClassPage extends OrienteerBasePage<OClass> {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static String[] ATTRS_TO_VIEW = new String[]{"name", "shortName", "superClass", "overSizeInternal", "strictMode", "abstract", "clusterSelection"};
 	
 	private OrienteerStructureTable<OClass, String> structureTable;
@@ -81,9 +86,19 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		Form<OClass> form = new Form<OClass>("form");
 		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", Arrays.asList(ATTRS_TO_VIEW)) {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected IModel<?> getLabelModel(IModel<String> rowModel) {
 				return new AbstractNamingModel<String>(rowModel) {
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					public String getResourceKey(String object) {
