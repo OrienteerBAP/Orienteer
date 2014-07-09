@@ -21,8 +21,8 @@ import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.EditCommand;
-import ru.ydn.orienteer.components.commands.OClassSaveCommand;
-import ru.ydn.orienteer.components.commands.SchemaSaveCommand;
+import ru.ydn.orienteer.components.commands.SaveOClassCommand;
+import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
@@ -133,7 +133,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 			}
 		};
 		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
-		structureTable.addCommand(new OClassSaveCommand(structureTable, modeModel, getModel()));
+		structureTable.addCommand(new SaveOClassCommand(structureTable, modeModel, getModel()));
 		
 		form.add(structureTable);
 		

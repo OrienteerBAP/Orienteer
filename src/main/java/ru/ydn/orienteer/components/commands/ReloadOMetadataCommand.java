@@ -10,7 +10,7 @@ import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 
-public class OMetadataReloadCommand extends AjaxCommand<OClass>
+public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 {
 	
 
@@ -19,11 +19,11 @@ public class OMetadataReloadCommand extends AjaxCommand<OClass>
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public OMetadataReloadCommand(OrienteerDataTable<OClass, ?> table)
+	public ReloadOMetadataCommand(OrienteerDataTable<OClass, ?> table)
 	{
 		super(new ResourceModel("command.reload"), table);
 		setIcon(FAIconType.refresh);
-		setBootstrapType(BootstrapType.DANGER);
+		setBootstrapType(BootstrapType.WARNING);
 	}
 
 	@Override

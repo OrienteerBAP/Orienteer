@@ -19,7 +19,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class ODocumentCreateCommand extends SimpleCreateCommand<ODocument> implements ISecuredComponent{
+public class CreateODocumentCommand extends AbstractCreateCommand<ODocument> implements ISecuredComponent{
 	
 	/**
 	 * 
@@ -29,24 +29,24 @@ public class ODocumentCreateCommand extends SimpleCreateCommand<ODocument> imple
 	public IModel<ODocument> documentModel;
 	public IModel<OProperty> propertyModel;
 	
-	public ODocumentCreateCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel) {
+	public CreateODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel) {
 		super(table);
 		this.classModel = classModel;
 	}
 	
-	public ODocumentCreateCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+	public CreateODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
 		super(table);
 		this.documentModel = documentModel;
 		this.propertyModel = propertyModel;
 		this.classModel = new PropertyModel<OClass>(propertyModel, "linkedClass");
 	}
 
-	public ODocumentCreateCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<OClass> classModel) {
+	public CreateODocumentCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<OClass> classModel) {
 		super(toolbar);
 		this.classModel = classModel;
 	}
 	
-	public ODocumentCreateCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+	public CreateODocumentCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
 		super(toolbar);
 		this.documentModel = documentModel;
 		this.propertyModel = propertyModel;

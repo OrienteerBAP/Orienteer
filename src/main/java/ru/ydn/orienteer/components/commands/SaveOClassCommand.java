@@ -10,10 +10,10 @@ import ru.ydn.wicket.wicketorientdb.utils.proto.IPrototype;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
-public class OClassSaveCommand extends SimpleSaveCommand<OClass>
+public class SaveOClassCommand extends AbstractSaveCommand<OClass>
 {
 	private IModel<OClass> classModel;
-	public OClassSaveCommand(OrienteerStructureTable<OClass,?> table,
+	public SaveOClassCommand(OrienteerStructureTable<OClass,?> table,
 			IModel<DisplayMode> displayModeModel, IModel<OClass> classModel)
 	{
 		super(table, displayModeModel);

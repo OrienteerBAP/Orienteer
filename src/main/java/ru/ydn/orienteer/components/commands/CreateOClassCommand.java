@@ -11,16 +11,16 @@ import ru.ydn.wicket.wicketorientdb.utils.proto.OClassPrototyper;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
-public class OClassCreateCommand extends SimpleCreateCommand<OClass>
+public class CreateOClassCommand extends AbstractCreateCommand<OClass>
 {
 	
 
-	public OClassCreateCommand(DataTableCommandsToolbar<OClass> toolbar)
+	public CreateOClassCommand(DataTableCommandsToolbar<OClass> toolbar)
 	{
 		super(toolbar);
 	}
 
-	public OClassCreateCommand(OrienteerDataTable<OClass, ?> table)
+	public CreateOClassCommand(OrienteerDataTable<OClass, ?> table)
 	{
 		super(table);
 	}

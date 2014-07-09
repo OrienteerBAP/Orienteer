@@ -6,7 +6,7 @@ import org.apache.wicket.model.IModel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 
-public class SchemaSaveCommand<T> extends SimpleSaveCommand<T>
+public class SaveSchemaCommand<T> extends AbstractSaveCommand<T>
 {
 
 	/**
@@ -14,7 +14,7 @@ public class SchemaSaveCommand<T> extends SimpleSaveCommand<T>
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public SchemaSaveCommand(OrienteerStructureTable<T, ?> structureTable,
+	public SaveSchemaCommand(OrienteerStructureTable<T, ?> structureTable,
 			IModel<DisplayMode> displayModeModel)
 	{
 		super(structureTable, displayModeModel);

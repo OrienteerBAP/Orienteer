@@ -14,7 +14,7 @@ import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.EditCommand;
-import ru.ydn.orienteer.components.commands.SchemaSaveCommand;
+import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OPropertyMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -100,7 +100,7 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 	protected void onInitialize() {
 		super.onInitialize();
 		structureTable.addCommand(new EditCommand<OProperty>(structureTable, modeModel));
-		structureTable.addCommand(new SchemaSaveCommand<OProperty>(structureTable, modeModel));
+		structureTable.addCommand(new SaveSchemaCommand<OProperty>(structureTable, modeModel));
 	}
 	
 	@Override

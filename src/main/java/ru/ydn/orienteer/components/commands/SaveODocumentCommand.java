@@ -10,7 +10,7 @@ import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 
-public class ODocumentSaveCommand extends SimpleSaveCommand<ODocument>
+public class SaveODocumentCommand extends AbstractSaveCommand<ODocument>
 {
 	/**
 	 * 
@@ -18,7 +18,7 @@ public class ODocumentSaveCommand extends SimpleSaveCommand<ODocument>
 	private static final long serialVersionUID = 1L;
 	private IModel<? extends OIdentifiable> documentModel;
 
-	public ODocumentSaveCommand(StructureTableCommandsToolbar<ODocument> toolbar, IModel<DisplayMode> displayModeModel, IModel<? extends OIdentifiable> documentModel)
+	public SaveODocumentCommand(StructureTableCommandsToolbar<ODocument> toolbar, IModel<DisplayMode> displayModeModel, IModel<? extends OIdentifiable> documentModel)
 	{
 		super(toolbar, displayModeModel);
 		this.documentModel = documentModel;

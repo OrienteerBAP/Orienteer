@@ -8,6 +8,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -18,9 +19,11 @@ import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.OClassPageLink;
 import ru.ydn.orienteer.components.commands.Command;
-import ru.ydn.orienteer.components.commands.OClassCreateCommand;
-import ru.ydn.orienteer.components.commands.OMetadataReloadCommand;
+import ru.ydn.orienteer.components.commands.CreateOClassCommand;
+import ru.ydn.orienteer.components.commands.DeleteOClassCommand;
+import ru.ydn.orienteer.components.commands.ReloadOMetadataCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OClassColumn;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.web.BrowseClassPage;
@@ -28,9 +31,13 @@ import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.utils.OClassClassNameConverter;
+import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
+import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @MountPath("/classes")
 @RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
@@ -53,7 +60,9 @@ public class ListClassesPage extends OrienteerBasePage<Object> {
 	@Override
 	public void initialize() {
 		super.initialize();
+		Form<?> form = new Form<Object>("form");
 		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
+		columns.add(new CheckBoxColumn<OClass, String, String>(null, OClassClassNameConverter.INSTANCE));
 		columns.add(new OClassColumn<OClass>(new ResourceModel("class.name"), "name", ""));
 		columns.add(new OClassColumn<OClass>(new ResourceModel("class.superClass"), "superClass.name", "superClass"));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.abstract"), "abstract"));
@@ -93,9 +102,11 @@ public class ListClassesPage extends OrienteerBasePage<Object> {
 		OClassesDataProvider provider = new OClassesDataProvider();
 		provider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OClass, String> table = new OrienteerDataTable<OClass, String>("table", columns, provider ,20);
-		table.addCommand(new OClassCreateCommand(table));
-		table.addCommand(new OMetadataReloadCommand(table));
-		add(table);
+		table.addCommand(new CreateOClassCommand(table));
+		table.addCommand(new DeleteOClassCommand(table));
+		table.addCommand(new ReloadOMetadataCommand(table));
+		form.add(table);
+		add(form);
 	}
 
 

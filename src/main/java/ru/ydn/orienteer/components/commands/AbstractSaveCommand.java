@@ -11,14 +11,14 @@ import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 
-public class SimpleSaveCommand<T> extends AjaxFormCommand<T> {
+public class AbstractSaveCommand<T> extends AjaxFormCommand<T> {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 	
-	public SimpleSaveCommand(StructureTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
+	public AbstractSaveCommand(StructureTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
 	{
 		super(new ResourceModel("command.save"), toolbar);
 		this.displayModeModel = displayModeModel;
@@ -26,7 +26,7 @@ public class SimpleSaveCommand<T> extends AjaxFormCommand<T> {
 		setBootstrapType(BootstrapType.PRIMARY);
 	}
 	
-	public SimpleSaveCommand(OrienteerStructureTable<T, ?> structureTable, IModel<DisplayMode> displayModeModel)
+	public AbstractSaveCommand(OrienteerStructureTable<T, ?> structureTable, IModel<DisplayMode> displayModeModel)
 	{
 		this(structureTable.getCommandsToolbar(), displayModeModel);
 	}

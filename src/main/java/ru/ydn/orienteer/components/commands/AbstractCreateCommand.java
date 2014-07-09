@@ -11,36 +11,36 @@ import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 
 
-public abstract class SimpleCreateCommand<T> extends Command<T>
+public abstract class AbstractCreateCommand<T> extends Command<T>
 {
 
-	public SimpleCreateCommand(DataTableCommandsToolbar<T> toolbar)
+	public AbstractCreateCommand(DataTableCommandsToolbar<T> toolbar)
 	{
 		super(new ResourceModel("command.create"), toolbar);
 	}
 
-	public SimpleCreateCommand(OrienteerDataTable<T, ?> table)
+	public AbstractCreateCommand(OrienteerDataTable<T, ?> table)
 	{
 		super(new ResourceModel("command.create"), table);
 	}
 
-	public SimpleCreateCommand(OrienteerStructureTable<T, ?> table)
+	public AbstractCreateCommand(OrienteerStructureTable<T, ?> table)
 	{
 		super(new ResourceModel("command.create"), table);
 	}
 
-	public SimpleCreateCommand(StructureTableCommandsToolbar<T> toolbar)
+	public AbstractCreateCommand(StructureTableCommandsToolbar<T> toolbar)
 	{
 		super(new ResourceModel("command.create"), toolbar);
 	}
 
 
-	public SimpleCreateCommand(String commandId, String labelKey)
+	public AbstractCreateCommand(String commandId, String labelKey)
 	{
 		super(commandId, labelKey);
 	}
 
-	public SimpleCreateCommand(String labelKey)
+	public AbstractCreateCommand(String labelKey)
 	{
 		super(labelKey);
 	}
