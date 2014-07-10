@@ -5,27 +5,28 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
-import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.wicket.wicketorientdb.utils.proto.IPrototype;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
-public class SaveOClassCommand extends AbstractSaveCommand<OClass>
+public class SavePrototypeCommand<T> extends AbstractSaveCommand<T>
 {
-	private IModel<OClass> classModel;
-	public SaveOClassCommand(OrienteerStructureTable<OClass,?> table,
-			IModel<DisplayMode> displayModeModel, IModel<OClass> classModel)
+	private IModel<T> model;
+	public SavePrototypeCommand(OrienteerStructureTable<T,?> table,
+			IModel<DisplayMode> displayModeModel, IModel<T> model)
 	{
 		super(table, displayModeModel);
-		this.classModel = classModel;
+		this.model = model;
 	}
 	
 	@Override
 	public void onClick(AjaxRequestTarget target) {
-		OClass oClass = classModel.getObject();
-		if(oClass instanceof IPrototype)
+		T object = model.getObject();
+		if(object instanceof IPrototype)
 		{
-			((IPrototype<?>)oClass).realizePrototype();
+			getDatabase().commit();
+			((IPrototype<?>)object).realizePrototype();
+			getDatabase().begin();
 		}
 		super.onClick(target);
 	}
@@ -33,7 +34,7 @@ public class SaveOClassCommand extends AbstractSaveCommand<OClass>
 	@Override
 	public void detachModels() {
 		super.detachModels();
-		if(classModel!=null) classModel.detach();
+		if(model!=null) model.detach();
 	}
 	
 }

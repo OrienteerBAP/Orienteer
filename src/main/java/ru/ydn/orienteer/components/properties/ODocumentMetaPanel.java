@@ -11,6 +11,7 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -105,6 +106,11 @@ public class ODocumentMetaPanel<V> extends AbstractMapMetaPanel<ODocument, Displ
 			};
 		}
 		else return null;
+	}
+
+	@Override
+	public IModel<String> newLabelModel() {
+		return new OPropertyNamingModel(getCriteryModel());
 	}
 	
 }

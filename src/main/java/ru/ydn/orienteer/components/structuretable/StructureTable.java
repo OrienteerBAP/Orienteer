@@ -10,10 +10,13 @@ import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ILabelProvider;
+import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
@@ -63,10 +66,11 @@ public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C
 			@Override
 			protected void populateItem(ListItem<C> item) {
 				IModel<C> rowModel = item.getModel();
-				Component label = getLabelComponent(LABEL_CELL_ID, rowModel);
-				if(!LABEL_CELL_ID.equals(label.getId())) throw new WicketRuntimeException("Wrong component id '"+label.getId()+"'. Should be '"+LABEL_CELL_ID+"'.");
 				Component value = getValueComponent(VALUE_CELL_ID, rowModel);
 				if(!VALUE_CELL_ID.equals(value.getId())) throw new WicketRuntimeException("Wrong component id '"+value.getId()+"'. Should be '"+VALUE_CELL_ID+"'.");
+				
+				Component label = getLabelComponent(LABEL_CELL_ID, rowModel, getLabelModel(value, rowModel));
+				if(!LABEL_CELL_ID.equals(label.getId())) throw new WicketRuntimeException("Wrong component id '"+label.getId()+"'. Should be '"+LABEL_CELL_ID+"'.");
 				item.add(label, value);
 			}
 		};
@@ -76,14 +80,21 @@ public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C
 	
 	protected abstract Component getValueComponent(String id, IModel<C> rowModel);
 	
-	protected Component getLabelComponent(String id, IModel<C> rowModel)
+	protected Component getLabelComponent(String id, IModel<C> rowModel, IModel<?> labelModel)
 	{
-		return new Label(id, getLabelModel(rowModel));
+		return new Label(id, labelModel);
 	}
 	
-	protected IModel<?> getLabelModel(IModel<C> rowModel)
+	protected IModel<?> getLabelModel(Component resolvedComponent, IModel<C> rowModel)
 	{
-		return rowModel;
+		if(resolvedComponent instanceof ILabelProvider<?>)
+		{
+			return ((ILabelProvider<?>)resolvedComponent).getLabel();
+		}
+		else
+		{
+			return rowModel;
+		}
 	}
 	
 	public StructureTable<T, C> setReuseItems(boolean reuseItems)

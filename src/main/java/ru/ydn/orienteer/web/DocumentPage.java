@@ -55,16 +55,6 @@ public class DocumentPage extends AbstractDocumentPage {
 		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", 
 				new PropertyModel<List<? extends OProperty>>(getDocumentModel(), "schemaClass.properties()")) {
 
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					protected IModel<?> getLabelModel(IModel<OProperty> rowModel) {
-						return new OPropertyNamingModel(rowModel);
-					}
-
 					@Override
 					protected Component getValueComponent(String id,
 							IModel<OProperty> rowModel) {

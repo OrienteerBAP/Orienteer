@@ -14,7 +14,7 @@ import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.EditCommand;
-import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
+import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OPropertyMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -48,6 +48,8 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 
 	public PropertyPage(PageParameters parameters) {
 		super(parameters);
+		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
+		if(mode!=null) modeModel.setObject(mode);
 	}
 
 	@Override
@@ -57,33 +59,27 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 		String propertyName = pageParameters.get("propertyName").toOptionalString();
 		return Strings.isEmpty(className) || Strings.isEmpty(propertyName)?null:new OPropertyModel(className, propertyName) ;
 	}
+	
+	public IModel<DisplayMode> getDisplayModeModel() {
+		return modeModel;
+	}
+	
+	public DisplayMode getDisplayMode()
+	{
+		return modeModel.getObject();
+	}
+	
+	public PropertyPage setDisplayMode(DisplayMode mode)
+	{
+		modeModel.setObject(mode);
+		return this;
+	}
 
 	@Override
 	public void initialize() {
 		super.initialize();
 		Form<OProperty> form = new Form<OProperty>("form");
 		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", Arrays.asList(ATTRS_TO_VIEW)) {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected IModel<?> getLabelModel(IModel<String> rowModel) {
-				return new AbstractNamingModel<String>(rowModel) {
-
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public String getResourceKey(String object) {
-						return "property."+object;
-					}
-				};
-			}
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
@@ -100,7 +96,7 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 	protected void onInitialize() {
 		super.onInitialize();
 		structureTable.addCommand(new EditCommand<OProperty>(structureTable, modeModel));
-		structureTable.addCommand(new SaveSchemaCommand<OProperty>(structureTable, modeModel));
+		structureTable.addCommand(new SavePrototypeCommand<OProperty>(structureTable, modeModel, getModel()));
 	}
 	
 	@Override

@@ -14,6 +14,7 @@ import org.apache.wicket.validation.IValidator;
 
 import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
+import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
@@ -82,9 +83,13 @@ public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, Displ
 				public Component resolve(String id, String critery) {
 					if("name".equals(critery))
 					{
-						return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE);
+						return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE).setRequired(true);
 					}
-					else if("type".equals(critery) || "linkedType".equals(critery))
+					else if("type".equals(critery))
+					{
+						return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values())).setRequired(true);
+					}
+					else if("linkedType".equals(critery))
 					{
 						return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values())).setNullValid(true);
 					}
@@ -108,7 +113,7 @@ public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, Displ
 							}
 						}).setNullValid(true);
 					}
-					else if("mandatory".equals(critery) || "readOnly".equals(critery) || "notNull".equals(critery))
+					else if("mandatory".equals(critery) || "readonly".equals(critery) || "notNull".equals(critery))
 					{
 						return new CheckBox(id, (IModel<Boolean>)getModel());
 					}
@@ -129,6 +134,17 @@ public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, Displ
 			};
 		}
 		else return null;
+	}
+
+	@Override
+	public IModel<String> newLabelModel() {
+		return new AbstractNamingModel<String>(getCriteryModel()) {
+
+			@Override
+			public String getResourceKey(String object) {
+				return "property."+object;
+			}
+		};
 	}
 	
 

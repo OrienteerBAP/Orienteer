@@ -20,13 +20,15 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
+import ru.ydn.orienteer.components.commands.DeleteOPropertyCommand;
 import ru.ydn.orienteer.components.commands.EditCommand;
-import ru.ydn.orienteer.components.commands.SaveOClassCommand;
-import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
+import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
+import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OClassColumn;
 import ru.ydn.orienteer.components.table.OPropertyDefinitionColumn;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
@@ -37,6 +39,7 @@ import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.utils.OPropertyFullNameConverter;
 
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -106,38 +109,18 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		Form<OClass> form = new Form<OClass>("form");
 		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", Arrays.asList(ATTRS_TO_VIEW)) {
 
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected IModel<?> getLabelModel(IModel<String> rowModel) {
-				return new AbstractNamingModel<String>(rowModel) {
-
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public String getResourceKey(String object) {
-						return "class."+object;
-					}
-				};
-			}
-
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
 				return new OClassMetaPanel<Object>(id, modeModel, ClassPage.this.getModel(), rowModel);
 			}
 		};
 		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
-		structureTable.addCommand(new SaveOClassCommand(structureTable, modeModel, getModel()));
+		structureTable.addCommand(new SavePrototypeCommand<OClass>(structureTable, modeModel, getModel()));
 		
 		form.add(structureTable);
 		
 		List<IColumn<OProperty, String>> pColumns = new ArrayList<IColumn<OProperty,String>>();
+		pColumns.add(new CheckBoxColumn<OProperty, String, String>(null, new OPropertyFullNameConverter()));
 		pColumns.add(new OPropertyDefinitionColumn<OProperty>(new ResourceModel("property.name"), "name", ""));
 		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.type"), "type", "type"));
 		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.linkedType"), "linkedType", "linkedType"));
@@ -152,7 +135,9 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		OPropertiesDataProvider pProvider = new OPropertiesDataProvider(getModel(), showParentPropertiesModel);
 		pProvider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OProperty, String> pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
+		pTable.addCommand(new CreateOPropertyCommand(pTable, getModel()));
 		pTable.addCommand(new ShowHideParentsCommand<OProperty>(pTable, showParentPropertiesModel));
+		pTable.addCommand(new DeleteOPropertyCommand(pTable));
 		form.add(pTable);
 		
 		

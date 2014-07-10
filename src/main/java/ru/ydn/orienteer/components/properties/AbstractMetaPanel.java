@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.html.form.ILabelProvider;
+import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
@@ -12,8 +14,10 @@ import ru.ydn.orienteer.services.IMarkupProvider;
 
 import com.google.inject.Inject;
 
-public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V>
+public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V> implements ILabelProvider<String>
 {
+
+
 	/**
 	 * 
 	 */
@@ -23,6 +27,8 @@ public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V>
 	
 	private Serializable stateSignature;
 	private  IModel<C> criteryModel;
+	
+	private IModel<String> labelModel;
 	
 	@Inject
 	private IMarkupProvider markupProvider;
@@ -46,7 +52,12 @@ public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V>
 		if(!newSignature.equals(stateSignature) || get(PANEL_ID)==null)
 		{
 			stateSignature = newSignature;
-			addOrReplace(resolver.resolve(PANEL_ID, critery));
+			Component component = resolver.resolve(PANEL_ID, critery);
+			if(component instanceof LabeledWebMarkupContainer)
+			{
+				((LabeledWebMarkupContainer)component).setLabel(getLabel());
+			}
+			addOrReplace(component);
 		}
 	}
 	
@@ -70,7 +81,17 @@ public abstract class AbstractMetaPanel<T, C, V> extends GenericPanel<V>
 		IMarkupFragment ret = markupProvider.provideMarkup(child);
 		return ret!=null?ret:super.getMarkup(child);
 	}
+	
+	@Override
+	public IModel<String> getLabel() {
+		if(labelModel==null)
+		{
+			labelModel = newLabelModel();
+		}
+		return labelModel;
+	}
 
+	protected abstract IModel<String> newLabelModel();
 	protected abstract IMetaComponentResolver<C> getComponentResolver();
-
+	
 }

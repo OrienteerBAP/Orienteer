@@ -28,6 +28,7 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORound
 
 import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
@@ -176,6 +177,18 @@ public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, Disp
 			};
 		}
 		else return null;
+	}
+
+	@Override
+	public IModel<String> newLabelModel() {
+		return new AbstractNamingModel<String>(getCriteryModel()) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public String getResourceKey(String object) {
+				return "class."+object;
+			}
+		};
 	}
 	
 
