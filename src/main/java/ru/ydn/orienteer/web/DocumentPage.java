@@ -52,7 +52,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	public void initialize() {
 		super.initialize();
 		Form<ODocument> form = new Form<ODocument>("form", getModel());
-		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", 
+		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", getModel(),  
 				new PropertyModel<List<? extends OProperty>>(getDocumentModel(), "schemaClass.properties()")) {
 
 					@Override

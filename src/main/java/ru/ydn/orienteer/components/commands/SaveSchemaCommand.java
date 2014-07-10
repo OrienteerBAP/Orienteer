@@ -1,0 +1,32 @@
+package ru.ydn.orienteer.components.commands;
+
+import org.apache.wicket.model.IModel;
+
+import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
+import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.utils.proto.IPrototype;
+
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+
+public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISecuredComponent {
+
+	private IModel<T> objectModel;
+	public SaveSchemaCommand(OrienteerStructureTable<T, ?> table,
+			IModel<DisplayMode> displayModeModel, IModel<T> model) {
+		super(table, displayModeModel, model);
+		objectModel = table.getModel();
+	}
+
+	@Override
+	public RequiredOrientResource[] getRequiredResources() {
+		T object = objectModel.getObject();
+		OrientPermission permission = (object instanceof IPrototype<?>)?OrientPermission.CREATE:OrientPermission.UPDATE;
+		return OSecurityHelper.requireResource(ODatabaseSecurityResources.SCHEMA, permission);
+	}
+
+}

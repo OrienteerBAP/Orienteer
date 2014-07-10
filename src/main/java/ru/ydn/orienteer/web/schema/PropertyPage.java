@@ -13,8 +13,11 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.commands.CreateOClassCommand;
+import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
+import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OPropertyMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -79,11 +82,11 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 	public void initialize() {
 		super.initialize();
 		Form<OProperty> form = new Form<OProperty>("form");
-		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", Arrays.asList(ATTRS_TO_VIEW)) {
+		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), Arrays.asList(ATTRS_TO_VIEW)) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
-				return new OPropertyMetaPanel<Object>(id, modeModel, rowModel, new PropertyModel<Object>(PropertyPage.this.getModel(), rowModel.getObject()));
+				return new OPropertyMetaPanel<Object>(id, modeModel, rowModel, new PropertyModel<Object>(getModel(), rowModel.getObject()));
 			}
 		};
 		
@@ -96,7 +99,7 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 	protected void onInitialize() {
 		super.onInitialize();
 		structureTable.addCommand(new EditCommand<OProperty>(structureTable, modeModel));
-		structureTable.addCommand(new SavePrototypeCommand<OProperty>(structureTable, modeModel, getModel()));
+		structureTable.addCommand(new SaveSchemaCommand<OProperty>(structureTable, modeModel, getModel()));
 	}
 	
 	@Override

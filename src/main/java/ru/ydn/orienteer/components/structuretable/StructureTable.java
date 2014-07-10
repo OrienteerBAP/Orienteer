@@ -24,7 +24,7 @@ import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 
-public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C>> 
+public abstract class StructureTable<T, C> extends GenericPanel<T> 
 {
 	/**
 	 * 
@@ -41,22 +41,18 @@ public abstract class StructureTable<T, C> extends GenericPanel<List<? extends C
 	private ListView<C> listView;
 	private long toolbarIdCounter;
 	
-	public StructureTable(String id) {
-		this(id, (IModel<List<? extends C>>)null);
-	}
-	
-	public StructureTable(String id, List<? extends C> list) {
-		this(id, Model.ofList(list));
+	public StructureTable(String id, IModel<T> model, List<? extends C> list) {
+		this(id, model, Model.ofList(list));
 	}
 
-	public StructureTable(String id, IModel<List<? extends C>> model) {
+	public StructureTable(String id, IModel<T> model, IModel<List<? extends C>> criteriesModel) {
 		super(id, model);
 		setOutputMarkupPlaceholderTag(true);
 		caption = new Caption("caption", getCaptionModel());
 		topToolbars = new ToolbarsContainer("topToolbars");
 		bottomToolbars = new ToolbarsContainer("bottomToolbars");
 		add(caption, topToolbars, bottomToolbars);
-		this.listView = new ListView<C>("rows", getModel()) {
+		this.listView = new ListView<C>("rows", criteriesModel) {
 
 			/**
 			 * 

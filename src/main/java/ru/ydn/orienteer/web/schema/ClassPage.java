@@ -20,10 +20,12 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
 import ru.ydn.orienteer.components.commands.DeleteOPropertyCommand;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
+import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
@@ -107,7 +109,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 	{
 		super.onInitialize();
 		Form<OClass> form = new Form<OClass>("form");
-		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", Arrays.asList(ATTRS_TO_VIEW)) {
+		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), Arrays.asList(ATTRS_TO_VIEW)) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
@@ -115,7 +117,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 			}
 		};
 		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
-		structureTable.addCommand(new SavePrototypeCommand<OClass>(structureTable, modeModel, getModel()));
+		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, modeModel, getModel()));
 		
 		form.add(structureTable);
 		

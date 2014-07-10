@@ -37,7 +37,7 @@ public class AbstractStructureTableToolbar<P> extends Panel
 	/**
 	 * @return DataTable this toolbar is attached to
 	 */
-	protected StructureTable<P, ?> getTable()
+	public StructureTable<P, ?> getTable()
 	{
 		return table;
 	}

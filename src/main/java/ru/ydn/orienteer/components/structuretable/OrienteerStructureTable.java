@@ -14,24 +14,18 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	private static final long serialVersionUID = 1L;
 	private StructureTableCommandsToolbar<T> commandsToolbar;
 
-	public OrienteerStructureTable(String id, IModel<List<? extends C>> model)
+	public OrienteerStructureTable(String id, IModel<T> model, IModel<List<? extends C>> criteriesModel)
 	{
-		super(id, model);
+		super(id, model, criteriesModel);
 		initialize();
 	}
 
-	public OrienteerStructureTable(String id, List<? extends C> list)
+	public OrienteerStructureTable(String id, IModel<T> model, List<? extends C> list)
 	{
-		super(id, list);
+		super(id, model, list);
 		initialize();
 	}
 
-	public OrienteerStructureTable(String id)
-	{
-		super(id);
-		initialize();
-	}
-	
 	protected void initialize()
 	{
 		commandsToolbar = new StructureTableCommandsToolbar<T>(this);
