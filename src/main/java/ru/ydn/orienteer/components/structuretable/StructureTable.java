@@ -48,7 +48,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	public StructureTable(String id, IModel<T> model, IModel<List<? extends C>> criteriesModel) {
 		super(id, model);
 		setOutputMarkupPlaceholderTag(true);
-		caption = new Caption("caption", getCaptionModel());
+		caption = new Caption("caption", Model.of(""));
 		topToolbars = new ToolbarsContainer("topToolbars");
 		bottomToolbars = new ToolbarsContainer("bottomToolbars");
 		add(caption, topToolbars, bottomToolbars);
@@ -99,9 +99,16 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 		return this;
 	}
 	
-	protected IModel<String> getCaptionModel()
+	@SuppressWarnings("unchecked")
+	public IModel<String> getCaptionModel()
 	{
-		return null;
+		return (IModel<String>)caption.getDefaultModel();
+	}
+	
+	public StructureTable<T, C> setCaptionModel(IModel<String> captionModel)
+	{
+		caption.setDefaultModel(captionModel);
+		return this;
 	}
 	
 	public boolean getReuseItems()
@@ -118,7 +125,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
 		checkComponentTag(tag, "table");
-		tag.append("class", "table table-condensed", " ");
+		tag.append("class", "table table-condensed structure-table", " ");
 		super.onComponentTag(tag);
 	}
 	

@@ -41,5 +41,11 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 		getCommandsToolbar().add(command);
 		return this;
 	}
+	
+	public OrienteerStructureTable<T, C> setCaptionModel(IModel<String> captionModel)
+	{
+		super.setCaptionModel(captionModel);
+		return this;
+	}
 
 }

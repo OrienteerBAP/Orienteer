@@ -140,6 +140,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		pTable.addCommand(new CreateOPropertyCommand(pTable, getModel()));
 		pTable.addCommand(new ShowHideParentsCommand<OProperty>(pTable, showParentPropertiesModel));
 		pTable.addCommand(new DeleteOPropertyCommand(pTable));
+		pTable.setCaptionModel(new ResourceModel("class.properties"));
 		form.add(pTable);
 		
 		
@@ -157,6 +158,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		iProvider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OIndex<?>, String> iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
 		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(iTable, showParentIndexesModel));
+		iTable.setCaptionModel(new ResourceModel("class.indexies"));
 		form.add(iTable);
 		add(form);
 	
