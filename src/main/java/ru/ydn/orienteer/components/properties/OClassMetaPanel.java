@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.validation.IValidator;
 
 import com.google.common.base.Function;
@@ -26,13 +27,12 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClust
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 
-import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
-public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, DisplayMode, String, V>
+public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V>
 {
 	/**
 	 * 
@@ -99,89 +99,57 @@ public class OClassMetaPanel<V> extends AbstractComplexMapMetaPanel<OClass, Disp
 
 
 	@Override
-	protected IMetaComponentResolver<String> newResolver(DisplayMode key) {
-		if(DisplayMode.VIEW.equals(key))
+	protected Component resolveComponent(String id, DisplayMode mode,
+			String critery) {
+		if(DisplayMode.VIEW.equals(mode))
 		{
-			return new IMetaComponentResolver<String>() {
+				return new Label(id, getModel());
+		}
+		else if(DisplayMode.EDIT.equals(mode))
+		{
+				if("name".equals(critery) || "shortName".equals(critery))
+				{
+					return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE);
+				}
+				else if("abstract".equals(critery) || "strictMode".equals(critery))
+				{
+					return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
+				}
+				else if("superClass".equals(critery))
+				{
+					return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListClassesModel(), new IChoiceRenderer<OClass>() {
 
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
+						/**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
 
-				@Override
-				public Component resolve(String id, String critery) {
+						@Override
+						public Object getDisplayValue(OClass object) {
+							return new OClassNamingModel(object).getObject();
+						}
+
+						@Override
+						public String getIdValue(OClass object, int index) {
+							return object.getName();
+						}
+					}).setNullValid(true);
+				}
+				else if("clusterSelection".equals(critery))
+				{
+					return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
+				}
+				else
+				{
 					return new Label(id, getModel());
 				}
-
-				@Override
-				public Serializable getSignature(String critery) {
-					return critery;
-				}
-			};
-		}
-		else if(DisplayMode.EDIT.equals(key))
-		{
-			return new IMetaComponentResolver<String>() {
-
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@SuppressWarnings("unchecked")
-				@Override
-				public Component resolve(String id, String critery) {
-					if("name".equals(critery) || "shortName".equals(critery))
-					{
-						return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE);
-					}
-					else if("abstract".equals(critery) || "strictMode".equals(critery))
-					{
-						return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
-					}
-					else if("superClass".equals(critery))
-					{
-						return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListClassesModel(), new IChoiceRenderer<OClass>() {
-
-							/**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-							@Override
-							public Object getDisplayValue(OClass object) {
-								return new OClassNamingModel(object).getObject();
-							}
-
-							@Override
-							public String getIdValue(OClass object, int index) {
-								return object.getName();
-							}
-						}).setNullValid(true);
-					}
-					else if("clusterSelection".equals(critery))
-					{
-						return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
-					}
-					else
-					{
-						return new Label(id, getModel());
-					}
-				}
-
-				@Override
-				public Serializable getSignature(String critery) {
-					return critery;
-				}
-			};
 		}
 		else return null;
 	}
 
 	@Override
 	public IModel<String> newLabelModel() {
-		return new AbstractNamingModel<String>(getCriteryModel()) {
+		return new AbstractNamingModel<String>(getPropertyModel()) {
 			private static final long serialVersionUID = 1L;
 
 			@Override

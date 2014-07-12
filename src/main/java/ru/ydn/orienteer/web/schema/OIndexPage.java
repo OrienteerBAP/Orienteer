@@ -81,7 +81,7 @@ public class OIndexPage extends OrienteerBasePage<OIndex<?>>
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
-				return new OIndexMetaPanel<Object>(id, modeModel, rowModel, new PropertyModel<Object>(getModel(), rowModel.getObject()));
+				return new OIndexMetaPanel<Object>(id, modeModel, OIndexPage.this.getModel(), rowModel);
 			}
 		};
 		

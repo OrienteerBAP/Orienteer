@@ -3,7 +3,6 @@ package ru.ydn.orienteer.components.properties;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
-@Deprecated
 public abstract class AbstractEntityAndPropertyAwarePanel<E, P, V> extends GenericPanel<V> implements IEntityAndPropertyAware<E, P, V>
 {
 	/**
@@ -43,6 +42,21 @@ public abstract class AbstractEntityAndPropertyAwarePanel<E, P, V> extends Gener
 	public IModel<V> getValueModel()
 	{
 		return getModel();
+	}
+	
+	public E getEntityObject()
+	{
+		return getEntityModel().getObject();
+	}
+	
+	public P getPropertyObject()
+	{
+		return getPropertyModel().getObject();
+	}
+	
+	public V getValueObject()
+	{
+		return getValueModel().getObject();
 	}
 	
 	@Override

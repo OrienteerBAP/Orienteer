@@ -85,7 +85,7 @@ public class OPropertyPage extends OrienteerBasePage<OProperty>
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
-				return new OPropertyMetaPanel<Object>(id, modeModel, rowModel, new PropertyModel<Object>(getModel(), rowModel.getObject()));
+				return new OPropertyMetaPanel<Object>(id, modeModel, OPropertyPage.this.getModel(), rowModel);
 			}
 		};
 		

@@ -3,36 +3,51 @@ package ru.ydn.orienteer.components.properties;
 import java.io.Serializable;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 
-import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 
 import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
-public class OIndexMetaPanel<V> extends AbstractMapMetaPanel<OIndex<?>, DisplayMode, String, V>
+public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, DisplayMode, String, V>
 {
 	
+	
+
 	public OIndexMetaPanel(String id, IModel<DisplayMode> modeModel,
-			IModel<String> criteryModel, IModel<V> model)
+			IModel<OIndex<?>> entityModel, IModel<String> propertyModel,
+			IModel<V> valueModel)
 	{
-		super(id, modeModel, criteryModel, model);
+		super(id, modeModel, entityModel, propertyModel, valueModel);
+	}
+
+	public OIndexMetaPanel(String id, IModel<DisplayMode> modeModel,
+			IModel<OIndex<?>> entityModel, IModel<String> criteryModel)
+	{
+		super(id, modeModel, entityModel, criteryModel);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	protected V getValue(OIndex<?> entity, String critery) {
+		return (V) PropertyResolver.getValue(critery, entity);
 	}
 
 	@Override
-	protected IMetaComponentResolver<String> newResolver(DisplayMode key) {
-		if(DisplayMode.VIEW.equals(key))
+	protected void setValue(OIndex<?> entity, String critery, V value) {
+		PropertyResolver.setValue(critery, entity, value, null);
+	}
+	
+	@Override
+	protected Component resolveComponent(String id, DisplayMode mode,
+			String critery) {
+		if(DisplayMode.VIEW.equals(mode))
 		{
-			return new IMetaComponentResolver<String>() {
-
-				private static final long serialVersionUID = 1L;
-
-				@SuppressWarnings("unchecked")
-				@Override
-				public Component resolve(String id, String critery) {
 					if(OIndexPrototyper.DEF_CLASS_NAME.equals(critery))
 					{
 						return new OClassViewPanel(id, new OClassModel((IModel<String>)getModel()));
@@ -41,38 +56,17 @@ public class OIndexMetaPanel<V> extends AbstractMapMetaPanel<OIndex<?>, DisplayM
 					{
 						return new Label(id, getModel());
 					}
-				}
-
-				@Override
-				public Serializable getSignature(String critery) {
-					return critery;
-				}
-			};
 		}
-		else if(DisplayMode.EDIT.equals(key))
+		else if(DisplayMode.EDIT.equals(mode))
 		{
-			return new IMetaComponentResolver<String>() {
-
-				private static final long serialVersionUID = 1L;
-
-				@SuppressWarnings("unchecked")
-				@Override
-				public Component resolve(String id, String critery) {
 					return new Label(id, getModel());
-				}
-
-				@Override
-				public Serializable getSignature(String critery) {
-					return critery;
-				}
-			};
 		}
 		else return null;
 	}
 
 	@Override
 	protected IModel<String> newLabelModel() {
-		return new AbstractNamingModel<String>(getCriteryModel()) {
+		return new AbstractNamingModel<String>(getPropertyModel()) {
 
 			@Override
 			public String getResourceKey(String object) {
