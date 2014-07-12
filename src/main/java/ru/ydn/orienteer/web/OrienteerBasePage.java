@@ -11,7 +11,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import ru.ydn.orienteer.components.ODocumentPageLink;
 import ru.ydn.orienteer.components.OrienteerFeedbackPanel;
-import ru.ydn.orienteer.web.schema.ListClassesPage;
+import ru.ydn.orienteer.web.schema.ListOClassesPage;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 public abstract class OrienteerBasePage<T> extends BasePage<T>
@@ -45,7 +45,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
 		add(new BookmarkablePageLink<T>("usersLink", BrowseClassPage.class, new PageParameters().add("className", "OUser")));
 		add(new BookmarkablePageLink<T>("rolesLink", BrowseClassPage.class, new PageParameters().add("className", "ORole")));
-		add(new BookmarkablePageLink<T>("classesLink", ListClassesPage.class));
+		add(new BookmarkablePageLink<T>("classesLink", ListOClassesPage.class));
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
 		add(new ODocumentPageLink<OIdentifiable>("myProfile", new PropertyModel<OIdentifiable>(this, "session.user.document")));

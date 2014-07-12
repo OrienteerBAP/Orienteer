@@ -41,7 +41,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @MountPath("/classes")
 @RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
-public class ListClassesPage extends OrienteerBasePage<Object> {
+public class ListOClassesPage extends OrienteerBasePage<Object> {
 
 	/**
 	 * 
@@ -50,7 +50,7 @@ public class ListClassesPage extends OrienteerBasePage<Object> {
 
 
 
-	public ListClassesPage()
+	public ListOClassesPage()
 	{
 		super();
 	}

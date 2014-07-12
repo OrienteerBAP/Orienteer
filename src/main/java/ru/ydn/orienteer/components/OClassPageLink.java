@@ -7,7 +7,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
-import ru.ydn.orienteer.web.schema.ClassPage;
+import ru.ydn.orienteer.web.schema.OClassPage;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
@@ -56,11 +56,11 @@ public class OClassPageLink extends BookmarkablePageLink<OClass>
 	{
 		switch (mode) {
 		case VIEW:
-			return ClassPage.class;
+			return OClassPage.class;
 		case EDIT:
-			return ClassPage.class;
+			return OClassPage.class;
 		default:
-			return ClassPage.class;
+			return OClassPage.class;
 		}
 	}
 	

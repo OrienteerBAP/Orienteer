@@ -32,6 +32,7 @@ import ru.ydn.orienteer.components.properties.OClassMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OClassColumn;
+import ru.ydn.orienteer.components.table.OIndexDefinitionColumn;
 import ru.ydn.orienteer.components.table.OPropertyDefinitionColumn;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.web.OrienteerBasePage;
@@ -39,6 +40,7 @@ import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
+import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import ru.ydn.wicket.wicketorientdb.utils.OPropertyFullNameConverter;
@@ -50,25 +52,23 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 
 @MountPath("/class/${className}")
 @RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
-public class ClassPage extends OrienteerBasePage<OClass> {
+public class OClassPage extends OrienteerBasePage<OClass> {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static String[] ATTRS_TO_VIEW = new String[]{"name", "shortName", "superClass", "overSize", "strictMode", "abstract", "clusterSelection"};
-	
 	private OrienteerStructureTable<OClass, String> structureTable;
 	
 	private IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 	private IModel<Boolean> showParentPropertiesModel = Model.<Boolean>of(true);
 	private IModel<Boolean> showParentIndexesModel = Model.<Boolean>of(true);
 	
-	public ClassPage(IModel<OClass> model) {
+	public OClassPage(IModel<OClass> model) {
 		super(model);
 	}
 
-	public ClassPage(PageParameters parameters) {
+	public OClassPage(PageParameters parameters) {
 		super(parameters);
 		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
 		if(mode!=null) modeModel.setObject(mode);
@@ -92,7 +92,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		return modeModel.getObject();
 	}
 	
-	public ClassPage setDisplayMode(DisplayMode mode)
+	public OClassPage setDisplayMode(DisplayMode mode)
 	{
 		modeModel.setObject(mode);
 		return this;
@@ -109,11 +109,11 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 	{
 		super.onInitialize();
 		Form<OClass> form = new Form<OClass>("form");
-		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), Arrays.asList(ATTRS_TO_VIEW)) {
+		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), Arrays.asList(OClassPrototyper.OCLASS_ATTRS)) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
-				return new OClassMetaPanel<Object>(id, modeModel, ClassPage.this.getModel(), rowModel);
+				return new OClassMetaPanel<Object>(id, modeModel, OClassPage.this.getModel(), rowModel);
 			}
 		};
 		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
@@ -145,7 +145,7 @@ public class ClassPage extends OrienteerBasePage<OClass> {
 		
 		
 		List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.name"), "name", "name"));
+		iColumns.add(new OIndexDefinitionColumn<OIndex<?>>(new ResourceModel("index.name"), "name", ""));
 		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.type"), "type", "type"));
 		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.fields"), "definition.fields"));
 		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.fieldsToIndex"), "definition.fieldsToIndex"));

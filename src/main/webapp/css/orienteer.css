@@ -63,3 +63,8 @@ table.table caption
 	margin-right: 50%;
 	margin-left: 10px;
 }
+
+td.st-label
+{
+	width: 30%;
+}

@@ -5,12 +5,12 @@ import org.apache.wicket.util.lang.Args;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
-import ru.ydn.orienteer.web.schema.ClassPage;
-import ru.ydn.orienteer.web.schema.PropertyPage;
+import ru.ydn.orienteer.web.schema.OClassPage;
+import ru.ydn.orienteer.web.schema.OPropertyPage;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
-import ru.ydn.wicket.wicketorientdb.utils.proto.OClassPrototyper;
-import ru.ydn.wicket.wicketorientdb.utils.proto.OPropertyPrototyper;
+import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -27,7 +27,7 @@ public class CreateOPropertyCommand extends AbstractCreateCommand<OProperty> {
 
 	@Override
 	public void onClick() {
-		setResponsePage(new PropertyPage(new OPropertyModel(OPropertyPrototyper.newPrototype(classModel.getObject().getName()))).setDisplayMode(DisplayMode.EDIT));
+		setResponsePage(new OPropertyPage(new OPropertyModel(OPropertyPrototyper.newPrototype(classModel.getObject().getName()))).setDisplayMode(DisplayMode.EDIT));
 	}
 
 	@Override

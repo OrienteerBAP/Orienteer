@@ -24,6 +24,7 @@ import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
@@ -32,24 +33,22 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 
 @MountPath("/property/${className}/${propertyName}")
 @RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
-public class PropertyPage extends OrienteerBasePage<OProperty>
+public class OPropertyPage extends OrienteerBasePage<OProperty>
 {
 /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType", "linkedClass", "mandatory", "readonly", "notNull", "min", "max", "collate"};
-	
 	private OrienteerStructureTable<OProperty, String> structureTable;
 	
 	private IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 	
-	public PropertyPage(IModel<OProperty> model) {
+	public OPropertyPage(IModel<OProperty> model) {
 		super(model);
 	}
 
-	public PropertyPage(PageParameters parameters) {
+	public OPropertyPage(PageParameters parameters) {
 		super(parameters);
 		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
 		if(mode!=null) modeModel.setObject(mode);
@@ -72,7 +71,7 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 		return modeModel.getObject();
 	}
 	
-	public PropertyPage setDisplayMode(DisplayMode mode)
+	public OPropertyPage setDisplayMode(DisplayMode mode)
 	{
 		modeModel.setObject(mode);
 		return this;
@@ -82,7 +81,7 @@ private static String[] ATTRS_TO_VIEW = new String[]{"name", "type", "linkedType
 	public void initialize() {
 		super.initialize();
 		Form<OProperty> form = new Form<OProperty>("form");
-		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), Arrays.asList(ATTRS_TO_VIEW)) {
+		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), Arrays.asList(OPropertyPrototyper.OPROPERTY_ATTRS)) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {

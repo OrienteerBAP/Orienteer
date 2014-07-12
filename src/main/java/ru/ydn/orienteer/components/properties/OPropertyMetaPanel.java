@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.validation.IValidator;
 
 import ru.ydn.orienteer.components.IMetaComponentResolver;
@@ -56,6 +57,10 @@ public class OPropertyMetaPanel<V> extends AbstractMapMetaPanel<OProperty, Displ
 					if("linkedClass".equals(critery))
 					{
 						return new OClassViewPanel(id, (IModel<OClass>)getModel());
+					}
+					else if("collate".equals(critery))
+					{
+						return new Label(id, new PropertyModel<String>(getModel(), "collate"));
 					}
 					else
 					{

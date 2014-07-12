@@ -5,7 +5,7 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
-import ru.ydn.wicket.wicketorientdb.utils.proto.IPrototype;
+import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
