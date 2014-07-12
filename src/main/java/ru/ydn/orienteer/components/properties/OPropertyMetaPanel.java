@@ -2,26 +2,43 @@ package ru.ydn.orienteer.components.properties;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidator;
 
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
+import com.orientechnologies.orient.core.collate.OCollate;
+import com.orientechnologies.orient.core.collate.OCollateFactory;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.sql.OSQLEngine;
 
 public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V>
 {
@@ -46,12 +63,27 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 	@SuppressWarnings("unchecked")
 	@Override
 	protected V getValue(OProperty entity, String critery) {
-		return (V) PropertyResolver.getValue(critery, entity);
+		if(OPropertyPrototyper.COLLATE.equals(critery))
+		{
+			OCollate collate = entity.getCollate();
+			return (V)(collate!=null?collate.getName():null);
+		}
+		else
+		{
+			return (V) PropertyResolver.getValue(critery, entity);
+		}
 	}
 
 	@Override
 	protected void setValue(OProperty entity, String critery, V value) {
-		PropertyResolver.setValue(critery, entity, value, null);
+		if(OPropertyPrototyper.COLLATE.equals(critery))
+		{
+			entity.setCollate((String)value);
+		}
+		else
+		{
+			PropertyResolver.setValue(critery, entity, value, null);
+		}
 	}
 
 	@Override
@@ -65,7 +97,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else if("collate".equals(critery))
 			{
-				return new Label(id, new PropertyModel<String>(getModel(), "name"));
+				return new Label(id, getModel());
 			}
 			else
 			{
@@ -105,6 +137,10 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 						return object.getName();
 					}
 				}).setNullValid(true);
+			}
+			else if("collate".equals(critery))
+			{
+				return new DropDownChoice<String>(id, (IModel<String>)getModel(), Lists.newArrayList(OSQLEngine.getCollateNames()));
 			}
 			else if("mandatory".equals(critery) || "readonly".equals(critery) || "notNull".equals(critery))
 			{

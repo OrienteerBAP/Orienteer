@@ -21,15 +21,18 @@ import org.apache.wicket.validation.IValidator;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
+import com.orientechnologies.orient.core.collate.OCollate;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalancedClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
+import com.orientechnologies.orient.core.sql.OSQLEngine;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
+import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V>
@@ -60,8 +63,6 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		
 	}
 	
-	
-
 	public OClassMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<OClass> entityModel, IModel<String> criteryModel) {
 		super(id, modeModel, entityModel, criteryModel);
@@ -114,6 +115,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				else if("abstract".equals(critery) || "strictMode".equals(critery))
 				{
 					return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
+				}
+				else if(OClassPrototyper.OVER_SIZE.equals(critery))
+				{
+					return new TextField<V>(id, getModel()).setType(Float.class);
 				}
 				else if("superClass".equals(critery))
 				{
