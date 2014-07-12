@@ -8,6 +8,8 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.IMetaComponentResolver;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 
 import com.orientechnologies.orient.core.index.OIndex;
 
@@ -31,7 +33,14 @@ public class OIndexMetaPanel<V> extends AbstractMapMetaPanel<OIndex<?>, DisplayM
 				@SuppressWarnings("unchecked")
 				@Override
 				public Component resolve(String id, String critery) {
-					return new Label(id, getModel());
+					if(OIndexPrototyper.DEF_CLASS_NAME.equals(critery))
+					{
+						return new OClassViewPanel(id, new OClassModel((IModel<String>)getModel()));
+					}
+					else
+					{
+						return new Label(id, getModel());
+					}
 				}
 
 				@Override
