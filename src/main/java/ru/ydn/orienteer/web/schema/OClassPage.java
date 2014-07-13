@@ -21,7 +21,9 @@ import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
+import ru.ydn.orienteer.components.commands.CreateOIndexFromOPropertiesCommand;
 import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
+import ru.ydn.orienteer.components.commands.DeleteOIndexCommand;
 import ru.ydn.orienteer.components.commands.DeleteOPropertyCommand;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
@@ -33,7 +35,9 @@ import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OClassColumn;
 import ru.ydn.orienteer.components.table.OIndexDefinitionColumn;
+import ru.ydn.orienteer.components.table.OIndexMetaColumn;
 import ru.ydn.orienteer.components.table.OPropertyDefinitionColumn;
+import ru.ydn.orienteer.components.table.OPropertyMetaColumn;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
@@ -41,8 +45,11 @@ import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
+import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.utils.OIndexNameConverter;
 import ru.ydn.wicket.wicketorientdb.utils.OPropertyFullNameConverter;
 
 import com.orientechnologies.orient.core.index.OIndex;
@@ -109,7 +116,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 	{
 		super.onInitialize();
 		Form<OClass> form = new Form<OClass>("form");
-		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), Arrays.asList(OClassPrototyper.OCLASS_ATTRS)) {
+		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), OClassPrototyper.OCLASS_ATTRS) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
@@ -122,17 +129,17 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		form.add(structureTable);
 		
 		List<IColumn<OProperty, String>> pColumns = new ArrayList<IColumn<OProperty,String>>();
-		pColumns.add(new CheckBoxColumn<OProperty, String, String>(null, new OPropertyFullNameConverter()));
+		pColumns.add(new CheckBoxColumn<OProperty, String, String>(null, OPropertyFullNameConverter.INSTANCE));
 		pColumns.add(new OPropertyDefinitionColumn<OProperty>(new ResourceModel("property.name"), "name", ""));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.type"), "type", "type"));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.linkedType"), "linkedType", "linkedType"));
-		pColumns.add(new OClassColumn<OProperty>(new ResourceModel("property.linkedClass"), "linkedClass.name", "linkedClass"));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.notNull"), "notNull", "notNull"));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.collate"), "collate.name", "collate.name"));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.mandatory"), "mandatory", "mandatory"));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.readonly"), "readonly", "readonly"));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.min"), "min", "min"));
-		pColumns.add(new PropertyColumn<OProperty, String>(new ResourceModel("property.max"), "max", "max"));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.TYPE));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.LINKED_TYPE));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.LINKED_CLASS));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.NOT_NULL));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MANDATORY));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.READONLY));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.COLLATE));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MIN));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MAX));
 		
 		OPropertiesDataProvider pProvider = new OPropertiesDataProvider(getModel(), showParentPropertiesModel);
 		pProvider.setSort("name", SortOrder.ASCENDING);
@@ -140,24 +147,26 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		pTable.addCommand(new CreateOPropertyCommand(pTable, getModel()));
 		pTable.addCommand(new ShowHideParentsCommand<OProperty>(pTable, showParentPropertiesModel));
 		pTable.addCommand(new DeleteOPropertyCommand(pTable));
+		pTable.addCommand(new CreateOIndexFromOPropertiesCommand(pTable, getModel()));
 		pTable.setCaptionModel(new ResourceModel("class.properties"));
 		form.add(pTable);
 		
 		
 		List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
+		iColumns.add(new CheckBoxColumn<OIndex<?>, String, String>(null, OIndexNameConverter.INSTANCE));
 		iColumns.add(new OIndexDefinitionColumn<OIndex<?>>(new ResourceModel("index.name"), "name", ""));
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.type"), "type", "type"));
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.fields"), "definition.fields"));
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.fieldsToIndex"), "definition.fieldsToIndex"));
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.collate"), "definition.collate.name", "definition.collate.name"));
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.definition.nullValuesIgnored"), "definition.nullValuesIgnored", "definition.nullValuesIgnored"));
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.size"), "size", "size"));
-		iColumns.add(new PropertyColumn<OIndex<?>, String>(new ResourceModel("index.keySize"), "keySize", "keySize"));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.TYPE));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_FIELDS));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_COLLATE));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_NULLS_IGNORED));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.SIZE));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.KEY_SIZE));
 		
 		OIndexiesDataProvider iProvider = new OIndexiesDataProvider(getModel(), showParentIndexesModel);
 		iProvider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OIndex<?>, String> iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
 		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(iTable, showParentIndexesModel));
+		iTable.addCommand(new DeleteOIndexCommand(iTable));
 		iTable.setCaptionModel(new ResourceModel("class.indexies"));
 		form.add(iTable);
 		add(form);

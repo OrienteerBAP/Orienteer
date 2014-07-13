@@ -46,6 +46,24 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public static class OPropertyFieldNameModel extends AbstractNamingModel<String> 
+	{
+		public OPropertyFieldNameModel(IModel<String> objectModel)
+		{
+			super(objectModel);
+		}
+
+		public OPropertyFieldNameModel(String object)
+		{
+			super(object);
+		}
+
+		@Override
+		public String getResourceKey(String object) {
+			return "property."+object;
+		}
+	}
 
 	public OPropertyMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<OProperty> entityModel, IModel<String> propertyModel,
@@ -160,13 +178,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 
 	@Override
 	public IModel<String> newLabelModel() {
-		return new AbstractNamingModel<String>(getPropertyModel()) {
-
-			@Override
-			public String getResourceKey(String object) {
-				return "property."+object;
-			}
-		};
+		return new OPropertyFieldNameModel(getPropertyModel());
 	}
 	
 

@@ -42,6 +42,27 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final List<String> CLUSTER_SELECTIONS = Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
+	
+	public static class OClassFieldNameModel extends AbstractNamingModel<String>
+	{
+		private static final long serialVersionUID = 1L;
+		
+		public OClassFieldNameModel(IModel<String> objectModel)
+		{
+			super(objectModel);
+		}
+
+		public OClassFieldNameModel(String object)
+		{
+			super(object);
+		}
+
+		@Override
+		public String getResourceKey(String object) {
+			return "class."+object;
+		}
+	};
+	
 	public static class ListClassesModel extends LoadableDetachableModel<List<OClass>>
 	{
 		/**
@@ -154,14 +175,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 	@Override
 	public IModel<String> newLabelModel() {
-		return new AbstractNamingModel<String>(getPropertyModel()) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public String getResourceKey(String object) {
-				return "class."+object;
-			}
-		};
+		return new OClassFieldNameModel(getPropertyModel());
 	}
 	
 

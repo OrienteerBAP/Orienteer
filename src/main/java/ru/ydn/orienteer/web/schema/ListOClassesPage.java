@@ -25,10 +25,12 @@ import ru.ydn.orienteer.components.commands.ReloadOMetadataCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OClassColumn;
+import ru.ydn.orienteer.components.table.OClassMetaColumn;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.web.BrowseClassPage;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
+import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import ru.ydn.wicket.wicketorientdb.utils.OClassClassNameConverter;
@@ -64,9 +66,9 @@ public class ListOClassesPage extends OrienteerBasePage<Object> {
 		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
 		columns.add(new CheckBoxColumn<OClass, String, String>(null, OClassClassNameConverter.INSTANCE));
 		columns.add(new OClassColumn<OClass>(new ResourceModel("class.name"), "name", ""));
-		columns.add(new OClassColumn<OClass>(new ResourceModel("class.superClass"), "superClass.name", "superClass"));
-		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.abstract"), "abstract"));
-		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.strictMode"), "strictMode"));
+		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS+".name", OClassPrototyper.SUPER_CLASS));
+		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT, OClassPrototyper.ABSTRACT));
+		columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE, OClassPrototyper.STRICT_MODE));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.javaClass"), "javaClass", "javaClass"));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.count"), "count", "count"));
 		columns.add(new AbstractColumn<OClass, String>(new ResourceModel("class.browse")) {

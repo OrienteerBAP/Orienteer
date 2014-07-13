@@ -1,6 +1,7 @@
 package ru.ydn.orienteer.components.table;
 
 import org.apache.wicket.model.IModel;
+
 import ru.ydn.orienteer.components.properties.AbstractMetaPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
@@ -17,14 +18,20 @@ public class OPropertyValueColumn extends AbstractMetaColumn<ODocument, OPropert
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public OPropertyValueColumn(OProperty property)
+	public OPropertyValueColumn(OProperty oProperty)
 	{
-		this(new OPropertyModel(property));
+		this(new OPropertyModel(oProperty));
 	}
-	
-	public OPropertyValueColumn(IModel<OProperty> propertyModel)
+
+	public OPropertyValueColumn(IModel<OProperty> criteryModel)
 	{
-		super(new OPropertyNamingModel(propertyModel), propertyModel);
+		super(criteryModel);
+	}
+
+	public OPropertyValueColumn(String sortProperty,
+			IModel<OProperty> criteryModel)
+	{
+		super(sortProperty, criteryModel);
 	}
 
 	@Override
@@ -32,6 +39,11 @@ public class OPropertyValueColumn extends AbstractMetaColumn<ODocument, OPropert
 			String componentId, IModel<OProperty> criteryModel,
 			IModel<ODocument> rowModel) {
 		return new ODocumentMetaPanel<V>(componentId, DisplayMode.VIEW.asModel(), rowModel, criteryModel);
+	}
+
+	@Override
+	protected IModel<String> newLabelModel() {
+		return new OPropertyNamingModel(getCriteryModel());
 	}
 
 }

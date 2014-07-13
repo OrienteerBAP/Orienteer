@@ -77,7 +77,7 @@ public class OIndexPage extends OrienteerBasePage<OIndex<?>>
 	public void initialize() {
 		super.initialize();
 		Form<OIndex<?>> form = new Form<OIndex<?>>("form");
-		structureTable  = new OrienteerStructureTable<OIndex<?>, String>("attributes", getModel(), Arrays.asList(OIndexPrototyper.OINDEX_ATTRS)) {
+		structureTable  = new OrienteerStructureTable<OIndex<?>, String>("attributes", getModel(), OIndexPrototyper.OINDEX_ATTRS) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {

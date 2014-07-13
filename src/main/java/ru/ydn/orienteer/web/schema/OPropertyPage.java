@@ -81,7 +81,7 @@ public class OPropertyPage extends OrienteerBasePage<OProperty>
 	public void initialize() {
 		super.initialize();
 		Form<OProperty> form = new Form<OProperty>("form");
-		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), Arrays.asList(OPropertyPrototyper.OPROPERTY_ATTRS)) {
+		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), OPropertyPrototyper.OPROPERTY_ATTRS) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
