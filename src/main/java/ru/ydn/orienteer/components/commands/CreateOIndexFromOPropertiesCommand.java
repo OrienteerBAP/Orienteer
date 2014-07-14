@@ -58,13 +58,13 @@ public class CreateOIndexFromOPropertiesCommand extends
 		}
 		else
 		{
-			String[] fields = Lists.transform(objects, new Function<OProperty, String>() {
+			List<String> fields = Lists.newArrayList(Lists.transform(objects, new Function<OProperty, String>() {
 
 				@Override
 				public String apply(OProperty input) {
 					return input.getName();
 				}
-			}).toArray(new String[0]);
+			}));
 			OClass oClass = classModel!=null?classModel.getObject():null;
 			if(oClass==null) oClass = objects.get(0).getOwnerClass();
 			setResponsePage(new OIndexPage(new OIndexModel(OIndexPrototyper.newPrototype(oClass.getName(), fields))).setDisplayMode(DisplayMode.EDIT));
