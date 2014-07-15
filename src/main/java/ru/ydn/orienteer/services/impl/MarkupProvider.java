@@ -12,6 +12,7 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.lang.Generics;
 
@@ -31,6 +32,7 @@ public class MarkupProvider implements IMarkupProvider
 		registerMarkupContent(DropDownChoice.class, "<select wicket:id=\"component\" class=\"form-control\"></select>");
 		registerMarkupContent(CheckBox.class, "<input type=\"checkbox\" wicket:id=\"component\"/>");
 		registerMarkupContent(TextField.class, "<input type=\"text\" wicket:id=\"component\" class=\"form-control\"/>");
+		registerMarkupContent(TextArea.class, "<textarea wicket:id=\"component\" class=\"form-control\"></textarea>");
 	}
 	
 	@Override

@@ -1,6 +1,8 @@
 package ru.ydn.orienteer.web.schema;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -39,6 +41,7 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 @RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
 public class OPropertyPage extends OrienteerBasePage<OProperty>
 {
+	
 /**
 	 * 
 	 */
@@ -85,7 +88,7 @@ public class OPropertyPage extends OrienteerBasePage<OProperty>
 	public void initialize() {
 		super.initialize();
 		Form<OProperty> form = new Form<OProperty>("form");
-		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), OPropertyPrototyper.OPROPERTY_ATTRS) {
+		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), OPropertyMetaPanel.OPROPERTY_ATTRS) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {

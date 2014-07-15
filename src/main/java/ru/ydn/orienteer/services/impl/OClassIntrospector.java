@@ -28,7 +28,8 @@ public class OClassIntrospector implements IOClassIntrospector
 		public static final PropertyDisplayablePredicate INSTANCE = new PropertyDisplayablePredicate();
 		@Override
 		public boolean apply(OProperty input) {
-			return "true.".equalsIgnoreCase(input.getCustom(CustomAttributes.DISPLAYABLE.getName()));
+			Boolean value = CustomAttributes.DISPLAYABLE.getValue(input);
+			return value!=null?value:false;
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package ru.ydn.orienteer.components.properties;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -14,6 +15,7 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -21,6 +23,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidator;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
@@ -42,6 +45,15 @@ import com.orientechnologies.orient.core.sql.OSQLEngine;
 
 public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V>
 {
+	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>(OPropertyPrototyper.OPROPERTY_ATTRS);
+	static
+	{
+		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.DISPLAYABLE.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.ORDER.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.TAB.getName());
+	}
 	/**
 	 * 
 	 */
@@ -81,10 +93,15 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 	@SuppressWarnings("unchecked")
 	@Override
 	protected V getValue(OProperty entity, String critery) {
+		CustomAttributes custom;
 		if(OPropertyPrototyper.COLLATE.equals(critery))
 		{
 			OCollate collate = entity.getCollate();
 			return (V)(collate!=null?collate.getName():null);
+		}
+		else if((custom = CustomAttributes.fromString(critery))!=null)
+		{
+			return custom.getValue(entity);
 		}
 		else
 		{
@@ -94,9 +111,14 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 
 	@Override
 	protected void setValue(OProperty entity, String critery, V value) {
+		CustomAttributes custom;
 		if(OPropertyPrototyper.COLLATE.equals(critery))
 		{
 			entity.setCollate((String)value);
+		}
+		else if((custom = CustomAttributes.fromString(critery))!=null)
+		{
+			custom.setValue(entity, value);
 		}
 		else
 		{
@@ -104,6 +126,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Component resolveComponent(String id, DisplayMode mode,
 			String critery) {
@@ -170,6 +193,21 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else
 			{
+				CustomAttributes customAttr = CustomAttributes.fromString(critery);
+				if(customAttr!=null)
+				{
+					switch (customAttr) {
+					case CALCULABLE:
+					case DISPLAYABLE:
+						return new CheckBox(id, (IModel<Boolean>)getModel());
+					case CALC_SCRIPT:
+						return new TextArea<V>(id, getModel());
+					case ORDER:
+						return new TextField<V>(id, getModel()).setType(Integer.class);
+					case TAB:
+						return new TextField<V>(id, getModel());
+					}
+				}
 				return resolveComponent(id, DisplayMode.VIEW, critery);
 			}
 		}
