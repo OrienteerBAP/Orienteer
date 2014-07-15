@@ -5,6 +5,7 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -13,12 +14,14 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.SchemaPageHeader;
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
 import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.OClassViewPanel;
 import ru.ydn.orienteer.components.properties.OPropertyMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.web.OrienteerBasePage;
@@ -28,6 +31,7 @@ import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 
@@ -110,5 +114,13 @@ public class OPropertyPage extends OrienteerBasePage<OProperty>
 	@Override
 	public IModel<String> getTitleModel() {
 		return new PropertyModel<String>(getModel(), "name");
+	}
+	
+	@Override
+	protected Component newPageHeaderComponent(String componentId) {
+		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
+		pageHeader.addChild(new OClassViewPanel("class", new PropertyModel<OClass>(getModel(), "ownerClass")));
+		pageHeader.addChild(new Label("property", getTitleModel()));
+		return pageHeader;
 	}
 }

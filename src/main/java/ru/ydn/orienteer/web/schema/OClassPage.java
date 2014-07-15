@@ -10,7 +10,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -20,6 +22,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.SchemaPageHeader;
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.CreateOIndexFromOPropertiesCommand;
 import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
@@ -31,6 +34,7 @@ import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
+import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OClassColumn;
@@ -177,5 +181,14 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 	public IModel<String> getTitleModel() {
 		return new PropertyModel<String>(getModel(), "name");
 	}
+
+	@Override
+	protected Component newPageHeaderComponent(String componentId) {
+		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
+		pageHeader.addChild(new Label("class", getTitleModel()));
+		return pageHeader;
+	}
+	
+	
 	
 }

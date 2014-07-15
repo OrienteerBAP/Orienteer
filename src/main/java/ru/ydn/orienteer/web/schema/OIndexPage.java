@@ -5,6 +5,7 @@ import java.util.Arrays;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -13,19 +14,23 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.SchemaPageHeader;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.OClassViewPanel;
 import ru.ydn.orienteer.components.properties.OIndexMetaPanel;
 import ru.ydn.orienteer.components.properties.OPropertyMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.web.OrienteerBasePage;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexModel;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 
 @MountPath("/index/${indexName}")
@@ -106,5 +111,13 @@ public class OIndexPage extends OrienteerBasePage<OIndex<?>>
 	@Override
 	public IModel<String> getTitleModel() {
 		return new PropertyModel<String>(getModel(), "name");
+	}
+	
+	@Override
+	protected Component newPageHeaderComponent(String componentId) {
+		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
+		pageHeader.addChild(new OClassViewPanel("class", new OClassModel(new PropertyModel<String>(getModel(), OIndexPrototyper.DEF_CLASS_NAME))));
+		pageHeader.addChild(new Label("index", getTitleModel()));
+		return pageHeader;
 	}
 }
