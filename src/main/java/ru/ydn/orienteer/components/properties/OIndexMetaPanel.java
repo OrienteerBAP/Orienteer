@@ -136,7 +136,9 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 			}
 			else if(OIndexPrototyper.DEF_COLLATE.equals(critery))
 			{
-				if(!(getEntityObject().getDefinition() instanceof OCompositeIndexDefinition))
+				OIndex<?> index = getEntityObject();
+				if(!(index.getDefinition() instanceof OCompositeIndexDefinition)
+						&& (!isProto || index.getDefinition().getFields().size()==1))
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), Lists.newArrayList(OSQLEngine.getCollateNames())).setRequired(true);
 				}

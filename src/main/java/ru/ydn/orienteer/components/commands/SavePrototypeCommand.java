@@ -26,6 +26,7 @@ public class SavePrototypeCommand<T> extends AbstractSaveCommand<T>
 		{
 			getDatabase().commit();
 			((IPrototype<?>)object).realizePrototype();
+			model.detach();
 			getDatabase().begin();
 		}
 		super.onClick(target);
