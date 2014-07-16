@@ -116,8 +116,8 @@ public class OIndexPage extends OrienteerBasePage<OIndex<?>>
 	@Override
 	protected Component newPageHeaderComponent(String componentId) {
 		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
-		pageHeader.addChild(new OClassViewPanel("class", new OClassModel(new PropertyModel<String>(getModel(), OIndexPrototyper.DEF_CLASS_NAME))));
-		pageHeader.addChild(new Label("index", getTitleModel()));
+		pageHeader.addChild(new OClassViewPanel(pageHeader.newChildId(), new OClassModel(new PropertyModel<String>(getModel(), OIndexPrototyper.DEF_CLASS_NAME))));
+		pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
 		return pageHeader;
 	}
 }

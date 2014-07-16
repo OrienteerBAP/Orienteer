@@ -1,6 +1,7 @@
 package ru.ydn.orienteer.components.properties;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.validation.IValidator;
 
@@ -23,20 +25,29 @@ import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.orient.core.collate.OCollate;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalancedClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 import com.orientechnologies.orient.core.sql.OSQLEngine;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V>
 {
+	public static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
+	static
+	{
+		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
+		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
+	}
 	/**
 	 * 
 	 */
@@ -92,10 +103,15 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	@SuppressWarnings("unchecked")
 	@Override
 	protected V getValue(OClass entity, String critery) {
+		CustomAttributes custom;
 		if("clusterSelection".equals(critery))
 		{
 			OClusterSelectionStrategy strategy = entity.getClusterSelection();
 			return (V)(strategy!=null?strategy.getName():null);
+		}
+		else if((custom = CustomAttributes.fromString(critery))!=null)
+		{
+			return custom.getValue(entity);
 		}
 		else
 		{
@@ -105,9 +121,14 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 	@Override
 	protected void setValue(OClass entity, String critery, V value) {
+		CustomAttributes custom;
 		if("clusterSelection".equals(critery))
 		{
 			if(value!=null) entity.setClusterSelection(value.toString());
+		}
+		else if((custom = CustomAttributes.fromString(critery))!=null)
+		{
+			custom.setValue(entity, value);
 		}
 		else
 		{
@@ -164,6 +185,15 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				else if("clusterSelection".equals(critery))
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
+				}
+				else if(CustomAttributes.PROP_NAME.getName().equals(critery))
+				{
+					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new PropertyModel<List<OProperty>>(getEntityModel(), "properties()"));
+				}
+				else if(CustomAttributes.PROP_PARENT.getName().equals(critery))
+				{
+					//TODO: limit list only to LINKs
+					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new PropertyModel<List<OProperty>>(getEntityModel(), "properties()"));
 				}
 				else
 				{

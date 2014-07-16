@@ -3,6 +3,9 @@ package ru.ydn.orienteer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.wicket.util.string.Strings;
+
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
@@ -31,21 +34,28 @@ public enum CustomAttributes
 	/**
 	 * Name of the property which is storing name of this entity
 	 */
-	PROP_NAME("orienteer.prop.name", OType.STRING),
+	PROP_NAME("orienteer.prop.name", OType.LINK, OProperty.class),
 	/**
 	 * Name of property which is storing link to a parent entity
 	 */
-	PROP_PARENT("orienteer.prop.parent", OType.STRING);
+	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class);
 	
 	private final String name;
 	private final OType type;
+	private final Class<?> javaClass;
 	
 	private static final Map<String, CustomAttributes> QUICK_CACHE = new HashMap<String, CustomAttributes>();
 	
 	private CustomAttributes(String name, OType type)
 	{
+		this(name, type, type.getDefaultJavaType());
+	}
+	
+	private CustomAttributes(String name, OType type, Class<?> javaClass)
+	{
 		this.name = name;
 		this.type = type;
+		this.javaClass = javaClass;
 	}
 
 	public String getName() {
@@ -71,12 +81,38 @@ public enum CustomAttributes
 	@SuppressWarnings("unchecked")
 	public <V> V getValue(OProperty property)
 	{
-		return (V) OType.convert(property.getCustom(name), type.getDefaultJavaType());
+		return (V) OType.convert(property.getCustom(name), javaClass);
 	}
 	
 	public <V> void setValue(OProperty property, V value)
 	{
 		property.setCustom(name, value!=null?value.toString():null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <V> V getValue(OClass oClass)
+	{
+		if(OProperty.class.isAssignableFrom(javaClass))
+		{
+			String propertyName = oClass.getCustom(name);
+			return (V) (Strings.isEmpty(propertyName)?null:oClass.getProperty(propertyName));
+		}
+		else
+		{
+			return (V) OType.convert(oClass.getCustom(name), javaClass);
+		}
+	}
+	
+	public <V> void setValue(OClass oClass, V value)
+	{
+		if(OProperty.class.isAssignableFrom(javaClass) && value instanceof OProperty)
+		{
+			oClass.setCustom(name, ((OProperty)value).getName());
+		}
+		else
+		{
+			oClass.setCustom(name, value!=null?value.toString():null);
+		}
 	}
 	
 }

@@ -120,7 +120,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 	{
 		super.onInitialize();
 		Form<OClass> form = new Form<OClass>("form");
-		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), OClassPrototyper.OCLASS_ATTRS) {
+		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), OClassMetaPanel.OCLASS_ATTRS) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
@@ -185,7 +185,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 	@Override
 	protected Component newPageHeaderComponent(String componentId) {
 		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
-		pageHeader.addChild(new Label("class", getTitleModel()));
+		pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
 		return pageHeader;
 	}
 	

@@ -122,8 +122,8 @@ public class OPropertyPage extends OrienteerBasePage<OProperty>
 	@Override
 	protected Component newPageHeaderComponent(String componentId) {
 		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
-		pageHeader.addChild(new OClassViewPanel("class", new PropertyModel<OClass>(getModel(), "ownerClass")));
-		pageHeader.addChild(new Label("property", getTitleModel()));
+		pageHeader.addChild(new OClassViewPanel(pageHeader.newChildId(), new PropertyModel<OClass>(getModel(), "ownerClass")));
+		pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
 		return pageHeader;
 	}
 }
