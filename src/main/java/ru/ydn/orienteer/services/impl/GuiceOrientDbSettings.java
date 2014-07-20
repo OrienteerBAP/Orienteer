@@ -14,17 +14,6 @@ public class GuiceOrientDbSettings extends OrientDbSettings
 		super.setDBUrl(url);
 	}
 
-	@Inject
-	@Override
-	public void setDefaultUserName(@Named("orientdb.default.username")String userName) {
-		super.setDefaultUserName(userName);
-	}
-
-	@Inject
-	@Override
-	public void setDefaultUserPassword(@Named("orientdb.default.password")String password) {
-		super.setDefaultUserPassword(password);
-	}
 
 	@Inject
 	@Override
