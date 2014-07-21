@@ -10,6 +10,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.EditCommand;
+import ru.ydn.orienteer.components.commands.EditODocumentCommand;
 import ru.ydn.orienteer.components.commands.SaveODocumentCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
@@ -80,8 +81,8 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		propertiesStructureTable.addCommand(new EditCommand<ODocument>(propertiesStructureTable.getCommandsToolbar(), displayMode));
-		propertiesStructureTable.addCommand(new SaveODocumentCommand(propertiesStructureTable.getCommandsToolbar(), displayMode, getModel()));
+		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayMode));
+		propertiesStructureTable.addCommand(new SaveODocumentCommand(propertiesStructureTable, displayMode));
 	}
 
 	@Override

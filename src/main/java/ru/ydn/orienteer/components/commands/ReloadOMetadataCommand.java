@@ -5,11 +5,15 @@ import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.model.ResourceModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+@RequiredOrientResource(value = ODatabaseSecurityResources.SERVER_ADMIN, permissions=OrientPermission.READ)
 public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 {
 	

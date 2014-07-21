@@ -68,7 +68,7 @@ public class BrowseClassPage extends OrienteerBasePage<OClass>
 		
 		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject()), provider, 20);
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
-		table.addCommand(new DeleteODocumentCommand(table));
+		table.addCommand(new DeleteODocumentCommand(table, getModel()));
 		form.add(table);
 		add(form);
 	}

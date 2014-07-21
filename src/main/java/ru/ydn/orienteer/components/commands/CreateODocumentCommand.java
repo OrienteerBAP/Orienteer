@@ -25,9 +25,9 @@ public class CreateODocumentCommand extends AbstractCreateCommand<ODocument> imp
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public IModel<OClass> classModel;
-	public IModel<ODocument> documentModel;
-	public IModel<OProperty> propertyModel;
+	private IModel<OClass> classModel;
+	private IModel<ODocument> documentModel;
+	private IModel<OProperty> propertyModel;
 	
 	public CreateODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel) {
 		super(table);

@@ -4,11 +4,15 @@ import java.util.List;
 
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.index.OIndexManager;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 
+@RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.DELETE)
 public class DeleteOIndexCommand extends AbstractDeleteCommand<OIndex<?>>
 {
 	private OIndexManager indexManager;
