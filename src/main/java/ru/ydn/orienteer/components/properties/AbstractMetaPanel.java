@@ -3,11 +3,15 @@ package ru.ydn.orienteer.components.properties;
 import java.io.Serializable;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
+import org.apache.wicket.util.visit.ClassVisitFilter;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 
 import ru.ydn.orienteer.services.IMarkupProvider;
 
@@ -82,6 +86,34 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 			labelModel = newLabelModel();
 		}
 		return labelModel;
+	}
+	
+	public IMetaContext getMetaContext()
+	{
+		return (IMetaContext) visitParents(MarkupContainer.class, new IVisitor<MarkupContainer, IMetaContext>() {
+
+			@Override
+			public void component(MarkupContainer object,
+					IVisit<IMetaContext> visit) {
+				visit.stop((IMetaContext)object);
+			}
+		}, new ClassVisitFilter(IMetaContext.class));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <K extends AbstractMetaPanel<?, ?, ?>> K getMetaComponent(IMetaContext<?> context, final Object critery)
+	{
+		return (K)context.getContextComponent()
+						.visitChildren(AbstractMetaPanel.class, new IVisitor<AbstractMetaPanel<?, ?, ?>, AbstractMetaPanel<?, ?, ?>>() {
+
+							@Override
+							public void component(
+									AbstractMetaPanel<?, ?, ?> object,
+									IVisit<AbstractMetaPanel<?, ?, ?>> visit) {
+								if(Objects.isEqual(object.getPropertyObject(), critery)) visit.stop(object);
+								else visit.dontGoDeeper();
+							}
+		});
 	}
 
 	protected abstract IModel<String> newLabelModel();

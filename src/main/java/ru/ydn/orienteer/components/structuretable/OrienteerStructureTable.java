@@ -5,9 +5,13 @@ import java.util.List;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.commands.Command;
+import ru.ydn.orienteer.components.properties.AbstractMetaPanel;
+import ru.ydn.orienteer.components.properties.IMetaContext;
 
-public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
+public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C> implements IMetaContext<C>
 {
+
+
 	/**
 	 * 
 	 */
@@ -46,6 +50,16 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	{
 		super.setCaptionModel(captionModel);
 		return this;
+	}
+	
+	@Override
+	public OrienteerStructureTable<T, C> getContextComponent() {
+		return this;
+	}
+	
+	@Override
+	public <K extends AbstractMetaPanel<?, C, ?>> K getMetaComponent(C critery) {
+		return AbstractMetaPanel.getMetaComponent(this, critery);
 	}
 
 }
