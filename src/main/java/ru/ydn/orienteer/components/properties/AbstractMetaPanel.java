@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.model.IModel;
@@ -35,6 +36,8 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	@Inject
 	private IMarkupProvider markupProvider;
 	
+	private Component component;
+	
 	
 	
 	public AbstractMetaPanel(String id, IModel<T> entityModel,
@@ -58,11 +61,12 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		if(!newSignature.equals(stateSignature) || get(PANEL_ID)==null)
 		{
 			stateSignature = newSignature;
-			Component component = resolveComponent(PANEL_ID, critery);
+			component = resolveComponent(PANEL_ID, critery);
 			if(component instanceof LabeledWebMarkupContainer)
 			{
 				((LabeledWebMarkupContainer)component).setLabel(getLabel());
 			}
+//			component.setOutputMarkupId(true);
 			addOrReplace(component);
 		}
 	}
@@ -88,22 +92,55 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		return labelModel;
 	}
 	
-	public IMetaContext getMetaContext()
+	@SuppressWarnings("unchecked")
+	public IMetaContext<C> getMetaContext()
 	{
-		return (IMetaContext) visitParents(MarkupContainer.class, new IVisitor<MarkupContainer, IMetaContext>() {
+		return (IMetaContext<C>) visitParents(MarkupContainer.class, new IVisitor<MarkupContainer, IMetaContext<C>>() {
 
 			@Override
 			public void component(MarkupContainer object,
-					IVisit<IMetaContext> visit) {
-				visit.stop((IMetaContext)object);
+					IVisit<IMetaContext<C>> visit) {
+				visit.stop((IMetaContext<C>)object);
 			}
 		}, new ClassVisitFilter(IMetaContext.class));
+	}
+	
+	public <V2> AbstractMetaPanel<T, C, V2> getMetaComponent(C critery)
+	{
+		return getMetaComponent(getMetaContext(), critery);
+	}
+	
+	public <V2> V2 getMetaComponentValue(C critery)
+	{
+		AbstractMetaPanel<T, C, V2> otherMetaPanel = getMetaComponent(critery);
+		return otherMetaPanel!=null?otherMetaPanel.getValueObject():null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public V getEnteredValue()
+	{
+		if(component instanceof FormComponent)
+		{
+			return ((FormComponent<V>)component).getConvertedInput();
+		}
+		else
+		{
+			return getValueObject();
+		}
+	}
+	
+	public <V2> V2 getMetaComponentEnteredValue(C critery)
+	{
+		AbstractMetaPanel<T, C, V2> otherMetaPanel = getMetaComponent(critery);
+		if(otherMetaPanel==null) return null;
+		return otherMetaPanel!=null?otherMetaPanel.getEnteredValue():null;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public static <K extends AbstractMetaPanel<?, ?, ?>> K getMetaComponent(IMetaContext<?> context, final Object critery)
 	{
-		return (K)context.getContextComponent()
+		if(context==null || critery==null) return null;
+		else return (K)context.getContextComponent()
 						.visitChildren(AbstractMetaPanel.class, new IVisitor<AbstractMetaPanel<?, ?, ?>, AbstractMetaPanel<?, ?, ?>>() {
 
 							@Override

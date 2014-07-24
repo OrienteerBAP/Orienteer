@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -125,6 +127,17 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			PropertyResolver.setValue(critery, entity, value, null);
 		}
 	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		String critery = getPropertyObject();
+		if("type".equals(critery))
+		{
+			OType oType = (OType)getEnteredValue();
+			getMetaComponent("linkedClass").setVisibilityAllowed(oType!=null && oType.isLink());
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -153,7 +166,21 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else if("type".equals(critery))
 			{
-				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values())).setRequired(true);
+				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values()))
+						.setRequired(true)
+						.add(new OnChangeAjaxBehavior() {
+							
+							@Override
+							protected void onUpdate(AjaxRequestTarget target) {
+								target.add(OPropertyMetaPanel.this.getMetaContext().getContextComponent());
+							}
+
+							@Override
+							protected boolean getUpdateModel() {
+								return false;
+							}
+							
+						});
 			}
 			else if("linkedType".equals(critery))
 			{
