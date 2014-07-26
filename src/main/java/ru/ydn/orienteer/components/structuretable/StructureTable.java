@@ -24,6 +24,8 @@ import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 
+import ru.ydn.orienteer.behavior.SyncVisibilityBehaviour;
+
 public abstract class StructureTable<T, C> extends GenericPanel<T> 
 {
 	/**
@@ -64,11 +66,12 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 				IModel<C> rowModel = item.getModel();
 				Component value = getValueComponent(VALUE_CELL_ID, rowModel);
 				if(!VALUE_CELL_ID.equals(value.getId())) throw new WicketRuntimeException("Wrong component id '"+value.getId()+"'. Should be '"+VALUE_CELL_ID+"'.");
-				
+				item.add(new SyncVisibilityBehaviour(value));
 				Component label = getLabelComponent(LABEL_CELL_ID, rowModel, getLabelModel(value, rowModel));
 				if(!LABEL_CELL_ID.equals(label.getId())) throw new WicketRuntimeException("Wrong component id '"+label.getId()+"'. Should be '"+LABEL_CELL_ID+"'.");
 				item.add(label, value);
 			}
+
 		};
 		listView.setReuseItems(true);
 		add(listView);
