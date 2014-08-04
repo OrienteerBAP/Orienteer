@@ -175,10 +175,12 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 								target.add(OPropertyMetaPanel.this.getMetaContext().getContextComponent());
 							}
 
+							/*
+							 TODO: Comment this till fix of WICKET-5658
 							@Override
 							protected boolean getUpdateModel() {
 								return false;
-							}
+							}*/
 							
 						});
 			}

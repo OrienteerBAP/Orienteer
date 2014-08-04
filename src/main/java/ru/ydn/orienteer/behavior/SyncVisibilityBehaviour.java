@@ -16,7 +16,7 @@ public class SyncVisibilityBehaviour extends Behavior
 	public void onConfigure(Component component) {
 		super.onConfigure(component);
 		sourceComponent.configure();
-		component.setVisibilityAllowed(component.isVisibilityAllowed() && sourceComponent.determineVisibility());
+		component.setVisible(sourceComponent.determineVisibility());
 	}
 	
 	
