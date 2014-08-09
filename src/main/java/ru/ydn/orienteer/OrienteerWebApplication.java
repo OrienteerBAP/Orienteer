@@ -1,9 +1,14 @@
 package ru.ydn.orienteer;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
+import ru.ydn.orienteer.modules.IOrienteerModule;
+import ru.ydn.orienteer.modules.ModuledDataInstallator;
 import ru.ydn.orienteer.web.LoginPage;
 import ru.ydn.orienteer.web.schema.ListOClassesPage;
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
@@ -25,6 +30,7 @@ import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 public class OrienteerWebApplication extends OrientDbWebApplication
 {
 	private boolean embedded;
+	private Map<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	
 	@Inject
 	public OrienteerWebApplication(@Named("orientdb.embedded") boolean embedded)
@@ -58,6 +64,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
+		getApplicationListeners().add(new ModuledDataInstallator());
 	}
 
 	@Override
@@ -78,6 +85,15 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public ODatabaseRecord getDatabase()
 	{
 		return OrientDbWebSession.get().getDatabase();
+	}
+
+	public Map<String, IOrienteerModule> getRegisteredModules() {
+		return registeredModules;
+	}
+	
+	public void registerModule(IOrienteerModule module)
+	{
+		registeredModules.put(module.getName(), module);
 	}
 	
 }

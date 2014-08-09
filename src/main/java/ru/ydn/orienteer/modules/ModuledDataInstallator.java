@@ -1,34 +1,36 @@
-package ru.ydn.orienteer;
+package ru.ydn.orienteer.modules;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.wicket.Application;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.exception.OTransactionException;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.wicket.wicketorientdb.AbstractDataInstallator;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 public class ModuledDataInstallator extends AbstractDataInstallator
 {
+	private static final Logger LOG = LoggerFactory.getLogger(ModuledDataInstallator.class);
 	private static final String OMODULE_CLASS = "OModule";
 	private static final String OMODULE_NAME = "name";
 	private static final String OMODULE_VERSION = "version";
 	
-	private Map<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
-	
-	public void registerModule(IOrienteerModule module)
-	{
-		registeredModules.put(module.getName(), module);
-	}
-	
 	@Override
-	protected void installData(ODatabaseRecord database) {
+	protected void installData(OrientDbWebApplication application, ODatabaseRecord database) {
+		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		ODatabaseDocument db = (ODatabaseDocument)database;
 		OSchema schema = db.getMetadata().getSchema();
 		OClass oModuleClass = schema.getClass(OMODULE_CLASS);
@@ -50,7 +52,7 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 			installedModules.put((String)doc.field(OMODULE_NAME), (Integer)doc.field(OMODULE_VERSION, Integer.class));
 		}
 		
-		for(Map.Entry<String, IOrienteerModule> entry: registeredModules.entrySet())
+		for(Map.Entry<String, IOrienteerModule> entry: app.getRegisteredModules().entrySet())
 		{
 			String name = entry.getKey();
 			IOrienteerModule module = entry.getValue();
@@ -64,7 +66,37 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 			{
 				module.onUpdate(db, oldVersion, version);
 			}
+			module.onInitialize(app, db);
 		}
 	}
+
+	@Override
+	public void onBeforeDestroyed(Application application) {
+		super.onBeforeDestroyed(application);
+		OrienteerWebApplication app = (OrienteerWebApplication)application;
+		ODatabaseDocument db = (ODatabaseDocument)getDatabase(app);
+		try
+		{
+			for(IOrienteerModule module: app.getRegisteredModules().values())
+			{
+				try
+				{
+					db.begin();
+					module.onDestroy(app, db);
+					db.commit();
+				} catch (Exception e)
+				{
+					LOG.error("Exception during destroying module '"+module.getName()+"'", e);
+					db.rollback();
+				}
+			}
+		} 
+		finally
+		{
+			db.close();
+		}
+	}
+	
+	
 
 }
