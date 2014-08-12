@@ -60,11 +60,11 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 			Integer oldVersion = installedModules.get(name);
 			if(oldVersion==null)
 			{
-				module.onInstall(db);
+				module.onInstall(app, db);
 			}
 			else if(!oldVersion.equals(version))
 			{
-				module.onUpdate(db, oldVersion, version);
+				module.onUpdate(app, db, oldVersion, version);
 			}
 			module.onInitialize(app, db);
 		}

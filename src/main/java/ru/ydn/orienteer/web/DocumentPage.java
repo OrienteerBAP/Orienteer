@@ -3,22 +3,27 @@ package ru.ydn.orienteer.web;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.ODocumentPageHeader;
+import ru.ydn.orienteer.components.SchemaPageHeader;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.EditODocumentCommand;
 import ru.ydn.orienteer.components.commands.SaveODocumentCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.OClassViewPanel;
 import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.model.DocumentNameModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -90,7 +95,10 @@ public class DocumentPage extends AbstractDocumentPage {
 		return new DocumentNameModel(getDocumentModel());
 	}
 	
-	
+	@Override
+	protected Component newPageHeaderComponent(String componentId) {
+		return new ODocumentPageHeader(componentId, getModel());
+	}
 	
 	
 

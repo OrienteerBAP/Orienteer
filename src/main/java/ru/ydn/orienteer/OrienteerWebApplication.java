@@ -96,4 +96,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registeredModules.put(module.getName(), module);
 	}
 	
+	public IOrienteerModule getModuleByName(String name)
+	{
+		return registeredModules.get(name);
+	}
+	
 }

@@ -12,4 +12,6 @@ public interface IOClassIntrospector
 {
 	public List<OProperty> getDisplayableProperties(OClass oClass);
 	public List<IColumn<ODocument, String>>  getColumnsFor(OClass oClass);
+	public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown);
+	public ODocument getParent(ODocument doc);
 }
