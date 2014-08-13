@@ -38,7 +38,10 @@ public enum CustomAttributes
 	/**
 	 * Name of property which is storing link to a parent entity
 	 */
-	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class);
+	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class),
+	
+	VIEW_COMPONENT("orienteer.component.view", OType.STRING),
+	EDIT_COMPONENT("orienteer.component.edit", OType.STRING);
 	
 	private final String name;
 	private final OType type;

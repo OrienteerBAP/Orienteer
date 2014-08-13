@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
+import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
 import ru.ydn.orienteer.modules.IOrienteerModule;
 import ru.ydn.orienteer.modules.ModuledDataInstallator;
 import ru.ydn.orienteer.web.LoginPage;
@@ -43,6 +45,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void setOrientDbSettings(IOrientDbSettings orientDbSettings) {
 		super.setOrientDbSettings(orientDbSettings);
 	}
+	
+	public static OrienteerWebApplication get()
+    {
+        return (OrienteerWebApplication) WebApplication.get();
+    }
 
 	@Override
 	public Class<? extends WebPage> getHomePage()
@@ -99,6 +106,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public IOrienteerModule getModuleByName(String name)
 	{
 		return registeredModules.get(name);
+	}
+	
+	public UIComponentsRegistry getUIComponentsRegistry()
+	{
+		return getServiceInstance(UIComponentsRegistry.class);
 	}
 	
 }

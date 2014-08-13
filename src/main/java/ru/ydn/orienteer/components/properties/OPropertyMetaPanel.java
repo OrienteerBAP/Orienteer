@@ -26,6 +26,7 @@ import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidator;
 
 import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
@@ -50,6 +51,8 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>(OPropertyPrototyper.OPROPERTY_ATTRS);
 	static
 	{
+		OPROPERTY_ATTRS.add(CustomAttributes.VIEW_COMPONENT.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.EDIT_COMPONENT.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.DISPLAYABLE.getName());
@@ -222,7 +225,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else
 			{
-				CustomAttributes customAttr = CustomAttributes.fromString(critery);
+				final CustomAttributes customAttr = CustomAttributes.fromString(critery);
 				if(customAttr!=null)
 				{
 					switch (customAttr) {
@@ -235,6 +238,29 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 						return new TextField<V>(id, getModel()).setType(Integer.class);
 					case TAB:
 						return new TextField<V>(id, getModel());
+					case VIEW_COMPONENT:
+					case EDIT_COMPONENT:
+						return new DropDownChoice<String>(id,  (IModel<String>)getModel(), new LoadableDetachableModel<List<String>>() {
+								@Override
+								protected List<String> load() {
+									OType type = getMetaComponentEnteredValue(OPropertyPrototyper.TYPE);
+									DisplayMode mode = CustomAttributes.VIEW_COMPONENT.equals(customAttr)?DisplayMode.VIEW:DisplayMode.EDIT;
+									UIComponentsRegistry registry = OrienteerWebApplication.get().getUIComponentsRegistry();
+									return registry.getComponentsOptions(mode, type);
+								}
+							})
+						{
+
+							private static final long serialVersionUID = 1L;
+
+							@Override
+							protected void onConfigure() {
+								super.onConfigure();
+								List<?> choices = getChoices();
+								setVisible(choices!=null && choices.size()>0);
+							}
+							
+						};
 					}
 				}
 				return resolveComponent(id, DisplayMode.VIEW, critery);

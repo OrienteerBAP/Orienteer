@@ -9,6 +9,8 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 
+import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
@@ -50,6 +52,12 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 		OType oType = property.getType();
 		if(DisplayMode.VIEW.equals(mode))
 		{
+			String viewComponent = CustomAttributes.VIEW_COMPONENT.getValue(property);
+			if(viewComponent!=null)
+			{
+				UIComponentsRegistry.IUIComponentFactory factory = OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(mode, oType, viewComponent);
+				if(factory!=null) return factory.createComponent(id, getModel());
+			}
 			switch(oType)
 			{
 				case LINK:
@@ -63,6 +71,12 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 		}
 		else if(DisplayMode.EDIT.equals(mode))
 		{
+			String editComponent = CustomAttributes.EDIT_COMPONENT.getValue(property);
+			if(editComponent!=null)
+			{
+				UIComponentsRegistry.IUIComponentFactory factory = OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(mode, oType, editComponent);
+				if(factory!=null) return factory.createComponent(id, getModel());
+			}
 			switch(oType)
 			{
 				case BOOLEAN:
