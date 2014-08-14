@@ -44,7 +44,7 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 							protected boolean isLinkEnabled() {
 								return !Objects.isEqual(getModelObject(), ODocumentPageHeader.this.getModelObject());
 							}
-						});
+						}.setDocumentNameAsBody(true));
 			}
 		});
 	}

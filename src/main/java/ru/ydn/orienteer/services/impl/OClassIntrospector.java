@@ -93,8 +93,8 @@ public class OClassIntrospector implements IOClassIntrospector
 	public ODocument getParent(ODocument doc) {
 		if(doc==null || doc.getSchemaClass()==null) return null;
 		OClass oClass = doc.getSchemaClass();
-		String parent = CustomAttributes.PROP_PARENT.getValue(oClass);
-		if(parent!=null) return doc.field(parent);
+		OProperty parent = CustomAttributes.PROP_PARENT.getValue(oClass);
+		if(parent!=null) return doc.field(parent.getName());
 		else return null;
 	}
 

@@ -36,6 +36,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	private static final long serialVersionUID = 1L;
 
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
+	private SaveODocumentCommand saveODocumentCommand;
 	
 	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
 	
@@ -87,7 +88,22 @@ public class DocumentPage extends AbstractDocumentPage {
 	protected void onInitialize() {
 		super.onInitialize();
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayMode));
-		propertiesStructureTable.addCommand(new SaveODocumentCommand(propertiesStructureTable, displayMode));
+		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, displayMode));
+	}
+	
+	
+
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		if(DisplayMode.EDIT.equals(displayMode.getObject()))
+		{
+			saveODocumentCommand.configure();
+			if(!saveODocumentCommand.determineVisibility())
+			{
+				displayMode.setObject(DisplayMode.VIEW);
+			}
+		}
 	}
 
 	@Override
