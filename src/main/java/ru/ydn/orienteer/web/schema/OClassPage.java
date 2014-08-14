@@ -38,6 +38,7 @@ import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OClassColumn;
+import ru.ydn.orienteer.components.table.OEntityColumn;
 import ru.ydn.orienteer.components.table.OIndexDefinitionColumn;
 import ru.ydn.orienteer.components.table.OIndexMetaColumn;
 import ru.ydn.orienteer.components.table.OPropertyDefinitionColumn;
@@ -48,6 +49,7 @@ import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
@@ -60,6 +62,8 @@ import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORole;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @MountPath("/class/${className}")
 @RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
@@ -173,6 +177,16 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		iTable.addCommand(new DeleteOIndexCommand(iTable));
 		iTable.setCaptionModel(new ResourceModel("class.indexies"));
 		form.add(iTable);
+		
+		List<IColumn<ORole, String>> sColumns = new ArrayList<IColumn<ORole,String>>();
+		sColumns.add(new OEntityColumn<ORole>("ORole", "document"));
+		
+		OQueryDataProvider<ORole> sProvider = new OQueryDataProvider<ORole>("select from ORole", ORole.class);
+		sProvider.setSort("name", SortOrder.ASCENDING);
+		OrienteerDataTable<ORole, String> sTable = new OrienteerDataTable<ORole, String>("security", sColumns, sProvider ,20);
+		sTable.setCaptionModel(new ResourceModel("class.security"));
+		form.add(sTable);
+		
 		add(form);
 	
 	}
