@@ -7,12 +7,17 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
+import org.apache.wicket.extensions.model.AbstractCheckBoxModel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -22,7 +27,10 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.BootstrapType;
+import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.SchemaPageHeader;
+import ru.ydn.orienteer.components.commands.AjaxFormCommand;
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.CreateOIndexFromOPropertiesCommand;
 import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
@@ -32,6 +40,7 @@ import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
 import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
+import ru.ydn.orienteer.components.properties.BooleanEditPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
@@ -46,6 +55,7 @@ import ru.ydn.orienteer.components.table.OPropertyMetaColumn;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.EnumNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
@@ -68,6 +78,54 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @MountPath("/class/${className}")
 @RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
 public class OClassPage extends OrienteerBasePage<OClass> {
+	
+	private class SecurityRightsColumn extends AbstractColumn<ORole, String>
+	{
+		private final OrientPermission permission;
+		public SecurityRightsColumn(OrientPermission permission)
+		{
+			super(new EnumNamingModel<OrientPermission>(permission));
+			this.permission = permission;
+		}
+
+		@Override
+		public void populateItem(Item<ICellPopulator<ORole>> cellItem,
+				String componentId, IModel<ORole> rowModel) {
+			cellItem.add(new BooleanEditPanel(componentId, getSecurityRightsModel(rowModel)));
+		}
+		
+		protected IModel<Boolean> getSecurityRightsModel(final IModel<ORole> rowModel)
+		{
+			return new AbstractCheckBoxModel() {
+				
+				@Override
+				public void unselect() {
+					ORole oRole = rowModel.getObject();
+					oRole.revoke(getSecurityResource(), permission.getPermissionFlag());
+					oRole.save();
+				}
+				
+				@Override
+				public void select() {
+					ORole oRole = rowModel.getObject();
+					oRole.grant(getSecurityResource(), permission.getPermissionFlag());
+					oRole.save();
+				}
+				
+				@Override
+				public boolean isSelected() {
+					ORole oRole = rowModel.getObject();
+					return oRole.allow(getSecurityResource(), permission.getPermissionFlag());
+				}
+				
+				private String getSecurityResource()
+				{
+					return ODatabaseSecurityResources.CLASS+"."+OClassPage.this.getModelObject().getName();
+				}
+			};
+		}
+		
+	}
 	/**
 	 * 
 	 */
@@ -177,17 +235,24 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		iTable.addCommand(new DeleteOIndexCommand(iTable));
 		iTable.setCaptionModel(new ResourceModel("class.indexies"));
 		form.add(iTable);
+		add(form);
+		
+		Form<OClass> sForm = new Form<OClass>("sForm");
 		
 		List<IColumn<ORole, String>> sColumns = new ArrayList<IColumn<ORole,String>>();
 		sColumns.add(new OEntityColumn<ORole>("ORole", "document"));
+		sColumns.add(new SecurityRightsColumn(OrientPermission.CREATE));
+		sColumns.add(new SecurityRightsColumn(OrientPermission.READ));
+		sColumns.add(new SecurityRightsColumn(OrientPermission.UPDATE));
+		sColumns.add(new SecurityRightsColumn(OrientPermission.DELETE));
 		
 		OQueryDataProvider<ORole> sProvider = new OQueryDataProvider<ORole>("select from ORole", ORole.class);
 		sProvider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<ORole, String> sTable = new OrienteerDataTable<ORole, String>("security", sColumns, sProvider ,20);
+		sTable.addCommand(new AjaxFormCommand<ORole>(new ResourceModel("command.save"), sTable).setBootstrapType(BootstrapType.PRIMARY).setIcon(FAIconType.save));
 		sTable.setCaptionModel(new ResourceModel("class.security"));
-		form.add(sTable);
-		
-		add(form);
+		sForm.add(sTable);
+		add(sForm);
 	
 	}
 
