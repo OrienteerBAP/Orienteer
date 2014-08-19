@@ -220,6 +220,33 @@
 					</connectors>
 				</configuration>
 			</plugin>
+			<!-- <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-war-plugin</artifactId>
+		        <version>2.4</version>
+		        <configuration>
+			        <archive>
+			            <manifest>
+			            	<addClasspath>true</addClasspath>
+			              <mainClass>ru.ydn.orienteer.StartStandalone</mainClass>
+			            </manifest>
+			          </archive>
+		        </configuration>
+      		</plugin> -->
+      		<!-- <plugin>
+		      <artifactId>maven-assembly-plugin</artifactId>
+		      <configuration>
+		        <archive>
+		          <manifest>
+		            <addClasspath>true</addClasspath>
+		            <mainClass>ru.ydn.orienteer.StartStandalone</mainClass>
+		          </manifest>
+		        </archive>
+		        <descriptorRefs>
+		          <descriptorRef>jar-with-dependencies</descriptorRef>
+		        </descriptorRefs>
+		      </configuration>
+		    </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -231,6 +258,43 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>standalone</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.eclipse.jetty.aggregate</groupId>
+					<artifactId>jetty-all-server</artifactId>
+					<version>${jetty.version}</version>
+					<scope>compile</scope>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+		                <groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-war-plugin</artifactId>
+		                <version>2.4</version>
+		                <configuration>
+		                    <archive>
+		                        <manifest>
+		                            <mainClass>ru.ydn.orienteer.StartStandalone</mainClass>
+		                        </manifest>
+		                    </archive>
+		                    <packagingExcludes>WEB-INF/lib/jetty-*.jar,WEB-INF/lib/*EmbeddedJetty*.jar</packagingExcludes>
+		                    <overlays>
+		                        <overlay>
+		                            <groupId>org.eclipse.jetty.aggregate</groupId>
+		                            <artifactId>jetty-all-server</artifactId>
+		                            <type>jar</type>
+		                        </overlay>
+		                    </overlays>
+		                </configuration>
+		            </plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<repositories>
 		<repository>
