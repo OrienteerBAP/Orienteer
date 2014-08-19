@@ -44,7 +44,8 @@
 		<wicket.version>6.16.0</wicket.version>
 		<wicketstuff.version>6.16.0</wicketstuff.version>
 		<orientdb.version>1.7.4</orientdb.version>
-		<jetty.version>7.6.13.v20130916</jetty.version>
+		<!-- <jetty.version>7.6.13.v20130916</jetty.version> -->
+		<jetty.version>7.6.15.v20140411</jetty.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
@@ -268,6 +269,11 @@
 					<version>${jetty.version}</version>
 					<scope>compile</scope>
 				</dependency>
+				<dependency>
+		            <groupId>javax.servlet</groupId>
+		            <artifactId>servlet-api</artifactId>
+		            <version>2.5</version>
+		        </dependency>
 			</dependencies>
 			<build>
 				<plugins>
@@ -276,21 +282,50 @@
 		                <artifactId>maven-war-plugin</artifactId>
 		                <version>2.4</version>
 		                <configuration>
+	                    	<webResources>
+	                    		<resource>
+	                    			<directory>target/classes/ru/ydn/orienteer/standalone</directory>
+	                    			<targetPath>ru/ydn/orienteer/standalone/</targetPath>
+	                    		</resource>
+	                    	</webResources>
 		                    <archive>
 		                        <manifest>
-		                            <mainClass>ru.ydn.orienteer.StartStandalone</mainClass>
+		                            <mainClass>ru.ydn.orienteer.standalone.StartStandalone</mainClass>
 		                        </manifest>
 		                    </archive>
-		                    <packagingExcludes>WEB-INF/lib/jetty-*.jar,WEB-INF/lib/*EmbeddedJetty*.jar</packagingExcludes>
+		                    <packagingExcludes>WEB-INF/lib/jetty-*.jar,WEB-INF/lib/*EmbeddedJetty*.jar,WEB-INF/lib/javax.servlet*.jar</packagingExcludes>
 		                    <overlays>
 		                        <overlay>
 		                            <groupId>org.eclipse.jetty.aggregate</groupId>
 		                            <artifactId>jetty-all-server</artifactId>
 		                            <type>jar</type>
 		                        </overlay>
+		                        <overlay>
+		                            <groupId>javax.servlet</groupId>
+		            				<artifactId>servlet-api</artifactId>
+		                            <type>jar</type>
+		                        </overlay>
 		                    </overlays>
 		                </configuration>
 		            </plugin>
+<!-- 		            <plugin>
+				        <artifactId>maven-antrun-plugin</artifactId>
+				        <version>1.7</version>
+				        <executions>
+				          <execution>
+				            <phase>prepare-package</phase>
+				            <configuration>
+				              <target>
+								<echo>Coping of main class</echo>
+								<copy file="target/classes/ru/ydn/orienteer/StartStandalone.class" todir="target/war/"/>
+				              </target>
+				            </configuration>
+				            <goals>
+				              <goal>run</goal>
+				            </goals>
+				          </execution>
+				        </executions>
+				      </plugin> -->
 				</plugins>
 			</build>
 		</profile>

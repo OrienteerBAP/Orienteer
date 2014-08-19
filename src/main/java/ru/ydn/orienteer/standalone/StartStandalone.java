@@ -1,14 +1,17 @@
-package ru.ydn.orienteer;
+package ru.ydn.orienteer.standalone;
 
-import org.apache.wicket.util.time.Duration;
+import java.net.URL;
+import java.security.ProtectionDomain;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 public class StartStandalone
 {
     public static void main(String[] args) throws Exception {
-        int timeout = (int) Duration.ONE_HOUR.getMilliseconds();
+        int timeout = 60*60*1000;
 
         Server server = new Server();
         SocketConnector connector = new SocketConnector();
@@ -18,11 +21,17 @@ public class StartStandalone
         connector.setSoLingerTime(-1);
         connector.setPort(8080);
         server.addConnector(connector);
+        Resource.setDefaultUseCaches(false);
 
         WebAppContext bb = new WebAppContext();
         bb.setServer(server);
         bb.setContextPath("/");
-        bb.setWar("src/main/webapp");
+        ProtectionDomain protectionDomain = StartStandalone.class.getProtectionDomain();
+        URL location = protectionDomain.getCodeSource().getLocation();
+        bb.setWar(location.toExternalForm());
+        bb.setExtractWAR(false);
+        bb.setCopyWebInf(true);
+        bb.setCopyWebDir(false);
 
         // START JMX SERVER
         // MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
