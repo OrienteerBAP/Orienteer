@@ -1,9 +1,13 @@
 package ru.ydn.orienteer.services;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URI;
+import java.net.URL;
 import java.util.Properties;
 
 import org.apache.wicket.protocol.http.WebApplication;
@@ -12,6 +16,7 @@ import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
 import ru.ydn.orienteer.services.impl.GuiceOrientDbSettings;
 import ru.ydn.orienteer.services.impl.OClassIntrospector;
+import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 
 import com.google.inject.AbstractModule;
@@ -23,19 +28,18 @@ import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 public class OrienteerModule extends AbstractModule
 {
-	private static final String PROPERTIES_FILE_NAME = "orienteer.properties";
 	@Override
 	protected void configure() {
 		bind(WebApplication.class).to(OrienteerWebApplication.class);
 		final Properties properties = new Properties();
-		File propertiesFile = lookupPropertiesFile();
-		if(propertiesFile==null) throw new ProvisionException("Properties files was not found");
 		try
 		{
-			properties.load(new FileReader(propertiesFile));
+			URL propertiesURL = StartStandalone.lookupPropertiesURL();
+			if(propertiesURL==null) throw new ProvisionException("Properties files was not found");
+			else properties.load(propertiesURL.openStream());
 		} catch (FileNotFoundException e)
 		{
-			throw new ProvisionException("Properties files was not found");
+			throw new ProvisionException("Properties files was not found", e);
 		} catch (IOException e)
 		{
 			throw new ProvisionException("Properties files can't be read", e);
@@ -45,18 +49,6 @@ public class OrienteerModule extends AbstractModule
 		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
 		bind(UIComponentsRegistry.class).asEagerSingleton();
-	}
-	
-	private File lookupPropertiesFile()
-	{
-		File file = new File(PROPERTIES_FILE_NAME);
-		File dir = new File("").getAbsoluteFile();
-		while(!file.exists() && dir!=null)
-		{
-			dir = dir.getParentFile();
-			file = new File(dir, PROPERTIES_FILE_NAME);
-		}
-		return file;
 	}
 	
 	@Provides

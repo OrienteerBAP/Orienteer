@@ -3,6 +3,7 @@ package ru.ydn.orienteer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -11,6 +12,7 @@ import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
 import ru.ydn.orienteer.modules.IOrienteerModule;
 import ru.ydn.orienteer.modules.ModuledDataInstallator;
+import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.orienteer.web.LoginPage;
 import ru.ydn.orienteer.web.schema.ListOClassesPage;
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
@@ -21,7 +23,10 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
+import com.orientechnologies.orient.client.remote.OServerAdmin;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.server.config.OServerUserConfiguration;
 
 /**
  * Application object for your web application.
@@ -35,8 +40,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	private Map<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	
 	@Inject
-	public OrienteerWebApplication(@Named("orientdb.embedded") boolean embedded)
+	public OrienteerWebApplication(@Named("orienteer.production") boolean production, @Named("orientdb.embedded") boolean embedded)
 	{
+		setConfigurationType(production?RuntimeConfigurationType.DEPLOYMENT:RuntimeConfigurationType.DEVELOPMENT);
 		this.embedded = embedded;
 	}
 	
@@ -66,7 +72,21 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		super.init();
 		if(embedded)
 		{
-			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml")));
+			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(StartStandalone.class.getResource("db.config.xml"))
+			{
+
+				@Override
+				public void onAfterServerStartupAndActivation(OrientDbWebApplication app)
+						throws Exception {
+					IOrientDbSettings settings = app.getOrientDbSettings();
+					ODatabaseDocumentTx db = new ODatabaseDocumentTx(settings.getDBUrl());
+					if(!db.exists()) db = db.create();
+					if(db.isClosed()) db.open(settings.getDBInstallatorUserName(), settings.getDBInstallatorUserPassword());
+					db.getMetadata().load();
+					db.close();
+				}
+				
+			});
 		}
 		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
 		getMarkupSettings().setStripWicketTags(true);

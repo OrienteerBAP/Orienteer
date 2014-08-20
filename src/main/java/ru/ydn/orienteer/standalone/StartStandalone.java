@@ -1,56 +1,131 @@
 package ru.ydn.orienteer.standalone;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.security.ProtectionDomain;
-
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.webapp.WebAppContext;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StartStandalone
 {
+	private static final Pattern ARG_PATTERN=Pattern.compile("^--([^=]*)=?(.*)$");
+	private static final String ARG_CONFIG="config";
+	private static final String ARG_EMBEDDED="embedded";
+	private static final String ARG_PORT="port";
+	private static final String ARG_HELP="help";
+	
     public static void main(String[] args) throws Exception {
-        int timeout = 60*60*1000;
-
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
-
-        // Set some timeout options to make debugging easier.
-        connector.setMaxIdleTime(timeout);
-        connector.setSoLingerTime(-1);
-        connector.setPort(8080);
-        server.addConnector(connector);
-        Resource.setDefaultUseCaches(false);
-
-        WebAppContext bb = new WebAppContext();
-        bb.setServer(server);
-        bb.setContextPath("/");
-        ProtectionDomain protectionDomain = StartStandalone.class.getProtectionDomain();
-        URL location = protectionDomain.getCodeSource().getLocation();
-        bb.setWar(location.toExternalForm());
-        bb.setExtractWAR(false);
-        bb.setCopyWebInf(true);
-        bb.setCopyWebDir(false);
-
-        // START JMX SERVER
-        // MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-        // MBeanContainer mBeanContainer = new MBeanContainer(mBeanServer);
-        // server.getContainer().addEventListener(mBeanContainer);
-        // mBeanContainer.start();
-
-        server.setHandler(bb);
-
-        try {
+    	
+    	Map<String, String> parsedArgs = parseArgs(args);
+    	if(parsedArgs==null || parsedArgs.containsKey(ARG_HELP))
+    	{
+    		printHelp();
+    		return;
+    	}
+    	if(parsedArgs.containsKey(ARG_CONFIG))
+    	{
+    		System.setProperty(PROPERTIES_FILE_NAME, parsedArgs.get(ARG_CONFIG));
+    	}
+    	else if(parsedArgs.containsKey(ARG_EMBEDDED))
+    	{
+    		System.setProperty(PROPERTIES_FILE_NAME, StartStandalone.class.getResource("standalone.properties").toString());
+    	}
+    	else
+    	{
+    		URL url = StartStandalone.lookupPropertiesURL();
+    		if(url!=null)
+    		{
+    			System.out.println("Automatic lookup found following config file: "+url);
+    			System.setProperty(PROPERTIES_FILE_NAME, url.toString());
+    		}
+    		else
+    		{
+    			System.out.println("Using embedded mode");
+    			System.setProperty(PROPERTIES_FILE_NAME, StartStandalone.class.getResource("standalone.properties").toString());
+    		}
+    	}
+    	try {
+    		int port = ServerRunner.DEFAULT_PORT;
+    		String portStr = parsedArgs.get(ARG_PORT);
+    		try
+			{
+				if(portStr!=null) port = Integer.parseInt(portStr);
+			} catch (NumberFormatException e)
+			{
+				System.out.printf("Port '%s' is incorrect. Using default port %i", portStr, port);
+			}
+    		ServerRunner runner = new ServerRunner(port);
             System.out.println("Starting Orienteer, PRESS ANY KEY TO STOP");
-            server.start();
+            runner.start();
             System.in.read();
             System.out.println("Stopping Orienteer");
-            server.stop();
-            server.join();
+            runner.stop();
+            runner.join();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
         }
     }
+    
+    private static Map<String, String> parseArgs(String... args)
+    {
+    	Map<String, String> ret = new HashMap<String, String>();
+    	Matcher matcher;
+    	for(String arg: args)
+    	{
+    		matcher = ARG_PATTERN.matcher(arg);
+    		if(matcher.find())
+    		{
+    			ret.put(matcher.group(1), matcher.group(2));
+    		}
+    		else
+    		{
+    			System.out.printf("Unknown option provided '%s'", arg);
+    			return null;
+    		}
+    	}
+    	return ret;
+    }
+    
+    private static void printHelp()
+    {
+    	ProtectionDomain protectionDomain = StartStandalone.class.getProtectionDomain();
+    	URL location = protectionDomain.getCodeSource().getLocation();
+    	System.out.printf("Usage: java -jar %s [--config=<path> | --embedded] [--port=<port>] [--help]", location.getFile());
+    }
+
+	public static URL lookupPropertiesURL() throws IOException
+	{
+		String configFile = System.getProperty(StartStandalone.PROPERTIES_FILE_NAME);
+		if(configFile!=null)
+		{
+			File file = new File(configFile);
+			if(file.exists())
+			{
+				return file.toURI().toURL();
+			}
+			else
+			{
+				URL url = StartStandalone.class.getClassLoader().getResource(configFile);
+				if(url!=null) return url;
+				else return new URL(configFile);
+			}
+		}
+		else
+		{
+			File file = new File(StartStandalone.PROPERTIES_FILE_NAME);
+			File dir = new File("").getAbsoluteFile();
+			while(!file.exists() && dir!=null)
+			{
+				dir = dir.getParentFile();
+				file = new File(dir, StartStandalone.PROPERTIES_FILE_NAME);
+			}
+			return file!=null?file.toURI().toURL():null;
+		}
+	}
+
+	public static final String PROPERTIES_FILE_NAME = "orienteer.properties";
 }
