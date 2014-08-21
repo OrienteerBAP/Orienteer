@@ -69,7 +69,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Override
 	public void init()
 	{
-		super.init();
 		if(embedded)
 		{
 			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(StartStandalone.class.getResource("db.config.xml"))
@@ -88,6 +87,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 				
 			});
 		}
+		super.init();
 		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);

@@ -123,7 +123,7 @@ public class StartStandalone
 				dir = dir.getParentFile();
 				file = new File(dir, StartStandalone.PROPERTIES_FILE_NAME);
 			}
-			return file!=null?file.toURI().toURL():null;
+			return file!=null && file.exists() ?file.toURI().toURL():null;
 		}
 	}
 
