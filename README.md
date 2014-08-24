@@ -1,12 +1,20 @@
 Orienteer
 =========
 
-Extreemly powerfull Data Warehouse system based on OrientDB
+Extremely powerfull Data Warehouse system based on OrientDB.
 
-Installation
-------------
-Orienteer is in early better: that's why installation is a little bit complicated.
+Demo
+----
+[Link to Demo server](http://ydn.ru:8081)
+Default users:
+admin/admin
+reader/reader
+writer/writer
 
+Demo might be unavailable. Please consider to use localbuild and run.
+
+Development version installation steps
+--------------------------------------
 ### Prerequisetes
 1. java 6+
 2. git
