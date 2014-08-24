@@ -1,7 +1,9 @@
 package ru.ydn.orienteer.standalone;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ public class StartStandalone
 	private static final String ARG_EMBEDDED="embedded";
 	private static final String ARG_PORT="port";
 	private static final String ARG_HELP="help";
+	private static final String ARG_WAIT="wait";
 	
     public static void main(String[] args) throws Exception {
     	
@@ -60,7 +63,21 @@ public class StartStandalone
     		ServerRunner runner = new ServerRunner(port);
             System.out.println("Starting Orienteer, PRESS ANY KEY TO STOP");
             runner.start();
-            System.in.read();
+            String wait = parsedArgs.get(ARG_WAIT);
+            if(wait==null || wait.trim().length()==0)
+            {
+            	System.in.read();
+            }
+            else
+            {
+            	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            	String line=reader.readLine();
+            	while(!wait.equals(line))
+            	{
+            		if(line!=null) System.out.printf("Input is '%s'. You should enter '%s' to exit", line, wait);
+            		else Thread.sleep(60000);
+            	}
+            }
             System.out.println("Stopping Orienteer");
             runner.stop();
             runner.join();

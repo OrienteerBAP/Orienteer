@@ -26,12 +26,34 @@
 	<version>1.0-SNAPSHOT</version>
 	<name>Orienteer</name>
 	<description>Orienteer - very flexible data-warehousing system</description>
-	<!--
-		<organization>
-			<name>company name</name>
-			<url>company url</url>
-		</organization>
-	-->
+	<scm>
+	    <url>https://github.com/PhantomYdn/Orienteer</url>
+	    <connection>scm:git:ssh://github.com/PhantomYdn/Orienteer.git</connection>
+	    <developerConnection>scm:git:ssh://git@github.com/PhantomYdn/Orienteer.git</developerConnection>
+	    <tag>HEAD</tag>
+	</scm>
+
+	<issueManagement>
+	    <system>github</system>
+	    <url>https://github.com/PhantomYdn/Orienteer/issues</url>
+	</issueManagement>
+	<distributionManagement>
+	  <snapshotRepository>
+	    <id>ossrh</id>
+	    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	  </snapshotRepository>
+	  <repository>
+	    <id>ossrh</id>
+	    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+	  </repository>
+	</distributionManagement>
+	<developers>
+	    <developer>
+		<id>owner</id>
+		<name>Ilia Naryzhny</name>
+		<email>phantom@ydn.ru</email>
+	    </developer>
+	</developers>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -221,33 +243,18 @@
 					</connectors>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-war-plugin</artifactId>
-		        <version>2.4</version>
-		        <configuration>
-			        <archive>
-			            <manifest>
-			            	<addClasspath>true</addClasspath>
-			              <mainClass>ru.ydn.orienteer.StartStandalone</mainClass>
-			            </manifest>
-			          </archive>
-		        </configuration>
-      		</plugin> -->
-      		<!-- <plugin>
-		      <artifactId>maven-assembly-plugin</artifactId>
-		      <configuration>
-		        <archive>
-		          <manifest>
-		            <addClasspath>true</addClasspath>
-		            <mainClass>ru.ydn.orienteer.StartStandalone</mainClass>
-		          </manifest>
-		        </archive>
-		        <descriptorRefs>
-		          <descriptorRef>jar-with-dependencies</descriptorRef>
-		        </descriptorRefs>
-		      </configuration>
-		    </plugin> -->
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-release-plugin</artifactId>
+			    <version>2.5</version>
+			    <configuration>
+				<autoVersionSubmodules>true</autoVersionSubmodules>
+				<useReleaseProfile>false</useReleaseProfile>
+				<releaseProfiles>release</releaseProfiles>
+				<goals>deploy</goals>
+				<tagNameFormat>v@{project.version}</tagNameFormat>
+			    </configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -276,7 +283,7 @@
 		        </dependency>
 			</dependencies>
 			<build>
-				<finalName>orienteer-stable</finalName>
+				<finalName>orienteer-standalone</finalName>
 				<plugins>
 					<plugin>
 		                <groupId>org.apache.maven.plugins</groupId>
@@ -309,39 +316,66 @@
 		                    </overlays>
 		                </configuration>
 		            </plugin>
-<!-- 		            <plugin>
-				        <artifactId>maven-antrun-plugin</artifactId>
-				        <version>1.7</version>
-				        <executions>
-				          <execution>
-				            <phase>prepare-package</phase>
-				            <configuration>
-				              <target>
-								<echo>Coping of main class</echo>
-								<copy file="target/classes/ru/ydn/orienteer/StartStandalone.class" todir="target/war/"/>
-				              </target>
-				            </configuration>
-				            <goals>
-				              <goal>run</goal>
-				            </goals>
-				          </execution>
-				        </executions>
-				      </plugin> -->
+			  </plugins>
+			    </build>
+			  </profile>
+			  <profile> 
+			    <id>release</id>
+			    <build>
+				<plugins>
+				    <plugin>
+				      <groupId>org.sonatype.plugins</groupId>
+				      <artifactId>nexus-staging-maven-plugin</artifactId>
+				      <version>1.6.2</version>
+				      <extensions>true</extensions>
+				      <configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				      </configuration>
+				    </plugin>
+				    <plugin>
+				      <groupId>org.apache.maven.plugins</groupId>
+				      <artifactId>maven-source-plugin</artifactId>
+				      <version>2.2.1</version>
+				      <executions>
+					<execution>
+					  <id>attach-sources</id>
+					  <goals>
+					    <goal>jar-no-fork</goal>
+					  </goals>
+					</execution>
+				      </executions>
+				    </plugin>
+				    <plugin>
+				      <groupId>org.apache.maven.plugins</groupId>
+				      <artifactId>maven-javadoc-plugin</artifactId>
+				      <version>2.9.1</version>
+				      <executions>
+					<execution>
+					  <id>attach-javadocs</id>
+					  <goals>
+					    <goal>jar</goal>
+					  </goals>
+					</execution>
+				      </executions>
+				    </plugin>
+				    <plugin>
+				      <groupId>org.apache.maven.plugins</groupId>
+				      <artifactId>maven-gpg-plugin</artifactId>
+				      <version>1.5</version>
+				      <executions>
+					<execution>
+					  <id>sign-artifacts</id>
+					  <phase>verify</phase>
+					  <goals>
+					    <goal>sign</goal>
+					  </goals>
+					</execution>
+				      </executions>
+			      </plugin>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
-
-	<repositories>
-		<repository>
-			<id>Apache Nexus</id>
-			<url>https://repository.apache.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	</project>
+</project>
