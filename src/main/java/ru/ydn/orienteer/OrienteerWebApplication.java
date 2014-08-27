@@ -12,6 +12,7 @@ import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
 import ru.ydn.orienteer.modules.IOrienteerModule;
 import ru.ydn.orienteer.modules.ModuledDataInstallator;
+import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
 import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.orienteer.web.LoginPage;
 import ru.ydn.orienteer.web.schema.ListOClassesPage;
@@ -92,6 +93,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
+		registerModule(new OrienteerLocalizationModule());
 	}
 
 	@Override
