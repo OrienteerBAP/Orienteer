@@ -7,6 +7,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.string.Strings;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
@@ -91,6 +92,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 			doc.field(OPROPERTY_STYLE, style);
 			doc.field(OPROPERTY_VARIATION, variation);
 			doc.field(OPROPERTY_ACTIVE, false);
+			doc.save();
 		}
 		
 	}
@@ -102,7 +104,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 
 	@Override
 	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
-		OSchema schema = app.getDatabase().getMetadata().getSchema();
+		OSchema schema = db.getMetadata().getSchema();
 		OClass oClass = mergeOClass(schema, OCLASS_LOCALIZATION);
 		mergeOProperty(oClass, OPROPERTY_KEY, OType.STRING);
 		mergeOProperty(oClass, OPROPERTY_LANG, OType.STRING);
