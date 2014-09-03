@@ -21,6 +21,7 @@ import ru.ydn.orienteer.components.OClassPageLink;
 import ru.ydn.orienteer.components.commands.Command;
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.DeleteOClassCommand;
+import ru.ydn.orienteer.components.commands.ExportOSchemaCommand;
 import ru.ydn.orienteer.components.commands.ReloadOMetadataCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
@@ -107,6 +108,7 @@ public class ListOClassesPage extends OrienteerBasePage<Object> {
 		table.addCommand(new CreateOClassCommand(table));
 		table.addCommand(new DeleteOClassCommand(table));
 		table.addCommand(new ReloadOMetadataCommand(table));
+		table.addCommand(new ExportOSchemaCommand(table));
 		form.add(table);
 		add(form);
 	}
