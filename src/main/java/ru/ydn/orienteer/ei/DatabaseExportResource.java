@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.utils.LoggerOCommandOutputListener;
 
 import com.orientechnologies.orient.core.command.OCommandOutputListener;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
@@ -28,13 +29,7 @@ public class DatabaseExportResource extends AbstractResource
 				OutputStream out = attributes.getResponse().getOutputStream();
 				GZIPOutputStream gzipOut = new GZIPOutputStream(out);
 				ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
-				ODatabaseExport dbExport = new ODatabaseExport(db, gzipOut, new OCommandOutputListener() {
-					
-					@Override
-					public void onMessage(String iText) {
-						LOG.info(iText);
-					}
-				});
+				ODatabaseExport dbExport = new ODatabaseExport(db, gzipOut, LoggerOCommandOutputListener.INSTANCE);
 				configureODatabaseExport(dbExport);
 				dbExport.exportDatabase();
 			}
