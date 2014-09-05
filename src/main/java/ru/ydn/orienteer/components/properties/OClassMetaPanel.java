@@ -15,6 +15,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
@@ -24,6 +25,7 @@ import org.apache.wicket.validation.IValidator;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.orient.core.collate.OCollate;
+import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalancedClusterSelectionStrategy;
@@ -121,19 +123,27 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 	@Override
 	protected void setValue(OClass entity, String critery, V value) {
-		CustomAttributes custom;
-		if("clusterSelection".equals(critery))
+		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		db.commit();
+		try
 		{
-			if(value!=null) entity.setClusterSelection(value.toString());
-		}
-		else if((custom = CustomAttributes.fromString(critery))!=null)
+			CustomAttributes custom;
+			if("clusterSelection".equals(critery))
+			{
+				if(value!=null) entity.setClusterSelection(value.toString());
+			}
+			else if((custom = CustomAttributes.fromString(critery))!=null)
+			{
+				custom.setValue(entity, value);
+			}
+			else
+			{
+				PropertyResolver.setValue(critery, entity, value, new PropertyResolverConverter(Application.get().getConverterLocator(),
+						Session.get().getLocale()));
+			}
+		} finally
 		{
-			custom.setValue(entity, value);
-		}
-		else
-		{
-			PropertyResolver.setValue(critery, entity, value, new PropertyResolverConverter(Application.get().getConverterLocator(),
-					Session.get().getLocale()));
+			db.begin();
 		}
 	}
 
@@ -186,14 +196,19 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
 				}
-				else if(CustomAttributes.PROP_NAME.getName().equals(critery))
+				else if(CustomAttributes.PROP_NAME.getName().equals(critery) 
+						|| CustomAttributes.PROP_PARENT.getName().equals(critery))
 				{
-					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new PropertyModel<List<OProperty>>(getEntityModel(), "properties()"));
-				}
-				else if(CustomAttributes.PROP_PARENT.getName().equals(critery))
-				{
-					//TODO: limit list only to LINKs
-					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new PropertyModel<List<OProperty>>(getEntityModel(), "properties()"));
+					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new AbstractReadOnlyModel<List<OProperty>>() {
+
+						@Override
+						public List<OProperty> getObject() {
+							OClass oClass = getEntityObject();
+							if(oClass==null) return null;
+							Collection<OProperty> ret = oClass.properties();
+							return ret instanceof List?(List<OProperty>) ret:new ArrayList<OProperty>(ret);
+						}
+					});
 				}
 				else
 				{

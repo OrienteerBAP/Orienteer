@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
@@ -22,6 +23,7 @@ import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.collate.OCollate;
+import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.index.OCompositeIndexDefinition;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.index.OIndexDefinition;
@@ -92,21 +94,29 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 
 	@Override
 	protected void setValue(OIndex<?> entity, String critery, V value) {
-		if(OIndexPrototyper.DEF_COLLATE.equals(critery))
+		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		db.commit();
+		try
 		{
-			if(value!=null)
+			if(OIndexPrototyper.DEF_COLLATE.equals(critery))
 			{
-				String collate = value.toString();
-				entity.getDefinition().setCollate(OSQLEngine.getCollate(collate));
+				if(value!=null)
+				{
+					String collate = value.toString();
+					entity.getDefinition().setCollate(OSQLEngine.getCollate(collate));
+				}
+				else
+				{
+					entity.getDefinition().setCollate(null);
+				}
 			}
 			else
 			{
-				entity.getDefinition().setCollate(null);
+				PropertyResolver.setValue(critery, entity, value, null);
 			}
-		}
-		else
+		} finally
 		{
-			PropertyResolver.setValue(critery, entity, value, null);
+			db.begin();
 		}
 	}
 	

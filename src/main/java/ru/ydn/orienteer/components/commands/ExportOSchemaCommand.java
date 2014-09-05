@@ -44,7 +44,7 @@ public class ExportOSchemaCommand extends Command<OClass>
 
 			@Override
 			protected void configureODatabaseExport(ODatabaseExport dbExport) {
-				dbExport.setIncludeRecords(false);
+				dbExport.setOptions("-excludeAll=true -includeSchema=true");
 			}
 			
 		});

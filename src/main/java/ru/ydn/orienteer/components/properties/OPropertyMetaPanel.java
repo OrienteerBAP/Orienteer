@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.orient.core.collate.OCollate;
 import com.orientechnologies.orient.core.collate.OCollateFactory;
+import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -116,18 +117,26 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 
 	@Override
 	protected void setValue(OProperty entity, String critery, V value) {
-		CustomAttributes custom;
-		if(OPropertyPrototyper.COLLATE.equals(critery))
+		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		db.commit();
+		try
 		{
-			entity.setCollate((String)value);
-		}
-		else if((custom = CustomAttributes.fromString(critery))!=null)
+			CustomAttributes custom;
+			if(OPropertyPrototyper.COLLATE.equals(critery))
+			{
+				entity.setCollate((String)value);
+			}
+			else if((custom = CustomAttributes.fromString(critery))!=null)
+			{
+				custom.setValue(entity, value);
+			}
+			else
+			{
+				PropertyResolver.setValue(critery, entity, value, null);
+			}
+		} finally
 		{
-			custom.setValue(entity, value);
-		}
-		else
-		{
-			PropertyResolver.setValue(critery, entity, value, null);
+			db.begin();
 		}
 	}
 	
