@@ -2,7 +2,14 @@ package ru.ydn.orienteer.services.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedMap;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 
@@ -54,6 +61,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	
 	public static final Ordering<OProperty> ORDER_PROPERTIES_BY_ORDER = Ordering.<Integer>natural().nullsLast().onResultOf(GetOrderOfPropertyFunction.INSTANCE);
 
+	
 	@Override
 	public List<OProperty> getDisplayableProperties(OClass oClass) {
 		Collection<OProperty> properties =  oClass.properties();
@@ -97,6 +105,36 @@ public class OClassIntrospector implements IOClassIntrospector
 		if(parent!=null) return doc.field(parent.getName());
 		else return null;
 	}
+
+	@Override
+	public List<String> listTabs(OClass oClass) {
+		Set<String> tabs = new HashSet<String>();
+		for(OProperty property: oClass.properties())
+		{
+			String tab = CustomAttributes.TAB.getValue(property);
+			if(tab==null) tab = DEFAULT_TAB;
+			tabs.add(tab);
+		}
+		return new ArrayList<String>(tabs);
+	}
+
+	@Override
+	public List<OProperty> listProperties(OClass oClass, String tab) {
+		Collection<OProperty> properties =  oClass.properties();
+		final String safeTab = tab!=null?tab:DEFAULT_TAB;
+		Collection<OProperty> filteredProperties = Collections2.filter(properties, new Predicate<OProperty>() {
+
+			@Override
+			public boolean apply(OProperty input) {
+				String propertyTab = CustomAttributes.TAB.getValue(input);
+				return safeTab.equals(propertyTab!=null?propertyTab:DEFAULT_TAB);
+			}
+		});
+		if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
+		return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
+	}
+	
+	
 
 
 }

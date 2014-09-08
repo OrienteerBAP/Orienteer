@@ -10,8 +10,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public interface IOClassIntrospector
 {
+	public static String DEFAULT_TAB = "parameters";
+	
 	public List<OProperty> getDisplayableProperties(OClass oClass);
 	public List<IColumn<ODocument, String>>  getColumnsFor(OClass oClass);
 	public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown);
 	public ODocument getParent(ODocument doc);
+	public List<String> listTabs(OClass oClass);
+	public List<OProperty> listProperties(OClass oClass, String tab);
 }
