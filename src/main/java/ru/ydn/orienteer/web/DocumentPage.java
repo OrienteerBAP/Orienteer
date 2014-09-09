@@ -3,15 +3,19 @@ package ru.ydn.orienteer.web;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.ODocumentPageHeader;
 import ru.ydn.orienteer.components.SchemaPageHeader;
+import ru.ydn.orienteer.components.TabsPanel;
 import ru.ydn.orienteer.components.commands.EditCommand;
 import ru.ydn.orienteer.components.commands.EditODocumentCommand;
 import ru.ydn.orienteer.components.commands.SaveODocumentCommand;
@@ -20,9 +24,12 @@ import ru.ydn.orienteer.components.properties.OClassViewPanel;
 import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.model.DocumentNameModel;
+import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
+import com.google.inject.Inject;
+import com.orientechnologies.common.thread.OPollerThread;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -35,10 +42,15 @@ public class DocumentPage extends AbstractDocumentPage {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private TabsPanel tabsPanel;
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
 	private SaveODocumentCommand saveODocumentCommand;
 	
+	private IModel<String> tabModel;
 	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
+	
+	@Inject
+	private IOClassIntrospector oClassIntrospector;
 	
 	public DocumentPage(ODocument doc)
 	{
@@ -58,9 +70,33 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	public void initialize() {
 		super.initialize();
+		tabModel = Model.of(IOClassIntrospector.DEFAULT_TAB);
+		tabsPanel = new TabsPanel("tabs", tabModel, new LoadableDetachableModel<List<String>>() {
+
+			@Override
+			protected List<String> load() {
+				return oClassIntrospector.listTabs(getDocument().getSchemaClass());
+			}
+		})
+		{
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void onTabClick(AjaxRequestTarget target) {
+				target.add(propertiesStructureTable);
+			}
+			
+		};
+		add(tabsPanel);
+		
 		Form<ODocument> form = new Form<ODocument>("form", getModel());
-		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", getModel(),  
-				new PropertyModel<List<? extends OProperty>>(getDocumentModel(), "schemaClass.properties()")) {
+		IModel<List<? extends OProperty>> propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
+			@Override
+			protected List<? extends OProperty> load() {
+				return oClassIntrospector.listProperties(getDocument().getSchemaClass(), tabModel.getObject(), displayMode.getObject(), false);
+			}
+		};
+		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", getModel(), propertiesModel){
 
 					@Override
 					protected Component getValueComponent(String id,

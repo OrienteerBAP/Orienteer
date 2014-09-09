@@ -24,6 +24,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OEntityColumn;
 import ru.ydn.orienteer.components.table.OPropertyValueColumn;
@@ -119,15 +122,23 @@ public class OClassIntrospector implements IOClassIntrospector
 	}
 
 	@Override
-	public List<OProperty> listProperties(OClass oClass, String tab) {
+	public List<OProperty> listProperties(OClass oClass, String tab, final DisplayMode mode, final Boolean extended) {
 		Collection<OProperty> properties =  oClass.properties();
 		final String safeTab = tab!=null?tab:DEFAULT_TAB;
+		final UIComponentsRegistry registry = OrienteerWebApplication.get().getUIComponentsRegistry();
 		Collection<OProperty> filteredProperties = Collections2.filter(properties, new Predicate<OProperty>() {
 
 			@Override
 			public boolean apply(OProperty input) {
 				String propertyTab = CustomAttributes.TAB.getValue(input);
-				return safeTab.equals(propertyTab!=null?propertyTab:DEFAULT_TAB);
+				boolean ret = safeTab.equals(propertyTab!=null?propertyTab:DEFAULT_TAB);
+				if(extended==null) return ret;
+				else {
+					CustomAttributes attr = DisplayMode.EDIT.equals(mode)?CustomAttributes.EDIT_COMPONENT:CustomAttributes.VIEW_COMPONENT;
+					String component = attr.getValue(input);
+					if(component==null) return !extended;
+					return registry.getComponentFactory(mode, input.getType(), component).isExtended() == extended;
+				}
 			}
 		});
 		if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;

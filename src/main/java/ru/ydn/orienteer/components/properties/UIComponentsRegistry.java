@@ -26,25 +26,33 @@ public class UIComponentsRegistry
 	public static interface IUIComponentFactory
 	{
 		public String getName();
+		public boolean isExtended();
 		public <T> Component createComponent(String id, IModel<T> model);
 	}
 	
 	public static class DefaultIOComponentFactory implements IUIComponentFactory
 	{
 		private final String name;
+		private final boolean extended;
 		private final Class<? extends Component> componentClass;
 		
-		public DefaultIOComponentFactory(String name, Class<? extends Component> componentClass)
+		public DefaultIOComponentFactory(String name, boolean extended, Class<? extends Component> componentClass)
 		{
 			Args.notNull(name, "name");
 			Args.notNull(componentClass, "componentClass");
 			this.name = name;
+			this.extended = extended;
 			this.componentClass = componentClass;
 		}
 		
 		@Override
 		public String getName() {
 			return name;
+		}
+		
+		@Override
+		public boolean isExtended() {
+			return extended;
 		}
 
 		@Override
@@ -64,7 +72,7 @@ public class UIComponentsRegistry
 	
 	public UIComponentsRegistry()
 	{
-		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", TextArea.class), DisplayMode.EDIT, OType.STRING);
+		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", false, TextArea.class), DisplayMode.EDIT, OType.STRING);
 	}
 	
 	public Table<DisplayMode, OType, Map<String, IUIComponentFactory>> getRegistryTable()
