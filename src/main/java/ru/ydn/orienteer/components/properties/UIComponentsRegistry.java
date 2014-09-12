@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.components.properties;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,13 +14,18 @@ import java.util.TreeSet;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 
+import ru.ydn.orienteer.model.DynamicPropertyValueModel;
+
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class UIComponentsRegistry
 {
@@ -27,22 +33,26 @@ public class UIComponentsRegistry
 	{
 		public String getName();
 		public boolean isExtended();
-		public <T> Component createComponent(String id, IModel<T> model);
+		public Component createComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, IModel<OProperty> propertyModel);
+		public <T> Component createComponent(String id, DisplayMode mode, IModel<T> model);
 	}
 	
 	public static class DefaultIOComponentFactory implements IUIComponentFactory
 	{
 		private final String name;
 		private final boolean extended;
-		private final Class<? extends Component> componentClass;
+		private final Class<? extends Component> viewComponentClass;
+		private final Class<? extends Component> editComponentClass;
 		
-		public DefaultIOComponentFactory(String name, boolean extended, Class<? extends Component> componentClass)
+		public DefaultIOComponentFactory(String name, boolean extended, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass)
 		{
 			Args.notNull(name, "name");
-			Args.notNull(componentClass, "componentClass");
+			Args.notNull(viewComponentClass, "viewComponentClass");
+			Args.notNull(editComponentClass, "editComponentClass");
 			this.name = name;
 			this.extended = extended;
-			this.componentClass = componentClass;
+			this.viewComponentClass = viewComponentClass;
+			this.editComponentClass = editComponentClass;
 		}
 		
 		@Override
@@ -54,9 +64,30 @@ public class UIComponentsRegistry
 		public boolean isExtended() {
 			return extended;
 		}
+		
+		
 
 		@Override
-		public <T> Component createComponent(String id, IModel<T> model) {
+		public Component createComponent(String id, DisplayMode mode,
+				IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+			Class<? extends Component> componentClass = DisplayMode.EDIT.equals(mode)?editComponentClass:viewComponentClass;
+			try
+			{
+				Constructor<? extends Component> constructor = componentClass.getConstructor(String.class, IModel.class, IModel.class);
+				return constructor.newInstance(id, documentModel, propertyModel);
+			} catch (NoSuchMethodException e)
+			{
+				return createComponent(id, mode, new DynamicPropertyValueModel<ODocument>(documentModel, propertyModel));
+			} catch (Exception e)
+			{
+				throw new WicketRuntimeException("Can't create component", e);
+			}
+		}
+
+		@Override
+		public <T> Component createComponent(String id, DisplayMode mode,
+				IModel<T> model) {
+			Class<? extends Component> componentClass = DisplayMode.EDIT.equals(mode)?editComponentClass:viewComponentClass;
 			try
 			{
 				return componentClass.getConstructor(String.class, IModel.class).newInstance(id, model);
@@ -65,72 +96,54 @@ public class UIComponentsRegistry
 				throw new WicketRuntimeException("Can't create component", e);
 			} 
 		}
-		
+
 	}
 	
-	private Table<DisplayMode, OType, Map<String, IUIComponentFactory>> registryTable = HashBasedTable.create();
+	private Table<OType, String, IUIComponentFactory> registryTable = HashBasedTable.create();
 	
 	public UIComponentsRegistry()
 	{
-		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", false, TextArea.class), DisplayMode.EDIT, OType.STRING);
+		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", false, Label.class, TextArea.class), OType.STRING);
 	}
 	
-	public Table<DisplayMode, OType, Map<String, IUIComponentFactory>> getRegistryTable()
+	public Table<OType, String, IUIComponentFactory> getRegistryTable()
 	{
 		return registryTable;
 	}
 	
-	public void registerUIComponentFactory(IUIComponentFactory factory, DisplayMode mode, OType... types)
+	public void registerUIComponentFactory(IUIComponentFactory factory, OType... types)
 	{
 		for(OType oType : types)
 		{
-			registerUIComponentFactory(factory, mode, oType);
+			registerUIComponentFactory(factory, oType);
 		}
 	}
 	
-	public void registerUIComponentFactory(IUIComponentFactory factory, DisplayMode mode, OType oType)
+	public void registerUIComponentFactory(IUIComponentFactory factory, OType oType)
 	{
-		Map<String, IUIComponentFactory> factoriesMap = registryTable.get(mode, oType);
-		if(factoriesMap==null)
+		registryTable.put(oType, factory.getName(), factory);
+	}
+	
+	public IUIComponentFactory getComponentFactory(OType oType, String componentName)
+	{
+		Args.notNull(oType, "oType");
+		Args.notNull(componentName, "componentName");
+		return registryTable.get(oType, componentName);
+	}
+	
+	public List<String> getComponentsOptions(OType oType)
+	{
+		List<String> ret = new ArrayList<String>();
+		if(oType!=null)
 		{
-			factoriesMap = new HashMap<String, UIComponentsRegistry.IUIComponentFactory>();
-			registryTable.put(mode, oType, factoriesMap);
+			ret.addAll(registryTable.row(oType).keySet());
 		}
-		factoriesMap.put(factory.getName(), factory);
-	}
-	
-	public IUIComponentFactory getComponentFactory(DisplayMode mode, OType oType, String name)
-	{
-		Map<String, IUIComponentFactory> map = registryTable.get(mode, oType);
-		return map!=null?map.get(name):null;
-	}
-	
-	public List<String> getComponentsOptions(DisplayMode mode, OType oType)
-	{
-		SortedSet<String> ret = new TreeSet<String>();
-		if(mode!=null || oType!=null)
+		else
 		{
-			if(mode==null)
-			{
-				for(Map<String, IUIComponentFactory> map : registryTable.column(oType).values())
-				{
-					ret.addAll(map.keySet());
-				}
-			}
-			else if(oType==null)
-			{
-				for(Map<String, IUIComponentFactory> map : registryTable.row(mode).values())
-				{
-					ret.addAll(map.keySet());
-				}
-			}
-			else
-			{
-				Map<String, IUIComponentFactory> map = registryTable.get(mode, oType);
-				if(map!=null) ret.addAll(map.keySet());
-			}
+			ret.addAll(registryTable.columnKeySet());
 		}
-		return new ArrayList<String>(ret);
+		Collections.sort(ret);
+		return ret;
 	}
 	
 }

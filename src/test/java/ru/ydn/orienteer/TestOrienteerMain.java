@@ -12,8 +12,10 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.junit.OrienteerTestRunner;
 import ru.ydn.orienteer.web.BrowseClassPage;
+import ru.ydn.orienteer.web.DocumentPage;
 import ru.ydn.orienteer.web.LoginPage;
 import ru.ydn.orienteer.web.schema.ListOClassesPage;
 import ru.ydn.orienteer.web.schema.OClassPage;
@@ -28,6 +30,7 @@ import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
@@ -71,6 +74,23 @@ public class TestOrienteerMain
 			LOG.info("Rendering browse page for class '"+oClass.getName()+"'");
 			tester.startPage(BrowseClassPage.class, parameters);
 			tester.assertRenderedPage(BrowseClassPage.class);
+		}
+	}
+	
+	@Test
+	public void testShowDummyDocuments() throws Exception
+	{
+		ODatabaseRecord db = getDatabase();
+		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
+		for (OClass oClass : classes)
+		{
+			ODocument doc = new ODocument(oClass);
+			LOG.info("Rendering VIEW document page for class '"+oClass.getName()+"'");
+			tester.startPage(new DocumentPage(doc));
+			tester.assertRenderedPage(DocumentPage.class);
+			LOG.info("Rendering EDIT document page for class '"+oClass.getName()+"'");
+			tester.startPage(new DocumentPage(doc).setDisplayMode(DisplayMode.EDIT));
+			tester.assertRenderedPage(DocumentPage.class);
 		}
 	}
 	

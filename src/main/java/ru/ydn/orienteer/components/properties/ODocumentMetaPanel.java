@@ -50,14 +50,15 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 			OProperty property) {
 		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
 		OType oType = property.getType();
+		String visualizationComponent = CustomAttributes.VISUALIZATION_TYPE.getValue(property);
+		if(visualizationComponent!=null)
+		{
+			UIComponentsRegistry.IUIComponentFactory factory = OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(oType, visualizationComponent);
+			if(factory!=null) 
+				return factory.createComponent(id, mode, getEntityModel(), getPropertyModel());
+		}
 		if(DisplayMode.VIEW.equals(mode))
 		{
-			String viewComponent = CustomAttributes.VIEW_COMPONENT.getValue(property);
-			if(viewComponent!=null)
-			{
-				UIComponentsRegistry.IUIComponentFactory factory = OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(mode, oType, viewComponent);
-				if(factory!=null) return factory.createComponent(id, getModel());
-			}
 			switch(oType)
 			{
 				case LINK:
@@ -71,12 +72,6 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 		}
 		else if(DisplayMode.EDIT.equals(mode))
 		{
-			String editComponent = CustomAttributes.EDIT_COMPONENT.getValue(property);
-			if(editComponent!=null)
-			{
-				UIComponentsRegistry.IUIComponentFactory factory = OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(mode, oType, editComponent);
-				if(factory!=null) return factory.createComponent(id, getModel());
-			}
 			switch(oType)
 			{
 				case BOOLEAN:

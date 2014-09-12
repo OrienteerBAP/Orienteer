@@ -52,11 +52,11 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>(OPropertyPrototyper.OPROPERTY_ATTRS);
 	static
 	{
-		OPROPERTY_ATTRS.add(CustomAttributes.VIEW_COMPONENT.getName());
-		OPROPERTY_ATTRS.add(CustomAttributes.EDIT_COMPONENT.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.VISUALIZATION_TYPE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.DISPLAYABLE.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.HIDDEN.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.ORDER.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.TAB.getName());
 	}
@@ -247,15 +247,13 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 						return new TextField<V>(id, getModel()).setType(Integer.class);
 					case TAB:
 						return new TextField<V>(id, getModel());
-					case VIEW_COMPONENT:
-					case EDIT_COMPONENT:
+					case VISUALIZATION_TYPE:
 						return new DropDownChoice<String>(id,  (IModel<String>)getModel(), new LoadableDetachableModel<List<String>>() {
 								@Override
 								protected List<String> load() {
 									OType type = getMetaComponentEnteredValue(OPropertyPrototyper.TYPE);
-									DisplayMode mode = CustomAttributes.VIEW_COMPONENT.equals(customAttr)?DisplayMode.VIEW:DisplayMode.EDIT;
 									UIComponentsRegistry registry = OrienteerWebApplication.get().getUIComponentsRegistry();
-									return registry.getComponentsOptions(mode, type);
+									return registry.getComponentsOptions(type);
 								}
 							})
 						{

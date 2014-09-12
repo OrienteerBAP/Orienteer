@@ -6,6 +6,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -13,6 +15,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.ODocumentPageHeader;
 import ru.ydn.orienteer.components.SchemaPageHeader;
 import ru.ydn.orienteer.components.TabsPanel;
@@ -24,6 +28,7 @@ import ru.ydn.orienteer.components.properties.OClassViewPanel;
 import ru.ydn.orienteer.components.properties.ODocumentMetaPanel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.model.DocumentNameModel;
+import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
@@ -93,7 +98,7 @@ public class DocumentPage extends AbstractDocumentPage {
 		IModel<List<? extends OProperty>> propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
 			@Override
 			protected List<? extends OProperty> load() {
-				return oClassIntrospector.listProperties(getDocument().getSchemaClass(), tabModel.getObject(), displayMode.getObject(), false);
+				return oClassIntrospector.listProperties(getDocument().getSchemaClass(), tabModel.getObject(), false);
 			}
 		};
 		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", getModel(), propertiesModel){
@@ -104,9 +109,28 @@ public class DocumentPage extends AbstractDocumentPage {
 						return new ODocumentMetaPanel<Object>(id, displayMode, getDocumentModel(), rowModel);
 					}
 		};
-		
 		form.add(propertiesStructureTable);
 		add(form);
+		
+		//Extended components
+		propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
+			@Override
+			protected List<? extends OProperty> load() {
+				return oClassIntrospector.listProperties(getDocument().getSchemaClass(), tabModel.getObject(), true);
+			}
+		};
+		ListView<OProperty> extendedPropertiesListView = new ListView<OProperty>("extendedProperties", propertiesModel) {
+
+			@Override
+			protected void populateItem(ListItem<OProperty> item) {
+				Form<?> form = new Form<Object>("form");
+				OProperty oProperty = item.getModelObject();
+				String component = CustomAttributes.VISUALIZATION_TYPE.getValue(oProperty);
+				OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(oProperty.getType(), component).createComponent("component", DisplayMode.VIEW, getDocumentModel(), item.getModel());
+				add(form);
+			}
+		};
+		add(extendedPropertiesListView);
 	}
 	
 	public DisplayMode getDisplayMode()

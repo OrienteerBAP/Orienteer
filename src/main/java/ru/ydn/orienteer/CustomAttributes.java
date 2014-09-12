@@ -23,6 +23,11 @@ public enum CustomAttributes
 	 * Is this property displayable or not
 	 */
 	DISPLAYABLE("orienteer.displayable", OType.BOOLEAN),
+	
+	/**
+	 * Is this property value should not be visible
+	 */
+	HIDDEN("orienteer.hidden", OType.BOOLEAN),
 	/**
 	 * Order of this property in a table/tab
 	 */
@@ -40,8 +45,9 @@ public enum CustomAttributes
 	 */
 	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class),
 	
-	VIEW_COMPONENT("orienteer.component.view", OType.STRING),
-	EDIT_COMPONENT("orienteer.component.edit", OType.STRING);
+//	VIEW_COMPONENT("orienteer.component.view", OType.STRING),
+//	EDIT_COMPONENT("orienteer.component.edit", OType.STRING),
+	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING);
 	
 	private final String name;
 	private final OType type;
@@ -87,6 +93,12 @@ public enum CustomAttributes
 		return (V) OType.convert(property.getCustom(name), javaClass);
 	}
 	
+	public <V> V getValue(OProperty property, V defaultValue)
+	{
+		V ret = getValue(property);
+		return ret!=null?ret:defaultValue;
+	}
+	
 	public <V> void setValue(OProperty property, V value)
 	{
 		property.setCustom(name, value!=null?value.toString():null);
@@ -104,6 +116,12 @@ public enum CustomAttributes
 		{
 			return (V) OType.convert(oClass.getCustom(name), javaClass);
 		}
+	}
+	
+	public <V> V getValue(OClass oClass, V defaultValue)
+	{
+		V ret = getValue(oClass);
+		return ret!=null?ret:defaultValue;
 	}
 	
 	public <V> void setValue(OClass oClass, V value)

@@ -122,7 +122,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	}
 
 	@Override
-	public List<OProperty> listProperties(OClass oClass, String tab, final DisplayMode mode, final Boolean extended) {
+	public List<OProperty> listProperties(OClass oClass, String tab, final Boolean extended) {
 		Collection<OProperty> properties =  oClass.properties();
 		final String safeTab = tab!=null?tab:DEFAULT_TAB;
 		final UIComponentsRegistry registry = OrienteerWebApplication.get().getUIComponentsRegistry();
@@ -132,16 +132,16 @@ public class OClassIntrospector implements IOClassIntrospector
 			public boolean apply(OProperty input) {
 				String propertyTab = CustomAttributes.TAB.getValue(input);
 				boolean ret = safeTab.equals(propertyTab!=null?propertyTab:DEFAULT_TAB);
-				if(extended==null) return ret;
+				ret = ret && !CustomAttributes.HIDDEN.getValue(input, false);
+				if(!ret || extended==null) return ret;
 				else {
-					CustomAttributes attr = DisplayMode.EDIT.equals(mode)?CustomAttributes.EDIT_COMPONENT:CustomAttributes.VIEW_COMPONENT;
-					String component = attr.getValue(input);
+					String component = CustomAttributes.VISUALIZATION_TYPE.getValue(input);
 					if(component==null) return !extended;
-					return registry.getComponentFactory(mode, input.getType(), component).isExtended() == extended;
+					return registry.getComponentFactory(input.getType(), component).isExtended() == extended;
 				}
 			}
 		});
-		if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
+		//if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
 		return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
 	}
 	

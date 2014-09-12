@@ -19,5 +19,5 @@ public interface IOClassIntrospector
 	public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown);
 	public ODocument getParent(ODocument doc);
 	public List<String> listTabs(OClass oClass);
-	public List<OProperty> listProperties(OClass oClass, String tab, DisplayMode mode, Boolean extended);
+	public List<OProperty> listProperties(OClass oClass, String tab, Boolean extended);
 }
