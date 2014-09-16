@@ -54,8 +54,7 @@ public class SchemaHelper
 	public static boolean isPropertyCalculable(OProperty property)
 	{
 		if(property==null) return false;
-		String calcFlag = property.getCustom(CustomAttributes.CALCULABLE.getName());
-		return Strings.isEqual(calcFlag, "true");
+		return CustomAttributes.CALCULABLE.getValue(property, false);
 	}
 	
 	public static String getCustomAttr(OClass oClass, CustomAttributes attr)

@@ -10,6 +10,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
 import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
+import ru.ydn.orienteer.hooks.CalculablePropertiesHook;
 import ru.ydn.orienteer.modules.IOrienteerModule;
 import ru.ydn.orienteer.modules.ModuledDataInstallator;
 import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
@@ -94,6 +95,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
 		registerModule(new OrienteerLocalizationModule());
+		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
 	}
 
 	@Override
