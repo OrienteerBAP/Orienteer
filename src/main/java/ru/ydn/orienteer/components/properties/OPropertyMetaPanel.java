@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
@@ -180,19 +181,17 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values()))
 						.setRequired(true)
-						.add(new OnChangeAjaxBehavior() {
-							
+						.add(new AjaxFormSubmitBehavior("change") {
+
 							@Override
-							protected void onUpdate(AjaxRequestTarget target) {
+							protected void onSubmit(AjaxRequestTarget target) {
 								target.add(OPropertyMetaPanel.this.getMetaContext().getContextComponent());
 							}
 
-							/*
-							 TODO: Comment this till fix of WICKET-5658
 							@Override
-							protected boolean getUpdateModel() {
+							public boolean getDefaultProcessing() {
 								return false;
-							}*/
+							}
 							
 						});
 			}

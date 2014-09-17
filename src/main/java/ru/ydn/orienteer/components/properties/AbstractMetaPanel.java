@@ -1,9 +1,12 @@
 package ru.ydn.orienteer.components.properties;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
@@ -119,14 +122,29 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	@SuppressWarnings("unchecked")
 	public V getEnteredValue()
 	{
-		if(component instanceof FormComponent)
+		if(component instanceof FormComponent && ((FormComponent<V>)component).hasRawInput())
 		{
-			return ((FormComponent<V>)component).getConvertedInput();
+			FormComponent<V> formComponent = (FormComponent<V>)component;
+			convertInput(formComponent);
+			return formComponent.getConvertedInput();
 		}
 		else
 		{
 			return getValueObject();
 		}
+	}
+	
+	private void convertInput(FormComponent<V> formComponent)
+	{
+		try
+		{
+			Method convertInputMethod = FormComponent.class.getDeclaredMethod("convertInput");
+			convertInputMethod.setAccessible(true);
+			convertInputMethod.invoke(formComponent);
+		} catch (Exception e)
+		{
+			throw new WicketRuntimeException("Can't invoke 'convertInput' on component", e);
+		} 
 	}
 	
 	public <V2> V2 getMetaComponentEnteredValue(C critery)
