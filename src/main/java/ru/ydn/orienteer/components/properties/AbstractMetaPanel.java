@@ -98,7 +98,13 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	@SuppressWarnings("unchecked")
 	public IMetaContext<C> getMetaContext()
 	{
-		return (IMetaContext<C>) visitParents(MarkupContainer.class, new IVisitor<MarkupContainer, IMetaContext<C>>() {
+		return getMetaContext(this);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <C> IMetaContext<C> getMetaContext(Component component)
+	{
+		return (IMetaContext<C>) component.visitParents(MarkupContainer.class, new IVisitor<MarkupContainer, IMetaContext<C>>() {
 
 			@Override
 			public void component(MarkupContainer object,

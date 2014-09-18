@@ -28,6 +28,7 @@ import org.apache.wicket.validation.IValidator;
 
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.behavior.RefreshMetaContextOnChangeBehaviour;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
@@ -40,6 +41,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.orientechnologies.common.thread.OPollerThread;
 import com.orientechnologies.orient.core.collate.OCollate;
 import com.orientechnologies.orient.core.collate.OCollateFactory;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
@@ -145,10 +147,15 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 	protected void onConfigure() {
 		super.onConfigure();
 		String critery = getPropertyObject();
-		if("type".equals(critery))
+		if(OPropertyPrototyper.TYPE.equals(critery))
 		{
 			OType oType = (OType)getEnteredValue();
-			getMetaComponent("linkedClass").setVisibilityAllowed(oType!=null && oType.isLink());
+			getMetaComponent(OPropertyPrototyper.LINKED_CLASS).setVisibilityAllowed(oType!=null && oType.isLink());
+		}
+		else if(CustomAttributes.CALCULABLE.getName().equals(critery))
+		{
+			Boolean calculable = (Boolean) getEnteredValue();
+			getMetaComponent(CustomAttributes.CALC_SCRIPT.getName()).setVisibilityAllowed(calculable!=null && calculable);
 		}
 	}
 
@@ -181,19 +188,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values()))
 						.setRequired(true)
-						.add(new AjaxFormSubmitBehavior("change") {
-
-							@Override
-							protected void onSubmit(AjaxRequestTarget target) {
-								target.add(OPropertyMetaPanel.this.getMetaContext().getContextComponent());
-							}
-
-							@Override
-							public boolean getDefaultProcessing() {
-								return false;
-							}
-							
-						});
+						.add(new RefreshMetaContextOnChangeBehaviour());
 			}
 			else if("linkedType".equals(critery))
 			{
@@ -238,6 +233,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 				{
 					switch (customAttr) {
 					case CALCULABLE:
+						return new CheckBox(id, (IModel<Boolean>)getModel()).add(new RefreshMetaContextOnChangeBehaviour());
 					case DISPLAYABLE:
 						return new CheckBox(id, (IModel<Boolean>)getModel());
 					case CALC_SCRIPT:
