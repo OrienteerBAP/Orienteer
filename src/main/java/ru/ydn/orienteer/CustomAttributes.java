@@ -2,10 +2,12 @@ package ru.ydn.orienteer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.wicket.util.string.Strings;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
@@ -45,9 +47,9 @@ public enum CustomAttributes
 	 */
 	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class, false),
 	
-//	VIEW_COMPONENT("orienteer.component.view", OType.STRING),
-//	EDIT_COMPONENT("orienteer.component.edit", OType.STRING),
-	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING, false);
+	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING, false),
+	
+	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, false);
 	
 	private final String name;
 	private final OType type;
@@ -73,6 +75,23 @@ public enum CustomAttributes
 		return name;
 	}
 	
+	public boolean match(String critery)
+	{
+		return name.equals(critery);
+	}
+	
+	public OType getType() {
+		return type;
+	}
+
+	public Class<?> getJavaClass() {
+		return javaClass;
+	}
+
+	public boolean isEncode() {
+		return encode;
+	}
+
 	public static CustomAttributes fromString(String name)
 	{
 		if(QUICK_CACHE.containsKey(name)) return QUICK_CACHE.get(name);
@@ -94,7 +113,14 @@ public enum CustomAttributes
 	{
 		String stringValue = property.getCustom(name);
 		if(encode) stringValue = decodeCustomValue(stringValue);
-		return (V) OType.convert(stringValue, javaClass);
+		if(OProperty.class.isAssignableFrom(javaClass))
+		{
+			return (V)resolveProperty(property.getOwnerClass(), stringValue);
+		}
+		else
+		{
+			return (V) OType.convert(stringValue, javaClass);
+		}
 	}
 	
 	public <V> V getValue(OProperty property, V defaultValue)
@@ -105,9 +131,18 @@ public enum CustomAttributes
 	
 	public <V> void setValue(OProperty property, V value)
 	{
-		String stringValue = value!=null?value.toString():null;
-		if(encode) stringValue = encodeCustomValue(stringValue);
-		property.setCustom(name, stringValue);
+		if(OProperty.class.isAssignableFrom(javaClass) && value instanceof OProperty)
+		{
+			OProperty valueProperty = (OProperty)value;
+			boolean fullNameRequired = !Objects.equals(property.getOwnerClass(), valueProperty.getOwnerClass());
+			property.setCustom(name, fullNameRequired?valueProperty.getFullName():valueProperty.getName());
+		}
+		else
+		{
+			String stringValue = value!=null?value.toString():null;
+			if(encode) stringValue = encodeCustomValue(stringValue);
+			property.setCustom(name, stringValue);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -117,7 +152,7 @@ public enum CustomAttributes
 		if(encode) stringValue = decodeCustomValue(stringValue);
 		if(OProperty.class.isAssignableFrom(javaClass))
 		{
-			return (V) (Strings.isEmpty(stringValue)?null:oClass.getProperty(stringValue));
+			return (V)resolveProperty(oClass, stringValue);
 		}
 		else
 		{
@@ -135,7 +170,9 @@ public enum CustomAttributes
 	{
 		if(OProperty.class.isAssignableFrom(javaClass) && value instanceof OProperty)
 		{
-			oClass.setCustom(name, ((OProperty)value).getName());
+			OProperty valueProperty = (OProperty)value;
+			boolean fullNameRequired = !Objects.equals(oClass, valueProperty.getOwnerClass());
+			oClass.setCustom(name, fullNameRequired?valueProperty.getFullName():valueProperty.getName());
 		}
 		else
 		{
@@ -143,6 +180,29 @@ public enum CustomAttributes
 			if(encode) stringValue = encodeCustomValue(stringValue);
 			oClass.setCustom(name, stringValue);
 		}
+	}
+	
+	private OProperty resolveProperty(OClass oClass, String propertyName)
+	{
+		if(Strings.isEmpty(propertyName)) return null;
+		int indx = propertyName.indexOf('.');
+		if(indx>0)
+		{
+			String className = propertyName.substring(0, indx);
+			propertyName = propertyName.substring(indx+1);
+			oClass = ((OClassImpl)oClass).getOwner().getClass(className);
+			if(oClass==null) return null;
+		}
+		return oClass.getProperty(propertyName);
+	}
+	
+	public static boolean match(String critery, CustomAttributes... attrs)
+	{
+		for (CustomAttributes customAttributes : attrs)
+		{
+			if(customAttributes.match(critery)) return true;
+		}
+		return false;
 	}
 	
 	public static String encodeCustomValue(String value)

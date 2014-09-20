@@ -58,7 +58,7 @@ public class StartStandalone
 				if(portStr!=null) port = Integer.parseInt(portStr);
 			} catch (NumberFormatException e)
 			{
-				System.out.printf("Port '%s' is incorrect. Using default port %i", portStr, port);
+				System.out.println("Port '"+portStr+"' is incorrect. Using default port "+port);
 			}
     		ServerRunner runner = new ServerRunner(port);
             System.out.println("Starting Orienteer, PRESS ANY KEY TO STOP");

@@ -151,12 +151,20 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Component resolveComponent(String id, DisplayMode mode,
 			String critery) {
 		if(DisplayMode.VIEW.equals(mode))
 		{
+			if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME, CustomAttributes.PROP_PARENT))
+			{
+				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
+			}
+			else
+			{
 				return new Label(id, getModel());
+			}
 		}
 		else if(DisplayMode.EDIT.equals(mode))
 		{

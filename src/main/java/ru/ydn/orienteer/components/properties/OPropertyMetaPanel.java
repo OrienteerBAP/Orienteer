@@ -165,11 +165,11 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			String critery) {
 		if(DisplayMode.VIEW.equals(mode))
 		{
-			if("linkedClass".equals(critery))
+			if(OPropertyPrototyper.LINKED_CLASS.equals(critery))
 			{
 				return new OClassViewPanel(id, (IModel<OClass>)getModel());
 			}
-			else if("collate".equals(critery))
+			else if(OPropertyPrototyper.COLLATE.equals(critery))
 			{
 				return new Label(id, getModel());
 			}
