@@ -40,17 +40,15 @@ public class UIComponentsRegistry
 	public static class DefaultIOComponentFactory implements IUIComponentFactory
 	{
 		private final String name;
-		private final boolean extended;
 		private final Class<? extends Component> viewComponentClass;
 		private final Class<? extends Component> editComponentClass;
 		
-		public DefaultIOComponentFactory(String name, boolean extended, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass)
+		public DefaultIOComponentFactory(String name, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass)
 		{
 			Args.notNull(name, "name");
 			Args.notNull(viewComponentClass, "viewComponentClass");
 			Args.notNull(editComponentClass, "editComponentClass");
 			this.name = name;
-			this.extended = extended;
 			this.viewComponentClass = viewComponentClass;
 			this.editComponentClass = editComponentClass;
 		}
@@ -62,10 +60,8 @@ public class UIComponentsRegistry
 		
 		@Override
 		public boolean isExtended() {
-			return extended;
+			return false;
 		}
-		
-		
 
 		@Override
 		public Component createComponent(String id, DisplayMode mode,
@@ -103,7 +99,7 @@ public class UIComponentsRegistry
 	
 	public UIComponentsRegistry()
 	{
-		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", false, Label.class, TextArea.class), OType.STRING);
+		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", Label.class, TextArea.class), OType.STRING);
 	}
 	
 	public Table<OType, String, IUIComponentFactory> getRegistryTable()
