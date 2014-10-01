@@ -126,8 +126,11 @@ public class DocumentPage extends AbstractDocumentPage {
 				Form<?> form = new Form<Object>("form");
 				OProperty oProperty = item.getModelObject();
 				String component = CustomAttributes.VISUALIZATION_TYPE.getValue(oProperty);
-				OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(oProperty.getType(), component).createComponent("component", DisplayMode.VIEW, getDocumentModel(), item.getModel());
-				add(form);
+				form.add(OrienteerWebApplication.get()
+							.getUIComponentsRegistry()
+							.getComponentFactory(oProperty.getType(), component)
+							.createComponent("component", DisplayMode.VIEW, getDocumentModel(), item.getModel()));
+				item.add(form);
 			}
 		};
 		add(extendedPropertiesListView);

@@ -100,6 +100,7 @@ public class UIComponentsRegistry
 	public UIComponentsRegistry()
 	{
 		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", Label.class, TextArea.class), OType.STRING);
+		registerUIComponentFactory(new LinksPropertyDataTablePanel.LinkPropertyDataTablePanelFactory(), OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
 	}
 	
 	public Table<OType, String, IUIComponentFactory> getRegistryTable()

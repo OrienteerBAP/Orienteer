@@ -11,3 +11,4 @@ release.properties
 build.cmd
 databases/
 /Orienteer/
+orienteer.properties

@@ -262,7 +262,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 								setVisible(choices!=null && choices.size()>0);
 							}
 							
-						};
+						}.setNullValid(true);
 					}
 				}
 				return resolveComponent(id, DisplayMode.VIEW, critery);
