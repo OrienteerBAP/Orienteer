@@ -17,14 +17,17 @@ import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
 import ru.ydn.orienteer.services.impl.GuiceOrientDbSettings;
 import ru.ydn.orienteer.services.impl.OClassIntrospector;
 import ru.ydn.orienteer.standalone.StartStandalone;
+import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.ProvisionException;
 import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
 public class OrienteerModule extends AbstractModule
 {
@@ -54,7 +57,13 @@ public class OrienteerModule extends AbstractModule
 	@Provides
 	public ODatabaseRecord getDatabaseRecord()
 	{
-		return ODatabaseRecordThreadLocal.INSTANCE.get();
+		return DefaultODatabaseThreadLocalFactory.castToODatabaseRecord(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+	}
+	
+	@Provides
+	public OSchema getSchema(ODatabaseRecord db)
+	{
+		return db.getMetadata().getSchema();
 	}
 
 }

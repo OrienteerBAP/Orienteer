@@ -6,12 +6,16 @@ import org.apache.wicket.util.tester.WicketTester;
 
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.standalone.StartStandalone;
+import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 public class TestOrieenteerModule extends AbstractModule
 {
@@ -40,7 +44,7 @@ public class TestOrieenteerModule extends AbstractModule
 	@Singleton
 	public WebApplication providesWebApplication(Injector injector)
 	{
-		WebApplication app = injector.getInstance(OrienteerWebApplication.class);
+		OrienteerWebApplication app = injector.getInstance(OrienteerWebApplication.class);
 		app.getComponentInstantiationListeners().add(new GuiceComponentInjector(app, injector));
 		return app;
 	}
@@ -50,6 +54,18 @@ public class TestOrieenteerModule extends AbstractModule
 	public WicketTester providesInitialWicketTester(WebApplication app)
 	{
 		return new CloseableWicketTester(app);
+	}
+	
+	@Provides
+	public ODatabaseRecord getDatabaseRecord()
+	{
+		ODatabaseRecord db = DefaultODatabaseThreadLocalFactory.castToODatabaseRecord(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+		if(db.isClosed())
+		{
+			ODatabaseRecordThreadLocal.INSTANCE.remove();
+			db = DefaultODatabaseThreadLocalFactory.castToODatabaseRecord(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+		}
+		return db;
 	}
 
 }

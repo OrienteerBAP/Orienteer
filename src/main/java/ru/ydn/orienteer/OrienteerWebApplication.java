@@ -11,6 +11,7 @@ import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
 import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
 import ru.ydn.orienteer.hooks.CalculablePropertiesHook;
+import ru.ydn.orienteer.hooks.ReferencesConsistencyHook;
 import ru.ydn.orienteer.modules.IOrienteerModule;
 import ru.ydn.orienteer.modules.ModuledDataInstallator;
 import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
@@ -96,6 +97,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getApplicationListeners().add(new ModuledDataInstallator());
 		registerModule(new OrienteerLocalizationModule());
 		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
+		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
@@ -52,16 +54,27 @@ import com.orientechnologies.orient.core.sql.OSQLEngine;
 
 public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V>
 {
-	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>(OPropertyPrototyper.OPROPERTY_ATTRS);
+	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>();
 	static
 	{
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.NAME);
+		OPROPERTY_ATTRS.add(CustomAttributes.TAB.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.ORDER.getName());
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.TYPE);
 		OPROPERTY_ATTRS.add(CustomAttributes.VISUALIZATION_TYPE.getName());
-		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
-		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.LINKED_TYPE);
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.LINKED_CLASS);
+		OPROPERTY_ATTRS.add(CustomAttributes.PROP_INVERSE.getName());
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.MANDATORY);
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.READONLY);
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.NOT_NULL);
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.MIN);
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.MAX);
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.COLLATE);
 		OPROPERTY_ATTRS.add(CustomAttributes.DISPLAYABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.HIDDEN.getName());
-		OPROPERTY_ATTRS.add(CustomAttributes.ORDER.getName());
-		OPROPERTY_ATTRS.add(CustomAttributes.TAB.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
+		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
 	}
 	/**
 	 * 
@@ -150,12 +163,16 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		if(OPropertyPrototyper.TYPE.equals(critery))
 		{
 			OType oType = (OType)getEnteredValue();
-			getMetaComponent(OPropertyPrototyper.LINKED_CLASS).setVisibilityAllowed(oType!=null && oType.isLink());
+			AbstractMetaPanel<OProperty, String, ?> metaPanel = getMetaComponent(OPropertyPrototyper.LINKED_CLASS);
+			if(metaPanel!=null) metaPanel.setVisibilityAllowed(oType!=null && oType.isLink());
+			metaPanel = getMetaComponent(CustomAttributes.PROP_INVERSE.getName());
+			if(metaPanel!=null) metaPanel.setVisibilityAllowed(oType!=null && oType.isLink());
 		}
 		else if(CustomAttributes.CALCULABLE.getName().equals(critery))
 		{
 			Boolean calculable = (Boolean) getEnteredValue();
-			getMetaComponent(CustomAttributes.CALC_SCRIPT.getName()).setVisibilityAllowed(calculable!=null && calculable);
+			AbstractMetaPanel<OProperty, String, ?> metaPanel = getMetaComponent(CustomAttributes.CALC_SCRIPT.getName());
+			if(metaPanel!=null) metaPanel.setVisibilityAllowed(calculable!=null && calculable);
 		}
 	}
 
@@ -173,6 +190,10 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new Label(id, getModel());
 			}
+			else if(CustomAttributes.PROP_INVERSE.getName().equals(critery))
+			{
+				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
+			}
 			else
 			{
 				return new Label(id, getModel());
@@ -180,21 +201,21 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		}
 		else if(DisplayMode.EDIT.equals(mode))
 		{
-			if("name".equals(critery))
+			if(OPropertyPrototyper.NAME.equals(critery))
 			{
 				return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE).setRequired(true);
 			}
-			else if("type".equals(critery))
+			else if(OPropertyPrototyper.TYPE.equals(critery))
 			{
 				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values()))
 						.setRequired(true)
 						.add(new RefreshMetaContextOnChangeBehaviour());
 			}
-			else if("linkedType".equals(critery))
+			else if(OPropertyPrototyper.LINKED_TYPE.equals(critery))
 			{
 				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values())).setNullValid(true);
 			}
-			else if("linkedClass".equals(critery))
+			else if(OPropertyPrototyper.LINKED_CLASS.equals(critery))
 			{
 				return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListClassesModel(), new IChoiceRenderer<OClass>() {
 
@@ -214,15 +235,17 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 					}
 				}).setNullValid(true);
 			}
-			else if("collate".equals(critery))
+			else if(OPropertyPrototyper.COLLATE.equals(critery))
 			{
 				return new DropDownChoice<String>(id, (IModel<String>)getModel(), Lists.newArrayList(OSQLEngine.getCollateNames()));
 			}
-			else if("mandatory".equals(critery) || "readonly".equals(critery) || "notNull".equals(critery))
+			else if(OPropertyPrototyper.MANDATORY.equals(critery) 
+					|| OPropertyPrototyper.READONLY.equals(critery) 
+					|| OPropertyPrototyper.NOT_NULL.equals(critery))
 			{
 				return new CheckBox(id, (IModel<Boolean>)getModel());
 			}
-			else if("min".equals(critery) || "max".equals(critery))
+			else if(OPropertyPrototyper.MIN.equals(critery) || OPropertyPrototyper.MAX.equals(critery))
 			{
 				return new TextField<V>(id, getModel());
 			}
@@ -263,6 +286,18 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 							}
 							
 						}.setNullValid(true);
+					case PROP_INVERSE:
+						return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new AbstractReadOnlyModel<List<OProperty>>() {
+
+							@Override
+							public List<OProperty> getObject() {
+								OClass oClass = (OClass)getMetaComponent(OPropertyPrototyper.LINKED_CLASS).getEnteredValue();
+								if(oClass==null) return Collections.EMPTY_LIST;
+								Collection<OProperty> ret = oClass.properties();
+								//TODO: filter properties
+								return ret instanceof List?(List<OProperty>) ret:new ArrayList<OProperty>(ret);
+							}
+						});
 					}
 				}
 				return resolveComponent(id, DisplayMode.VIEW, critery);

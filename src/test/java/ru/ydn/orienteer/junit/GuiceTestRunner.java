@@ -22,14 +22,18 @@ public class GuiceTestRunner extends BlockJUnit4ClassRunner
 	   */
 	  public GuiceTestRunner(final Class<?> classToRun, Module... modules) throws InitializationError
 	  {
-	    super(classToRun);
-	    this.injector = Guice.createInjector(modules);
+	    this(classToRun, Guice.createInjector(modules));
+	  }
+	  
+	  public GuiceTestRunner(final Class<?> classToRun, Injector injector) throws InitializationError
+	  {
+		  super(classToRun);
+		  this.injector = injector;
 	  }
 	 
 	  @Override
 	  public Object createTest()
 	  {
-		  System.out.println("INJECTING IN THREAD: "+Thread.currentThread());
 	    return injector.getInstance(getTestClass().getJavaClass());
 	  }
 	 

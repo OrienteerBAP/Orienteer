@@ -65,6 +65,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 		}
 		return calcProperties.get(db.getURL(), oClass.getName());
 	}
+	
 
 	@Override
 	public void onRecordAfterRead(ODocument iDocument) {

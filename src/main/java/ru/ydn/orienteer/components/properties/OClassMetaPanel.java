@@ -214,6 +214,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 							OClass oClass = getEntityObject();
 							if(oClass==null) return null;
 							Collection<OProperty> ret = oClass.properties();
+							//TODO: filter properties
 							return ret instanceof List?(List<OProperty>) ret:new ArrayList<OProperty>(ret);
 						}
 					});
