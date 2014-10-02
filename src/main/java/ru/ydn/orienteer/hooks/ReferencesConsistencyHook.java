@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.hooks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -95,6 +96,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			try
 			{
 				OClass thisOClass = doc.getSchemaClass();
+				if(thisOClass==null) return;
 				Collection<OProperty> refProperties = getCache().get(thisOClass);
 				for (OProperty oProperty : refProperties)
 				{
@@ -119,6 +121,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 									else
 									{
 										Collection<Object> objects = otherDoc.field(inverseProperty.getName());
+										if(objects==null) objects = new ArrayList<Object>();
 										objects.add(doc);
 										otherDoc.field(inverseProperty.getName(), objects);
 									}
@@ -138,21 +141,45 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			}
 		}
 	}
+	
+	
 
-	@Override
+	/*@Override
 	public void onRecordAfterUpdate(ODocument doc) {
 		if(enter())
 		{
 			try
 			{
+				OClass thisOClass = doc.getSchemaClass();
+				if(thisOClass==null) return;
+				Collection<OProperty> refProperties = getCache().get(thisOClass);
+				if(refProperties!=null && refProperties.size()>0)
+				{
+					String[] changedFields = doc.getDirtyFields();
+					for (String field : changedFields)
+					{
+						OProperty changedProperty = thisOClass.getProperty(field);
+						if(refProperties.contains(changedProperty))
+						{
+							Object original = doc.getOriginalValue(field);
+							Object current = doc.field(field);
+							System.out.println("Changed field '"+field+"'");
+							System.out.println("Original: "+original+ " type: "+(original!=null?original.getClass().getName():"NULL"));
+							System.out.println("Current: "+current+" type: "+(current!=null?current.getClass().getName():"NULL"));
+						}
+					}
+				}
 				
+			} catch (ExecutionException e)
+			{
+				LOG.error("Can't update reverse links onUpdate", e);
 			}
 			finally
 			{
 				exit();
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public void onRecordAfterDelete(ODocument doc) {
@@ -161,6 +188,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			try
 			{
 				OClass thisOClass = doc.getSchemaClass();
+				if(thisOClass==null) return;
 				Collection<OProperty> refProperties = getCache().get(thisOClass);
 				for (OProperty oProperty : refProperties)
 				{
@@ -185,7 +213,12 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 									else
 									{
 										Collection<Object> objects = otherDoc.field(inverseProperty.getName());
-										objects.add(doc.getIdentity());
+										if(objects!=null)
+										{
+											objects.remove(doc);
+										}
+										otherDoc.field(inverseProperty.getName(), objects);
+										otherDoc.save();
 									}
 								}
 							}

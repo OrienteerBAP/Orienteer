@@ -1,5 +1,7 @@
 package ru.ydn.orienteer;
 
+import java.util.Collection;
+
 import javax.inject.Provider;
 
 import org.junit.Test;
@@ -12,6 +14,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -22,6 +25,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @Singleton
 public class TestHooks
 {
+	private static final String TEST_CLASS_A = "TestClassA";
+	private static final String TEST_CLASS_B = "TestClassB";
 	@Test
 	public void testCalculableHook() throws Exception
 	{
@@ -31,8 +36,8 @@ public class TestHooks
 		
 		assertFalse(db.isClosed());
 		db.commit();
-		if(schema.existsClass("TestClassA")) schema.dropClass("TestClassA");
-		OClass oClass = schema.createClass("TestClassA");
+		if(schema.existsClass(TEST_CLASS_A)) schema.dropClass(TEST_CLASS_A);
+		OClass oClass = schema.createClass(TEST_CLASS_A);
 		try
 		{
 			oClass.createProperty("a", OType.INTEGER);
@@ -49,7 +54,80 @@ public class TestHooks
 			assertEquals(4, doc.field("c"));
 		} finally
 		{
-			schema.dropClass(oClass.getName());
+			schema.dropClass(TEST_CLASS_A);
+			OrientDbWebSession.get().signOut();
+		}
+	}
+	
+	@Test
+	public void testReferencesHook() throws Exception
+	{
+		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
+		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		OSchema schema = db.getMetadata().getSchema();
+		
+		assertFalse(db.isClosed());
+		db.commit();
+		if(schema.existsClass(TEST_CLASS_A)) schema.dropClass(TEST_CLASS_A);
+		OClass classA = schema.createClass(TEST_CLASS_A);
+		try
+		{
+			OProperty parent = classA.createProperty("parent", OType.LINK);
+			OProperty child = classA.createProperty("child", OType.LINKLIST);
+			CustomAttributes.PROP_INVERSE.setValue(parent, child);
+			CustomAttributes.PROP_INVERSE.setValue(child, parent);
+			//Create root object
+			ODocument rootDoc = new ODocument(classA);
+			rootDoc.save();
+			//Create first child
+			ODocument child1Doc = new ODocument(classA);
+			child1Doc.field("parent", rootDoc);
+			child1Doc.save();
+			//Check that back ref is here
+			rootDoc.reload();
+			Collection<OIdentifiable> childCollection = rootDoc.field("child");
+			assertEquals(1, childCollection.size());
+			assertTrue(childCollection.contains(child1Doc));
+			//Create second child
+			ODocument child2Doc = new ODocument(classA);
+			child2Doc.field("parent", rootDoc);
+			child2Doc.save();
+			//Check that back ref to 2 child doc here
+			rootDoc.reload();
+			childCollection = rootDoc.field("child");
+			assertEquals(2, childCollection.size());
+			assertTrue(childCollection.contains(child1Doc));
+			assertTrue(childCollection.contains(child2Doc));
+			//Remove first child;
+			child1Doc.reload();
+			child1Doc.delete();
+			//Check that back ref to second child doc here
+			rootDoc.reload();
+			childCollection = rootDoc.field("child");
+			assertEquals(1, childCollection.size());
+			assertTrue(childCollection.contains(child2Doc));
+			/*
+			//Create 3rd child
+			ODocument child3Doc = new ODocument(classA);
+			child3Doc.save();
+			//Associate 3rd child with root by attribute
+			childCollection.add(child3Doc);
+			rootDoc.field("child", childCollection);
+			rootDoc.save();
+			//Check that association is correct for root
+			rootDoc.reload();
+			childCollection = rootDoc.field("child");
+			assertEquals(2, childCollection.size());
+			assertTrue(childCollection.contains(child2Doc));
+			assertTrue(childCollection.contains(child3Doc));
+			//Check that association is correct for child3
+			child3Doc.reload();
+			assertNotNull("Parent should be set", child3Doc.field("parent"));
+			OIdentifiable rootId = child3Doc.field("parent");
+			assertEquals(rootDoc, rootId.getRecord());*/
+		} finally
+		{
+			schema.dropClass(TEST_CLASS_A);
 			OrientDbWebSession.get().signOut();
 		}
 	}
