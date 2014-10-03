@@ -106,7 +106,7 @@ public class TestHooks
 			childCollection = rootDoc.field("child");
 			assertEquals(1, childCollection.size());
 			assertTrue(childCollection.contains(child2Doc));
-			/*
+			
 			//Create 3rd child
 			ODocument child3Doc = new ODocument(classA);
 			child3Doc.save();
@@ -124,7 +124,25 @@ public class TestHooks
 			child3Doc.reload();
 			assertNotNull("Parent should be set", child3Doc.field("parent"));
 			OIdentifiable rootId = child3Doc.field("parent");
-			assertEquals(rootDoc, rootId.getRecord());*/
+			assertEquals(rootDoc, rootId.getRecord());
+			
+			//Now lets update parent for child2 to null
+			child2Doc.field("parent", (Object)null);
+			child2Doc.save();
+			//Check root
+			rootDoc.reload();
+			childCollection = rootDoc.field("child");
+			assertEquals(1, childCollection.size());
+			assertTrue(childCollection.contains(child3Doc));
+			
+			//Lets delete reference to child3 by clear
+			childCollection.clear();
+//			childCollection.remove(child3Doc);
+			rootDoc.field("child", childCollection);
+			rootDoc.save();
+			//Check back ref from Child3
+			child3Doc.reload();
+			assertNull(child3Doc.field("parent"));
 		} finally
 		{
 			schema.dropClass(TEST_CLASS_A);

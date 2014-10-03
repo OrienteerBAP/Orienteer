@@ -19,6 +19,8 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.db.record.OMultiValueChangeEvent;
+import com.orientechnologies.orient.core.db.record.OMultiValueChangeTimeLine;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.hook.ORecordHook.DISTRIBUTED_EXECUTION_MODE;
 import com.orientechnologies.orient.core.id.ORID;
@@ -105,28 +107,12 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 					if(value instanceof OIdentifiable) value = Arrays.asList(value);
 					if(inverseProperty!=null && value!=null && value instanceof Collection)
 					{
-						OClass otherOClass = inverseProperty.getOwnerClass();
-						boolean isReverseMultiple = inverseProperty.getType().isMultiValue();
 						for(Object otherObj: (Collection<?>)value)
 						{
 							if(otherObj instanceof OIdentifiable)
 							{
 								ODocument otherDoc = ((OIdentifiable) otherObj).getRecord();
-								if(otherDoc.getSchemaClass().isSubClassOf(otherOClass))
-								{
-									if(!isReverseMultiple)
-									{
-										otherDoc.field(inverseProperty.getName(), doc);
-									}
-									else
-									{
-										Collection<Object> objects = otherDoc.field(inverseProperty.getName());
-										if(objects==null) objects = new ArrayList<Object>();
-										objects.add(doc);
-										otherDoc.field(inverseProperty.getName(), objects);
-									}
-									otherDoc.save();
-								}
+								addLink(otherDoc, inverseProperty, doc);
 							}
 						}
 					}
@@ -144,7 +130,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 	
 	
 
-	/*@Override
+	@Override
 	public void onRecordAfterUpdate(ODocument doc) {
 		if(enter())
 		{
@@ -161,11 +147,41 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 						OProperty changedProperty = thisOClass.getProperty(field);
 						if(refProperties.contains(changedProperty))
 						{
-							Object original = doc.getOriginalValue(field);
-							Object current = doc.field(field);
-							System.out.println("Changed field '"+field+"'");
-							System.out.println("Original: "+original+ " type: "+(original!=null?original.getClass().getName():"NULL"));
-							System.out.println("Current: "+current+" type: "+(current!=null?current.getClass().getName():"NULL"));
+							OProperty inverseProperty = CustomAttributes.PROP_INVERSE.getValue(changedProperty);
+							if(changedProperty.getType().isMultiValue())
+							{
+								OMultiValueChangeTimeLine<Object, Object> timeline = doc.getCollectionTimeLine(field);
+								List<OMultiValueChangeEvent<Object, Object>> events = timeline.getMultiValueChangeEvents();
+								for (OMultiValueChangeEvent<Object, Object> event : events)
+								{
+									OIdentifiable toAddTo=null;
+									OIdentifiable toRemoveFrom=null;
+									switch (event.getChangeType())
+									{
+										case ADD:
+											toAddTo = (OIdentifiable)event.getValue();
+											break;
+										case UPDATE:
+											toAddTo = (OIdentifiable)event.getValue();
+											toRemoveFrom = (OIdentifiable)event.getOldValue();
+											break;
+										case REMOVE:
+											toRemoveFrom = (OIdentifiable)event.getOldValue();
+											break;
+									}
+									if(toAddTo!=null) addLink((ODocument)toAddTo.getRecord(), inverseProperty, doc);
+									if(toRemoveFrom!=null) removeLink((ODocument)toRemoveFrom.getRecord(), inverseProperty, doc);
+								}
+							}
+							else
+							{
+								Object original = doc.getOriginalValue(field);
+								Object current = doc.field(field);
+								if(original!=null && original instanceof OIdentifiable) 
+									removeLink((ODocument)((OIdentifiable)original).getRecord(), inverseProperty, doc);
+								if(current!=null && current instanceof OIdentifiable)
+									addLink((ODocument)((OIdentifiable)current).getRecord(), inverseProperty, doc);
+							}
 						}
 					}
 				}
@@ -179,7 +195,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				exit();
 			}
 		}
-	}*/
+	}
 
 	@Override
 	public void onRecordAfterDelete(ODocument doc) {
@@ -197,30 +213,12 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 					if(value instanceof OIdentifiable) value = Arrays.asList(value);
 					if(inverseProperty!=null && value!=null && value instanceof Collection)
 					{
-						OClass otherOClass = inverseProperty.getOwnerClass();
-						boolean isReverseMultiple = inverseProperty.getType().isMultiValue();
 						for(Object otherObj: (Collection<?>)value)
 						{
 							if(otherObj instanceof OIdentifiable)
 							{
 								ODocument otherDoc = ((OIdentifiable) otherObj).getRecord();
-								if(otherDoc.getSchemaClass().isSubClassOf(otherOClass))
-								{
-									if(!isReverseMultiple)
-									{
-										otherDoc.removeField(inverseProperty.getName());
-									}
-									else
-									{
-										Collection<Object> objects = otherDoc.field(inverseProperty.getName());
-										if(objects!=null)
-										{
-											objects.remove(doc);
-										}
-										otherDoc.field(inverseProperty.getName(), objects);
-										otherDoc.save();
-									}
-								}
+								removeLink(otherDoc, inverseProperty, doc);
 							}
 						}
 					}
@@ -232,6 +230,55 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			finally
 			{
 				exit();
+			}
+		}
+	}
+	
+	private void addLink(ODocument doc, OProperty property, ODocument value)
+	{
+		if(doc==null || property ==null || value == null) return;
+		String field = property.getName();
+		if(doc.getSchemaClass().isSubClassOf(property.getOwnerClass()))
+		{
+			if(property.getType().isMultiValue())
+			{
+				Collection<Object> objects = doc.field(field);
+				if(objects==null) objects = new ArrayList<Object>();
+				objects.add(value);
+				doc.field(field, objects);
+				doc.save();
+			}
+			else
+			{
+				doc.field(field, value);
+				doc.save();
+			}
+		}
+	}
+	
+	private void removeLink(ODocument doc, OProperty property, ODocument value)
+	{
+		if(doc==null || property ==null || value == null) return;
+		String field = property.getName();
+		if(doc.getSchemaClass().isSubClassOf(property.getOwnerClass()))
+		{
+			if(property.getType().isMultiValue())
+			{
+				Collection<Object> objects = doc.field(field);
+				if(objects!=null)
+				{
+					objects.remove(value);
+				}
+				doc.field(field, objects);
+				doc.save();
+			}
+			else
+			{
+				if(value.getIdentity().equals(doc.field(field, ORID.class)))
+				{
+					doc.field(field, (Object) null);
+					doc.save();
+				}
 			}
 		}
 	}
