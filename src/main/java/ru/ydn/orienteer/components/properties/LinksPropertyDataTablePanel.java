@@ -6,8 +6,11 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
+import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
@@ -53,7 +56,8 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		super(id, documentModel);
 		String sql;
 		OClass linkedClass = property.getLinkedClass();
-		if(CustomAttributes.CALCULABLE.getValue(property, false))
+		boolean isCalculable = CustomAttributes.CALCULABLE.getValue(property, false);
+		if(isCalculable)
 		{
 			sql = CustomAttributes.CALC_SCRIPT.getValue(property);
 			sql = sql.replace("?", ":doc");
@@ -66,6 +70,11 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		provider.setParameter("doc", documentModel);
 		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass), provider, 20);
 		table.setCaptionModel(new OPropertyNamingModel(property));
+		if(!isCalculable)
+		{
+			table.addCommand(new CreateODocumentCommand(table, documentModel, new OPropertyModel(property)));
+			table.addCommand(new DeleteODocumentCommand(table, linkedClass));
+		}
 		add(table);
 	}
 

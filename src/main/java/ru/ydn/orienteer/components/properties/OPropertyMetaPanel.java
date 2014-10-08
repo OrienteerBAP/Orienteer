@@ -297,7 +297,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 								//TODO: filter properties
 								return ret instanceof List?(List<OProperty>) ret:new ArrayList<OProperty>(ret);
 							}
-						});
+						}).setNullValid(true);
 					}
 				}
 				return resolveComponent(id, DisplayMode.VIEW, critery);

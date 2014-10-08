@@ -20,6 +20,7 @@ import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -30,6 +31,11 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 	private static final long serialVersionUID = 1L;
 	private IModel<OClass> classModel;
 	
+	public DeleteODocumentCommand(OrienteerDataTable<ODocument, ?> table, OClass oClasss)
+	{
+		this(table, new OClassModel(oClasss));
+	}
+	
 	public DeleteODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel)
 	{
 		super(table);
@@ -39,7 +45,7 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 	@Override
 	protected void performMultiAction(List<ODocument> objects) {
 		super.performMultiAction(objects);
-		getDatabase().commit();
+		getDatabase().commit(true);
 		getDatabase().begin();
 	}
 

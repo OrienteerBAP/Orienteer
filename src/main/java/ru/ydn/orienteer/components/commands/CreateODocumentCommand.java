@@ -4,6 +4,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.properties.DisplayMode;
@@ -56,6 +57,18 @@ public class CreateODocumentCommand extends AbstractCreateCommand<ODocument> imp
 	@Override
 	public void onClick() {
 		ODocument doc = new ODocument(classModel.getObject());
+		if(propertyModel!=null && documentModel!=null)
+		{
+			OProperty property = propertyModel.getObject();
+			if(property!=null)
+			{
+				OProperty inverseProperty = CustomAttributes.PROP_INVERSE.getValue(property);
+				if(inverseProperty!=null)
+				{
+					doc.field(inverseProperty.getName(), documentModel.getObject());
+				}
+			}
+		}
 		setResponsePage(new DocumentPage(doc).setDisplayMode(DisplayMode.EDIT));
 	}
 

@@ -17,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -66,6 +67,31 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 		return calcProperties.get(db.getURL(), oClass.getName());
 	}
 	
+	@Override
+	public RESULT onRecordBeforeCreate(ODocument iDocument) {
+		return onRecordBeforeUpdate(iDocument);
+	}
+
+	@Override
+	public RESULT onRecordBeforeUpdate(ODocument iDocument) {
+		List<String> calcProperties = getCalcProperties(iDocument);
+		if(calcProperties!=null && calcProperties.size()>0)
+		{
+			boolean wasChanged=false;
+			String[] fieldNames = iDocument.fieldNames();
+			for (String field : fieldNames)
+			{
+				if(calcProperties.contains(field))
+				{
+					iDocument.removeField(field);
+					wasChanged = true;
+				}
+			}
+			return wasChanged?RESULT.RECORD_CHANGED:RESULT.RECORD_NOT_CHANGED;
+		}
+		
+		return RESULT.RECORD_NOT_CHANGED;
+	}
 
 	@Override
 	public void onRecordAfterRead(ODocument iDocument) {
