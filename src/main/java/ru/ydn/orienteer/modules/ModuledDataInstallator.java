@@ -13,10 +13,12 @@ import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.exception.OTransactionException;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.wicket.wicketorientdb.AbstractDataInstallator;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
@@ -40,7 +42,8 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 		}
 		if(!oModuleClass.existsProperty(OMODULE_NAME))
 		{
-			oModuleClass.createProperty(OMODULE_NAME, OType.STRING);
+			OProperty nameProperty = oModuleClass.createProperty(OMODULE_NAME, OType.STRING);
+			CustomAttributes.PROP_NAME.setValue(oModuleClass, nameProperty);
 		}
 		if(!oModuleClass.existsProperty(OMODULE_VERSION))
 		{
@@ -61,6 +64,10 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 			if(oldVersion==null)
 			{
 				module.onInstall(app, db);
+				ODocument moduleDoc = new ODocument(oModuleClass);
+				moduleDoc.field(OMODULE_NAME, module.getName());
+				moduleDoc.field(OMODULE_VERSION, module.getVersion());
+				moduleDoc.save();
 			}
 			else if(!oldVersion.equals(version))
 			{

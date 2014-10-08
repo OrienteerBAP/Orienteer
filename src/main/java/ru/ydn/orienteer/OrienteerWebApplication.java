@@ -15,6 +15,7 @@ import ru.ydn.orienteer.hooks.ReferencesConsistencyHook;
 import ru.ydn.orienteer.modules.IOrienteerModule;
 import ru.ydn.orienteer.modules.ModuledDataInstallator;
 import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
+import ru.ydn.orienteer.modules.UpdateDefaultSchemaModule;
 import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.orienteer.web.LoginPage;
 import ru.ydn.orienteer.web.schema.ListOClassesPage;
@@ -96,6 +97,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
 		registerModule(new OrienteerLocalizationModule());
+		registerModule(new UpdateDefaultSchemaModule());
 		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
 		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
 	}

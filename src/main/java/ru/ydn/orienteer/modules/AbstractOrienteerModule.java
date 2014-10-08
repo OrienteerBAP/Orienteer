@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.modules;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -96,6 +97,60 @@ public class AbstractOrienteerModule implements IOrienteerModule
 			//We can't do something to change type and fields if required
 		}
 		return ret;
+	}
+	
+	protected void orderProperties(OClass oClass, String... fields)
+	{
+		for(int i=0; i<fields.length; i++)
+		{
+			String field = fields[i];
+			OProperty oProperty = oClass.getProperty(field);
+			if(oProperty!=null)
+			{
+				CustomAttributes.ORDER.setValue(oProperty, i*10);
+			}
+		}
+	}
+	
+	protected void assignTab(OClass oClass, String tab, String... fields)
+	{
+		updateCustomAttribute(oClass, CustomAttributes.TAB, tab, fields);
+	}
+	
+	protected void assignVisualization(OClass oClass, String visualization, String... fields)
+	{
+		updateCustomAttribute(oClass, CustomAttributes.VISUALIZATION_TYPE, visualization, fields);
+	}
+	
+	protected void switchDisplayable(OClass oClass, boolean displayable, String... fields)
+	{
+		updateCustomAttribute(oClass, CustomAttributes.DISPLAYABLE, displayable, fields);
+	}
+	
+	protected <V> void updateCustomAttribute(OClass oClass, CustomAttributes attr, V value, String... fields)
+	{
+		for(String field: fields)
+		{
+			OProperty oProperty = oClass.getProperty(field);
+			if(oProperty!=null)
+			{
+				attr.setValue(oProperty, value);
+			}
+		}
+	}
+	
+	protected void assignNameAndParent(OClass oClass, String nameField, String parentField)
+	{
+		OProperty name = nameField!=null?oClass.getProperty(nameField):null;
+		OProperty parent = parentField!=null?oClass.getProperty(parentField):null;
+		if(name!=null)
+		{
+			CustomAttributes.PROP_NAME.setValue(oClass, name);
+		}
+		if(parent!=null)
+		{
+			CustomAttributes.PROP_PARENT.setValue(oClass, parent);
+		}
 	}
 
 }
