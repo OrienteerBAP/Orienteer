@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -49,6 +50,7 @@ public class DocumentPage extends AbstractDocumentPage {
 
 	private TabsPanel tabsPanel;
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
+	private WebMarkupContainer extendedPropertiesContainer;
 	private SaveODocumentCommand saveODocumentCommand;
 	
 	private IModel<String> tabModel;
@@ -89,6 +91,7 @@ public class DocumentPage extends AbstractDocumentPage {
 			@Override
 			public void onTabClick(AjaxRequestTarget target) {
 				target.add(propertiesStructureTable);
+				target.add(extendedPropertiesContainer);
 			}
 			
 		};
@@ -119,6 +122,8 @@ public class DocumentPage extends AbstractDocumentPage {
 				return oClassIntrospector.listProperties(getDocument().getSchemaClass(), tabModel.getObject(), true);
 			}
 		};
+		extendedPropertiesContainer = new WebMarkupContainer("extendedPropertiesContainer");
+		extendedPropertiesContainer.setOutputMarkupPlaceholderTag(true);
 		ListView<OProperty> extendedPropertiesListView = new ListView<OProperty>("extendedProperties", propertiesModel) {
 
 			@Override
@@ -133,7 +138,8 @@ public class DocumentPage extends AbstractDocumentPage {
 				item.add(form);
 			}
 		};
-		add(extendedPropertiesListView);
+		extendedPropertiesContainer.add(extendedPropertiesListView);
+		add(extendedPropertiesContainer);
 	}
 	
 	public DisplayMode getDisplayMode()
