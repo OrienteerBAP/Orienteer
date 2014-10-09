@@ -65,12 +65,17 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		{
 			stateSignature = newSignature;
 			component = resolveComponent(PANEL_ID, critery);
-			if(component instanceof LabeledWebMarkupContainer)
-			{
-				((LabeledWebMarkupContainer)component).setLabel(getLabel());
-			}
+			onPostResolveComponent(component, critery);
 //			component.setOutputMarkupId(true);
 			addOrReplace(component);
+		}
+	}
+	
+	protected void onPostResolveComponent(Component component, C critery)
+	{
+		if(component instanceof LabeledWebMarkupContainer)
+		{
+			((LabeledWebMarkupContainer)component).setLabel(getLabel());
 		}
 	}
 	

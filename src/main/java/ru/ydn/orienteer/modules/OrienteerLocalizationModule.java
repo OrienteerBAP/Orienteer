@@ -118,6 +118,9 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 		mergeOProperty(oClass, OPROPERTY_ACTIVE, OType.BOOLEAN);
 		mergeOProperty(oClass, OPROPERTY_VALUE, OType.STRING);
 		mergeOIndex(oClass, "key_index", INDEX_TYPE.NOTUNIQUE, "key");
+		orderProperties(oClass, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
+		switchDisplayable(oClass, true, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
+		assignNameAndParent(oClass, OPROPERTY_KEY, null);
 	}
 
 	@Override
