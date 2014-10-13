@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/PhantomYdn/Orienteer.svg?branch=master)](https://travis-ci.org/PhantomYdn/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/PhantomYdn/Orienteer.svg)](https://coveralls.io/r/PhantomYdn/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/PhantomYdn/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Orienteer
-<img src="http://ydn.ru/orienteer.png">
+![Orinenteer]("http://orienteer.org/images/orienteer.png")
 
 ### What is Orienteer 
 
@@ -14,7 +14,7 @@
 
 ### Demo
 
-[Demo server](http://ydn.ru:8081)
+[Demo server](http://demo.orienteer.org)
 
 Default users:
 - admin/admin
