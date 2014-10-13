@@ -1,12 +1,18 @@
 package ru.ydn.orienteer.web;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
@@ -53,6 +59,20 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
 		add(new ODocumentPageLink<OIdentifiable>("myProfile", new PropertyModel<OIdentifiable>(this, "session.user.document")));
+		
+		final IModel<String> queryModel = Model.of();
+		Form<String>  searchForm = new Form<String>("searchForm", queryModel)
+		{
+
+			@Override
+			protected void onSubmit() {
+				setResponsePage(new SearchPage(queryModel));
+			}
+			
+		};
+		searchForm.add(new TextField<String>("query", queryModel));
+		searchForm.add(new AjaxButton("search"){});
+		add(searchForm);
 	}
 	
 	protected Component newPageHeaderComponent(String componentId)

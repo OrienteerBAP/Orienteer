@@ -16,21 +16,21 @@ import org.apache.wicket.model.Model;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
-public class TabsPanel extends GenericPanel<String>
+public class TabsPanel<T> extends GenericPanel<T>
 {
-	private ListView<String> tabs;
-	public TabsPanel(String id, IModel<String> model, List<String> tabs)
+	private ListView<T> tabs;
+	public TabsPanel(String id, IModel<T> model, List<T> tabs)
 	{
 		this(id, model, Model.ofList(tabs));
 	}
-	public TabsPanel(String id, IModel<String> model, IModel<? extends List<? extends String>> tabsModel)
+	public TabsPanel(String id, IModel<T> model, IModel<? extends List<? extends T>> tabsModel)
 	{
 		super(id, model);
 		setOutputMarkupPlaceholderTag(true);
-		tabs = new ListView<String>("tabs", tabsModel) {
+		tabs = new ListView<T>("tabs", tabsModel) {
 
 			@Override
-			protected void populateItem(final ListItem<String> item) {
+			protected void populateItem(final ListItem<T> item) {
 				item.add(new AttributeAppender("class", "active")
 				{
 					@Override
@@ -40,7 +40,7 @@ public class TabsPanel extends GenericPanel<String>
 					
 				});
 				
-				item.add(new AjaxLink<String>("link", item.getModel()) {
+				item.add(new AjaxLink<T>("link", item.getModel()) {
 					@Override
 					public void onClick(AjaxRequestTarget target) {
 						TabsPanel.this.setModelObject(item.getModelObject());
@@ -53,7 +53,7 @@ public class TabsPanel extends GenericPanel<String>
 		add(tabs);
 	}
 	
-	protected IModel<String> newTabNameModel(IModel<String> tabModel)
+	protected IModel<String> newTabNameModel(IModel<T> tabModel)
 	{
 		return new SimpleNamingModel(tabModel);
 	}
