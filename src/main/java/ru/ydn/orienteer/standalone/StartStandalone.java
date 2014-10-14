@@ -16,6 +16,7 @@ public class StartStandalone
 	private static final Pattern ARG_PATTERN=Pattern.compile("^--([^=]*)=?(.*)$");
 	private static final String ARG_CONFIG="config";
 	private static final String ARG_EMBEDDED="embedded";
+	private static final String ARG_HOST="host";
 	private static final String ARG_PORT="port";
 	private static final String ARG_HELP="help";
 	private static final String ARG_WAIT="wait";
@@ -60,16 +61,19 @@ public class StartStandalone
 			{
 				System.out.println("Port '"+portStr+"' is incorrect. Using default port "+port);
 			}
-    		ServerRunner runner = new ServerRunner(port);
-            System.out.println("Starting Orienteer, PRESS ANY KEY TO STOP");
+    		String host = parsedArgs.get(ARG_HOST);
+    		ServerRunner runner = new ServerRunner(host, port);
+            System.out.println("Starting Orienteer on "+(host!=null?host:"0.0.0.0")+":"+port);
             runner.start();
             String wait = parsedArgs.get(ARG_WAIT);
             if(wait==null || wait.trim().length()==0)
             {
+            	System.out.println("PRESS ANY KEY TO STOP");
             	System.in.read();
             }
             else
             {
+            	System.out.println("ENTER '"+wait+"' TO STOP");
             	BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             	String line=reader.readLine();
             	while(!wait.equals(line))
@@ -111,7 +115,7 @@ public class StartStandalone
     {
     	ProtectionDomain protectionDomain = StartStandalone.class.getProtectionDomain();
     	URL location = protectionDomain.getCodeSource().getLocation();
-    	System.out.printf("Usage: java -jar %s [--config=<path> | --embedded] [--port=<port>] [--help]", location.getFile());
+    	System.out.printf("Usage: java -jar %s [--config=<path> | --embedded] [--host=<host>] [--port=<port>] [--help]", location.getFile());
     }
 
 	public static URL lookupPropertiesURL() throws IOException

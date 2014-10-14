@@ -13,8 +13,9 @@ public class ServerRunner
 	public static final int DEFAULT_TIMEOUT = 60*60*1000;
 	public static final int DEFAULT_PORT = 8080;
 	
-	private int timeout = DEFAULT_TIMEOUT;
+	private String host = null;
 	private int port = DEFAULT_PORT;
+	private int timeout = DEFAULT_TIMEOUT;
 	
 	private Server server;
 	
@@ -22,13 +23,15 @@ public class ServerRunner
 	{
 	}
 	
-	public ServerRunner(int port)
+	public ServerRunner(String host, int port)
 	{
+		this.host = host;
 		this.port = port;
 	}
 	
-	public ServerRunner(int port, int timeout)
+	public ServerRunner(String host, int port, int timeout)
 	{
+		this.host = host;
 		this.port = port;
 		this.timeout = timeout;
 	}
@@ -45,6 +48,7 @@ public class ServerRunner
 	        // Set some timeout options to make debugging easier.
 	        connector.setMaxIdleTime(timeout);
 	        connector.setSoLingerTime(-1);
+	        if(host!=null) connector.setHost(host);
 	        connector.setPort(port);
 	        server.addConnector(connector);
 	        Resource.setDefaultUseCaches(false);
