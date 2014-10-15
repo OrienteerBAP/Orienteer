@@ -115,7 +115,7 @@ public class StartStandalone
     {
     	ProtectionDomain protectionDomain = StartStandalone.class.getProtectionDomain();
     	URL location = protectionDomain.getCodeSource().getLocation();
-    	System.out.printf("Usage: java -jar %s [--config=<path> | --embedded] [--host=<host>] [--port=<port>] [--help]", location.getFile());
+    	System.out.printf("Usage: java -jar %s [--config=<path> | --embedded] [--host=<host>] [--port=<port>] [--wait=<wait for>][--help]", location.getFile());
     }
 
 	public static URL lookupPropertiesURL() throws IOException
