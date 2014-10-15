@@ -72,6 +72,14 @@
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
 	</properties>
+	<repositories>
+       <repository>
+         <id>snapshots-repo</id>
+         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+         <releases><enabled>false</enabled></releases>
+         <snapshots><enabled>true</enabled></snapshots>
+       </repository>
+     </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>
