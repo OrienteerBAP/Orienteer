@@ -1,8 +1,6 @@
-[![Build Status](https://travis-ci.org/PhantomYdn/Orienteer.svg?branch=master)](https://travis-ci.org/PhantomYdn/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/PhantomYdn/Orienteer.svg)](https://coveralls.io/r/PhantomYdn/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/PhantomYdn/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-
 ## Orienteer
 ![Orinenteer](http://orienteer.org/images/orienteer.png)
-##This is fork for PhantomYdn Project Orienteer
+###This is fork for PhantomYdn Project Orienteer
 ### What is Orienteer 
 
 **Orienteer** is Data Warehouse System on top of OrientDB. It allows you:
@@ -11,17 +9,6 @@
 * Create/Read/Update/Delete documents
 * Create and view customizable reports
 * Extend functionality by flexible visualizations
-
-### Demo
-
-[Demo server](http://demo.orienteer.org)
-
-Default users:
-- admin/admin
-- reader/reader
-- writer/writer
-
-> Demo might be unavailable. Please consider to use localbuild and run.
 
 ### Orienteer installation
 
@@ -54,7 +41,7 @@ Orienteer in standalone mode use embedded jetty server to run yourself. To insta
 - Put orienteer-standalone.war into any directory
 - Optionally configure orienteer.properties accordging to your environment and place it in the same directory or above
   - By default, Orienteer, will run OrientDB database embedded
-- Run Orinteer as ```bash java -Xm512m -Xms512m -jar orienteer-standalone.war```. JVM parameters can be adjusted accordingly. Additional application parameters can be supplied:
+- Run Orinteer as ```bash java -Xmx512m -Xms512m -jar orienteer-standalone.war```. JVM parameters can be adjusted accordingly. Additional application parameters can be supplied:
   - ``` --config=<filename>``` - specification of path to orienteer configuration file
   - ``` --embedded``` - run embedded OrientDB database
   - ``` --port=<port number>``` - run Orienteer on specified port (Default: 8080)
