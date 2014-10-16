@@ -4,7 +4,7 @@
 
 **Orienteer** is Data Warehouse System on top of OrientDB. It allows you:
 
-* Manage you schema
+* Manage your schema
 * Create/Read/Update/Delete documents
 * Create and view customizable reports
 * Extend functionality by flexible visualizations
