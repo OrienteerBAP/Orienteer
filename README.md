@@ -1,5 +1,4 @@
 ## Orienteer
-![Orinenteer](http://orienteer.org/images/orienteer.png)
 ###This is fork for PhantomYdn Project Orienteer
 ### What is Orienteer 
 
