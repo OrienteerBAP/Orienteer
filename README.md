@@ -14,14 +14,13 @@
 
 ### Demo
 
-[Demo server](http://demo.orienteer.org)
+[Main Demo Server](http://demo.orienteer.org)
+[Heroku Demo Server](http://heroku.orienteer.org)
 
 Default users:
 - admin/admin
 - reader/reader
 - writer/writer
-
-> Demo might be unavailable. Please consider to use localbuild and run.
 
 ### Orienteer installation
 
