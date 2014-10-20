@@ -1,20 +1,26 @@
 <wicket:extend>
 <form wicket:id="form">
-	<div class = "search-container">
+	<div class = "row">
+		<div class="col-xs-9">
         <div class="input-group-top">
             <input wicket:id="query" type="text" class="form-control search-query"/>
         </div>
-        <div class = "div-search-form-button">
-            <button type="submit" class="btn btn-default" wicket:id="search">
+        </div>
+        <div class="col-xs-3">
+            <button type="submit" class="btn btn-primary" wicket:id="search">
                 <wicket:message key="search.searchbutton">Search</wicket:message>
             </button>
         </div>
     </div>
-	<ul wicket:id="tabs">
-	</ul>
+    <div class="row">
+		<ul wicket:id="tabs">
+		</ul>
+	</div>
+	<div class="row">
 	<div wicket:id="resultsContainer">
 		<table wicket:id="results">
 		</table>
+	</div>
 	</div>
 </form>
 </wicket:extend>

@@ -73,3 +73,16 @@ td.st-value textarea
 {
 	height: 12em;
 }
+
+.search-container {
+    display: table;
+    float: right;
+    white-space: normal;
+    width: 100%;
+}
+
+div.div-search-form-button {
+    display: table-cell;
+    vertical-align: middle;
+    padding-left: 8px;
+}
