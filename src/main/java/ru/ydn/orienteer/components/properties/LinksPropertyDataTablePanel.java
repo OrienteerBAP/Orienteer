@@ -8,6 +8,7 @@ import org.apache.wicket.model.IModel;
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
 import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
+import ru.ydn.orienteer.components.commands.ReleaseODocumentCommand;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
@@ -74,6 +75,7 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		{
 			table.addCommand(new CreateODocumentCommand(table, documentModel, new OPropertyModel(property)));
 			table.addCommand(new DeleteODocumentCommand(table, linkedClass));
+			table.addCommand(new ReleaseODocumentCommand(table, documentModel, new OPropertyModel(property)));
 		}
 		add(table);
 	}
