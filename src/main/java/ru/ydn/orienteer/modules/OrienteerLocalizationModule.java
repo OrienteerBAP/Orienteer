@@ -68,9 +68,9 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 					for (ODocument candidate : result)
 					{
 						int score = 0;
-						if(Strings.isEqual(language, (String)candidate.field(OPROPERTY_LANG)))score|=1<<3;
-						if(Strings.isEqual(language, (String)candidate.field(OPROPERTY_STYLE)))score|=1<<2;
-						if(Strings.isEqual(language, (String)candidate.field(OPROPERTY_VARIATION)))score|=1;
+						if(Strings.isEqual(language, (String)candidate.field(OPROPERTY_LANG)))score|=1<<2;
+						if(Strings.isEqual(style, (String)candidate.field(OPROPERTY_STYLE)))score|=1<<1;
+						if(Strings.isEqual(variation, (String)candidate.field(OPROPERTY_VARIATION)))score|=1;
 						if(score==7) fullMatchPresent=true;
 						Boolean active = candidate.field(OPROPERTY_ACTIVE);
 						if(active==null || active) score=-1;
