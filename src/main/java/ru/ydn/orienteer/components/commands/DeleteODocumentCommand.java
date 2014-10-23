@@ -43,14 +43,14 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 	}
 	
 	@Override
-	protected void performMultiAction(List<ODocument> objects) {
-		super.performMultiAction(objects);
+	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
+		super.performMultiAction(target, objects);
 		getDatabase().commit(true);
 		getDatabase().begin();
 	}
 
 	@Override
-	protected void perfromSingleAction(ODocument object) {
+	protected void perfromSingleAction(AjaxRequestTarget target, ODocument object) {
 		object.delete();
 	}
 

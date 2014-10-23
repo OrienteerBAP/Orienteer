@@ -52,9 +52,11 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 		super(labelKey);
 	}
 	
+	
+	
 	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
+	protected void onInitialize() {
+		super.onInitialize();
 		modal = new ModalWindow("modal");
 		modal.setAutoSize(true);
 		add(modal);

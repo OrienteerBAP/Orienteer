@@ -2,6 +2,7 @@ package ru.ydn.orienteer.components.commands;
 
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
@@ -43,14 +44,14 @@ public class CreateOIndexFromOPropertiesCommand extends
 	
 
 	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
+	protected void onInitialize() {
+		super.onInitialize();
 		setIcon(FAIconType.plus);
 		setBootstrapType(BootstrapType.SUCCESS);
 	}
 
 	@Override
-	protected void performMultiAction(List<OProperty> objects) {
+	protected void performMultiAction(AjaxRequestTarget target, List<OProperty> objects) {
 		if(objects==null || objects.size()==0)
 		{
 			error(OrienteerWebApplication.get().getResourceSettings().getLocalizer().getString("errors.checkbox.empty", this));

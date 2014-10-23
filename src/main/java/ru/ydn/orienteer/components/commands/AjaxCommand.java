@@ -58,8 +58,8 @@ public abstract class AjaxCommand<T> extends Command<T>
 	}
 	
 	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
+	protected void onInitialize() {
+		super.onInitialize();
 		setOutputMarkupPlaceholderTag(true);
 	}
 

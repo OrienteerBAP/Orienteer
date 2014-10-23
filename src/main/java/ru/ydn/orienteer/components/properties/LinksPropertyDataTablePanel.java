@@ -9,6 +9,7 @@ import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
 import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
 import ru.ydn.orienteer.components.commands.ReleaseODocumentCommand;
+import ru.ydn.orienteer.components.commands.SelectODocumentCommand;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
@@ -73,9 +74,11 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		table.setCaptionModel(new OPropertyNamingModel(property));
 		if(!isCalculable)
 		{
-			table.addCommand(new CreateODocumentCommand(table, documentModel, new OPropertyModel(property)));
+			OPropertyModel propertyModel = new OPropertyModel(property);
+			table.addCommand(new CreateODocumentCommand(table, documentModel, propertyModel));
 			table.addCommand(new DeleteODocumentCommand(table, linkedClass));
-			table.addCommand(new ReleaseODocumentCommand(table, documentModel, new OPropertyModel(property)));
+			table.addCommand(new SelectODocumentCommand(table, documentModel, propertyModel));
+			table.addCommand(new ReleaseODocumentCommand(table, documentModel, propertyModel));
 		}
 		add(table);
 	}

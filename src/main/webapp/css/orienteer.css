@@ -73,3 +73,13 @@ td.st-value textarea
 {
 	height: 12em;
 }
+
+div.wicket-modal h3.w_captionText
+{
+	font-size: 18px;
+}
+
+div.wicket-modal h3.w_captionText
+{
+	margin: 2em 0;
+}

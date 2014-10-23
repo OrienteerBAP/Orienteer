@@ -3,6 +3,7 @@ package ru.ydn.orienteer.components.commands;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
@@ -36,14 +37,14 @@ public class ReleaseODocumentCommand extends
 	}
 	
 	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
+	protected void onInitialize() {
+		super.onInitialize();
 		setIcon(FAIconType.times);
 		setBootstrapType(BootstrapType.WARNING);
 	}
 	
 	@Override
-	protected void performMultiAction(List<ODocument> objects) {
+	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 		if(objects==null || objects.isEmpty()) return;
 		ODocument doc = documentModel.getObject();
 		if(doc!=null)

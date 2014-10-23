@@ -2,6 +2,8 @@ package ru.ydn.orienteer.components.commands;
 
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -28,14 +30,14 @@ public class DeleteOIndexCommand extends AbstractDeleteCommand<OIndex<?>>
 	}
 	
 	@Override
-	protected void performMultiAction(List<OIndex<?>> objects) {
+	protected void performMultiAction(AjaxRequestTarget target, List<OIndex<?>> objects) {
 		getDatabase().commit();
-		super.performMultiAction(objects);
+		super.performMultiAction(target, objects);
 		getDatabase().begin();
 	}
 
 	@Override
-	protected void perfromSingleAction(OIndex<?> object) {
+	protected void perfromSingleAction(AjaxRequestTarget target, OIndex<?> object) {
 		//object.delete(); //TODO: This doesn't work - might be make PR to OrientDB?
 		getIndexManager().dropIndex(object.getName());
 	}

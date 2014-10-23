@@ -44,14 +44,12 @@ public abstract class AbstractCreateCommand<T> extends Command<T>
 	{
 		super(labelKey);
 	}
-
+	
 	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
+	protected void onInitialize() {
+		super.onInitialize();
 		setIcon(FAIconType.plus);
 		setBootstrapType(BootstrapType.PRIMARY);
 	}
-	
-	
 
 }

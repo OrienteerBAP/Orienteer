@@ -43,6 +43,7 @@ public class ImportOSchemaCommand extends AbstractModalWindowCommand<OClass>
 
 	@Override
 	protected void initializeContent(ModalWindow modal) {
+		modal.setTitle(new ResourceModel("command.import.modal.title"));
 		modal.setContent(new ImportDialogPanel(modal.getContentId(), modal));
 	}
 }

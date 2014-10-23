@@ -26,8 +26,8 @@ public abstract class AbstractDeleteCommand<T> extends AbstractCheckBoxEnabledCo
 	}
 	
 	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
+	protected void onInitialize() {
+		super.onInitialize();
 		setIcon(FAIconType.times_circle);
 		setBootstrapType(BootstrapType.DANGER);
 	}
