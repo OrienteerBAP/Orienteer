@@ -1,9 +1,4 @@
 <wicket:panel>
-<a href="#" wicket:id="command" class="btn" rel="nofollow"><wicket:enclosure><i wicket:id="icon"></i>&nbsp</wicket:enclosure><wicket:container wicket:id="label">Label</wicket:container></a>
-<div wicket:id="modal" style="display:none;"></div>
-</wicket:panel>
-
-<wicket:fragment wicket:id="import">
 <form wicket:id="uploadForm" role="form">
 <div class="form-group">
     <label wicket:for="inputFile"><wicket:message key="select.file">Select File</wicket:message></label>
@@ -12,4 +7,4 @@
   </div>
   <input type="submit" wicket:id="importFile" class="btn btn-primary" value="Submit" wicket:message="value:command.import"/>
 </form>
-</wicket:fragment>
+</wicket:panel>
