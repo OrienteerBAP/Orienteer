@@ -69,7 +69,7 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		}
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
 		provider.setParameter("doc", documentModel);
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass), provider, 20);
+		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true), provider, 20);
 		table.setCaptionModel(new OPropertyNamingModel(property));
 		if(!isCalculable)
 		{
