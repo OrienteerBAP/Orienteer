@@ -92,9 +92,12 @@ public class OClassIntrospector implements IOClassIntrospector
 	public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown) {
 		List<ODocument> path = new ArrayList<ODocument>();
 		ODocument current = doc;
+		boolean cycle;
 		while(current!=null)
 		{
+			cycle = path.contains(current);
 			path.add(current);
+			if(cycle) break;
 			current = getParent(current);
 		}
 		return fromUpToDown?Lists.reverse(path):path;
