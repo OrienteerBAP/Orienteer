@@ -161,6 +161,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
 			}
+			else if(OClassPrototyper.SUPER_CLASS.equals(critery))
+			{
+				return new OClassViewPanel(id,  (IModel<OClass>)getModel());
+			}
 			else
 			{
 				return new Label(id, getModel());

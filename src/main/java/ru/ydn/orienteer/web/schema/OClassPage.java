@@ -27,6 +27,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.SchemaPageHeader;
@@ -203,7 +204,8 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.NOT_NULL));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MANDATORY));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.READONLY));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.COLLATE));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DISPLAYABLE.getName()));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.CALCULABLE.getName()));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MIN));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MAX));
 		
