@@ -81,9 +81,4 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		return new DefaultPageHeader(componentId, getTitleModel());
 	}
 
-	@Override
-	public void onEvent(IEvent<?> event) {
-		if(Broadcast.BUBBLE.equals(event.getType())) send(feedbacks, Broadcast.EXACT, event.getPayload());
-	}
-
 }
