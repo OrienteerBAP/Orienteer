@@ -53,7 +53,7 @@ Orienteer in standalone mode use embedded jetty server to run yourself. To insta
 - Put orienteer-standalone.war into any directory
 - Optionally configure orienteer.properties accordging to your environment and place it in the same directory or above
   - By default, Orienteer, will run OrientDB database embedded
-- Run Orinteer as ```bash java -Xm512m -Xms512m -jar orienteer-standalone.war```. JVM parameters can be adjusted accordingly. Additional application parameters can be supplied:
+- Run Orinteer as ```bash java -Xmx512m -Xms512m -jar orienteer-standalone.war```. JVM parameters can be adjusted accordingly. Additional application parameters can be supplied:
   - ``` --config=<filename>``` - specification of path to orienteer configuration file
   - ``` --embedded``` - run embedded OrientDB database
   - ``` --port=<port number>``` - run Orienteer on specified port (Default: 8080)
