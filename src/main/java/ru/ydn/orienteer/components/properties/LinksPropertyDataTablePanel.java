@@ -56,20 +56,9 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 	public LinksPropertyDataTablePanel(String id, IModel<ODocument> documentModel, OProperty property)
 	{
 		super(id, documentModel);
-		String sql;
 		OClass linkedClass = property.getLinkedClass();
 		boolean isCalculable = CustomAttributes.CALCULABLE.getValue(property, false);
-		if(isCalculable)
-		{
-			sql = CustomAttributes.CALC_SCRIPT.getValue(property);
-			sql = sql.replace("?", ":doc");
-		}
-		else
-		{
-			sql = "select expand("+property.getName()+") from "+property.getOwnerClass().getName()+" where @rid = :doc";
-		}
-		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
-		provider.setParameter("doc", documentModel);
+		OQueryDataProvider<ODocument> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
 		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true), provider, 20);
 		table.setCaptionModel(new OPropertyNamingModel(property));
 		if(!isCalculable)

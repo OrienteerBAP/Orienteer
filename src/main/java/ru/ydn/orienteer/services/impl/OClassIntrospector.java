@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.model.IModel;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -31,6 +32,7 @@ import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OEntityColumn;
 import ru.ydn.orienteer.components.table.OPropertyValueColumn;
 import ru.ydn.orienteer.services.IOClassIntrospector;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
 public class OClassIntrospector implements IOClassIntrospector
@@ -146,6 +148,24 @@ public class OClassIntrospector implements IOClassIntrospector
 		});
 		//if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
 		return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
+	}
+
+	@Override
+	public OQueryDataProvider<ODocument> prepareDataProviderForProperty(
+			OProperty property, IModel<ODocument> documentModel) {
+		String sql;
+		if(CustomAttributes.CALCULABLE.getValue(property, false))
+		{
+			sql = CustomAttributes.CALC_SCRIPT.getValue(property);
+			sql = sql.replace("?", ":doc");
+		}
+		else
+		{
+			sql = "select expand("+property.getName()+") from "+property.getOwnerClass().getName()+" where @rid = :doc";
+		}
+		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
+		provider.setParameter("doc", documentModel);
+		return provider;
 	}
 	
 	

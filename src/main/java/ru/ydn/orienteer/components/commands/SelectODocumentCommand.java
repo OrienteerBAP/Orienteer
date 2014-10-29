@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -43,6 +44,14 @@ public class SelectODocumentCommand extends AbstractModalWindowCommand<ODocument
 			protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects) {
 				if(objects==null || objects.isEmpty()) return true;
 				OType oType = propertyModel.getObject().getType();
+				
+				if(!oType.isMultiValue() && objects.size()>1)
+				{
+					String message = getLocalizer().getString("alert.onlyoneshouldbeselected", this).replace("\"", "\\\"");
+					target.appendJavaScript("alert(\""+message+"\")");
+					return false;
+				}
+				
 				if(oType.isMultiValue())
 				{
 					ODocument doc = documentModel.getObject();
@@ -57,25 +66,18 @@ public class SelectODocumentCommand extends AbstractModalWindowCommand<ODocument
 						doc.field(property.getName(), objects);
 					}
 					doc.save();
-					return true;
 				}
 				else
 				{
-					if(objects.size()>1)
-					{
-						String message = getLocalizer().getString("alert.onlyoneshouldbeselected", this).replace("\"", "\\\"");
-						target.appendJavaScript("alert(\""+message+"\")");
-						return false;
-					}
-					else
-					{
-						ODocument doc = documentModel.getObject();
-						OProperty property = propertyModel.getObject();
-						doc.field(property.getName(), objects.get(0));
-						doc.save();
-						return true;
-					}
+					ODocument doc = documentModel.getObject();
+					OProperty property = propertyModel.getObject();
+					doc.field(property.getName(), objects.get(0));
+					doc.save();
+					return true;
 				}
+				
+				send(SelectODocumentCommand.this, Broadcast.BUBBLE, target);
+				return true;
 			}
 		});
 	}

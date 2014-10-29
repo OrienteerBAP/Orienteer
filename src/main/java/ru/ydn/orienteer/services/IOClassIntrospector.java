@@ -3,8 +3,10 @@ package ru.ydn.orienteer.services;
 import java.util.List;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -20,4 +22,5 @@ public interface IOClassIntrospector
 	public ODocument getParent(ODocument doc);
 	public List<String> listTabs(OClass oClass);
 	public List<OProperty> listProperties(OClass oClass, String tab, Boolean extended);
+	public OQueryDataProvider<ODocument> prepareDataProviderForProperty(OProperty property, IModel<ODocument> documentModel);
 }

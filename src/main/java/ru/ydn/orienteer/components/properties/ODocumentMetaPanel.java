@@ -80,7 +80,7 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 					return new LinkViewPanel<OIdentifiable>(id, (IModel<OIdentifiable>)getModel());
 				case LINKLIST:
 				case LINKSET:
-					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, (IModel<Collection<OIdentifiable>>)getModel());
+					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, getEntityModel(), property);
 				default:
 					return new Label(id, getModel());
 			}

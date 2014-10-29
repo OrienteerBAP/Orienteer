@@ -40,11 +40,11 @@ public class OEntityColumn<T> extends PropertyColumn<T, String>
 	
 	public OEntityColumn(OClass oClass, String propertyExpression)
 	{
-		this(new OClassNamingModel(oClass), oClass, propertyExpression);
+		this(oClass!=null?new OClassNamingModel(oClass):null, oClass, propertyExpression);
 	}
 	public OEntityColumn(String oClass, String propertyExpression)
 	{
-		this(new OClassNamingModel(oClass), oClass, propertyExpression);
+		this(oClass!=null?new OClassNamingModel(oClass):null, oClass, propertyExpression);
 	}
 	public OEntityColumn(IModel<String> displayModel, OClass oClass, String propertyExpression) {
 		super(displayModel, SchemaHelper.resolveNameProperty(oClass), propertyExpression);

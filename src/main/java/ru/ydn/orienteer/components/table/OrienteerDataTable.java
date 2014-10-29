@@ -51,6 +51,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 	 */
 	private static final long serialVersionUID = 1L;
 	private DataTableCommandsToolbar<T> commandsToolbar;
+	private HeadersToolbar<S> headersToolbar;
 	
 	private IModel<String> captionModel;
 	
@@ -59,7 +60,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 	{
 		super(id, columns, dataProvider, rowsPerPage);
 		addTopToolbar(commandsToolbar=new DataTableCommandsToolbar<T>(this));
-		addTopToolbar(new HeadersToolbar<S>(this, dataProvider));
+		addTopToolbar(headersToolbar =new HeadersToolbar<S>(this, dataProvider));
 		addBottomToolbar(new NavigationToolbar(this));
 		addBottomToolbar(new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
@@ -69,6 +70,10 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 		return commandsToolbar;
 	}
 	
+	public HeadersToolbar<S> getHeadersToolbar() {
+		return headersToolbar;
+	}
+
 	public OrienteerDataTable<T, S> addCommand(Command<T> command)
 	{
 		commandsToolbar.add(command);
@@ -105,12 +110,6 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 		if(captionModel!=null) captionModel.detach();
 	}
 
-	@Override
-	protected void onComponentTag(ComponentTag tag) {
-		super.onComponentTag(tag);
-		tag.append("class", "table", " ");
-	}
-	
 	@Override
 	protected Item<T> newRowItem(final String id, final int index, final IModel<T> model)
 	{
