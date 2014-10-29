@@ -16,6 +16,7 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.SchemaPageHeader;
 import ru.ydn.orienteer.components.commands.EditCommand;
+import ru.ydn.orienteer.components.commands.EditSchemaCommand;
 import ru.ydn.orienteer.components.commands.RebuildOIndexCommand;
 import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
@@ -99,7 +100,7 @@ public class OIndexPage extends OrienteerBasePage<OIndex<?>>
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		structureTable.addCommand(new EditCommand<OIndex<?>>(structureTable, modeModel));
+		structureTable.addCommand(new EditSchemaCommand<OIndex<?>>(structureTable, modeModel));
 		structureTable.addCommand(new SaveSchemaCommand<OIndex<?>>(structureTable, modeModel, getModel()));
 		structureTable.addCommand(new RebuildOIndexCommand(structureTable));
 	}

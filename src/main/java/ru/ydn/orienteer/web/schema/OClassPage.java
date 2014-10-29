@@ -31,13 +31,16 @@ import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.SchemaPageHeader;
+import ru.ydn.orienteer.components.commands.AbstractSaveCommand;
 import ru.ydn.orienteer.components.commands.AjaxFormCommand;
+import ru.ydn.orienteer.components.commands.Command;
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.CreateOIndexFromOPropertiesCommand;
 import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
 import ru.ydn.orienteer.components.commands.DeleteOIndexCommand;
 import ru.ydn.orienteer.components.commands.DeleteOPropertyCommand;
 import ru.ydn.orienteer.components.commands.EditCommand;
+import ru.ydn.orienteer.components.commands.EditSchemaCommand;
 import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
 import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
@@ -64,6 +67,7 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import ru.ydn.wicket.wicketorientdb.utils.OIndexNameConverter;
@@ -190,7 +194,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 				return new OClassMetaPanel<Object>(id, modeModel, OClassPage.this.getModel(), rowModel);
 			}
 		};
-		structureTable.addCommand(new EditCommand<OClass>(structureTable, modeModel));
+		structureTable.addCommand(new EditSchemaCommand<OClass>(structureTable, modeModel));
 		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, modeModel, getModel()));
 		
 		form.add(structureTable);
@@ -213,7 +217,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		pProvider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OProperty, String> pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
 		pTable.addCommand(new CreateOPropertyCommand(pTable, getModel()));
-		pTable.addCommand(new ShowHideParentsCommand<OProperty>(pTable, showParentPropertiesModel));
+		pTable.addCommand(new ShowHideParentsCommand<OProperty>(getModel(), pTable, showParentPropertiesModel));
 		pTable.addCommand(new DeleteOPropertyCommand(pTable));
 		pTable.addCommand(new CreateOIndexFromOPropertiesCommand(pTable, getModel()));
 		pTable.setCaptionModel(new ResourceModel("class.properties"));
@@ -233,7 +237,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		OIndexiesDataProvider iProvider = new OIndexiesDataProvider(getModel(), showParentIndexesModel);
 		iProvider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OIndex<?>, String> iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
-		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(iTable, showParentIndexesModel));
+		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(getModel(), iTable, showParentIndexesModel));
 		iTable.addCommand(new DeleteOIndexCommand(iTable));
 		iTable.setCaptionModel(new ResourceModel("class.indexies"));
 		form.add(iTable);
@@ -251,7 +255,9 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		OQueryDataProvider<ORole> sProvider = new OQueryDataProvider<ORole>("select from ORole", ORole.class);
 		sProvider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<ORole, String> sTable = new OrienteerDataTable<ORole, String>("security", sColumns, sProvider ,20);
-		sTable.addCommand(new AjaxFormCommand<ORole>(new ResourceModel("command.save"), sTable).setBootstrapType(BootstrapType.PRIMARY).setIcon(FAIconType.save));
+		Command<ORole> saveCommand = new AbstractSaveCommand<ORole>(sTable, null);
+		OSecurityHelper.secureComponent(saveCommand, OSecurityHelper.requireOClass("ORole", OrientPermission.UPDATE));
+		sTable.addCommand(saveCommand);
 		sTable.setCaptionModel(new ResourceModel("class.security"));
 		sForm.add(sTable);
 		add(sForm);

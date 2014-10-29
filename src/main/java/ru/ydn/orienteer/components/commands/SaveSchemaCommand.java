@@ -29,13 +29,19 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 		getDatabase().getMetadata().reload();
 	}
 
-
-
 	@Override
 	public RequiredOrientResource[] getRequiredResources() {
 		T object = objectModel.getObject();
 		OrientPermission permission = (object instanceof IPrototype<?>)?OrientPermission.CREATE:OrientPermission.UPDATE;
 		return OSecurityHelper.requireResource(ODatabaseSecurityResources.SCHEMA, permission);
 	}
+
+	@Override
+	public void detachModels() {
+		super.detachModels();
+		objectModel.detach();
+	}
+	
+	
 
 }

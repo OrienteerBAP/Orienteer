@@ -25,13 +25,17 @@ import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.commands.modal.ImportDialogPanel;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import ru.ydn.wicket.wicketorientdb.utils.LoggerOCommandOutputListener;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.db.tool.ODatabaseImport;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 
+@RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions={OrientPermission.CREATE, OrientPermission.UPDATE})
 public class ImportOSchemaCommand extends AbstractModalWindowCommand<OClass>
 {
 	public ImportOSchemaCommand(OrienteerDataTable<OClass, ?> table)

@@ -1,11 +1,14 @@
 package ru.ydn.orienteer.components.properties;
 
+import java.util.HashMap;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.behavior.SecurityBehavior;
 import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
 import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
 import ru.ydn.orienteer.components.commands.ReleaseODocumentCommand;
@@ -15,6 +18,8 @@ import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -64,10 +69,11 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		if(!isCalculable)
 		{
 			OPropertyModel propertyModel = new OPropertyModel(property);
-			table.addCommand(new CreateODocumentCommand(table, documentModel, propertyModel));
-			table.addCommand(new DeleteODocumentCommand(table, linkedClass));
-			table.addCommand(new SelectODocumentCommand(table, documentModel, propertyModel));
-			table.addCommand(new ReleaseODocumentCommand(table, documentModel, propertyModel));
+			SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
+			table.addCommand(new CreateODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
+			table.addCommand(new DeleteODocumentCommand(table, linkedClass).add(securityBehaviour));
+			table.addCommand(new SelectODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
+			table.addCommand(new ReleaseODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
 		}
 		add(table);
 	}

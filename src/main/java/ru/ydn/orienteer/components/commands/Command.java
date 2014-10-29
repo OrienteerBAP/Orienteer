@@ -1,6 +1,8 @@
 package ru.ydn.orienteer.components.commands;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
@@ -75,8 +77,13 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
         add(link);
     }
     
-    
-    protected AbstractLink newLink(String id)
+    @Override
+	public Command<T> add(Behavior... behaviors) {
+		super.add(behaviors);
+		return this;
+	}
+
+	protected AbstractLink newLink(String id)
     {
     	return new Link<Object>(id)
         {

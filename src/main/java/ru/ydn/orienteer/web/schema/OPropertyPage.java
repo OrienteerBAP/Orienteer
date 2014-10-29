@@ -20,6 +20,7 @@ import ru.ydn.orienteer.components.SchemaPageHeader;
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.CreateOPropertyCommand;
 import ru.ydn.orienteer.components.commands.EditCommand;
+import ru.ydn.orienteer.components.commands.EditSchemaCommand;
 import ru.ydn.orienteer.components.commands.SavePrototypeCommand;
 import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
@@ -104,7 +105,7 @@ public class OPropertyPage extends OrienteerBasePage<OProperty>
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		structureTable.addCommand(new EditCommand<OProperty>(structureTable, modeModel));
+		structureTable.addCommand(new EditSchemaCommand<OProperty>(structureTable, modeModel));
 		structureTable.addCommand(new SaveSchemaCommand<OProperty>(structureTable, modeModel, getModel()));
 	}
 	
