@@ -15,7 +15,7 @@ public interface IOClassIntrospector
 	public static String DEFAULT_TAB = "parameters";
 	
 	public List<OProperty> getDisplayableProperties(OClass oClass);
-	public List<IColumn<ODocument, String>>  getColumnsFor(OClass oClass);
+	public List<IColumn<ODocument, String>>  getColumnsFor(OClass oClass, boolean withCheckbox);
 	public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown);
 	public ODocument getParent(ODocument doc);
 	public List<String> listTabs(OClass oClass);

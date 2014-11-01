@@ -1,87 +1,51 @@
-package ru.ydn.orienteer.web;
+package ru.ydn.orienteer.components.commands.modal;
 
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.core.util.lang.PropertyResolver;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
-import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.orienteer.components.BootstrapType;
+import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.TabsPanel;
-import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
-import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
+import ru.ydn.orienteer.components.commands.AbstractCheckBoxEnabledCommand;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
+import ru.ydn.orienteer.web.SearchPage;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
-import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Ordering;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-@MountPath("/search")
-public class SearchPage extends OrienteerBasePage<String>
+public abstract class SelectDialogPanel extends GenericPanel<String>
 {
-	public static Ordering<OClass> CLASSES_ORDERING = Ordering.natural().nullsFirst().onResultOf(new Function<OClass, String>() {
-
-		@Override
-		public String apply(OClass input) {
-			return new OClassNamingModel(input).getObject();
-		}
-	});
-	private WebMarkupContainer resultsContainer;
-	private IModel<OClass> selectedClassModel;
-	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 	
-	public SearchPage()
-	{
-		super(Model.of(""));
-	}
-
-	public SearchPage(IModel<String> model)
-	{
-		super(model);
-	}
-
-	public SearchPage(PageParameters parameters)
-	{
-		super(parameters);
-	}
-
-	@Override
-	protected IModel<String> resolveByPageParameters(
-			PageParameters pageParameters) {
-		String query = pageParameters.get("q").toOptionalString();
-		return Model.of(query);
-	}
+	private ModalWindow modal;
+	private boolean canChangeClass;
+	private WebMarkupContainer resultsContainer;
+	private IModel<OClass> selectedClassModel;
 	
-	public List<OClass> getClasses()
+	public SelectDialogPanel(String id, final ModalWindow modal, IModel<OClass> oClassModel)
 	{
-		return CLASSES_ORDERING.sortedCopy(getDatabase().getMetadata().getSchema().getClasses());
-	}
-
-	@Override
-	public void initialize() {
-		super.initialize();
-		selectedClassModel = new OClassModel(getClasses().get(0));
+		super(id, Model.of(""));
+		this.modal = modal;
+		canChangeClass = oClassModel==null;
+		this.selectedClassModel = canChangeClass?new OClassModel(getClasses().get(0)):oClassModel;
 		
 		Form<String> form = new Form<String>("form", getModel());
 		form.add(new TextField<String>("query", getModel()));
@@ -103,7 +67,7 @@ public class SearchPage extends OrienteerBasePage<String>
 						target.add(resultsContainer);
 					}
 			
-				});
+				}.setVisible(canChangeClass));
 		
 		resultsContainer = new WebMarkupContainer("resultsContainer")
 		{
@@ -114,7 +78,7 @@ public class SearchPage extends OrienteerBasePage<String>
 			@Override
 			protected void onConfigure() {
 				super.onConfigure();
-				setVisible(!Strings.isEmpty(SearchPage.this.getModelObject()));
+				setVisible(!Strings.isEmpty(SelectDialogPanel.this.getModelObject()));
 			}
 			
 		};
@@ -122,6 +86,11 @@ public class SearchPage extends OrienteerBasePage<String>
 		prepareResults();
 		form.add(resultsContainer);
 		add(form);
+	}
+	
+	public List<OClass> getClasses()
+	{
+		return SearchPage.CLASSES_ORDERING.sortedCopy(OrientDbWebSession.get().getDatabase().getMetadata().getSchema().getClasses());
 	}
 	
 	private void prepareResults()
@@ -133,15 +102,23 @@ public class SearchPage extends OrienteerBasePage<String>
 	{
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
 		provider.setParameter("text", getModel());
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, false), provider, 20);
+		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, true), provider, 20);
+		table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.select"), table)
+				{
+					
+					{
+						setBootstrapType(BootstrapType.SUCCESS);
+						setIcon(FAIconType.hand_o_right);
+					}
+
+					@Override
+					protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
+						if(onSelect(target, objects)) modal.close(target);
+					}
+					
+				});
 		resultsContainer.addOrReplace(table);
 	}
-
-	@Override
-	public IModel<String> getTitleModel() {
-		return new ResourceModel("search.title");
-	}
 	
-	
-	
+	protected abstract boolean onSelect(AjaxRequestTarget target, List<ODocument> objects);
 }

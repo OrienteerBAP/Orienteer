@@ -22,6 +22,7 @@ import org.apache.wicket.model.ResourceModel;
 
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
+import ru.ydn.orienteer.components.commands.modal.ImportDialogPanel;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.utils.LoggerOCommandOutputListener;
@@ -31,62 +32,18 @@ import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.db.tool.ODatabaseImport;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
-public class ImportOSchemaCommand extends AjaxCommand<OClass>
+public class ImportOSchemaCommand extends AbstractModalWindowCommand<OClass>
 {
-	private ModalWindow modal;
-	private FileUploadField inputFile;
-
 	public ImportOSchemaCommand(OrienteerDataTable<OClass, ?> table)
 	{
 		super(new ResourceModel("command.import"), table);
 		setIcon(FAIconType.upload);
 		setBootstrapType(BootstrapType.SUCCESS);
-		modal = new ModalWindow("modal");
-		modal.setAutoSize(true);
-		add(modal);
-		Fragment content = new Fragment(modal.getContentId(), "import", this);
-		Form<?> uploadForm = new Form<Object>("uploadForm");
-		inputFile = new FileUploadField("inputFile");
-		uploadForm.add(inputFile);
-		uploadForm.add(new AjaxButton("importFile", uploadForm)
-		{
-
-			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				FileUpload file = inputFile.getFileUpload();
-				ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
-				db.commit();
-				try
-				{
-					InputStream is = file.getInputStream();
-					if(file.getClientFileName().endsWith(".gz") || file.getContentType().contains("gzip"))
-					{
-						is = new GZIPInputStream(is);
-					}
-					ODatabaseImport dbImport = new ODatabaseImport((ODatabaseDocument)db, is, LoggerOCommandOutputListener.INSTANCE);
-					dbImport.setOptions("-merge=true");
-					dbImport.importDatabase();
-					ImportOSchemaCommand.this.success(getLocalizer().getString("success.import", ImportOSchemaCommand.this));
-				} catch (IOException e)
-				{
-					ImportOSchemaCommand.this.error(getLocalizer().getString("errors.import.error", ImportOSchemaCommand.this));
-				}
-				finally
-				{
-					db.begin();
-				}
-				modal.close(target);
-				ImportOSchemaCommand.this.send(ImportOSchemaCommand.this, Broadcast.BUBBLE, target);
-			}
-			
-		});
-		content.add(uploadForm);
-		modal.setContent(content);
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
-		modal.show(target);
+	protected void initializeContent(ModalWindow modal) {
+		modal.setTitle(new ResourceModel("command.import.modal.title"));
+		modal.setContent(new ImportDialogPanel(modal.getContentId(), modal));
 	}
-
 }

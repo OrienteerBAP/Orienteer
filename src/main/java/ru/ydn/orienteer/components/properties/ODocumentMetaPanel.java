@@ -92,7 +92,8 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 				case BOOLEAN:
 					return new CheckBox(id, (IModel<Boolean>)getModel());
 				case LINK:
-					return new TextField<V>(id, getModel()).setType(ODocument.class);
+					return new LinkEditPanel(id, getEntityModel(), getPropertyModel());
+					//return new TextField<V>(id, getModel()).setType(ODocument.class);
 				default:
 					return new TextField<V>(id, getModel()).setType(oType.getDefaultJavaType());
 			}

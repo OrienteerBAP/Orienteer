@@ -2,6 +2,8 @@ package ru.ydn.orienteer.components.commands;
 
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -23,14 +25,14 @@ public class DeleteOPropertyCommand extends AbstractDeleteCommand<OProperty> {
 	}
 	
 	@Override
-	protected void performMultiAction(List<OProperty> objects) {
+	protected void performMultiAction(AjaxRequestTarget target, List<OProperty> objects) {
 		getDatabase().commit();
-		super.performMultiAction(objects);
+		super.performMultiAction(target, objects);
 		getDatabase().begin();
 	}
 
 	@Override
-	protected void perfromSingleAction(OProperty object) {
+	protected void perfromSingleAction(AjaxRequestTarget target, OProperty object) {
 		object.getOwnerClass().dropProperty(object.getName());
 	}
 

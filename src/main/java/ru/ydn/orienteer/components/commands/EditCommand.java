@@ -41,8 +41,8 @@ public class EditCommand<T> extends AjaxCommand<T>
 	
 	
 	@Override
-	protected void initialize(String commandId, IModel<?> labelModel) {
-		super.initialize(commandId, labelModel);
+	protected void onInitialize() {
+		super.onInitialize();
 		setIcon(FAIconType.edit);
 		setBootstrapType(BootstrapType.PRIMARY);
 	}

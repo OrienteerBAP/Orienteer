@@ -60,20 +60,20 @@ public class AbstractCheckBoxEnabledCommand<T> extends AjaxFormCommand<T>
 
 	@Override
 	public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-		performMultiAction(checkboxColumn.getSelected());
+		performMultiAction(target, checkboxColumn.getSelected());
 		checkboxColumn.resetSelection();
 		this.send(this, Broadcast.BUBBLE, target);
 	}
 	
-	protected void performMultiAction(List<T> objects)
+	protected void performMultiAction(AjaxRequestTarget target, List<T> objects)
 	{
 		for (T object : objects)
 		{
-			perfromSingleAction(object);
+			perfromSingleAction(target, object);
 		}
 	}
 	
-	protected void perfromSingleAction(T object)
+	protected void perfromSingleAction(AjaxRequestTarget target, T object)
 	{
 		//NOP
 	}

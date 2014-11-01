@@ -74,10 +74,10 @@ public class OClassIntrospector implements IOClassIntrospector
 	}
 
 	@Override
-	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass) {
+	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, boolean withCheckbox) {
 		List<OProperty> properties = getDisplayableProperties(oClass);
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+2);
-		columns.add(new CheckBoxColumn<ODocument, ORID, String>(null, ODocumentORIDConverter.INSTANCE));
+		if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(null, ODocumentORIDConverter.INSTANCE));
 		OEntityColumn entityColumn = new OEntityColumn(oClass);
 		String nameProperty = entityColumn.getNameProperty();
 		columns.add(entityColumn);
@@ -92,9 +92,12 @@ public class OClassIntrospector implements IOClassIntrospector
 	public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown) {
 		List<ODocument> path = new ArrayList<ODocument>();
 		ODocument current = doc;
+		boolean cycle;
 		while(current!=null)
 		{
+			cycle = path.contains(current);
 			path.add(current);
+			if(cycle) break;
 			current = getParent(current);
 		}
 		return fromUpToDown?Lists.reverse(path):path;

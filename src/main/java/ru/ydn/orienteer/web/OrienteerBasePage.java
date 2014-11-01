@@ -49,6 +49,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 	@Override
 	public void initialize() {
 		super.initialize();
+		add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
 		add(newPageHeaderComponent("pageHeader"));
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));

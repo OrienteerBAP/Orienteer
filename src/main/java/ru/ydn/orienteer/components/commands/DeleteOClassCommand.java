@@ -2,6 +2,8 @@ package ru.ydn.orienteer.components.commands;
 
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -22,14 +24,14 @@ public class DeleteOClassCommand extends AbstractDeleteCommand<OClass> {
 	}
 	
 	@Override
-	protected void performMultiAction(List<OClass> objects) {
+	protected void performMultiAction(AjaxRequestTarget target, List<OClass> objects) {
 		getDatabase().commit();
-		super.performMultiAction(objects);
+		super.performMultiAction(target, objects);
 		getDatabase().begin();
 	}
 
 	@Override
-	protected void perfromSingleAction(OClass object) {
+	protected void perfromSingleAction(AjaxRequestTarget target, OClass object) {
 		getSchema().dropClass(object.getName());
 	}
 
