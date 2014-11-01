@@ -93,6 +93,11 @@
 		</dependency>
 		<!--  WICKET DEPENDENCIES -->
 		<dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-datetime</artifactId>
+            <version>6.17.0</version>
+        </dependency>
+		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-extensions</artifactId>
 			<version>${wicket.version}</version>
