@@ -1,16 +1,17 @@
+[![Build Status](https://travis-ci.org/PhantomYdn/Orienteer.svg?branch=master)](https://travis-ci.org/PhantomYdn/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/PhantomYdn/Orienteer.svg)](https://coveralls.io/r/PhantomYdn/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/PhantomYdn/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ## Orienteer
-###This is fork for PhantomYdn Project Orienteer
+![Orinenteer](http://orienteer.org/images/orienteer.png)
+
 ### What is Orienteer 
 
 **Orienteer** is Data Warehouse System on top of OrientDB. It allows you:
 
-* Manage your schema
+* Manage you schema
 * Create/Read/Update/Delete documents
 * Create and view customizable reports
 * Extend functionality by flexible visualizations
 
-<<<<<<< HEAD
-=======
 ### Demo
 
 [Main Demo Server](http://demo.orienteer.org)
@@ -21,7 +22,6 @@ Default users:
 - reader/reader
 - writer/writer
 
->>>>>>> 55454f4b685be0fda2e3c98603c6b670ab557ed1
 ### Orienteer installation
 
 There are two options for Orienteer installation:
