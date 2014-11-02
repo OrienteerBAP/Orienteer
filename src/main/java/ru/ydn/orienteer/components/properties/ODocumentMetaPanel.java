@@ -1,13 +1,16 @@
 package ru.ydn.orienteer.components.properties;
 
-import java.io.Serializable;
+//import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.extensions.markup.html.form.DateTextField;
+import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.CustomAttributes;
@@ -94,6 +97,10 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 				case LINK:
 					return new LinkEditPanel(id, getEntityModel(), getPropertyModel());
 					//return new TextField<V>(id, getModel()).setType(ODocument.class);
+				case DATE:
+					return new DateTextField(id,(IModel<Date>)getModel());
+				case DATETIME:
+					return new DateTimeField(id,(IModel<Date>)getModel());
 				default:
 					return new TextField<V>(id, getModel()).setType(oType.getDefaultJavaType());
 			}
