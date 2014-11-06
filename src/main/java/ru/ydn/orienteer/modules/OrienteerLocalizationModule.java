@@ -14,7 +14,6 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import com.google.common.primitives.Booleans;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -53,7 +52,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 			return new DBClosure<String>() {
 
 				@Override
-				protected String execute(ODatabaseRecord db) {
+				protected String execute(ODatabaseDocument db) {
 					OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("select from "+OCLASS_LOCALIZATION+" where "+OPROPERTY_KEY+" = ?");
 					List<ODocument> result = db.command(query).execute(key);
 					if(result==null || result.isEmpty())

@@ -11,8 +11,8 @@ import org.apache.wicket.settings.IJavaScriptLibrarySettings;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 public abstract class BasePage<T> extends GenericWebPage<T>
 {
@@ -70,14 +70,14 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 				forReference(javaScriptSettings.getJQueryReference()));
 	}
 
-	public ODatabaseRecord getDatabase()
+	public ODatabaseDocument getDatabase()
 	{
 		return OrientDbWebSession.get().getDatabase();
 	}
 	
 	public ODatabaseDocument getDatabaseDocument()
 	{
-		return (ODatabaseDocument) getDatabase().getDatabaseOwner();
+		return (ODatabaseDocument)((ODatabaseDocumentInternal) getDatabase()).getDatabaseOwner();
 	}
 	
 	public IModel<String> getTitleModel()

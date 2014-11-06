@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.exception.OTransactionException;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -31,7 +30,7 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 	private static final String OMODULE_VERSION = "version";
 	
 	@Override
-	protected void installData(OrientDbWebApplication application, ODatabaseRecord database) {
+	protected void installData(OrientDbWebApplication application, ODatabaseDocument database) {
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		ODatabaseDocument db = (ODatabaseDocument)database;
 		OSchema schema = db.getMetadata().getSchema();

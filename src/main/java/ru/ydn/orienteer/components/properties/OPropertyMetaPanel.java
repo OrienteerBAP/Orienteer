@@ -46,7 +46,7 @@ import com.google.common.collect.Ordering;
 import com.orientechnologies.common.thread.OPollerThread;
 import com.orientechnologies.orient.core.collate.OCollate;
 import com.orientechnologies.orient.core.collate.OCollateFactory;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -133,7 +133,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 
 	@Override
 	protected void setValue(OProperty entity, String critery, V value) {
-		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		db.commit();
 		try
 		{

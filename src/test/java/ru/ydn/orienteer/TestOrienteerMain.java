@@ -26,7 +26,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -65,7 +65,7 @@ public class TestOrienteerMain
 	@Test
 	public void testBrowsePages() throws Exception
 	{
-		ODatabaseRecord db = getDatabase();
+		ODatabaseDocument db = getDatabase();
 		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
 		PageParameters parameters = new PageParameters();
 		for (OClass oClass : classes)
@@ -80,7 +80,7 @@ public class TestOrienteerMain
 	@Test
 	public void testShowDummyDocuments() throws Exception
 	{
-		ODatabaseRecord db = getDatabase();
+		ODatabaseDocument db = getDatabase();
 		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
 		for (OClass oClass : classes)
 		{
@@ -97,7 +97,7 @@ public class TestOrienteerMain
 	@Test
 	public void testViewClassesAndPropertiesPages() throws Exception
 	{
-		ODatabaseRecord db = getDatabase();
+		ODatabaseDocument db = getDatabase();
 		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
 		PageParameters parameters = new PageParameters();
 		for (OClass oClass : classes)
@@ -126,7 +126,7 @@ public class TestOrienteerMain
 		}
 	}
 	
-	private ODatabaseRecord getDatabase()
+	private ODatabaseDocument getDatabase()
 	{
 		return ((OrientDbWebSession)tester.getSession()).getDatabase();
 	}

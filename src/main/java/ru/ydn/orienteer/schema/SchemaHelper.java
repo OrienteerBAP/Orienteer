@@ -6,11 +6,12 @@ import java.util.regex.Pattern;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.util.string.Strings;
+
 import ru.ydn.orienteer.CustomAttributes;
 
 import com.google.common.base.Function;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
@@ -123,7 +124,7 @@ public class SchemaHelper
 		else throw new WicketRuntimeException("Can't convert '"+oridObj+"' to ORID");
 	}
 	
-	public static ODatabaseRecord getDatabase()
+	public static ODatabaseDocument getDatabase()
 	{
 		return ODatabaseRecordThreadLocal.INSTANCE.get();
 	}

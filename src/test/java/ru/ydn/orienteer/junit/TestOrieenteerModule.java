@@ -15,7 +15,7 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 
 public class TestOrieenteerModule extends AbstractModule
 {
@@ -57,13 +57,13 @@ public class TestOrieenteerModule extends AbstractModule
 	}
 	
 	@Provides
-	public ODatabaseRecord getDatabaseRecord()
+	public ODatabaseDocument getDatabaseRecord()
 	{
-		ODatabaseRecord db = DefaultODatabaseThreadLocalFactory.castToODatabaseRecord(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+		ODatabaseDocument db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
 		if(db.isClosed())
 		{
 			ODatabaseRecordThreadLocal.INSTANCE.remove();
-			db = DefaultODatabaseThreadLocalFactory.castToODatabaseRecord(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+			db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
 		}
 		return db;
 	}

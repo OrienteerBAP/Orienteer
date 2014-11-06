@@ -13,7 +13,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -31,7 +31,7 @@ public class TestHooks
 	public void testCalculableHook() throws Exception
 	{
 		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
-		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		OSchema schema = db.getMetadata().getSchema();
 		
 		assertFalse(db.isClosed());
@@ -63,7 +63,7 @@ public class TestHooks
 	public void testReferencesHook() throws Exception
 	{
 		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
-		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		OSchema schema = db.getMetadata().getSchema();
 		
 		assertFalse(db.isClosed());

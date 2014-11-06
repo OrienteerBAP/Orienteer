@@ -23,7 +23,7 @@ import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.collate.OCollate;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OCompositeIndexDefinition;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.index.OIndexDefinition;
@@ -94,7 +94,7 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 
 	@Override
 	protected void setValue(OIndex<?> entity, String critery, V value) {
-		ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		db.commit();
 		try
 		{

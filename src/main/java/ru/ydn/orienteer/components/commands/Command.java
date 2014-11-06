@@ -11,7 +11,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
 import ru.ydn.orienteer.components.BootstrapType;
@@ -131,7 +131,7 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 		return bootstrapType;
 	}
 	
-	public ODatabaseRecord	getDatabase()
+	public ODatabaseDocument	getDatabase()
 	{
 		return OrientDbWebSession.get().getDatabase();
 	}

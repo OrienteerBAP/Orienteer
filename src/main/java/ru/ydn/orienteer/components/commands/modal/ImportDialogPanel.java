@@ -17,8 +17,8 @@ import ru.ydn.orienteer.components.commands.ImportOSchemaCommand;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.utils.LoggerOCommandOutputListener;
 
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.core.db.tool.ODatabaseImport;
 
 public class ImportDialogPanel extends Panel
@@ -36,7 +36,7 @@ public class ImportDialogPanel extends Panel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				FileUpload file = inputFile.getFileUpload();
-				ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+				ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 				db.commit();
 				try
 				{
@@ -45,7 +45,7 @@ public class ImportDialogPanel extends Panel
 					{
 						is = new GZIPInputStream(is);
 					}
-					ODatabaseImport dbImport = new ODatabaseImport((ODatabaseDocument)db, is, LoggerOCommandOutputListener.INSTANCE);
+					ODatabaseImport dbImport = new ODatabaseImport((ODatabaseDocumentInternal)db, is, LoggerOCommandOutputListener.INSTANCE);
 					dbImport.setOptions("-merge=true");
 					dbImport.importDatabase();
 					success(getLocalizer().getString("success.import", this));

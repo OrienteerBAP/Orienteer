@@ -28,8 +28,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import com.orientechnologies.orient.client.remote.OServerAdmin;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 import com.orientechnologies.orient.server.config.OServerUserConfiguration;
 
 /**
@@ -117,7 +117,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return getInjector().getInstance(serviceType);
 	}
 	
-	public ODatabaseRecord getDatabase()
+	public ODatabaseDocument getDatabase()
 	{
 		return OrientDbWebSession.get().getDatabase();
 	}

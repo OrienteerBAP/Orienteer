@@ -4,7 +4,6 @@ import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
 
 public interface IOrienteerModule
 {

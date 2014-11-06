@@ -1,23 +1,19 @@
 package ru.ydn.orienteer.hooks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import ru.ydn.orienteer.CustomAttributes;
-import ru.ydn.orienteer.schema.SchemaHelper;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
-import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -38,7 +34,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 	@SuppressWarnings("deprecation")
 	private List<String> getCalcProperties(ODocument iDocument)
 	{
-		ODatabaseRecord db = iDocument.getDatabase();
+		ODatabaseDocument db = iDocument.getDatabase();
 		OClass oClass = iDocument.getSchemaClass();
 		if(db==null || oClass==null) return null;
 		OSchema schema = db.getMetadata().getSchema();

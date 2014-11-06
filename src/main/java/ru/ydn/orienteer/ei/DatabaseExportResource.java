@@ -12,7 +12,8 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.utils.LoggerOCommandOutputListener;
 
 import com.orientechnologies.orient.core.command.OCommandOutputListener;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.tool.ODatabaseExport;
 
 public class DatabaseExportResource extends AbstractResource
@@ -28,7 +29,7 @@ public class DatabaseExportResource extends AbstractResource
 			public void writeData(Attributes attributes) throws IOException {
 				OutputStream out = attributes.getResponse().getOutputStream();
 				GZIPOutputStream gzipOut = new GZIPOutputStream(out);
-				ODatabaseRecord db = OrientDbWebSession.get().getDatabase();
+				ODatabaseDocumentInternal db = (ODatabaseDocumentInternal)OrientDbWebSession.get().getDatabase();
 				ODatabaseExport dbExport = new ODatabaseExport(db, gzipOut, LoggerOCommandOutputListener.INSTANCE);
 				configureODatabaseExport(dbExport);
 				dbExport.exportDatabase();

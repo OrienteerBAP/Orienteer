@@ -26,7 +26,7 @@ import com.google.inject.Provides;
 import com.google.inject.ProvisionException;
 import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.db.record.ODatabaseRecord;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
 public class OrienteerModule extends AbstractModule
@@ -55,13 +55,13 @@ public class OrienteerModule extends AbstractModule
 	}
 	
 	@Provides
-	public ODatabaseRecord getDatabaseRecord()
+	public ODatabaseDocument getDatabaseRecord()
 	{
-		return DefaultODatabaseThreadLocalFactory.castToODatabaseRecord(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+		return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
 	}
 	
 	@Provides
-	public OSchema getSchema(ODatabaseRecord db)
+	public OSchema getSchema(ODatabaseDocument db)
 	{
 		return db.getMetadata().getSchema();
 	}
