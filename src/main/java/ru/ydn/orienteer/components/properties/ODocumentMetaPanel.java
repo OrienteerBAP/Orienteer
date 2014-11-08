@@ -94,6 +94,9 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 				case LINK:
 					return new LinkEditPanel(id, getEntityModel(), getPropertyModel());
 					//return new TextField<V>(id, getModel()).setType(ODocument.class);
+				case LINKLIST:
+				case LINKSET:
+					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, getEntityModel(), property);
 				default:
 					return new TextField<V>(id, getModel()).setType(oType.getDefaultJavaType());
 			}

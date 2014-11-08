@@ -233,7 +233,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 					public String getIdValue(OClass object, int index) {
 						return object.getName();
 					}
-				}).setNullValid(true);
+				}).setNullValid(true).add(new RefreshMetaContextOnChangeBehaviour());
 			}
 			else if(OPropertyPrototyper.COLLATE.equals(critery))
 			{

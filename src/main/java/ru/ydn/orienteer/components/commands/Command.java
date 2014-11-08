@@ -14,10 +14,11 @@ import org.apache.wicket.model.ResourceModel;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
+import ru.ydn.orienteer.components.BootstrapSize;
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIcon;
 import ru.ydn.orienteer.components.FAIconType;
-import ru.ydn.orienteer.components.IBootstrapTypeAware;
+import ru.ydn.orienteer.components.IBootstrapAware;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
@@ -25,7 +26,7 @@ import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 
-public abstract class Command<T> extends Panel implements IBootstrapTypeAware
+public abstract class Command<T> extends Panel implements IBootstrapAware
 {
 	/**
 	 * 
@@ -34,6 +35,7 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 	private String icon;
 	private AbstractLink link;
 	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
+	private BootstrapSize bootstrapSize = BootstrapSize.DEFAULT;
 	
 	public Command(IModel<?> labelModel, StructureTableCommandsToolbar<T> toolbar)
     {
@@ -72,6 +74,7 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 //      link.setMarkupId(commandId.replace(".","_"));
         link.setOutputMarkupId(true);
         link.add(new AttributeAppender("class", new PropertyModel<String>(this, "bootstrapType.btnCssClass"), " "));
+        link.add(new AttributeAppender("class", new PropertyModel<String>(this, "bootstrapSize.btnCssClass"), " "));
         link.add(new Label("label", labelModel).setRenderBodyOnly(true));
         link.add(new FAIcon("icon", new PropertyModel<String>(this, "icon")));
         add(link);
@@ -110,7 +113,7 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 	
 	public Command<T> setIcon(FAIconType type)
 	{
-		this.icon = type.getCssClass();
+		this.icon = type!=null?type.getCssClass():null;
 		return this;
 	}
 
@@ -129,6 +132,17 @@ public abstract class Command<T> extends Panel implements IBootstrapTypeAware
 	@Override
 	public BootstrapType getBootstrapType() {
 		return bootstrapType;
+	}
+	
+    @Override
+	public Command<T> setBootstrapSize(BootstrapSize size) {
+    	this.bootstrapSize = size;
+		return this;
+	}
+
+	@Override
+	public BootstrapSize getBootstrapSize() {
+		return bootstrapSize;
 	}
 	
 	public ODatabaseDocument	getDatabase()
