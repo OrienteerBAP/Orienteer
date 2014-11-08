@@ -70,6 +70,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.NOT_NULL);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.MIN);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.MAX);
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.REGEXP);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.COLLATE);
 		OPROPERTY_ATTRS.add(CustomAttributes.DISPLAYABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.HIDDEN.getName());
@@ -245,7 +246,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new CheckBox(id, (IModel<Boolean>)getModel());
 			}
-			else if(OPropertyPrototyper.MIN.equals(critery) || OPropertyPrototyper.MAX.equals(critery))
+			else if(OPropertyPrototyper.MIN.equals(critery) || OPropertyPrototyper.MAX.equals(critery) || OPropertyPrototyper.REGEXP.equals(critery))
 			{
 				return new TextField<V>(id, getModel());
 			}
