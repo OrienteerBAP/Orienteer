@@ -14,6 +14,8 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import com.google.common.primitives.Booleans;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
+import com.orientechnologies.orient.core.hook.ORecordHook.DISTRIBUTED_EXECUTION_MODE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -72,7 +74,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 						if(Strings.isEqual(variation, (String)candidate.field(OPROPERTY_VARIATION)))score|=1;
 						if(score==7) fullMatchPresent=true;
 						Boolean active = candidate.field(OPROPERTY_ACTIVE);
-						if(active==null || active) score=-1;
+						if(active==null || !active) score=-1;
 						if(score>bestCandidateScore)
 						{
 							bestCandidate = candidate;
@@ -131,6 +133,41 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		app.getResourceSettings().getStringResourceLoaders().add(new OrienteerStringResourceLoader());
+		app.getOrientDbSettings().getORecordHooks().add(new ODocumentHookAbstract() {
+			
+			{
+				setIncludeClasses(OCLASS_LOCALIZATION);
+			}
+			
+			private void invalidateCache()
+			{
+				OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+				if(app!=null)
+				{
+					app.getResourceSettings().getLocalizer().clearCache();
+				}
+			}
+			
+			@Override
+			public void onRecordAfterCreate(ODocument iDocument) {
+				invalidateCache();
+			}
+
+			@Override
+			public void onRecordAfterUpdate(ODocument iDocument) {
+				invalidateCache();
+			}
+
+			@Override
+			public void onRecordAfterDelete(ODocument iDocument) {
+				invalidateCache();
+			}
+
+			@Override
+			public DISTRIBUTED_EXECUTION_MODE getDistributedExecutionMode() {
+				return DISTRIBUTED_EXECUTION_MODE.BOTH;
+			}
+		});
 	}
 	
 	

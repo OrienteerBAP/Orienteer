@@ -60,6 +60,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
     {
         return (OrienteerWebApplication) WebApplication.get();
     }
+	
+	public static OrienteerWebApplication lookupApplication()
+	{
+		return lookupApplication(OrienteerWebApplication.class);
+	}
 
 	@Override
 	public Class<? extends WebPage> getHomePage()
