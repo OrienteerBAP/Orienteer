@@ -1,14 +1,19 @@
 package ru.ydn.orienteer.components.properties;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
 
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
@@ -60,11 +65,13 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected Component resolveComponent(String id, DisplayMode mode,
 			OProperty property) {
 		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
 		OType oType = property.getType();
+		Class<?> javaOType = oType.getDefaultJavaType();
 		String visualizationComponent = CustomAttributes.VISUALIZATION_TYPE.getValue(property);
 		if(visualizationComponent!=null)
 		{
@@ -98,10 +105,36 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 				case LINKSET:
 					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, getEntityModel(), property);
 				default:
-					return new TextField<V>(id, getModel()).setType(oType.getDefaultJavaType());
+					if(Number.class.isAssignableFrom(javaOType))
+					{
+						NumberTextField field = new NumberTextField(id, getModel(), javaOType);
+						Number min = toNumber(property.getMin(), (Class<? extends Number>)javaOType);
+						Number max = toNumber(property.getMax(), (Class<? extends Number>)javaOType);
+						if(min!=null) field.setMinimum(min);
+						if(max!=null) field.setMaximum(max);
+						return field;
+					}
+					else
+					{
+						return new TextField<V>(id, getModel()).setType(javaOType);
+					}
 			}
 		}
 		else return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends Number> T toNumber(String str, Class<T> clazz)
+	{
+		if(Strings.isEmpty(str)) return null;
+		try
+		{
+			Method method = clazz.getMethod("valueOf", String.class);
+			return (T) method.invoke(null, str);
+		} catch (Exception e)
+		{
+			return null;
+		} 	
 	}
 
 	@Override
