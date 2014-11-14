@@ -68,6 +68,13 @@ public class AbstractOrienteerModule implements IOrienteerModule
 		return ret;
 	}
 	
+	protected OProperty mergeOProperty(OClass oClass, String propertyName, OType type, String visualization)
+	{
+		OProperty property = mergeOProperty(oClass, propertyName, type);
+		CustomAttributes.VISUALIZATION_TYPE.setValue(property, visualization);
+		return property;
+	}
+	
 	protected OProperty mergeOProperty(OClass oClass, String propertyName, OType type)
 	{
 		OProperty ret = oClass.getProperty(propertyName);
