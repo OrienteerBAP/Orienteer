@@ -122,12 +122,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-enterprise</artifactId>
-			<version>${orientdb.version}</version>
-			<type>bundle</type>
-		</dependency>
-		<dependency>
-			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-server</artifactId>
 			<version>${orientdb.version}</version>
 			<type>bundle</type>
