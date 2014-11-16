@@ -18,6 +18,14 @@ public class OrienteerTestRunner extends GuiceTestRunner
 		System.out.println("Using embedded mode");
 		System.setProperty(StartStandalone.PROPERTIES_FILE_NAME, StartStandalone.class.getResource("standalone.properties").toString());
 		STATIC_INJECTOR = Guice.createInjector(Modules.override(new OrienteerModule()).with(new TestOrieenteerModule()));
+		Runtime.getRuntime().addShutdownHook(new Thread()
+		{
+			@Override
+			public void run() {
+				WicketTester wicketTester = STATIC_INJECTOR.getInstance(WicketTester.class);
+				wicketTester.destroy();
+			}
+		});
 	}
 	
 	public OrienteerTestRunner(Class<?> classToRun) throws InitializationError
