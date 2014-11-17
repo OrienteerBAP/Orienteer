@@ -38,7 +38,13 @@ public class FAIcon extends WebMarkupContainer
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
 		checkComponentTag(tag, "i");
-		tag.append("class", "fa "+getDefaultModelObjectAsString(), " "); 
+		String css = getDefaultModelObjectAsString();
+		if(css!=null)
+		{
+			FAIconType faIconType = FAIconType.parseToFAIconType(css);
+			if(faIconType!=null) css = faIconType.getCssClass();
+			tag.append("class", css, " "); 
+		}
 		super.onComponentTag(tag);
 	}
 	

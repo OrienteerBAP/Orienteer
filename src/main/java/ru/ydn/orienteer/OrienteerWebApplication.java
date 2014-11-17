@@ -72,6 +72,12 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	{
 		return ListOClassesPage.class;
 	}
+	
+	@Override
+	protected Class<? extends OrienteerWebSession> getWebSessionClass()
+	{
+		return OrienteerWebSession.class;
+	}
 
 	/**
 	 * @see org.apache.wicket.Application#init()
@@ -102,9 +108,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
-		registerModule(new OrienteerLocalizationModule());
-		registerModule(new UpdateDefaultSchemaModule());
-		registerModule(new PerspectivesModule());
+		registerModule(OrienteerLocalizationModule.class);
+		registerModule(UpdateDefaultSchemaModule.class);
+		registerModule(PerspectivesModule.class);
 		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
 		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
 	}
@@ -133,9 +139,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return registeredModules;
 	}
 	
-	public void registerModule(IOrienteerModule module)
+	public <M extends IOrienteerModule> M registerModule(Class<M> moduleClass)
 	{
+		M module = getServiceInstance(moduleClass);
 		registeredModules.put(module.getName(), module);
+		return module;
 	}
 	
 	public IOrienteerModule getModuleByName(String name)

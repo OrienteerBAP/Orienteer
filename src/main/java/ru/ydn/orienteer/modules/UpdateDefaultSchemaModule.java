@@ -1,5 +1,7 @@
 package ru.ydn.orienteer.modules;
 
+import javax.inject.Singleton;
+
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 
@@ -7,6 +9,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
+@Singleton
 public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 {
 	public UpdateDefaultSchemaModule()

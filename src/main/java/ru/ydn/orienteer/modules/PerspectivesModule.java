@@ -2,8 +2,11 @@ package ru.ydn.orienteer.modules;
 
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.OrienteerWebSession;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -14,6 +17,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+@Singleton
 public class PerspectivesModule extends AbstractOrienteerModule
 {
 	public static final String OCLASS_PERSPECTIVE="OPerspective";
@@ -39,7 +43,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		assignNameAndParent(perspectiveClass, "name", null);
 		switchDisplayable(perspectiveClass, true, "name", "homeUrl");
 		orderProperties(perspectiveClass, "name", "homeUrl", "footer", "menu");
-		perspectiveClass.createIndex(OCLASS_PERSPECTIVE+".name", INDEX_TYPE.UNIQUE, "name");
+		mergeOIndex(perspectiveClass, OCLASS_PERSPECTIVE+".name", INDEX_TYPE.UNIQUE, "name");
 		
 		mergeOProperty(itemClass, "name", OType.STRING);
 		mergeOProperty(itemClass, "icon", OType.STRING);
@@ -53,11 +57,22 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		CustomAttributes.PROP_INVERSE.setValue(perspective, menu);
 		
 	}
+	
+	public ODocument getDefaultPerspective(ODatabaseDocument db)
+	{
+		List<ODocument> defaultPerspectives = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_PERSPECTIVE+" where name=?"), DEFAULT_PERSPECTIVE);
+		return defaultPerspectives==null || defaultPerspectives.size()<1?null:defaultPerspectives.get(0);
+	}
 
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-		List<ODocument> defaultPerspectives = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_PERSPECTIVE+" where name=?"), DEFAULT_PERSPECTIVE);
-		if(defaultPerspectives==null || defaultPerspectives.size()<1)
+		OSchema schema  = db.getMetadata().getSchema();
+		if(schema.getClass(OCLASS_PERSPECTIVE)==null || schema.getClass(OCLASS_ITEM)==null)
+		{
+			//Repair
+			onInstall(app, db);
+		}
+		if(getDefaultPerspective(db)==null)
 		{
 			ODocument perspective = new ODocument(OCLASS_PERSPECTIVE);
 			perspective.field("name", DEFAULT_PERSPECTIVE);

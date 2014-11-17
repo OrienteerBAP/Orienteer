@@ -3,6 +3,8 @@ package ru.ydn.orienteer.modules;
 import java.util.List;
 import java.util.Locale;
 
+import javax.inject.Singleton;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.string.Strings;
@@ -23,6 +25,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+@Singleton
 public class OrienteerLocalizationModule extends AbstractOrienteerModule
 {
 	public static final String OCLASS_LOCALIZATION="OLocalization";

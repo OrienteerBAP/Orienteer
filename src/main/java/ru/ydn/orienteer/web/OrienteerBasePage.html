@@ -51,14 +51,11 @@
                             </form>
                             <!-- /input-group -->
                         </li>
-                        <li>
-                            <a href="#" wicket:id="usersLink"><i class="fa fa-users fa-fw"></i><wicket:message key="menu.list.user"></wicket:message></a>
-                        </li>
-                        <li>
-                            <a href="#" wicket:id="rolesLink"><i class="fa fa-users fa-fw"></i><wicket:message key="menu.list.role"></wicket:message></a>
-                        </li>
-                        <li>
-                            <a href="#" wicket:id="classesLink"><i class="fa fa-cubes fa-fw"></i><wicket:message key="menu.list.class"></wicket:message></a>
+                        <li wicket:id="perspectiveItems">
+                        	<a href="#" wicket:id="link">
+                        		<i class="fa-fw" wicket:id="icon"></i>
+                        		<span wicket:id="name"></span>
+                        	</a>
                         </li>
                     </ul>
                     <!-- /#side-menu -->
