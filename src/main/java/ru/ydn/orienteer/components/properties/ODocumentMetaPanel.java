@@ -4,9 +4,12 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Date;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.extensions.yui.calendar.DateField;
+import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -104,7 +107,11 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 				case LINKLIST:
 				case LINKSET:
 					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, getEntityModel(), property);
-				default:
+                case DATE:
+                    return new DateField(id, (IModel<Date>) getModel());
+                case DATETIME:
+                    return new DateTimeField(id, (IModel<Date>) getModel());
+                default:
 					if(Number.class.isAssignableFrom(javaOType))
 					{
 						NumberTextField field = new NumberTextField(id, getModel(), javaOType);
