@@ -63,7 +63,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
 		
-		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "session.perspective");
+		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
 		add(new ListView<ODocument>("perspectiveItems", new ODocumentPropertyModel<List<ODocument>>(perspectiveModel, "menu")) {
 
 			@Override
@@ -71,10 +71,11 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 				IModel<ODocument> itemModel = item.getModel();
 				ExternalLink link = new ExternalLink("link", new ODocumentPropertyModel<String>(itemModel, "url"));
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")));
+						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
 				item.add(link);
 			}
 		});
+		
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
 		add(new ODocumentPageLink<OIdentifiable>("myProfile", new PropertyModel<OIdentifiable>(this, "session.user.document")));
