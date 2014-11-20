@@ -37,15 +37,12 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 
 @MountPath("/property/${className}/${propertyName}")
-@RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value=ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.READ)
 public class OPropertyPage extends OrienteerBasePage<OProperty>
 {
-	
-/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private OrienteerStructureTable<OProperty, String> structureTable;

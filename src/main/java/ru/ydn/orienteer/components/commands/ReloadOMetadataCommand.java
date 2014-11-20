@@ -6,6 +6,7 @@ import org.apache.wicket.model.ResourceModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
@@ -13,14 +14,10 @@ import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
-@RequiredOrientResource(value = ODatabaseSecurityResources.SERVER_ADMIN, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = ORule.ResourceGeneric.DATABASE, permissions=OrientPermission.READ)
 public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 {
-	
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public ReloadOMetadataCommand(OrienteerDataTable<OClass, ?> table)

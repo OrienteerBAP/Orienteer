@@ -10,6 +10,7 @@ import org.apache.wicket.request.resource.IResource.Attributes;
 import com.orientechnologies.orient.core.db.tool.ODatabaseExport;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
@@ -18,7 +19,7 @@ import ru.ydn.orienteer.ei.DatabaseExportResource;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
-@RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.READ)
 public class ExportOSchemaCommand extends Command<OClass>
 {
 

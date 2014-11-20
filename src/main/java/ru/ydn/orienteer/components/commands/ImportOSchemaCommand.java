@@ -12,8 +12,9 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 
-@RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions={OrientPermission.CREATE, OrientPermission.UPDATE})
+@RequiredOrientResource(value = ORule.ResourceGeneric.SCHEMA, permissions={OrientPermission.CREATE, OrientPermission.UPDATE})
 public class ImportOSchemaCommand extends AbstractModalWindowCommand<OClass>
 {
 	public ImportOSchemaCommand(OrienteerDataTable<OClass, ?> table)

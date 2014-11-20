@@ -13,6 +13,7 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 
 public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISecuredComponent {
 
@@ -33,7 +34,7 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 	public RequiredOrientResource[] getRequiredResources() {
 		T object = objectModel.getObject();
 		OrientPermission permission = (object instanceof IPrototype<?>)?OrientPermission.CREATE:OrientPermission.UPDATE;
-		return OSecurityHelper.requireResource(ODatabaseSecurityResources.SCHEMA, permission);
+		return OSecurityHelper.requireResource(ORule.ResourceGeneric.SCHEMA, null, permission);
 	}
 
 	@Override

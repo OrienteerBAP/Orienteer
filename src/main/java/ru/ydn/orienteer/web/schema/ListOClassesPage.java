@@ -41,17 +41,18 @@ import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @MountPath("/classes")
-@RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.READ)
 public class ListOClassesPage extends OrienteerBasePage<Object> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
 
 
 	public ListOClassesPage()

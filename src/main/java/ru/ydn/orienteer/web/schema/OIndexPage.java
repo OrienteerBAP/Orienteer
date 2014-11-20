@@ -34,14 +34,12 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 
 @MountPath("/index/${indexName}")
-@RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value=ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.READ)
 public class OIndexPage extends OrienteerBasePage<OIndex<?>>
 {
-/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private OrienteerStructureTable<OIndex<?>, String> structureTable;

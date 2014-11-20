@@ -11,8 +11,9 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 
-@RequiredOrientResource(value = ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.DELETE)
+@RequiredOrientResource(value = ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.DELETE)
 public class DeleteOClassCommand extends AbstractDeleteCommand<OClass> {
 
 	public DeleteOClassCommand(DataTableCommandsToolbar<OClass> toolbar) {

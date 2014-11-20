@@ -78,10 +78,11 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORole;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @MountPath("/class/${className}")
-@RequiredOrientResource(value=ODatabaseSecurityResources.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value=ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.READ)
 public class OClassPage extends OrienteerBasePage<OClass> {
 	
 	private class SecurityRightsColumn extends AbstractColumn<ORole, String>
