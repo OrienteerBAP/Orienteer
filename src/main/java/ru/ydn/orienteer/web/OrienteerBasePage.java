@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
@@ -14,6 +15,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
@@ -24,13 +26,16 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.orienteer.OrienteerWebSession;
 import ru.ydn.orienteer.components.DefaultPageHeader;
 import ru.ydn.orienteer.components.FAIcon;
 import ru.ydn.orienteer.components.ODocumentPageLink;
 import ru.ydn.orienteer.components.OrienteerFeedbackPanel;
+import ru.ydn.orienteer.modules.PerspectivesModule;
 import ru.ydn.orienteer.web.schema.ListOClassesPage;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 public abstract class OrienteerBasePage<T> extends BasePage<T>
 {
@@ -59,6 +64,26 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		super.initialize();
 		add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
 		add(newPageHeaderComponent("pageHeader"));
+		
+		add(new ListView<ODocument>("perspectives", new OQueryModel<ODocument>("select from "+PerspectivesModule.OCLASS_PERSPECTIVE)) {
+
+			@Override
+			protected void populateItem(ListItem<ODocument> item) {
+				IModel<ODocument> itemModel = item.getModel();
+				Link<ODocument> link = new Link<ODocument>("link", itemModel) {
+
+					@Override
+					public void onClick() {
+						OrienteerWebSession.get().setPerspecive(getModelObject());
+						OrienteerBasePage.this.info(getLocalizer().getString("info.perspectivechanged", this, new ODocumentPropertyModel<String>(getModel(), "name")));
+					}
+				};
+				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
+						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
+				item.add(link);
+			}
+		});
+		
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));

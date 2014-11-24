@@ -37,12 +37,13 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		OClass perspectiveClass = mergeOClass(schema, OCLASS_PERSPECTIVE);
 		OClass itemClass = mergeOClass(schema, OCLASS_ITEM);
 		mergeOProperty(perspectiveClass, "name", OType.STRING);
+		mergeOProperty(perspectiveClass, "icon", OType.STRING);
 		mergeOProperty(perspectiveClass, "homeUrl", OType.STRING);
 		OProperty menu = mergeOProperty(perspectiveClass, "menu", OType.LINKLIST, "table").setLinkedClass(itemClass);
 		mergeOProperty(perspectiveClass, "footer", OType.STRING, "textarea");
 		assignNameAndParent(perspectiveClass, "name", null);
 		switchDisplayable(perspectiveClass, true, "name", "homeUrl");
-		orderProperties(perspectiveClass, "name", "homeUrl", "footer", "menu");
+		orderProperties(perspectiveClass, "name", "icon", "homeUrl", "footer", "menu");
 		mergeOIndex(perspectiveClass, OCLASS_PERSPECTIVE+".name", INDEX_TYPE.UNIQUE, "name");
 		
 		mergeOProperty(itemClass, "name", OType.STRING);
