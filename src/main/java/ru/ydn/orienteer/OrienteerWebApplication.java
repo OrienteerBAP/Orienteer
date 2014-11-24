@@ -18,8 +18,8 @@ import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
 import ru.ydn.orienteer.modules.PerspectivesModule;
 import ru.ydn.orienteer.modules.UpdateDefaultSchemaModule;
 import ru.ydn.orienteer.standalone.StartStandalone;
+import ru.ydn.orienteer.web.HomePage;
 import ru.ydn.orienteer.web.LoginPage;
-import ru.ydn.orienteer.web.schema.ListOClassesPage;
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
@@ -28,10 +28,8 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
-import com.orientechnologies.orient.client.remote.OServerAdmin;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.server.config.OServerUserConfiguration;
 
 /**
  * Application object for your web application.
@@ -70,7 +68,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Override
 	public Class<? extends WebPage> getHomePage()
 	{
-		return ListOClassesPage.class;
+		return HomePage.class;
 	}
 	
 	@Override
