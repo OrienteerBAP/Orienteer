@@ -40,12 +40,17 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	private WebMarkupContainer resultsContainer;
 	private IModel<OClass> selectedClassModel;
 	
-	public SelectDialogPanel(String id, final ModalWindow modal, IModel<OClass> oClassModel)
+	public SelectDialogPanel(String id, final ModalWindow modal, IModel<OClass> initialClass)
+	{
+		this(id, modal, initialClass.getObject(), initialClass.getObject()==null);
+	}
+	
+	public SelectDialogPanel(String id, final ModalWindow modal, OClass initialClass, boolean canChangeClass)
 	{
 		super(id, Model.of(""));
 		this.modal = modal;
-		canChangeClass = oClassModel==null;
-		this.selectedClassModel = canChangeClass?new OClassModel(getClasses().get(0)):oClassModel;
+		this.canChangeClass = canChangeClass || initialClass==null;
+		this.selectedClassModel = new OClassModel(initialClass!=null?initialClass: getClasses().get(0));
 		
 		Form<String> form = new Form<String>("form", getModel());
 		form.add(new TextField<String>("query", getModel()));
