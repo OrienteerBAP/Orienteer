@@ -15,6 +15,7 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -191,9 +192,13 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new Label(id, getModel());
 			}
-			else if(CustomAttributes.PROP_INVERSE.getName().equals(critery))
+			else if(CustomAttributes.match(critery, CustomAttributes.PROP_INVERSE))
 			{
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
+			}
+			else if(CustomAttributes.match(critery, CustomAttributes.CALC_SCRIPT))
+			{
+				return new MultiLineLabel(id, getModel());
 			}
 			else
 			{

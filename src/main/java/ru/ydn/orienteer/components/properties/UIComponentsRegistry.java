@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
@@ -99,7 +100,7 @@ public class UIComponentsRegistry
 	
 	public UIComponentsRegistry()
 	{
-		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", Label.class, TextArea.class), OType.STRING);
+		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", MultiLineLabel.class, TextArea.class), OType.STRING);
 		registerUIComponentFactory(new LinksPropertyDataTablePanel.LinkPropertyDataTablePanelFactory(), OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
 	}
 	
