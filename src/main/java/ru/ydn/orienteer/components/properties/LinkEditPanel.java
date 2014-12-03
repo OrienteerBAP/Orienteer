@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.ResourceModel;
 
 import ru.ydn.orienteer.components.ODocumentPageLink;
 import ru.ydn.orienteer.components.commands.modal.SelectDialogPanel;
@@ -36,7 +37,7 @@ public class LinkEditPanel extends FormComponentPanel<ODocument>
 		modal = new ModalWindow("modal");
 		modal.setAutoSize(true);
 		add(modal);
-		
+		modal.setTitle(new ResourceModel("command.select.modal.title"));
 		modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, new PropertyModel<OClass>(propertyModel, "linkedClass")) {
 			
 			@Override

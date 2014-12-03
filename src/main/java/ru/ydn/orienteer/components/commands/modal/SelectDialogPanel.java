@@ -49,6 +49,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	{
 		super(id, Model.of(""));
 		this.modal = modal;
+		this.modal.setMinimalHeight(400);
 		this.canChangeClass = canChangeClass || initialClass==null;
 		this.selectedClassModel = new OClassModel(initialClass!=null?initialClass: getClasses().get(0));
 		
