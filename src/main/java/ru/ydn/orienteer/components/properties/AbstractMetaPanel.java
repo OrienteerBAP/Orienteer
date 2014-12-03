@@ -11,6 +11,7 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.visit.ClassVisitFilter;
@@ -163,6 +164,16 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		AbstractMetaPanel<T, C, V2> otherMetaPanel = getMetaComponent(critery);
 		if(otherMetaPanel==null) return null;
 		return otherMetaPanel!=null?otherMetaPanel.getEnteredValue():null;
+	}
+	
+	public IModel<?> getMetaComponentEnteredValueModel(final C critery)
+	{
+		return new AbstractReadOnlyModel<Object>() {
+			@Override
+			public Object getObject() {
+				 return getMetaComponentEnteredValue(critery);
+			}
+		};
 	}
 	
 	@SuppressWarnings("unchecked")

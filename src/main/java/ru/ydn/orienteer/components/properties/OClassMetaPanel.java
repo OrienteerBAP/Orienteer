@@ -23,11 +23,13 @@ import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.validation.IValidator;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.orient.core.collate.OCollate;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalancedClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
@@ -37,6 +39,7 @@ import com.orientechnologies.orient.core.sql.OSQLEngine;
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
@@ -50,9 +53,15 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
 		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
 	}
-	/**
-	 * 
-	 */
+	
+	private static final Predicate<OProperty> IS_LINK_PROPERTY = new Predicate<OProperty>() {
+
+		@Override
+		public boolean apply(OProperty input) {
+			return OType.LINK.equals(input.getType());
+		}
+	};
+	
 	private static final long serialVersionUID = 1L;
 	private static final List<String> CLUSTER_SELECTIONS = Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
 	
@@ -208,20 +217,20 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
 				}
-				else if(CustomAttributes.PROP_NAME.getName().equals(critery) 
-						|| CustomAttributes.PROP_PARENT.getName().equals(critery))
+				else if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME))
 				{
-					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new AbstractReadOnlyModel<List<OProperty>>() {
-
+					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null));
+				}
+				else if(CustomAttributes.match(critery, CustomAttributes.PROP_PARENT))
+				{
+					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null) {
+						
 						@Override
-						public List<OProperty> getObject() {
-							OClass oClass = getEntityObject();
-							if(oClass==null) return null;
-							Collection<OProperty> ret = oClass.properties();
-							//TODO: filter properties
-							return ret instanceof List?(List<OProperty>) ret:new ArrayList<OProperty>(ret);
+						protected Predicate<? super OProperty> getFilterPredicate() {
+							return IS_LINK_PROPERTY;
 						}
-					});
+
+					}).setNullValid(true);
 				}
 				else
 				{
