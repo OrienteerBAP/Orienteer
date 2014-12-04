@@ -183,10 +183,11 @@ public class PlantUmlService implements IUmlService
 				allClasses.add(oClass);
 				if(goUp)
 				{
-					OClass parent;
-					while((parent = oClass.getSuperClass())!=null)
+					OClass parent = oClass.getSuperClass();
+					while(parent!=null)
 					{
 						allClasses.add(parent);
+						parent = parent.getSuperClass();
 					}
 				}
 				if(goDown)
