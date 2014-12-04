@@ -58,21 +58,6 @@ public class SchemaHelper
 		return CustomAttributes.CALCULABLE.getValue(property, false);
 	}
 	
-	public static String getCustomAttr(OClass oClass, CustomAttributes attr)
-	{
-		return getCustomAttr(oClass, attr.getName());
-	}
-	
-	public static String getCustomAttr(OClass oClass, String attr)
-	{
-		String ret = oClass.getCustom(attr);
-		while(ret==null && oClass!=null)
-		{
-			oClass = oClass.getSuperClass();
-			if(oClass!=null) ret = oClass.getCustom(attr);
-		}
-		return ret;
-	}
 	
 	public static String resolveNameProperty(String oClass)
 	{
@@ -82,10 +67,11 @@ public class SchemaHelper
 	public static String resolveNameProperty(OClass oClass)
 	{
 		if(oClass==null) return null;
-		String ret = SchemaHelper.getCustomAttr(oClass, CustomAttributes.PROP_NAME);
-		if(ret==null || !oClass.existsProperty(ret))
+		OProperty property = CustomAttributes.PROP_NAME.getValue(oClass);
+		String ret = property!=null?property.getName():null;
+		if(ret==null || oClass.getProperty(ret)==null)
 		{
-			if(oClass.existsProperty("name"))
+			if(oClass.getProperty("name")!=null)
 			{
 				ret = "name";
 			}
