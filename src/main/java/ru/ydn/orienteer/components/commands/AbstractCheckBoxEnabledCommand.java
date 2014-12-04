@@ -20,9 +20,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class AbstractCheckBoxEnabledCommand<T> extends AjaxFormCommand<T>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private DataTable<T, ?> table;
 	private CheckBoxColumn<T, ?, ?> checkboxColumn;
@@ -60,9 +57,19 @@ public class AbstractCheckBoxEnabledCommand<T> extends AjaxFormCommand<T>
 
 	@Override
 	public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-		performMultiAction(target, checkboxColumn.getSelected());
-		checkboxColumn.resetSelection();
+		performMultiAction(target, getSelected());
+		resetSelection();
 		this.send(this, Broadcast.BUBBLE, target);
+	}
+	
+	public List<T> getSelected()
+	{
+		return checkboxColumn.getSelected();
+	}
+	
+	public void resetSelection()
+	{
+		checkboxColumn.resetSelection();
 	}
 	
 	protected void performMultiAction(AjaxRequestTarget target, List<T> objects)
