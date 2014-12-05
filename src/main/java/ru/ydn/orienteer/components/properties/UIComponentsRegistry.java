@@ -35,7 +35,6 @@ public class UIComponentsRegistry
 		public String getName();
 		public boolean isExtended();
 		public Component createComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, IModel<OProperty> propertyModel);
-		public <T> Component createComponent(String id, DisplayMode mode, IModel<T> model);
 	}
 	
 	public static class DefaultIOComponentFactory implements IUIComponentFactory
@@ -81,7 +80,6 @@ public class UIComponentsRegistry
 			}
 		}
 
-		@Override
 		public <T> Component createComponent(String id, DisplayMode mode,
 				IModel<T> model) {
 			Class<? extends Component> componentClass = DisplayMode.EDIT.equals(mode)?editComponentClass:viewComponentClass;
@@ -102,6 +100,7 @@ public class UIComponentsRegistry
 	{
 		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", MultiLineLabel.class, TextArea.class), OType.STRING);
 		registerUIComponentFactory(new LinksPropertyDataTablePanel.LinkPropertyDataTablePanelFactory(), OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
+		registerUIComponentFactory(new ListboxUIComponentFactory(), OType.LINK);
 	}
 	
 	public Table<OType, String, IUIComponentFactory> getRegistryTable()

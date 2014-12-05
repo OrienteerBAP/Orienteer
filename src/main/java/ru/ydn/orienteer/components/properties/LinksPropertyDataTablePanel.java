@@ -47,12 +47,6 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 			return new LinksPropertyDataTablePanel(id, documentModel, propertyModel.getObject());
 		}
 
-		@Override
-		public <T> Component createComponent(String id, DisplayMode mode,
-				IModel<T> model) {
-			throw new WicketRuntimeException("Not supported");
-		}
-		
 	}
 	
 	@Inject
