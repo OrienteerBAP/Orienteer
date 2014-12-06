@@ -11,6 +11,7 @@ import org.apache.wicket.util.string.Strings;
 
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.utils.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -114,17 +115,18 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 	@Override
 	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		OSchema schema = db.getMetadata().getSchema();
-		OClass oClass = mergeOClass(schema, OCLASS_LOCALIZATION);
-		mergeOProperty(oClass, OPROPERTY_KEY, OType.STRING);
-		mergeOProperty(oClass, OPROPERTY_LANG, OType.STRING);
-		mergeOProperty(oClass, OPROPERTY_STYLE, OType.STRING);
-		mergeOProperty(oClass, OPROPERTY_VARIATION, OType.STRING);
-		mergeOProperty(oClass, OPROPERTY_ACTIVE, OType.BOOLEAN);
-		mergeOProperty(oClass, OPROPERTY_VALUE, OType.STRING);
-		mergeOIndex(oClass, "key_index", INDEX_TYPE.NOTUNIQUE, "key");
-		orderProperties(oClass, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
-		switchDisplayable(oClass, true, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
-		assignNameAndParent(oClass, OPROPERTY_KEY, null);
+		OSchemaHelper.bind(db)
+		.oClass(OCLASS_LOCALIZATION)
+			.oProperty(OPROPERTY_KEY, OType.STRING)
+				.markAsDocumentName()
+				.oIndex("key_index", INDEX_TYPE.NOTUNIQUE)
+			.oProperty(OPROPERTY_LANG, OType.STRING)
+			.oProperty(OPROPERTY_STYLE, OType.STRING)
+			.oProperty(OPROPERTY_VARIATION, OType.STRING)
+			.oProperty(OPROPERTY_ACTIVE, OType.BOOLEAN)
+			.oProperty(OPROPERTY_VALUE, OType.STRING)
+			.orderProperties(OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE)
+			.switchDisplayable(true, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -34,11 +35,13 @@ import ru.ydn.orienteer.behavior.RefreshMetaContextOnChangeBehaviour;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -77,9 +80,13 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
 	}
-	/**
-	 * 
-	 */
+	private static final Predicate<OProperty> CAN_BE_INVERSE_PROPERTY = new Predicate<OProperty>() {
+
+		@Override
+		public boolean apply(OProperty input) {
+			return input.getType().isLink();
+		}
+	};
 	private static final long serialVersionUID = 1L;
 	
 	public static class OPropertyFieldNameModel extends AbstractNamingModel<String> 
@@ -191,9 +198,13 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new Label(id, getModel());
 			}
-			else if(CustomAttributes.PROP_INVERSE.getName().equals(critery))
+			else if(CustomAttributes.match(critery, CustomAttributes.PROP_INVERSE))
 			{
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
+			}
+			else if(CustomAttributes.match(critery, CustomAttributes.CALC_SCRIPT))
+			{
+				return new MultiLineLabel(id, getModel());
 			}
 			else
 			{
@@ -288,17 +299,16 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 							
 						}.setNullValid(true);
 					case PROP_INVERSE:
-						return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new AbstractReadOnlyModel<List<OProperty>>() {
-
-							@Override
-							public List<OProperty> getObject() {
-								OClass oClass = (OClass)getMetaComponent(OPropertyPrototyper.LINKED_CLASS).getEnteredValue();
-								if(oClass==null) return Collections.EMPTY_LIST;
-								Collection<OProperty> ret = oClass.properties();
-								//TODO: filter properties
-								return ret instanceof List?(List<OProperty>) ret:new ArrayList<OProperty>(ret);
-							}
-						}).setNullValid(true);
+						return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(),
+									new ListOPropertiesModel((IModel<OClass>)getMetaComponentEnteredValueModel(OPropertyPrototyper.LINKED_CLASS), null)
+									{
+										@Override
+										protected Predicate<? super OProperty> getFilterPredicate() {
+											return CAN_BE_INVERSE_PROPERTY;
+										}
+										
+									}
+								).setNullValid(true);
 					}
 				}
 				return resolveComponent(id, DisplayMode.VIEW, critery);

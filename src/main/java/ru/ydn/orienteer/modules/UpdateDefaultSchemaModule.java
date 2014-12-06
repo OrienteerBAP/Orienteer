@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.utils.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -12,6 +13,12 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 @Singleton
 public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 {
+	private static final String OCLASS_FUNCTION="OFunction";
+	private static final String OCLASS_RESTRICTED="ORestricted";
+	private static final String OCLASS_ROLE="ORole";
+	private static final String OCLASS_USER="OUser";
+	private static final String OCLASS_SCHEDULE="OSchedule";
+	
 	public UpdateDefaultSchemaModule()
 	{
 		super("update-default-schema", 1);
@@ -39,44 +46,44 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	
 	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
 	{
-		OSchema schema = db.getMetadata().getSchema();
-		OClass oFunction = schema.getClass("OFunction");
-		if(oFunction!=null)
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		if(helper.existsClass(OCLASS_FUNCTION))
 		{
-			assignVisualization(oFunction, "textarea", "code");
-			orderProperties(oFunction, "name", "language", "idempotent", "parameters", "code");
-			switchDisplayable(oFunction, true, "name", "language", "parameters");
-			assignNameAndParent(oFunction, "name", null);
+			helper.oClass(OCLASS_FUNCTION)
+				.assignVisualization("textarea", "code")
+				.orderProperties("name", "language", "idempotent", "parameters", "code")
+				.switchDisplayable(true, "name", "language", "parameters")
+				.assignNameAndParent("name", null);
 		}
-		OClass oRestricted = schema.getClass("ORestricted");
-		if(oRestricted!=null)
+		if(helper.existsClass(OCLASS_RESTRICTED))
 		{
 			String[] fields = {"_allow", "_allowRead", "_allowUpdate", "_allowDelete"};
-			assignTab(oRestricted, "security", fields);
-			assignVisualization(oRestricted, "table", fields);
-			orderProperties(oRestricted, fields); 
+			helper.oClass(OCLASS_RESTRICTED)
+				.assignTab("security", fields)
+				.assignVisualization("table", fields)
+				.orderProperties(fields); 
 		}
-		OClass oRole = schema.getClass("ORole");
-		if(oRole!=null)
+		if(helper.existsClass(OCLASS_ROLE))
 		{
-			orderProperties(oRole, "name", "mode", "inheritedRole", "rules");
-			assignNameAndParent(oRole, "name", "inheritedRole");
-			switchDisplayable(oRole, true, "name", "model", "inheritedRole");
+			helper.oClass(OCLASS_ROLE)
+				.orderProperties("name", "mode", "inheritedRole", "rules")
+				.assignNameAndParent("name", "inheritedRole")
+				.switchDisplayable(true, "name", "model", "inheritedRole");
 		}
-		OClass oUser = schema.getClass("OUser");
-		if(oUser!=null)
+		if(helper.existsClass(OCLASS_USER))
 		{
-			orderProperties(oUser, "name", "status", "password", "roles");
-			assignVisualization(oUser, "table", "roles");
-			assignNameAndParent(oUser, "name", null);
-			switchDisplayable(oUser, true, "name", "status");
+			helper.oClass(OCLASS_USER)
+				.orderProperties("name", "status", "password", "roles")
+				.assignVisualization("table", "roles")
+				.assignNameAndParent("name", null)
+				.switchDisplayable(true, "name", "status");
 		}
-		OClass oSchedule = schema.getClass("OSchedule");
-		if(oSchedule!=null)
+		if(helper.existsClass(OCLASS_SCHEDULE))
 		{
-			orderProperties(oSchedule, "name", "rule", "status", "start", "starttime", "arguments", "function");
-			assignNameAndParent(oSchedule, "name", null);
-			switchDisplayable(oSchedule, true, "name", "status", "rule");
+			helper.oClass(OCLASS_SCHEDULE)
+				.orderProperties("name", "rule", "status", "start", "starttime", "arguments", "function")
+				.assignNameAndParent("name", null)
+				.switchDisplayable(true, "name", "status", "rule");
 		}
 	}
 	

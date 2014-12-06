@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
@@ -34,7 +35,6 @@ public class UIComponentsRegistry
 		public String getName();
 		public boolean isExtended();
 		public Component createComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, IModel<OProperty> propertyModel);
-		public <T> Component createComponent(String id, DisplayMode mode, IModel<T> model);
 	}
 	
 	public static class DefaultIOComponentFactory implements IUIComponentFactory
@@ -80,7 +80,6 @@ public class UIComponentsRegistry
 			}
 		}
 
-		@Override
 		public <T> Component createComponent(String id, DisplayMode mode,
 				IModel<T> model) {
 			Class<? extends Component> componentClass = DisplayMode.EDIT.equals(mode)?editComponentClass:viewComponentClass;
@@ -99,8 +98,9 @@ public class UIComponentsRegistry
 	
 	public UIComponentsRegistry()
 	{
-		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", Label.class, TextArea.class), OType.STRING);
+		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", MultiLineLabel.class, TextArea.class), OType.STRING);
 		registerUIComponentFactory(new LinksPropertyDataTablePanel.LinkPropertyDataTablePanelFactory(), OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
+		registerUIComponentFactory(new ListboxUIComponentFactory(), OType.LINK);
 	}
 	
 	public Table<OType, String, IUIComponentFactory> getRegistryTable()

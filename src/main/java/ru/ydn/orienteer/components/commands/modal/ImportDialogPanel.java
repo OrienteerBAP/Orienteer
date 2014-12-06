@@ -27,6 +27,7 @@ public class ImportDialogPanel extends Panel
 	public ImportDialogPanel(String id, final ModalWindow modal)
 	{
 		super(id);
+		modal.setMinimalHeight(300);
 		Form<?> uploadForm = new Form<Object>("uploadForm");
 		final FileUploadField inputFile = new FileUploadField("inputFile");
 		uploadForm.add(inputFile);

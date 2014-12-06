@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.OrienteerWebSession;
+import ru.ydn.orienteer.utils.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
@@ -38,32 +39,27 @@ public class PerspectivesModule extends AbstractOrienteerModule
 
 	@Override
 	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
-		OSchema schema = db.getMetadata().getSchema();
-		OClass perspectiveClass = mergeOClass(schema, OCLASS_PERSPECTIVE);
-		OClass itemClass = mergeOClass(schema, OCLASS_ITEM);
-		mergeOProperty(perspectiveClass, "name", OType.STRING);
-		mergeOProperty(perspectiveClass, "icon", OType.STRING);
-		mergeOProperty(perspectiveClass, "homeUrl", OType.STRING);
-		OProperty menu = mergeOProperty(perspectiveClass, "menu", OType.LINKLIST, "table").setLinkedClass(itemClass);
-		mergeOProperty(perspectiveClass, "footer", OType.STRING, "textarea");
-		assignNameAndParent(perspectiveClass, "name", null);
-		switchDisplayable(perspectiveClass, true, "name", "homeUrl");
-		orderProperties(perspectiveClass, "name", "icon", "homeUrl", "footer", "menu");
-		mergeOIndex(perspectiveClass, OCLASS_PERSPECTIVE+".name", INDEX_TYPE.UNIQUE, "name");
-		
-		mergeOProperty(itemClass, "name", OType.STRING);
-		mergeOProperty(itemClass, "icon", OType.STRING);
-		mergeOProperty(itemClass, "url", OType.STRING);
-		OProperty perspective = mergeOProperty(itemClass, "perspective", OType.LINK).setLinkedClass(perspectiveClass);
-		assignNameAndParent(itemClass, "name", "perspective");
-		switchDisplayable(itemClass, true, "name", "icon", "url");
-		orderProperties(itemClass, "name", "perspective", "icon", "url");
-		
-		CustomAttributes.PROP_INVERSE.setValue(menu, perspective);
-		CustomAttributes.PROP_INVERSE.setValue(perspective, menu);
-		
-		OClass identityClass = schema.getClass(OSecurityShared.IDENTITY_CLASSNAME);
-		mergeOProperty(identityClass, "perspective", OType.LINK).setLinkedClass(perspectiveClass);
+		OSchemaHelper.bind(db)
+			.oClass(OCLASS_PERSPECTIVE)
+				.oProperty("name", OType.STRING)
+					.markAsDocumentName()
+					.oIndex(OCLASS_PERSPECTIVE+".name", INDEX_TYPE.UNIQUE)
+				.oProperty("icon", OType.STRING)
+				.oProperty("homeUrl", OType.STRING)
+				.oProperty("menu", OType.LINKLIST).assignVisualization("table")
+				.oProperty("footer", OType.STRING)
+				.switchDisplayable(true, "name", "homeUrl")
+				.orderProperties("name", "icon", "homeUrl", "footer", "menu")
+			.oClass(OCLASS_ITEM)
+				.oProperty("name", OType.STRING).markAsDocumentName()
+				.oProperty("icon", OType.STRING)
+				.oProperty("url", OType.STRING)
+				.oProperty("perspective", OType.LINK).markAsLinkToParent()
+				.switchDisplayable(true, "name", "icon", "url")
+				.orderProperties("name", "perspective", "icon", "url")
+			.setupRelationship(OCLASS_PERSPECTIVE, "menu", OCLASS_ITEM, "perspective")
+			.oClass(OSecurityShared.IDENTITY_CLASSNAME)
+				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE);
 	}
 	
 	public ODocument getDefaultPerspective(ODatabaseDocument db, OUser user)
