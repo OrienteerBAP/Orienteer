@@ -3,11 +3,14 @@ package ru.ydn.orienteer.components.properties;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.yui.calendar.DateField;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
@@ -91,7 +94,11 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 				case LINKLIST:
 				case LINKSET:
 					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, getEntityModel(), property);
-				default:
+                case DATE:
+                    return DateLabel.forDatePattern(id, (IModel<Date>) getModel(), ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, getLocale())).toPattern());
+                case DATETIME:
+                    return DateLabel.forDatePattern(id, (IModel<Date>) getModel(), ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, getLocale())).toPattern());
+                default:
 					return new Label(id, getModel());
 			}
 		}

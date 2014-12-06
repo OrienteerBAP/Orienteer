@@ -12,3 +12,5 @@ build.cmd
 databases/
 /Orienteer/
 orienteer.properties
+.idea/
+orienteer.iml
