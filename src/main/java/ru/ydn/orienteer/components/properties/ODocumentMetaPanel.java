@@ -122,7 +122,7 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) getModel());
                 default:
-					if(Number.class.isAssignableFrom(javaOType))
+                	if(javaOType!=null && Number.class.isAssignableFrom(javaOType))
 					{
 						NumberTextField field = new NumberTextField(id, getModel(), javaOType);
 						Number min = toNumber(property.getMin(), (Class<? extends Number>)javaOType);
@@ -133,7 +133,7 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 					}
 					else
 					{
-						return new TextField<V>(id, getModel()).setType(javaOType);
+						return new TextField<V>(id, getModel()).setType(javaOType!=null?javaOType:String.class);
 					}
 			}
 		}

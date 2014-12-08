@@ -5,6 +5,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.tester.WicketTester;
 
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.TestSchemaInstaller;
 import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -46,6 +47,7 @@ public class TestOrieenteerModule extends AbstractModule
 	{
 		OrienteerWebApplication app = injector.getInstance(OrienteerWebApplication.class);
 		app.getComponentInstantiationListeners().add(new GuiceComponentInjector(app, injector));
+		app.registerModule(TestSchemaInstaller.class);
 		return app;
 	}
 	
