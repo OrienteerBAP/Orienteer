@@ -100,7 +100,7 @@ public class UIComponentsRegistry
 	{
 		registerUIComponentFactory(new DefaultIOComponentFactory("textarea", MultiLineLabel.class, TextArea.class), OType.STRING);
 		registerUIComponentFactory(new LinksPropertyDataTablePanel.LinkPropertyDataTablePanelFactory(), OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
-		registerUIComponentFactory(new ListboxUIComponentFactory(), OType.LINK);
+		registerUIComponentFactory(new ListboxUIComponentFactory(), OType.LINK, OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
 	}
 	
 	public Table<OType, String, IUIComponentFactory> getRegistryTable()

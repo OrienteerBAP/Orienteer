@@ -83,7 +83,10 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 		{
 			UIComponentsRegistry.IUIComponentFactory factory = OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(oType, visualizationComponent);
 			if(factory!=null) 
-				return factory.createComponent(id, mode, getEntityModel(), getPropertyModel());
+			{
+				Component ret = factory.createComponent(id, mode, getEntityModel(), getPropertyModel());
+				if(ret!=null) return ret;
+			}
 		}
 		if(DisplayMode.VIEW.equals(mode))
 		{
