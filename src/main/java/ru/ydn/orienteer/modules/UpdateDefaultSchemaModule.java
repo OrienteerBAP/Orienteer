@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.components.properties.visualizers.PasswordVisualizer;
 import ru.ydn.orienteer.utils.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -75,6 +76,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 			helper.oClass(OCLASS_USER)
 				.orderProperties("name", "status", "password", "roles")
 				.assignVisualization("table", "roles")
+				.assignVisualization(PasswordVisualizer.NAME, "password")
 				.assignNameAndParent("name", null)
 				.switchDisplayable(true, "name", "status");
 		}

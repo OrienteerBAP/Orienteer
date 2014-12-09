@@ -22,6 +22,7 @@ import org.apache.wicket.util.lang.Args;
 
 import ru.ydn.orienteer.components.properties.visualizers.IVisualizer;
 import ru.ydn.orienteer.components.properties.visualizers.ListboxVisualizer;
+import ru.ydn.orienteer.components.properties.visualizers.PasswordVisualizer;
 import ru.ydn.orienteer.components.properties.visualizers.SimpleVisualizer;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 
@@ -40,6 +41,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new SimpleVisualizer("textarea", MultiLineLabel.class, TextArea.class, OType.STRING));
 		registerUIComponentFactory(new SimpleVisualizer("table", true, LinksPropertyDataTablePanel.class, LinksPropertyDataTablePanel.class, OType.LINKLIST, OType.LINKSET, OType.LINKBAG));
 		registerUIComponentFactory(new ListboxVisualizer());
+		registerUIComponentFactory(new PasswordVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()

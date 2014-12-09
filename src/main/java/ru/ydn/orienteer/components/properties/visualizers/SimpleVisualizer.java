@@ -60,7 +60,7 @@ public class SimpleVisualizer implements IVisualizer
 	
 	@Override
 	public boolean isExtended() {
-		return false;
+		return extended;
 	}
 
 	@Override
