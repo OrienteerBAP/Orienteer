@@ -1,6 +1,8 @@
-package ru.ydn.orienteer.components.properties;
+package ru.ydn.orienteer.components.properties.visualizers;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -8,6 +10,7 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.model.IModel;
 
+import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 import ru.ydn.orienteer.schema.SchemaHelper;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
@@ -16,11 +19,13 @@ import ru.ydn.wicket.wicketorientdb.utils.OChoiceRenderer;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class ListboxUIComponentFactory implements UIComponentsRegistry.IUIComponentFactory
+public class ListboxVisualizer implements IVisualizer
 {
-
+	private List<OType> supportedTypes = Arrays.asList(OType.LINK, OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
+	
 	@Override
 	public String getName() {
 		return "listbox";
@@ -56,6 +61,11 @@ public class ListboxUIComponentFactory implements UIComponentsRegistry.IUICompon
 		{
 			return null;
 		}
+	}
+
+	@Override
+	public Collection<OType> getSupportedTypes() {
+		return supportedTypes;
 	}
 
 }

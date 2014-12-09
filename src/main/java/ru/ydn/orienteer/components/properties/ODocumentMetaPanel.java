@@ -23,6 +23,7 @@ import org.apache.wicket.util.string.Strings;
 
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
+import ru.ydn.orienteer.components.properties.visualizers.IVisualizer;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
@@ -81,10 +82,10 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 		String visualizationComponent = CustomAttributes.VISUALIZATION_TYPE.getValue(property);
 		if(visualizationComponent!=null)
 		{
-			UIComponentsRegistry.IUIComponentFactory factory = OrienteerWebApplication.get().getUIComponentsRegistry().getComponentFactory(oType, visualizationComponent);
-			if(factory!=null) 
+			IVisualizer visualizer = OrienteerWebApplication.get().getUIVisualizersRegistry().getComponentFactory(oType, visualizationComponent);
+			if(visualizer!=null) 
 			{
-				Component ret = factory.createComponent(id, mode, getEntityModel(), getPropertyModel());
+				Component ret = visualizer.createComponent(id, mode, getEntityModel(), getPropertyModel());
 				if(ret!=null) return ret;
 			}
 		}

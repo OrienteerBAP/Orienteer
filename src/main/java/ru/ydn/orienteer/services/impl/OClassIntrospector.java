@@ -27,7 +27,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.properties.DisplayMode;
-import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
+import ru.ydn.orienteer.components.properties.UIVisualizersRegistry;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OEntityColumn;
 import ru.ydn.orienteer.components.table.OPropertyValueColumn;
@@ -130,7 +130,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	public List<OProperty> listProperties(OClass oClass, String tab, final Boolean extended) {
 		Collection<OProperty> properties =  oClass.properties();
 		final String safeTab = tab!=null?tab:DEFAULT_TAB;
-		final UIComponentsRegistry registry = OrienteerWebApplication.get().getUIComponentsRegistry();
+		final UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
 		Collection<OProperty> filteredProperties = Collections2.filter(properties, new Predicate<OProperty>() {
 
 			@Override

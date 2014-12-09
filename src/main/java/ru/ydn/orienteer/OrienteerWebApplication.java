@@ -9,7 +9,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
-import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
+import ru.ydn.orienteer.components.properties.UIVisualizersRegistry;
 import ru.ydn.orienteer.hooks.CalculablePropertiesHook;
 import ru.ydn.orienteer.hooks.ReferencesConsistencyHook;
 import ru.ydn.orienteer.modules.IOrienteerModule;
@@ -149,9 +149,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return registeredModules.get(name);
 	}
 	
-	public UIComponentsRegistry getUIComponentsRegistry()
+	public UIVisualizersRegistry getUIVisualizersRegistry()
 	{
-		return getServiceInstance(UIComponentsRegistry.class);
+		return getServiceInstance(UIVisualizersRegistry.class);
 	}
 	
 }

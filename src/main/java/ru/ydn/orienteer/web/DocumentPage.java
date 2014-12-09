@@ -132,7 +132,7 @@ public class DocumentPage extends AbstractDocumentPage {
 				OProperty oProperty = item.getModelObject();
 				String component = CustomAttributes.VISUALIZATION_TYPE.getValue(oProperty);
 				form.add(OrienteerWebApplication.get()
-							.getUIComponentsRegistry()
+							.getUIVisualizersRegistry()
 							.getComponentFactory(oProperty.getType(), component)
 							.createComponent("component", DisplayMode.VIEW, getDocumentModel(), item.getModel()));
 				item.add(form);

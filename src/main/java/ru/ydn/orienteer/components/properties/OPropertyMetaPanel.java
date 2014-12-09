@@ -282,7 +282,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 								@Override
 								protected List<String> load() {
 									OType type = getMetaComponentEnteredValue(OPropertyPrototyper.TYPE);
-									UIComponentsRegistry registry = OrienteerWebApplication.get().getUIComponentsRegistry();
+									UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
 									return registry.getComponentsOptions(type);
 								}
 							})

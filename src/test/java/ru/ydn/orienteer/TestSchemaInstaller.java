@@ -8,7 +8,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
-import ru.ydn.orienteer.components.properties.UIComponentsRegistry;
+import ru.ydn.orienteer.components.properties.UIVisualizersRegistry;
 import ru.ydn.orienteer.modules.AbstractOrienteerModule;
 import ru.ydn.orienteer.utils.OSchemaHelper;
 
@@ -26,7 +26,7 @@ public class TestSchemaInstaller extends AbstractOrienteerModule
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(TEST_OCLASS);
-		UIComponentsRegistry registry = app.getUIComponentsRegistry();
+		UIVisualizersRegistry registry = app.getUIVisualizersRegistry();
 		for(OType type: OType.values())
 		{
 			if(type == OType.LINKBAG) continue;

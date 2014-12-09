@@ -28,29 +28,14 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 {
-	public static class LinkPropertyDataTablePanelFactory implements UIComponentsRegistry.IUIComponentFactory
-	{
-
-		@Override
-		public String getName() {
-			return "table";
-		}
-
-		@Override
-		public boolean isExtended() {
-			return true;
-		}
-
-		@Override
-		public Component createComponent(String id, DisplayMode mode,
-				IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
-			return new LinksPropertyDataTablePanel(id, documentModel, propertyModel.getObject());
-		}
-
-	}
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
+	
+	public LinksPropertyDataTablePanel(String id, IModel<ODocument> documentModel, IModel<OProperty> property)
+	{
+		this(id, documentModel, property.getObject());
+	}
 	
 	public LinksPropertyDataTablePanel(String id, IModel<ODocument> documentModel, OProperty property)
 	{
