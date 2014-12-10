@@ -52,8 +52,21 @@ public class TestHooks
 			doc.save();
 			doc.reload();
 			assertEquals(4, doc.field("c"));
+			doc.field("a", 3);
+			doc.field("b", 3);
+			doc.save();
+			doc.reload();
+			assertEquals(6, doc.field("c"));
+			db.begin();
+			doc.field("a", 4);
+			doc.field("b", 4);
+			doc.save();
+			doc.reload();
+			assertEquals(8, doc.field("c"));
+			db.commit();
 		} finally
 		{
+			if(db.getTransaction().isActive()) db.commit();
 			schema.dropClass(TEST_CLASS_A);
 			OrientDbWebSession.get().signOut();
 		}
