@@ -20,6 +20,7 @@ import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.validation.validator.RangeValidator;
 
 import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
@@ -123,26 +124,16 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) getModel());
                 default:
-                	if(javaOType!=null && Number.class.isAssignableFrom(javaOType))
-					{
-						NumberTextField field = new NumberTextField(id, getModel(), javaOType);
-						Number min = toNumber(property.getMin(), (Class<? extends Number>)javaOType);
-						Number max = toNumber(property.getMax(), (Class<? extends Number>)javaOType);
-						if(min!=null) field.setMinimum(min);
-						if(max!=null) field.setMaximum(max);
-						return field;
-					}
-					else
-					{
-						return new TextField<V>(id, getModel()).setType(javaOType!=null?javaOType:String.class);
-					}
+                	TextField<V> ret = new TextField<V>(id, getModel());
+                	if(javaOType!=null) ret.setType(javaOType);
+                	return ret;
 			}
 		}
 		else return null;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T extends Number> T toNumber(String str, Class<T> clazz)
+	private <T extends Comparable<? super T> & Serializable> T toRangePoint(String str, Class<?> clazz)
 	{
 		if(Strings.isEmpty(str)) return null;
 		try
