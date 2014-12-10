@@ -46,12 +46,10 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 		}
 		
 	}
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private DataTableCommandsToolbar<T> commandsToolbar;
-	private HeadersToolbar<S> headersToolbar;
+	protected DataTableCommandsToolbar<T> commandsToolbar;
+	protected HeadersToolbar<S> headersToolbar;
+	protected NoRecordsToolbar noRecordsToolbar;
 	
 	private IModel<String> captionModel;
 	
@@ -62,7 +60,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 		addTopToolbar(commandsToolbar=new DataTableCommandsToolbar<T>(this));
 		addTopToolbar(headersToolbar =new HeadersToolbar<S>(this, dataProvider));
 		addBottomToolbar(new NavigationToolbar(this));
-		addBottomToolbar(new NoRecordsToolbar(this));
+		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
 	}
 
@@ -72,6 +70,11 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 	
 	public HeadersToolbar<S> getHeadersToolbar() {
 		return headersToolbar;
+	}
+	
+	public NoRecordsToolbar getNoRecordsToolbar()
+	{
+		return noRecordsToolbar;
 	}
 
 	public OrienteerDataTable<T, S> addCommand(Command<T> command)

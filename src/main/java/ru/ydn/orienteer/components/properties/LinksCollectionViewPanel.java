@@ -54,7 +54,8 @@ public class LinksCollectionViewPanel<T extends OIdentifiable, M extends Collect
 		columns.add(new OEntityColumn<ODocument>(property.getLinkedClass()));
 		
 		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("links", columns, provider, 10);
-		table.getHeadersToolbar().setVisible(false);
+		table.getHeadersToolbar().setVisibilityAllowed(false);
+		table.getNoRecordsToolbar().setVisibilityAllowed(false);
 		add(table);
 	}
 

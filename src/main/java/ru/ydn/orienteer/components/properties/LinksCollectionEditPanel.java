@@ -80,7 +80,8 @@ public class LinksCollectionEditPanel<T extends OIdentifiable, M extends Collect
 		});
 		
 		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("links", columns, provider, 10);
-		table.getHeadersToolbar().setVisible(false);
+		table.getHeadersToolbar().setVisibilityAllowed(false);
+		table.getNoRecordsToolbar().setVisibilityAllowed(false);
 		table.addCommand(new SelectODocumentCommand(table, documentModel, new OPropertyModel(property))
 				.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 				.setIcon((String)null));
