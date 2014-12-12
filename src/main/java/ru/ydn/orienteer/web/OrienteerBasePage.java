@@ -6,6 +6,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
@@ -22,6 +23,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.lang.Objects;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -65,6 +67,14 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
 		add(newPageHeaderComponent("pageHeader"));
 		
+		final AttributeAppender highlightActivePerspective = new AttributeAppender("class", "active")
+		{
+			@Override
+			public boolean isEnabled(Component component) {
+				return Objects.isEqual(getPerspective(), component.getDefaultModelObject());
+			}
+		};
+		
 		add(new ListView<ODocument>("perspectives", new OQueryModel<ODocument>("select from "+PerspectivesModule.OCLASS_PERSPECTIVE)) {
 
 			@Override
@@ -81,6 +91,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
 						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
 				item.add(link);
+				item.add(highlightActivePerspective);
 			}
 		});
 		
