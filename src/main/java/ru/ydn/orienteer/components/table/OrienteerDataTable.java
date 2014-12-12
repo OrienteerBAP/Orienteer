@@ -87,9 +87,15 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 	public void onEvent(IEvent<?> event) {
 		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))
 		{
-			((AjaxRequestTarget)event.getPayload()).add(this);
+			AjaxRequestTarget target = ((AjaxRequestTarget)event.getPayload());
+			target.add(this);
+			onAjaxUpdate(target);
 			event.stop();
 		}
+	}
+	
+	public void onAjaxUpdate(AjaxRequestTarget target)
+	{
 	}
 
 	@Override

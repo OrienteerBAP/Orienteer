@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -64,6 +65,7 @@ import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
@@ -132,12 +134,13 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		}
 		
 	}
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
 	private OrienteerStructureTable<OClass, String> structureTable;
+	private OrienteerDataTable<OProperty, String> pTable;
+	private OrienteerDataTable<OIndex<?>, String> iTable;
+	private OrienteerDataTable<ORole, String> sTable;
 	
 	private IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 	private IModel<Boolean> showParentPropertiesModel = Model.<Boolean>of(true);
@@ -181,8 +184,12 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 	protected void onConfigure() {
 		super.onConfigure();
 		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+		boolean isExistingClass = !(getModelObject() instanceof IPrototype);
+		pTable.setEnabled(isExistingClass);
+		iTable.setEnabled(isExistingClass);
+		sTable.setEnabled(isExistingClass);
 	}
-
+	
 	@Override
 	protected void onInitialize() 
 	{
@@ -194,6 +201,14 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
 				return new OClassMetaPanel<Object>(id, modeModel, OClassPage.this.getModel(), rowModel);
 			}
+
+			@Override
+			public void onAjaxUpdate(AjaxRequestTarget target) {
+				OClassPage.this.onConfigure();
+				target.add(pTable, iTable, sTable);
+			}
+			
+			
 		};
 		structureTable.addCommand(new EditSchemaCommand<OClass>(structureTable, modeModel));
 		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, modeModel, getModel()));
@@ -216,7 +231,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		
 		OPropertiesDataProvider pProvider = new OPropertiesDataProvider(getModel(), showParentPropertiesModel);
 		pProvider.setSort("name", SortOrder.ASCENDING);
-		OrienteerDataTable<OProperty, String> pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
+		pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
 		pTable.addCommand(new CreateOPropertyCommand(pTable, getModel()));
 		pTable.addCommand(new ShowHideParentsCommand<OProperty>(getModel(), pTable, showParentPropertiesModel));
 		pTable.addCommand(new DeleteOPropertyCommand(pTable));
@@ -237,7 +252,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		
 		OIndexiesDataProvider iProvider = new OIndexiesDataProvider(getModel(), showParentIndexesModel);
 		iProvider.setSort("name", SortOrder.ASCENDING);
-		OrienteerDataTable<OIndex<?>, String> iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
+		iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
 		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(getModel(), iTable, showParentIndexesModel));
 		iTable.addCommand(new DeleteOIndexCommand(iTable));
 		iTable.setCaptionModel(new ResourceModel("class.indexies"));
@@ -255,7 +270,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		
 		OQueryDataProvider<ORole> sProvider = new OQueryDataProvider<ORole>("select from ORole", ORole.class);
 		sProvider.setSort("name", SortOrder.ASCENDING);
-		OrienteerDataTable<ORole, String> sTable = new OrienteerDataTable<ORole, String>("security", sColumns, sProvider ,20);
+		sTable = new OrienteerDataTable<ORole, String>("security", sColumns, sProvider ,20);
 		Command<ORole> saveCommand = new AbstractSaveCommand<ORole>(sTable, null);
 		OSecurityHelper.secureComponent(saveCommand, OSecurityHelper.requireOClass("ORole", OrientPermission.UPDATE));
 		sTable.addCommand(saveCommand);

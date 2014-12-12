@@ -14,7 +14,7 @@
 	background-color: #eee
 }
 
-tr.commandstoolbar a.btn
+tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
 {
 	margin-left:0.5em;
 	margin-right:0.5em;

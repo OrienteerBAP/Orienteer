@@ -242,13 +242,4 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 		}
 	}
 	
-	@Override
-	public void onEvent(IEvent<?> event) {
-		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))
-		{
-			((AjaxRequestTarget)event.getPayload()).add(this);
-			event.stop();
-		}
-	}
-	
 }

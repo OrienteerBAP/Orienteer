@@ -2,6 +2,9 @@ package ru.ydn.orienteer.components.structuretable;
 
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.event.Broadcast;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.commands.Command;
@@ -60,6 +63,21 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	@Override
 	public <K extends AbstractMetaPanel<?, C, ?>> K getMetaComponent(C critery) {
 		return AbstractMetaPanel.getMetaComponent(this, critery);
+	}
+	
+	@Override
+	public void onEvent(IEvent<?> event) {
+		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))
+		{
+			AjaxRequestTarget target = ((AjaxRequestTarget)event.getPayload());
+			target.add(this);
+			onAjaxUpdate(target);
+			event.stop();
+		}
+	}
+	
+	public void onAjaxUpdate(AjaxRequestTarget target)
+	{
 	}
 
 }

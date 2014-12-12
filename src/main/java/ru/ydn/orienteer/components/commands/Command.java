@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.components.commands;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
@@ -23,14 +24,20 @@ import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.orienteer.web.schema.OClassPage;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 
 
 public abstract class Command<T> extends Panel implements IBootstrapAware
 {
-	/**
-	 * 
-	 */
+	private static final AttributeModifier DISABLED_LINK_BEHAVIOR = new AttributeModifier("disabled", AttributeModifier.VALUELESS_ATTRIBUTE_ADD)
+	{
+		@Override
+		public boolean isEnabled(Component component) {
+			return !component.isEnabledInHierarchy();
+		}
+	};
 	private static final long serialVersionUID = 1L;
 	private String icon;
 	private AbstractLink link;
@@ -71,12 +78,12 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
     {
         super(commandId);
         link = newLink("command");
-//      link.setMarkupId(commandId.replace(".","_"));
         link.setOutputMarkupId(true);
         link.add(new AttributeAppender("class", new PropertyModel<String>(this, "bootstrapType.btnCssClass"), " "));
         link.add(new AttributeAppender("class", new PropertyModel<String>(this, "bootstrapSize.btnCssClass"), " "));
         link.add(new Label("label", labelModel).setRenderBodyOnly(true));
         link.add(new FAIcon("icon", new PropertyModel<String>(this, "icon")));
+        link.add(DISABLED_LINK_BEHAVIOR);
         add(link);
     }
     
