@@ -174,6 +174,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				return new OClassViewPanel(id,  (IModel<OClass>)getModel());
 			}
+			if("abstract".equals(critery) || "strictMode".equals(critery))
+			{
+				return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
+			}
 			else
 			{
 				return new Label(id, getModel());

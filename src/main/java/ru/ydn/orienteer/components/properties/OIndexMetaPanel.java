@@ -130,6 +130,10 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 			{
 				return new OClassViewPanel(id, new OClassModel((IModel<String>)getModel()));
 			}
+			else if(OIndexPrototyper.DEF_NULLS_IGNORED.equals(critery))
+			{
+				return new BooleanViewPanel(id, (IModel<Boolean>)getModel());
+			}
 			//Default component for view
 			return new Label(id, getModel());
 		}

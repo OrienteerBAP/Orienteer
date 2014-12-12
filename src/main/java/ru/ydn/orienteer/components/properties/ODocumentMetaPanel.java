@@ -103,6 +103,8 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
                     return DateLabel.forDatePattern(id, (IModel<Date>) getModel(), ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, getLocale())).toPattern());
                 case DATETIME:
                     return DateLabel.forDatePattern(id, (IModel<Date>) getModel(), ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, getLocale())).toPattern());
+                case BOOLEAN:
+                	return new BooleanViewPanel(id, (IModel<Boolean>)getModel());
                 default:
 					return new Label(id, getModel());
 			}

@@ -206,6 +206,13 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new MultiLineLabel(id, getModel());
 			}
+			if(OPropertyPrototyper.MANDATORY.equals(critery) 
+					|| OPropertyPrototyper.READONLY.equals(critery) 
+					|| OPropertyPrototyper.NOT_NULL.equals(critery)
+					|| CustomAttributes.match(critery, CustomAttributes.DISPLAYABLE, CustomAttributes.CALCULABLE))
+			{
+				return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
+			}
 			else
 			{
 				return new Label(id, getModel());
