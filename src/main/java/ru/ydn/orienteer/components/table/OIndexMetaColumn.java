@@ -11,19 +11,15 @@ import ru.ydn.orienteer.components.properties.OIndexMetaPanel;
 
 public class OIndexMetaColumn extends AbstractMetaColumn<OIndex<?>, String, String>
 {
+
 	public OIndexMetaColumn(String critery)
 	{
-		this(Model.of(critery));
+		this(critery, critery);
 	}
-
-	public OIndexMetaColumn(IModel<String> criteryModel)
+	
+	public OIndexMetaColumn(String sortParam, String critery)
 	{
-		super(criteryModel);
-	}
-
-	public OIndexMetaColumn(String sortProperty, IModel<String> criteryModel)
-	{
-		super(sortProperty, criteryModel);
+		super(sortParam, Model.of(critery));
 	}
 
 	@Override

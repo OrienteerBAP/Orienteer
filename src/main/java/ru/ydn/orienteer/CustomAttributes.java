@@ -94,6 +94,7 @@ public enum CustomAttributes
 
 	public static CustomAttributes fromString(String name)
 	{
+		if(name==null) return null;
 		if(QUICK_CACHE.containsKey(name)) return QUICK_CACHE.get(name);
 		else
 		{

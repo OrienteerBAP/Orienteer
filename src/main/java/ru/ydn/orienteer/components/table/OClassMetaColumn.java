@@ -3,6 +3,7 @@ package ru.ydn.orienteer.components.table;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
+import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.components.properties.AbstractMetaPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
@@ -11,24 +12,19 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 public class OClassMetaColumn  extends AbstractMetaColumn<OClass, String, String>
 {
-	public OClassMetaColumn(String critery)
+	public OClassMetaColumn(CustomAttributes custom)
 	{
-		this(Model.of(critery));
-	}
-
-	public OClassMetaColumn(IModel<String> criteryModel)
-	{
-		super(criteryModel);
+		this(custom.getName());
 	}
 	
-	public OClassMetaColumn(String sortProperty, String critery)
+	public OClassMetaColumn(String critery)
 	{
-		this(sortProperty, Model.of(critery));
+		this(critery, critery);
 	}
-
-	public OClassMetaColumn(String sortProperty, IModel<String> criteryModel)
+	
+	public OClassMetaColumn(String sortParam, String critery)
 	{
-		super(sortProperty, criteryModel);
+		super(sortParam, Model.of(critery));
 	}
 
 	@Override

@@ -70,10 +70,9 @@ public class ListOClassesPage extends OrienteerBasePage<Object> {
 		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
 		columns.add(new CheckBoxColumn<OClass, String, String>(null, OClassClassNameConverter.INSTANCE));
 		columns.add(new OClassColumn<OClass>(new ResourceModel("class.name"), "name", ""));
-		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS+".name", OClassPrototyper.SUPER_CLASS));
-		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT, OClassPrototyper.ABSTRACT));
-		columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE, OClassPrototyper.STRICT_MODE));
-		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.javaClass"), "javaClass", "javaClass"));
+		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS));
+		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT));
+		columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.count"), "count", "count"));
 		columns.add(new AbstractColumn<OClass, String>(new ResourceModel("class.browse")) {
 

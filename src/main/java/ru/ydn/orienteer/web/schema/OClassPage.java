@@ -58,6 +58,7 @@ import ru.ydn.orienteer.components.table.OIndexMetaColumn;
 import ru.ydn.orienteer.components.table.OPropertyDefinitionColumn;
 import ru.ydn.orienteer.components.table.OPropertyMetaColumn;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.orienteer.model.ExtendedOPropertiesDataProvider;
 import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.EnumNamingModel;
@@ -224,13 +225,12 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.NOT_NULL));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MANDATORY));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.READONLY));
-		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DISPLAYABLE.getName()));
-		pColumns.add(new OPropertyMetaColumn(CustomAttributes.CALCULABLE.getName()));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MIN));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MAX));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DISPLAYABLE));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.CALCULABLE));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.ORDER));
 		
-		OPropertiesDataProvider pProvider = new OPropertiesDataProvider(getModel(), showParentPropertiesModel);
-		pProvider.setSort("name", SortOrder.ASCENDING);
+		ExtendedOPropertiesDataProvider pProvider = new ExtendedOPropertiesDataProvider(getModel(), showParentPropertiesModel);
+		pProvider.setSort(CustomAttributes.ORDER.getName(), SortOrder.ASCENDING);
 		pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
 		pTable.addCommand(new CreateOPropertyCommand(pTable, getModel()));
 		pTable.addCommand(new ShowHideParentsCommand<OProperty>(getModel(), pTable, showParentPropertiesModel));

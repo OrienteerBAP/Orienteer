@@ -6,6 +6,8 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
+import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
+import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxNavigationToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeadersToolbar;
@@ -48,7 +50,8 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 	}
 	private static final long serialVersionUID = 1L;
 	protected DataTableCommandsToolbar<T> commandsToolbar;
-	protected HeadersToolbar<S> headersToolbar;
+	protected AjaxFallbackHeadersToolbar<S> headersToolbar;
+	protected AjaxNavigationToolbar navigationToolbar;
 	protected NoRecordsToolbar noRecordsToolbar;
 	
 	private IModel<String> captionModel;
@@ -57,9 +60,9 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 			ISortableDataProvider<T, S> dataProvider, int rowsPerPage)
 	{
 		super(id, columns, dataProvider, rowsPerPage);
-		addTopToolbar(commandsToolbar=new DataTableCommandsToolbar<T>(this));
-		addTopToolbar(headersToolbar =new HeadersToolbar<S>(this, dataProvider));
-		addBottomToolbar(new NavigationToolbar(this));
+		addTopToolbar(commandsToolbar= new DataTableCommandsToolbar<T>(this));
+		addTopToolbar(headersToolbar = new AjaxFallbackHeadersToolbar<S>(this, dataProvider));
+		addBottomToolbar(navigationToolbar = new AjaxNavigationToolbar(this));
 		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
 	}
