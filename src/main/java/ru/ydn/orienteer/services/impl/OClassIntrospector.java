@@ -1,6 +1,7 @@
 package ru.ydn.orienteer.services.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import com.google.common.collect.Ordering;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.orienteer.CustomAttributes;
@@ -85,7 +87,18 @@ public class OClassIntrospector implements IOClassIntrospector
 		columns.add(entityColumn);
 		for (OProperty oProperty : properties)
 		{
-			if(nameProperty==null || !nameProperty.equals(oProperty.getName()))columns.add(new OPropertyValueColumn(oProperty));
+			if(nameProperty==null || !nameProperty.equals(oProperty.getName()))
+			{
+				Class<?> javaType = oProperty.getType().getDefaultJavaType();
+				if(javaType!=null && Comparable.class.isAssignableFrom(javaType))
+				{
+					columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty));
+				}
+				else
+				{
+					columns.add(new OPropertyValueColumn(oProperty));
+				}
+			}
 		}
 		return columns;
 	}

@@ -27,9 +27,13 @@ public class OPropertyValueColumn extends AbstractMetaColumn<ODocument, OPropert
 	{
 		super(criteryModel);
 	}
+	
+	public OPropertyValueColumn(String sortProperty, OProperty oProperty)
+	{
+		this(sortProperty, new OPropertyModel(oProperty));
+	}
 
-	public OPropertyValueColumn(String sortProperty,
-			IModel<OProperty> criteryModel)
+	public OPropertyValueColumn(String sortProperty, IModel<OProperty> criteryModel)
 	{
 		super(sortProperty, criteryModel);
 	}
