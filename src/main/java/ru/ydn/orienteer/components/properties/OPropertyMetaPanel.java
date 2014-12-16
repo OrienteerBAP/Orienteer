@@ -33,6 +33,7 @@ import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.behavior.RefreshMetaContextOnChangeBehaviour;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
+import ru.ydn.orienteer.model.ListAvailableOTypesModel;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
@@ -106,7 +107,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			return "property."+object;
 		}
 	}
-
+	
 	public OPropertyMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<OProperty> entityModel, IModel<String> propertyModel,
 			IModel<V> valueModel)
@@ -226,7 +227,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else if(OPropertyPrototyper.TYPE.equals(critery))
 			{
-				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values()))
+				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), new ListAvailableOTypesModel(getEntityModel()))
 						.setRequired(true)
 						.add(new RefreshMetaContextOnChangeBehaviour());
 			}
