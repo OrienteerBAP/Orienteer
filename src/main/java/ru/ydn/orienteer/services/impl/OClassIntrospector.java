@@ -30,6 +30,7 @@ import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.UIVisualizersRegistry;
+import ru.ydn.orienteer.components.properties.visualizers.IVisualizer;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
 import ru.ydn.orienteer.components.table.OEntityColumn;
 import ru.ydn.orienteer.components.table.OPropertyValueColumn;
@@ -155,7 +156,8 @@ public class OClassIntrospector implements IOClassIntrospector
 				else {
 					String component = CustomAttributes.VISUALIZATION_TYPE.getValue(input);
 					if(component==null) return !extended;
-					return registry.getComponentFactory(input.getType(), component).isExtended() == extended;
+					IVisualizer visualizer = registry.getComponentFactory(input.getType(), component);
+					return (visualizer!=null?visualizer.isExtended():false) == extended;
 				}
 			}
 		});

@@ -16,58 +16,60 @@ public enum CustomAttributes
 	/**
 	 * Is this property calculable or not
 	 */
-	CALCULABLE("orienteer.calculable", OType.BOOLEAN, false),
+	CALCULABLE("orienteer.calculable", OType.BOOLEAN, false, false),
 	/**
 	 * Script to calculate value of the property
 	 */
-	CALC_SCRIPT("orienteer.script", OType.STRING, true),
+	CALC_SCRIPT("orienteer.script", OType.STRING, null, true),
 	/**
 	 * Is this property displayable or not
 	 */
-	DISPLAYABLE("orienteer.displayable", OType.BOOLEAN, false),
+	DISPLAYABLE("orienteer.displayable", OType.BOOLEAN, false, false),
 	
 	/**
 	 * Is this property value should not be visible
 	 */
-	HIDDEN("orienteer.hidden", OType.BOOLEAN, false),
+	HIDDEN("orienteer.hidden", OType.BOOLEAN, false, false),
 	/**
 	 * Order of this property in a table/tab
 	 */
-	ORDER("orienteer.order", OType.INTEGER, false),
+	ORDER("orienteer.order", OType.INTEGER, 0, false),
 	/**
 	 * Name of the tab where this parameter should be shown
 	 */
-	TAB("orienteer.tab", OType.STRING, false),
+	TAB("orienteer.tab", OType.STRING, null, false),
 	/**
 	 * Name of the property which is storing name of this entity
 	 */
-	PROP_NAME("orienteer.prop.name", OType.LINK, OProperty.class, false),
+	PROP_NAME("orienteer.prop.name", OType.LINK, OProperty.class, null, false),
 	/**
 	 * Name of property which is storing link to a parent entity
 	 */
-	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class, false),
+	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class, null, false),
 	
-	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING, false),
+	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING, "default", false),
 	
-	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, false);
+	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, null, false);
 	
 	private final String name;
 	private final OType type;
+	private final Object defaultValue;
 	private final Class<?> javaClass;
 	private final boolean encode;
 	
 	private static final Map<String, CustomAttributes> QUICK_CACHE = new HashMap<String, CustomAttributes>();
 	
-	private CustomAttributes(String name, OType type, boolean encode)
+	private CustomAttributes(String name, OType type, Object defaultValue, boolean encode)
 	{
-		this(name, type, type.getDefaultJavaType(), encode);
+		this(name, type, type.getDefaultJavaType(), defaultValue, encode);
 	}
 	
-	private CustomAttributes(String name, OType type, Class<?> javaClass, boolean encode)
+	private CustomAttributes(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode)
 	{
 		this.name = name;
 		this.type = type;
 		this.javaClass = javaClass;
+		this.defaultValue = defaultValue;
 		this.encode = encode;
 	}
 
@@ -86,6 +88,10 @@ public enum CustomAttributes
 
 	public Class<?> getJavaClass() {
 		return javaClass;
+	}
+	
+	public Object getDefaultValue() {
+		return defaultValue;
 	}
 
 	public boolean isEncode() {
@@ -112,21 +118,23 @@ public enum CustomAttributes
 	@SuppressWarnings("unchecked")
 	public <V> V getValue(OProperty property)
 	{
+		return getValue(property, (V) defaultValue);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <V> V getValue(OProperty property, V defaultValue)
+	{
 		String stringValue = property.getCustom(name);
 		if(encode) stringValue = decodeCustomValue(stringValue);
+		V ret;
 		if(OProperty.class.isAssignableFrom(javaClass))
 		{
-			return (V)resolveProperty(property.getOwnerClass(), stringValue);
+			ret = (V)resolveProperty(property.getOwnerClass(), stringValue);
 		}
 		else
 		{
-			return (V) OType.convert(stringValue, javaClass);
+			ret = (V) OType.convert(stringValue, javaClass);
 		}
-	}
-	
-	public <V> V getValue(OProperty property, V defaultValue)
-	{
-		V ret = getValue(property);
 		return ret!=null?ret:defaultValue;
 	}
 	
@@ -140,6 +148,7 @@ public enum CustomAttributes
 		}
 		else
 		{
+			if(defaultValue!=null && defaultValue.equals(value)) value = null;
 			String stringValue = value!=null?value.toString():null;
 			if(encode) stringValue = encodeCustomValue(stringValue);
 			property.setCustom(name, stringValue);
@@ -149,21 +158,23 @@ public enum CustomAttributes
 	@SuppressWarnings("unchecked")
 	public <V> V getValue(OClass oClass)
 	{
+		return getValue(oClass, (V) defaultValue);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <V> V getValue(OClass oClass, V defaultValue)
+	{
 		String stringValue = oClass.getCustom(name);
 		if(encode) stringValue = decodeCustomValue(stringValue);
+		V ret;
 		if(OProperty.class.isAssignableFrom(javaClass))
 		{
-			return (V)resolveProperty(oClass, stringValue);
+			ret = (V)resolveProperty(oClass, stringValue);
 		}
 		else
 		{
-			return (V) OType.convert(stringValue, javaClass);
+			ret = (V) OType.convert(stringValue, javaClass);
 		}
-	}
-	
-	public <V> V getValue(OClass oClass, V defaultValue)
-	{
-		V ret = getValue(oClass);
 		return ret!=null?ret:defaultValue;
 	}
 	
@@ -177,6 +188,7 @@ public enum CustomAttributes
 		}
 		else
 		{
+			if(defaultValue!=null && defaultValue.equals(value)) value = null;
 			String stringValue = value!=null?value.toString():null;
 			if(encode) stringValue = encodeCustomValue(stringValue);
 			oClass.setCustom(name, stringValue);

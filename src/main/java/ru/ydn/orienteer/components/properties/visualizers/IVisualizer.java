@@ -14,8 +14,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public interface IVisualizer extends IClusterable
 {
+	public static final String DEFAULT_VISUALIZER = "default";
 	public String getName();
 	public boolean isExtended();
 	public Collection<OType> getSupportedTypes();
-	public Component createComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, IModel<OProperty> propertyModel);
+	public <V> Component createComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel);
 }

@@ -64,8 +64,8 @@ public class SimpleVisualizer implements IVisualizer
 	}
 
 	@Override
-	public Component createComponent(String id, DisplayMode mode,
-			IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+	public <V> Component createComponent(String id, DisplayMode mode,
+			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel) {
 		Class<? extends Component> componentClass = DisplayMode.EDIT.equals(mode)?editComponentClass:viewComponentClass;
 		try
 		{
@@ -73,7 +73,7 @@ public class SimpleVisualizer implements IVisualizer
 			return constructor.newInstance(id, documentModel, propertyModel);
 		} catch (NoSuchMethodException e)
 		{
-			return createComponent(id, mode, new DynamicPropertyValueModel<ODocument>(documentModel, propertyModel));
+			return createComponent(id, mode, valueModel);
 		} catch (Exception e)
 		{
 			throw new WicketRuntimeException("Can't create component", e);

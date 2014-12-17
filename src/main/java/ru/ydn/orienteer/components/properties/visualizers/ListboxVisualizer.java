@@ -36,9 +36,10 @@ public class ListboxVisualizer implements IVisualizer
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Component createComponent(String id, DisplayMode mode,
-			IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+	public <V> Component createComponent(String id, DisplayMode mode,
+			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel) {
 		if(DisplayMode.EDIT.equals(mode))
 		{
 			
@@ -48,11 +49,11 @@ public class ListboxVisualizer implements IVisualizer
 			String nameProperty = SchemaHelper.resolveNameProperty(oClass);
 			if(property.getType().isMultiValue())
 			{
-				return new ListMultipleChoice<ODocument>(id, new DynamicPropertyValueModel<Collection<ODocument>>(documentModel, propertyModel), choicesModel, new OChoiceRenderer(nameProperty));
+				return new ListMultipleChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, choicesModel, new OChoiceRenderer(nameProperty));
 			}
 			else
 			{
-				return new DropDownChoice<ODocument>(id, new DynamicPropertyValueModel<ODocument>(documentModel, propertyModel), 
+				return new DropDownChoice<ODocument>(id, (IModel<ODocument>)valueModel, 
 					choicesModel, new OChoiceRenderer(nameProperty))
 					.setNullValid(!property.isNotNull());
 			}

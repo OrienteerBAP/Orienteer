@@ -35,16 +35,17 @@ public class PasswordVisualizer implements IVisualizer
 		return supported;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Component createComponent(String id, DisplayMode mode,
-			IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+	public <V> Component createComponent(String id, DisplayMode mode,
+			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel) {
 		if(mode==DisplayMode.VIEW)
 		{
 			return new Label(id, "*****");
 		}
 		else if(mode==DisplayMode.EDIT)
 		{
-			return new PasswordsPanel(id, new DynamicPropertyValueModel<String>(documentModel, propertyModel));
+			return new PasswordsPanel(id, (IModel<String>)valueModel);
 		}
 		else
 		{

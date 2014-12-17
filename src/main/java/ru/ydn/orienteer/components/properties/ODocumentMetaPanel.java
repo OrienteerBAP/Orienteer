@@ -79,59 +79,19 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 			OProperty property) {
 		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
 		OType oType = property.getType();
-		Class<?> javaOType = oType.getDefaultJavaType();
+		UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
 		String visualizationComponent = CustomAttributes.VISUALIZATION_TYPE.getValue(property);
 		if(visualizationComponent!=null)
 		{
-			IVisualizer visualizer = OrienteerWebApplication.get().getUIVisualizersRegistry().getComponentFactory(oType, visualizationComponent);
+			IVisualizer visualizer = registry.getComponentFactory(oType, visualizationComponent);
 			if(visualizer!=null) 
 			{
-				Component ret = visualizer.createComponent(id, mode, getEntityModel(), getPropertyModel());
+				Component ret = visualizer.createComponent(id, mode, getEntityModel(), getPropertyModel(), getModel());
 				if(ret!=null) return ret;
 			}
 		}
-		if(DisplayMode.VIEW.equals(mode))
-		{
-			switch(oType)
-			{
-				case LINK:
-					return new LinkViewPanel<OIdentifiable>(id, (IModel<OIdentifiable>)getModel());
-				case LINKLIST:
-				case LINKSET:
-					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, getEntityModel(), property);
-                case DATE:
-                    return DateLabel.forDatePattern(id, (IModel<Date>) getModel(), ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, getLocale())).toPattern());
-                case DATETIME:
-                    return DateLabel.forDatePattern(id, (IModel<Date>) getModel(), ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, getLocale())).toPattern());
-                case BOOLEAN:
-                	return new BooleanViewPanel(id, (IModel<Boolean>)getModel());
-                default:
-					return new Label(id, getModel());
-			}
-		}
-		else if(DisplayMode.EDIT.equals(mode))
-		{
-			switch(oType)
-			{
-				case BOOLEAN:
-					return new CheckBox(id, (IModel<Boolean>)getModel());
-				case LINK:
-					return new LinkEditPanel(id, getEntityModel(), getPropertyModel());
-					//return new TextField<V>(id, getModel()).setType(ODocument.class);
-				case LINKLIST:
-				case LINKSET:
-					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, getEntityModel(), property);
-                case DATE:
-                    return new DateField(id, (IModel<Date>) getModel());
-                case DATETIME:
-                    return new DateTimeField(id, (IModel<Date>) getModel());
-                default:
-                	TextField<V> ret = new TextField<V>(id, getModel());
-                	if(javaOType!=null) ret.setType(javaOType);
-                	return ret;
-			}
-		}
-		else return null;
+		return registry.getComponentFactory(oType, IVisualizer.DEFAULT_VISUALIZER)
+							.createComponent(id, mode, getEntityModel(), getPropertyModel(), getModel());
 	}
 	
 	@SuppressWarnings("unchecked")

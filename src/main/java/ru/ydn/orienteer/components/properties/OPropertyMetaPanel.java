@@ -278,6 +278,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 					case CALCULABLE:
 						return new CheckBox(id, (IModel<Boolean>)getModel()).add(new RefreshMetaContextOnChangeBehaviour());
 					case DISPLAYABLE:
+					case HIDDEN:
 						return new CheckBox(id, (IModel<Boolean>)getModel());
 					case CALC_SCRIPT:
 						return new TextArea<V>(id, getModel());
@@ -305,7 +306,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 								setVisible(choices!=null && choices.size()>0);
 							}
 							
-						}.setNullValid(true);
+						}.setNullValid(false).setRequired(true);
 					case PROP_INVERSE:
 						return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(),
 									new ListOPropertiesModel((IModel<OClass>)getMetaComponentEnteredValueModel(OPropertyPrototyper.LINKED_CLASS), null)

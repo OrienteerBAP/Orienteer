@@ -20,6 +20,7 @@ import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 
+import ru.ydn.orienteer.components.properties.visualizers.DefaultVisualizer;
 import ru.ydn.orienteer.components.properties.visualizers.IVisualizer;
 import ru.ydn.orienteer.components.properties.visualizers.ListboxVisualizer;
 import ru.ydn.orienteer.components.properties.visualizers.PasswordVisualizer;
@@ -38,6 +39,7 @@ public class UIVisualizersRegistry
 	
 	public UIVisualizersRegistry()
 	{
+		registerUIComponentFactory(new DefaultVisualizer());
 		registerUIComponentFactory(new SimpleVisualizer("textarea", MultiLineLabel.class, TextArea.class, OType.STRING));
 		registerUIComponentFactory(new SimpleVisualizer("table", true, LinksPropertyDataTablePanel.class, LinksPropertyDataTablePanel.class, OType.LINKLIST, OType.LINKSET, OType.LINKBAG));
 		registerUIComponentFactory(new ListboxVisualizer());
