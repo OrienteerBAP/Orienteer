@@ -21,9 +21,11 @@ import ru.ydn.orienteer.components.OClassPageLink;
 import ru.ydn.orienteer.components.commands.Command;
 import ru.ydn.orienteer.components.commands.CreateOClassCommand;
 import ru.ydn.orienteer.components.commands.DeleteOClassCommand;
+import ru.ydn.orienteer.components.commands.EditSchemaCommand;
 import ru.ydn.orienteer.components.commands.ExportOSchemaCommand;
 import ru.ydn.orienteer.components.commands.ImportOSchemaCommand;
 import ru.ydn.orienteer.components.commands.ReloadOMetadataCommand;
+import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.commands.ViewUMLCommand;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.CheckBoxColumn;
@@ -67,12 +69,13 @@ public class ListOClassesPage extends OrienteerBasePage<Object> {
 	public void initialize() {
 		super.initialize();
 		Form<?> form = new Form<Object>("form");
+		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
 		columns.add(new CheckBoxColumn<OClass, String, String>(null, OClassClassNameConverter.INSTANCE));
-		columns.add(new OClassColumn<OClass>(new ResourceModel("class.name"), "name", ""));
-		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS));
-		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT));
-		columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE));
+		columns.add(new OClassColumn(OClassPrototyper.NAME, modeModel));
+		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS, modeModel));
+		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT, modeModel));
+		columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE, modeModel));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.count"), "count", "count"));
 		columns.add(new AbstractColumn<OClass, String>(new ResourceModel("class.browse")) {
 
@@ -108,6 +111,8 @@ public class ListOClassesPage extends OrienteerBasePage<Object> {
 		provider.setSort("name", SortOrder.ASCENDING);
 		OrienteerDataTable<OClass, String> table = new OrienteerDataTable<OClass, String>("table", columns, provider ,20);
 		table.addCommand(new CreateOClassCommand(table));
+		table.addCommand(new EditSchemaCommand<OClass>(table, modeModel));
+		table.addCommand(new SaveSchemaCommand<OClass>(table, modeModel));
 		table.addCommand(new DeleteOClassCommand(table));
 		table.addCommand(new ReloadOMetadataCommand(table));
 		table.addCommand(new ExportOSchemaCommand(table));

@@ -12,14 +12,18 @@ import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
+import ru.ydn.orienteer.components.table.OrienteerDataTable;
 
 public class EditCommand<T> extends AjaxCommand<T>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
+	
+	public EditCommand(OrienteerDataTable<T, ?> table, IModel<DisplayMode> displayModeModel)
+	{
+		super(new ResourceModel("command.edit"), table);
+		this.displayModeModel = displayModeModel;
+	}
 
 	public EditCommand(DataTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
 	{
@@ -29,7 +33,8 @@ public class EditCommand<T> extends AjaxCommand<T>
 	
 	public EditCommand(OrienteerStructureTable<T, ?> structureTable, IModel<DisplayMode> displayModeModel)
 	{
-		this(structureTable.getCommandsToolbar(), displayModeModel);
+		super(new ResourceModel("command.edit"), structureTable);
+		this.displayModeModel = displayModeModel;
 	}
 
 	public EditCommand(StructureTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)

@@ -34,6 +34,7 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalan
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
+import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.sql.OSQLEngine;
 
 import ru.ydn.orienteer.CustomAttributes;
@@ -41,8 +42,11 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V>
@@ -64,26 +68,6 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	
 	private static final long serialVersionUID = 1L;
 	private static final List<String> CLUSTER_SELECTIONS = Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
-	
-	public static class OClassFieldNameModel extends AbstractNamingModel<String>
-	{
-		private static final long serialVersionUID = 1L;
-		
-		public OClassFieldNameModel(IModel<String> objectModel)
-		{
-			super(objectModel);
-		}
-
-		public OClassFieldNameModel(String object)
-		{
-			super(object);
-		}
-
-		@Override
-		public String getResourceKey(String object) {
-			return "class."+object;
-		}
-	};
 	
 	public static class ListClassesModel extends LoadableDetachableModel<List<OClass>>
 	{
@@ -164,6 +148,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	@Override
 	protected Component resolveComponent(String id, DisplayMode mode,
 			String critery) {
+		if(DisplayMode.EDIT.equals(mode) && !OSecurityHelper.isAllowed(ORule.ResourceGeneric.SCHEMA, null, OrientPermission.UPDATE))
+		{
+			mode = DisplayMode.VIEW;
+		}
 		if(DisplayMode.VIEW.equals(mode))
 		{
 			if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME, CustomAttributes.PROP_PARENT))
@@ -246,7 +234,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 	@Override
 	public IModel<String> newLabelModel() {
-		return new OClassFieldNameModel(getPropertyModel());
+		return new SimpleNamingModel<String>("class", getPropertyModel());
 	}
 	
 

@@ -7,35 +7,45 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 
+import ru.ydn.orienteer.CustomAttributes;
+import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.OPropertyViewPanel;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
-public class OPropertyDefinitionColumn<T> extends PropertyColumn<T, String>
+public class OPropertyDefinitionColumn extends OPropertyMetaColumn
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	public OPropertyDefinitionColumn(IModel<String> displayModel, final String propertyExpression) {
-		super(displayModel, propertyExpression);
-	}
-	
-	public OPropertyDefinitionColumn(IModel<String> displayModel, String sortingProperty, final String propertyExpression) {
-		super(displayModel, sortingProperty, propertyExpression);
-	}
-	
-	@Override
-	public void populateItem(Item<ICellPopulator<T>> cellItem,
-			String componentId, IModel<T> rowModel) {
-		cellItem.add(new OPropertyViewPanel(componentId, getPropertyModel(rowModel)));
-	}
-	
-	@SuppressWarnings("unchecked")
-	public IModel<OProperty> getPropertyModel(IModel<T> rowModel)
+	public OPropertyDefinitionColumn(CustomAttributes custom,
+			IModel<DisplayMode> modeModel)
 	{
-		if(Strings.isEmpty(getPropertyExpression())) return (IModel<OProperty>)rowModel;
-		else return new PropertyModel<OProperty>(rowModel, getPropertyExpression());
+		super(custom, modeModel);
 	}
+
+	public OPropertyDefinitionColumn(String critery,
+			IModel<DisplayMode> modeModel)
+	{
+		super(critery, modeModel);
+	}
+
+	public OPropertyDefinitionColumn(String sortParam, String critery,
+			IModel<DisplayMode> modeModel)
+	{
+		super(sortParam, critery, modeModel);
+	}
+
+	@Override
+	public void populateItem(Item<ICellPopulator<OProperty>> cellItem,
+			String componentId, IModel<OProperty> rowModel) {
+		if(DisplayMode.EDIT.equals(getModeObject()))
+		{
+			super.populateItem(cellItem, componentId, rowModel);
+		}
+		else
+		{
+			cellItem.add(new OPropertyViewPanel(componentId, rowModel));
+		}
+	}
+	
 }

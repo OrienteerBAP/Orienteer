@@ -215,49 +215,59 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, modeModel, getModel()));
 		
 		form.add(structureTable);
+		add(form);
 		
+		Form<OClass> pForm = new Form<OClass>("pForm");
+		IModel<DisplayMode> propertiesDisplayMode = DisplayMode.VIEW.asModel();
 		List<IColumn<OProperty, String>> pColumns = new ArrayList<IColumn<OProperty,String>>();
 		pColumns.add(new CheckBoxColumn<OProperty, String, String>(null, OPropertyFullNameConverter.INSTANCE));
-		pColumns.add(new OPropertyDefinitionColumn<OProperty>(new ResourceModel("property.name"), "name", ""));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.TYPE));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.LINKED_TYPE));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.LINKED_CLASS));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.NOT_NULL));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MANDATORY));
-		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.READONLY));
-		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DISPLAYABLE));
-		pColumns.add(new OPropertyMetaColumn(CustomAttributes.CALCULABLE));
-		pColumns.add(new OPropertyMetaColumn(CustomAttributes.ORDER));
+		pColumns.add(new OPropertyDefinitionColumn(OPropertyPrototyper.NAME, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.TYPE, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.LINKED_TYPE, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.LINKED_CLASS, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.NOT_NULL, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MANDATORY, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.READONLY, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DISPLAYABLE, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.CALCULABLE, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.ORDER, propertiesDisplayMode));
 		
 		ExtendedOPropertiesDataProvider pProvider = new ExtendedOPropertiesDataProvider(getModel(), showParentPropertiesModel);
 		pProvider.setSort(CustomAttributes.ORDER.getName(), SortOrder.ASCENDING);
 		pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
 		pTable.addCommand(new CreateOPropertyCommand(pTable, getModel()));
+		pTable.addCommand(new EditSchemaCommand<OProperty>(pTable, propertiesDisplayMode));
+		pTable.addCommand(new SaveSchemaCommand<OProperty>(pTable, propertiesDisplayMode));
 		pTable.addCommand(new ShowHideParentsCommand<OProperty>(getModel(), pTable, showParentPropertiesModel));
 		pTable.addCommand(new DeleteOPropertyCommand(pTable));
 		pTable.addCommand(new CreateOIndexFromOPropertiesCommand(pTable, getModel()));
 		pTable.setCaptionModel(new ResourceModel("class.properties"));
-		form.add(pTable);
+		pForm.add(pTable);
+		add(pForm);
 		
 		
+		Form<OClass> iForm = new Form<OClass>("iForm");
+		IModel<DisplayMode> indexiesDisplayMode = DisplayMode.VIEW.asModel();
 		List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
 		iColumns.add(new CheckBoxColumn<OIndex<?>, String, String>(null, OIndexNameConverter.INSTANCE));
-		iColumns.add(new OIndexDefinitionColumn<OIndex<?>>(new ResourceModel("index.name"), "name", ""));
-		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.TYPE));
-		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_FIELDS));
-		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_COLLATE));
-		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_NULLS_IGNORED));
-		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.SIZE));
-		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.KEY_SIZE));
+		iColumns.add(new OIndexDefinitionColumn(OIndexPrototyper.NAME, indexiesDisplayMode));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.TYPE, indexiesDisplayMode));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_FIELDS, indexiesDisplayMode));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_COLLATE, indexiesDisplayMode));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_NULLS_IGNORED, indexiesDisplayMode));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.SIZE, indexiesDisplayMode));
+		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.KEY_SIZE, indexiesDisplayMode));
 		
 		OIndexiesDataProvider iProvider = new OIndexiesDataProvider(getModel(), showParentIndexesModel);
 		iProvider.setSort("name", SortOrder.ASCENDING);
 		iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
+		iTable.addCommand(new EditSchemaCommand<OIndex<?>>(iTable, indexiesDisplayMode));
+		iTable.addCommand(new SaveSchemaCommand<OIndex<?>>(iTable, indexiesDisplayMode));
 		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(getModel(), iTable, showParentIndexesModel));
 		iTable.addCommand(new DeleteOIndexCommand(iTable));
 		iTable.setCaptionModel(new ResourceModel("class.indexies"));
-		form.add(iTable);
-		add(form);
+		iForm.add(iTable);
+		add(iForm);
 		
 		Form<OClass> sForm = new Form<OClass>("sForm");
 		

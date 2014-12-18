@@ -16,6 +16,7 @@ import org.apache.wicket.model.IModel;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
@@ -45,24 +46,6 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 		}
 	}
 	
-	public static class OIndexFieldNameModel extends AbstractNamingModel<String>{
-
-		public OIndexFieldNameModel(String object)
-		{
-			super(object);
-		}
-		
-		public OIndexFieldNameModel(IModel<String> objectModel)
-		{
-			super(objectModel);
-		}
-
-		@Override
-		public String getResourceKey(String object) {
-			return "index."+object;
-		}
-	};
-
 	public OIndexMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<OIndex<?>> entityModel, IModel<String> propertyModel,
 			IModel<V> valueModel)
@@ -169,7 +152,7 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 
 	@Override
 	protected IModel<String> newLabelModel() {
-		return new OIndexFieldNameModel(getPropertyModel());
+		return new SimpleNamingModel<String>("index", getPropertyModel());
 	}
 
 }
