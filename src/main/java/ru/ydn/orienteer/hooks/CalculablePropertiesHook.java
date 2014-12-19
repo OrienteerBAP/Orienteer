@@ -35,7 +35,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 	private List<String> getCalcProperties(ODocument iDocument)
 	{
 		ODatabaseDocument db = iDocument.getDatabase();
-		OClass oClass = iDocument.getImmutableSchemaClass();
+		OClass oClass = iDocument.getSchemaClass();
 		if(db==null || oClass==null) return null;
 		OSchema schema = db.getMetadata().getSchema();
 		int schemaVersion = schema.getVersion();
