@@ -141,6 +141,17 @@
 		    <artifactId>guava</artifactId>
 		    <version>17.0</version>
 		</dependency>
+		<!-- WEB JARS -->
+		<dependency>
+			<groupId>de.agilecoders.wicket.webjars</groupId>
+			<artifactId>wicket-webjars</artifactId>
+			<version>0.4.4</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.webjars</groupId>
+		    <artifactId>font-awesome</artifactId>
+		    <version>4.2.0</version>
+		</dependency>
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

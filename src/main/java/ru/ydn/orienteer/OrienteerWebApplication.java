@@ -31,6 +31,9 @@ import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
+import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.settings.WebjarsSettings;
+
 /**
  * Application object for your web application.
  * If you want to run this application without deploying, run the Start class.
@@ -102,6 +105,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			});
 		}
 		super.init();
+		WebjarsSettings settings = new WebjarsSettings();
+		WicketWebjars.install(this, settings);
 		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
@@ -111,6 +116,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(PerspectivesModule.class);
 		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
 		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
+		
 	}
 
 	@Override

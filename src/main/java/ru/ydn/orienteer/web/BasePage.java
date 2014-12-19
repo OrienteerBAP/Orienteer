@@ -2,6 +2,7 @@ package ru.ydn.orienteer.web;
 
 import java.util.List;
 
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.GenericWebPage;
@@ -10,6 +11,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.settings.IJavaScriptLibrarySettings;
 
 import ru.ydn.orienteer.OrienteerWebSession;
@@ -20,13 +22,12 @@ import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
+
 public abstract class BasePage<T> extends GenericWebPage<T>
 {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private static final ResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
 
 	public BasePage()
 	{
@@ -76,6 +77,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
                 getApplication().getJavaScriptLibrarySettings();
 		response.render(JavaScriptHeaderItem.
 				forReference(javaScriptSettings.getJQueryReference()));
+		response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
 	}
 
 	public ODatabaseDocument getDatabase()
