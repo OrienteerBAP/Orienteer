@@ -16,6 +16,7 @@ import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.properties.UIVisualizersRegistry;
 import ru.ydn.orienteer.services.impl.GuiceOrientDbSettings;
 import ru.ydn.orienteer.services.impl.OClassIntrospector;
+import ru.ydn.orienteer.services.impl.OrienteerWebjarsSettings;
 import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
@@ -28,6 +29,8 @@ import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
+
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 
 public class OrienteerModule extends AbstractModule
 {
@@ -52,6 +55,7 @@ public class OrienteerModule extends AbstractModule
 		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
 		bind(UIVisualizersRegistry.class).asEagerSingleton();
+		bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
 	}
 	
 	@Provides

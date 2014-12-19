@@ -7,3 +7,7 @@ orientdb.db.installator.username=admin
 orientdb.db.installator.password=admin
 #plantuml.url=http://custom-plantuml-url
 #plantuml.showuml=false;
+
+webjars.readFromCacheTimeout=5 seconds
+webjars.useCdnResources=true
+webjars.cdnUrl=//maxcdn.bootstrapcdn.com:80

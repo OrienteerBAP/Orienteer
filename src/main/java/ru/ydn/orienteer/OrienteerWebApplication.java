@@ -32,6 +32,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
 import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 import de.agilecoders.wicket.webjars.settings.WebjarsSettings;
 
 /**
@@ -44,6 +45,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 {
 	private boolean embedded;
 	private Map<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
+	
+	@Inject
+	private IWebjarsSettings webjarSettings;
 	
 	@Inject
 	public OrienteerWebApplication(@Named("orienteer.production") boolean production, @Named("orientdb.embedded") boolean embedded)
@@ -105,8 +109,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			});
 		}
 		super.init();
-		WebjarsSettings settings = new WebjarsSettings();
-		WicketWebjars.install(this, settings);
+		WicketWebjars.install(this, webjarSettings);
 		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
