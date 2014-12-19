@@ -17,11 +17,16 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 public class TabsPanel<T> extends GenericPanel<T>
 {
+	private static final CssResourceReference TABDROP_CSS = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");
+	private static final JavaScriptResourceReference TABDROP_JS = new JavaScriptResourceReference(TabsPanel.class, "tabdrop/bootstrap-tabdrop.js");
+	
 	private ListView<T> tabs;
 	public TabsPanel(String id, IModel<T> model, List<T> tabs)
 	{
@@ -78,8 +83,8 @@ public class TabsPanel<T> extends GenericPanel<T>
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
-		response.render(CssHeaderItem.forUrl("css/plugins/tabdrop/tabdrop.css"));
-		response.render(JavaScriptHeaderItem.forUrl("js/plugins/tabdrop/bootstrap-tabdrop.js"));
+		response.render(CssHeaderItem.forReference(TABDROP_CSS));
+		response.render(JavaScriptHeaderItem.forReference(TABDROP_JS));
 		response.render(OnDomReadyHeaderItem.forScript("$('#"+getMarkupId()+"').tabdrop({text: '<i class=\"glyphicon glyphicon-align-justify\"></i>'});"));
 	}
 

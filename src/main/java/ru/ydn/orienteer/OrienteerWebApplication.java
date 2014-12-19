@@ -18,6 +18,7 @@ import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
 import ru.ydn.orienteer.modules.PerspectivesModule;
 import ru.ydn.orienteer.modules.UpdateDefaultSchemaModule;
 import ru.ydn.orienteer.standalone.StartStandalone;
+import ru.ydn.orienteer.web.BasePage;
 import ru.ydn.orienteer.web.HomePage;
 import ru.ydn.orienteer.web.LoginPage;
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
@@ -111,8 +112,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		super.init();
 		WicketWebjars.install(this, webjarSettings);
 		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
+		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
+		
 		getApplicationListeners().add(new ModuledDataInstallator());
 		registerModule(OrienteerLocalizationModule.class);
 		registerModule(UpdateDefaultSchemaModule.class);
