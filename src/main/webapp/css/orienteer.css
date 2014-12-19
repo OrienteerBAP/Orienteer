@@ -78,3 +78,8 @@ div.wicket-modal h3.w_captionText
 {
 	font-size: 18px;
 }
+
+tr.navigation
+{
+	text-align: center;
+}

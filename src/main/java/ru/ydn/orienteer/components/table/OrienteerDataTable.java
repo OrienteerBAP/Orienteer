@@ -24,6 +24,7 @@ import org.apache.wicket.model.Model;
 import ru.ydn.orienteer.components.commands.Command;
 import ru.ydn.orienteer.components.properties.AbstractMetaPanel;
 import ru.ydn.orienteer.components.properties.IMetaContext;
+import ru.ydn.orienteer.components.table.navigation.OrienteerNavigationToolbar;
 
 public class OrienteerDataTable<T, S> extends DataTable<T, S>
 {
@@ -51,7 +52,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 	private static final long serialVersionUID = 1L;
 	protected DataTableCommandsToolbar<T> commandsToolbar;
 	protected AjaxFallbackHeadersToolbar<S> headersToolbar;
-	protected AjaxNavigationToolbar navigationToolbar;
+	protected OrienteerNavigationToolbar navigationToolbar;
 	protected NoRecordsToolbar noRecordsToolbar;
 	
 	private IModel<String> captionModel;
@@ -62,7 +63,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 		super(id, columns, dataProvider, rowsPerPage);
 		addTopToolbar(commandsToolbar= new DataTableCommandsToolbar<T>(this));
 		addTopToolbar(headersToolbar = new AjaxFallbackHeadersToolbar<S>(this, dataProvider));
-		addBottomToolbar(navigationToolbar = new AjaxNavigationToolbar(this));
+		addBottomToolbar(navigationToolbar = new OrienteerNavigationToolbar(this));
 		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
 	}
