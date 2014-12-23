@@ -25,10 +25,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.ProvisionException;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.server.OServer;
 
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 
@@ -36,7 +38,7 @@ public class OrienteerModule extends AbstractModule
 {
 	@Override
 	protected void configure() {
-		bind(WebApplication.class).to(OrienteerWebApplication.class);
+		bind(WebApplication.class).to(OrienteerWebApplication.class).in(Singleton.class);
 		final Properties properties = new Properties();
 		try
 		{
@@ -68,6 +70,13 @@ public class OrienteerModule extends AbstractModule
 	public OSchema getSchema(ODatabaseDocument db)
 	{
 		return db.getMetadata().getSchema();
+	}
+	
+	@Provides
+	public OServer getOServer(WebApplication application)
+	{
+		OrienteerWebApplication app = (OrienteerWebApplication)application;
+		return app.getServer();
 	}
 
 }

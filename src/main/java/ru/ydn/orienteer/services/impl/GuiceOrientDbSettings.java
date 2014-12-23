@@ -38,7 +38,11 @@ public class GuiceOrientDbSettings extends OrientDbSettings
 	public void setDBInstallatorUserPassword(@Named("orientdb.db.installator.password")String password) {
 		super.setDBInstallatorUserPassword(password);
 	}
-	
-	
+
+	@Inject(optional=true)
+	@Override
+	public void setOrientDBRestApiUrl(@Named("orientdb.rest.url") String orientDbRestApiUrl) {
+		super.setOrientDBRestApiUrl(orientDbRestApiUrl);
+	}
 	
 }

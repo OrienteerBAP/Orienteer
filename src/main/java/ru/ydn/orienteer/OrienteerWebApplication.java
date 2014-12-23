@@ -25,6 +25,7 @@ import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.rest.OrientDBHttpAPIResource;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -122,7 +123,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(PerspectivesModule.class);
 		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
 		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
-		
+		mountOrientDbRestApi();
 	}
 
 	@Override
