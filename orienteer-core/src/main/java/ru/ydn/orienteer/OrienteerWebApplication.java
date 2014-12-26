@@ -17,7 +17,6 @@ import ru.ydn.orienteer.modules.ModuledDataInstallator;
 import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
 import ru.ydn.orienteer.modules.PerspectivesModule;
 import ru.ydn.orienteer.modules.UpdateDefaultSchemaModule;
-import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.orienteer.web.BasePage;
 import ru.ydn.orienteer.web.HomePage;
 import ru.ydn.orienteer.web.LoginPage;
@@ -94,7 +93,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	{
 		if(embedded)
 		{
-			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(StartStandalone.class.getResource("db.config.xml"))
+			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
 			{
 
 				@Override

@@ -6,9 +6,7 @@ import org.apache.wicket.util.tester.WicketTester;
 
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.TestSchemaInstaller;
-import ru.ydn.orienteer.standalone.StartStandalone;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;

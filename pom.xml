@@ -83,6 +83,7 @@
 	<modules>
 		<module>orienteer-core</module>
 		<module>orienteer-war</module>
+		<module>orienteer-standalone</module>
 	</modules>
 	<dependencyManagement>
 	    <dependencies>
@@ -190,6 +191,11 @@
 			    <version>${jetty.version}</version>
 			    <scope>provided</scope>
 		    </dependency>
+		    <dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+		    </dependency>
 	    </dependencies>
 	</dependencyManagement>
 	<build>
@@ -259,115 +265,63 @@
 		</plugins>
 	</build>
 	<profiles>
-		<profile>
-			<id>standalone</id>
-			<dependencies>
-				<dependency>
-					<groupId>org.eclipse.jetty.aggregate</groupId>
-					<artifactId>jetty-all-server</artifactId>
-					<version>${jetty.version}</version>
-					<scope>compile</scope>
-				</dependency>
-				<dependency>
-		            <groupId>javax.servlet</groupId>
-		            <artifactId>servlet-api</artifactId>
-		            <version>2.5</version>
-		        </dependency>
-			</dependencies>
-			<build>
-				<finalName>orienteer-standalone</finalName>
-				<plugins>
-					<plugin>
-		                <groupId>org.apache.maven.plugins</groupId>
-		                <artifactId>maven-war-plugin</artifactId>
-		                <version>2.4</version>
-		                <configuration>
-	                    	<webResources>
-	                    		<resource>
-	                    			<directory>target/classes/ru/ydn/orienteer/standalone</directory>
-	                    			<targetPath>ru/ydn/orienteer/standalone/</targetPath>
-	                    		</resource>
-	                    	</webResources>
-		                    <archive>
-		                        <manifest>
-		                            <mainClass>ru.ydn.orienteer.standalone.StartStandalone</mainClass>
-		                        </manifest>
-		                    </archive>
-		                    <packagingExcludes>WEB-INF/lib/jetty-*.jar,WEB-INF/lib/*EmbeddedJetty*.jar,WEB-INF/lib/javax.servlet*.jar</packagingExcludes>
-		                    <overlays>
-		                        <overlay>
-		                            <groupId>org.eclipse.jetty.aggregate</groupId>
-		                            <artifactId>jetty-all-server</artifactId>
-		                            <type>jar</type>
-		                        </overlay>
-		                        <overlay>
-		                            <groupId>javax.servlet</groupId>
-		            				<artifactId>servlet-api</artifactId>
-		                            <type>jar</type>
-		                        </overlay>
-		                    </overlays>
-		                </configuration>
-		            </plugin>
-			  </plugins>
-			    </build>
-			  </profile>
-			  <profile> 
-			    <id>release</id>
-			    <build>
-				<plugins>
-				    <plugin>
-				      <groupId>org.sonatype.plugins</groupId>
-				      <artifactId>nexus-staging-maven-plugin</artifactId>
-				      <version>1.6.2</version>
-				      <extensions>true</extensions>
-				      <configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				      </configuration>
-				    </plugin>
-				    <plugin>
-				      <groupId>org.apache.maven.plugins</groupId>
-				      <artifactId>maven-source-plugin</artifactId>
-				      <version>2.2.1</version>
-				      <executions>
-					<execution>
-					  <id>attach-sources</id>
-					  <goals>
-					    <goal>jar-no-fork</goal>
-					  </goals>
-					</execution>
-				      </executions>
-				    </plugin>
-				    <plugin>
-				      <groupId>org.apache.maven.plugins</groupId>
-				      <artifactId>maven-javadoc-plugin</artifactId>
-				      <version>2.9.1</version>
-				      <executions>
-					<execution>
-					  <id>attach-javadocs</id>
-					  <goals>
-					    <goal>jar</goal>
-					  </goals>
-					</execution>
-				      </executions>
-				    </plugin>
-				    <plugin>
-				      <groupId>org.apache.maven.plugins</groupId>
-				      <artifactId>maven-gpg-plugin</artifactId>
-				      <version>1.5</version>
-				      <executions>
-					<execution>
-					  <id>sign-artifacts</id>
-					  <phase>verify</phase>
-					  <goals>
-					    <goal>sign</goal>
-					  </goals>
-					</execution>
-				      </executions>
-			      </plugin>
-				</plugins>
-			</build>
-		</profile>
+	    <profile> 
+		<id>release</id>
+		<build>
+		    <plugins>
+			<plugin>
+			    <groupId>org.sonatype.plugins</groupId>
+			    <artifactId>nexus-staging-maven-plugin</artifactId>
+			    <version>1.6.2</version>
+			    <extensions>true</extensions>
+			    <configuration>
+				<serverId>ossrh</serverId>
+				<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+				<autoReleaseAfterClose>true</autoReleaseAfterClose>
+			    </configuration>
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-source-plugin</artifactId>
+			    <version>2.2.1</version>
+			    <executions>
+				<execution>
+				    <id>attach-sources</id>
+				    <goals>
+					<goal>jar-no-fork</goal>
+				    </goals>
+				</execution>
+			    </executions>
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-javadoc-plugin</artifactId>
+			    <version>2.9.1</version>
+			    <executions>
+				<execution>
+				    <id>attach-javadocs</id>
+				    <goals>
+					<goal>jar</goal>
+				    </goals>
+				</execution>
+			    </executions>
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-gpg-plugin</artifactId>
+			    <version>1.5</version>
+			    <executions>
+				<execution>
+				    <id>sign-artifacts</id>
+				    <phase>verify</phase>
+				    <goals>
+					<goal>sign</goal>
+				    </goals>
+				</execution>
+			    </executions>
+			</plugin>
+		    </plugins>
+		</build>
+	    </profile>
 	</profiles>
 </project>

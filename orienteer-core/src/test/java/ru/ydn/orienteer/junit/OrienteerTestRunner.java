@@ -4,7 +4,6 @@ import org.apache.wicket.util.tester.WicketTester;
 import org.junit.runners.model.InitializationError;
 
 import ru.ydn.orienteer.services.OrienteerModule;
-import ru.ydn.orienteer.standalone.StartStandalone;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -16,7 +15,7 @@ public class OrienteerTestRunner extends GuiceTestRunner
 	static
 	{
 		System.out.println("Using embedded mode");
-		System.setProperty(StartStandalone.PROPERTIES_FILE_NAME, StartStandalone.class.getResource("standalone.properties").toString());
+		System.setProperty(OrienteerModule.PROPERTIES_FILE_NAME, OrienteerTestRunner.class.getResource("test-env.properties").toString());
 		STATIC_INJECTOR = Guice.createInjector(Modules.override(new OrienteerModule()).with(new TestOrieenteerModule()));
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{

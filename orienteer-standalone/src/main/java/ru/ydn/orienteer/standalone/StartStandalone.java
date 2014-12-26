@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ru.ydn.orienteer.OrienteerWebApplication;
+
 public class StartStandalone
 {
 	private static final Pattern ARG_PATTERN=Pattern.compile("^--([^=]*)=?(.*)$");
@@ -39,7 +41,7 @@ public class StartStandalone
     	}
     	else
     	{
-    		URL url = StartStandalone.lookupPropertiesURL();
+    		URL url = lookupPropertiesURL();
     		if(url!=null)
     		{
     			System.out.println("Automatic lookup found following config file: "+url);
@@ -117,10 +119,13 @@ public class StartStandalone
     	URL location = protectionDomain.getCodeSource().getLocation();
     	System.out.printf("Usage: java -jar %s [--config=<path> | --embedded] [--host=<host>] [--port=<port>] [--wait=<wait for>][--help]", location.getFile());
     }
-
+    
+    //TODO: There is code duplication! Remove
+    public static final String PROPERTIES_FILE_NAME = "orienteer.properties";
+	
 	public static URL lookupPropertiesURL() throws IOException
 	{
-		String configFile = System.getProperty(StartStandalone.PROPERTIES_FILE_NAME);
+		String configFile = System.getProperty(PROPERTIES_FILE_NAME);
 		if(configFile!=null)
 		{
 			File file = new File(configFile);
@@ -130,23 +135,23 @@ public class StartStandalone
 			}
 			else
 			{
-				URL url = StartStandalone.class.getClassLoader().getResource(configFile);
+				URL url = OrienteerWebApplication.class.getClassLoader().getResource(configFile);
 				if(url!=null) return url;
 				else return new URL(configFile);
 			}
 		}
 		else
 		{
-			File file = new File(StartStandalone.PROPERTIES_FILE_NAME);
+			File file = new File(PROPERTIES_FILE_NAME);
 			File dir = new File("").getAbsoluteFile();
 			while(!file.exists() && dir!=null)
 			{
 				dir = dir.getParentFile();
-				file = new File(dir, StartStandalone.PROPERTIES_FILE_NAME);
+				file = new File(dir, PROPERTIES_FILE_NAME);
 			}
 			return file!=null && file.exists() ?file.toURI().toURL():null;
 		}
 	}
 
-	public static final String PROPERTIES_FILE_NAME = "orienteer.properties";
+	
 }

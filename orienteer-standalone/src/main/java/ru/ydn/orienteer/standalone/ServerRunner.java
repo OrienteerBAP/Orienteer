@@ -56,8 +56,9 @@ public class ServerRunner
 	        WebAppContext bb = new WebAppContext();
 	        bb.setServer(server);
 	        bb.setContextPath("/");
-	        ProtectionDomain protectionDomain = StartStandalone.class.getProtectionDomain();
+	        ProtectionDomain protectionDomain = ServerRunner.class.getProtectionDomain();
 	        URL location = protectionDomain.getCodeSource().getLocation();
+	        System.out.println("loading from "+location);
 	        bb.setWar(location.toExternalForm());
 	        bb.setExtractWAR(false);
 	        bb.setCopyWebInf(true);
