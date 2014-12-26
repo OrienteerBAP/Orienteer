@@ -27,6 +27,10 @@
 		  <param-name>module</param-name>
 		  <param-value>ru.ydn.orienteer.services.OrienteerModule</param-value>
 		</init-param>
+		<init-param>
+			<param-name>filterMappingUrlPattern</param-name>
+			<param-value>/*</param-value>
+		</init-param>
 	</filter>
 
 	<filter-mapping>
