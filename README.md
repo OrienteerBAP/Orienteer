@@ -14,8 +14,8 @@
 
 ### Demo
 
-[Main Demo Server](http://demo.orienteer.org)
-[Heroku Demo Server](http://heroku.orienteer.org)
+- [Main Demo Server](http://demo.orienteer.org)
+- [Heroku Demo Server](http://heroku.orienteer.org)
 
 Default users:
 - admin/admin
@@ -49,11 +49,11 @@ To install Orienteer in embedded mode:
 #### Standalone
 
 Orienteer in standalone mode use embedded jetty server to run yourself. To install Orienteer in standalone mode:
-- Download latest orienteer-standalone.war
+- Download latest orienteer-standalone.jar
 - Put orienteer-standalone.war into any directory
 - Optionally configure orienteer.properties accordging to your environment and place it in the same directory or above
   - By default, Orienteer, will run OrientDB database embedded
-- Run Orinteer as ```bash java -Xmx512m -Xms512m -jar orienteer-standalone.war```. JVM parameters can be adjusted accordingly. Additional application parameters can be supplied:
+- Run Orinteer as ```java -Xmx512m -Xms512m -jar orienteer-standalone.jar```. JVM parameters can be adjusted accordingly. Additional application parameters can be supplied:
   - ``` --config=<filename>``` - specification of path to orienteer configuration file
   - ``` --embedded``` - run embedded OrientDB database
   - ``` --port=<port number>``` - run Orienteer on specified port (Default: 8080)
@@ -70,7 +70,17 @@ orientdb.url=remote:localhost/Orienteer   //OrientDB server URL
 orientdb.db.username=reader               //Default OrientDB user (will be used for guests as well)
 orientdb.db.password=reader               //Password for default OrientDB user
 orientdb.db.installator.username=admin    //OrientDB user to user for administrative stuff
-orientdb.db.installator.password=admin    //Password for OrientDB user used for administrative stuff 
+orientdb.db.installator.password=admin    //Password for OrientDB user used for administrative stuff
+
+# Optional properties
+
+#orientdb.rest.url=http://localhost:2480
+#plantuml.url=http://custom-plantuml-url
+#plantuml.showuml=false;
+
+#webjars.readFromCacheTimeout=5 seconds
+#webjars.useCdnResources=true
+#webjars.cdnUrl=//maxcdn.bootstrapcdn.com:80
 ```
 
 ### Setup of development environment 
