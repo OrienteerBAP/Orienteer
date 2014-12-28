@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.wicket.protocol.http.WebApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.properties.UIVisualizersRegistry;
@@ -31,9 +33,11 @@ import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 public class OrienteerModule extends AbstractModule
 {
 	public static final String PROPERTIES_FILE_NAME = "orienteer.properties";
+	private static final Logger LOG = LoggerFactory.getLogger(OrienteerModule.class);
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void configure() {
-		bind(WebApplication.class).to(OrienteerWebApplication.class).in(Singleton.class);
 		final Properties properties = new Properties();
 		try
 		{
@@ -48,6 +52,28 @@ public class OrienteerModule extends AbstractModule
 			throw new ProvisionException("Properties files can't be read", e);
 		}
 		Names.bindProperties(binder(), properties);
+		String applicationClass = properties.getProperty("orienteer.application");
+		Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
+		if(applicationClass!=null)
+		{
+			try
+			{
+				Class<?> customAppClass = Class.forName(applicationClass);
+				
+				if(OrienteerWebApplication.class.isAssignableFrom(appClass))
+				{
+					appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
+				}
+				else
+				{
+					LOG.error("Orienteer application class '"+applicationClass+"' is not child class of '"+OrienteerWebApplication.class+"'. Using default.");
+				}
+			} catch (ClassNotFoundException e)
+			{
+				LOG.error("Orienteer application class '"+applicationClass+"' was not found. Using default.");
+			}
+		}
+		bind(WebApplication.class).to(appClass).in(Singleton.class);
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);

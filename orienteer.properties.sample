@@ -1,4 +1,5 @@
 orienteer.production=false
+#orienteer.application=Custom application class
 orientdb.embedded=false
 orientdb.url=remote:localhost/Orienteer
 orientdb.db.username=reader
