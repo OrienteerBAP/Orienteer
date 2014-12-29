@@ -44,17 +44,24 @@ import de.agilecoders.wicket.webjars.settings.WebjarsSettings;
  */
 public class OrienteerWebApplication extends OrientDbWebApplication
 {
-	private boolean embedded;
 	private Map<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	
 	@Inject
 	private IWebjarsSettings webjarSettings;
 	
 	@Inject
-	public OrienteerWebApplication(@Named("orienteer.production") boolean production, @Named("orientdb.embedded") boolean embedded)
+	@Named("orienteer.production")
+	private boolean production;
+	
+	@Inject
+	@Named("orientdb.embedded")
+	private boolean embedded;
+	
+	
+	@Inject
+	public OrienteerWebApplication()
 	{
 		setConfigurationType(production?RuntimeConfigurationType.DEPLOYMENT:RuntimeConfigurationType.DEVELOPMENT);
-		this.embedded = embedded;
 	}
 	
 	@Inject
