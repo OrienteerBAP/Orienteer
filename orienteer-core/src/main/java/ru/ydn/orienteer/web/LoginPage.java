@@ -17,7 +17,9 @@ public class LoginPage extends BasePage<Object>
 	public LoginPage()
 	{
 		super();
-		add(new SignInPanel("signInPanel", false));
+		SignInPanel signInPanel = new SignInPanel("signInPanel", true);
+		signInPanel.setRememberMe(false);
+		add(signInPanel);
 	}
 
 	@Override
