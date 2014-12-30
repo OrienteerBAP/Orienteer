@@ -29,14 +29,18 @@ public class PasswordsPanel extends FormComponentPanel<String>
 		IModel<String> labelModel = getLabel();
 		password.add(new AttributeModifier("placeholder", new StringResourceModel("password.placeholder.enter", labelModel)));
 		password.setLabel(labelModel);
-		password.setRequired(isRequired());
 		confirmPassword.add(new AttributeModifier("placeholder", new StringResourceModel("password.placeholder.confirm", labelModel)));
 		confirmPassword.setLabel(new StringResourceModel("password.confirm.label", labelModel));
-		confirmPassword.setRequired(isRequired());
 	}
 	
-	
-	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		boolean shouldBeRequired = isRequired() && Strings.isEmpty(getModelObject());
+		password.setRequired(shouldBeRequired);
+		confirmPassword.setRequired(shouldBeRequired);
+	}
+
 	@Override
 	protected void convertInput()
  	{
