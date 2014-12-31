@@ -240,17 +240,25 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 		String field = property.getName();
 		if(doc.getSchemaClass().isSubClassOf(property.getOwnerClass()))
 		{
+			Object wrappedValue = value.getIdentity().isPersistent()?value.getIdentity():value;
 			if(property.getType().isMultiValue())
 			{
 				Collection<Object> objects = doc.field(field);
-				if(objects==null) objects = new ArrayList<Object>();
-				objects.add(value);
-				doc.field(field, objects);
+				if(objects==null)
+				{
+					objects = new ArrayList<Object>();
+					objects.add(wrappedValue);
+					doc.field(field, objects);
+				}
+				else
+				{
+					objects.add(wrappedValue);
+				}
 				doc.save();
 			}
 			else
 			{
-				doc.field(field, value);
+				doc.field(field, wrappedValue);
 				doc.save();
 			}
 		}
@@ -262,15 +270,15 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 		String field = property.getName();
 		if(doc.getSchemaClass().isSubClassOf(property.getOwnerClass()))
 		{
+			Object wrappedValue = value.getIdentity().isPersistent()?value.getIdentity():value;
 			if(property.getType().isMultiValue())
 			{
 				Collection<Object> objects = doc.field(field);
-				if(objects!=null)
+				if(objects!=null && objects.remove(wrappedValue))
 				{
-					objects.remove(value);
+					doc.field(field, objects);
+					doc.save();
 				}
-				doc.field(field, objects);
-				doc.save();
 			}
 			else
 			{
