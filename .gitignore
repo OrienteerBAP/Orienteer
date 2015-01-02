@@ -5,6 +5,7 @@ pom.xml.next
 release.properties
 *~
 *.swp
+*.swo
 .classpath
 .project
 .settings/
