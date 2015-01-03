@@ -49,7 +49,7 @@ public class LinksCollectionEditPanel<T extends OIdentifiable, M extends Collect
 		final String propertyName = property.getName();
 		
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
-		columns.add(new OEntityColumn<ODocument>(property.getLinkedClass()));
+		columns.add(new OEntityColumn(property.getLinkedClass(), DisplayMode.VIEW.asModel()));
 		columns.add(new AbstractColumn<ODocument, String>(null) {
 
 			@Override

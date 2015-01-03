@@ -51,7 +51,7 @@ public class LinksCollectionViewPanel<T extends OIdentifiable, M extends Collect
 		OQueryDataProvider<ODocument> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
 		
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
-		columns.add(new OEntityColumn<ODocument>(property.getLinkedClass()));
+		columns.add(new OEntityColumn(property.getLinkedClass(), DisplayMode.VIEW.asModel()));
 		
 		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("links", columns, provider, 10);
 		table.getHeadersToolbar().setVisibilityAllowed(false);

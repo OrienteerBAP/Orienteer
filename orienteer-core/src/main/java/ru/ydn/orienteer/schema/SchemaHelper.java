@@ -59,36 +59,24 @@ public class SchemaHelper
 	}
 	
 	
-	public static String resolveNameProperty(String oClass)
+	public static OProperty resolveNameProperty(String oClass)
 	{
 		return resolveNameProperty(getDatabase().getMetadata().getSchema().getClass(oClass));
 	}
 	
-	public static String resolveNameProperty(OClass oClass)
+	public static OProperty resolveNameProperty(OClass oClass)
 	{
 		if(oClass==null) return null;
-		OProperty property = CustomAttributes.PROP_NAME.getValue(oClass);
-		String ret = property!=null?property.getName():null;
-		if(ret==null || oClass.getProperty(ret)==null)
+		OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
+		if(ret!=null) return ret;
+		ret = oClass.getProperty("name");
+		if(ret!=null) return ret;
+		for(OProperty p: oClass.properties())
 		{
-			if(oClass.getProperty("name")!=null)
+			if(!p.getType().isMultiValue())
 			{
-				ret = "name";
-			}
-			else
-			{
-				for(OProperty p: oClass.properties())
-				{
-					if(OType.STRING.equals(p.getType()))
-					{
-						ret = p.getName();
-						break;
-					}
-					else if(!p.getType().isMultiValue())
-					{
-						ret = p.getName();
-					}
-				}
+				ret = p;
+				if(OType.STRING.equals(p.getType())) break;
 			}
 		}
 		return ret;

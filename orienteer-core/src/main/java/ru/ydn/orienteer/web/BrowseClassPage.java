@@ -8,6 +8,9 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
 import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
+import ru.ydn.orienteer.components.commands.EditODocumentsCommand;
+import ru.ydn.orienteer.components.commands.SaveODocumentsCommand;
+import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
@@ -55,23 +58,15 @@ public class BrowseClassPage extends OrienteerBasePage<OClass> implements ISecur
 	@Override
 	public void initialize() {
 		super.initialize();
-		Form<ODocument> form = new Form<ODocument>("form");
-		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+getModelObject().getName())
-			{
-			/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				//To optimize number of queries
-				@Override
-				public long size() {
-					return BrowseClassPage.this.getModelObject().count();
-				}
-			};
+		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true), provider, 20);
+		Form<ODocument> form = new Form<ODocument>("form");
+		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+getModelObject().getName());
+		
+		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
+		table.addCommand(new EditODocumentsCommand(table, modeModel, getModel()));
+		table.addCommand(new SaveODocumentsCommand(table, modeModel));
 		table.addCommand(new DeleteODocumentCommand(table, getModel()));
 		form.add(table);
 		add(form);

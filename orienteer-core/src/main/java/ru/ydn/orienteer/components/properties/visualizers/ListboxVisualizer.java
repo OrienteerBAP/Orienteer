@@ -46,7 +46,7 @@ public class ListboxVisualizer implements IVisualizer
 			OProperty property = propertyModel.getObject();
 			OClass oClass = property.getLinkedClass();
 			OQueryModel<ODocument> choicesModel = new OQueryModel<ODocument>("select from "+oClass.getName()+" LIMIT 100");
-			String nameProperty = SchemaHelper.resolveNameProperty(oClass);
+			OProperty nameProperty = SchemaHelper.resolveNameProperty(oClass);
 			if(property.getType().isMultiValue())
 			{
 				return new ListMultipleChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, choicesModel, new OChoiceRenderer(nameProperty));

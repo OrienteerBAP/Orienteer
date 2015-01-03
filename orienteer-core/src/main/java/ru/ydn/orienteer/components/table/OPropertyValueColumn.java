@@ -11,38 +11,35 @@ import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class OPropertyValueColumn extends AbstractMetaColumn<ODocument, OProperty, String>
+public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, DisplayMode, OProperty, String>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	public OPropertyValueColumn(OProperty oProperty)
+	public OPropertyValueColumn(OProperty oProperty, IModel<DisplayMode> modeModel)
 	{
-		this(new OPropertyModel(oProperty));
+		this(new OPropertyModel(oProperty), modeModel);
 	}
 
-	public OPropertyValueColumn(IModel<OProperty> criteryModel)
+	public OPropertyValueColumn(IModel<OProperty> criteryModel, IModel<DisplayMode> modeModel)
 	{
-		super(criteryModel);
+		super(criteryModel, modeModel);
 	}
 	
-	public OPropertyValueColumn(String sortProperty, OProperty oProperty)
+	public OPropertyValueColumn(String sortProperty, OProperty oProperty, IModel<DisplayMode> modeModel)
 	{
-		this(sortProperty, new OPropertyModel(oProperty));
+		this(sortProperty, new OPropertyModel(oProperty), modeModel);
 	}
 
-	public OPropertyValueColumn(String sortProperty, IModel<OProperty> criteryModel)
+	public OPropertyValueColumn(String sortProperty, IModel<OProperty> criteryModel, IModel<DisplayMode> modeModel)
 	{
-		super(sortProperty, criteryModel);
+		super(sortProperty, criteryModel, modeModel);
 	}
 
 	@Override
 	protected <V> AbstractMetaPanel<ODocument, OProperty, V> newMetaPanel(
 			String componentId, IModel<OProperty> criteryModel,
 			IModel<ODocument> rowModel) {
-		return new ODocumentMetaPanel<V>(componentId, DisplayMode.VIEW.asModel(), rowModel, criteryModel);
+		return new ODocumentMetaPanel<V>(componentId, getModeModel(), rowModel, criteryModel);
 	}
 
 	@Override

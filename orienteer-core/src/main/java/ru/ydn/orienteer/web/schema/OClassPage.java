@@ -47,6 +47,7 @@ import ru.ydn.orienteer.components.commands.SaveSchemaCommand;
 import ru.ydn.orienteer.components.commands.ShowHideParentsCommand;
 import ru.ydn.orienteer.components.properties.BooleanEditPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.LinkViewPanel;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel;
 import ru.ydn.orienteer.components.properties.OClassMetaPanel.ListClassesModel;
 import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
@@ -63,6 +64,7 @@ import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.EnumNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -272,7 +274,15 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		Form<OClass> sForm = new Form<OClass>("sForm");
 		
 		List<IColumn<ORole, String>> sColumns = new ArrayList<IColumn<ORole,String>>();
-		sColumns.add(new OEntityColumn<ORole>("ORole", "document"));
+		OClass oRoleClass = getDatabase().getMetadata().getSchema().getClass("ORole");
+		sColumns.add(new AbstractColumn<ORole, String>(new OClassNamingModel(oRoleClass), "name") {
+
+			@Override
+			public void populateItem(Item<ICellPopulator<ORole>> cellItem,
+					String componentId, IModel<ORole> rowModel) {
+				cellItem.add(new LinkViewPanel<ODocument>(componentId, new PropertyModel<ODocument>(rowModel, "document")));
+			}
+		});
 		sColumns.add(new SecurityRightsColumn(OrientPermission.CREATE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.READ));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.UPDATE));

@@ -55,16 +55,8 @@ public class OClassIntrospector implements IOClassIntrospector
 		public static final GetOrderOfPropertyFunction INSTANCE = new GetOrderOfPropertyFunction();
 		@Override
 		public Integer apply(OProperty input) {
-			String order = input.getCustom(CustomAttributes.ORDER.getName());
-			try
-			{
-				return order!=null?Integer.parseInt(order):null;
-			} catch (NumberFormatException e)
-			{
-				return null;
-			}
+			return CustomAttributes.ORDER.getValue(input);
 		}
-		
 	}
 	
 	public static final Ordering<OProperty> ORDER_PROPERTIES_BY_ORDER = Ordering.<Integer>natural().nullsLast().onResultOf(GetOrderOfPropertyFunction.INSTANCE);
@@ -79,11 +71,11 @@ public class OClassIntrospector implements IOClassIntrospector
 	}
 
 	@Override
-	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, boolean withCheckbox) {
+	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, boolean withCheckbox, IModel<DisplayMode> modeModel) {
 		List<OProperty> properties = getDisplayableProperties(oClass);
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+2);
 		if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(null, ODocumentORIDConverter.INSTANCE));
-		OEntityColumn entityColumn = new OEntityColumn(oClass);
+		OEntityColumn entityColumn = new OEntityColumn(oClass, modeModel);
 		String nameProperty = entityColumn.getNameProperty();
 		columns.add(entityColumn);
 		for (OProperty oProperty : properties)
@@ -93,11 +85,11 @@ public class OClassIntrospector implements IOClassIntrospector
 				Class<?> javaType = oProperty.getType().getDefaultJavaType();
 				if(javaType!=null && Comparable.class.isAssignableFrom(javaType))
 				{
-					columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty));
+					columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty, modeModel));
 				}
 				else
 				{
-					columns.add(new OPropertyValueColumn(oProperty));
+					columns.add(new OPropertyValueColumn(oProperty, modeModel));
 				}
 			}
 		}

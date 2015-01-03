@@ -19,6 +19,7 @@ import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.TabsPanel;
 import ru.ydn.orienteer.components.commands.AbstractCheckBoxEnabledCommand;
+import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.orienteer.web.SearchPage;
@@ -108,7 +109,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	{
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
 		provider.setParameter("text", getModel());
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, true), provider, 20);
+		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, true, DisplayMode.VIEW.asModel()), provider, 20);
 		table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.select"), table)
 				{
 					

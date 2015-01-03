@@ -23,6 +23,9 @@ import org.wicketstuff.annotation.mount.MountPath;
 import ru.ydn.orienteer.components.TabsPanel;
 import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
 import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
+import ru.ydn.orienteer.components.commands.EditODocumentsCommand;
+import ru.ydn.orienteer.components.commands.SaveODocumentsCommand;
+import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
@@ -133,7 +136,10 @@ public class SearchPage extends OrienteerBasePage<String>
 	{
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
 		provider.setParameter("text", getModel());
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, false), provider, 20);
+		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
+		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20);
+		table.addCommand(new EditODocumentsCommand(table, modeModel, oClass));
+		table.addCommand(new SaveODocumentsCommand(table, modeModel));
 		resultsContainer.addOrReplace(table);
 	}
 

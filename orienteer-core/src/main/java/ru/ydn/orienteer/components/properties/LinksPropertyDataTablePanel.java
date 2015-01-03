@@ -11,7 +11,9 @@ import ru.ydn.orienteer.CustomAttributes;
 import ru.ydn.orienteer.behavior.SecurityBehavior;
 import ru.ydn.orienteer.components.commands.CreateODocumentCommand;
 import ru.ydn.orienteer.components.commands.DeleteODocumentCommand;
+import ru.ydn.orienteer.components.commands.EditODocumentsCommand;
 import ru.ydn.orienteer.components.commands.ReleaseODocumentCommand;
+import ru.ydn.orienteer.components.commands.SaveODocumentsCommand;
 import ru.ydn.orienteer.components.commands.SelectODocumentCommand;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
@@ -42,17 +44,26 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		super(id, documentModel);
 		OClass linkedClass = property.getLinkedClass();
 		boolean isCalculable = CustomAttributes.CALCULABLE.getValue(property, false);
+		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
+		
 		OQueryDataProvider<ODocument> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true), provider, 20);
+		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true, modeModel), provider, 20);
 		table.setCaptionModel(new OPropertyNamingModel(property));
+		SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
 		if(!isCalculable)
 		{
 			OPropertyModel propertyModel = new OPropertyModel(property);
-			SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
 			table.addCommand(new CreateODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
+			table.addCommand(new EditODocumentsCommand(table, modeModel, linkedClass).add(securityBehaviour));
+			table.addCommand(new SaveODocumentsCommand(table, modeModel).add(securityBehaviour));
 			table.addCommand(new DeleteODocumentCommand(table, linkedClass).add(securityBehaviour));
 			table.addCommand(new SelectODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
 			table.addCommand(new ReleaseODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
+		}
+		else
+		{
+			table.addCommand(new EditODocumentsCommand(table, modeModel, linkedClass).add(securityBehaviour));
+			table.addCommand(new SaveODocumentsCommand(table, modeModel).add(securityBehaviour));
 		}
 		add(table);
 	}
