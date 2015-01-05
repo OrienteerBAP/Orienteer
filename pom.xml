@@ -84,6 +84,7 @@
 		<module>orienteer-core</module>
 		<module>orienteer-war</module>
 		<module>orienteer-standalone</module>
+		<module>orienteer-archetype-war</module>
 	</modules>
 	<dependencyManagement>
 	    <dependencies>
