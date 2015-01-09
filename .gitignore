@@ -15,3 +15,5 @@ databases/
 /orienteer-core/Orienteer/
 .idea/
 orienteer.iml
+orienteer.properties
+orienteer-test.properties
