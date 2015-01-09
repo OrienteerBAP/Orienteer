@@ -43,6 +43,7 @@
 	</licenses>
 	<properties>
 		<orienteer.version>1.0-SNAPSHOT</orienteer.version>
+		<wicket.orientdb.version>1.0-SNAPSHOT</wicket.orientdb.version>
 		<wicket.version>6.18.0</wicket.version>
 		<jetty.version>7.6.13.v20130916</jetty.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,7 +62,14 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${dollar}{orienteer.version}</version>
 			<type>test-jar</type>
-      		<scope>test</scope>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>
+			<artifactId>wicket-orientdb</artifactId>
+			<version>${dollar}{wicket.orientdb.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 		<!--  JUNIT DEPENDENCY FOR TESTING -->
 		<dependency>

@@ -11,25 +11,9 @@ import com.google.inject.util.Modules;
 
 public class OrienteerTestRunner extends GuiceTestRunner
 {
-	private static final Injector STATIC_INJECTOR;
-	static
-	{
-		System.out.println("Using embedded mode");
-		System.setProperty(OrienteerModule.PROPERTIES_FILE_NAME, OrienteerTestRunner.class.getResource("test-env.properties").toString());
-		STATIC_INJECTOR = Guice.createInjector(Modules.override(new OrienteerModule()).with(new TestOrieenteerModule()));
-		Runtime.getRuntime().addShutdownHook(new Thread()
-		{
-			@Override
-			public void run() {
-				WicketTester wicketTester = STATIC_INJECTOR.getInstance(WicketTester.class);
-				wicketTester.destroy();
-			}
-		});
-	}
-	
 	public OrienteerTestRunner(Class<?> classToRun) throws InitializationError
 	{
-		super(classToRun, STATIC_INJECTOR);
+		super(classToRun, StaticInjectorProvider.INSTANCE);
 	}
 
 	@Override

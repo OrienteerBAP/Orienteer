@@ -2,18 +2,21 @@ package ru.ydn.orienteer;
 
 import java.util.Collection;
 
-import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.junit.OrienteerTestRunner;
+import ru.ydn.orienteer.junit.OrienteerTester;
 import ru.ydn.orienteer.web.BrowseClassPage;
 import ru.ydn.orienteer.web.DocumentPage;
 import ru.ydn.orienteer.web.LoginPage;
@@ -40,6 +43,12 @@ public class TestOrienteerMain
 	@Inject
 	private WicketTester tester;
 	
+	@Test
+	public void testWicketTester()
+	{
+		assertTrue(tester instanceof OrienteerTester);
+	}
+	
 	@Before
 	public void performLogin()
 	{
@@ -53,6 +62,12 @@ public class TestOrienteerMain
             formTester.submit();
 		}
 		tester.assertRenderedPage(ListOClassesPage.class);
+	}
+	
+	@Test
+	public void testWebApplicationRedefenition()
+	{
+		assertTrue(tester.getApplication() instanceof TestOrienteerWebApplication);
 	}
 	
 	@Test

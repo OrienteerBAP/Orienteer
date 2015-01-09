@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,8 +18,10 @@ import ru.ydn.orienteer.services.impl.OClassIntrospector;
 import ru.ydn.orienteer.services.impl.OrienteerWebjarsSettings;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.ProvisionException;
 import com.google.inject.Singleton;
@@ -44,6 +47,7 @@ public class OrienteerModule extends AbstractModule
 			URL propertiesURL = lookupPropertiesURL();
 			if(propertiesURL==null) throw new ProvisionException("Properties files was not found");
 			else properties.load(propertiesURL.openStream());
+			LOG.info("Loading Orienteer properties from '"+propertiesURL+"'");
 		} catch (FileNotFoundException e)
 		{
 			throw new ProvisionException("Properties files was not found", e);
@@ -73,7 +77,15 @@ public class OrienteerModule extends AbstractModule
 				LOG.error("Orienteer application class '"+applicationClass+"' was not found. Using default.");
 			}
 		}
-		bind(WebApplication.class).to(appClass).in(Singleton.class);
+		bind(appClass).asEagerSingleton();
+		Provider<? extends OrienteerWebApplication> appProvider = binder().getProvider(appClass);
+		if(!OrienteerWebApplication.class.equals(appClass))
+		{
+			bind(OrienteerWebApplication.class).toProvider(appProvider);
+		}
+		bind(OrientDbWebApplication.class).toProvider(appProvider);
+		bind(WebApplication.class).toProvider(appProvider);
+		
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
@@ -100,11 +112,21 @@ public class OrienteerModule extends AbstractModule
 		return app.getServer();
 	}
 	
-	
 	public static URL lookupPropertiesURL() throws IOException
 	{
-		String configFile = System.getProperty(PROPERTIES_FILE_NAME);
-		if(configFile!=null)
+		return lookupFile(PROPERTIES_FILE_NAME);
+	}
+	
+	public static URL lookupFile(String fileName) throws IOException
+	{
+		return lookupFile(fileName, fileName);
+	}
+	
+	
+	public static URL lookupFile(String fileNameProperty, String fileName) throws IOException
+	{
+		String configFile = fileNameProperty!=null?System.getProperty(fileNameProperty):fileNameProperty;
+		if(!Strings.isEmpty(configFile))
 		{
 			File file = new File(configFile);
 			if(file.exists())
@@ -120,12 +142,12 @@ public class OrienteerModule extends AbstractModule
 		}
 		else
 		{
-			File file = new File(PROPERTIES_FILE_NAME);
+			File file = new File(fileName);
 			File dir = new File("").getAbsoluteFile();
 			while(!file.exists() && dir!=null)
 			{
 				dir = dir.getParentFile();
-				file = new File(dir, PROPERTIES_FILE_NAME);
+				file = new File(dir, fileName);
 			}
 			return file!=null && file.exists() ?file.toURI().toURL():null;
 		}

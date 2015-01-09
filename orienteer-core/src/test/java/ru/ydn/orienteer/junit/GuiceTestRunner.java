@@ -8,48 +8,31 @@ import org.junit.runners.model.InitializationError;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.google.inject.Provider;
 
 public class GuiceTestRunner extends BlockJUnit4ClassRunner
 {
-	private final Injector injector;
-	 
-	  /**
-	   * Creates a new GuiceTestRunner.
-	   *
-	   * @param classToRun the test class to run
-	   * @param modules the Guice modules
-	   * @throws InitializationError if the test class is malformed
-	   */
-	  public GuiceTestRunner(final Class<?> classToRun, Module... modules) throws InitializationError
-	  {
-	    this(classToRun, Guice.createInjector(modules));
-	  }
-	  
-	  public GuiceTestRunner(final Class<?> classToRun, Injector injector) throws InitializationError
-	  {
-		  super(classToRun);
-		  this.injector = injector;
-	  }
-	 
-	  @Override
-	  public Object createTest()
-	  {
-	    return injector.getInstance(getTestClass().getJavaClass());
-	  }
-	 
-	  @Override
-	  protected void validateZeroArgConstructor(List<Throwable> errors)
-	  {
-	    // Guice can inject constructors with parameters so we don't want this method to trigger an error
-	  }
-	 
-	  /**
-	   * Returns the Guice injector.
-	   *
-	   * @return the Guice injector
-	   */
-	  protected Injector getInjector()
-	  {
-	    return injector;
-	  }
+	private final Provider<Injector> injectorProvider;
+
+	public GuiceTestRunner(final Class<?> classToRun,
+			Provider<Injector> injectorProvider) throws InitializationError
+	{
+		super(classToRun);
+		this.injectorProvider = injectorProvider;
+	}
+
+	@Override
+	public Object createTest() {
+		return getInjector().getInstance(getTestClass().getJavaClass());
+	}
+
+	@Override
+	protected void validateZeroArgConstructor(List<Throwable> errors) {
+		// Guice can inject constructors with parameters so we don't want this
+		// method to trigger an error
+	}
+
+	protected Injector getInjector() {
+		return injectorProvider.get();
+	}
 }

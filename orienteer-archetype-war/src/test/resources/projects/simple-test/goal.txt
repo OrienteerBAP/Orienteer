@@ -1,1 +1,1 @@
--DskipTests=false test
+-DskipTests=false test -Dorienteer.properties=
