@@ -15,24 +15,12 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class PasswordVisualizer implements IVisualizer
+public class PasswordVisualizer extends AbstractSimpleVisualizer
 {
 	public static final String NAME = "password";
-	private static final Collection<OType> supported = Arrays.asList(OType.STRING);
-	
-	@Override
-	public String getName() {
-		return "password";
-	}
-
-	@Override
-	public boolean isExtended() {
-		return false;
-	}
-
-	@Override
-	public Collection<OType> getSupportedTypes() {
-		return supported;
+	public PasswordVisualizer()
+	{
+		super(NAME, false, OType.STRING);
 	}
 
 	@SuppressWarnings("unchecked")

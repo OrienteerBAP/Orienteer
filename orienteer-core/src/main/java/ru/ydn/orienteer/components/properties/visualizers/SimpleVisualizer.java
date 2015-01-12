@@ -16,13 +16,10 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class SimpleVisualizer implements IVisualizer
+public class SimpleVisualizer extends AbstractSimpleVisualizer
 {
-	private final String name;
-	private final boolean extended;
 	private final Class<? extends Component> viewComponentClass;
 	private final Class<? extends Component> editComponentClass;
-	private final Collection<OType> supportedTypes;
 	
 	public SimpleVisualizer(String name, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass, OType... supportedTypes)
 	{
@@ -41,28 +38,16 @@ public class SimpleVisualizer implements IVisualizer
 	
 	public SimpleVisualizer(String name, boolean extended, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass, Collection<OType> supportedTypes)
 	{
+		super(name, extended, supportedTypes);
 		Args.notNull(name, "name");
 		Args.notNull(viewComponentClass, "viewComponentClass");
 		Args.notNull(editComponentClass, "editComponentClass");
 		Args.notNull(supportedTypes, "supportedTypes");
 		Args.notEmpty(supportedTypes, "supportedTypes");
-		this.name = name;
-		this.extended = extended;
 		this.viewComponentClass = viewComponentClass;
 		this.editComponentClass = editComponentClass;
-		this.supportedTypes = supportedTypes;
 	}
 	
-	@Override
-	public String getName() {
-		return name;
-	}
-	
-	@Override
-	public boolean isExtended() {
-		return extended;
-	}
-
 	@Override
 	public <V> Component createComponent(String id, DisplayMode mode,
 			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel) {
@@ -90,11 +75,6 @@ public class SimpleVisualizer implements IVisualizer
 		{
 			throw new WicketRuntimeException("Can't create component", e);
 		} 
-	}
-
-	@Override
-	public Collection<OType> getSupportedTypes() {
-		return supportedTypes;
 	}
 
 }

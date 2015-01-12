@@ -22,18 +22,11 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class ListboxVisualizer implements IVisualizer
+public class ListboxVisualizer extends AbstractSimpleVisualizer
 {
-	private List<OType> supportedTypes = Arrays.asList(OType.LINK, OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
-	
-	@Override
-	public String getName() {
-		return "listbox";
-	}
-
-	@Override
-	public boolean isExtended() {
-		return false;
+	public ListboxVisualizer()
+	{
+		super("listbox", false, OType.LINK, OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -62,11 +55,6 @@ public class ListboxVisualizer implements IVisualizer
 		{
 			return null;
 		}
-	}
-
-	@Override
-	public Collection<OType> getSupportedTypes() {
-		return supportedTypes;
 	}
 
 }

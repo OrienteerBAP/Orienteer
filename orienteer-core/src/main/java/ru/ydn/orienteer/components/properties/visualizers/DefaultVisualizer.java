@@ -29,23 +29,11 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class DefaultVisualizer implements IVisualizer
+public class DefaultVisualizer extends AbstractSimpleVisualizer
 {
-	private static final List<OType> SUPPORTED = Arrays.asList(OType.values());
-	
-	@Override
-	public String getName() {
-		return "default";
-	}
-
-	@Override
-	public boolean isExtended() {
-		return false;
-	}
-
-	@Override
-	public Collection<OType> getSupportedTypes() {
-		return SUPPORTED;
+	public DefaultVisualizer()
+	{
+		super("default", false, OType.values());
 	}
 
 	@SuppressWarnings("unchecked")

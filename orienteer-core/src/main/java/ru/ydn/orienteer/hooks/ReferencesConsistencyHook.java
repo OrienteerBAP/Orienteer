@@ -254,13 +254,12 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				{
 					objects.add(wrappedValue);
 				}
-				doc.save();
 			}
 			else
 			{
 				doc.field(field, wrappedValue);
-				doc.save();
 			}
+			doc.save();
 		}
 	}
 	
