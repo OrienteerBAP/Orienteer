@@ -175,7 +175,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		{
 				if("name".equals(critery) || "shortName".equals(critery))
 				{
-					return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.INSTANCE);
+					return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.CLASS_NAME_VALIDATOR);
 				}
 				else if("abstract".equals(critery) || "strictMode".equals(critery))
 				{

@@ -11,10 +11,11 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 import ru.ydn.orienteer.components.BootstrapType;
 import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
-@RequiredOrientResource(value = ORule.ResourceGeneric.DATABASE, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = OSecurityHelper.DATABASE, permissions=OrientPermission.READ)
 public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 {
 

@@ -28,6 +28,7 @@ import ru.ydn.orienteer.web.OrienteerBasePage;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexModel;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
@@ -37,7 +38,7 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
 @MountPath("/index/${indexName}")
-@RequiredOrientResource(value=ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class OIndexPage extends OrienteerBasePage<OIndex<?>>
 {
 	private static final long serialVersionUID = 1L;

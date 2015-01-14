@@ -10,10 +10,11 @@ import ru.ydn.orienteer.components.structuretable.OrienteerStructureTable;
 import ru.ydn.orienteer.components.structuretable.StructureTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.DataTableCommandsToolbar;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
-@RequiredOrientResource(value=ORule.ResourceGeneric.SCHEMA, permissions=OrientPermission.UPDATE)
+@RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.UPDATE)
 public class EditSchemaCommand<T> extends EditCommand<T>
 {
 
