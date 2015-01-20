@@ -98,6 +98,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Override
 	public void init()
 	{
+		super.init();
 		if(embedded)
 		{
 			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
@@ -116,7 +117,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 				
 			});
 		}
-		super.init();
 		WicketWebjars.install(this, webjarSettings);
 		new AnnotatedMountScanner().scanPackage("ru.ydn.orienteer.web").mount(this);
 		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);

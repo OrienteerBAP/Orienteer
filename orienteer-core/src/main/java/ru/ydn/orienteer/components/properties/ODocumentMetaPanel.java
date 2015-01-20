@@ -72,12 +72,21 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 			((FormComponent<?>)component).add(new OPropertyValueValidator<Object>(critery));
 		}
 	}
+	
+	@Override
+	protected DisplayMode getEffectiveMode(DisplayMode mode, OProperty property) {
+		if(mode.canModify()
+				&& (property.isReadonly() || (Boolean)CustomAttributes.UI_READONLY.getValue(property)))
+		{
+			return DisplayMode.VIEW;
+		}
+		return mode;
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected Component resolveComponent(String id, DisplayMode mode,
 			OProperty property) {
-		if(mode.canModify() && property.isReadonly()) mode = DisplayMode.VIEW;
 		OType oType = property.getType();
 		UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
 		String visualizationComponent = CustomAttributes.VISUALIZATION_TYPE.getValue(property);

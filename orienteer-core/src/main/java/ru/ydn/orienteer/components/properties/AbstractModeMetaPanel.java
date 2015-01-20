@@ -43,7 +43,11 @@ public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPane
 	protected Component resolveComponent(String id, C critery) {
 		K mode = getModeObject();
 		Args.notNull(mode, "mode");
-		return resolveComponent(id, mode, critery);
+		return resolveComponent(id, getEffectiveMode(mode, critery), critery);
+	}
+	
+	protected K getEffectiveMode(K mode, C critery) {
+		return mode;
 	}
 	
 	@Override

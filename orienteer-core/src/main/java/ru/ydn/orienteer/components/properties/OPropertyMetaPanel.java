@@ -72,6 +72,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(CustomAttributes.PROP_INVERSE.getName());
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.MANDATORY);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.READONLY);
+		OPROPERTY_ATTRS.add(CustomAttributes.UI_READONLY.getName());
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.NOT_NULL);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.MIN);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.MAX);
@@ -193,7 +194,9 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			if(OPropertyPrototyper.MANDATORY.equals(critery) 
 					|| OPropertyPrototyper.READONLY.equals(critery) 
 					|| OPropertyPrototyper.NOT_NULL.equals(critery)
-					|| CustomAttributes.match(critery, CustomAttributes.DISPLAYABLE, CustomAttributes.CALCULABLE))
+					|| CustomAttributes.match(critery, CustomAttributes.UI_READONLY, 
+													   CustomAttributes.DISPLAYABLE,
+													   CustomAttributes.CALCULABLE))
 			{
 				return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
 			}
@@ -262,6 +265,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 						return new CheckBox(id, (IModel<Boolean>)getModel()).add(new RefreshMetaContextOnChangeBehaviour());
 					case DISPLAYABLE:
 					case HIDDEN:
+					case UI_READONLY:
 						return new CheckBox(id, (IModel<Boolean>)getModel());
 					case CALC_SCRIPT:
 						return new TextArea<V>(id, getModel());

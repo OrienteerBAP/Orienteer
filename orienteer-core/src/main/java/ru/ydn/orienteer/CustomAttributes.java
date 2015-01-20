@@ -25,6 +25,10 @@ public enum CustomAttributes
 	 * Is this property displayable or not
 	 */
 	DISPLAYABLE("orienteer.displayable", OType.BOOLEAN, false, false),
+	/**
+	 * Is this property should be readonly in UI
+	 */
+	UI_READONLY("orienteer.uireadonly", OType.BOOLEAN, false, false),
 	
 	/**
 	 * Is this property value should not be visible
