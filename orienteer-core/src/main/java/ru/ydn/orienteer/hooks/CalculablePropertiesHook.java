@@ -79,7 +79,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 			{
 				if(calcProperties.contains(field))
 				{
-					iDocument.removeField(field);
+					iDocument.undo(field);
 					wasChanged = true;
 				}
 			}
