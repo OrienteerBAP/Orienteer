@@ -112,26 +112,26 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 				@Override
 				public void unselect() {
 					ORole oRole = rowModel.getObject();
-					oRole.revoke(getSecurityResource(), permission.getPermissionFlag());
+					oRole.revoke(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
 					oRole.save();
 				}
 				
 				@Override
 				public void select() {
 					ORole oRole = rowModel.getObject();
-					oRole.grant(getSecurityResource(), permission.getPermissionFlag());
+					oRole.grant(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
 					oRole.save();
 				}
 				
 				@Override
 				public boolean isSelected() {
 					ORole oRole = rowModel.getObject();
-					return oRole.allow(getSecurityResource(), permission.getPermissionFlag());
+					return oRole.allow(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
 				}
 				
-				private String getSecurityResource()
+				private String getSecurityResourceSpecific()
 				{
-					return ODatabaseSecurityResources.CLASS+"."+OClassPage.this.getModelObject().getName();
+					return OClassPage.this.getModelObject().getName();
 				}
 			};
 		}
@@ -230,6 +230,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.NOT_NULL, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.MANDATORY, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.READONLY, propertiesDisplayMode));
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.UI_READONLY, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DISPLAYABLE, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(CustomAttributes.CALCULABLE, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(CustomAttributes.ORDER, propertiesDisplayMode));
