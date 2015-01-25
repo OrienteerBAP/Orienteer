@@ -136,4 +136,8 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		return new DefaultPageHeader(componentId, getTitleModel());
 	}
 
+	public OrienteerFeedbackPanel getFeedbacks() {
+		return feedbacks;
+	}
+	
 }
