@@ -14,6 +14,7 @@ import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.table.OrienteerDataTable;
 import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
@@ -74,7 +75,7 @@ public class BrowseClassPage extends OrienteerBasePage<OClass> implements ISecur
 
 	@Override
 	public IModel<String> getTitleModel() {
-		return new StringResourceModel("class.browse.title", getModel());
+		return new StringResourceModel("class.browse.title", new OClassNamingModel(getModel()));
 	}
 
 	@Override
