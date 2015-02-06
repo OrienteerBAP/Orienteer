@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.guice.GuiceInjectorHolder;
+import org.apache.wicket.markup.html.IPackageResourceGuard;
+import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
@@ -122,6 +124,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
+		IPackageResourceGuard packageResourceGuard = getResourceSettings().getPackageResourceGuard();
+		if (packageResourceGuard instanceof SecurePackageResourceGuard)
+		{
+			SecurePackageResourceGuard guard = (SecurePackageResourceGuard) packageResourceGuard;
+			//Allow to access only to woff2 - new format from bootstrap
+			guard.addPattern("+*.woff2");
+		}
 		
 		getApplicationListeners().add(new ModuledDataInstallator());
 		registerModule(OrienteerLocalizationModule.class);
