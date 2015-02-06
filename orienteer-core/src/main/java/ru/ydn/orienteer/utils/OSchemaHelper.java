@@ -46,6 +46,12 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 			String propertyName, OType type) {
 		return (OSchemaHelper) super.oProperty(propertyName, type);
 	}
+	
+	@Override
+	public OSchemaHelper oIndex(INDEX_TYPE type)
+	{
+		return (OSchemaHelper) super.oIndex(type);
+	}
 
 	@Override
 	public OSchemaHelper oIndex(String name,
@@ -155,6 +161,14 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	{
 		checkOProperty();
 		CustomAttributes.PROP_PARENT.setValue(lastClass, lastProperty);
+		return this;
+	}
+	
+	public OSchemaHelper calculateBy(String script)
+	{
+		checkOProperty();
+		CustomAttributes.CALCULABLE.setValue(lastProperty, true);
+		CustomAttributes.CALC_SCRIPT.setValue(lastProperty, script);
 		return this;
 	}
 	

@@ -1,5 +1,6 @@
 package ru.ydn.orienteer;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import javax.inject.Provider;
@@ -156,6 +157,21 @@ public class TestHooks
 			//Check back ref from Child3
 			child3Doc.reload();
 			assertNull(child3Doc.field("parent"));
+			
+			//Lets create one more Root to test setting collection from scratch
+			ODocument root2Doc = new ODocument(classA);
+			root2Doc.save();
+			
+			ODocument childTestForNull = new ODocument(classA);
+			childTestForNull.save();
+			assertNull(root2Doc.field("child"));
+			root2Doc.field("child", Arrays.asList(childTestForNull));
+			root2Doc.save();
+			childTestForNull.reload();
+			childCollection = root2Doc.field("child");
+			assertEquals(1, childCollection.size());
+			assertTrue(childCollection.contains(childTestForNull));
+			assertEquals(root2Doc, childTestForNull.field("parent"));
 		} finally
 		{
 			schema.dropClass(TEST_CLASS_A);

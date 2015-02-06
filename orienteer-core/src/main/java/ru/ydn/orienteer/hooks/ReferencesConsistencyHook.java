@@ -151,26 +151,52 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 							if(changedProperty.getType().isMultiValue())
 							{
 								OMultiValueChangeTimeLine<Object, Object> timeline = doc.getCollectionTimeLine(field);
-								List<OMultiValueChangeEvent<Object, Object>> events = timeline.getMultiValueChangeEvents();
-								for (OMultiValueChangeEvent<Object, Object> event : events)
+								if(timeline!=null)
 								{
-									OIdentifiable toAddTo=null;
-									OIdentifiable toRemoveFrom=null;
-									switch (event.getChangeType())
+									//Our old collection was modified, so we can perform changes one by one
+									List<OMultiValueChangeEvent<Object, Object>> events = timeline.getMultiValueChangeEvents();
+									for (OMultiValueChangeEvent<Object, Object> event : events)
 									{
-										case ADD:
-											toAddTo = (OIdentifiable)event.getValue();
-											break;
-										case UPDATE:
-											toAddTo = (OIdentifiable)event.getValue();
-											toRemoveFrom = (OIdentifiable)event.getOldValue();
-											break;
-										case REMOVE:
-											toRemoveFrom = (OIdentifiable)event.getOldValue();
-											break;
+										OIdentifiable toAddTo=null;
+										OIdentifiable toRemoveFrom=null;
+										switch (event.getChangeType())
+										{
+											case ADD:
+												toAddTo = (OIdentifiable)event.getValue();
+												break;
+											case UPDATE:
+												toAddTo = (OIdentifiable)event.getValue();
+												toRemoveFrom = (OIdentifiable)event.getOldValue();
+												break;
+											case REMOVE:
+												toRemoveFrom = (OIdentifiable)event.getOldValue();
+												break;
+										}
+										if(toAddTo!=null) addLink((ODocument)toAddTo.getRecord(), inverseProperty, doc);
+										if(toRemoveFrom!=null) removeLink((ODocument)toRemoveFrom.getRecord(), inverseProperty, doc);
 									}
-									if(toAddTo!=null) addLink((ODocument)toAddTo.getRecord(), inverseProperty, doc);
-									if(toRemoveFrom!=null) removeLink((ODocument)toRemoveFrom.getRecord(), inverseProperty, doc);
+								}
+								else
+								{
+									//whole collection was replaces
+									Object original = doc.getOriginalValue(field);
+									Object current = doc.field(field);
+									if(original!=null && original instanceof Iterable)
+									{
+										for(Object originaIdentifiable: (Iterable<?>)original)
+										{
+											if(originaIdentifiable!=null && originaIdentifiable instanceof OIdentifiable) 
+												removeLink((ODocument)((OIdentifiable)originaIdentifiable).getRecord(), inverseProperty, doc);
+										}
+									}
+									if(current!=null && current instanceof Iterable)
+									{
+										for(Object currentIdentifiable: (Iterable<?>)current)
+										{
+											if(currentIdentifiable!=null && currentIdentifiable instanceof OIdentifiable) 
+												addLink((ODocument)((OIdentifiable)currentIdentifiable).getRecord(), inverseProperty, doc);
+										}
+									}
 								}
 							}
 							else
