@@ -35,6 +35,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 		public MetaContextItem(String id, int index, IModel<T> model)
 		{
 			super(id, index, model);
+			setOutputMarkupId(true);
 		}
 
 		@Override

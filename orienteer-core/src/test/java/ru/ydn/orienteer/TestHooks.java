@@ -65,6 +65,13 @@ public class TestHooks
 			doc.reload();
 			assertEquals(8, doc.field("c"));
 			db.commit();
+			db.begin();
+			doc.field("a", 5);
+			doc.field("b", 5);
+			doc.save();
+			doc.reload();
+			assertEquals(10, doc.field("c"));
+			db.commit();
 		} finally
 		{
 			if(db.getTransaction().isActive()) db.commit();

@@ -28,7 +28,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 	
 	@Override
 	public DISTRIBUTED_EXECUTION_MODE getDistributedExecutionMode() {
-		return DISTRIBUTED_EXECUTION_MODE.TARGET_NODE;
+		return DISTRIBUTED_EXECUTION_MODE.SOURCE_NODE;
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -79,7 +79,9 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 			{
 				if(calcProperties.contains(field))
 				{
-					iDocument.undo(field);
+					boolean tracking = iDocument.isTrackingChanges();
+					if(tracking) iDocument.undo(field);
+//					iDocument.removeField(field);
 					wasChanged = true;
 				}
 			}
@@ -110,7 +112,8 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 			if(calcProperties!=null && calcProperties.size()>0)
 			{
 				for (String calcProperty :calcProperties) {
-					if(iDocument.field(calcProperty)!=null) continue;
+					//Force calculation. Required for work around issue in OrientDB
+					//if(iDocument.field(calcProperty)!=null) continue;
 					final OProperty property = oClass.getProperty(calcProperty);
 					String script = CustomAttributes.CALC_SCRIPT.getValue(property);
 					List<ODocument> calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>(script), iDocument);

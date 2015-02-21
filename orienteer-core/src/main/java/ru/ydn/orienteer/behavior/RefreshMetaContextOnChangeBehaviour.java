@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.behavior;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.html.form.Form;
@@ -19,6 +20,15 @@ public class RefreshMetaContextOnChangeBehaviour extends AjaxFormSubmitBehavior
 		super("change");
 	}
 	
+	@Override
+	protected void onBind() {
+		IMetaContext<?> context = AbstractMetaPanel.getMetaContext(getComponent());
+		if(context!=null && context instanceof Component)
+		{
+			((Component)context).setOutputMarkupId(true);
+		}
+	}
+
 	@Override
 	protected void onSubmit(AjaxRequestTarget target) {
 		IMetaContext<?> context = AbstractMetaPanel.getMetaContext(getComponent());
