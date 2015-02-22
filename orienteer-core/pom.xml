@@ -172,7 +172,7 @@
 			    <configuration>
 			    <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
 				<webApp>
-				    <descriptor>..\orienteer-war\src\main\webapp\WEB-INF\web.xml</descriptor>
+				    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
 				    <resourceBase>src/main/resources</resourceBase>
 				    <contextPath>/</contextPath>
 				</webApp>
