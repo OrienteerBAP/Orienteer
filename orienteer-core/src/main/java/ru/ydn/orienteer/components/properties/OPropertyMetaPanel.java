@@ -44,6 +44,7 @@ import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -60,6 +61,8 @@ import com.orientechnologies.orient.core.sql.OSQLEngine;
 public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V>
 {
 	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>();
+	public static final List<OType> LINKED_TYPE_OPTIONS;
+	
 	static
 	{
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.NAME);
@@ -82,6 +85,15 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(CustomAttributes.HIDDEN.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
+		
+		// Only single value types are allowed for linked type.
+		LINKED_TYPE_OPTIONS = ListAvailableOTypesModel.orderTypes(Collections2.filter(Arrays.asList(OType.values()), new Predicate<OType>() {
+
+			@Override
+			public boolean apply(OType input) {
+				return !input.isMultiValue();
+			}
+		}));
 	}
 	private static final Predicate<OProperty> CAN_BE_INVERSE_PROPERTY = new Predicate<OProperty>() {
 
@@ -156,8 +168,15 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		if(OPropertyPrototyper.TYPE.equals(critery))
 		{
 			OType oType = (OType)getEnteredValue();
+			// Show Linked Class if type is a some kind of link
 			AbstractMetaPanel<OProperty, String, ?> metaPanel = getMetaComponent(OPropertyPrototyper.LINKED_CLASS);
 			if(metaPanel!=null) metaPanel.setVisibilityAllowed(oType!=null && oType.isLink());
+			
+			// Show Linked Type if type is a some kind of embedded
+			metaPanel = getMetaComponent(OPropertyPrototyper.LINKED_TYPE);
+			if(metaPanel!=null) metaPanel.setVisibilityAllowed(oType!=null && oType.isEmbedded());
+			
+			// Show inverse if current type is a link
 			metaPanel = getMetaComponent(CustomAttributes.PROP_INVERSE.getName());
 			if(metaPanel!=null) metaPanel.setVisibilityAllowed(oType!=null && oType.isLink());
 		}
@@ -219,7 +238,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else if(OPropertyPrototyper.LINKED_TYPE.equals(critery))
 			{
-				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), Arrays.asList(OType.values())).setNullValid(true);
+				return new DropDownChoice<OType>(id, (IModel<OType>)getModel(), LINKED_TYPE_OPTIONS).setNullValid(true);
 			}
 			else if(OPropertyPrototyper.LINKED_CLASS.equals(critery))
 			{
