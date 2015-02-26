@@ -19,6 +19,7 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.BooleanViewPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.EmbeddedCollectionViewPanel;
 import ru.ydn.orienteer.components.properties.LinkEditPanel;
 import ru.ydn.orienteer.components.properties.LinkViewPanel;
 import ru.ydn.orienteer.components.properties.LinksCollectionEditPanel;
@@ -31,6 +32,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class DefaultVisualizer extends AbstractSimpleVisualizer
 {
+	public static final DefaultVisualizer INSTANCE = new DefaultVisualizer();
+	
 	public DefaultVisualizer()
 	{
 		super("default", false, OType.values());
@@ -40,8 +43,12 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 	@Override
 	public <V> Component createComponent(String id, DisplayMode mode,
 			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+		return createComponent(id, mode, documentModel, propertyModel, propertyModel.getObject().getType(), valueModel);
+	}
+	
+	public <V> Component createComponent(String id, DisplayMode mode,
+			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, OType oType, IModel<V> valueModel) {
 		OProperty property = propertyModel.getObject();
-		OType oType = property.getType();
 		if(DisplayMode.VIEW.equals(mode))
 		{
 			switch(oType)
@@ -57,6 +64,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                     return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, Session.get().getLocale())).toPattern());
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
+                case EMBEDDEDLIST:
+                case EMBEDDEDSET:
+                	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
                 default:
 					return new Label(id, valueModel);
 			}

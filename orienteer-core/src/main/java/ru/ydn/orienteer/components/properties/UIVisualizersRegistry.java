@@ -25,7 +25,7 @@ public class UIVisualizersRegistry
 	
 	public UIVisualizersRegistry()
 	{
-		registerUIComponentFactory(new DefaultVisualizer());
+		registerUIComponentFactory(DefaultVisualizer.INSTANCE);
 		registerUIComponentFactory(new SimpleVisualizer("textarea", MultiLineLabel.class, TextArea.class, OType.STRING));
 		registerUIComponentFactory(new SimpleVisualizer("table", true, LinksPropertyDataTablePanel.class, LinksPropertyDataTablePanel.class, OType.LINKLIST, OType.LINKSET, OType.LINKBAG));
 		registerUIComponentFactory(new ListboxVisualizer());
