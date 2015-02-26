@@ -50,7 +50,7 @@ public class ListAvailableOTypesModel extends LoadableDetachableModel<List<OType
 		}
 	}
 	
-	protected static List<OType> orderTypes(Collection<OType> types)
+	public static List<OType> orderTypes(Collection<OType> types)
 	{
 		List<OType> list = types instanceof List?(List<OType>)types:new ArrayList<OType>(types);
 		
