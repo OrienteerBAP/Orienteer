@@ -32,12 +32,18 @@
 				<include>orienteer-test.properties</include>
 			</includes>
 		</fileSet>
-		<!--<fileSet filtered="false" packaged="false" encoding="UTF-8">
+		<fileSet filtered="false" packaged="false" encoding="UTF-8">
 			<directory>src/main/resources</directory>
 			<includes>
-				<include>__log4j.properties__</include>
+				<include>log4j.properties</include>
 			</includes>
-		</fileSet>-->
+		</fileSet>
+		<fileSet filtered="true" packaged="true" encoding="UTF-8">
+			<directory>src/main/resources</directory>
+			<excludes>
+				<exclude>log4j.properties</exclude>
+			</excludes>
+		</fileSet>
 		<fileSet filtered="true" packaged="false" encoding="UTF-8">
 			<directory>src/main/webapp</directory>
 			<includes>
