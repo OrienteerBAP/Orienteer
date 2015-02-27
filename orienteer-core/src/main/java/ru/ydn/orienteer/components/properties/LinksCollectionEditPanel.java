@@ -5,14 +5,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -20,7 +16,6 @@ import org.apache.wicket.model.ResourceModel;
 
 import ru.ydn.orienteer.components.BootstrapSize;
 import ru.ydn.orienteer.components.BootstrapType;
-import ru.ydn.orienteer.components.FAIconType;
 import ru.ydn.orienteer.components.commands.AjaxFormCommand;
 import ru.ydn.orienteer.components.commands.SelectODocumentCommand;
 import ru.ydn.orienteer.components.table.OEntityColumn;

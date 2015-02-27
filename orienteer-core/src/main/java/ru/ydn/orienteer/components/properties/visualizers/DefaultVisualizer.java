@@ -2,10 +2,13 @@ package ru.ydn.orienteer.components.properties.visualizers;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -19,6 +22,7 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.BooleanViewPanel;
 import ru.ydn.orienteer.components.properties.DisplayMode;
+import ru.ydn.orienteer.components.properties.EmbeddedCollectionEditPanel;
 import ru.ydn.orienteer.components.properties.EmbeddedCollectionViewPanel;
 import ru.ydn.orienteer.components.properties.LinkEditPanel;
 import ru.ydn.orienteer.components.properties.LinkViewPanel;
@@ -87,6 +91,10 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                     return new DateField(id, (IModel<Date>) valueModel);
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) valueModel);
+                case EMBEDDEDLIST:
+                	return new EmbeddedCollectionEditPanel<Object, List<Object>>(id, documentModel, propertyModel, ArrayList.class);
+                case EMBEDDEDSET:
+                	return new EmbeddedCollectionEditPanel<Object, Set<Object>>(id, documentModel, propertyModel, HashSet.class);
                 default:
                 	TextField<V> ret = new TextField<V>(id, valueModel);
                 	Class<?> javaOType = oType.getDefaultJavaType();
