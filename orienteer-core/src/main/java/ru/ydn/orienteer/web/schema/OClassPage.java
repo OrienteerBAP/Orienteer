@@ -222,7 +222,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		Form<OClass> pForm = new Form<OClass>("pForm");
 		IModel<DisplayMode> propertiesDisplayMode = DisplayMode.VIEW.asModel();
 		List<IColumn<OProperty, String>> pColumns = new ArrayList<IColumn<OProperty,String>>();
-		pColumns.add(new CheckBoxColumn<OProperty, String, String>(null, OPropertyFullNameConverter.INSTANCE));
+		pColumns.add(new CheckBoxColumn<OProperty, String, String>(OPropertyFullNameConverter.INSTANCE));
 		pColumns.add(new OPropertyDefinitionColumn(OPropertyPrototyper.NAME, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.TYPE, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(OPropertyPrototyper.LINKED_TYPE, propertiesDisplayMode));
@@ -252,7 +252,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		Form<OClass> iForm = new Form<OClass>("iForm");
 		IModel<DisplayMode> indexiesDisplayMode = DisplayMode.VIEW.asModel();
 		List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
-		iColumns.add(new CheckBoxColumn<OIndex<?>, String, String>(null, OIndexNameConverter.INSTANCE));
+		iColumns.add(new CheckBoxColumn<OIndex<?>, String, String>(OIndexNameConverter.INSTANCE));
 		iColumns.add(new OIndexDefinitionColumn(OIndexPrototyper.NAME, indexiesDisplayMode));
 		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.TYPE, indexiesDisplayMode));
 		iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_FIELDS, indexiesDisplayMode));

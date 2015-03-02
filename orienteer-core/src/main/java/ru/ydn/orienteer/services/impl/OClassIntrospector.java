@@ -74,7 +74,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, boolean withCheckbox, IModel<DisplayMode> modeModel) {
 		List<OProperty> properties = getDisplayableProperties(oClass);
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+2);
-		if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(null, ODocumentORIDConverter.INSTANCE));
+		if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
 		OEntityColumn entityColumn = new OEntityColumn(oClass, modeModel);
 		String nameProperty = entityColumn.getNameProperty();
 		columns.add(entityColumn);

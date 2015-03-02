@@ -1,5 +1,6 @@
 package ru.ydn.orienteer.components.properties;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
@@ -24,6 +25,11 @@ public class BooleanEditPanel extends GenericPanel<Boolean>
 	
 	protected void initialize()
 	{
-		add(new CheckBox("checkbox", getModel()));
+		add(newCheckbox("checkbox"));
+	}
+	
+	protected Component newCheckbox(String componentId)
+	{
+		return new CheckBox(componentId, getModel());
 	}
 }

@@ -72,7 +72,7 @@ public class ListOClassesPage extends OrienteerBasePage<Object> {
 		Form<?> form = new Form<Object>("form");
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
-		columns.add(new CheckBoxColumn<OClass, String, String>(null, OClassClassNameConverter.INSTANCE));
+		columns.add(new CheckBoxColumn<OClass, String, String>(OClassClassNameConverter.INSTANCE));
 		columns.add(new OClassColumn(OClassPrototyper.NAME, modeModel));
 		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS, modeModel));
 		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT, modeModel));
