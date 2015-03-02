@@ -7,11 +7,8 @@ import org.apache.wicket.model.IModel;
 
 public class BooleanEditPanel extends GenericPanel<Boolean>
 {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private static final String CHECKBOX_ID = "checkbox";
 
 	public BooleanEditPanel(String id, IModel<Boolean> model) {
 		super(id, model);
@@ -25,11 +22,16 @@ public class BooleanEditPanel extends GenericPanel<Boolean>
 	
 	protected void initialize()
 	{
-		add(newCheckbox("checkbox"));
+		add(newCheckbox(CHECKBOX_ID));
 	}
 	
 	protected Component newCheckbox(String componentId)
 	{
 		return new CheckBox(componentId, getModel());
+	}
+	
+	public Component getCheckbox()
+	{
+		return get(CHECKBOX_ID);
 	}
 }
