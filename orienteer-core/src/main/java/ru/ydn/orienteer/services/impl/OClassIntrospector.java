@@ -23,6 +23,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -79,12 +80,12 @@ public class OClassIntrospector implements IOClassIntrospector
 		List<OProperty> properties = getDisplayableProperties(oClass);
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+2);
 		if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
-		OEntityColumn entityColumn = new OEntityColumn(oClass, modeModel);
-		String nameProperty = entityColumn.getNameProperty();
+		OProperty nameProperty = getNameProperty(oClass);
+		OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
 		columns.add(entityColumn);
 		for (OProperty oProperty : properties)
 		{
-			if(nameProperty==null || !nameProperty.equals(oProperty.getName()))
+			if(nameProperty==null || !nameProperty.equals(oProperty))
 			{
 				Class<?> javaType = oProperty.getType().getDefaultJavaType();
 				if(javaType!=null && Comparable.class.isAssignableFrom(javaType))
@@ -199,12 +200,32 @@ public class OClassIntrospector implements IOClassIntrospector
 	
 	@Override
 	public String getDocumentName(ODocument doc) {
-		if(doc==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
+		if(doc==null) return Application.get().getResourceSettings().getLocalizer().getString("nodoc", null);
 		else
 		{
 			//TODO: Enhance to cover complex naming cases
 			OProperty nameProp = getNameProperty(doc.getSchemaClass());
-			return nameProp!=null?Strings.toString(doc.field(nameProp.getName())):doc.toString();
+			if(nameProp!=null)
+			{
+				Object value = doc.field(nameProp.getName());
+				if(value==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
+				OType type = nameProp.getType();
+				switch (type)
+				{
+					case DATE:
+						return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateFormatInstance().format(value);
+					case DATETIME:
+						return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateTimeFormatInstance().format(value);
+					case LINK:
+						return getDocumentName((ODocument)value);
+					default:
+						return value.toString();
+				}
+			}
+			else
+			{
+				return doc.toString();
+			}
 		}
 	}
 

@@ -13,6 +13,7 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 
 import com.google.common.base.Converter;
@@ -50,7 +51,7 @@ public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColum
 	
 	@Override
 	public Component getHeader(String componentId) {
-		return new BooleanEditPanel(componentId)
+		return new BooleanEditPanel(componentId, Model.of(false))
 		{
 			@Override
 			protected Component newCheckbox(String componentId) {
