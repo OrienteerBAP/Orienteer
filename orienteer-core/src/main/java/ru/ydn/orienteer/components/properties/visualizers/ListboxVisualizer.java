@@ -12,7 +12,7 @@ import org.apache.wicket.model.IModel;
 
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.model.DynamicPropertyValueModel;
-import ru.ydn.orienteer.schema.SchemaHelper;
+import ru.ydn.orienteer.utils.ODocumentChoiceRenderer;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.utils.OChoiceRenderer;
 
@@ -39,15 +39,14 @@ public class ListboxVisualizer extends AbstractSimpleVisualizer
 			OProperty property = propertyModel.getObject();
 			OClass oClass = property.getLinkedClass();
 			OQueryModel<ODocument> choicesModel = new OQueryModel<ODocument>("select from "+oClass.getName()+" LIMIT 100");
-			OProperty nameProperty = SchemaHelper.resolveNameProperty(oClass);
 			if(property.getType().isMultiValue())
 			{
-				return new ListMultipleChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, choicesModel, new OChoiceRenderer(nameProperty));
+				return new ListMultipleChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, choicesModel, new ODocumentChoiceRenderer());
 			}
 			else
 			{
 				return new DropDownChoice<ODocument>(id, (IModel<ODocument>)valueModel, 
-					choicesModel, new OChoiceRenderer(nameProperty))
+					choicesModel, new ODocumentChoiceRenderer())
 					.setNullValid(!property.isNotNull());
 			}
 		}

@@ -38,7 +38,7 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 
 			@Override
 			protected void populateItem(ListItem<ODocument> item) {
-				item.add(new ODocumentPageLink<ODocument>("link", item.getModel())
+				item.add(new ODocumentPageLink("link", item.getModel())
 						{
 							@Override
 							protected boolean isLinkEnabled() {

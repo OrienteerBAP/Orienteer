@@ -1,17 +1,12 @@
 package ru.ydn.orienteer.components.table;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.string.Strings;
 
+import ru.ydn.orienteer.OrienteerWebApplication;
 import ru.ydn.orienteer.components.properties.DisplayMode;
 import ru.ydn.orienteer.components.properties.LinkViewPanel;
-import ru.ydn.orienteer.schema.SchemaHelper;
-import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -23,7 +18,7 @@ public class OEntityColumn extends OPropertyValueColumn
 	
 	public OEntityColumn(OClass oClass, IModel<DisplayMode> modeModel)
 	{
-		this(SchemaHelper.resolveNameProperty(oClass), true, modeModel);
+		this(OrienteerWebApplication.get().getOClassIntrospector().getNameProperty(oClass), true, modeModel);
 	}
 
 	public OEntityColumn(IModel<OProperty> criteryModel,
@@ -71,7 +66,7 @@ public class OEntityColumn extends OPropertyValueColumn
 			String componentId, IModel<ODocument> rowModel) {
 		if(DisplayMode.VIEW.equals(getModeObject()))
 		{
-			cellItem.add(new LinkViewPanel<ODocument>(componentId, rowModel));
+			cellItem.add(new LinkViewPanel(componentId, rowModel));
 		}
 		else
 		{

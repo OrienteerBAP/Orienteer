@@ -114,7 +114,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
-		add(new ODocumentPageLink<OIdentifiable>("myProfile", new PropertyModel<OIdentifiable>(this, "session.user.document")));
+		add(new ODocumentPageLink("myProfile", new PropertyModel<ODocument>(this, "session.user.document")));
 		
 		final IModel<String> queryModel = Model.of();
 		Form<String>  searchForm = new Form<String>("searchForm", queryModel)

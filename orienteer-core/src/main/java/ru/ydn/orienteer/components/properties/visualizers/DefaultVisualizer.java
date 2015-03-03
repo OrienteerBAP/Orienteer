@@ -58,7 +58,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 			switch(oType)
 			{
 				case LINK:
-					return new LinkViewPanel<OIdentifiable>(id, (IModel<OIdentifiable>)valueModel);
+					return new LinkViewPanel(id, (IModel<ODocument>)valueModel);
 				case LINKLIST:
 				case LINKSET:
 					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);

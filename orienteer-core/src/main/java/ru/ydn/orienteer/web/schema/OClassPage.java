@@ -281,7 +281,7 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 			@Override
 			public void populateItem(Item<ICellPopulator<ORole>> cellItem,
 					String componentId, IModel<ORole> rowModel) {
-				cellItem.add(new LinkViewPanel<ODocument>(componentId, new PropertyModel<ODocument>(rowModel, "document")));
+				cellItem.add(new LinkViewPanel(componentId, new PropertyModel<ODocument>(rowModel, "document")));
 			}
 		});
 		sColumns.add(new SecurityRightsColumn(OrientPermission.CREATE));

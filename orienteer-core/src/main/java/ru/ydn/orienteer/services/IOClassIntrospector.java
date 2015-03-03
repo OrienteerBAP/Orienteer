@@ -23,4 +23,6 @@ public interface IOClassIntrospector
 	public List<String> listTabs(OClass oClass);
 	public List<OProperty> listProperties(OClass oClass, String tab, Boolean extended);
 	public OQueryDataProvider<ODocument> prepareDataProviderForProperty(OProperty property, IModel<ODocument> documentModel);
+	public OProperty getNameProperty(OClass oClass);
+	public String getDocumentName(ODocument doc);
 }

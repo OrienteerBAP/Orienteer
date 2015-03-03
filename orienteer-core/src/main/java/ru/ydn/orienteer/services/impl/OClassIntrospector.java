@@ -12,14 +12,18 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 
+import org.apache.wicket.Application;
+import org.apache.wicket.Localizer;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -174,8 +178,34 @@ public class OClassIntrospector implements IOClassIntrospector
 		provider.setParameter("doc", documentModel);
 		return provider;
 	}
-	
-	
 
+	@Override
+	public OProperty getNameProperty(OClass oClass) {
+		if(oClass==null) return null;
+		OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
+		if(ret!=null) return ret;
+		ret = oClass.getProperty("name");
+		if(ret!=null) return ret;
+		for(OProperty p: oClass.properties())
+		{
+			if(!p.getType().isMultiValue())
+			{
+				ret = p;
+				if(OType.STRING.equals(p.getType())) break;
+			}
+		}
+		return ret;
+	}
+	
+	@Override
+	public String getDocumentName(ODocument doc) {
+		if(doc==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
+		else
+		{
+			//TODO: Enhance to cover complex naming cases
+			OProperty nameProp = getNameProperty(doc.getSchemaClass());
+			return nameProp!=null?Strings.toString(doc.field(nameProp.getName())):doc.toString();
+		}
+	}
 
 }

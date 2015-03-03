@@ -1,49 +1,27 @@
 package ru.ydn.orienteer.model;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.model.LoadableDetachableModel;
 
-import ru.ydn.orienteer.schema.SchemaHelper;
+import ru.ydn.orienteer.OrienteerWebApplication;
 
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class DocumentNameModel implements IModel<String>
+public class DocumentNameModel extends LoadableDetachableModel<String>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private IModel<? extends OIdentifiable> documentModel;
+	private IModel<ODocument> documentModel;
 	
-	public DocumentNameModel(IModel<? extends OIdentifiable> documentModel)
+	public DocumentNameModel(IModel<ODocument> documentModel)
 	{
 		this.documentModel = documentModel;
 	}
-
-
+	
 	@Override
-	public String getObject() {
-		OIdentifiable identifiable = documentModel.getObject();
-		if(identifiable==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
-		ODocument doc = identifiable.getRecord();
-		OProperty nameProp = SchemaHelper.resolveNameProperty(doc.getSchemaClass());
-		return nameProp!=null?Strings.toString(doc.field(nameProp.getName())):doc.toString();
+	protected String load() {
+		return OrienteerWebApplication.get().getOClassIntrospector().getDocumentName(documentModel.getObject());
 	}
 
-	@Override
-	public void setObject(String object) {
-		ODocument doc = documentModel.getObject().getRecord();
-		OProperty nameProp = doc!=null?SchemaHelper.resolveNameProperty(doc.getSchemaClass()):null;
-		if(nameProp!=null)
-		{
-			doc.field(nameProp.getName(), object);
-		}
-	}
-	
-	
 	@Override
 	public void detach() {
 		documentModel.detach();

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.wicket.Localizer;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
@@ -110,6 +111,12 @@ public class OrienteerModule extends AbstractModule
 	{
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		return app.getServer();
+	}
+	
+	@Provides
+	public Localizer getLocalizer(WebApplication application)
+	{
+		return application.getResourceSettings().getLocalizer();
 	}
 	
 	public static URL lookupPropertiesURL() throws IOException

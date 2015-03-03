@@ -19,6 +19,7 @@ import ru.ydn.orienteer.modules.ModuledDataInstallator;
 import ru.ydn.orienteer.modules.OrienteerLocalizationModule;
 import ru.ydn.orienteer.modules.PerspectivesModule;
 import ru.ydn.orienteer.modules.UpdateDefaultSchemaModule;
+import ru.ydn.orienteer.services.IOClassIntrospector;
 import ru.ydn.orienteer.web.BasePage;
 import ru.ydn.orienteer.web.HomePage;
 import ru.ydn.orienteer.web.LoginPage;
@@ -180,6 +181,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public UIVisualizersRegistry getUIVisualizersRegistry()
 	{
 		return getServiceInstance(UIVisualizersRegistry.class);
+	}
+	
+	public IOClassIntrospector getOClassIntrospector()
+	{
+		return getServiceInstance(IOClassIntrospector.class);
 	}
 	
 }
