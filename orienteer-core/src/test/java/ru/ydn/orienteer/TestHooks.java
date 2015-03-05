@@ -2,6 +2,7 @@ package ru.ydn.orienteer;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Provider;
 
@@ -28,6 +29,7 @@ public class TestHooks
 {
 	private static final String TEST_CLASS_A = "TestClassA";
 	private static final String TEST_CLASS_B = "TestClassB";
+	private static final String TEST_CLASS_C = "TestClassC";
 	@Test
 	public void testCalculableHook() throws Exception
 	{
@@ -89,19 +91,19 @@ public class TestHooks
 		
 		assertFalse(db.isClosed());
 		db.commit();
-		if(schema.existsClass(TEST_CLASS_A)) schema.dropClass(TEST_CLASS_A);
-		OClass classA = schema.createClass(TEST_CLASS_A);
+		if(schema.existsClass(TEST_CLASS_B)) schema.dropClass(TEST_CLASS_B);
+		OClass classB = schema.createClass(TEST_CLASS_B);
 		try
 		{
-			OProperty parent = classA.createProperty("parent", OType.LINK);
-			OProperty child = classA.createProperty("child", OType.LINKLIST);
+			OProperty parent = classB.createProperty("parent", OType.LINK);
+			OProperty child = classB.createProperty("child", OType.LINKLIST);
 			CustomAttributes.PROP_INVERSE.setValue(parent, child);
 			CustomAttributes.PROP_INVERSE.setValue(child, parent);
 			//Create root object
-			ODocument rootDoc = new ODocument(classA);
+			ODocument rootDoc = new ODocument(classB);
 			rootDoc.save();
 			//Create first child
-			ODocument child1Doc = new ODocument(classA);
+			ODocument child1Doc = new ODocument(classB);
 			child1Doc.field("parent", rootDoc);
 			child1Doc.save();
 			//Check that back ref is here
@@ -110,7 +112,7 @@ public class TestHooks
 			assertEquals(1, childCollection.size());
 			assertTrue(childCollection.contains(child1Doc));
 			//Create second child
-			ODocument child2Doc = new ODocument(classA);
+			ODocument child2Doc = new ODocument(classB);
 			child2Doc.field("parent", rootDoc);
 			child2Doc.save();
 			//Check that back ref to 2 child doc here
@@ -129,7 +131,7 @@ public class TestHooks
 			assertTrue(childCollection.contains(child2Doc));
 			
 			//Create 3rd child
-			ODocument child3Doc = new ODocument(classA);
+			ODocument child3Doc = new ODocument(classB);
 			child3Doc.save();
 			//Associate 3rd child with root by attribute
 			childCollection.add(child3Doc);
@@ -166,10 +168,10 @@ public class TestHooks
 			assertNull(child3Doc.field("parent"));
 			
 			//Lets create one more Root to test setting collection from scratch
-			ODocument root2Doc = new ODocument(classA);
+			ODocument root2Doc = new ODocument(classB);
 			root2Doc.save();
 			
-			ODocument childTestForNull = new ODocument(classA);
+			ODocument childTestForNull = new ODocument(classB);
 			childTestForNull.save();
 			assertNull(root2Doc.field("child"));
 			root2Doc.field("child", Arrays.asList(childTestForNull));
@@ -181,7 +183,50 @@ public class TestHooks
 			assertEquals(root2Doc, childTestForNull.field("parent"));
 		} finally
 		{
-			schema.dropClass(TEST_CLASS_A);
+			schema.dropClass(TEST_CLASS_B);
+			OrientDbWebSession.get().signOut();
+		}
+	}
+	
+	@Test
+	public void testReferencesHookDeepCase() throws Exception
+	{
+		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		OSchema schema = db.getMetadata().getSchema();
+		
+		assertFalse(db.isClosed());
+		db.commit();
+		if(schema.existsClass(TEST_CLASS_C)) schema.dropClass(TEST_CLASS_C);
+		OClass classC = schema.createClass(TEST_CLASS_C);
+		try
+		{
+			OProperty parent = classC.createProperty("parent", OType.LINK);
+			OProperty child = classC.createProperty("child", OType.LINKLIST);
+			CustomAttributes.PROP_INVERSE.setValue(parent, child);
+			CustomAttributes.PROP_INVERSE.setValue(child, parent);
+			
+			ODocument doc1 = new ODocument(classC).save();
+			ODocument doc2 = new ODocument(classC).save();
+			ODocument doc3 = new ODocument(classC).save();
+			
+			doc1.field("child", Arrays.asList(doc2));
+			doc1.save();
+			doc2.reload();
+			assertEquals(doc1, doc2.field("parent"));
+			
+			doc3.field("child", Arrays.asList(doc2));
+			doc3.save();
+			doc2.reload();
+			assertEquals(doc3, doc2.field("parent"));
+			doc1.reload();
+			List<ODocument> childs = doc1.field("child");
+			assertNotNull(childs);
+			assertArrayEquals(new ODocument[0], childs.toArray(new ODocument[0]));
+			
+		} finally
+		{
+			schema.dropClass(TEST_CLASS_C);
 			OrientDbWebSession.get().signOut();
 		}
 	}

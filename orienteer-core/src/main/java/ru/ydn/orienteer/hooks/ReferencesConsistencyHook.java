@@ -48,7 +48,14 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 											});
 									}
 								});
-	private static final ThreadLocal<Boolean> ENTRY_LOCK = new ThreadLocal<Boolean>()
+	private static final ThreadLocal<List<ODocument>> ENTRY_LOCK = new ThreadLocal<List<ODocument>>()
+			{
+				@Override
+				protected List<ODocument> initialValue() {
+					return new ArrayList<ODocument>(3);
+				}
+			};
+	private static final ThreadLocal<Boolean> HOOK_DISABLED = new ThreadLocal<Boolean>()
 			{
 				@Override
 				protected Boolean initialValue() {
@@ -56,22 +63,36 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				}
 			};
 			
-	private boolean enter()
+	private boolean enter(ODocument doc)
 	{
-		if(!ENTRY_LOCK.get())
-		{
-			ENTRY_LOCK.set(true);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		if(doc.getSchemaClass()==null || HOOK_DISABLED.get()) return false;
+		List<ODocument> docs = ENTRY_LOCK.get();
+		boolean ret = !docs.contains(doc);
+		if(ret) docs.add(doc);
+		return ret;
 	}
 	
-	private void exit()
+	private void exit(ODocument doc)
 	{
-		ENTRY_LOCK.set(false);
+		ENTRY_LOCK.get().remove(doc);
+	}
+	
+	private boolean isUnderTheLock(ODocument doc)
+	{
+		return ENTRY_LOCK.get().contains(doc);
+	}
+	
+	private void saveOutOfHook(ODocument doc)
+	{
+		try
+		{
+			HOOK_DISABLED.set(true);
+			doc.save();
+		}
+		finally
+		{
+			HOOK_DISABLED.set(false);
+		}
 	}
 	
 	@Override
@@ -93,13 +114,13 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 
 	@Override
 	public void onRecordAfterCreate(ODocument doc) {
-		if(enter())
+		if(enter(doc))
 		{
 			try
 			{
 				OClass thisOClass = doc.getSchemaClass();
-				if(thisOClass==null) return;
-				Collection<OProperty> refProperties = getCache().get(thisOClass);
+//				if(thisOClass==null) return;
+				Collection<OProperty> refProperties = getCache().get(doc.getSchemaClass());
 				for (OProperty oProperty : refProperties)
 				{
 					OProperty inverseProperty = CustomAttributes.PROP_INVERSE.getValue(oProperty);
@@ -123,7 +144,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			}
 			finally
 			{
-				exit();
+				exit(doc);
 			}
 		}
 	}
@@ -132,12 +153,12 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 
 	@Override
 	public void onRecordAfterUpdate(ODocument doc) {
-		if(enter())
+		if(enter(doc))
 		{
 			try
 			{
 				OClass thisOClass = doc.getSchemaClass();
-				if(thisOClass==null) return;
+//				if(thisOClass==null) return;
 				Collection<OProperty> refProperties = getCache().get(thisOClass);
 				if(refProperties!=null && refProperties.size()>0)
 				{
@@ -218,19 +239,19 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			}
 			finally
 			{
-				exit();
+				exit(doc);
 			}
 		}
 	}
 
 	@Override
 	public void onRecordAfterDelete(ODocument doc) {
-		if(enter())
+		if(enter(doc))
 		{
 			try
 			{
 				OClass thisOClass = doc.getSchemaClass();
-				if(thisOClass==null) return;
+//				if(thisOClass==null) return;
 				Collection<OProperty> refProperties = getCache().get(thisOClass);
 				for (OProperty oProperty : refProperties)
 				{
@@ -255,14 +276,14 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			}
 			finally
 			{
-				exit();
+				exit(doc);
 			}
 		}
 	}
 	
 	private void addLink(ODocument doc, OProperty property, ODocument value)
 	{
-		if(doc==null || property ==null || value == null) return;
+		if(doc==null || property ==null || value == null || isUnderTheLock(doc)) return;
 		String field = property.getName();
 		if(doc.getSchemaClass().isSubClassOf(property.getOwnerClass()))
 		{
@@ -280,18 +301,20 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				{
 					objects.add(wrappedValue);
 				}
+				//It's safe of fields with multivalue
+				saveOutOfHook(doc);
 			}
 			else
 			{
 				doc.field(field, wrappedValue);
+				doc.save();
 			}
-			doc.save();
 		}
 	}
 	
 	private void removeLink(ODocument doc, OProperty property, ODocument value)
 	{
-		if(doc==null || property ==null || value == null) return;
+		if(doc==null || property ==null || value == null || isUnderTheLock(doc)) return;
 		String field = property.getName();
 		if(doc.getSchemaClass().isSubClassOf(property.getOwnerClass()))
 		{
@@ -302,7 +325,8 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				if(objects!=null && objects.remove(wrappedValue))
 				{
 					doc.field(field, objects);
-					doc.save();
+					//It's safe for multivalue docs
+					saveOutOfHook(doc);
 				}
 			}
 			else
