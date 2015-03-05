@@ -9,11 +9,14 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 
 import ru.ydn.orienteer.components.BootstrapSize;
 import ru.ydn.orienteer.components.BootstrapType;
@@ -75,6 +78,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 			}
 
 		};
+		listView.setReuseItems(true);
 		add(listView);
 		add(new AjaxFormCommand("add", "command.add")
 		{
@@ -100,16 +104,29 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 	}
 	
 	@Override
-	protected void onBeforeRender() {
+	protected void onConfigure() {
 		//Explicitly prepare data
 		getData();
-		super.onBeforeRender();
+		super.onConfigure();
 	}
 	
 	@Override
 	protected void convertInput() {
 		M converted;
 		List<T> storedData = getData();
+		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
+
+			@Override
+			public void component(FormComponent<Object> object,
+					IVisit<Void> visit) {
+				if(!(EmbeddedCollectionEditPanel.this.equals(object)))
+				{
+					object.updateModel();
+					visit.dontGoDeeper();
+				}
+			}
+		});
+
 		if(finalType.isInstance(storedData)) converted = (M) storedData;
 		else
 		{
@@ -129,9 +146,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 	}
 	
 	@Override
-	public void updateModel() {
-		super.updateModel();
+	protected void onModelChanged() {
 		data = null;
 	}
-	
 }
