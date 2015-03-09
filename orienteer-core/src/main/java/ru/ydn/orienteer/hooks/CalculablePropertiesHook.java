@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+
+import org.apache.wicket.util.string.Strings;
 
 import ru.ydn.orienteer.CustomAttributes;
 
@@ -23,6 +26,8 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 public class CalculablePropertiesHook extends ODocumentHookAbstract
 {
+	private static Pattern FULL_QUERY_PATTERN = Pattern.compile("^\\s*(select|traverse)", Pattern.CASE_INSENSITIVE);
+	
 	private Map<String, Integer> schemaVersions = new ConcurrentHashMap<String, Integer>();
 	private Table<String, String, List<String>> calcProperties = HashBasedTable.create();
 	
@@ -116,32 +121,43 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 					//if(iDocument.field(calcProperty)!=null) continue;
 					final OProperty property = oClass.getProperty(calcProperty);
 					String script = CustomAttributes.CALC_SCRIPT.getValue(property);
-					List<ODocument> calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>(script), iDocument);
-					if(calculated!=null && calculated.size()>0)
+					if(!Strings.isEmpty(script))
 					{
-						OType type = property.getType();
-						Object value;
-						if(type.isMultiValue())
+						List<ODocument> calculated;
+						if(FULL_QUERY_PATTERN.matcher(script).find())
 						{
-							final OType linkedType = property.getLinkedType();
-							value = linkedType==null
-									?calculated
-									:Lists.transform(calculated, new Function<ODocument, Object>() {
-										
-										@Override
-										public Object apply(ODocument input) {
-											return OType.convert(input.field("value"), linkedType.getDefaultJavaType());
-										}
-									});
+							calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>(script), iDocument);
 						}
 						else
 						{
-							value = calculated.get(0).field("value");
+							calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>("select "+script+" as value from "+iDocument.getIdentity()));
 						}
-						value = OType.convert(value, type.getDefaultJavaType());
-						iDocument.field(calcProperty, value);
+						if(calculated!=null && calculated.size()>0)
+						{
+							OType type = property.getType();
+							Object value;
+							if(type.isMultiValue())
+							{
+								final OType linkedType = property.getLinkedType();
+								value = linkedType==null
+										?calculated
+										:Lists.transform(calculated, new Function<ODocument, Object>() {
+											
+											@Override
+											public Object apply(ODocument input) {
+												return OType.convert(input.field("value"), linkedType.getDefaultJavaType());
+											}
+										});
+							}
+							else
+							{
+								value = calculated.get(0).field("value");
+							}
+							value = OType.convert(value, type.getDefaultJavaType());
+							iDocument.field(calcProperty, value);
+						}
+						
 					}
-					
 				}
 				
 			}

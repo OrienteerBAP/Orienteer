@@ -46,8 +46,11 @@ public class TestHooks
 			oClass.createProperty("a", OType.INTEGER);
 			oClass.createProperty("b", OType.INTEGER);
 			OProperty cProperty = oClass.createProperty("c", OType.INTEGER);
+			OProperty dProperty = oClass.createProperty("d", OType.INTEGER);
 			CustomAttributes.CALCULABLE.setValue(cProperty, true);
+			CustomAttributes.CALCULABLE.setValue(dProperty, true);
 			CustomAttributes.CALC_SCRIPT.setValue(cProperty, "select sum(a, b) as value from TestClassA where @rid = ?");
+			CustomAttributes.CALC_SCRIPT.setValue(dProperty, "sum(a, b)");
 			
 			ODocument doc = new ODocument(oClass);
 			doc.field("a", 2);
@@ -55,17 +58,20 @@ public class TestHooks
 			doc.save();
 			doc.reload();
 			assertEquals(4, doc.field("c"));
+			assertEquals(4, doc.field("d"));
 			doc.field("a", 3);
 			doc.field("b", 3);
 			doc.save();
 			doc.reload();
 			assertEquals(6, doc.field("c"));
+			assertEquals(6, doc.field("d"));
 			db.begin();
 			doc.field("a", 4);
 			doc.field("b", 4);
 			doc.save();
 			doc.reload();
 			assertEquals(8, doc.field("c"));
+			assertEquals(8, doc.field("d"));
 			db.commit();
 			db.begin();
 			doc.field("a", 5);
@@ -73,6 +79,7 @@ public class TestHooks
 			doc.save();
 			doc.reload();
 			assertEquals(10, doc.field("c"));
+			assertEquals(10, doc.field("d"));
 			db.commit();
 		} finally
 		{
