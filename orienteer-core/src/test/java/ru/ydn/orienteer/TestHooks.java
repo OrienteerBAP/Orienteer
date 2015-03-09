@@ -230,4 +230,50 @@ public class TestHooks
 			OrientDbWebSession.get().signOut();
 		}
 	}
+	
+	@Test
+	public void testReferencesHookChangeParent() throws Exception
+	{
+		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		OSchema schema = db.getMetadata().getSchema();
+		
+		assertFalse(db.isClosed());
+		db.commit();
+		if(schema.existsClass(TEST_CLASS_C)) schema.dropClass(TEST_CLASS_C);
+		OClass classC = schema.createClass(TEST_CLASS_C);
+		try
+		{
+			OProperty parent = classC.createProperty("parent", OType.LINK);
+			OProperty child = classC.createProperty("child", OType.LINKLIST);
+			CustomAttributes.PROP_INVERSE.setValue(parent, child);
+			CustomAttributes.PROP_INVERSE.setValue(child, parent);
+			
+			ODocument doc1 = new ODocument(classC).save();
+			ODocument doc2 = new ODocument(classC).save();
+			ODocument doc3 = new ODocument(classC).save();
+			
+			doc1.field("child", Arrays.asList(doc2));
+			doc1.save();
+			doc2.reload();
+			assertEquals(doc1, doc2.field("parent"));
+			
+			doc2.field("parent", doc3);
+			doc2.save();
+			
+			doc1.reload();
+			doc3.reload();
+			List<ODocument> childs = doc1.field("child");
+			assertNotNull(childs);
+			assertArrayEquals(new ODocument[0], childs.toArray(new ODocument[0]));
+			childs = doc3.field("child");
+			assertNotNull(childs);
+			assertArrayEquals(new ODocument[]{doc2}, childs.toArray(new ODocument[0]));
+			
+		} finally
+		{
+			schema.dropClass(TEST_CLASS_C);
+			OrientDbWebSession.get().signOut();
+		}
+	}
 }
