@@ -8,12 +8,7 @@ import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.util.lang.Args;
 
-import ru.ydn.orienteer.components.properties.visualizers.DefaultVisualizer;
-import ru.ydn.orienteer.components.properties.visualizers.HTMLVisualizer;
-import ru.ydn.orienteer.components.properties.visualizers.IVisualizer;
-import ru.ydn.orienteer.components.properties.visualizers.ListboxVisualizer;
-import ru.ydn.orienteer.components.properties.visualizers.PasswordVisualizer;
-import ru.ydn.orienteer.components.properties.visualizers.SimpleVisualizer;
+import ru.ydn.orienteer.components.properties.visualizers.*;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -31,6 +26,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new ListboxVisualizer());
 		registerUIComponentFactory(new PasswordVisualizer());
 		registerUIComponentFactory(new HTMLVisualizer());
+		registerUIComponentFactory(new UrlLinkVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()
