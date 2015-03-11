@@ -17,6 +17,7 @@ import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.markup.html.form.NumberTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.lang.Generics;
 
@@ -41,6 +42,7 @@ public class MarkupProvider implements IMarkupProvider
 		registerMarkupContent(TextArea.class, "<textarea wicket:id=\"component\" class=\"form-control\"></textarea>");
 		registerMarkupContent(FormComponentPanel.class, "<div wicket:id=\"component\"></div>");
 		registerMarkupContent(Panel.class, "<div wicket:id=\"component\"></div>");
+		registerMarkupContent(AbstractLink.class, "<a wicket:id=\"component\"></a>");
 	}
 	
 	@Override
