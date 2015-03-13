@@ -55,7 +55,7 @@ public enum CustomAttributes
 	
 	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, null, false),
 
-    DESCRIPTION("orienteer.description",OType.STRING,null,false);
+    DESCRIPTION("orienteer.description",OType.STRING,null,true);
 
 	private final String name;
 	private final OType type;
