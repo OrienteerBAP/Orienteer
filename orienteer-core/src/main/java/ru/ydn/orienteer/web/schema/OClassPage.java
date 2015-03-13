@@ -234,7 +234,8 @@ public class OClassPage extends OrienteerBasePage<OClass> {
 		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DISPLAYABLE, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(CustomAttributes.CALCULABLE, propertiesDisplayMode));
 		pColumns.add(new OPropertyMetaColumn(CustomAttributes.ORDER, propertiesDisplayMode));
-		
+		pColumns.add(new OPropertyMetaColumn(CustomAttributes.DESCRIPTION, propertiesDisplayMode));
+
 		ExtendedOPropertiesDataProvider pProvider = new ExtendedOPropertiesDataProvider(getModel(), showParentPropertiesModel);
 		pProvider.setSort(CustomAttributes.ORDER.getName(), SortOrder.ASCENDING);
 		pTable = new OrienteerDataTable<OProperty, String>("properties", pColumns, pProvider ,20);
