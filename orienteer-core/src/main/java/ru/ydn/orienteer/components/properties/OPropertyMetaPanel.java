@@ -85,6 +85,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(CustomAttributes.HIDDEN.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
+        OPROPERTY_ATTRS.add(CustomAttributes.DESCRIPTION.getName());
 		
 		// Only single value types are allowed for linked type.
 		LINKED_TYPE_OPTIONS = ListAvailableOTypesModel.orderTypes(Collections2.filter(Arrays.asList(OType.values()), new Predicate<OType>() {
@@ -324,6 +325,8 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 										
 									}
 								).setNullValid(true);
+                    case DESCRIPTION:
+                        return new TextArea<V>(id,getModel());
 					}
 				}
 				return resolveComponent(id, DisplayMode.VIEW, critery);

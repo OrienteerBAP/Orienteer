@@ -53,8 +53,10 @@ public enum CustomAttributes
 	
 	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING, "default", false),
 	
-	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, null, false);
-	
+	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, null, false),
+
+    DESCRIPTION("orienteer.description",OType.STRING,null,true);
+
 	private final String name;
 	private final OType type;
 	private final Object defaultValue;
