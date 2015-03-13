@@ -14,6 +14,7 @@ import org.apache.wicket.core.util.lang.PropertyResolverConverter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
@@ -56,6 +57,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	{
 		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
 		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
+        OCLASS_ATTRS.add(CustomAttributes.DESCRIPTION.getName());
 	}
 	
 	private static final Predicate<OProperty> IS_LINK_PROPERTY = new Predicate<OProperty>() {
@@ -224,6 +226,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 					}).setNullValid(true);
 				}
+                else if(CustomAttributes.match(critery,CustomAttributes.DESCRIPTION))
+                {
+                    return new TextArea<V>(id, getModel());
+                }
 				else
 				{
 					return new Label(id, getModel());
