@@ -1,6 +1,6 @@
 package ${package};
 
-import ru.ydn.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.junit.OrienteerTestRunner;
 
 import org.apache.wicket.util.tester.WicketTester;
 

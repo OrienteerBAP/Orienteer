@@ -1,6 +1,6 @@
 package ${package};
 
-import ru.ydn.orienteer.OrienteerWebApplication;
+import org.orienteer.OrienteerWebApplication;
 
 public class MyWebApplication extends OrienteerWebApplication
 {
