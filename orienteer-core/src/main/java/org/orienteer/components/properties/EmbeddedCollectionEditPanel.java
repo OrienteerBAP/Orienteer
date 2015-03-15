@@ -22,10 +22,10 @@ import org.orienteer.components.BootstrapType;
 import org.orienteer.components.FAIconType;
 import org.orienteer.components.commands.AjaxFormCommand;
 import org.orienteer.components.properties.visualizers.DefaultVisualizer;
-import org.orienteer.model.DynamicPropertyValueModel;
 import org.orienteer.services.IMarkupProvider;
 
 import ru.ydn.wicket.wicketorientdb.model.CollectionAdapterModel;
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;

@@ -10,9 +10,9 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 import org.apache.wicket.model.IModel;
 import org.orienteer.components.properties.DisplayMode;
-import org.orienteer.model.DynamicPropertyValueModel;
 import org.orienteer.utils.ODocumentChoiceRenderer;
 
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.utils.OChoiceRenderer;
 

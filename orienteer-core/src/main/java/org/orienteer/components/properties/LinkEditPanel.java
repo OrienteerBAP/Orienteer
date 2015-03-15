@@ -12,8 +12,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.components.ODocumentPageLink;
 import org.orienteer.components.commands.modal.SelectDialogPanel;
-import org.orienteer.model.DynamicPropertyValueModel;
 
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;

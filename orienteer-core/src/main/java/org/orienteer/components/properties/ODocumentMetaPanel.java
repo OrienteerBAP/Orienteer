@@ -24,8 +24,8 @@ import org.apache.wicket.validation.validator.RangeValidator;
 import org.orienteer.CustomAttributes;
 import org.orienteer.OrienteerWebApplication;
 import org.orienteer.components.properties.visualizers.IVisualizer;
-import org.orienteer.model.DynamicPropertyValueModel;
 
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
 

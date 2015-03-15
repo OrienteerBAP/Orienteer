@@ -3,6 +3,7 @@ package org.orienteer.services;
 import java.util.List;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.orienteer.components.properties.DisplayMode;
 
@@ -22,7 +23,7 @@ public interface IOClassIntrospector
 	public ODocument getParent(ODocument doc);
 	public List<String> listTabs(OClass oClass);
 	public List<OProperty> listProperties(OClass oClass, String tab, Boolean extended);
-	public OQueryDataProvider<ODocument> prepareDataProviderForProperty(OProperty property, IModel<ODocument> documentModel);
+	public ISortableDataProvider<ODocument, String> prepareDataProviderForProperty(OProperty property, IModel<ODocument> documentModel);
 	public OProperty getNameProperty(OClass oClass);
 	public String getDocumentName(ODocument doc);
 }

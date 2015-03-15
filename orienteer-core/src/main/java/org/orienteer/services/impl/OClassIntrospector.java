@@ -15,6 +15,7 @@ import java.util.SortedMap;
 import org.apache.wicket.Application;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.CustomAttributes;
@@ -40,6 +41,7 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
@@ -163,21 +165,20 @@ public class OClassIntrospector implements IOClassIntrospector
 	}
 
 	@Override
-	public OQueryDataProvider<ODocument> prepareDataProviderForProperty(
+	public ISortableDataProvider<ODocument, String> prepareDataProviderForProperty(
 			OProperty property, IModel<ODocument> documentModel) {
-		String sql;
 		if(CustomAttributes.CALCULABLE.getValue(property, false))
 		{
-			sql = CustomAttributes.CALC_SCRIPT.getValue(property);
+			String sql = CustomAttributes.CALC_SCRIPT.getValue(property);
 			sql = sql.replace("?", ":doc");
+			OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
+			provider.setParameter("doc", documentModel);
+			return provider;
 		}
 		else
 		{
-			sql = "select expand("+property.getName()+") from "+property.getOwnerClass().getName()+" where @rid = :doc";
+			return new ODocumentLinksDataProvider(documentModel, property);
 		}
-		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
-		provider.setParameter("doc", documentModel);
-		return provider;
 	}
 
 	@Override

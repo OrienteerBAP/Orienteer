@@ -11,10 +11,10 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.OrienteerWebApplication;
 import org.orienteer.components.properties.visualizers.DefaultVisualizer;
 import org.orienteer.components.properties.visualizers.IVisualizer;
-import org.orienteer.model.DynamicPropertyValueModel;
 import org.orienteer.services.IMarkupProvider;
 
 import ru.ydn.wicket.wicketorientdb.model.CollectionAdapterModel;
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 
 import com.google.inject.Inject;

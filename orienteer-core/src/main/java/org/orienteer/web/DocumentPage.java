@@ -27,10 +27,10 @@ import org.orienteer.components.properties.OClassViewPanel;
 import org.orienteer.components.properties.ODocumentMetaPanel;
 import org.orienteer.components.structuretable.OrienteerStructureTable;
 import org.orienteer.model.DocumentNameModel;
-import org.orienteer.model.DynamicPropertyValueModel;
 import org.orienteer.services.IOClassIntrospector;
 import org.wicketstuff.annotation.mount.MountPath;
 
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 

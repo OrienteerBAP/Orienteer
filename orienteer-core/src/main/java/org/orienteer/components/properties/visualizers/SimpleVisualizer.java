@@ -9,7 +9,8 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 import org.orienteer.components.properties.DisplayMode;
-import org.orienteer.model.DynamicPropertyValueModel;
+
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;

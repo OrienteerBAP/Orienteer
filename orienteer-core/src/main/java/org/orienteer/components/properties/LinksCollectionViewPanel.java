@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -21,9 +22,9 @@ import org.orienteer.components.commands.SelectODocumentCommand;
 import org.orienteer.components.table.CheckBoxColumn;
 import org.orienteer.components.table.OEntityColumn;
 import org.orienteer.components.table.OrienteerDataTable;
-import org.orienteer.model.DynamicPropertyValueModel;
 import org.orienteer.services.IOClassIntrospector;
 
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -48,7 +49,7 @@ public class LinksCollectionViewPanel<T extends OIdentifiable, M extends Collect
 	public LinksCollectionViewPanel(String id, IModel<ODocument> documentModel, OProperty property) {
 		super(id, new DynamicPropertyValueModel<M>(documentModel, new OPropertyModel(property)));
 		
-		OQueryDataProvider<ODocument> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
+		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
 		
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
 		columns.add(new OEntityColumn(property.getLinkedClass(), DisplayMode.VIEW.asModel()));

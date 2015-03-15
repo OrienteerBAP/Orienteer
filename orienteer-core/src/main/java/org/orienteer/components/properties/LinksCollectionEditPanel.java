@@ -9,6 +9,7 @@ import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -19,9 +20,9 @@ import org.orienteer.components.commands.AjaxFormCommand;
 import org.orienteer.components.commands.SelectODocumentCommand;
 import org.orienteer.components.table.OEntityColumn;
 import org.orienteer.components.table.OrienteerDataTable;
-import org.orienteer.model.DynamicPropertyValueModel;
 import org.orienteer.services.IOClassIntrospector;
 
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
@@ -40,7 +41,7 @@ public class LinksCollectionEditPanel<T extends OIdentifiable, M extends Collect
 	public LinksCollectionEditPanel(String id, final IModel<ODocument> documentModel, OProperty property) {
 		super(id, new DynamicPropertyValueModel<M>(documentModel, new OPropertyModel(property)));
 		
-		OQueryDataProvider<ODocument> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
+		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
 		final String propertyName = property.getName();
 		
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
