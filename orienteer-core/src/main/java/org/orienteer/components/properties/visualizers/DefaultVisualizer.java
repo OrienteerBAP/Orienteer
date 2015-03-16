@@ -19,6 +19,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.orienteer.components.properties.BinaryEditPanel;
+import org.orienteer.components.properties.BinaryViewPanel;
 import org.orienteer.components.properties.BooleanViewPanel;
 import org.orienteer.components.properties.DisplayMode;
 import org.orienteer.components.properties.EmbeddedCollectionEditPanel;
@@ -70,6 +72,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case EMBEDDEDLIST:
                 case EMBEDDEDSET:
                 	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
+                case BINARY:
+                	return new BinaryViewPanel(id, documentModel, propertyModel, valueModel);
                 default:
 					return new Label(id, valueModel);
 			}
@@ -94,6 +98,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 	return new EmbeddedCollectionEditPanel<Object, List<Object>>(id, documentModel, propertyModel, ArrayList.class);
                 case EMBEDDEDSET:
                 	return new EmbeddedCollectionEditPanel<Object, Set<Object>>(id, documentModel, propertyModel, HashSet.class);
+                case BINARY:
+                	return new BinaryEditPanel(id, (IModel<byte[]>)valueModel);
                 default:
                 	TextField<V> ret = new TextField<V>(id, valueModel);
                 	Class<?> javaOType = oType.getDefaultJavaType();
