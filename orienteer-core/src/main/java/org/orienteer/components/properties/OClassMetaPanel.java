@@ -57,6 +57,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	{
 		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
 		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
+        OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
         OCLASS_ATTRS.add(CustomAttributes.DESCRIPTION.getName());
 	}
 	
@@ -229,6 +230,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
                 else if(CustomAttributes.match(critery,CustomAttributes.DESCRIPTION))
                 {
                     return new TextArea<V>(id, getModel());
+                }
+                else if (CustomAttributes.match(critery,CustomAttributes.TAB))
+                {
+                    return new TextField<V>(id,getModel());
                 }
 				else
 				{
