@@ -77,8 +77,8 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	public void initialize() {
 		super.initialize();
-        String default_tab = CustomAttributes.TAB.getValue(getDocument().getSchemaClass());
-        tabModel = Model.of(default_tab!=null?default_tab: IOClassIntrospector.DEFAULT_TAB);
+        String classDefaultTab = CustomAttributes.TAB.getValue(getDocument().getSchemaClass());
+        tabModel = Model.of(classDefaultTab!=null?classDefaultTab: IOClassIntrospector.DEFAULT_TAB);
         tabsPanel = new TabsPanel("tabs", tabModel, new LoadableDetachableModel<List<String>>() {
 
 			@Override
