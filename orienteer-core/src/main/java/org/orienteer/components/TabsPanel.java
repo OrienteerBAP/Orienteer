@@ -46,7 +46,7 @@ public class TabsPanel<T> extends GenericPanel<T>
 					public boolean isEnabled(Component component) {
 						return super.isEnabled(component) && Objects.equals(item.getModelObject(), TabsPanel.this.getModelObject());
 					}
-					
+
 				});
 				
 				item.add(new AjaxLink<T>("link", item.getModel()) {
