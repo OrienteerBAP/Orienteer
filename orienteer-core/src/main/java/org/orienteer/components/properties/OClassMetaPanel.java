@@ -55,9 +55,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	public static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
 	static
 	{
+		//Index:OCLASS_ATTRS.indexOf(OClassPrototyper.NAME)+1
+		OCLASS_ATTRS.add(2, CustomAttributes.DESCRIPTION.getName());
 		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
 		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
-        OCLASS_ATTRS.add(CustomAttributes.DESCRIPTION.getName());
 	}
 	
 	private static final Predicate<OProperty> IS_LINK_PROPERTY = new Predicate<OProperty>() {

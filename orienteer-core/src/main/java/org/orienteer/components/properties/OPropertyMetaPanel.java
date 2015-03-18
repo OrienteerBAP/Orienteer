@@ -66,6 +66,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 	static
 	{
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.NAME);
+		OPROPERTY_ATTRS.add(CustomAttributes.DESCRIPTION.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.TAB.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.ORDER.getName());
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.TYPE);
@@ -85,7 +86,6 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(CustomAttributes.HIDDEN.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
-        OPROPERTY_ATTRS.add(CustomAttributes.DESCRIPTION.getName());
 		
 		// Only single value types are allowed for linked type.
 		LINKED_TYPE_OPTIONS = ListAvailableOTypesModel.orderTypes(Collections2.filter(Arrays.asList(OType.values()), new Predicate<OType>() {
