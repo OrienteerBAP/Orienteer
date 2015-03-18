@@ -44,7 +44,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class DocumentPage extends AbstractDocumentPage {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -52,18 +52,18 @@ public class DocumentPage extends AbstractDocumentPage {
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
 	private WebMarkupContainer extendedPropertiesContainer;
 	private SaveODocumentCommand saveODocumentCommand;
-	
+
 	private IModel<String> tabModel;
 	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
-	
+
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
-	
+
 	public DocumentPage(ODocument doc)
 	{
 		this(new ODocumentModel(doc));
 	}
-	
+
 	public DocumentPage(IModel<ODocument> model) {
 		super(model);
 	}
@@ -77,8 +77,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	public void initialize() {
 		super.initialize();
-        String classDefaultTab = CustomAttributes.TAB.getValue(getDocument().getSchemaClass());
-        tabModel = Model.of(classDefaultTab!=null?classDefaultTab: IOClassIntrospector.DEFAULT_TAB);
+        tabModel = Model.of();
         tabsPanel = new TabsPanel("tabs", tabModel, new LoadableDetachableModel<List<String>>() {
 
 			@Override
@@ -94,10 +93,10 @@ public class DocumentPage extends AbstractDocumentPage {
 				target.add(propertiesStructureTable);
 				target.add(extendedPropertiesContainer);
 			}
-			
+
 		};
 		add(tabsPanel);
-		
+
 		Form<ODocument> form = new Form<ODocument>("form", getModel());
 		IModel<List<? extends OProperty>> propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
 			@Override
@@ -115,7 +114,7 @@ public class DocumentPage extends AbstractDocumentPage {
 		};
 		form.add(propertiesStructureTable);
 		add(form);
-		
+
 		//Extended components
 		propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
 			@Override
@@ -142,26 +141,26 @@ public class DocumentPage extends AbstractDocumentPage {
 		extendedPropertiesContainer.add(extendedPropertiesListView);
 		add(extendedPropertiesContainer);
 	}
-	
+
 	public DisplayMode getDisplayMode()
 	{
 		return displayMode.getObject();
 	}
-	
+
 	public DocumentPage setDisplayMode(DisplayMode displayMode)
 	{
 		this.displayMode.setObject(displayMode);
 		return this;
 	}
-	
+
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayMode));
 		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, displayMode));
 	}
-	
-	
+
+
 
 	@Override
 	protected void onConfigure() {
@@ -174,18 +173,20 @@ public class DocumentPage extends AbstractDocumentPage {
 				displayMode.setObject(DisplayMode.VIEW);
 			}
 		}
+        if (tabModel.getObject()==null)
+        tabModel.setObject(CustomAttributes.TAB.<String>getValue(getDocument().getSchemaClass(),IOClassIntrospector.DEFAULT_TAB));
 	}
 
 	@Override
 	public IModel<String> getTitleModel() {
 		return new DocumentNameModel(getDocumentModel());
 	}
-	
+
 	@Override
 	protected Component newPageHeaderComponent(String componentId) {
 		return new ODocumentPageHeader(componentId, getModel());
 	}
-	
-	
+
+
 
 }
