@@ -1,5 +1,6 @@
 package org.orienteer.components;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,6 +29,7 @@ public class TabsPanel<T> extends GenericPanel<T>
 	private static final JavaScriptResourceReference TABDROP_JS = new JavaScriptResourceReference(TabsPanel.class, "tabdrop/bootstrap-tabdrop.js");
 	
 	private ListView<T> tabs;
+	private IModel<T> defaultTabModel;
 	public TabsPanel(String id, IModel<T> model, List<T> tabs)
 	{
 		this(id, model, Model.ofList(tabs));
@@ -58,10 +60,41 @@ public class TabsPanel<T> extends GenericPanel<T>
 					}
 				}.setBody(newTabNameModel(item.getModel())));
 			}
+			
+			@Override
+			protected void onConfigure() {
+				T tab = TabsPanel.this.getModelObject();
+				if(!getModelObject().contains(tab))
+				{
+					T defaultTab = getDefaultTab();
+					if(defaultTab != null && getModelObject().contains(defaultTab))
+					{
+						tab = defaultTab;
+					}
+					else
+					{
+						List<T> tabs = getModelObject();
+						tab = tabs!=null && tabs.size()>0?tabs.get(0):null;
+					}
+					TabsPanel.this.setModelObject(tab);
+				}
+				super.onConfigure();
+			}
 		};
 		add(tabs);
 	}
 	
+	public T getDefaultTab() {
+		return defaultTabModel!=null?defaultTabModel.getObject():null;
+	}
+	
+	public IModel<T> getDefaultTabModel() {
+		return defaultTabModel;
+	}
+	
+	public void setDefaultTabModel(IModel<T> defaultTabModel) {
+		this.defaultTabModel = defaultTabModel;
+	}
 	protected IModel<String> newTabNameModel(IModel<T> tabModel)
 	{
 		return new SimpleNamingModel(tabModel);
@@ -70,6 +103,12 @@ public class TabsPanel<T> extends GenericPanel<T>
 	public void onTabClick(AjaxRequestTarget target)
 	{
 		
+	}
+	
+	@Override
+	public void detachModels() {
+		super.detachModels();
+		if(defaultTabModel!=null) defaultTabModel.detach();
 	}
 
 	@Override

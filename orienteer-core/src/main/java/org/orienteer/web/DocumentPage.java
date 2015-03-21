@@ -48,7 +48,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private TabsPanel tabsPanel;
+	private TabsPanel<String> tabsPanel;
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
 	private WebMarkupContainer extendedPropertiesContainer;
 	private SaveODocumentCommand saveODocumentCommand;
@@ -72,13 +72,15 @@ public class DocumentPage extends AbstractDocumentPage {
 		super(parameters);
 		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
 		if(mode!=null) displayMode.setObject(mode);
+		String tab = parameters.get("tab").toOptionalString();
+		tabModel.setObject(tab);
 	}
 
 	@Override
 	public void initialize() {
 		super.initialize();
-        tabModel = Model.of();
-        tabsPanel = new TabsPanel("tabs", tabModel, new LoadableDetachableModel<List<String>>() {
+		tabModel = Model.of();
+        tabsPanel = new TabsPanel<String>("tabs", tabModel, new LoadableDetachableModel<List<String>>() {
 
 			@Override
 			protected List<String> load() {
@@ -141,7 +143,7 @@ public class DocumentPage extends AbstractDocumentPage {
 		extendedPropertiesContainer.add(extendedPropertiesListView);
 		add(extendedPropertiesContainer);
 	}
-
+	
 	public DisplayMode getDisplayMode()
 	{
 		return displayMode.getObject();
@@ -156,6 +158,8 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
+		String defaultTab = CustomAttributes.TAB.<String>getValue(getDocument().getSchemaClass(),IOClassIntrospector.DEFAULT_TAB);
+		tabsPanel.setDefaultTabModel(Model.of(defaultTab));
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayMode));
 		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, displayMode));
 	}
@@ -173,8 +177,8 @@ public class DocumentPage extends AbstractDocumentPage {
 				displayMode.setObject(DisplayMode.VIEW);
 			}
 		}
-        if (tabModel.getObject()==null)
-        tabModel.setObject(CustomAttributes.TAB.<String>getValue(getDocument().getSchemaClass(),IOClassIntrospector.DEFAULT_TAB));
+//        if (tabModel.getObject()==null)
+//        tabModel.setObject(CustomAttributes.TAB.<String>getValue(getDocument().getSchemaClass(),IOClassIntrospector.DEFAULT_TAB));
 	}
 
 	@Override
