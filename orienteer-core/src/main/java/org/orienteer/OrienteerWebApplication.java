@@ -9,6 +9,7 @@ import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.settings.IRequestCycleSettings;
 import org.orienteer.components.properties.UIVisualizersRegistry;
 import org.orienteer.hooks.CalculablePropertiesHook;
 import org.orienteer.hooks.ReferencesConsistencyHook;
@@ -59,6 +60,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orientdb.embedded")
 	private boolean embedded;
+	
+	@Inject(optional=true)
+	@Named("wicket.render.strategy")
+	private IRequestCycleSettings.RenderStrategy renderStrategy;
 	
 	
 	@Inject
@@ -140,6 +145,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
 		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
 		mountOrientDbRestApi();
+		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 	}
 
 	@Override
