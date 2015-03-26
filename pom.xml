@@ -271,6 +271,23 @@
 				    <wtpversion>${wtp.version}</wtpversion>
 			    </configuration>
 		    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <id>invoke build</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>update_submodules.sh</executable>
+                        </configuration>
+                    </plugin>
 		</plugins>
 	</build>
 	<profiles>
