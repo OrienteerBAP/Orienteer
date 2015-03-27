@@ -26,6 +26,7 @@ import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.ProvisionException;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -117,6 +118,15 @@ public class OrienteerModule extends AbstractModule
 	public Localizer getLocalizer(WebApplication application)
 	{
 		return application.getResourceSettings().getLocalizer();
+	}
+	
+	@Provides
+	@Named("version")
+	@Singleton
+	public String getVersion()
+	{
+		String version = getClass().getPackage().getImplementationVersion();
+		return version!=null?version:"";
 	}
 	
 	public static URL lookupPropertiesURL() throws IOException

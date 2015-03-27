@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -22,6 +23,8 @@ import org.orienteer.OrienteerWebSession;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -39,6 +42,10 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
 
+	@Inject
+	@Named("version")
+	private String version;
+	
 	public BasePage()
 	{
 		super();
@@ -76,7 +83,8 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	protected void onInitialize() {
 		super.onInitialize();
 		if(get("title")==null) add(new Label("title", getTitleModel()));
-		if(get("poweredBy")==null) add(new Label("poweredBy", new ResourceModel("poweredby")).setEscapeModelStrings(false));
+		IModel<String> poweredByModel = new StringResourceModel("poweredby", null, "", version);
+		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
 									.setEscapeModelStrings(false).setRenderBodyOnly(true));
 	}
