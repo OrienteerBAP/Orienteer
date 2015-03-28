@@ -53,18 +53,14 @@ public class OrienteerWebSession extends OrientDbWebSession
 		}
 		else
 		{
-			if(perspective!=null)
-			{
-				perspective = perspective.getRecord();
-				return (ODocument)perspective;
-			}
-			else
+			if(perspective!=null) perspective = perspective.getRecord();
+			if(perspective==null)
 			{
 				OrienteerWebApplication app = OrienteerWebApplication.get();
 				PerspectivesModule perspectiveModule = app.getServiceInstance(PerspectivesModule.class);
 				perspective = perspectiveModule.getDefaultPerspective(getDatabase(), getUser());
-				return (ODocument)perspective;
 			}
+			return (ODocument)perspective;
 			
 		}
 	}
