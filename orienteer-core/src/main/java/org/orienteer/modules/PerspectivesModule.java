@@ -10,6 +10,8 @@ import org.orienteer.OrienteerWebApplication;
 import org.orienteer.OrienteerWebSession;
 import org.orienteer.utils.OSchemaHelper;
 
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -62,6 +64,57 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE);
 	}
 	
+	private ODocument runtimeRepairDefaultPerspective()
+	{
+		return new DBClosure<ODocument>() {
+
+			@Override
+			protected ODocument execute(ODatabaseDocument db) {
+				ODocument perspective = new ODocument(OCLASS_PERSPECTIVE);
+				perspective.field("name", DEFAULT_PERSPECTIVE);
+				perspective.field("homeUrl", "/classes");
+				perspective.save();
+				
+				ODocument item = new ODocument(OCLASS_ITEM);
+				item.field("name", "Users");
+				item.field("icon", "users");
+				item.field("url", "/browse/OUser");
+				item.field("perspective", perspective);
+				item.save();
+				
+				item = new ODocument(OCLASS_ITEM);
+				item.field("name", "Roles");
+				item.field("icon", "users");
+				item.field("url", "/browse/ORole");
+				item.field("perspective", perspective);
+				item.save();
+				
+				item = new ODocument(OCLASS_ITEM);
+				item.field("name", "Schema");
+				item.field("icon", "cubes");
+				item.field("url", "/classes");
+				item.field("perspective", perspective);
+				item.save();
+				
+				item = new ODocument(OCLASS_ITEM);
+				item.field("name", "Localization");
+				item.field("icon", "language");
+				item.field("url", "/browse/OLocalization");
+				item.field("perspective", perspective);
+				item.save();
+				
+				item = new ODocument(OCLASS_ITEM);
+				item.field("name", "Perspectives");
+				item.field("icon", "desktop");
+				item.field("url", "/browse/OPerspective");
+				item.field("perspective", perspective);
+				item.save();
+				
+				return perspective;
+			}
+		}.execute();
+	}
+	
 	public ODocument getDefaultPerspective(ODatabaseDocument db, OUser user)
 	{
 		if(user!=null)
@@ -78,7 +131,14 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			}
 		}
 		List<ODocument> defaultPerspectives = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_PERSPECTIVE+" where name=?"), DEFAULT_PERSPECTIVE);
-		return defaultPerspectives==null || defaultPerspectives.size()<1?null:defaultPerspectives.get(0);
+		if(defaultPerspectives!=null && !defaultPerspectives.isEmpty())
+		{
+			return defaultPerspectives.get(0);
+		}
+		else
+		{
+			return runtimeRepairDefaultPerspective();
+		}
 	}
 	
 	private ODocument getPerspectiveForORole(ORole role)
@@ -108,34 +168,6 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		{
 			//Repair
 			onInstall(app, db);
-		}
-		if(getDefaultPerspective(db, null)==null)
-		{
-			ODocument perspective = new ODocument(OCLASS_PERSPECTIVE);
-			perspective.field("name", DEFAULT_PERSPECTIVE);
-			perspective.field("homeUrl", "/classes");
-			perspective.save();
-			
-			ODocument item = new ODocument(OCLASS_ITEM);
-			item.field("name", "Users");
-			item.field("icon", "users");
-			item.field("url", "/browse/OUser");
-			item.field("perspective", perspective);
-			item.save();
-			
-			item = new ODocument(OCLASS_ITEM);
-			item.field("name", "Roles");
-			item.field("icon", "users");
-			item.field("url", "/browse/ORole");
-			item.field("perspective", perspective);
-			item.save();
-			
-			item = new ODocument(OCLASS_ITEM);
-			item.field("name", "Classes");
-			item.field("icon", "cubes");
-			item.field("url", "/classes");
-			item.field("perspective", perspective);
-			item.save();
 		}
 	}
 
