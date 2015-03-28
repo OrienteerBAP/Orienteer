@@ -49,7 +49,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("icon", OType.STRING)
 				.oProperty("homeUrl", OType.STRING)
 				.oProperty("menu", OType.LINKLIST).assignVisualization("table")
-				.oProperty("footer", OType.STRING)
+				.oProperty("footer", OType.STRING).assignVisualization("textarea")
 				.switchDisplayable(true, "name", "homeUrl")
 				.orderProperties("name", "icon", "homeUrl", "footer", "menu")
 			.oClass(OCLASS_ITEM)
