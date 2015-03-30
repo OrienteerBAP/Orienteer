@@ -25,6 +25,7 @@ import org.orienteer.components.properties.BooleanViewPanel;
 import org.orienteer.components.properties.DisplayMode;
 import org.orienteer.components.properties.EmbeddedCollectionEditPanel;
 import org.orienteer.components.properties.EmbeddedCollectionViewPanel;
+import org.orienteer.components.properties.EmbeddedMapViewPanel;
 import org.orienteer.components.properties.LinkEditPanel;
 import org.orienteer.components.properties.LinkViewPanel;
 import org.orienteer.components.properties.LinksCollectionEditPanel;
@@ -72,6 +73,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case EMBEDDEDLIST:
                 case EMBEDDEDSET:
                 	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
+                case EMBEDDEDMAP:
+                	return new EmbeddedMapViewPanel<V>(id, documentModel, propertyModel);
                 case BINARY:
                 	return new BinaryViewPanel(id, documentModel, propertyModel, valueModel);
                 default:
