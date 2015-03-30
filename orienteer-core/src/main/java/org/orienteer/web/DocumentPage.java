@@ -2,6 +2,8 @@ package org.orienteer.web;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -13,6 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.CustomAttributes;
 import org.orienteer.OrienteerWebApplication;
@@ -158,6 +161,7 @@ public class DocumentPage extends AbstractDocumentPage {
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
+		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 		String defaultTab = CustomAttributes.TAB.<String>getValue(getDocument().getSchemaClass(),IOClassIntrospector.DEFAULT_TAB);
 		tabsPanel.setDefaultTabModel(Model.of(defaultTab));
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayMode));

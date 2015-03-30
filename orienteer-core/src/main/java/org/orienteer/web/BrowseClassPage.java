@@ -1,8 +1,11 @@
 package org.orienteer.web;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.components.commands.CreateODocumentCommand;
 import org.orienteer.components.commands.DeleteODocumentCommand;
@@ -59,6 +62,7 @@ public class BrowseClassPage extends OrienteerBasePage<OClass> implements ISecur
 	@Override
 	public void initialize() {
 		super.initialize();
+		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
 		Form<ODocument> form = new Form<ODocument>("form");
