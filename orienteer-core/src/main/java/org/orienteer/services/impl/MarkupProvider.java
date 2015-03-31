@@ -20,6 +20,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.lang.Generics;
+import org.orienteer.components.structuretable.StructureTable;
 import org.orienteer.services.IMarkupProvider;
 
 import com.google.common.base.Function;
@@ -42,6 +43,7 @@ public class MarkupProvider implements IMarkupProvider
 		registerMarkupContent(FormComponentPanel.class, "<div wicket:id=\"component\"></div>");
 		registerMarkupContent(Panel.class, "<div wicket:id=\"component\"></div>");
 		registerMarkupContent(AbstractLink.class, "<a wicket:id=\"component\"></a>");
+		registerMarkupContent(StructureTable.class, "<table wicket:id=\"component\"></table>");
 	}
 	
 	@Override
@@ -75,9 +77,10 @@ public class MarkupProvider implements IMarkupProvider
 						public Integer apply(Class<? extends Component> input) {
 							int ret = 0;
 							Class<?> thisClass = componentClass;
-							while(input!=null && !input.equals(thisClass))
+							while(thisClass!=null && !input.equals(thisClass))
 							{
 								thisClass = thisClass.getSuperclass();
+								ret++;
 							}
 							return ret;
 						}
@@ -85,9 +88,10 @@ public class MarkupProvider implements IMarkupProvider
 					ret = markupsMap.get(minParents);
 				}
 			}
+			if(ret==null) ret = Markup.NO_MARKUP;
+			markupsCache.put(componentClass, ret);
 		}
-		if(ret!=null) markupsCache.put(componentClass, ret);
-		return ret;
+		return ret!=Markup.NO_MARKUP?ret:null;
 	}
 
 	@Override

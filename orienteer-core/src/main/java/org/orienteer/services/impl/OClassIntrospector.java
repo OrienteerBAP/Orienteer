@@ -3,6 +3,7 @@ package org.orienteer.services.impl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,6 +31,7 @@ import org.orienteer.services.IOClassIntrospector;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -140,16 +142,16 @@ public class OClassIntrospector implements IOClassIntrospector
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<OProperty> listProperties(OClass oClass, String tab, final Boolean extended) {
-		Collection<OProperty> properties =  oClass.properties();
 		final String safeTab = tab!=null?tab:DEFAULT_TAB;
 		final UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
-		Collection<OProperty> filteredProperties = Collections2.filter(properties, new Predicate<OProperty>() {
+		
+		return listProperties(oClass, new Predicate<OProperty>() {
 
 			@Override
 			public boolean apply(OProperty input) {
-				String propertyTab = CustomAttributes.TAB.getValue(input);
-				boolean ret = safeTab.equals(propertyTab!=null?propertyTab:DEFAULT_TAB);
+				boolean ret = safeTab.equals(CustomAttributes.TAB.getValue(input, DEFAULT_TAB));
 				ret = ret && !CustomAttributes.HIDDEN.getValue(input, false);
 				if(!ret || extended==null) return ret;
 				else {
@@ -160,8 +162,21 @@ public class OClassIntrospector implements IOClassIntrospector
 				}
 			}
 		});
-		//if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
+	}
+	
+	@Override
+	public List<OProperty> listProperties(OClass oClass,
+			Predicate<OProperty>... predicates) {
+		if(oClass==null) return Collections.EMPTY_LIST;
+		Collection<OProperty> properties =  oClass.properties();
+		Predicate<OProperty> predicate = predicates==null || predicates.length==0?
+												 null
+												:(predicates.length==1?
+															predicates[0]
+															:Predicates.and(predicates));
+		Collection<OProperty> filteredProperties = predicate!=null?Collections2.filter(properties, predicate):properties;
 		return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
+		
 	}
 
 	@Override

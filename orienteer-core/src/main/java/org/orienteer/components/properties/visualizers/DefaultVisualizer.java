@@ -27,10 +27,12 @@ import org.orienteer.components.properties.EmbeddedCollectionEditPanel;
 import org.orienteer.components.properties.EmbeddedCollectionViewPanel;
 import org.orienteer.components.properties.EmbeddedMapEditPanel;
 import org.orienteer.components.properties.EmbeddedMapViewPanel;
+import org.orienteer.components.properties.EmbeddedStructureTable;
 import org.orienteer.components.properties.LinkEditPanel;
 import org.orienteer.components.properties.LinkViewPanel;
 import org.orienteer.components.properties.LinksCollectionEditPanel;
 import org.orienteer.components.properties.LinksCollectionViewPanel;
+import org.orienteer.components.structuretable.OrienteerStructureTable;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -71,6 +73,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                     return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, Session.get().getLocale())).toPattern());
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
+                case EMBEDDED:
+                	return new EmbeddedStructureTable(id, documentModel, propertyModel, mode.asModel());
                 case EMBEDDEDLIST:
                 case EMBEDDEDSET:
                 	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
@@ -98,6 +102,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                     return new DateField(id, (IModel<Date>) valueModel);
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) valueModel);
+                case EMBEDDED:
+                	return new EmbeddedStructureTable(id, documentModel, propertyModel, mode.asModel());
                 case EMBEDDEDLIST:
                 	return new EmbeddedCollectionEditPanel<Object, List<Object>>(id, documentModel, propertyModel, ArrayList.class);
                 case EMBEDDEDSET:
