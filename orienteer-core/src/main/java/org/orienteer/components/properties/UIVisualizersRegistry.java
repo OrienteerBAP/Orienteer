@@ -26,6 +26,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new PasswordVisualizer());
 		registerUIComponentFactory(new HTMLVisualizer());
 		registerUIComponentFactory(new UrlLinkVisualizer());
+		registerUIComponentFactory(new MarkDownVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()
