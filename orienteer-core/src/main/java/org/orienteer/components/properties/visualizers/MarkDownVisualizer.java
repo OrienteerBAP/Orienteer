@@ -14,7 +14,7 @@ import org.pegdown.PegDownProcessor;
 
 public class MarkDownVisualizer extends AbstractSimpleVisualizer
 {
-    private static final String NAME = "markDown";
+    private static final String NAME = "markdown";
 
     public MarkDownVisualizer()
     {
