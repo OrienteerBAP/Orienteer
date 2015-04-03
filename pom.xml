@@ -282,6 +282,7 @@
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
+                                <inherited>false</inherited>
                             </execution>
                         </executions>
                         <configuration>
