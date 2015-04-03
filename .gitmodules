@@ -1,0 +1,3 @@
+[submodule "wicket-orientdb"]
+	path = wicket-orientdb
+	url = https://github.com/PhantomYdn/wicket-orientdb.git
