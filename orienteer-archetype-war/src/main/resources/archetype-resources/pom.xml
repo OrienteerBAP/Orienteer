@@ -55,6 +55,12 @@
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
 			<version>${dollar}{orienteer.version}</version>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.orienteer</groupId>
+                                <artifactId>orienteer-resources</artifactId>
+                            </exclusion>
+                        </exclusions>
 		</dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
@@ -63,6 +69,12 @@
 			<version>${dollar}{orienteer.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.orienteer</groupId>
+                                <artifactId>orienteer-resources</artifactId>
+                            </exclusion>
+                        </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>

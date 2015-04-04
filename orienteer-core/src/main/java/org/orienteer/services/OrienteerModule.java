@@ -28,6 +28,7 @@ import com.google.inject.ProvisionException;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -74,10 +75,13 @@ public class OrienteerModule extends AbstractModule {
 		try {
 			PROPERTIES_DEFAULT.load(propertiesDefaultInputStream);
 		} catch (IOException ex) {
-			LOG.error(String.format("orienteer-archetype or some other artefact "
+			LOG.error(String.format("orienteer-resources or some other artefact "
 				+ "needs to provide '%s'", resourcePath), ex);
 			throw new ExceptionInInitializerError(ex);
 		}
+	}
+
+	public OrienteerModule() {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -182,6 +186,7 @@ public class OrienteerModule extends AbstractModule {
 			return retValue;
 		}
 
+		LOG.info(String.format("using built-in default properties", PROPERTIES_DEFAULT));
 		Properties loadedProperties = new Properties(); //loading
 		//default properties doesn't make sense because they're
 		//overwritten at load (no idea why there's a way to
@@ -254,6 +259,7 @@ public class OrienteerModule extends AbstractModule {
 		if (!Strings.isEmpty(systemProperty)) {
 			File file = new File(systemProperty);
 			if (file.exists()) {
+				LOG.info(String.format("using existing properties file '%s'", file.getAbsolutePath()));
 				return file.toURI().toURL();
 			}
 		} else {
@@ -264,6 +270,7 @@ public class OrienteerModule extends AbstractModule {
 		if (!Strings.isEmpty(resourceProperty)) {
 			URL propertiesFileResource = Thread.currentThread().getContextClassLoader().getResource(resourceProperty);
 			if (propertiesFileResource != null) {
+				LOG.info(String.format("using existing properties resource '%s'", propertiesFileResource.toString()));
 				return propertiesFileResource;
 			} else {
 				LOG.info(String.format("properties resource specified by system property '%s' is null or empty, skipping", propertyResourceNamePropertyName));

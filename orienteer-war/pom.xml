@@ -34,11 +34,6 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-                <dependency>
-                    <groupId>org.orienteer</groupId>
-                    <artifactId>orienteer-archetype-war</artifactId>
-                    <version>${project.parent.version}</version>
-                </dependency>
 	</dependencies>
 	<build>
 		<finalName>orienteer</finalName>

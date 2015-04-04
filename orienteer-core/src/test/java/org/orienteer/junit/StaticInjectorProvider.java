@@ -1,8 +1,5 @@
 package org.orienteer.junit;
 
-import java.io.IOException;
-import java.net.URL;
-
 import org.apache.wicket.util.tester.WicketTester;
 import org.orienteer.services.OrienteerModule;
 import org.slf4j.Logger;
@@ -12,7 +9,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.util.Modules;
-import java.util.Properties;
 
 public class StaticInjectorProvider implements Provider<Injector>
 {
@@ -22,7 +18,7 @@ public class StaticInjectorProvider implements Provider<Injector>
 	
 	static
 	{
-		System.out.println("Using embedded mode");
+		LOG.info("Using embedded mode");
 		STATIC_INJECTOR = Guice.createInjector(Modules.override(new OrienteerModule()).with(new OrienteerTestModule()));
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{

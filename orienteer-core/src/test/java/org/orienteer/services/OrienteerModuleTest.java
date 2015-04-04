@@ -63,6 +63,8 @@ public class OrienteerModuleTest {
 		String propertyFileNamePropertyName = "test.something";
 		String propertyFileName = "some.filename";
 		//system property not set
+		String oldProp = System.clearProperty(OrienteerModule.PROPERTIES_RESOURCE_NAME_PROPERTY_NAME); //set again after the test -> don't run in parallel
+			//without further precautions
 		Properties expResult = OrienteerModule.PROPERTIES_DEFAULT;
 		Properties result = OrienteerModule.retrieveProperties();
 		assertEquals(expResult, result);
@@ -85,6 +87,8 @@ public class OrienteerModuleTest {
 		expResult.setProperty("a", "b");
 		result = OrienteerModule.retrieveProperties();
 		assertEquals(expResult, result);
+		
+		System.setProperty(OrienteerModule.PROPERTIES_RESOURCE_NAME_PROPERTY_NAME, oldProp);
 	}
 	
 }
