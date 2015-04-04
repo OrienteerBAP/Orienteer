@@ -24,7 +24,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 
 public class OrienteerTestModule extends AbstractModule
 {
-	public static final String TEST_PROPERTIES_FILE_NAME = "orienteer-test.properties";
+	public static final String TEST_PROPERTIES_FILE_NAME = "archetype-resources/orienteer-test.properties";
 
 	@Override
 	protected void configure() {

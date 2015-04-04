@@ -12,6 +12,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.util.Modules;
+import java.util.Properties;
 
 public class StaticInjectorProvider implements Provider<Injector>
 {
@@ -22,21 +23,6 @@ public class StaticInjectorProvider implements Provider<Injector>
 	static
 	{
 		System.out.println("Using embedded mode");
-		if(!System.getProperties().containsKey(OrienteerModule.PROPERTIES_FILE_NAME))
-		{
-			try
-			{
-				URL testProperties = OrienteerModule.lookupFile(OrienteerTestModule.TEST_PROPERTIES_FILE_NAME);
-				if(testProperties!=null)
-				{
-					System.setProperty(OrienteerModule.PROPERTIES_FILE_NAME, testProperties.toString());
-				}
-			} catch (IOException e)
-			{
-				LOG.error("Can't get test properties", e);
-			}
-//			System.setProperty(OrienteerModule.PROPERTIES_FILE_NAME, OrienteerTestRunner.class.getResource("test-env.properties").toString());
-		}
 		STATIC_INJECTOR = Guice.createInjector(Modules.override(new OrienteerModule()).with(new OrienteerTestModule()));
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{

@@ -26,7 +26,15 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-archetype-war</artifactId>
-	<packaging>maven-archetype</packaging> 
+	<packaging>maven-archetype</packaging>
+        
+        <dependencies>
+            <dependency>
+                <groupId>org.orienteer</groupId>
+                <artifactId>orienteer-resources</artifactId>
+            </dependency>
+        </dependencies>
+        
 	<build>
 	    <resources>
 		<resource>
