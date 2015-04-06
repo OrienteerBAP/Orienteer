@@ -292,6 +292,7 @@
                         <exclude>**/README</exclude>
                         <exclude>src/test/resources/**</exclude>
                         <exclude>src/main/resources/**</exclude>
+                        <exclude>orienteer-archetype-war/src/test/resources/projects/simple-test/goal.txt</exclude>
                     </excludes>
                     <aggregate>true</aggregate>
                 </configuration>
