@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.services;
 
 import java.io.File;
@@ -34,130 +49,111 @@ import com.orientechnologies.orient.server.OServer;
 
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 
-public class OrienteerModule extends AbstractModule
-{
-	public static final String PROPERTIES_FILE_NAME = "orienteer.properties";
-	private static final Logger LOG = LoggerFactory.getLogger(OrienteerModule.class);
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void configure() {
-		final Properties properties = new Properties();
-		try
-		{
-			URL propertiesURL = lookupPropertiesURL();
-			if(propertiesURL==null) throw new ProvisionException("Properties files was not found");
-			else properties.load(propertiesURL.openStream());
-			LOG.info("Loading Orienteer properties from '"+propertiesURL+"'");
-		} catch (FileNotFoundException e)
-		{
-			throw new ProvisionException("Properties files was not found", e);
-		} catch (IOException e)
-		{
-			throw new ProvisionException("Properties files can't be read", e);
-		}
-		Names.bindProperties(binder(), properties);
-		String applicationClass = properties.getProperty("orienteer.application");
-		Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
-		if(applicationClass!=null)
-		{
-			try
-			{
-				Class<?> customAppClass = Class.forName(applicationClass);
-				
-				if(OrienteerWebApplication.class.isAssignableFrom(appClass))
-				{
-					appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
-				}
-				else
-				{
-					LOG.error("Orienteer application class '"+applicationClass+"' is not child class of '"+OrienteerWebApplication.class+"'. Using default.");
-				}
-			} catch (ClassNotFoundException e)
-			{
-				LOG.error("Orienteer application class '"+applicationClass+"' was not found. Using default.");
-			}
-		}
-		bind(appClass).asEagerSingleton();
-		Provider<? extends OrienteerWebApplication> appProvider = binder().getProvider(appClass);
-		if(!OrienteerWebApplication.class.equals(appClass))
-		{
-			bind(OrienteerWebApplication.class).toProvider(appProvider);
-		}
-		bind(OrientDbWebApplication.class).toProvider(appProvider);
-		bind(WebApplication.class).toProvider(appProvider);
-		
-		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
-		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
-		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
-		bind(UIVisualizersRegistry.class).asEagerSingleton();
-		bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
-	}
-	
-	@Provides
-	public ODatabaseDocument getDatabaseRecord()
-	{
-		return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
-	}
-	
-	@Provides
-	public OSchema getSchema(ODatabaseDocument db)
-	{
-		return db.getMetadata().getSchema();
-	}
-	
-	@Provides
-	public OServer getOServer(WebApplication application)
-	{
-		OrienteerWebApplication app = (OrienteerWebApplication)application;
-		return app.getServer();
-	}
-	
-	@Provides
-	public Localizer getLocalizer(WebApplication application)
-	{
-		return application.getResourceSettings().getLocalizer();
-	}
-	
-	public static URL lookupPropertiesURL() throws IOException
-	{
-		return lookupFile(PROPERTIES_FILE_NAME);
-	}
-	
-	public static URL lookupFile(String fileName) throws IOException
-	{
-		return lookupFile(fileName, fileName);
-	}
-	
-	
-	public static URL lookupFile(String fileNameProperty, String fileName) throws IOException
-	{
-		String configFile = fileNameProperty!=null?System.getProperty(fileNameProperty):fileNameProperty;
-		if(!Strings.isEmpty(configFile))
-		{
-			File file = new File(configFile);
-			if(file.exists())
-			{
-				return file.toURI().toURL();
-			}
-			else
-			{
-				URL url = OrienteerWebApplication.class.getClassLoader().getResource(configFile);
-				if(url!=null) return url;
-				else return new URL(configFile);
-			}
-		}
-		else
-		{
-			File file = new File(fileName);
-			File dir = new File("").getAbsoluteFile();
-			while(!file.exists() && dir!=null)
-			{
-				dir = dir.getParentFile();
-				file = new File(dir, fileName);
-			}
-			return file!=null && file.exists() ?file.toURI().toURL():null;
-		}
-	}
-	
+public class OrienteerModule extends AbstractModule {
+
+    public static final String PROPERTIES_FILE_NAME = "orienteer.properties";
+    private static final Logger LOG = LoggerFactory.getLogger(OrienteerModule.class);
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void configure() {
+        final Properties properties = new Properties();
+        try {
+            URL propertiesURL = lookupPropertiesURL();
+            if (propertiesURL == null) {
+                throw new ProvisionException("Properties files was not found");
+            } else {
+                properties.load(propertiesURL.openStream());
+            }
+            LOG.info("Loading Orienteer properties from '" + propertiesURL + "'");
+        } catch (FileNotFoundException e) {
+            throw new ProvisionException("Properties files was not found", e);
+        } catch (IOException e) {
+            throw new ProvisionException("Properties files can't be read", e);
+        }
+        Names.bindProperties(binder(), properties);
+        String applicationClass = properties.getProperty("orienteer.application");
+        Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
+        if (applicationClass != null) {
+            try {
+                Class<?> customAppClass = Class.forName(applicationClass);
+
+                if (OrienteerWebApplication.class.isAssignableFrom(appClass)) {
+                    appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
+                } else {
+                    LOG.error("Orienteer application class '" + applicationClass + "' is not child class of '" + OrienteerWebApplication.class + "'. Using default.");
+                }
+            } catch (ClassNotFoundException e) {
+                LOG.error("Orienteer application class '" + applicationClass + "' was not found. Using default.");
+            }
+        }
+        bind(appClass).asEagerSingleton();
+        Provider<? extends OrienteerWebApplication> appProvider = binder().getProvider(appClass);
+        if (!OrienteerWebApplication.class.equals(appClass)) {
+            bind(OrienteerWebApplication.class).toProvider(appProvider);
+        }
+        bind(OrientDbWebApplication.class).toProvider(appProvider);
+        bind(WebApplication.class).toProvider(appProvider);
+
+        bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
+        bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
+        bind(IOClassIntrospector.class).to(OClassIntrospector.class);
+        bind(UIVisualizersRegistry.class).asEagerSingleton();
+        bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
+    }
+
+    @Provides
+    public ODatabaseDocument getDatabaseRecord() {
+        return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+    }
+
+    @Provides
+    public OSchema getSchema(ODatabaseDocument db) {
+        return db.getMetadata().getSchema();
+    }
+
+    @Provides
+    public OServer getOServer(WebApplication application) {
+        OrienteerWebApplication app = (OrienteerWebApplication) application;
+        return app.getServer();
+    }
+
+    @Provides
+    public Localizer getLocalizer(WebApplication application) {
+        return application.getResourceSettings().getLocalizer();
+    }
+
+    public static URL lookupPropertiesURL() throws IOException {
+        return lookupFile(PROPERTIES_FILE_NAME);
+    }
+
+    public static URL lookupFile(String fileName) throws IOException {
+        return lookupFile(fileName, fileName);
+    }
+
+    public static URL lookupFile(String fileNameProperty, String fileName) throws IOException {
+        String configFile = fileNameProperty != null ? System.getProperty(fileNameProperty) : fileNameProperty;
+        if (!Strings.isEmpty(configFile)) {
+            File file = new File(configFile);
+            if (file.exists()) {
+                return file.toURI().toURL();
+            } else {
+                URL url = OrienteerWebApplication.class.getClassLoader().getResource(configFile);
+                if (url != null) {
+                    return url;
+                } else {
+                    return new URL(configFile);
+                }
+            }
+        } else {
+            File file = new File(fileName);
+            File dir = new File("").getAbsoluteFile();
+            while (!file.exists() && dir != null) {
+                dir = dir.getParentFile();
+                file = new File(dir, fileName);
+            }
+            return file != null && file.exists() ? file.toURI().toURL() : null;
+        }
+    }
+
 }

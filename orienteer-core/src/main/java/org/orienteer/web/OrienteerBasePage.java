@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.web;
 
 import java.util.List;
@@ -39,105 +54,100 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
-public abstract class OrienteerBasePage<T> extends BasePage<T>
-{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private OrienteerFeedbackPanel feedbacks;
-	public OrienteerBasePage()
-	{
-		super();
-	}
+public abstract class OrienteerBasePage<T> extends BasePage<T> {
 
-	public OrienteerBasePage(IModel<T> model)
-	{
-		super(model);
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    private OrienteerFeedbackPanel feedbacks;
 
-	public OrienteerBasePage(PageParameters parameters)
-	{
-		super(parameters);
-	}
+    public OrienteerBasePage() {
+        super();
+    }
 
-	@Override
-	public void initialize() {
-		super.initialize();
-		add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
-		add(newPageHeaderComponent("pageHeader"));
-		
-		final AttributeAppender highlightActivePerspective = new AttributeAppender("class", "active")
-		{
-			@Override
-			public boolean isEnabled(Component component) {
-				return Objects.isEqual(getPerspective(), component.getDefaultModelObject());
-			}
-		};
-		
-		add(new ListView<ODocument>("perspectives", new OQueryModel<ODocument>("select from "+PerspectivesModule.OCLASS_PERSPECTIVE)) {
+    public OrienteerBasePage(IModel<T> model) {
+        super(model);
+    }
 
-			@Override
-			protected void populateItem(ListItem<ODocument> item) {
-				IModel<ODocument> itemModel = item.getModel();
-				Link<ODocument> link = new Link<ODocument>("link", itemModel) {
+    public OrienteerBasePage(PageParameters parameters) {
+        super(parameters);
+    }
 
-					@Override
-					public void onClick() {
-						OrienteerWebSession.get().setPerspecive(getModelObject());
-						OrienteerBasePage.this.info(getLocalizer().getString("info.perspectivechanged", this, new ODocumentPropertyModel<String>(getModel(), "name")));
-					}
-				};
-				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
-				item.add(link);
-				item.add(highlightActivePerspective);
-			}
-		});
-		
-		boolean signedIn = OrientDbWebSession.get().isSignedIn();
-		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
-		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
-		
-		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
-		add(new ListView<ODocument>("perspectiveItems", new ODocumentPropertyModel<List<ODocument>>(perspectiveModel, "menu")) {
+    @Override
+    public void initialize() {
+        super.initialize();
+        add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
+        add(newPageHeaderComponent("pageHeader"));
 
-			@Override
-			protected void populateItem(ListItem<ODocument> item) {
-				IModel<ODocument> itemModel = item.getModel();
-				ExternalLink link = new ExternalLink("link", new ODocumentPropertyModel<String>(itemModel, "url"));
-				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
-				item.add(link);
-			}
-		});
-		
-		
-		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
-		add(new ODocumentPageLink("myProfile", new PropertyModel<ODocument>(this, "session.user.document")));
-		
-		final IModel<String> queryModel = Model.of();
-		Form<String>  searchForm = new Form<String>("searchForm", queryModel)
-		{
+        final AttributeAppender highlightActivePerspective = new AttributeAppender("class", "active") {
+            @Override
+            public boolean isEnabled(Component component) {
+                return Objects.isEqual(getPerspective(), component.getDefaultModelObject());
+            }
+        };
 
-			@Override
-			protected void onSubmit() {
-				setResponsePage(new SearchPage(queryModel));
-			}
-			
-		};
-		searchForm.add(new TextField<String>("query", queryModel));
-		searchForm.add(new AjaxButton("search"){});
-		add(searchForm);
-	}
-	
-	protected Component newPageHeaderComponent(String componentId)
-	{
-		return new DefaultPageHeader(componentId, getTitleModel());
-	}
+        add(new ListView<ODocument>("perspectives", new OQueryModel<ODocument>("select from " + PerspectivesModule.OCLASS_PERSPECTIVE)) {
 
-	public OrienteerFeedbackPanel getFeedbacks() {
-		return feedbacks;
-	}
-	
+            @Override
+            protected void populateItem(ListItem<ODocument> item) {
+                IModel<ODocument> itemModel = item.getModel();
+                Link<ODocument> link = new Link<ODocument>("link", itemModel) {
+
+                    @Override
+                    public void onClick() {
+                        OrienteerWebSession.get().setPerspecive(getModelObject());
+                        OrienteerBasePage.this.info(getLocalizer().getString("info.perspectivechanged", this, new ODocumentPropertyModel<String>(getModel(), "name")));
+                    }
+                };
+                link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
+                        new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
+                item.add(link);
+                item.add(highlightActivePerspective);
+            }
+        });
+
+        boolean signedIn = OrientDbWebSession.get().isSignedIn();
+        add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
+        add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
+
+        IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
+        add(new ListView<ODocument>("perspectiveItems", new ODocumentPropertyModel<List<ODocument>>(perspectiveModel, "menu")) {
+
+            @Override
+            protected void populateItem(ListItem<ODocument> item) {
+                IModel<ODocument> itemModel = item.getModel();
+                ExternalLink link = new ExternalLink("link", new ODocumentPropertyModel<String>(itemModel, "url"));
+                link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
+                        new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
+                item.add(link);
+            }
+        });
+
+        add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
+        add(new ODocumentPageLink("myProfile", new PropertyModel<ODocument>(this, "session.user.document")));
+
+        final IModel<String> queryModel = Model.of();
+        Form<String> searchForm = new Form<String>("searchForm", queryModel) {
+
+            @Override
+            protected void onSubmit() {
+                setResponsePage(new SearchPage(queryModel));
+            }
+
+        };
+        searchForm.add(new TextField<String>("query", queryModel));
+        searchForm.add(new AjaxButton("search") {
+        });
+        add(searchForm);
+    }
+
+    protected Component newPageHeaderComponent(String componentId) {
+        return new DefaultPageHeader(componentId, getTitleModel());
+    }
+
+    public OrienteerFeedbackPanel getFeedbacks() {
+        return feedbacks;
+    }
+
 }

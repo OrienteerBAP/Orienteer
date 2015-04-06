@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.web;
 
 import java.util.List;
@@ -29,90 +44,87 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
-public abstract class BasePage<T> extends GenericWebPage<T>
-{
-	private static final long serialVersionUID = 1L;
-	public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
-	public static final CssResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
-	public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
-	public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
-	
-	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
+public abstract class BasePage<T> extends GenericWebPage<T> {
 
-	public BasePage()
-	{
-		super();
-		initialize();
-	}
+    private static final long serialVersionUID = 1L;
+    public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
+    public static final CssResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
+    public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
+    public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
 
-	public BasePage(IModel<T> model)
-	{
-		super(model);
-		initialize();
-	}
+    public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
 
-	public BasePage(PageParameters parameters)
-	{
-		super(parameters);
-		if(parameters!=null && !parameters.isEmpty())
-		{
-			IModel<T> model = resolveByPageParameters(parameters);
-			if(model!=null) setModel(model);
-		}
-		initialize();
-	}
-	
-	protected IModel<T> resolveByPageParameters(PageParameters pageParameters)
-	{
-		return null;
-	}
-	
-	
-	public void initialize()
-	{
-	}
-	
-	@Override
-	protected void onInitialize() {
-		super.onInitialize();
-		if(get("title")==null) add(new Label("title", getTitleModel()));
-		if(get("poweredBy")==null) add(new Label("poweredBy", new ResourceModel("poweredby")).setEscapeModelStrings(false));
-		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
-									.setEscapeModelStrings(false).setRenderBodyOnly(true));
-	}
+    public BasePage() {
+        super();
+        initialize();
+    }
 
-	@Override
-	public void renderHead(IHeaderResponse response) {
-		response.render(new PriorityHeaderItem(CssHeaderItem.forReference(BOOTSTRAP_CSS)));
-		response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
-		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
-		response.render(CssHeaderItem.forReference(ORIENTEER_CSS));
-		super.renderHead(response);
-		IJavaScriptLibrarySettings javaScriptSettings =          
-				getApplication().getJavaScriptLibrarySettings();
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.
-				forReference(javaScriptSettings.getJQueryReference())));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
-	}
+    public BasePage(IModel<T> model) {
+        super(model);
+        initialize();
+    }
 
-	public ODatabaseDocument getDatabase()
-	{
-		return OrientDbWebSession.get().getDatabase();
-	}
-	
-	public ODatabaseDocument getDatabaseDocument()
-	{
-		return (ODatabaseDocument)((ODatabaseDocumentInternal) getDatabase()).getDatabaseOwner();
-	}
-	
-	public IModel<String> getTitleModel()
-	{
-		return new ResourceModel("default.title");
-	}
-	
-	public ODocument getPerspective()
-	{
-		return OrienteerWebSession.get().getPerspective();
-	}
+    public BasePage(PageParameters parameters) {
+        super(parameters);
+        if (parameters != null && !parameters.isEmpty()) {
+            IModel<T> model = resolveByPageParameters(parameters);
+            if (model != null) {
+                setModel(model);
+            }
+        }
+        initialize();
+    }
+
+    protected IModel<T> resolveByPageParameters(PageParameters pageParameters) {
+        return null;
+    }
+
+    public void initialize() {
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        if (get("title") == null) {
+            add(new Label("title", getTitleModel()));
+        }
+        if (get("poweredBy") == null) {
+            add(new Label("poweredBy", new ResourceModel("poweredby")).setEscapeModelStrings(false));
+        }
+        if (get("footer") == null) {
+            add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
+                    .setEscapeModelStrings(false).setRenderBodyOnly(true));
+        }
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        response.render(new PriorityHeaderItem(CssHeaderItem.forReference(BOOTSTRAP_CSS)));
+        response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
+        response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
+        response.render(CssHeaderItem.forReference(ORIENTEER_CSS));
+        super.renderHead(response);
+        IJavaScriptLibrarySettings javaScriptSettings
+                = getApplication().getJavaScriptLibrarySettings();
+        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.
+                forReference(javaScriptSettings.getJQueryReference())));
+        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
+    }
+
+    public ODatabaseDocument getDatabase() {
+        return OrientDbWebSession.get().getDatabase();
+    }
+
+    public ODatabaseDocument getDatabaseDocument() {
+        return (ODatabaseDocument) ((ODatabaseDocumentInternal) getDatabase()).getDatabaseOwner();
+    }
+
+    public IModel<String> getTitleModel() {
+        return new ResourceModel("default.title");
+    }
+
+    public ODocument getPerspective() {
+        return OrienteerWebSession.get().getPerspective();
+    }
 
 }

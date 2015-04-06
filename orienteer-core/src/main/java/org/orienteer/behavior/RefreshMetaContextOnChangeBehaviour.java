@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.behavior;
 
 import org.apache.wicket.Component;
@@ -7,39 +22,35 @@ import org.apache.wicket.markup.html.form.Form;
 import org.orienteer.components.properties.AbstractMetaPanel;
 import org.orienteer.components.properties.IMetaContext;
 
-public class RefreshMetaContextOnChangeBehaviour extends AjaxFormSubmitBehavior
-{
-	public RefreshMetaContextOnChangeBehaviour(Form<?> form)
-	{
-		super(form, "change");
-	}
+public class RefreshMetaContextOnChangeBehaviour extends AjaxFormSubmitBehavior {
 
-	public RefreshMetaContextOnChangeBehaviour()
-	{
-		super("change");
-	}
-	
-	@Override
-	protected void onBind() {
-		IMetaContext<?> context = AbstractMetaPanel.getMetaContext(getComponent());
-		if(context!=null && context instanceof Component)
-		{
-			((Component)context).setOutputMarkupId(true);
-		}
-	}
+    public RefreshMetaContextOnChangeBehaviour(Form<?> form) {
+        super(form, "change");
+    }
 
-	@Override
-	protected void onSubmit(AjaxRequestTarget target) {
-		IMetaContext<?> context = AbstractMetaPanel.getMetaContext(getComponent());
-		if(context!=null)
-		{
-			target.add(context.getContextComponent());
-		}
-	}
+    public RefreshMetaContextOnChangeBehaviour() {
+        super("change");
+    }
 
-	@Override
-	public boolean getDefaultProcessing() {
-		return false;
-	}
+    @Override
+    protected void onBind() {
+        IMetaContext<?> context = AbstractMetaPanel.getMetaContext(getComponent());
+        if (context != null && context instanceof Component) {
+            ((Component) context).setOutputMarkupId(true);
+        }
+    }
+
+    @Override
+    protected void onSubmit(AjaxRequestTarget target) {
+        IMetaContext<?> context = AbstractMetaPanel.getMetaContext(getComponent());
+        if (context != null) {
+            target.add(context.getContextComponent());
+        }
+    }
+
+    @Override
+    public boolean getDefaultProcessing() {
+        return false;
+    }
 
 }

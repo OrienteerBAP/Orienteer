@@ -1,42 +1,59 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5">
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+    version="2.5">
 
-	<display-name>${artifactId}</display-name>
+    <display-name>${artifactId}</display-name>
 
-	<!--
-		There are three means to configure Wickets configuration mode and they 
-		are tested in the order given.
-		
-		1) A system property: -Dwicket.configuration 
-		2) servlet specific <init-param> 
-		3) context specific <context-param>
+    <!--
+        There are three means to configure Wickets configuration mode and they 
+        are tested in the order given.
+        
+        1) A system property: -Dwicket.configuration 
+        2) servlet specific <init-param> 
+        3) context specific <context-param>
 
-		The value might be either "development" (reloading when templates change) or 
-		"deployment". If no configuration is found, "development" is the default. -->
+    The value might be either "development" (reloading when templates change) or 
+    "deployment". If no configuration is found, "development" is the default. -->
 
-	<filter>
-		<filter-name>wicket.orienteer</filter-name>
-		<filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
-		<init-param>
-			<param-name>applicationFactoryClassName</param-name>
-			<param-value>org.apache.wicket.guice.GuiceWebApplicationFactory</param-value>
-		</init-param>
-		<init-param>
-		  <param-name>module</param-name>
-		  <param-value>org.orienteer.services.OrienteerModule</param-value>
-		</init-param>
-		<init-param>
-			<param-name>filterMappingUrlPattern</param-name>
-			<param-value>/*</param-value>
-		</init-param>
-	</filter>
+    <filter>
+        <filter-name>wicket.orienteer</filter-name>
+        <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+        <init-param>
+            <param-name>applicationFactoryClassName</param-name>
+            <param-value>org.apache.wicket.guice.GuiceWebApplicationFactory</param-value>
+        </init-param>
+        <init-param>
+            <param-name>module</param-name>
+            <param-value>org.orienteer.services.OrienteerModule</param-value>
+        </init-param>
+        <init-param>
+            <param-name>filterMappingUrlPattern</param-name>
+            <param-value>/*</param-value>
+        </init-param>
+    </filter>
 
-	<filter-mapping>
-		<filter-name>wicket.orienteer</filter-name>
-		<url-pattern>/*</url-pattern>
-		<dispatcher>REQUEST</dispatcher>
-		<dispatcher>ERROR</dispatcher>
-	</filter-mapping>
+    <filter-mapping>
+        <filter-name>wicket.orienteer</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
 </web-app>

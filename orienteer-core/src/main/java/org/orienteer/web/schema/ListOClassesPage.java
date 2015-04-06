@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.web.schema;
 
 import java.util.ArrayList;
@@ -49,85 +64,78 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @MountPath("/classes")
-@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.READ)
 public class ListOClassesPage extends OrienteerBasePage<Object> {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
+    public ListOClassesPage() {
+        super();
+    }
 
-	public ListOClassesPage()
-	{
-		super();
-	}
-	
-	
+    @Override
+    public void initialize() {
+        super.initialize();
+        Form<?> form = new Form<Object>("form");
+        IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
+        List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass, String>>();
+        columns.add(new CheckBoxColumn<OClass, String, String>(OClassClassNameConverter.INSTANCE));
+        columns.add(new OClassColumn(OClassPrototyper.NAME, modeModel));
+        columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS, modeModel));
+        columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT, modeModel));
+        columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE, modeModel));
+        columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.count"), "count", "count"));
+        columns.add(new AbstractColumn<OClass, String>(new ResourceModel("class.browse")) {
 
-	@Override
-	public void initialize() {
-		super.initialize();
-		Form<?> form = new Form<Object>("form");
-		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
-		columns.add(new CheckBoxColumn<OClass, String, String>(OClassClassNameConverter.INSTANCE));
-		columns.add(new OClassColumn(OClassPrototyper.NAME, modeModel));
-		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS, modeModel));
-		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT, modeModel));
-		columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE, modeModel));
-		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.count"), "count", "count"));
-		columns.add(new AbstractColumn<OClass, String>(new ResourceModel("class.browse")) {
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
 
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+            @Override
+            public void populateItem(Item<ICellPopulator<OClass>> cellItem,
+                    String componentId, final IModel<OClass> rowModel) {
+                cellItem.add(new Command<OClass>(componentId, "class.browse") {
 
-			@Override
-			public void populateItem(Item<ICellPopulator<OClass>> cellItem,
-					String componentId, final IModel<OClass> rowModel) {
-				cellItem.add(new Command<OClass>(componentId, "class.browse") {
-					
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
+                    /**
+                     *
+                     */
+                    private static final long serialVersionUID = 1L;
 
-					@Override
-					protected AbstractLink newLink(String id) {
-						return new OClassPageLink(id, rowModel, BrowseClassPage.class, DisplayMode.VIEW.asModel());
-					}
+                    @Override
+                    protected AbstractLink newLink(String id) {
+                        return new OClassPageLink(id, rowModel, BrowseClassPage.class, DisplayMode.VIEW.asModel());
+                    }
 
-					@Override
-					public void onClick() {
-						//We should not be here
-					}
-				}.setIcon(FAIconType.angle_double_down).setBootstrapType(BootstrapType.INFO));
-				
-			}
-		});
-		OClassesDataProvider provider = new OClassesDataProvider();
-		provider.setSort("name", SortOrder.ASCENDING);
-		OrienteerDataTable<OClass, String> table = new OrienteerDataTable<OClass, String>("table", columns, provider ,20);
-		table.addCommand(new CreateOClassCommand(table));
-		table.addCommand(new EditSchemaCommand<OClass>(table, modeModel));
-		table.addCommand(new SaveSchemaCommand<OClass>(table, modeModel));
-		table.addCommand(new DeleteOClassCommand(table));
-		table.addCommand(new ReloadOMetadataCommand(table));
-		table.addCommand(new ExportOSchemaCommand(table));
-		table.addCommand(new ImportOSchemaCommand(table));
-		table.addCommand(new ViewUMLCommand(table));
-		form.add(table);
-		add(form);
-	}
+                    @Override
+                    public void onClick() {
+                        //We should not be here
+                    }
+                    }.setIcon(FAIconType.angle_double_down).setBootstrapType(BootstrapType.INFO));
 
+            }
+        });
+        OClassesDataProvider provider = new OClassesDataProvider();
+        provider.setSort("name", SortOrder.ASCENDING);
+        OrienteerDataTable<OClass, String> table = new OrienteerDataTable<OClass, String>("table", columns, provider, 20);
+        table.addCommand(new CreateOClassCommand(table));
+        table.addCommand(new EditSchemaCommand<OClass>(table, modeModel));
+        table.addCommand(new SaveSchemaCommand<OClass>(table, modeModel));
+        table.addCommand(new DeleteOClassCommand(table));
+        table.addCommand(new ReloadOMetadataCommand(table));
+        table.addCommand(new ExportOSchemaCommand(table));
+        table.addCommand(new ImportOSchemaCommand(table));
+        table.addCommand(new ViewUMLCommand(table));
+        form.add(table);
+        add(form);
+    }
 
-
-	@Override
-	public IModel<String> getTitleModel() {
-		return new ResourceModel("class.list.title");
-	}
+    @Override
+    public IModel<String> getTitleModel() {
+        return new ResourceModel("class.list.title");
+    }
 
 }

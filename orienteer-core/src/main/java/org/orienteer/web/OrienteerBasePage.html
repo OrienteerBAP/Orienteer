@@ -1,5 +1,22 @@
+<!--
+
+    Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
 <wicket:extend>
-     <div id="wrapper">
+    <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
@@ -14,7 +31,7 @@
             <!-- /.navbar-header -->
 
             <ul class="nav navbar-top-links navbar-right">
-            <li class="dropdown">
+                <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-cogs fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
@@ -30,13 +47,13 @@
                     </a>
                     <ul class="dropdown-menu">
                         <wicket:enclosure child="logout">
-                        <li><a wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
-                        </li>
-                        <li class="divider"></li>
-                        	<li><a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a></li>
+                            <li><a wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a></li>
                         </wicket:enclosure>
                         <wicket:enclosure>
-                        	<li><a wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a></li>
+                            <li><a wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a></li>
                         </wicket:enclosure>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -49,22 +66,22 @@
                 <div class="sidebar-collapse">
                     <ul class="nav" id="side-menu">
                         <li class="sidebar-search">
-                        	<form wicket:id="searchForm">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button" wicket:id="search">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
+                            <form wicket:id="searchForm">
+                                <div class="input-group custom-search-form">
+                                    <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" wicket:id="search">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
                             </form>
                             <!-- /input-group -->
                         </li>
                         <li wicket:id="perspectiveItems">
-                        	<a href="#" wicket:id="link">
-                        		<i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span>
-                        	</a>
+                            <a href="#" wicket:id="link">
+                                <i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span>
+                            </a>
                         </li>
                     </ul>
                     <!-- /#side-menu -->
@@ -77,7 +94,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                	<wicket:container wicket:id="pageHeader"></wicket:container>
+                    <wicket:container wicket:id="pageHeader"></wicket:container>
                     <div wicket:id="feedbacks"></div>
                     <wicket:child></wicket:child>
                 </div>

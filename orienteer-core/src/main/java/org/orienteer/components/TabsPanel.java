@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.components;
 
 import java.io.Serializable;
@@ -23,109 +38,104 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
-public class TabsPanel<T> extends GenericPanel<T>
-{
-	private static final CssResourceReference TABDROP_CSS = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");
-	private static final JavaScriptResourceReference TABDROP_JS = new JavaScriptResourceReference(TabsPanel.class, "tabdrop/bootstrap-tabdrop.js");
-	
-	private ListView<T> tabs;
-	private IModel<T> defaultTabModel;
-	public TabsPanel(String id, IModel<T> model, List<T> tabs)
-	{
-		this(id, model, Model.ofList(tabs));
-	}
-	public TabsPanel(String id, IModel<T> model, IModel<? extends List<? extends T>> tabsModel)
-	{
-		super(id, model);
-		setOutputMarkupPlaceholderTag(true);
-		tabs = new ListView<T>("tabs", tabsModel) {
+public class TabsPanel<T> extends GenericPanel<T> {
 
-			@Override
-			protected void populateItem(final ListItem<T> item) {
-				item.add(new AttributeAppender("class", "active")
-				{
-					@Override
-					public boolean isEnabled(Component component) {
-						return super.isEnabled(component) && Objects.equals(item.getModelObject(), TabsPanel.this.getModelObject());
-					}
+    private static final CssResourceReference TABDROP_CSS = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");
+    private static final JavaScriptResourceReference TABDROP_JS = new JavaScriptResourceReference(TabsPanel.class, "tabdrop/bootstrap-tabdrop.js");
 
-				});
-				
-				item.add(new AjaxLink<T>("link", item.getModel()) {
-					@Override
-					public void onClick(AjaxRequestTarget target) {
-						TabsPanel.this.setModelObject(item.getModelObject());
-						onTabClick(target);
-						target.add(TabsPanel.this);
-					}
-				}.setBody(newTabNameModel(item.getModel())));
-			}
-			
-			@Override
-			protected void onConfigure() {
-				T tab = TabsPanel.this.getModelObject();
-				if(!getModelObject().contains(tab))
-				{
-					T defaultTab = getDefaultTab();
-					if(defaultTab != null && getModelObject().contains(defaultTab))
-					{
-						tab = defaultTab;
-					}
-					else
-					{
-						List<T> tabs = getModelObject();
-						tab = tabs!=null && tabs.size()>0?tabs.get(0):null;
-					}
-					TabsPanel.this.setModelObject(tab);
-				}
-				super.onConfigure();
-			}
-		};
-		add(tabs);
-	}
-	
-	public T getDefaultTab() {
-		return defaultTabModel!=null?defaultTabModel.getObject():null;
-	}
-	
-	public IModel<T> getDefaultTabModel() {
-		return defaultTabModel;
-	}
-	
-	public void setDefaultTabModel(IModel<T> defaultTabModel) {
-		this.defaultTabModel = defaultTabModel;
-	}
-	protected IModel<String> newTabNameModel(IModel<T> tabModel)
-	{
-		return new SimpleNamingModel(tabModel);
-	}
-	
-	public void onTabClick(AjaxRequestTarget target)
-	{
-		
-	}
-	
-	@Override
-	public void detachModels() {
-		super.detachModels();
-		if(defaultTabModel!=null) defaultTabModel.detach();
-	}
+    private ListView<T> tabs;
+    private IModel<T> defaultTabModel;
 
-	@Override
-	protected void onComponentTag(ComponentTag tag) {
-		checkComponentTag(tag, "ul");
-		super.onComponentTag(tag);
-		tag.append("class", "nav nav-tabs", " ");
-		tag.put("role", "tablist");
-	}
-	
-	@Override
-	public void renderHead(IHeaderResponse response) {
-		super.renderHead(response);
-		response.render(CssHeaderItem.forReference(TABDROP_CSS));
-		response.render(JavaScriptHeaderItem.forReference(TABDROP_JS));
-		response.render(OnDomReadyHeaderItem.forScript("$('#"+getMarkupId()+"').tabdrop({text: '<i class=\"glyphicon glyphicon-align-justify\"></i>'});"));
-	}
+    public TabsPanel(String id, IModel<T> model, List<T> tabs) {
+        this(id, model, Model.ofList(tabs));
+    }
 
+    public TabsPanel(String id, IModel<T> model, IModel<? extends List<? extends T>> tabsModel) {
+        super(id, model);
+        setOutputMarkupPlaceholderTag(true);
+        tabs = new ListView<T>("tabs", tabsModel) {
+
+            @Override
+            protected void populateItem(final ListItem<T> item) {
+                item.add(new AttributeAppender("class", "active") {
+                    @Override
+                    public boolean isEnabled(Component component) {
+                        return super.isEnabled(component) && Objects.equals(item.getModelObject(), TabsPanel.this.getModelObject());
+                    }
+
+                });
+
+                item.add(new AjaxLink<T>("link", item.getModel()) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        TabsPanel.this.setModelObject(item.getModelObject());
+                        onTabClick(target);
+                        target.add(TabsPanel.this);
+                    }
+                    }.setBody(newTabNameModel(item.getModel())));
+            }
+
+            @Override
+            protected void onConfigure() {
+                T tab = TabsPanel.this.getModelObject();
+                if (!getModelObject().contains(tab)) {
+                    T defaultTab = getDefaultTab();
+                    if (defaultTab != null && getModelObject().contains(defaultTab)) {
+                        tab = defaultTab;
+                    } else {
+                        List<T> tabs = getModelObject();
+                        tab = tabs != null && tabs.size() > 0 ? tabs.get(0) : null;
+                    }
+                    TabsPanel.this.setModelObject(tab);
+                }
+                super.onConfigure();
+            }
+        };
+        add(tabs);
+    }
+
+    public T getDefaultTab() {
+        return defaultTabModel != null ? defaultTabModel.getObject() : null;
+    }
+
+    public IModel<T> getDefaultTabModel() {
+        return defaultTabModel;
+    }
+
+    public void setDefaultTabModel(IModel<T> defaultTabModel) {
+        this.defaultTabModel = defaultTabModel;
+    }
+
+    protected IModel<String> newTabNameModel(IModel<T> tabModel) {
+        return new SimpleNamingModel(tabModel);
+    }
+
+    public void onTabClick(AjaxRequestTarget target) {
+
+    }
+
+    @Override
+    public void detachModels() {
+        super.detachModels();
+        if (defaultTabModel != null) {
+            defaultTabModel.detach();
+        }
+    }
+
+    @Override
+    protected void onComponentTag(ComponentTag tag) {
+        checkComponentTag(tag, "ul");
+        super.onComponentTag(tag);
+        tag.append("class", "nav nav-tabs", " ");
+        tag.put("role", "tablist");
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(CssHeaderItem.forReference(TABDROP_CSS));
+        response.render(JavaScriptHeaderItem.forReference(TABDROP_JS));
+        response.render(OnDomReadyHeaderItem.forScript("$('#" + getMarkupId() + "').tabdrop({text: '<i class=\"glyphicon glyphicon-align-justify\"></i>'});"));
+    }
 
 }

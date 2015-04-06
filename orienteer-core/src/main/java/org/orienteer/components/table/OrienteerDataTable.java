@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.components.table;
 
 import java.util.List;
@@ -25,108 +40,100 @@ import org.orienteer.components.properties.AbstractMetaPanel;
 import org.orienteer.components.properties.IMetaContext;
 import org.orienteer.components.table.navigation.OrienteerNavigationToolbar;
 
-public class OrienteerDataTable<T, S> extends DataTable<T, S>
-{
-	
-	public static class MetaContextItem<T, C> extends Item<T> implements IMetaContext<C>
-	{
+public class OrienteerDataTable<T, S> extends DataTable<T, S> {
 
-		public MetaContextItem(String id, int index, IModel<T> model)
-		{
-			super(id, index, model);
-			setOutputMarkupId(true);
-		}
+    public static class MetaContextItem<T, C> extends Item<T> implements IMetaContext<C> {
 
-		@Override
-		public MarkupContainer getContextComponent() {
-			return this;
-		}
+        public MetaContextItem(String id, int index, IModel<T> model) {
+            super(id, index, model);
+            setOutputMarkupId(true);
+        }
 
-		@Override
-		public <K extends AbstractMetaPanel<?, C, ?>> K getMetaComponent(
-				C critery) {
-			return AbstractMetaPanel.getMetaComponent(this, critery);
-		}
-		
-	}
-	private static final long serialVersionUID = 1L;
-	protected DataTableCommandsToolbar<T> commandsToolbar;
-	protected AjaxFallbackHeadersToolbar<S> headersToolbar;
-	protected OrienteerNavigationToolbar navigationToolbar;
-	protected NoRecordsToolbar noRecordsToolbar;
-	
-	private IModel<String> captionModel;
-	
-	public OrienteerDataTable(String id, List<? extends IColumn<T, S>> columns,
-			ISortableDataProvider<T, S> dataProvider, int rowsPerPage)
-	{
-		super(id, columns, dataProvider, rowsPerPage);
-		addTopToolbar(commandsToolbar= new DataTableCommandsToolbar<T>(this));
-		addTopToolbar(headersToolbar = new AjaxFallbackHeadersToolbar<S>(this, dataProvider));
-		addBottomToolbar(navigationToolbar = new OrienteerNavigationToolbar(this));
-		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
-		setOutputMarkupPlaceholderTag(true);
-	}
+        @Override
+        public MarkupContainer getContextComponent() {
+            return this;
+        }
 
-	public DataTableCommandsToolbar<T> getCommandsToolbar() {
-		return commandsToolbar;
-	}
-	
-	public HeadersToolbar<S> getHeadersToolbar() {
-		return headersToolbar;
-	}
-	
-	public NoRecordsToolbar getNoRecordsToolbar()
-	{
-		return noRecordsToolbar;
-	}
+        @Override
+        public <K extends AbstractMetaPanel<?, C, ?>> K getMetaComponent(
+                C critery) {
+            return AbstractMetaPanel.getMetaComponent(this, critery);
+        }
 
-	public OrienteerDataTable<T, S> addCommand(Command<T> command)
-	{
-		commandsToolbar.add(command);
-		return this;
-	}
-	
-	@Override
-	public void onEvent(IEvent<?> event) {
-		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))
-		{
-			AjaxRequestTarget target = ((AjaxRequestTarget)event.getPayload());
-			target.add(this);
-			onAjaxUpdate(target);
-			event.stop();
-		}
-	}
-	
-	public void onAjaxUpdate(AjaxRequestTarget target)
-	{
-	}
+    }
+    private static final long serialVersionUID = 1L;
+    protected DataTableCommandsToolbar<T> commandsToolbar;
+    protected AjaxFallbackHeadersToolbar<S> headersToolbar;
+    protected OrienteerNavigationToolbar navigationToolbar;
+    protected NoRecordsToolbar noRecordsToolbar;
 
-	@Override
-	public IModel<String> getCaptionModel() {
-		if(captionModel==null)
-		{
-			captionModel = Model.of("");
-		}
-		return captionModel;
-	}
-	
-	public OrienteerDataTable<T, S> setCaptionModel(IModel<String> captionModel) {
-		get("caption").setDefaultModel(captionModel);
-		this.captionModel = captionModel;
-		return this;
-	}
+    private IModel<String> captionModel;
 
-	@Override
-	public void detachModels() {
-		super.detachModels();
-		if(captionModel!=null) captionModel.detach();
-	}
+    public OrienteerDataTable(String id, List<? extends IColumn<T, S>> columns,
+            ISortableDataProvider<T, S> dataProvider, int rowsPerPage) {
+        super(id, columns, dataProvider, rowsPerPage);
+        addTopToolbar(commandsToolbar = new DataTableCommandsToolbar<T>(this));
+        addTopToolbar(headersToolbar = new AjaxFallbackHeadersToolbar<S>(this, dataProvider));
+        addBottomToolbar(navigationToolbar = new OrienteerNavigationToolbar(this));
+        addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
+        setOutputMarkupPlaceholderTag(true);
+    }
 
-	@Override
-	protected Item<T> newRowItem(final String id, final int index, final IModel<T> model)
-	{
-		return new MetaContextItem<T, Object>(id, index, model);
-	}
-	
+    public DataTableCommandsToolbar<T> getCommandsToolbar() {
+        return commandsToolbar;
+    }
+
+    public HeadersToolbar<S> getHeadersToolbar() {
+        return headersToolbar;
+    }
+
+    public NoRecordsToolbar getNoRecordsToolbar() {
+        return noRecordsToolbar;
+    }
+
+    public OrienteerDataTable<T, S> addCommand(Command<T> command) {
+        commandsToolbar.add(command);
+        return this;
+    }
+
+    @Override
+    public void onEvent(IEvent<?> event) {
+        if (event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType())) {
+            AjaxRequestTarget target = ((AjaxRequestTarget) event.getPayload());
+            target.add(this);
+            onAjaxUpdate(target);
+            event.stop();
+        }
+    }
+
+    public void onAjaxUpdate(AjaxRequestTarget target) {
+    }
+
+    @Override
+    public IModel<String> getCaptionModel() {
+        if (captionModel == null) {
+            captionModel = Model.of("");
+        }
+        return captionModel;
+    }
+
+    public OrienteerDataTable<T, S> setCaptionModel(IModel<String> captionModel) {
+        get("caption").setDefaultModel(captionModel);
+        this.captionModel = captionModel;
+        return this;
+    }
+
+    @Override
+    public void detachModels() {
+        super.detachModels();
+        if (captionModel != null) {
+            captionModel.detach();
+        }
+    }
+
+    @Override
+    protected Item<T> newRowItem(final String id, final int index, final IModel<T> model) {
+        return new MetaContextItem<T, Object>(id, index, model);
+    }
+
 }

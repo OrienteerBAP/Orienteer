@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.components.commands;
 
 import java.util.List;
@@ -26,37 +41,35 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
-public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  implements ISecuredComponent
-{
-	private static final long serialVersionUID = 1L;
-	private IModel<OClass> classModel;
-	
-	public DeleteODocumentCommand(OrienteerDataTable<ODocument, ?> table, OClass oClasss)
-	{
-		this(table, new OClassModel(oClasss));
-	}
-	
-	public DeleteODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel)
-	{
-		super(table);
-		this.classModel = classModel;
-	}
-	
-	@Override
-	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
-		super.performMultiAction(target, objects);
-		getDatabase().commit(true);
-		getDatabase().begin();
-	}
+public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument> implements ISecuredComponent {
 
-	@Override
-	protected void perfromSingleAction(AjaxRequestTarget target, ODocument object) {
-		object.delete();
-	}
+    private static final long serialVersionUID = 1L;
+    private IModel<OClass> classModel;
 
-	@Override
-	public RequiredOrientResource[] getRequiredResources() {
-		return OSecurityHelper.requireOClass(classModel.getObject(), OrientPermission.DELETE);
-	}
+    public DeleteODocumentCommand(OrienteerDataTable<ODocument, ?> table, OClass oClasss) {
+        this(table, new OClassModel(oClasss));
+    }
+
+    public DeleteODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel) {
+        super(table);
+        this.classModel = classModel;
+    }
+
+    @Override
+    protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
+        super.performMultiAction(target, objects);
+        getDatabase().commit(true);
+        getDatabase().begin();
+    }
+
+    @Override
+    protected void perfromSingleAction(AjaxRequestTarget target, ODocument object) {
+        object.delete();
+    }
+
+    @Override
+    public RequiredOrientResource[] getRequiredResources() {
+        return OSecurityHelper.requireOClass(classModel.getObject(), OrientPermission.DELETE);
+    }
 
 }

@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer;
 
 import java.util.Collection;
@@ -38,112 +53,98 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
-public class TestOrienteerMain
-{
-	private static final Logger LOG = LoggerFactory.getLogger(TestOrienteerMain.class);
-	@Inject
-	private WicketTester tester;
-	
-	@Test
-	public void testWicketTester()
-	{
-		assertTrue(tester instanceof OrienteerTester);
-	}
-	
-	@Before
-	public void performLogin()
-	{
-		tester.startPage(ListOClassesPage.class);
-		if(tester.getLastRenderedPage() instanceof LoginPage)
-		{
-			FormTester formTester = tester.newFormTester("signInPanel:signInForm");
-			IOrientDbSettings settings = ((OrienteerWebApplication)tester.getApplication()).getOrientDbSettings();
+public class TestOrienteerMain {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TestOrienteerMain.class);
+    @Inject
+    private WicketTester tester;
+
+    @Test
+    public void testWicketTester() {
+        assertTrue(tester instanceof OrienteerTester);
+    }
+
+    @Before
+    public void performLogin() {
+        tester.startPage(ListOClassesPage.class);
+        if (tester.getLastRenderedPage() instanceof LoginPage) {
+            FormTester formTester = tester.newFormTester("signInPanel:signInForm");
+            IOrientDbSettings settings = ((OrienteerWebApplication) tester.getApplication()).getOrientDbSettings();
             formTester.setValue("username", settings.getDBInstallatorUserName());
             formTester.setValue("password", settings.getDBInstallatorUserPassword());
             formTester.submit();
-		}
-		tester.assertRenderedPage(ListOClassesPage.class);
-	}
-	
-	@Test
-	public void testWebApplicationRedefenition()
-	{
-		assertTrue(tester.getApplication() instanceof TestOrienteerWebApplication);
-	}
-	
-	@Test
-	public void testMainPages() throws Exception
-	{
-		tester.startPage(ListOClassesPage.class);
-		tester.assertRenderedPage(ListOClassesPage.class);
-	}
-	
-	@Test
-	public void testBrowsePages() throws Exception
-	{
-		ODatabaseDocument db = getDatabase();
-		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
-		PageParameters parameters = new PageParameters();
-		for (OClass oClass : classes)
-		{
-			parameters.set("className", oClass.getName());
-			LOG.info("Rendering browse page for class '"+oClass.getName()+"'");
-			tester.startPage(BrowseClassPage.class, parameters);
-			tester.assertRenderedPage(BrowseClassPage.class);
-		}
-	}
-	
-	@Test
-	public void testShowDummyDocuments() throws Exception
-	{
-		ODatabaseDocument db = getDatabase();
-		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
-		for (OClass oClass : classes)
-		{
-			ODocument doc = new ODocument(oClass);
-			LOG.info("Rendering VIEW document page for class '"+oClass.getName()+"'");
-			tester.startPage(new DocumentPage(doc));
-			tester.assertRenderedPage(DocumentPage.class);
-			LOG.info("Rendering EDIT document page for class '"+oClass.getName()+"'");
-			tester.startPage(new DocumentPage(doc).setDisplayMode(DisplayMode.EDIT));
-			tester.assertRenderedPage(DocumentPage.class);
-		}
-	}
-	
-	@Test
-	public void testViewClassesAndPropertiesPages() throws Exception
-	{
-		ODatabaseDocument db = getDatabase();
-		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
-		PageParameters parameters = new PageParameters();
-		for (OClass oClass : classes)
-		{
-			parameters.clearNamed();
-			parameters.set("className", oClass.getName());
-			LOG.info("Rendering page for class '"+oClass.getName()+"'");
-			tester.startPage(OClassPage.class, parameters);
-			tester.assertRenderedPage(OClassPage.class);
-			Collection<OProperty> properties = oClass.properties();
-			for (OProperty oProperty : properties)
-			{
-				parameters.set("propertyName", oProperty.getName());
-				LOG.info("Rendering page for property '"+oProperty.getFullName()+"'");
-				tester.startPage(OPropertyPage.class, parameters);
-				tester.assertRenderedPage(OPropertyPage.class);
-			}
-			Collection<OIndex<?>> indexes = oClass.getIndexes();
-			for (OIndex<?> oIndex : indexes)
-			{
-				parameters.set("indexName", oIndex.getName());
-				LOG.info("Rendering page for index '"+oIndex.getName()+"'");
-				tester.startPage(OIndexPage.class, parameters);
-				tester.assertRenderedPage(OIndexPage.class);
-			}
-		}
-	}
-	
-	private ODatabaseDocument getDatabase()
-	{
-		return ((OrientDbWebSession)tester.getSession()).getDatabase();
-	}
+        }
+        tester.assertRenderedPage(ListOClassesPage.class);
+    }
+
+    @Test
+    public void testWebApplicationRedefenition() {
+        assertTrue(tester.getApplication() instanceof TestOrienteerWebApplication);
+    }
+
+    @Test
+    public void testMainPages() throws Exception {
+        tester.startPage(ListOClassesPage.class);
+        tester.assertRenderedPage(ListOClassesPage.class);
+    }
+
+    @Test
+    public void testBrowsePages() throws Exception {
+        ODatabaseDocument db = getDatabase();
+        Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
+        PageParameters parameters = new PageParameters();
+        for (OClass oClass : classes) {
+            parameters.set("className", oClass.getName());
+            LOG.info("Rendering browse page for class '" + oClass.getName() + "'");
+            tester.startPage(BrowseClassPage.class, parameters);
+            tester.assertRenderedPage(BrowseClassPage.class);
+        }
+    }
+
+    @Test
+    public void testShowDummyDocuments() throws Exception {
+        ODatabaseDocument db = getDatabase();
+        Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
+        for (OClass oClass : classes) {
+            ODocument doc = new ODocument(oClass);
+            LOG.info("Rendering VIEW document page for class '" + oClass.getName() + "'");
+            tester.startPage(new DocumentPage(doc));
+            tester.assertRenderedPage(DocumentPage.class);
+            LOG.info("Rendering EDIT document page for class '" + oClass.getName() + "'");
+            tester.startPage(new DocumentPage(doc).setDisplayMode(DisplayMode.EDIT));
+            tester.assertRenderedPage(DocumentPage.class);
+        }
+    }
+
+    @Test
+    public void testViewClassesAndPropertiesPages() throws Exception {
+        ODatabaseDocument db = getDatabase();
+        Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
+        PageParameters parameters = new PageParameters();
+        for (OClass oClass : classes) {
+            parameters.clearNamed();
+            parameters.set("className", oClass.getName());
+            LOG.info("Rendering page for class '" + oClass.getName() + "'");
+            tester.startPage(OClassPage.class, parameters);
+            tester.assertRenderedPage(OClassPage.class);
+            Collection<OProperty> properties = oClass.properties();
+            for (OProperty oProperty : properties) {
+                parameters.set("propertyName", oProperty.getName());
+                LOG.info("Rendering page for property '" + oProperty.getFullName() + "'");
+                tester.startPage(OPropertyPage.class, parameters);
+                tester.assertRenderedPage(OPropertyPage.class);
+            }
+            Collection<OIndex<?>> indexes = oClass.getIndexes();
+            for (OIndex<?> oIndex : indexes) {
+                parameters.set("indexName", oIndex.getName());
+                LOG.info("Rendering page for index '" + oIndex.getName() + "'");
+                tester.startPage(OIndexPage.class, parameters);
+                tester.assertRenderedPage(OIndexPage.class);
+            }
+        }
+    }
+
+    private ODatabaseDocument getDatabase() {
+        return ((OrientDbWebSession) tester.getSession()).getDatabase();
+    }
 }

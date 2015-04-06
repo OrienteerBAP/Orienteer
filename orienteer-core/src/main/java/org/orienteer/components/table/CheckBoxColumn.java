@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.components.table;
 
 import java.io.Serializable;
@@ -20,99 +35,94 @@ import org.orienteer.components.properties.BooleanEditPanel;
 import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
 
-public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColumn<T, S>
-{
-	private static final JavaScriptResourceReference SELECT_ALL_JS = new JavaScriptResourceReference(CheckBoxColumn.class, "select-all.js");
-	
-	private class CheckboxPanel extends BooleanEditPanel
-	{
+public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColumn<T, S> {
 
-		public CheckboxPanel(String id, IModel<Boolean> model)
-		{
-			super(id, model);
-		}
+    private static final JavaScriptResourceReference SELECT_ALL_JS = new JavaScriptResourceReference(CheckBoxColumn.class, "select-all.js");
 
-	}
-	private static final long serialVersionUID = 1L;
-	private List<PK> selected = new ArrayList<PK>();
-	private Converter<T, PK> converterToPK;
+    private class CheckboxPanel extends BooleanEditPanel {
 
-	public CheckBoxColumn(Converter<T, PK> converterToPK) {
-		super(null);
-		this.converterToPK = converterToPK;
-	}
+        public CheckboxPanel(String id, IModel<Boolean> model) {
+            super(id, model);
+        }
 
-	@Override
-	public void populateItem(Item<ICellPopulator<T>> cellItem,
-			String componentId, IModel<T> rowModel) {
-		cellItem.add(new CheckboxPanel(componentId, getCheckBoxModel(rowModel)));
-	}
-	
-	@Override
-	public Component getHeader(String componentId) {
-		return new BooleanEditPanel(componentId, Model.of(false))
-		{
-			@Override
-			protected Component newCheckbox(String componentId) {
-				return super.newCheckbox(componentId).setOutputMarkupId(true);
-			}
-			@Override
-			public void renderHead(IHeaderResponse response) {
-				super.renderHead(response);
-				response.render(JavaScriptHeaderItem.forReference(SELECT_ALL_JS, "select-all"));
-				String script = "installSelectAll('"+getCheckbox().getMarkupId()+"');";
-				response.render(OnDomReadyHeaderItem.forScript(script));
-			}
-		};
-	}
-	
-	protected AbstractCheckBoxModel getCheckBoxModel(final IModel<T> rowModel)
-	{
-		return new AbstractCheckBoxModel() {
-			
-			private static final long serialVersionUID = 1L;
+    }
+    private static final long serialVersionUID = 1L;
+    private List<PK> selected = new ArrayList<PK>();
+    private Converter<T, PK> converterToPK;
 
-			@Override
-			public void unselect() {
-				CheckBoxColumn.this.unselect(rowModel.getObject());
-			}
-			
-			@Override
-			public void select() {
-				CheckBoxColumn.this.select(rowModel.getObject());
-			}
-			
-			@Override
-			public boolean isSelected() {
-				return CheckBoxColumn.this.isSelected(rowModel.getObject());
-			}
-		};
-	}
-	
-	public void resetSelection()
-	{
-		selected.clear();
-	}
-	
-	public void unselect(T object) {
-		selected.remove(converterToPK.convert(object));
-	}
-	
-	public void select(T object) {
-		selected.add(converterToPK.convert(object));
-	}
-	
-	public boolean isSelected(T object) {
-		return selected.contains(converterToPK.convert(object));
-	}
-	
-	public List<T> getSelected()
-	{
-		return Lists.transform(selected, converterToPK.reverse());
-	}
+    public CheckBoxColumn(Converter<T, PK> converterToPK) {
+        super(null);
+        this.converterToPK = converterToPK;
+    }
 
-	@Override
-	public String getCssClass() {
-		return "checkbox-column";
-	}
+    @Override
+    public void populateItem(Item<ICellPopulator<T>> cellItem,
+            String componentId, IModel<T> rowModel) {
+        cellItem.add(new CheckboxPanel(componentId, getCheckBoxModel(rowModel)));
+    }
+
+    @Override
+    public Component getHeader(String componentId) {
+        return new BooleanEditPanel(componentId, Model.of(false)) {
+            @Override
+            protected Component newCheckbox(String componentId) {
+                return super.newCheckbox(componentId).setOutputMarkupId(true);
+            }
+
+            @Override
+            public void renderHead(IHeaderResponse response) {
+                super.renderHead(response);
+                response.render(JavaScriptHeaderItem.forReference(SELECT_ALL_JS, "select-all"));
+                String script = "installSelectAll('" + getCheckbox().getMarkupId() + "');";
+                response.render(OnDomReadyHeaderItem.forScript(script));
+            }
+        };
+    }
+
+    protected AbstractCheckBoxModel getCheckBoxModel(final IModel<T> rowModel) {
+        return new AbstractCheckBoxModel() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void unselect() {
+                CheckBoxColumn.this.unselect(rowModel.getObject());
+            }
+
+            @Override
+            public void select() {
+                CheckBoxColumn.this.select(rowModel.getObject());
+            }
+
+            @Override
+            public boolean isSelected() {
+                return CheckBoxColumn.this.isSelected(rowModel.getObject());
+            }
+        };
+    }
+
+    public void resetSelection() {
+        selected.clear();
+    }
+
+    public void unselect(T object) {
+        selected.remove(converterToPK.convert(object));
+    }
+
+    public void select(T object) {
+        selected.add(converterToPK.convert(object));
+    }
+
+    public boolean isSelected(T object) {
+        return selected.contains(converterToPK.convert(object));
+    }
+
+    public List<T> getSelected() {
+        return Lists.transform(selected, converterToPK.reverse());
+    }
+
+    @Override
+    public String getCssClass() {
+        return "checkbox-column";
+    }
 }

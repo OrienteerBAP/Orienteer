@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.components.properties;
 
 import java.util.ArrayList;
@@ -32,121 +47,116 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends FormComponentPanel<M>
-{
-	protected final Class<?> finalType;
-	private List<T> data;
-	
-	@Inject
-	private IMarkupProvider markupProvider;
-	
-	public EmbeddedCollectionEditPanel(String id, final IModel<ODocument> documentModel, final IModel<OProperty> propertyModel, Class<?> finalType)
-	{
-		super(id, new DynamicPropertyValueModel<M>(documentModel, propertyModel));
-		setOutputMarkupId(true);
-		this.finalType = finalType;
-		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
-		final OType oType = propertyModel.getObject().getLinkedType();
-		ListView<T> listView = new ListView<T>("items", new PropertyModel<List<T>>(this, "data")) {
+public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends FormComponentPanel<M> {
 
-			@Override
-			protected void populateItem(final ListItem<T> item) {
-				item.add(visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, item.getModel()));
-				item.add(new AjaxFormCommand<Object>("remove", "command.remove")
-						{
-							@Override
-							public void onClick(AjaxRequestTarget target) {
-								getData().remove(item.getIndex());
-								target.add(EmbeddedCollectionEditPanel.this);
-							}
-						}.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
-						 .setBootstrapType(BootstrapType.DANGER)
-						 .setIcon((String)null));
-			}
-			
-			@Override
-			protected ListItem<T> newItem(int index, IModel<T> itemModel) {
-				return new ListItem<T>(index, itemModel)
-						{
-							@Override
-							public IMarkupFragment getMarkup(Component child) {
-								if(child==null || !child.getId().equals("item")) return super.getMarkup(child);
-								IMarkupFragment ret = markupProvider.provideMarkup(child);
-								return ret!=null?ret:super.getMarkup(child);
-							}
-						};
-			}
+    protected final Class<?> finalType;
+    private List<T> data;
 
-		};
-		listView.setReuseItems(true);
-		add(listView);
-		add(new AjaxFormCommand("add", "command.add")
-		{
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				getData().add(null);
-				target.add(EmbeddedCollectionEditPanel.this);
-			}
-			
-		}.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
-		 .setBootstrapType(BootstrapType.PRIMARY)
-		 .setIcon((String)null));
-	}
+    @Inject
+    private IMarkupProvider markupProvider;
 
-	public List<T> getData() {
-		if(data==null)
-		{
-			M data = getModelObject();
-			this.data = new ArrayList<T>();
-			if(data!=null && !data.isEmpty()) this.data.addAll(data);
-		}
-		return data;
-	}
-	
-	@Override
-	protected void onConfigure() {
-		//Explicitly prepare data
-		getData();
-		super.onConfigure();
-	}
-	
-	@Override
-	protected void convertInput() {
-		M converted;
-		List<T> storedData = getData();
-		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
+    public EmbeddedCollectionEditPanel(String id, final IModel<ODocument> documentModel, final IModel<OProperty> propertyModel, Class<?> finalType) {
+        super(id, new DynamicPropertyValueModel<M>(documentModel, propertyModel));
+        setOutputMarkupId(true);
+        this.finalType = finalType;
+        final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
+        final OType oType = propertyModel.getObject().getLinkedType();
+        ListView<T> listView = new ListView<T>("items", new PropertyModel<List<T>>(this, "data")) {
 
-			@Override
-			public void component(FormComponent<Object> object,
-					IVisit<Void> visit) {
-				if(!(EmbeddedCollectionEditPanel.this.equals(object)))
-				{
-					object.updateModel();
-					visit.dontGoDeeper();
-				}
-			}
-		});
+            @Override
+            protected void populateItem(final ListItem<T> item) {
+                item.add(visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, item.getModel()));
+                item.add(new AjaxFormCommand<Object>("remove", "command.remove") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        getData().remove(item.getIndex());
+                        target.add(EmbeddedCollectionEditPanel.this);
+                    }
+                    }.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+                        .setBootstrapType(BootstrapType.DANGER)
+                        .setIcon((String) null));
+            }
 
-		if(finalType.isInstance(storedData)) converted = (M) storedData;
-		else
-		{
-			try
-			{
-				converted = (M) finalType.newInstance();
-				converted.addAll(storedData);
-			} catch (InstantiationException e)
-			{
-				throw new WicketRuntimeException("Can't create instance of class "+finalType.getName(), e);
-			} catch (IllegalAccessException e)
-			{
-				throw new WicketRuntimeException("Can't create instance of class "+finalType.getName(), e);
-			}
-		}
-		setConvertedInput(converted);
-	}
-	
-	@Override
-	protected void onModelChanged() {
-		data = null;
-	}
+            @Override
+            protected ListItem<T> newItem(int index, IModel<T> itemModel) {
+                return new ListItem<T>(index, itemModel) {
+                    @Override
+                    public IMarkupFragment getMarkup(Component child) {
+                        if (child == null || !child.getId().equals("item")) {
+                            return super.getMarkup(child);
+                        }
+                        IMarkupFragment ret = markupProvider.provideMarkup(child);
+                        return ret != null ? ret : super.getMarkup(child);
+                    }
+                };
+            }
+
+        };
+        listView.setReuseItems(true);
+        add(listView);
+        add(new AjaxFormCommand("add", "command.add") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                getData().add(null);
+                target.add(EmbeddedCollectionEditPanel.this);
+            }
+
+            }.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+                .setBootstrapType(BootstrapType.PRIMARY)
+                .setIcon((String) null));
+    }
+
+    public List<T> getData() {
+        if (data == null) {
+            M data = getModelObject();
+            this.data = new ArrayList<T>();
+            if (data != null && !data.isEmpty()) {
+                this.data.addAll(data);
+            }
+        }
+        return data;
+    }
+
+    @Override
+    protected void onConfigure() {
+        //Explicitly prepare data
+        getData();
+        super.onConfigure();
+    }
+
+    @Override
+    protected void convertInput() {
+        M converted;
+        List<T> storedData = getData();
+        visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
+
+            @Override
+            public void component(FormComponent<Object> object,
+                    IVisit<Void> visit) {
+                if (!(EmbeddedCollectionEditPanel.this.equals(object))) {
+                    object.updateModel();
+                    visit.dontGoDeeper();
+                }
+            }
+        });
+
+        if (finalType.isInstance(storedData)) {
+            converted = (M) storedData;
+        } else {
+            try {
+                converted = (M) finalType.newInstance();
+                converted.addAll(storedData);
+            } catch (InstantiationException e) {
+                throw new WicketRuntimeException("Can't create instance of class " + finalType.getName(), e);
+            } catch (IllegalAccessException e) {
+                throw new WicketRuntimeException("Can't create instance of class " + finalType.getName(), e);
+            }
+        }
+        setConvertedInput(converted);
+    }
+
+    @Override
+    protected void onModelChanged() {
+        data = null;
+    }
 }

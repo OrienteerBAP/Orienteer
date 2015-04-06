@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.web.schema;
 
 import java.util.ArrayList;
@@ -41,88 +56,90 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
 @MountPath("/property/${className}/${propertyName}")
-@RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
-public class OPropertyPage extends OrienteerBasePage<OProperty>
-{
-	private static final long serialVersionUID = 1L;
+@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.READ)
+public class OPropertyPage extends OrienteerBasePage<OProperty> {
 
-	private OrienteerStructureTable<OProperty, String> structureTable;
-	
-	private IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-	
-	public OPropertyPage(IModel<OProperty> model) {
-		super(model);
-	}
+    private static final long serialVersionUID = 1L;
 
-	public OPropertyPage(PageParameters parameters) {
-		super(parameters);
-		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
-		if(mode!=null) modeModel.setObject(mode);
-	}
+    private OrienteerStructureTable<OProperty, String> structureTable;
 
-	@Override
-	protected IModel<OProperty> resolveByPageParameters(
-			PageParameters pageParameters) {
-		String className = pageParameters.get("className").toOptionalString();
-		String propertyName = pageParameters.get("propertyName").toOptionalString();
-		return Strings.isEmpty(className) || Strings.isEmpty(propertyName)?null:new OPropertyModel(className, propertyName) ;
-	}
-	
-	public IModel<DisplayMode> getDisplayModeModel() {
-		return modeModel;
-	}
-	
-	public DisplayMode getDisplayMode()
-	{
-		return modeModel.getObject();
-	}
-	
-	public OPropertyPage setDisplayMode(DisplayMode mode)
-	{
-		modeModel.setObject(mode);
-		return this;
-	}
+    private IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 
-	@Override
-	public void initialize() {
-		super.initialize();
-		Form<OProperty> form = new Form<OProperty>("form");
-		structureTable  = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), OPropertyMetaPanel.OPROPERTY_ATTRS) {
+    public OPropertyPage(IModel<OProperty> model) {
+        super(model);
+    }
 
-			@Override
-			protected Component getValueComponent(String id, final IModel<String> rowModel) {
-				return new OPropertyMetaPanel<Object>(id, modeModel, OPropertyPage.this.getModel(), rowModel);
-			}
-		};
-		
-		form.add(structureTable);
-		
-		add(form);
-	}
-	
-	@Override
-	protected void onInitialize() {
-		super.onInitialize();
-		structureTable.addCommand(new EditSchemaCommand<OProperty>(structureTable, modeModel));
-		structureTable.addCommand(new SaveSchemaCommand<OProperty>(structureTable, modeModel, getModel()));
-	}
-	
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
-	}
+    public OPropertyPage(PageParameters parameters) {
+        super(parameters);
+        DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
+        if (mode != null) {
+            modeModel.setObject(mode);
+        }
+    }
 
-	@Override
-	public IModel<String> getTitleModel() {
-		return new PropertyModel<String>(getModel(), "name");
-	}
-	
-	@Override
-	protected Component newPageHeaderComponent(String componentId) {
-		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
-		pageHeader.addChild(new OClassViewPanel(pageHeader.newChildId(), new PropertyModel<OClass>(getModel(), "ownerClass")));
-		pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
-		return pageHeader;
-	}
+    @Override
+    protected IModel<OProperty> resolveByPageParameters(
+            PageParameters pageParameters) {
+        String className = pageParameters.get("className").toOptionalString();
+        String propertyName = pageParameters.get("propertyName").toOptionalString();
+        return Strings.isEmpty(className) || Strings.isEmpty(propertyName) ? null : new OPropertyModel(className, propertyName);
+    }
+
+    public IModel<DisplayMode> getDisplayModeModel() {
+        return modeModel;
+    }
+
+    public DisplayMode getDisplayMode() {
+        return modeModel.getObject();
+    }
+
+    public OPropertyPage setDisplayMode(DisplayMode mode) {
+        modeModel.setObject(mode);
+        return this;
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        Form<OProperty> form = new Form<OProperty>("form");
+        structureTable = new OrienteerStructureTable<OProperty, String>("attributes", getModel(), OPropertyMetaPanel.OPROPERTY_ATTRS) {
+
+            @Override
+            protected Component getValueComponent(String id, final IModel<String> rowModel) {
+                return new OPropertyMetaPanel<Object>(id, modeModel, OPropertyPage.this.getModel(), rowModel);
+            }
+        };
+
+        form.add(structureTable);
+
+        add(form);
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        structureTable.addCommand(new EditSchemaCommand<OProperty>(structureTable, modeModel));
+        structureTable.addCommand(new SaveSchemaCommand<OProperty>(structureTable, modeModel, getModel()));
+    }
+
+    @Override
+    protected void onConfigure() {
+        super.onConfigure();
+        if (getModelObject() == null) {
+            throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public IModel<String> getTitleModel() {
+        return new PropertyModel<String>(getModel(), "name");
+    }
+
+    @Override
+    protected Component newPageHeaderComponent(String componentId) {
+        SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
+        pageHeader.addChild(new OClassViewPanel(pageHeader.newChildId(), new PropertyModel<OClass>(getModel(), "ownerClass")));
+        pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
+        return pageHeader;
+    }
 }

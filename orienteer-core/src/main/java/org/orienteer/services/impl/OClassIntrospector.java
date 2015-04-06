@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.services.impl;
 
 import java.util.ArrayList;
@@ -45,189 +60,200 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
-public class OClassIntrospector implements IOClassIntrospector
-{
-	public static class PropertyDisplayablePredicate implements Predicate<OProperty>
-	{
-		public static final PropertyDisplayablePredicate INSTANCE = new PropertyDisplayablePredicate();
-		@Override
-		public boolean apply(OProperty input) {
-			Boolean value = CustomAttributes.DISPLAYABLE.getValue(input);
-			return value!=null?value:false;
-		}
-	}
-	
-	public static class GetOrderOfPropertyFunction implements Function<OProperty, Integer>
-	{
-		public static final GetOrderOfPropertyFunction INSTANCE = new GetOrderOfPropertyFunction();
-		@Override
-		public Integer apply(OProperty input) {
-			return CustomAttributes.ORDER.getValue(input);
-		}
-	}
-	
-	public static final Ordering<OProperty> ORDER_PROPERTIES_BY_ORDER = Ordering.<Integer>natural().nullsLast().onResultOf(GetOrderOfPropertyFunction.INSTANCE);
+public class OClassIntrospector implements IOClassIntrospector {
 
-	
-	@Override
-	public List<OProperty> getDisplayableProperties(OClass oClass) {
-		Collection<OProperty> properties =  oClass.properties();
-		Collection<OProperty> filteredProperties = Collections2.filter(properties, PropertyDisplayablePredicate.INSTANCE);
-		if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
-		return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
-	}
+    public static class PropertyDisplayablePredicate implements Predicate<OProperty> {
 
-	@Override
-	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, boolean withCheckbox, IModel<DisplayMode> modeModel) {
-		List<OProperty> properties = getDisplayableProperties(oClass);
-		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+2);
-		if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
-		OProperty nameProperty = getNameProperty(oClass);
-		OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
-		columns.add(entityColumn);
-		for (OProperty oProperty : properties)
-		{
-			if(nameProperty==null || !nameProperty.equals(oProperty))
-			{
-				Class<?> javaType = oProperty.getType().getDefaultJavaType();
-				if(javaType!=null && Comparable.class.isAssignableFrom(javaType))
-				{
-					columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty, modeModel));
-				}
-				else
-				{
-					columns.add(new OPropertyValueColumn(oProperty, modeModel));
-				}
-			}
-		}
-		return columns;
-	}
+        public static final PropertyDisplayablePredicate INSTANCE = new PropertyDisplayablePredicate();
 
-	@Override
-	public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown) {
-		List<ODocument> path = new ArrayList<ODocument>();
-		ODocument current = doc;
-		boolean cycle;
-		while(current!=null)
-		{
-			cycle = path.contains(current);
-			path.add(current);
-			if(cycle) break;
-			current = getParent(current);
-		}
-		return fromUpToDown?Lists.reverse(path):path;
-	}
+        @Override
+        public boolean apply(OProperty input) {
+            Boolean value = CustomAttributes.DISPLAYABLE.getValue(input);
+            return value != null ? value : false;
+        }
+    }
 
-	@Override
-	public ODocument getParent(ODocument doc) {
-		if(doc==null || doc.getSchemaClass()==null) return null;
-		OClass oClass = doc.getSchemaClass();
-		OProperty parent = CustomAttributes.PROP_PARENT.getValue(oClass);
-		if(parent!=null) return doc.field(parent.getName());
-		else return null;
-	}
+    public static class GetOrderOfPropertyFunction implements Function<OProperty, Integer> {
 
-	@Override
-	public List<String> listTabs(OClass oClass) {
-		Set<String> tabs = new HashSet<String>();
-		for(OProperty property: oClass.properties())
-		{
-			String tab = CustomAttributes.TAB.getValue(property);
-			if(tab==null) tab = DEFAULT_TAB;
-			tabs.add(tab);
-		}
-		return new ArrayList<String>(tabs);
-	}
+        public static final GetOrderOfPropertyFunction INSTANCE = new GetOrderOfPropertyFunction();
 
-	@Override
-	public List<OProperty> listProperties(OClass oClass, String tab, final Boolean extended) {
-		Collection<OProperty> properties =  oClass.properties();
-		final String safeTab = tab!=null?tab:DEFAULT_TAB;
-		final UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
-		Collection<OProperty> filteredProperties = Collections2.filter(properties, new Predicate<OProperty>() {
+        @Override
+        public Integer apply(OProperty input) {
+            return CustomAttributes.ORDER.getValue(input);
+        }
+    }
 
-			@Override
-			public boolean apply(OProperty input) {
-				String propertyTab = CustomAttributes.TAB.getValue(input);
-				boolean ret = safeTab.equals(propertyTab!=null?propertyTab:DEFAULT_TAB);
-				ret = ret && !CustomAttributes.HIDDEN.getValue(input, false);
-				if(!ret || extended==null) return ret;
-				else {
-					String component = CustomAttributes.VISUALIZATION_TYPE.getValue(input);
-					if(component==null) return !extended;
-					IVisualizer visualizer = registry.getComponentFactory(input.getType(), component);
-					return (visualizer!=null?visualizer.isExtended():false) == extended;
-				}
-			}
-		});
-		//if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
-		return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
-	}
+    public static final Ordering<OProperty> ORDER_PROPERTIES_BY_ORDER = Ordering.<Integer>natural().nullsLast().onResultOf(GetOrderOfPropertyFunction.INSTANCE);
 
-	@Override
-	public ISortableDataProvider<ODocument, String> prepareDataProviderForProperty(
-			OProperty property, IModel<ODocument> documentModel) {
-		if(CustomAttributes.CALCULABLE.getValue(property, false))
-		{
-			String sql = CustomAttributes.CALC_SCRIPT.getValue(property);
-			sql = sql.replace("?", ":doc");
-			OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
-			provider.setParameter("doc", documentModel);
-			return provider;
-		}
-		else
-		{
-			return new ODocumentLinksDataProvider(documentModel, property);
-		}
-	}
+    @Override
+    public List<OProperty> getDisplayableProperties(OClass oClass) {
+        Collection<OProperty> properties = oClass.properties();
+        Collection<OProperty> filteredProperties = Collections2.filter(properties, PropertyDisplayablePredicate.INSTANCE);
+        if (filteredProperties == null || filteredProperties.isEmpty()) {
+            filteredProperties = properties;
+        }
+        return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
+    }
 
-	@Override
-	public OProperty getNameProperty(OClass oClass) {
-		if(oClass==null) return null;
-		OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
-		if(ret!=null) return ret;
-		ret = oClass.getProperty("name");
-		if(ret!=null) return ret;
-		for(OProperty p: oClass.properties())
-		{
-			if(!p.getType().isMultiValue())
-			{
-				ret = p;
-				if(OType.STRING.equals(p.getType())) break;
-			}
-		}
-		return ret;
-	}
-	
-	@Override
-	public String getDocumentName(ODocument doc) {
-		if(doc==null) return Application.get().getResourceSettings().getLocalizer().getString("nodoc", null);
-		else
-		{
-			//TODO: Enhance to cover complex naming cases
-			OProperty nameProp = getNameProperty(doc.getSchemaClass());
-			if(nameProp!=null)
-			{
-				Object value = doc.field(nameProp.getName());
-				if(value==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
-				OType type = nameProp.getType();
-				switch (type)
-				{
-					case DATE:
-						return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateFormatInstance().format(value);
-					case DATETIME:
-						return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateTimeFormatInstance().format(value);
-					case LINK:
-						return getDocumentName((ODocument)value);
-					default:
-						return value.toString();
-				}
-			}
-			else
-			{
-				return doc.toString();
-			}
-		}
-	}
+    @Override
+    public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, boolean withCheckbox, IModel<DisplayMode> modeModel) {
+        List<OProperty> properties = getDisplayableProperties(oClass);
+        List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument, String>>(properties.size() + 2);
+        if (withCheckbox) {
+            columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
+        }
+        OProperty nameProperty = getNameProperty(oClass);
+        OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
+        columns.add(entityColumn);
+        for (OProperty oProperty : properties) {
+            if (nameProperty == null || !nameProperty.equals(oProperty)) {
+                Class<?> javaType = oProperty.getType().getDefaultJavaType();
+                if (javaType != null && Comparable.class.isAssignableFrom(javaType)) {
+                    columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty, modeModel));
+                } else {
+                    columns.add(new OPropertyValueColumn(oProperty, modeModel));
+                }
+            }
+        }
+        return columns;
+    }
+
+    @Override
+    public List<ODocument> getNavigationPath(ODocument doc, boolean fromUpToDown) {
+        List<ODocument> path = new ArrayList<ODocument>();
+        ODocument current = doc;
+        boolean cycle;
+        while (current != null) {
+            cycle = path.contains(current);
+            path.add(current);
+            if (cycle) {
+                break;
+            }
+            current = getParent(current);
+        }
+        return fromUpToDown ? Lists.reverse(path) : path;
+    }
+
+    @Override
+    public ODocument getParent(ODocument doc) {
+        if (doc == null || doc.getSchemaClass() == null) {
+            return null;
+        }
+        OClass oClass = doc.getSchemaClass();
+        OProperty parent = CustomAttributes.PROP_PARENT.getValue(oClass);
+        if (parent != null) {
+            return doc.field(parent.getName());
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<String> listTabs(OClass oClass) {
+        Set<String> tabs = new HashSet<String>();
+        for (OProperty property : oClass.properties()) {
+            String tab = CustomAttributes.TAB.getValue(property);
+            if (tab == null) {
+                tab = DEFAULT_TAB;
+            }
+            tabs.add(tab);
+        }
+        return new ArrayList<String>(tabs);
+    }
+
+    @Override
+    public List<OProperty> listProperties(OClass oClass, String tab, final Boolean extended) {
+        Collection<OProperty> properties = oClass.properties();
+        final String safeTab = tab != null ? tab : DEFAULT_TAB;
+        final UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
+        Collection<OProperty> filteredProperties = Collections2.filter(properties, new Predicate<OProperty>() {
+
+            @Override
+            public boolean apply(OProperty input) {
+                String propertyTab = CustomAttributes.TAB.getValue(input);
+                boolean ret = safeTab.equals(propertyTab != null ? propertyTab : DEFAULT_TAB);
+                ret = ret && !CustomAttributes.HIDDEN.getValue(input, false);
+                if (!ret || extended == null) {
+                    return ret;
+                } else {
+                    String component = CustomAttributes.VISUALIZATION_TYPE.getValue(input);
+                    if (component == null) {
+                        return !extended;
+                    }
+                    IVisualizer visualizer = registry.getComponentFactory(input.getType(), component);
+                    return (visualizer != null ? visualizer.isExtended() : false) == extended;
+                }
+            }
+        });
+        //if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
+        return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
+    }
+
+    @Override
+    public ISortableDataProvider<ODocument, String> prepareDataProviderForProperty(
+            OProperty property, IModel<ODocument> documentModel) {
+        if (CustomAttributes.CALCULABLE.getValue(property, false)) {
+            String sql = CustomAttributes.CALC_SCRIPT.getValue(property);
+            sql = sql.replace("?", ":doc");
+            OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
+            provider.setParameter("doc", documentModel);
+            return provider;
+        } else {
+            return new ODocumentLinksDataProvider(documentModel, property);
+        }
+    }
+
+    @Override
+    public OProperty getNameProperty(OClass oClass) {
+        if (oClass == null) {
+            return null;
+        }
+        OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
+        if (ret != null) {
+            return ret;
+        }
+        ret = oClass.getProperty("name");
+        if (ret != null) {
+            return ret;
+        }
+        for (OProperty p : oClass.properties()) {
+            if (!p.getType().isMultiValue()) {
+                ret = p;
+                if (OType.STRING.equals(p.getType())) {
+                    break;
+                }
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public String getDocumentName(ODocument doc) {
+        if (doc == null) {
+            return Application.get().getResourceSettings().getLocalizer().getString("nodoc", null);
+        } else {
+            //TODO: Enhance to cover complex naming cases
+            OProperty nameProp = getNameProperty(doc.getSchemaClass());
+            if (nameProp != null) {
+                Object value = doc.field(nameProp.getName());
+                if (value == null) {
+                    return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
+                }
+                OType type = nameProp.getType();
+                switch (type) {
+                    case DATE:
+                        return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateFormatInstance().format(value);
+                    case DATETIME:
+                        return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateTimeFormatInstance().format(value);
+                    case LINK:
+                        return getDocumentName((ODocument) value);
+                    default:
+                        return value.toString();
+                }
+            } else {
+                return doc.toString();
+            }
+        }
+    }
 
 }

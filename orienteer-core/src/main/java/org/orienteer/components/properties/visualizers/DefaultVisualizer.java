@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.components.properties.visualizers;
 
 import java.text.DateFormat;
@@ -35,79 +50,76 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class DefaultVisualizer extends AbstractSimpleVisualizer
-{
-	public static final DefaultVisualizer INSTANCE = new DefaultVisualizer();
-	
-	public DefaultVisualizer()
-	{
-		super("default", false, OType.values());
-	}
+public class DefaultVisualizer extends AbstractSimpleVisualizer {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <V> Component createComponent(String id, DisplayMode mode,
-			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel) {
-		return createComponent(id, mode, documentModel, propertyModel, propertyModel.getObject().getType(), valueModel);
-	}
-	
-	public <V> Component createComponent(String id, DisplayMode mode,
-			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, OType oType, IModel<V> valueModel) {
-		OProperty property = propertyModel.getObject();
-		if(DisplayMode.VIEW.equals(mode))
-		{
-			switch(oType)
-			{
-				case LINK:
-					return new LinkViewPanel(id, (IModel<ODocument>)valueModel);
-				case LINKLIST:
-				case LINKSET:
-					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
+    public static final DefaultVisualizer INSTANCE = new DefaultVisualizer();
+
+    public DefaultVisualizer() {
+        super("default", false, OType.values());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <V> Component createComponent(String id, DisplayMode mode,
+            IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+        return createComponent(id, mode, documentModel, propertyModel, propertyModel.getObject().getType(), valueModel);
+    }
+
+    public <V> Component createComponent(String id, DisplayMode mode,
+            IModel<ODocument> documentModel, IModel<OProperty> propertyModel, OType oType, IModel<V> valueModel) {
+        OProperty property = propertyModel.getObject();
+        if (DisplayMode.VIEW.equals(mode)) {
+            switch (oType) {
+                case LINK:
+                    return new LinkViewPanel(id, (IModel<ODocument>) valueModel);
+                case LINKLIST:
+                case LINKSET:
+                    return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
                 case DATE:
                     return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, Session.get().getLocale())).toPattern());
                 case DATETIME:
-                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, Session.get().getLocale())).toPattern());
+                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Session.get().getLocale())).toPattern());
                 case BOOLEAN:
-                	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
+                    return new BooleanViewPanel(id, (IModel<Boolean>) valueModel);
                 case EMBEDDEDLIST:
                 case EMBEDDEDSET:
-                	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
+                    return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
                 case BINARY:
-                	return new BinaryViewPanel(id, documentModel, propertyModel, valueModel);
+                    return new BinaryViewPanel(id, documentModel, propertyModel, valueModel);
                 default:
-					return new Label(id, valueModel);
-			}
-		}
-		else if(DisplayMode.EDIT.equals(mode))
-		{
-			switch(oType)
-			{
-				case BOOLEAN:
-					return new CheckBox(id, (IModel<Boolean>)valueModel);
-				case LINK:
-					return new LinkEditPanel(id, documentModel, propertyModel);
-					//return new TextField<V>(id, getModel()).setType(ODocument.class);
-				case LINKLIST:
-				case LINKSET:
-					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
+                    return new Label(id, valueModel);
+            }
+        } else if (DisplayMode.EDIT.equals(mode)) {
+            switch (oType) {
+                case BOOLEAN:
+                    return new CheckBox(id, (IModel<Boolean>) valueModel);
+                case LINK:
+                    return new LinkEditPanel(id, documentModel, propertyModel);
+                //return new TextField<V>(id, getModel()).setType(ODocument.class);
+                case LINKLIST:
+                case LINKSET:
+                    return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
                 case DATE:
                     return new DateField(id, (IModel<Date>) valueModel);
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) valueModel);
                 case EMBEDDEDLIST:
-                	return new EmbeddedCollectionEditPanel<Object, List<Object>>(id, documentModel, propertyModel, ArrayList.class);
+                    return new EmbeddedCollectionEditPanel<Object, List<Object>>(id, documentModel, propertyModel, ArrayList.class);
                 case EMBEDDEDSET:
-                	return new EmbeddedCollectionEditPanel<Object, Set<Object>>(id, documentModel, propertyModel, HashSet.class);
+                    return new EmbeddedCollectionEditPanel<Object, Set<Object>>(id, documentModel, propertyModel, HashSet.class);
                 case BINARY:
-                	return new BinaryEditPanel(id, (IModel<byte[]>)valueModel);
+                    return new BinaryEditPanel(id, (IModel<byte[]>) valueModel);
                 default:
-                	TextField<V> ret = new TextField<V>(id, valueModel);
-                	Class<?> javaOType = oType.getDefaultJavaType();
-                	if(javaOType!=null) ret.setType(javaOType);
-                	return ret;
-			}
-		}
-		else return null;
-	}
+                    TextField<V> ret = new TextField<V>(id, valueModel);
+                    Class<?> javaOType = oType.getDefaultJavaType();
+                    if (javaOType != null) {
+                        ret.setType(javaOType);
+                    }
+                    return ret;
+            }
+        } else {
+            return null;
+        }
+    }
 
 }

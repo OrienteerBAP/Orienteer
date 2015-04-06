@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2015 Ilia Naryzhny (phantom@ydn.ru)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.orienteer.components.properties;
 
 import java.util.List;
@@ -20,80 +35,76 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-public class LinkEditPanel extends FormComponentPanel<ODocument>
-{
-	protected IModel<ODocument> inputDocument;
-	protected ModalWindow modal;
+public class LinkEditPanel extends FormComponentPanel<ODocument> {
 
-	public LinkEditPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
-	{
-		super(id, new DynamicPropertyValueModel<ODocument>(documentModel, propertyModel));
-		setOutputMarkupPlaceholderTag(true);
-		setRenderBodyOnly(false);
-		inputDocument = new ODocumentModel(getModelObject());
-		add(new ODocumentPageLink("link", inputDocument).setDocumentNameAsBody(true));
-		
-		
-		modal = new ModalWindow("modal");
-		modal.setAutoSize(true);
-		add(modal);
-		modal.setTitle(new ResourceModel("command.select.modal.title"));
-		modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, new PropertyModel<OClass>(propertyModel, "linkedClass")) {
-			
-			@Override
-			protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects) {
-				if(objects==null || objects.size()==0) return true;
-				if(objects.size()>1)
-				{
-					String message = getLocalizer().getString("alert.onlyoneshouldbeselected", this).replace("\"", "\\\"");
-					target.appendJavaScript("alert(\""+message+"\")");
-					return false;
-				}
-				else
-				{
-					inputDocument.setObject(objects.get(0));
-					target.add(LinkEditPanel.this);
-					return true;
-				}
-			}
-		});
-		
-		add(new AjaxLink("select") {
+    protected IModel<ODocument> inputDocument;
+    protected ModalWindow modal;
 
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				modal.show(target);
-			}
-		});
-		
-		add(new AjaxLink("release") {
+    public LinkEditPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+        super(id, new DynamicPropertyValueModel<ODocument>(documentModel, propertyModel));
+        setOutputMarkupPlaceholderTag(true);
+        setRenderBodyOnly(false);
+        inputDocument = new ODocumentModel(getModelObject());
+        add(new ODocumentPageLink("link", inputDocument).setDocumentNameAsBody(true));
 
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				inputDocument.setObject(null);
-				target.add(LinkEditPanel.this);
-			}
+        modal = new ModalWindow("modal");
+        modal.setAutoSize(true);
+        add(modal);
+        modal.setTitle(new ResourceModel("command.select.modal.title"));
+        modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, new PropertyModel<OClass>(propertyModel, "linkedClass")) {
 
-			@Override
-			protected void onConfigure() {
-				super.onConfigure();
-				setVisible(inputDocument.getObject()!=null);
-			}
-			
-			
-		});
-	}
+            @Override
+            protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects) {
+                if (objects == null || objects.size() == 0) {
+                    return true;
+                }
+                if (objects.size() > 1) {
+                    String message = getLocalizer().getString("alert.onlyoneshouldbeselected", this).replace("\"", "\\\"");
+                    target.appendJavaScript("alert(\"" + message + "\")");
+                    return false;
+                } else {
+                    inputDocument.setObject(objects.get(0));
+                    target.add(LinkEditPanel.this);
+                    return true;
+                }
+            }
+        });
 
-	@Override
-	protected void convertInput() {
-		super.convertInput();
-		setConvertedInput(inputDocument.getObject());
-	}
+        add(new AjaxLink("select") {
 
-	@Override
-	public void detachModels() {
-		super.detachModels();
-		inputDocument.detach();
-	}
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                modal.show(target);
+            }
+        });
+
+        add(new AjaxLink("release") {
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                inputDocument.setObject(null);
+                target.add(LinkEditPanel.this);
+            }
+
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(inputDocument.getObject() != null);
+            }
+
+        });
+    }
+
+    @Override
+    protected void convertInput() {
+        super.convertInput();
+        setConvertedInput(inputDocument.getObject());
+    }
+
+    @Override
+    public void detachModels() {
+        super.detachModels();
+        inputDocument.detach();
+    }
 
 }
