@@ -26,12 +26,20 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-archetype-war</artifactId>
-	<packaging>maven-archetype</packaging> 
+	<packaging>maven-archetype</packaging>
+        
 	<build>
 	    <resources>
 		<resource>
 		    <filtering>false</filtering> 
 		    <directory>${basedir}/src/main/resources</directory> 
+		    <includes>
+			<include>**/*</include> 
+		    </includes>
+		</resource>
+		<resource>
+		    <filtering>false</filtering> 
+		    <directory>${basedir}/src/main/resources/archetype-resources</directory> 
 		    <includes>
 			<include>**/*</include> 
 		    </includes>
