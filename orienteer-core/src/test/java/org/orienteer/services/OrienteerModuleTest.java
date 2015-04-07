@@ -17,12 +17,16 @@ package org.orienteer.services;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.Properties;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import org.junit.Ignore;
 
 /**
@@ -40,55 +44,38 @@ public class OrienteerModuleTest {
 	}
 
 	/**
-	 * Test of configure method, of class OrienteerModule.
-	 */
-	@Test
-	@Ignore
-	public void testConfigure() {
-		System.out.println("configure");
-		OrienteerModule instance = new OrienteerModule();
-		instance.configure();
-		// TODO review the generated test code and remove the default call to fail.
-		fail("The test case is a prototype.");
-	}
-
-	/**
 	 * Test of lookupFile method, of class OrienteerModule.
 	 * @throws java.net.MalformedURLException
 	 */
 	@Test
 	public void testRetrieveProperties() throws MalformedURLException, IOException {
-		//guice property values need to be bound with values from
-		//orienteer-test.properties
-		String propertyFileNamePropertyName = "test.something";
-		String propertyFileName = "some.filename";
-		//system property not set
-		String oldProp = System.clearProperty(OrienteerModule.PROPERTIES_RESOURCE_NAME_PROPERTY_NAME); //set again after the test -> don't run in parallel
-			//without further precautions
-		Properties expResult = OrienteerModule.PROPERTIES_DEFAULT;
-		Properties result = OrienteerModule.retrieveProperties();
-		assertEquals(expResult, result);
-		//system property set
-		File propertyFile = File.createTempFile("orienteer-test", null);
-		System.setProperty(propertyFileNamePropertyName, propertyFile.getAbsolutePath());
-		expResult = OrienteerModule.PROPERTIES_DEFAULT;
-		result = OrienteerModule.retrieveProperties();
-		assertEquals(expResult, result);
-		//test creation of default properties file
-		Properties propertyFileProperties = new Properties();
-		propertyFileProperties.setProperty("a", "b");
-		OutputStream propertyFileOutputStream = new FileOutputStream(propertyFile);
-		propertyFileProperties.store(propertyFileOutputStream, "comment");
-		propertyFileOutputStream.flush();
-		propertyFileOutputStream.close();
-		System.setProperty(OrienteerModule.PROPERTIES_FILE_NAME_PROPERTY_NAME, propertyFile.getAbsolutePath());
-		expResult = new Properties();
-		expResult.putAll(OrienteerModule.PROPERTIES_DEFAULT);
-		expResult.setProperty("a", "b");
-		result = OrienteerModule.retrieveProperties();
-		assertEquals(expResult, result);
+		//clear system property
+		String oldProp = System.clearProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME);
+		try {
+			System.setProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "non-existing-qualifier");
+			Properties result = OrienteerModule.retrieveProperties();
+			assertEquals(OrienteerModule.PROPERTIES_DEFAULT, result);
+			//system property set
+			File propertyFile = File.createTempFile("orienteer-test-temp", ".properties");
+			
+			{
+				FileWriter writer = new FileWriter(propertyFile);
+				writer.write("myproperty=myvalue");
+				writer.flush(); 
+				writer.close();
+			}
+			System.setProperty("orienteer-test-temp.properties", propertyFile.getAbsolutePath());
+			System.setProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "orienteer-test-temp");
+			result = OrienteerModule.retrieveProperties();
+			assertTrue(result.containsKey("myproperty"));
+			assertEquals("myvalue", result.getProperty("myproperty"));
+			result.remove("myproperty");
+			assertEquals(OrienteerModule.PROPERTIES_DEFAULT, result);
+		} finally {
+			System.out.println("SETTING BACK OLD QUOLIFIER:"+oldProp);
+			if(oldProp!=null) System.setProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, oldProp);
+		}
 		
-		System.setProperty(OrienteerModule.PROPERTIES_RESOURCE_NAME_PROPERTY_NAME, oldProp);
 	}
 	
 }

@@ -14,6 +14,13 @@ import org.orienteer.components.properties.UIVisualizersRegistry;
 import org.orienteer.services.impl.GuiceOrientDbSettings;
 import org.orienteer.services.impl.OClassIntrospector;
 import org.orienteer.services.impl.OrienteerWebjarsSettings;
+import org.orienteer.utils.LookupResourceHelper;
+import org.orienteer.utils.LookupResourceHelper.DirFileLookuper;
+import org.orienteer.utils.LookupResourceHelper.IResourceLookuper;
+import org.orienteer.utils.LookupResourceHelper.SystemPropertyFileLookuper;
+import org.orienteer.utils.LookupResourceHelper.SystemPropertyResourceLookuper;
+import org.orienteer.utils.LookupResourceHelper.SystemPropertyURLLookuper;
+import org.orienteer.utils.LookupResourceHelper.UpDirectoriesFileLookuper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +42,14 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.server.OServer;
 
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 
 /**
+ * Main module to load Orienteer stuff to Guice
+ * 
  * <h1>Properties</h1>
  * Properties can be retrieved from both files from the local filesystem and
  * files on the Java classpath. The path of the file and the resource can be
@@ -58,28 +68,33 @@ import java.nio.file.FileSystems;
  */
 public class OrienteerModule extends AbstractModule {
 
-	public static final String PROPERTIES_FILE_NAME_PROPERTY_NAME = "orienteer.file.properties";
-	public static final String PROPERTIES_RESOURCE_NAME_PROPERTY_NAME = "orienteer.resource.property";
-	public static final String CONFIG_DIR_PARENT_PATH_DEFAULT = System.getProperty("user.home");
-	public static final String CONFIG_DIR_NAME_DEAFULT = ".orienteer";
-	public static final String PROPERTIES_FILE_NAME_DEFAULT = "orienteer.properties";
-	public static final String PROPERTIES_FILE_PATH_DEFAULT = FileSystems.getDefault().getPath(CONFIG_DIR_PARENT_PATH_DEFAULT, CONFIG_DIR_NAME_DEAFULT, PROPERTIES_FILE_NAME_DEFAULT).toString();
-	public static final String PROPERTIES_RESOURCE_PATH_DEFAULT = "archetype-resources/orienteer.properties";
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerModule.class);
+	
+	public static final String ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME = "orienteer.qualifier";
+	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER = "orienteer";
+	
+	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT = "orienteer-default.properties";
+	
+	
 	public final static Properties PROPERTIES_DEFAULT = new Properties();
 
 	static {
-		String resourcePath = "archetype-resources/orienteer.properties";
 		InputStream propertiesDefaultInputStream
-			= Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+			= Thread.currentThread().getContextClassLoader().getResourceAsStream(PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT);
 		try {
 			PROPERTIES_DEFAULT.load(propertiesDefaultInputStream);
 		} catch (IOException ex) {
-			LOG.error(String.format("orienteer-resources or some other artefact "
-				+ "needs to provide '%s'", resourcePath), ex);
+			LOG.error("Critical system resource '"+PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT+"' was not found. Terminating. ");
 			throw new ExceptionInInitializerError(ex);
 		}
 	}
+
+	private static final LookupResourceHelper.StackedResourceLookuper STACK_LOOKUPER = 
+		new LookupResourceHelper.StackedResourceLookuper(LookupResourceHelper.SystemPropertyFileLookuper.INSTANCE,
+														 LookupResourceHelper.SystemPropertyURLLookuper.INSTANCE,
+														 LookupResourceHelper.UpDirectoriesFileLookuper.INSTANCE,
+														 LookupResourceHelper.DirFileLookuper.CONFIG_DIR_INSTANCE,
+														 LookupResourceHelper.SystemPropertyResourceLookuper.INSTANCE);
 
 	public OrienteerModule() {
 	}
@@ -87,15 +102,7 @@ public class OrienteerModule extends AbstractModule {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void configure() {
-		Properties properties = new Properties();
-		try {
-			properties = retrieveProperties();
-			LOG.info("Loading Orienteer properties");
-		} catch (FileNotFoundException e) {
-			throw new ProvisionException("Properties files was not found", e);
-		} catch (IOException e) {
-			throw new ProvisionException("Properties files can't be read", e);
-		}
+		Properties properties = retrieveProperties();
 		Names.bindProperties(binder(), properties);
 		String applicationClass = properties.getProperty("orienteer.application");
 		Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
@@ -161,121 +168,52 @@ public class OrienteerModule extends AbstractModule {
 		return version!=null?version:"";
 	}
 
-	/**
-	 * retrieves Properties as described in {@link OrienteerModule}.
-	 * Behavior is controlled by system properties.
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	/*
-	 internal implementation notes:
-	 - control by system properties is not too elegant, but keeps things as
-	 simple as possible (KISS) (implement function arguments if necessary)
-	 */
-	public static Properties retrieveProperties() throws IOException {
-		URL lookup = lookupFile(PROPERTIES_FILE_NAME_PROPERTY_NAME, PROPERTIES_RESOURCE_NAME_PROPERTY_NAME);
-		if (lookup != null) {
-			Properties retValue = new Properties();
-			retValue.load(lookup.openStream());
-			for (String key : PROPERTIES_DEFAULT.stringPropertyNames()) {
-				if (!retValue.containsKey(key)) {
-					retValue.setProperty(key, PROPERTIES_DEFAULT.getProperty(key));
-				}
+	public static Properties retrieveProperties() {
+		Properties loadedProperties = new Properties();
+		loadedProperties.putAll(PROPERTIES_DEFAULT);
+		String qualifier = System.getProperty(ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME);
+		if(!Strings.isEmpty(qualifier))
+		{
+			LOG.info("Orienteer startup properties qualifier: "+qualifier);
+			Properties qualifierProperties = retrieveProperties(qualifier);
+			if(qualifierProperties!=null)
+			{
+				loadedProperties.putAll(qualifierProperties);
+				return loadedProperties;
 			}
-			return retValue;
-		}
-
-		LOG.info(String.format("using built-in default properties", PROPERTIES_DEFAULT));
-		Properties loadedProperties = new Properties(); //loading
-		//default properties doesn't make sense because they're
-		//overwritten at load (no idea why there's a way to
-		//specify default properties anyway...)
-		File configDirParent = new File(CONFIG_DIR_PARENT_PATH_DEFAULT);
-		if (!configDirParent.exists()) {
-			if (!configDirParent.mkdirs()) {
-				throw new RuntimeException(String.format("Creation of configuration directory parent '%s' failed", configDirParent.getAbsolutePath()));
+			else
+			{
+				LOG.info("Properties for qualifier '"+qualifier+"' was not found.");
 			}
 		}
-		File configDir = new File(configDirParent, CONFIG_DIR_NAME_DEAFULT);
-		if (!configDir.exists()) {
-			if (!configDir.mkdir()) {
-				throw new RuntimeException(String.format("Creation of configuration directory '%s' failed", configDir.getAbsolutePath()));
-			}
+		LOG.info("Using default orienteer startup properties qualifier");
+		Properties defaultQualifierProperties = retrieveProperties(DEFAULT_ORENTEER_PROPERTIES_QUALIFIER);
+		if(defaultQualifierProperties!=null)
+		{
+			loadedProperties.putAll(defaultQualifierProperties);
+			return loadedProperties;
 		}
-		File propertiesFile = new File(configDir, PROPERTIES_FILE_NAME_DEFAULT);
-		if (!propertiesFile.exists()) {
-			//simply create the file in order to facilitate the
-			//creation of the user; default values are specified
-			//programmatically
-			if (!propertiesFile.createNewFile()) {
-				throw new RuntimeException(String.format("Creation of properties file '%s' failed", propertiesFile.getAbsolutePath()));
-			}
-			LOG.info(String.format("creating inexisting default configuration file '%s'", propertiesFile.getAbsolutePath()));
-			InputStream propertiesFileInputStream
-				= new FileInputStream(propertiesFile);
-			loadedProperties.load(propertiesFileInputStream);
+		else
+		{
+			LOG.info("Properties for qualifier '"+qualifier+"' was not found. Using embedded.");
+			return loadedProperties;
 		}
-		for (String key : PROPERTIES_DEFAULT.stringPropertyNames()) {
-			if (!loadedProperties.containsKey(key)) {
-				loadedProperties.setProperty(key, PROPERTIES_DEFAULT.getProperty(key));
-			}
+		
+	}
+	
+	public static Properties retrieveProperties(String qualifier) {
+		String identification = qualifier+".properties";
+		URL propertiesURL = STACK_LOOKUPER.lookup(identification);
+		if(propertiesURL==null) return null;
+		Properties ret = new Properties();
+		try {
+			ret.load(propertiesURL.openStream());
+			return ret;
+		} catch (IOException e) {
+			LOG.error("Can't read from properties file '"+propertiesURL+"' for qualifier '"+qualifier+"'", e);
+			return null;
 		}
-		return loadedProperties;
 	}
 
-	/**
-	 * tries to find properties file to load. Idea is following:
-	 * <ol><li>Check system property for directly specified filename. If the
-	 * file exists: use that file and return its URL</li>
-	 * <li>Otherwise it looks for a properties file in the concatenation of
-	 * {@link #CONFIG_DIR_PARENT_PATH_DEFAULT}, {@link #CONFIG_DIR_NAME_DEAFULT}
-	 * and {@link #PROPERTIES_FILE_NAME_DEFAULT} ("default config file"). If
-	 * the file exists: use it and return its URL.</li>
-	 * <li>Create the "default config file" (see above) with default values
-	 * and return its URL.</li>
-	 * </ol>
-	 *
-	 * @param propertyFileNamePropertyName the name of the property to use
-	 * for search for properties file in filesystem
-	 * @param propertyResourceNamePropertyName the name of the property to
-	 * user for search for properties resource on classpath
-	 * @return
-	 * @throws IOException
-	 */
-	/*
-	 internal implementation notes:
-	 - it's not nice to look for a properties/configuration file in the 
-	 current directory, so seach it in a designated location (e.g. relative
-	 to the home directory) only and create such a file if it isn't present
-	 with default values and use such.
-	 */
-	private static URL lookupFile(String propertyFileNamePropertyName, String propertyResourceNamePropertyName) throws IOException {
-		if (Strings.isEmpty(propertyFileNamePropertyName)) {
-			// there's no sense in allowing an invalid property name
-			throw new IllegalArgumentException("propertyFileNamePropertyName mustn't be null or empty");
-		}
-		String systemProperty = System.getProperty(propertyFileNamePropertyName);
-		if (!Strings.isEmpty(systemProperty)) {
-			File file = new File(systemProperty);
-			if (file.exists()) {
-				LOG.info(String.format("using existing properties file '%s'", file.getAbsolutePath()));
-				return file.toURI().toURL();
-			}
-		} else {
-			LOG.info(String.format("properties file name specified by system property '%s' is null or empty, skipping", propertyFileNamePropertyName));
-		}
-
-		String resourceProperty = System.getProperty(propertyResourceNamePropertyName);
-		if (!Strings.isEmpty(resourceProperty)) {
-			URL propertiesFileResource = Thread.currentThread().getContextClassLoader().getResource(resourceProperty);
-			if (propertiesFileResource != null) {
-				LOG.info(String.format("using existing properties resource '%s'", propertiesFileResource.toString()));
-				return propertiesFileResource;
-			} else {
-				LOG.info(String.format("properties resource specified by system property '%s' is null or empty, skipping", propertyResourceNamePropertyName));
-			}
-		}
-		return null;
-	}
+	
 }

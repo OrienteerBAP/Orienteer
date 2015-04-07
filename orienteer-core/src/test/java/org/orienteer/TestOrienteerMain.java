@@ -35,6 +35,7 @@ import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import org.orienteer.junit.OrienteerTestModule;
 import org.orienteer.services.OrienteerModule;
 import org.orienteer.services.OrienteerModuleTest;

@@ -45,7 +45,7 @@
 		<module name="HideUtilityClassConstructor"/>
 		<module name="MethodLength"/>
 		<module name="LineLength">
-		    <property name="max" value="180"/>
+		    <property name="max" value="200"/>
 		</module>
 		<module name="NestedIfDepth">
 		    <property name="max" value="6"/>

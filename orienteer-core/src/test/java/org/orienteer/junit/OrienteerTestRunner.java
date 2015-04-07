@@ -6,10 +6,6 @@ import org.orienteer.services.OrienteerModule;
 
 public class OrienteerTestRunner extends GuiceTestRunner
 {
-	static {
-		System.setProperty(OrienteerModule.PROPERTIES_RESOURCE_NAME_PROPERTY_NAME, OrienteerTestModule.TEST_PROPERTIES_FILE_NAME);
-	}
-	
 	public OrienteerTestRunner(Class<?> classToRun) throws InitializationError
 	{
 		super(classToRun, StaticInjectorProvider.INSTANCE);

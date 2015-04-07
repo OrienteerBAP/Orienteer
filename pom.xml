@@ -81,7 +81,6 @@
        </repository>
      </repositories>
 	<modules>
-                <module>orienteer-resources</module>
 		<module>orienteer-core</module>
 		<module>orienteer-war</module>
 		<module>orienteer-standalone</module>
@@ -89,12 +88,6 @@
 	</modules>
 	<dependencyManagement>
 	    <dependencies>
-                <!--project internal-->
-                <dependency>
-                    <groupId>org.orienteer</groupId>
-                    <artifactId>orienteer-resources</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
                 <!--wicket-orientdb-->
 		    <dependency>
 			    <groupId>ru.ydn.wicket.wicket-orientdb</groupId>
