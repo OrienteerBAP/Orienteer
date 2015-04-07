@@ -52,19 +52,23 @@ import java.nio.file.FileSystems;
  * 
  * <h1>Properties</h1>
  * Properties can be retrieved from both files from the local filesystem and
- * files on the Java classpath. The path of the file and the resource can be
- * specified by setting system properties
- * ({@link #PROPERTIES_FILE_NAME_PROPERTY_NAME} and
- * {@link #PROPERTIES_RESOURCE_NAME_PROPERTY_NAME}). If none is specified the
- * default values {@link #PROPERTIES_FILE_PATH_DEFAULT} and
- * {@link #PROPERTIES_RESOURCE_PATH_DEFAULT} are used. If both are specified the
- * property for the resource file takes precedence over the one for the file
- * path (this allows applications to overwrite properties without bothering the
- * user). Default properties are specified in the
- * {@link #PROPERTIES_RESOURCE_PATH_DEFAULT} properties file and used if not
- * explicitly overwritten in one of the specifications described above.
- *
- * @author richter
+ * files on the Java classpath. 
+ * System property {@link #ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME} defines
+ * qualifier which should be used in properties lookup.
+ * Highlevel lookup:
+ * <ol>
+ * <li>If there is a qualifier - lookup by this qualifier</li>
+ * <li>If there is no a qualifier - lookup by default qualifier 'orienteer'</li>
+ * <li>If nothing was found - use embedded configuration</li> 
+ * </ol>
+ * Order of lookup for a specific qualifier (for example 'myapplication'):
+ * <ol>
+ * <li>lookup of file specified by system property 'myapplication.properties'</li>
+ * <li>lookup of URL specified by system property 'myapplication.properties'</li>
+ * <li>lookup of file 'myapplication.properties' up from current directory</li>
+ * <li>lookup of file 'myapplication.properties' in '~/orienteer/' directory</li>
+ * <li>lookup of resource 'myapplication.properties' in a classpath</li>
+ * </ol>
  */
 public class OrienteerModule extends AbstractModule {
 
@@ -168,6 +172,10 @@ public class OrienteerModule extends AbstractModule {
 		return version!=null?version:"";
 	}
 
+	/**
+	 * Retrieve startup properties 
+	 * @return not null {@link Properties}
+	 */
 	public static Properties retrieveProperties() {
 		Properties loadedProperties = new Properties();
 		loadedProperties.putAll(PROPERTIES_DEFAULT);
@@ -201,6 +209,11 @@ public class OrienteerModule extends AbstractModule {
 		
 	}
 	
+	/**
+	 * Lookup {@link Properties} for a specified qualifier
+	 * @param qualifier qualifier to be used during startup
+	 * @return {@link Properties} for a qualifier or null
+	 */
 	public static Properties retrieveProperties(String qualifier) {
 		String identification = qualifier+".properties";
 		URL propertiesURL = STACK_LOOKUPER.lookup(identification);

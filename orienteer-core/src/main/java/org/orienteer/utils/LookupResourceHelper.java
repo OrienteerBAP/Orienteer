@@ -5,9 +5,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.services.OrienteerModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Utility class to help in lookuping of startup properties files.
+ * Plugable architecture. Please see {@link OrienteerModule} for lookups order specification
+ */
 public class LookupResourceHelper {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(LookupResourceHelper.class);
@@ -25,6 +30,9 @@ public class LookupResourceHelper {
 		
 	}
 	
+	/**
+	 * Lookup file specified by system property 
+	 */
 	public static class SystemPropertyFileLookuper implements IResourceLookuper {
 
 		public static final SystemPropertyFileLookuper INSTANCE = new SystemPropertyFileLookuper();
@@ -41,6 +49,9 @@ public class LookupResourceHelper {
 		}
 	}
 	
+	/**
+	 * Lookup classpath resource specified by system property 
+	 */
 	public static class SystemPropertyResourceLookuper implements IResourceLookuper {
 
 		public static final SystemPropertyResourceLookuper INSTANCE = new SystemPropertyResourceLookuper();
@@ -51,6 +62,9 @@ public class LookupResourceHelper {
 		}
 	}
 	
+	/**
+	 * Lookup property URL by system property 
+	 */
 	public static class SystemPropertyURLLookuper implements IResourceLookuper {
 
 		public static final SystemPropertyURLLookuper INSTANCE = new SystemPropertyURLLookuper();
@@ -71,6 +85,9 @@ public class LookupResourceHelper {
 		}
 	}
 	
+	/**
+	 * Lookup file by looking up from start directory. By default start directory is current one. 
+	 */
 	public static class UpDirectoriesFileLookuper implements IResourceLookuper {
 		
 		public static final UpDirectoriesFileLookuper INSTANCE = new UpDirectoriesFileLookuper();
@@ -97,6 +114,9 @@ public class LookupResourceHelper {
 		}
 	}
 	
+	/**
+	 * Lookup file in specified directory 
+	 */
 	public static class DirFileLookuper implements IResourceLookuper {
 		
 		public static final DirFileLookuper CURRENT_DIR_INSTANCE = new DirFileLookuper();
@@ -122,6 +142,9 @@ public class LookupResourceHelper {
 		}
 	}
 	
+	/**
+	 * Stacked lookuper
+	 */
 	public static class StackedResourceLookuper implements IResourceLookuper {
 		
 		private final IResourceLookuper[] lookupers;
@@ -143,6 +166,11 @@ public class LookupResourceHelper {
 		
 	}
 	
+	/**
+	 * Utility method to convert file to URL
+	 * @param file
+	 * @return
+	 */
 	public static URL convertFileToURL(File file)
 	{
 		if(file==null || !file.exists()) return null;
