@@ -32,7 +32,8 @@ public class EmbeddedMapViewPanel<V> extends GenericPanel<Map<String, V>> {
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
 		final OType oType = propertyModel.getObject().getLinkedType();
 		IModel<Set<Map.Entry<String, V>>> entriesModel = new PropertyModel<Set<Map.Entry<String,V>>>(getModel(), "entrySet()");
-		ListView<Map.Entry<String, V>> listView = new ListView<Map.Entry<String, V>>("items", new CollectionAdapterModel<Map.Entry<String, V>, Set<Map.Entry<String, V>>>(entriesModel)) {
+		ListView<Map.Entry<String, V>> listView = 
+				new ListView<Map.Entry<String, V>>("items", new CollectionAdapterModel<Map.Entry<String, V>, Set<Map.Entry<String, V>>>(entriesModel)) {
 
 			@Override
 			protected void populateItem(ListItem<Map.Entry<String, V>> item) {

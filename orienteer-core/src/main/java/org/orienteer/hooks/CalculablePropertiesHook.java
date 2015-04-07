@@ -25,7 +25,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 public class CalculablePropertiesHook extends ODocumentHookAbstract
 {
-	private static Pattern FULL_QUERY_PATTERN = Pattern.compile("^\\s*(select|traverse)", Pattern.CASE_INSENSITIVE);
+	private final static Pattern FULL_QUERY_PATTERN = Pattern.compile("^\\s*(select|traverse)", Pattern.CASE_INSENSITIVE);
 	
 	private Map<String, Integer> schemaVersions = new ConcurrentHashMap<String, Integer>();
 	private Table<String, String, List<String>> calcProperties = HashBasedTable.create();
@@ -129,7 +129,8 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 						}
 						else
 						{
-							calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>("select "+script+" as value from "+iDocument.getIdentity()));
+							script = "select "+script+" as value from "+iDocument.getIdentity();
+							calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>(script));
 						}
 						if(calculated!=null && calculated.size()>0)
 						{

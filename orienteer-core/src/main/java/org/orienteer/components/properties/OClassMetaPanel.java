@@ -71,7 +71,8 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	};
 	
 	private static final long serialVersionUID = 1L;
-	private static final List<String> CLUSTER_SELECTIONS = Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
+	private static final List<String> CLUSTER_SELECTIONS = 
+			Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
 	
 	public static class ListClassesModel extends LoadableDetachableModel<List<OClass>>
 	{
@@ -79,7 +80,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private static final Ordering<OClass> ordering = Ordering.natural().nullsFirst().onResultOf(new Function<OClass, String>() {
+		private static final Ordering<OClass> ORDERING = Ordering.natural().nullsFirst().onResultOf(new Function<OClass, String>() {
 
 			@Override
 			public String apply(OClass input) {
@@ -89,7 +90,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		@Override
 		protected List<OClass> load() {
 			Collection<OClass> classes = OrientDbWebSession.get().getDatabase().getMetadata().getSchema().getClasses();
-			return ordering.sortedCopy(classes);
+			return ORDERING.sortedCopy(classes);
 		}
 		
 	}

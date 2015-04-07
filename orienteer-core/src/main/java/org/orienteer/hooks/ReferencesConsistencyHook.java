@@ -206,7 +206,8 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 										for(Object originaIdentifiable: (Iterable<?>)original)
 										{
 											if(originaIdentifiable!=null && originaIdentifiable instanceof OIdentifiable) 
-												removeLink((ODocument)((OIdentifiable)originaIdentifiable).getRecord(), inverseProperty, doc);
+												removeLink((ODocument)((OIdentifiable)originaIdentifiable).getRecord(), 
+															inverseProperty, doc);
 										}
 									}
 									if(current!=null && current instanceof Iterable)
@@ -214,7 +215,8 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 										for(Object currentIdentifiable: (Iterable<?>)current)
 										{
 											if(currentIdentifiable!=null && currentIdentifiable instanceof OIdentifiable) 
-												addLink((ODocument)((OIdentifiable)currentIdentifiable).getRecord(), inverseProperty, doc);
+												addLink((ODocument)((OIdentifiable)currentIdentifiable).getRecord(),
+															inverseProperty, doc);
 										}
 									}
 								}

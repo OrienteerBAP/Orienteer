@@ -41,7 +41,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @MountPath("/search")
 public class SearchPage extends OrienteerBasePage<String>
 {
-	public static Ordering<OClass> CLASSES_ORDERING = Ordering.natural().nullsFirst().onResultOf(new Function<OClass, String>() {
+	public final static Ordering<OClass> CLASSES_ORDERING = Ordering.natural().nullsFirst().onResultOf(new Function<OClass, String>() {
 
 		@Override
 		public String apply(OClass input) {
@@ -134,10 +134,12 @@ public class SearchPage extends OrienteerBasePage<String>
 	
 	private void prepareResults(OClass oClass)
 	{
-		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
+		OQueryDataProvider<ODocument> provider = 
+				new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
 		provider.setParameter("text", getModel());
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20);
+		OrienteerDataTable<ODocument, String> table = 
+				new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20);
 		table.addCommand(new EditODocumentsCommand(table, modeModel, oClass));
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));
 		resultsContainer.addOrReplace(table);

@@ -39,9 +39,9 @@ public class PlantUmlService implements IUmlService
 	
 	private static class AsciiEncoder{
 		
-		static AsciiEncoder INSTANCE = new AsciiEncoder();
+		private final static AsciiEncoder INSTANCE = new AsciiEncoder();
 
-		final private char encode6bit[] = new char[64];
+		final private char[] encode6bit = new char[64];
 
 		public AsciiEncoder() {
 			for (byte b = 0; b < 64; b++) {
@@ -49,7 +49,7 @@ public class PlantUmlService implements IUmlService
 			}
 		}
 
-		public String encode(byte data[]) {
+		public String encode(byte[] data) {
 			final StringBuilder resu = new StringBuilder((data.length * 4 + 2) / 3);
 			for (int i = 0; i < data.length; i += 3) {
 				append3bytes(resu, data[i] & 0xFF, i + 1 < data.length ? data[i + 1] & 0xFF : 0,

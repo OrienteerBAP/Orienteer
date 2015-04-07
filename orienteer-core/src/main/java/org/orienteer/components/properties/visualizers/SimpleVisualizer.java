@@ -21,22 +21,26 @@ public class SimpleVisualizer extends AbstractSimpleVisualizer
 	private final Class<? extends Component> viewComponentClass;
 	private final Class<? extends Component> editComponentClass;
 	
-	public SimpleVisualizer(String name, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass, OType... supportedTypes)
+	public SimpleVisualizer(String name, Class<? extends Component> viewComponentClass, 
+								Class<? extends Component> editComponentClass, OType... supportedTypes)
 	{
 		this(name, viewComponentClass, editComponentClass, Arrays.asList(supportedTypes));
 	}
 	
-	public SimpleVisualizer(String name, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass, Collection<OType> supportedTypes)
+	public SimpleVisualizer(String name, Class<? extends Component> viewComponentClass, 
+								Class<? extends Component> editComponentClass, Collection<OType> supportedTypes)
 	{
 		this(name, false, viewComponentClass, editComponentClass, supportedTypes);
 	}
 	
-	public SimpleVisualizer(String name, boolean extended, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass, OType... supportedTypes)
+	public SimpleVisualizer(String name, boolean extended, Class<? extends Component> viewComponentClass, 
+								Class<? extends Component> editComponentClass, OType... supportedTypes)
 	{
 		this(name, extended, viewComponentClass, editComponentClass, Arrays.asList(supportedTypes));
 	}
 	
-	public SimpleVisualizer(String name, boolean extended, Class<? extends Component> viewComponentClass, Class<? extends Component> editComponentClass, Collection<OType> supportedTypes)
+	public SimpleVisualizer(String name, boolean extended, Class<? extends Component> viewComponentClass, 
+								Class<? extends Component> editComponentClass, Collection<OType> supportedTypes)
 	{
 		super(name, extended, supportedTypes);
 		Args.notNull(name, "name");

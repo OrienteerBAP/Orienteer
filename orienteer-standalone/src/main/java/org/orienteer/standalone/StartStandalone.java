@@ -23,6 +23,9 @@ public class StartStandalone
 	private static final String ARG_HELP="help";
 	private static final String ARG_WAIT="wait";
 	
+	private StartStandalone() {
+	}
+	
     public static void main(String[] args) throws Exception {
     	
     	Map<String, String> parsedArgs = parseArgs(args);

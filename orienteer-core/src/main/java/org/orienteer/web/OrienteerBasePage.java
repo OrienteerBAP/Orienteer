@@ -85,7 +85,9 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 					@Override
 					public void onClick() {
 						OrienteerWebSession.get().setPerspecive(getModelObject());
-						OrienteerBasePage.this.info(getLocalizer().getString("info.perspectivechanged", this, new ODocumentPropertyModel<String>(getModel(), "name")));
+						OrienteerBasePage.this.info(
+								getLocalizer().getString("info.perspectivechanged", this, new ODocumentPropertyModel<String>(getModel(), "name"))
+							);
 					}
 				};
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),

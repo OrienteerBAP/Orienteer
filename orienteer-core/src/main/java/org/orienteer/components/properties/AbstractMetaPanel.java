@@ -119,14 +119,14 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		}, new ClassVisitFilter(IMetaContext.class));
 	}
 	
-	public <V2> AbstractMetaPanel<T, C, V2> getMetaComponent(C critery)
+	public <W> AbstractMetaPanel<T, C, W> getMetaComponent(C critery)
 	{
 		return getMetaComponent(getMetaContext(), critery);
 	}
 	
-	public <V2> V2 getMetaComponentValue(C critery)
+	public <W> W getMetaComponentValue(C critery)
 	{
-		AbstractMetaPanel<T, C, V2> otherMetaPanel = getMetaComponent(critery);
+		AbstractMetaPanel<T, C, W> otherMetaPanel = getMetaComponent(critery);
 		return otherMetaPanel!=null?otherMetaPanel.getValueObject():null;
 	}
 	
@@ -158,9 +158,9 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		} 
 	}
 	
-	public <V2> V2 getMetaComponentEnteredValue(C critery)
+	public <W> W getMetaComponentEnteredValue(C critery)
 	{
-		AbstractMetaPanel<T, C, V2> otherMetaPanel = getMetaComponent(critery);
+		AbstractMetaPanel<T, C, W> otherMetaPanel = getMetaComponent(critery);
 		if(otherMetaPanel==null) return null;
 		return otherMetaPanel!=null?otherMetaPanel.getEnteredValue():null;
 	}

@@ -68,7 +68,8 @@ public class BrowseClassPage extends OrienteerBasePage<OClass> implements ISecur
 		Form<ODocument> form = new Form<ODocument>("form");
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+getModelObject().getName());
 		
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
+		OrienteerDataTable<ODocument, String> table = 
+				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
 		table.addCommand(new EditODocumentsCommand(table, modeModel, getModel()));
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));

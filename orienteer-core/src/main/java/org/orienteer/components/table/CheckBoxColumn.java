@@ -20,7 +20,7 @@ import org.orienteer.components.properties.BooleanEditPanel;
 import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
 
-public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColumn<T, S>
+public class CheckBoxColumn<T, P extends Serializable, S> extends AbstractColumn<T, S>
 {
 	private static final JavaScriptResourceReference SELECT_ALL_JS = new JavaScriptResourceReference(CheckBoxColumn.class, "select-all.js");
 	
@@ -34,10 +34,10 @@ public class CheckBoxColumn<T, PK extends Serializable, S> extends AbstractColum
 
 	}
 	private static final long serialVersionUID = 1L;
-	private List<PK> selected = new ArrayList<PK>();
-	private Converter<T, PK> converterToPK;
+	private List<P> selected = new ArrayList<P>();
+	private Converter<T, P> converterToPK;
 
-	public CheckBoxColumn(Converter<T, PK> converterToPK) {
+	public CheckBoxColumn(Converter<T, P> converterToPK) {
 		super(null);
 		this.converterToPK = converterToPK;
 	}

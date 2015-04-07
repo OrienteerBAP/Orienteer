@@ -68,9 +68,11 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				case LINKSET:
 					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
                 case DATE:
-                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, Session.get().getLocale())).toPattern());
+                	String datePattern =((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, Session.get().getLocale())).toPattern();
+                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, datePattern);
                 case DATETIME:
-                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, Session.get().getLocale())).toPattern());
+                	String dateTimePattern = ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, Session.get().getLocale())).toPattern();
+                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, dateTimePattern);
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
                 case EMBEDDED:

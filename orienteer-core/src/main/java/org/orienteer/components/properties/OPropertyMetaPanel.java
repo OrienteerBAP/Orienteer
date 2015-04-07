@@ -315,8 +315,9 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 							
 						}.setNullValid(false).setRequired(true);
 					case PROP_INVERSE:
+						IModel<OClass> linkedClassModel = (IModel<OClass>)getMetaComponentEnteredValueModel(OPropertyPrototyper.LINKED_CLASS);
 						return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(),
-									new ListOPropertiesModel((IModel<OClass>)getMetaComponentEnteredValueModel(OPropertyPrototyper.LINKED_CLASS), null)
+									new ListOPropertiesModel(linkedClassModel, null)
 									{
 										@Override
 										protected Predicate<? super OProperty> getFilterPredicate() {

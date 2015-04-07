@@ -48,7 +48,8 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
 		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
-		OrienteerDataTable<ODocument, String> table = new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true, modeModel), provider, 20);
+		OrienteerDataTable<ODocument, String> table = 
+				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true, modeModel), provider, 20);
 		table.setCaptionModel(new OPropertyNamingModel(property));
 		SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
 		if(!isCalculable)
