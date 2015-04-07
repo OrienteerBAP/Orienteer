@@ -63,7 +63,11 @@ public class OrienteerModule extends AbstractModule {
 	public static final String CONFIG_DIR_PARENT_PATH_DEFAULT = System.getProperty("user.home");
 	public static final String CONFIG_DIR_NAME_DEAFULT = ".orienteer";
 	public static final String PROPERTIES_FILE_NAME_DEFAULT = "orienteer.properties";
-	public static final String PROPERTIES_FILE_PATH_DEFAULT = FileSystems.getDefault().getPath(CONFIG_DIR_PARENT_PATH_DEFAULT, CONFIG_DIR_NAME_DEAFULT, PROPERTIES_FILE_NAME_DEFAULT).toString();
+	public static final String PROPERTIES_FILE_PATH_DEFAULT = FileSystems.getDefault().getPath(
+            CONFIG_DIR_PARENT_PATH_DEFAULT,
+            CONFIG_DIR_NAME_DEAFULT,
+            PROPERTIES_FILE_NAME_DEFAULT
+    ).toString();
 	public static final String PROPERTIES_RESOURCE_PATH_DEFAULT = "archetype-resources/orienteer.properties";
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerModule.class);
 	public final static Properties PROPERTIES_DEFAULT = new Properties();
@@ -106,7 +110,9 @@ public class OrienteerModule extends AbstractModule {
 				if (OrienteerWebApplication.class.isAssignableFrom(appClass)) {
 					appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
 				} else {
-					LOG.error("Orienteer application class '" + applicationClass + "' is not child class of '" + OrienteerWebApplication.class + "'. Using default.");
+					LOG.error(String.format("Orienteer application class '%s' "
+                            + "is not child class of '%s'. "
+                             + "Using default.", applicationClass, OrienteerWebApplication.class));
 				}
 			} catch (ClassNotFoundException e) {
 				LOG.error("Orienteer application class '" + applicationClass + "' was not found. Using default.");
@@ -155,7 +161,7 @@ public class OrienteerModule extends AbstractModule {
 	@Provides
 	@Named("version")
 	@Singleton
-	public String getVersion() 
+	public String getVersion()
 	{
 		String version = getClass().getPackage().getImplementationVersion();
 		return version!=null?version:"";
@@ -245,7 +251,7 @@ public class OrienteerModule extends AbstractModule {
 	 */
 	/*
 	 internal implementation notes:
-	 - it's not nice to look for a properties/configuration file in the 
+	 - it's not nice to look for a properties/configuration file in the
 	 current directory, so seach it in a designated location (e.g. relative
 	 to the home directory) only and create such a file if it isn't present
 	 with default values and use such.
