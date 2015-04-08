@@ -221,6 +221,7 @@ public class OrienteerModule extends AbstractModule {
 		Properties ret = new Properties();
 		try {
 			ret.load(propertiesURL.openStream());
+			LOG.info("Startup properties was loaded from '"+propertiesURL+"' for qualifier '"+qualifier+"'");
 			return ret;
 		} catch (IOException e) {
 			LOG.error("Can't read from properties file '"+propertiesURL+"' for qualifier '"+qualifier+"'", e);

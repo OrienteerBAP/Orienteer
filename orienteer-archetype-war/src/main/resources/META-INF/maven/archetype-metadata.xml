@@ -26,10 +26,10 @@
 			</includes>
 		</fileSet>
 		<fileSet filtered="true" packaged="false" encoding="UTF-8">
-			<directory>src/main/resources</directory>
+			<directory></directory>
 			<includes>
-				<include>archetype-resources/orienteer.properties</include>
-				<include>archetype-resources/orienteer-test.properties</include>
+				<include>orienteer.properties</include>
+				<include>orienteer-test.properties</include>
 			</includes>
 		</fileSet>
 		<fileSet filtered="false" packaged="false" encoding="UTF-8">
