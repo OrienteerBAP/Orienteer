@@ -107,7 +107,8 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 			@Override
 			protected void populateItem(ListItem<ODocument> item) {
 				IModel<ODocument> itemModel = item.getModel();
-				ExternalLink link = new ExternalLink("link", new ODocumentPropertyModel<String>(itemModel, "url"));
+				ExternalLink link = new ExternalLink("link", new ODocumentPropertyModel<String>(itemModel, "url"))
+												.setContextRelative(true);
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
 						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
 				item.add(link);
