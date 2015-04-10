@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/OrienteerDW/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerDW/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/PhantomYdn/Orienteer.svg)](https://coveralls.io/r/PhantomYdn/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/PhantomYdn/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://travis-ci.org/OrienteerDW/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerDW/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/OrienteerDW/Orienteer.svg)](https://coveralls.io/r/OrienteerDW/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/OrienteerDW/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Orienteer
 ![Orinenteer](http://orienteer.org/images/orienteer.png)
@@ -61,7 +61,7 @@ Orienteer in standalone mode use embedded jetty server to run yourself. To insta
 
 #### Orienteer initial configuration
 
-**orienteer.properties** is the main file to store initial configuration paramenters for your installation. Sample properties file can be always found [here](https://github.com/PhantomYdn/Orienteer/blob/master/orienteer.properties.sample).
+**orienteer.properties** is the main file to store initial configuration paramenters for your installation. Sample properties file can be always found [here](https://github.com/OrienteerDW/Orienteer/blob/master/orienteer.properties.sample).
 
 ```properties
 orienteer.production=false  //Run Orienteer in production mode or not
@@ -93,9 +93,9 @@ orientdb.db.installator.password=admin    //Password for OrientDB user used for 
 
 #### Steps
 
-##### Install of [wicket-orientdb](https://github.com/PhantomYdn/wicket-orientdb) github SNAPSHOT
+##### Install of [wicket-orientdb](https://github.com/OrienteerDW/wicket-orientdb) github SNAPSHOT
 
-This step is optional: [wicket-orientdb](https://github.com/PhantomYdn/wicket-orientdb) SNAPSHOT always available on Maven central
+This step is optional: [wicket-orientdb](https://github.com/OrienteerDW/wicket-orientdb) SNAPSHOT always available on Maven central
 
 ```
 git clone <your fork URL for wicket-orientdb>
