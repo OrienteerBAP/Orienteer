@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/PhantomYdn/Orienteer.svg?branch=master)](https://travis-ci.org/PhantomYdn/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/PhantomYdn/Orienteer.svg)](https://coveralls.io/r/PhantomYdn/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/PhantomYdn/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://travis-ci.org/OrienteerDW/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerDW/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/PhantomYdn/Orienteer.svg)](https://coveralls.io/r/PhantomYdn/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/PhantomYdn/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Orienteer
 ![Orinenteer](http://orienteer.org/images/orienteer.png)
