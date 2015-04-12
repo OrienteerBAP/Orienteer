@@ -2,7 +2,7 @@ package ${package};
 
 import org.orienteer.junit.OrienteerTestRunner;
 
-import org.apache.wicket.util.tester.WicketTester;
+import org.orienteer.junit.OrienteerTester;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import com.google.inject.Singleton;
 public class TestMyWebApplication
 {
 	@Inject
-	private WicketTester tester;
+	private OrienteerTester tester;
     
 	@Test
 	public void testWebApplicationClass()
