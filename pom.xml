@@ -27,15 +27,15 @@
 	<name>Orienteer</name>
 	<description>Orienteer - modern data-warehousing system</description>
 	<scm>
-	    <url>https://github.com/PhantomYdn/Orienteer</url>
-	    <connection>scm:git:ssh://github.com/PhantomYdn/Orienteer.git</connection>
-	    <developerConnection>scm:git:ssh://git@github.com/PhantomYdn/Orienteer.git</developerConnection>
+	    <url>https://github.com/OrienteerDW/Orienteer</url>
+	    <connection>scm:git:ssh://github.com/OrienteerDW/Orienteer.git</connection>
+	    <developerConnection>scm:git:ssh://git@github.com/OrienteerDW/Orienteer.git</developerConnection>
 	    <tag>HEAD</tag>
 	</scm>
 
 	<issueManagement>
 	    <system>github</system>
-	    <url>https://github.com/PhantomYdn/Orienteer/issues</url>
+	    <url>https://github.com/OrienteerDW/Orienteer/issues</url>
 	</issueManagement>
 	<distributionManagement>
 	  <snapshotRepository>
