@@ -8,7 +8,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDat
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.orienteer.CustomAttributes;
-import org.orienteer.behavior.SecurityBehavior;
 import org.orienteer.components.commands.CreateODocumentCommand;
 import org.orienteer.components.commands.DeleteODocumentCommand;
 import org.orienteer.components.commands.EditODocumentsCommand;
@@ -18,6 +17,7 @@ import org.orienteer.components.commands.SelectODocumentCommand;
 import org.orienteer.components.table.OrienteerDataTable;
 import org.orienteer.services.IOClassIntrospector;
 
+import ru.ydn.wicket.wicketorientdb.behavior.SecurityBehavior;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;

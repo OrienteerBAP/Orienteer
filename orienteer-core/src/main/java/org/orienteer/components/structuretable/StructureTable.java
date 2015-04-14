@@ -23,7 +23,8 @@ import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.orienteer.behavior.SyncVisibilityBehaviour;
+
+import ru.ydn.wicket.wicketorientdb.behavior.SyncVisibilityBehaviour;
 
 public abstract class StructureTable<T, C> extends GenericPanel<T> 
 {
