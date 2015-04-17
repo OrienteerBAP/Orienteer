@@ -29,7 +29,7 @@
 	<packaging>maven-archetype</packaging>
         
 	<build>
-	    <resources>
+	    <!-- <resources>
 		<resource>
 		    <filtering>false</filtering> 
 		    <directory>${basedir}/src/main/resources</directory> 
@@ -37,7 +37,29 @@
 			<include>**/*</include> 
 		    </includes>
 		</resource>
-	    </resources>
+	    </resources> -->
+	    <resources>
+			<resource>
+			    <directory>src/main/resources</directory>
+			    <filtering>true</filtering>
+			    <includes>
+			        <include>META-INF/maven/archetype-metadata.xml</include>
+			    </includes>
+			</resource>
+			<resource>
+			    <directory>src/main/resources</directory>
+			    <filtering>false</filtering>
+			    <excludes>
+			        <exclude>META-INF/maven/archetype-metadata.xml</exclude>
+			    </excludes>
+			</resource>
+		</resources>
+		<testResources>
+		  <testResource>
+		      <directory>src/test/resources</directory>
+		      <filtering>true</filtering>
+		  </testResource>
+		</testResources>
 	    <extensions>
 		<extension>
 		    <groupId>org.apache.maven.archetype</groupId> 
