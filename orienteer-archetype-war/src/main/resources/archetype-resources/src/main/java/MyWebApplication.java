@@ -1,7 +1,7 @@
 package ${package};
 
-import org.orienteer.OrienteerWebApplication;
-import org.orienteer.modules.PerspectivesModule;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.module.PerspectivesModule;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
 public class MyWebApplication extends OrienteerWebApplication

@@ -1,9 +1,9 @@
 package ${package};
 
-import org.orienteer.CustomAttributes;
-import org.orienteer.OrienteerWebApplication;
-import org.orienteer.modules.AbstractOrienteerModule;
-import org.orienteer.utils.OSchemaHelper;
+import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.module.AbstractOrienteerModule;
+import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;

@@ -1,8 +1,8 @@
 package org.orienteer.junit;
 
 import org.apache.wicket.protocol.http.WebApplication;
-import org.orienteer.OrienteerWebApplication;
-import org.orienteer.OrienteerWebSession;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 
 import com.google.inject.Inject;
 

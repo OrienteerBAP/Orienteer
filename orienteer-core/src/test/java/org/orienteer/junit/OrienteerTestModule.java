@@ -3,9 +3,9 @@ package org.orienteer.junit;
 import org.apache.wicket.guice.GuiceComponentInjector;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.tester.WicketTester;
-import org.orienteer.OrienteerWebApplication;
-import org.orienteer.services.InstanceOfMatcher;
-import org.orienteer.services.OrienteerModule;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.service.InstanceOfMatcher;
+import org.orienteer.core.service.OrienteerModule;
 
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.junit.WicketOrientDbTester;

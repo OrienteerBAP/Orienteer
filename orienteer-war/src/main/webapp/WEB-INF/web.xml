@@ -25,7 +25,7 @@
 		</init-param>
 		<init-param>
 		  <param-name>module</param-name>
-		  <param-value>org.orienteer.services.OrienteerModule</param-value>
+		  <param-value>org.orienteer.core.service.OrienteerModule</param-value>
 		</init-param>
 		<init-param>
 			<param-name>filterMappingUrlPattern</param-name>

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Test;
-import org.orienteer.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.junit.OrienteerTester;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;

@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.orienteer.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebApplication;
 
 public class StartStandalone
 {

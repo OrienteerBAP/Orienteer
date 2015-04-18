@@ -2,7 +2,7 @@ package org.orienteer.junit;
 
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.runners.model.InitializationError;
-import org.orienteer.services.OrienteerModule;
+import org.orienteer.core.service.OrienteerModule;
 
 public class OrienteerTestRunner extends GuiceTestRunner
 {
