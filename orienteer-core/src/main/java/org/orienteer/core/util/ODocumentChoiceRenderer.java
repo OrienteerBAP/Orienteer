@@ -9,22 +9,20 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class ODocumentChoiceRenderer implements IChoiceRenderer<ODocument>
 {
-	private IOClassIntrospector oClassIntrospector;
+	private transient IOClassIntrospector oClassIntrospector;
 	
-	public ODocumentChoiceRenderer()
+	protected IOClassIntrospector getOClassIntrospector()
 	{
-		this(OrienteerWebApplication.get().getOClassIntrospector());
-	}
-	
-	@Inject
-	public ODocumentChoiceRenderer(IOClassIntrospector oClassIntrospector)
-	{
-		this.oClassIntrospector = oClassIntrospector;
+		if(oClassIntrospector==null)
+		{
+			oClassIntrospector = OrienteerWebApplication.get().getOClassIntrospector();
+		}
+		return oClassIntrospector;
 	}
 	
 	@Override
 	public Object getDisplayValue(ODocument object) {
-		return oClassIntrospector.getDocumentName(object);
+		return getOClassIntrospector().getDocumentName(object);
 	}
 
 	@Override

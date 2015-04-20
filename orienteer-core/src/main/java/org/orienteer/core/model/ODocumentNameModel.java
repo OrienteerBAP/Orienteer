@@ -18,12 +18,13 @@ public class ODocumentNameModel extends LoadableDetachableModel<String>
 	
 	@Override
 	protected String load() {
-		return OrienteerWebApplication.get().getOClassIntrospector().getDocumentName(documentModel.getObject());
+		ODocument doc = documentModel!=null?documentModel.getObject():null;
+		return doc!=null?OrienteerWebApplication.get().getOClassIntrospector().getDocumentName(doc):null;
 	}
 
 	@Override
 	public void detach() {
-		documentModel.detach();
+		if(documentModel!=null) documentModel.detach();
 	}
 
 }

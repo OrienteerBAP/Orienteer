@@ -67,7 +67,8 @@ public abstract class AbstractODocumentPage extends OrienteerBasePage<ODocument>
 	
 	public ODocument getDocument()
 	{
-		return getDocumentModel().getObject();
+		IModel<ODocument> documentModel = getDocumentModel();
+		return documentModel!=null?documentModel.getObject():null;
 	}
 	
 	
