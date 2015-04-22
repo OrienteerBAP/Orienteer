@@ -18,7 +18,9 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.settings.IJavaScriptLibrarySettings;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.module.PerspectivesModule;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
@@ -46,6 +48,9 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	@Named("version")
 	private String version;
 	
+	@Inject
+	private PerspectivesModule perspectivesModule;
+	
 	public BasePage()
 	{
 		super();
@@ -65,6 +70,12 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		{
 			IModel<T> model = resolveByPageParameters(parameters);
 			if(model!=null) setModel(model);
+			String perspective = parameters.get("_perspective").toOptionalString();
+			if(!Strings.isEmpty(perspective))
+			{
+				ODocument perspectiveDoc = perspectivesModule.getPerspectiveByName(getDatabase(), perspective);
+				if(perspectiveDoc!=null) OrienteerWebSession.get().setPerspecive(perspectiveDoc);
+			}
 		}
 		initialize();
 	}

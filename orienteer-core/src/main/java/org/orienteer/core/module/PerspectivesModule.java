@@ -115,6 +115,19 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		}.execute();
 	}
 	
+	public ODocument getPerspectiveByName(ODatabaseDocument db, String name)
+	{
+		List<ODocument> perspectives = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_PERSPECTIVE+" where name=?"), name);
+		if(perspectives!=null && !perspectives.isEmpty())
+		{
+			return perspectives.get(0);
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
 	public ODocument getDefaultPerspective(ODatabaseDocument db, OUser user)
 	{
 		if(user!=null)
@@ -130,15 +143,12 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				if(perspective!=null) return perspective;
 			}
 		}
-		List<ODocument> defaultPerspectives = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_PERSPECTIVE+" where name=?"), DEFAULT_PERSPECTIVE);
-		if(defaultPerspectives!=null && !defaultPerspectives.isEmpty())
+		ODocument perspective = getPerspectiveByName(db, DEFAULT_PERSPECTIVE);
+		if(perspective==null)
 		{
-			return defaultPerspectives.get(0);
+			perspective = runtimeRepairDefaultPerspective();
 		}
-		else
-		{
-			return runtimeRepairDefaultPerspective();
-		}
+		return perspective;
 	}
 	
 	private ODocument getPerspectiveForORole(ORole role)
