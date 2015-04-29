@@ -33,6 +33,7 @@
 			<includes>
 				<include>orienteer.properties</include>
 				<include>orienteer-test.properties</include>
+				<include>README.md</include>
 			</includes>
 		</fileSet>
 		<fileSet filtered="false" packaged="false" encoding="UTF-8">
