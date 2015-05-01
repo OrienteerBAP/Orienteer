@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -19,8 +21,11 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.UIVisualizersRegistry;
 import org.orienteer.core.component.table.CheckBoxColumn;
@@ -226,12 +231,13 @@ public class OClassIntrospector implements IOClassIntrospector
 				Object value = doc.field(nameProp.getName());
 				if(value==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
 				OType type = nameProp.getType();
+				Locale locale = OrienteerWebSession.get().getLocale();
 				switch (type)
 				{
 					case DATE:
-						return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateFormatInstance().format(value);
+						return OrienteerWebApplication.DATE_CONVERTER.convertToString((Date)value, locale);
 					case DATETIME:
-						return ODatabaseRecordThreadLocal.INSTANCE.get().getStorage().getConfiguration().getDateTimeFormatInstance().format(value);
+						return OrienteerWebApplication.DATE_TIME_CONVERTER.convertToString((Date)value, locale);
 					case LINK:
 						return getDocumentName((ODocument)value);
 					default:

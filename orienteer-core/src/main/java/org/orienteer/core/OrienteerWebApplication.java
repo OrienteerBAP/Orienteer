@@ -1,15 +1,19 @@
 package org.orienteer.core;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.wicket.RuntimeConfigurationType;
+import org.apache.wicket.datetime.DateConverter;
+import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.IPackageResourceGuard;
 import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.settings.IRequestCycleSettings;
+import org.apache.wicket.util.convert.IConverter;
 import org.orienteer.core.component.property.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
@@ -48,6 +52,9 @@ import de.agilecoders.wicket.webjars.settings.WebjarsSettings;
  */
 public class OrienteerWebApplication extends OrientDbWebApplication
 {
+	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("L-", true);
+	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("LL", true);
+	
 	private Map<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	
 	@Inject

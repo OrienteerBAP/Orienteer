@@ -19,6 +19,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.BinaryEditPanel;
 import org.orienteer.core.component.property.BinaryViewPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
@@ -68,11 +69,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				case LINKSET:
 					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
                 case DATE:
-                	String datePattern =((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.LONG, Session.get().getLocale())).toPattern();
-                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, datePattern);
+                	return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_CONVERTER);
                 case DATETIME:
-                	String dateTimePattern = ((SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG, Session.get().getLocale())).toPattern();
-                    return DateLabel.forDatePattern(id, (IModel<Date>) valueModel, dateTimePattern);
+                	return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_TIME_CONVERTER);
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
                 case EMBEDDED:
