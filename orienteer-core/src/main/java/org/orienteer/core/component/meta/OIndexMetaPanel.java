@@ -36,6 +36,11 @@ import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.sql.OSQLEngine;
 
+/**
+ * Meta panel for {@link OIndex}
+ *
+ * @param <V> type of a value
+ */
 public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, DisplayMode, String, V>
 {
 	private static final List<String> INDEX_TYPES;

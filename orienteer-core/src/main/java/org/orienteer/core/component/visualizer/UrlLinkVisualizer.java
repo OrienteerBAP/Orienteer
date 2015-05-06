@@ -10,6 +10,9 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.DisplayMode;
 
+/**
+ * {@link IVisualizer} to display and modify URLs in Orienteer
+ */
 public class UrlLinkVisualizer extends AbstractSimpleVisualizer
 {
     private static final String NAME = "urlLink";

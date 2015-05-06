@@ -39,11 +39,13 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
+/**
+ * Root page for pages which require Orienteers highlevel UI: top navigation bar and left menu
+ *
+ * @param <T> type of a main object for this page
+ */
 public abstract class OrienteerBasePage<T> extends BasePage<T>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private OrienteerFeedbackPanel feedbacks;
 	public OrienteerBasePage()

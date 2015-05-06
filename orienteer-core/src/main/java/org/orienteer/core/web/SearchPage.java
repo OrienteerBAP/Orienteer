@@ -38,6 +38,9 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Page to search and display search results
+ */
 @MountPath("/search")
 public class SearchPage extends OrienteerBasePage<String>
 {

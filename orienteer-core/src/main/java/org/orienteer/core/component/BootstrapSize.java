@@ -1,5 +1,8 @@
 package org.orienteer.core.component;
 
+/**
+ * {@link Enum} for bootstrap size specification
+ */
 public enum BootstrapSize
 {
 	LARGE("large", "btn-lg"),

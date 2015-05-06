@@ -10,8 +10,12 @@ import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OPropertyViewPanel;
 
+import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
+/**
+ * {@link OPropertyMetaColumn} to refer to {@link OProperty} themselves
+ */
 public class OPropertyDefinitionColumn extends OPropertyMetaColumn
 {
 	private static final long serialVersionUID = 1L;

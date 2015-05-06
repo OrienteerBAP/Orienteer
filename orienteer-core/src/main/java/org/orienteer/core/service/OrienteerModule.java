@@ -10,7 +10,7 @@ import org.apache.wicket.Localizer;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.component.property.UIVisualizersRegistry;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.impl.GuiceOrientDbSettings;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.service.impl.OrienteerWebjarsSettings;

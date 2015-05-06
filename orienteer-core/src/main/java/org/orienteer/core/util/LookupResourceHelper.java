@@ -17,6 +17,9 @@ public class LookupResourceHelper {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(LookupResourceHelper.class);
 	
+	/**
+	 * Interface for classes that can find a resource by specified identifier
+	 */
 	public static interface IResourceLookuper {
 		/**
 		 * Lookup file according to lookuper politics

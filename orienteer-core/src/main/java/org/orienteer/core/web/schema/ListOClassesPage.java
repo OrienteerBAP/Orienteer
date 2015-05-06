@@ -48,6 +48,9 @@ import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityReso
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Page to show all registered classes
+ */
 @MountPath("/classes")
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class ListOClassesPage extends OrienteerBasePage<Object> {

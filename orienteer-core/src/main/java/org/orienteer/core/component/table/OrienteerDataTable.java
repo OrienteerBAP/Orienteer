@@ -22,12 +22,25 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
-import org.orienteer.core.component.property.IMetaContext;
+import org.orienteer.core.component.meta.IMetaContext;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
 
+/**
+ * Bootstrap enabled {@link DataTable}
+ *
+ * @param <T>
+ *            the type of an table objects
+ * @param <S>
+ *            the type of the sorting parameter
+ */
 public class OrienteerDataTable<T, S> extends DataTable<T, S>
 {
-	
+	/**
+	 * {@link Item} that allows every row to be an {@link IMetaContext}
+	 *
+	 * @param <T> the type of an table objects
+	 * @param <C> the type of a criteria
+	 */
 	public static class MetaContextItem<T, C> extends Item<T> implements IMetaContext<C>
 	{
 

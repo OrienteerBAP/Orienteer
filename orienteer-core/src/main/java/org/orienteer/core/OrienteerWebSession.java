@@ -1,6 +1,7 @@
 package org.orienteer.core;
 
 import org.apache.wicket.Session;
+import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.orienteer.core.module.PerspectivesModule;
 
@@ -9,6 +10,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+/**
+ * Orienteer's {@link WebSession} class.
+ * Mainly used for perspectives manipulation 
+ */
 public class OrienteerWebSession extends OrientDbWebSession
 {
 	private OIdentifiable perspective;
@@ -70,8 +75,4 @@ public class OrienteerWebSession extends OrientDbWebSession
 		if(perspective!=null) perspective = perspective.getIdentity();
 		super.detach();
 	}
-	
-	
-	
-
 }

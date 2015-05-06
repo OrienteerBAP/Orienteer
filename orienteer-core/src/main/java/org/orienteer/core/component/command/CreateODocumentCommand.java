@@ -20,11 +20,11 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link Command} to create {@link ODocument}
+ */
 public class CreateODocumentCommand extends AbstractCreateCommand<ODocument> implements ISecuredComponent{
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<OClass> classModel;
 	private IModel<ODocument> documentModel;

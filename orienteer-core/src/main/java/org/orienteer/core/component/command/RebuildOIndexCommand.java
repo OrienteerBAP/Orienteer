@@ -10,6 +10,9 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 
 import com.orientechnologies.orient.core.index.OIndex;
 
+/**
+ * {@link Command} to rebuild {@link OIndex}
+ */
 public class RebuildOIndexCommand extends AjaxCommand<OIndex<?>>
 {
 	private IModel<OIndex<?>> oIndexModel;

@@ -8,6 +8,9 @@ import org.apache.wicket.util.lang.Args;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * Abstract {@link IVisualizer} to simplify stubbing
+ */
 public abstract class AbstractSimpleVisualizer implements IVisualizer
 {
 	private final String name;

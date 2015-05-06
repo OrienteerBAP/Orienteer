@@ -9,7 +9,11 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.service.IUmlService;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 
+/**
+ * Modal window to display UML for a selected {@link OClass}es
+ */
 public class ViewUMLDialogPanel  extends GenericPanel<String>
 {
 	@Inject

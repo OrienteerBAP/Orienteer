@@ -12,6 +12,9 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Page for Orienteer pages that took {@link ODocument} as an main object
+ */
 public abstract class AbstractODocumentPage extends OrienteerBasePage<ODocument> 
 {
 	private static final long serialVersionUID = 1L;

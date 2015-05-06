@@ -23,6 +23,11 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+/**
+ * {@link ODocumentHookAbstract} for automatic calculation of some properties.
+ * Properties to be automatically calculated should be marked by {@link CustomAttributes}.CALCULABLE
+ * Logic for calculation should be stored in {@link CustomAttributes}.CALC_SCRIPT
+ */
 public class CalculablePropertiesHook extends ODocumentHookAbstract
 {
 	private final static Pattern FULL_QUERY_PATTERN = Pattern.compile("^\\s*(select|traverse)", Pattern.CASE_INSENSITIVE);

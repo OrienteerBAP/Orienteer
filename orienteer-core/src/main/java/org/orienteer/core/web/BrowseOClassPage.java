@@ -28,6 +28,9 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Page to browse all documents for a specific {@link OClass}
+ */
 @MountPath("/browse/${className}")
 public class BrowseOClassPage extends OrienteerBasePage<OClass> implements ISecuredComponent
 {

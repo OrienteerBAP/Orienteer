@@ -37,6 +37,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * Page to display {@link OIndex} specific parameters
+ */
 @MountPath("/index/${indexName}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class OIndexPage extends OrienteerBasePage<OIndex<?>>

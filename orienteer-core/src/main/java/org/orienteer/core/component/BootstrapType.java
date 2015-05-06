@@ -1,5 +1,8 @@
 package org.orienteer.core.component;
 
+/**
+ * {@link Enum} for specification of bootstrap type: default, primary, success and etc.
+ */
 public enum BootstrapType
 {
 	DEFAULT("default", "btn-default"),

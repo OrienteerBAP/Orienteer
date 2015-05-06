@@ -8,15 +8,16 @@ import org.apache.wicket.event.IEvent;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
-import org.orienteer.core.component.property.IMetaContext;
+import org.orienteer.core.component.meta.IMetaContext;
 
+/**
+ * {@link StructureTable} which allow to use meta micro-framework ( {@link IMetaContext} )
+ *
+ * @param <T> the type of main object for this table
+ * @param <C> the type of criterias to be used for this table
+ */
 public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C> implements IMetaContext<C>
 {
-
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private StructureTableCommandsToolbar<T> commandsToolbar;
 

@@ -8,6 +8,9 @@ import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+/**
+ * Utility class to run jetty server according to specified parameters
+ */
 public class ServerRunner
 {
 	public static final int DEFAULT_TIMEOUT = 60*60*1000;

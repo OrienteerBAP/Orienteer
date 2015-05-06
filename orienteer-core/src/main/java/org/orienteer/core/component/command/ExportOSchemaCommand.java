@@ -20,6 +20,9 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+/**
+ * {@link Command} to export db schema
+ */
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class ExportOSchemaCommand extends Command<OClass>
 {
@@ -55,9 +58,5 @@ public class ExportOSchemaCommand extends Command<OClass>
 			
 		});
 	}
-	
-	
-	
-	
 
 }

@@ -5,13 +5,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.wicketstuff.annotation.mount.MountPath;
 
+/**
+ * Default login page
+ */
 @MountPath("/login")
 public class LoginPage extends BasePage<Object>
 {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public LoginPage()

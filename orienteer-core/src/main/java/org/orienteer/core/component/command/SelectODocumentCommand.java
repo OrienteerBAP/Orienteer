@@ -20,6 +20,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link Command} to select (establish new link to a document) some {@link ODocument}
+ */
 public class SelectODocumentCommand extends AbstractModalWindowCommand<ODocument>
 {
 	private IModel<ODocument> documentModel;

@@ -5,6 +5,9 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
 
+/**
+ * {@link FormComponentPanel} to edit binary parameters (upload)
+ */
 public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 	
 	private FileUploadField fileUploadField;

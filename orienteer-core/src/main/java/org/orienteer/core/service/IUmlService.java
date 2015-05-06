@@ -7,6 +7,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
+/**
+ * Guice service to describe schema related entities
+ */
 @ImplementedBy(PlantUmlService.class)
 public interface IUmlService
 {

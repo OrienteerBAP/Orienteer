@@ -12,7 +12,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
-
+/**
+ * Enhanced {@link ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper} from wicket-orientdb library to allow Orienteer specific things
+ */
 public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper
 {
 	protected OSchemaHelper(ODatabaseDocument db)

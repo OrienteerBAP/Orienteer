@@ -17,6 +17,10 @@ import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * Dynamic {@link IModel}&lt;{@link List}&lt; {@link OType} &gt;&gt; 
+ * to get {@link OType}s to which current {@link OType} can be switched to 
+ */
 public class ListAvailableOTypesModel extends LoadableDetachableModel<List<OType>>
 {
 	private final IModel<OProperty> propertyModel;

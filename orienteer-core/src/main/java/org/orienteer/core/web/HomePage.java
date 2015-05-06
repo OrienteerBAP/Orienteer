@@ -6,6 +6,9 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Page that redirects to concrete home page according to current perspective
+ */
 @MountPath("/home")
 public class HomePage extends BasePage
 {

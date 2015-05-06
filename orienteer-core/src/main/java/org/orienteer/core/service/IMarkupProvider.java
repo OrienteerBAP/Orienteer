@@ -6,6 +6,10 @@ import org.orienteer.core.service.impl.MarkupProvider;
 
 import com.google.inject.ImplementedBy;
 
+/**
+ * Guice service to provide markup per component.
+ * Widely used for meta components
+ */
 @ImplementedBy(MarkupProvider.class)
 public interface IMarkupProvider
 {

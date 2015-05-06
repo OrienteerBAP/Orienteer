@@ -21,6 +21,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * {@link Command} to create {@link OProperty}
+ */
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.CREATE)
 public class CreateOPropertyCommand extends AbstractCreateCommand<OProperty> {
 

@@ -14,6 +14,9 @@ import org.orienteer.core.component.property.OPropertyViewPanel;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
+/**
+ * {@link OClassMetaColumn} to refer to {@link OClass} themselves
+ */
 public class OClassColumn extends OClassMetaColumn
 {
 	private static final long serialVersionUID = 1L;

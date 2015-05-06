@@ -1,5 +1,8 @@
 package org.orienteer.core.component;
 
+/**
+ * {@link Enum} for Font Awesome icons specification in code
+ */
 public enum FAIconType
 {
 	adjust("fa fa-adjust"),

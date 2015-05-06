@@ -85,6 +85,9 @@ import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Page to show {@link OClass} specific things: class parameters, properties, indexies and etc.
+ */
 @MountPath("/class/${className}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class OClassPage extends OrienteerBasePage<OClass> {

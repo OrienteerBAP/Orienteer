@@ -14,6 +14,9 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link Command} to release (remove link, but not a document) an {@link ODocument}
+ */
 public class ReleaseODocumentCommand extends
 		AbstractCheckBoxEnabledCommand<ODocument>
 {

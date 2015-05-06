@@ -8,9 +8,12 @@ import org.orienteer.core.component.property.DisplayMode;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
+/**
+ * {@link AbstractModeMetaColumn} for {@link ODocument}s
+ */
 public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, DisplayMode, OProperty, String>
 {
 	private static final long serialVersionUID = 1L;

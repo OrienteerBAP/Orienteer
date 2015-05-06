@@ -20,6 +20,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link FormComponentPanel} to edit LINK properties
+ */
 public class LinkEditPanel extends FormComponentPanel<ODocument>
 {
 	protected IModel<ODocument> inputDocument;

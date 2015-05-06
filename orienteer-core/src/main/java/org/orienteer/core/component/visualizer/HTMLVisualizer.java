@@ -11,6 +11,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link IVisualizer} to display and modify HTML in Orienteer
+ */
 public class HTMLVisualizer extends AbstractSimpleVisualizer
 {
 	public HTMLVisualizer()

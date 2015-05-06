@@ -11,6 +11,9 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
+/**
+ * {@link AbstractModeMetaColumn} for {@link OClass}es
+ */
 public class OClassMetaColumn  extends AbstractModeMetaColumn<OClass, DisplayMode, String, String>
 {
 	public OClassMetaColumn(CustomAttributes custom, IModel<DisplayMode> modeModel)

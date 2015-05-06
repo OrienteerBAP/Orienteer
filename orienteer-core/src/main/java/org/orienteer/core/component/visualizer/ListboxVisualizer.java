@@ -22,6 +22,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link IVisualizer} to show links as listboxes
+ */
 public class ListboxVisualizer extends AbstractSimpleVisualizer
 {
 	public ListboxVisualizer()

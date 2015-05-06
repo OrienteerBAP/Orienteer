@@ -32,6 +32,12 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link FormComponentPanel} to edit embedded collections
+ *
+ * @param <T> the type of collection's objects
+ * @param <M> the type of a collection themselves
+ */
 public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends FormComponentPanel<M>
 {
 	protected final Class<?> finalType;

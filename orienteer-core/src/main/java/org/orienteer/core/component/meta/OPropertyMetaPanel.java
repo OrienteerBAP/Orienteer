@@ -35,7 +35,7 @@ import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OClassViewPanel;
 import org.orienteer.core.component.property.OPropertyViewPanel;
-import org.orienteer.core.component.property.UIVisualizersRegistry;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.model.ListAvailableOTypesModel;
 import org.orienteer.core.model.ListOClassesModel;
 
@@ -63,6 +63,11 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OSQLEngine;
 
+/**
+ * Meta panel for {@link OProperty}
+ *
+ * @param <V> type of a value
+ */
 public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V>
 {
 	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>();

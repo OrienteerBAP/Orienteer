@@ -11,6 +11,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Interface of Orienteer's visualizers
+ */
 public interface IVisualizer extends IClusterable
 {
 	public static final String DEFAULT_VISUALIZER = "default";

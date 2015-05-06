@@ -10,6 +10,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 
+/**
+ * {@link FormComponentPanel} to edit properties with 'password' visualization 
+ */
 public class PasswordsPanel extends FormComponentPanel<String>
 {
 	private PasswordTextField password;

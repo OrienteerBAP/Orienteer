@@ -3,6 +3,14 @@ package org.orienteer.core.component.meta;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 
+/**
+ * {@link AbstractModeMetaPanel} that can use getValue and setValue methods for dynamic value resolution
+ *
+ * @param <T> the type of an entity
+ * @param <K> the type of a display mode
+ * @param <C> the type of a criteria
+ * @param <V> the type of a value
+ */
 public abstract class AbstractComplexModeMetaPanel<T, K, C, V> extends AbstractModeMetaPanel<T, K, C, V> {
 
 	private static final long serialVersionUID = 1L;

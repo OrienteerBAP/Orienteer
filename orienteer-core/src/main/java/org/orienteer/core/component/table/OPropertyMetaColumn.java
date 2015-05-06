@@ -11,8 +11,12 @@ import org.orienteer.core.component.property.DisplayMode;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
+/**
+ * {@link AbstractModeMetaColumn} for {@link OProperty}es
+ */
 public class OPropertyMetaColumn  extends AbstractModeMetaColumn<OProperty, DisplayMode, String, String>
 {
 	public OPropertyMetaColumn(CustomAttributes custom, IModel<DisplayMode> modeModel)

@@ -26,6 +26,9 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+/**
+ * {@link Command} to delete an {@link ODocument}
+ */
 public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  implements ISecuredComponent
 {
 	private static final long serialVersionUID = 1L;

@@ -40,6 +40,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * Page to show {@link OProperty} specific parameters
+ */
 @MountPath("/property/${className}/${propertyName}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class OPropertyPage extends OrienteerBasePage<OProperty>

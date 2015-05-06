@@ -10,11 +10,11 @@ import org.orienteer.core.web.schema.OPropertyPage;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
+/**
+ * {@link BookmarkablePageLink} for {@link OProperty}
+ */
 public class OPropertyPageLink extends BookmarkablePageLink<OProperty>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 	public OPropertyPageLink(String id, IModel<OProperty> oClassModel, PageParameters parameters)

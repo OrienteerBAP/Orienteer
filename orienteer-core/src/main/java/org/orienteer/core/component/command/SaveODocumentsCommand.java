@@ -10,6 +10,9 @@ import org.orienteer.core.component.table.OrienteerDataTable.MetaContextItem;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link Command} for {@link OrienteerDataTable} to save {@link ODocument}s
+ */
 public class SaveODocumentsCommand extends AbstractSaveCommand<ODocument>
 {
 	private OrienteerDataTable<ODocument, ?> table;

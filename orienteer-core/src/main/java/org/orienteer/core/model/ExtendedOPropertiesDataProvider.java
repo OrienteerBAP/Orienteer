@@ -11,6 +11,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 
+/**
+ * {@link OPropertiesDataProvider} which allow to sort {@link OProperty}'es on {@link CustomAttributes} values
+ */
 public class ExtendedOPropertiesDataProvider extends OPropertiesDataProvider
 {
 

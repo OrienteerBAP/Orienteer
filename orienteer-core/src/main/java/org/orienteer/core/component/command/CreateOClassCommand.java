@@ -16,6 +16,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * {@link Command} to create {@link OClass}
+ */
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.CREATE)
 public class CreateOClassCommand extends AbstractCreateCommand<OClass>
 {

@@ -5,6 +5,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.web.ODocumentPage;
 
+/**
+ * Orienteer's display modes. There are 2 types: VIEW and EDIT.
+ * Some new might be added later
+ */
 public enum DisplayMode {
 	VIEW(ODocumentPage.class, false),
 	EDIT(ODocumentPage.class, true); //TODO: Change EDIT page

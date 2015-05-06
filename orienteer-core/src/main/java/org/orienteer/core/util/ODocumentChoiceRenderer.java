@@ -7,6 +7,9 @@ import org.orienteer.core.service.IOClassIntrospector;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link IChoiceRenderer} for {@link ODocument}s. Display value is an document's name
+ */
 public class ODocumentChoiceRenderer implements IChoiceRenderer<ODocument>
 {
 	private transient IOClassIntrospector oClassIntrospector;

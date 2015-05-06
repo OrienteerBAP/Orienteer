@@ -10,14 +10,13 @@ import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
+/**
+ * Ajax-enabled {@link Command}
+ *
+ * @param <T> the type of an entity to which this command can be applied
+ */
 public abstract class AjaxCommand<T> extends Command<T>
 {
-	
-	
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public AjaxCommand(IModel<?> labelModel, DataTableCommandsToolbar<T> toolbar)

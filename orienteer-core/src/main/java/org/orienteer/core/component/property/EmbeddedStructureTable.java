@@ -19,6 +19,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link OrienteerStructureTable} to display embedded properties
+ */
 public class EmbeddedStructureTable extends OrienteerStructureTable<ODocument, OProperty> {
 	
 	

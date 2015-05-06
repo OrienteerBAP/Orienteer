@@ -5,8 +5,11 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.html.form.Form;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
-import org.orienteer.core.component.property.IMetaContext;
+import org.orienteer.core.component.meta.IMetaContext;
 
+/**
+ * Automatically refresh upper meta context component which affected by changing a component to which this behaviour attached to  
+ */
 public class RefreshMetaContextOnChangeBehaviour extends AjaxFormSubmitBehavior
 {
 	public RefreshMetaContextOnChangeBehaviour(Form<?> form)

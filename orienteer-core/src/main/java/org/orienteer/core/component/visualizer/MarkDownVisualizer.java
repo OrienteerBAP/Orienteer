@@ -13,6 +13,9 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.model.MarkDownModel;
 import org.pegdown.PegDownProcessor;
 
+/**
+ * {@link IVisualizer} to display and modify markdown in Orienteer
+ */
 public class MarkDownVisualizer extends AbstractSimpleVisualizer
 {
     private static final String NAME = "markdown";

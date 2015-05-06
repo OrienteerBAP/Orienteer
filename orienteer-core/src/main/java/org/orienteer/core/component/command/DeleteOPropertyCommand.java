@@ -15,6 +15,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * {@link Command} to delete {@link OProperty}
+ */
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.DELETE)
 public class DeleteOPropertyCommand extends AbstractDeleteCommand<OProperty> {
 

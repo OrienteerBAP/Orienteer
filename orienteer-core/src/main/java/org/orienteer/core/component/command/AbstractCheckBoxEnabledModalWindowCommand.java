@@ -8,6 +8,12 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
+/**
+ * {@link AbstractCheckBoxEnabledCommand} that require selection of some set of objects.
+ * Modal window  will be displayed for additional steps
+ *
+ * @param <T>  the type of an entity to which this command can be applied
+ */
 public abstract class AbstractCheckBoxEnabledModalWindowCommand<T> extends
 		AbstractCheckBoxEnabledCommand<T>
 {

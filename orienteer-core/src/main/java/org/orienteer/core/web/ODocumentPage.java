@@ -43,6 +43,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Default page to display an {@link ODocument}
+ */
 @MountPath("/doc/#{rid}/#{mode}")
 public class ODocumentPage extends AbstractODocumentPage {
 

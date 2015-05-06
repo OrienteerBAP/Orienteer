@@ -26,6 +26,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * Implementation of {@link IUmlService}
+ */
 @Singleton
 public class PlantUmlService implements IUmlService
 {

@@ -21,6 +21,9 @@ import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.tool.ODatabaseImport;
 
+/**
+ * Modal window for schema importing
+ */
 public class ImportDialogPanel extends Panel
 {
 

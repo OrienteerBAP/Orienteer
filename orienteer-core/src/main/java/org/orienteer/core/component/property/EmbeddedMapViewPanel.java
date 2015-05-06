@@ -6,6 +6,7 @@ import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -22,6 +23,11 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link FormComponentPanel} to view embedded {@link Map}
+ *
+ * @param <V> the type of collection's objects
+ */
 public class EmbeddedMapViewPanel<V> extends GenericPanel<Map<String, V>> {
 	
 	@Inject

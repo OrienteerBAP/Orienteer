@@ -7,6 +7,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.GenericWebPage;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -34,6 +35,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
+/**
+ * Root {@link WebPage} for Orienteer enabled pages.
+ * Provide main resources for a header and basic methods to work with perspectives
+ *
+ * @param <T> type of a main object for this page
+ */
 public abstract class BasePage<T> extends GenericWebPage<T>
 {
 	private static final long serialVersionUID = 1L;

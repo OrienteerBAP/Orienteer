@@ -14,6 +14,13 @@ import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.property.AbstractLinkViewPanel;
 import org.orienteer.core.web.schema.ListOClassesPage;
 
+import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+
+/**
+ * Page header for schema specific entities: {@link OClass}, {@link OProperty}, {@link OIndex}
+ */
 public class SchemaPageHeader extends Panel {
 	private RepeatingView childRepeatingView;
 	private String lastComponentId;

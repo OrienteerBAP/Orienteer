@@ -4,6 +4,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
 
+/**
+ * Error page for 404 code (resource not found)
+ */
 @MountPath("/404")
 public class NotFoundPage extends SearchPage {
 

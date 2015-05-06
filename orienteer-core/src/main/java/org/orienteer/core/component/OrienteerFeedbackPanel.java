@@ -9,18 +9,18 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 
+/**
+ * AJAX-enabled {@link FeedbackPanel} for Orienteer
+ */
 public class OrienteerFeedbackPanel extends FeedbackPanel
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	/**
+	 * {@link IFeedbackMessageFilter} to remail only uniq messages
+	 */
 	public static class UniqueMessageFilter implements IFeedbackMessageFilter
 	  {
-	    /**
-		 * 
-		 */
 		private static final long serialVersionUID = 1L;
 		List<FeedbackMessage> messages = new ArrayList<FeedbackMessage>();
 	 

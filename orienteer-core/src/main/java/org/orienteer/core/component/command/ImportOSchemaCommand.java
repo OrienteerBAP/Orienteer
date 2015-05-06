@@ -15,6 +15,10 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * {@link Command} to import schema.
+ * Additional modal window will be displayed
+ */
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions={OrientPermission.CREATE, OrientPermission.UPDATE})
 public class ImportOSchemaCommand extends AbstractModalWindowCommand<OClass>
 {

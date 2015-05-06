@@ -40,6 +40,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Default {@link IVisualizer}. Should cover all property types
+ */
 public class DefaultVisualizer extends AbstractSimpleVisualizer
 {
 	public static final DefaultVisualizer INSTANCE = new DefaultVisualizer();

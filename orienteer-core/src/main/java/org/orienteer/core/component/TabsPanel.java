@@ -23,6 +23,11 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
+/**
+ * Panel for bootstrap's tabs with "tabdrop" feature.
+ *
+ * @param <T> type of entities for tabs
+ */
 public class TabsPanel<T> extends GenericPanel<T>
 {
 	private static final CssResourceReference TABDROP_CSS = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");

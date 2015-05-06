@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 
 import org.orienteer.core.OrienteerWebApplication;
 
+/**
+ * Class with main method to start Orienteer in standalone mode
+ */
 public class StartStandalone
 {
 	private static final Pattern ARG_PATTERN=Pattern.compile("^--([^=]*)=?(.*)$");

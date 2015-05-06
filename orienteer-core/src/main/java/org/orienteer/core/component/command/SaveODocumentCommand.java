@@ -17,11 +17,11 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+/**
+ * {@link Command} for {@link OrienteerStructureTable} to save {@link ODocument}
+ */
 public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> implements ISecuredComponent
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<? extends OIdentifiable> documentModel;
 

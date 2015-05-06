@@ -5,6 +5,9 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 
+/**
+ * {@link GenericPanel} to edit {@link Boolean} parameters
+ */
 public class BooleanEditPanel extends GenericPanel<Boolean>
 {
 	private static final long serialVersionUID = 1L;

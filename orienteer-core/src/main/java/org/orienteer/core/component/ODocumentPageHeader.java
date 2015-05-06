@@ -15,6 +15,10 @@ import org.orienteer.core.service.IOClassIntrospector;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Page header that has been used for a {@link ODocument} related pages.
+ * Header shows "navigation path" till this {@link ODocument}
+ */
 public class ODocumentPageHeader extends GenericPanel<ODocument>
 {
 	@Inject

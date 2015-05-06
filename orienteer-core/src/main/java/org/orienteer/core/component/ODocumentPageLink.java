@@ -11,11 +11,11 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link BookmarkablePageLink} for {@link ODocument}
+ */
 public class ODocumentPageLink extends BookmarkablePageLink<ODocument>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private boolean propogateDisplayMode = true;
 	private IModel<DisplayMode> displayModeModel;

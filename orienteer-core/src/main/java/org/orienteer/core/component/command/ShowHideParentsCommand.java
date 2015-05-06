@@ -10,11 +10,13 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
+/**
+ * {@link Command} to show or hide parent things
+ *
+ * @param <T> the type of an entity to which this command can be applied
+ */
 public class ShowHideParentsCommand<T> extends AjaxCommand<T>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<OClass> classModel;
 	private IModel<Boolean> showHideParentModel;

@@ -33,6 +33,11 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link FormComponentPanel} to edit embedded {@link Map}
+ *
+ * @param <V> the type of collection's objects
+ */
 public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> {
 	
 	private static class Pair<V> implements Map.Entry<String, V>, Serializable

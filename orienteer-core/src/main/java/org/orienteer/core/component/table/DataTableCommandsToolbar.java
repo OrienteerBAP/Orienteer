@@ -11,12 +11,13 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.command.Command;
 
-
+/**
+ * {@link AbstractToolbar} to collect {@link Command}s
+ *
+ * @param <T> the type of a data table objects
+ */
 public class DataTableCommandsToolbar<T> extends AbstractToolbar
 {
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
     public DataTableCommandsToolbar(DataTable<T, ?> table)

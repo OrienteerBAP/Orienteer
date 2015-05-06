@@ -11,6 +11,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link OPropertyValueColumn} to refer to {@link ODocument} themselves
+ */
 public class OEntityColumn extends OPropertyValueColumn
 {
 	private static final long serialVersionUID = 1L;

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -23,6 +24,12 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link FormComponentPanel} to view embedded collections
+ *
+ * @param <T> the type of collection's objects
+ * @param <M> the type of a collection themselves
+ */
 public class EmbeddedCollectionViewPanel<T, M extends Collection<T>> extends GenericPanel<M> {
 
 	@Inject

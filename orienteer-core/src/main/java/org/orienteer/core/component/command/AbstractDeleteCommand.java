@@ -9,6 +9,11 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Abstract {@link Command} for any commands which delete something after selection
+ *
+ * @param <T>  the type of an entity to which this command can be applied
+ */
 public abstract class AbstractDeleteCommand<T> extends AbstractCheckBoxEnabledCommand<T>
 {
 	private static final long serialVersionUID = 1L;

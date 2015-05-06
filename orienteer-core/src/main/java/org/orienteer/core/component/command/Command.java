@@ -28,7 +28,11 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 
-
+/**
+ * Main class for all commands
+ *
+ * @param <T> the type of an entity to which this command can be applied
+ */
 public abstract class Command<T> extends Panel implements IBootstrapAware
 {
 	private static final AttributeModifier DISABLED_LINK_BEHAVIOR = new AttributeModifier("disabled", AttributeModifier.VALUELESS_ATTRIBUTE_ADD)

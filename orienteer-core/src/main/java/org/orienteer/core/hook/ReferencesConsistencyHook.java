@@ -28,6 +28,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link ODocumentHookAbstract} for keeping references consistency between documents
+ */
 public class ReferencesConsistencyHook extends ODocumentHookAbstract
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ReferencesConsistencyHook.class);

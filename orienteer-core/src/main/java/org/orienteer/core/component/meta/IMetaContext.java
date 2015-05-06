@@ -1,9 +1,13 @@
-package org.orienteer.core.component.property;
+package org.orienteer.core.component.meta;
 
 import org.apache.wicket.MarkupContainer;
-import org.orienteer.core.component.meta.AbstractMetaPanel;
 
 
+/**
+ * Interface to mark components that reflect meta context
+ *
+ * @param <C> the type of criterias 
+ */
 public interface IMetaContext<C>
 {
 	public MarkupContainer getContextComponent();

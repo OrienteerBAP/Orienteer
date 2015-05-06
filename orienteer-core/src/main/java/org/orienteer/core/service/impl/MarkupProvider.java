@@ -26,6 +26,9 @@ import org.orienteer.core.service.IMarkupProvider;
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
+/**
+ * Implementation of {@link IMarkupProvider}
+ */
 @Singleton
 public class MarkupProvider implements IMarkupProvider
 {

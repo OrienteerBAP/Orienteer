@@ -10,11 +10,11 @@ import org.orienteer.core.web.schema.OIndexPage;
 
 import com.orientechnologies.orient.core.index.OIndex;
 
+/**
+ * {@link BookmarkablePageLink} for {@link OIndex}
+ */
 public class OIndexPageLink extends BookmarkablePageLink<OIndex<?>>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 	public OIndexPageLink(String id, IModel<OIndex<?>> oIndexModel, PageParameters parameters)

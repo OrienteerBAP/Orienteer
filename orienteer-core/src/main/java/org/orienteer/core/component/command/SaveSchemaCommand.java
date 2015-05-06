@@ -12,15 +12,20 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * {@link Command} to save a schema specific entities: {@link OClass}, {@link OProperty}, {@link OIndex} 
+ *
+ * @param <T>
+ */
 public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISecuredComponent {
 
 	private IModel<T> objectModel;
-	
-	
 	
 	public SaveSchemaCommand(OrienteerDataTable<T, ?> table,
 			IModel<DisplayMode> displayModeModel)

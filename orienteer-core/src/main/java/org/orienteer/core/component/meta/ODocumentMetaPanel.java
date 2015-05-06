@@ -24,18 +24,24 @@ import org.apache.wicket.validation.validator.RangeValidator;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.property.UIVisualizersRegistry;
 import org.orienteer.core.component.visualizer.IVisualizer;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Meta panel for {@link ODocument}
+ *
+ * @param <V> type of a value
+ */
 public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> {
 	
 	private static final long serialVersionUID = 1L;

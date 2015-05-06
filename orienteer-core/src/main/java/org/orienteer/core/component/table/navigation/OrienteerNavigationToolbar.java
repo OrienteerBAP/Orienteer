@@ -5,6 +5,9 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.NavigationToolbar;
 import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 
+/**
+ * AJAX-enabled and bootstrap orienteed {@link NavigationToolbar}
+ */
 public class OrienteerNavigationToolbar extends NavigationToolbar
 {
 	private static final long serialVersionUID = 1L;

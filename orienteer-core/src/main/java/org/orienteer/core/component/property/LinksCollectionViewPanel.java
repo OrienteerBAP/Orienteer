@@ -38,6 +38,12 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link GenericPanel} to view list or set of links
+ *
+ * @param <T> the type of {@link OIdentifiable} - commonly {@link ODocument}
+ * @param <M> the type of a collection
+ */
 public class LinksCollectionViewPanel<T extends OIdentifiable, M extends Collection<T>> extends GenericPanel<M>
 {
 

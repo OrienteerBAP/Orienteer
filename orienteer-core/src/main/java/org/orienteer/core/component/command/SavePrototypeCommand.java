@@ -10,6 +10,11 @@ import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
+/**
+ * {@link Command} to save {@link IPrototype} based entities
+ *
+ * @param <T> the type of an entity to which this command can be applied
+ */
 public class SavePrototypeCommand<T> extends AbstractSaveCommand<T>
 {
 	private IModel<T> model;

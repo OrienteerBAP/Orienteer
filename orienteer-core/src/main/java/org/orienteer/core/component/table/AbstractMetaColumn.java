@@ -2,16 +2,21 @@ package org.orienteer.core.component.table;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.OIndexMetaPanel;
 
+/**
+ * {@link IColumn} to display meta components ( {@link AbstractMetaPanel} )
+ *
+ * @param <T> the type of the object that will be rendered in this column's cells
+ * @param <C> the type of criteria for this column
+ * @param <S> the type of the sort property
+ */
 public abstract class AbstractMetaColumn<T, C, S> extends AbstractColumn<T, S>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private IModel<C> criteryModel;
 	private IModel<String> labelModel;

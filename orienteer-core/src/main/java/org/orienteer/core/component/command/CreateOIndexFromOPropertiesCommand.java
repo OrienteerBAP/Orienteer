@@ -21,11 +21,15 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
+/**
+ * {@link Command} to create an {@link OIndex} for a selected set of properties
+ */
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.CREATE)
 public class CreateOIndexFromOPropertiesCommand extends
 		AbstractCheckBoxEnabledCommand<OProperty>

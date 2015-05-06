@@ -26,6 +26,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+/**
+ * {@link IOrienteerModule} to simplify localization of an application
+ */
 @Singleton
 public class OrienteerLocalizationModule extends AbstractOrienteerModule
 {

@@ -26,11 +26,14 @@ import org.apache.wicket.util.visit.IVisitor;
 
 import ru.ydn.wicket.wicketorientdb.behavior.SyncVisibilityBehaviour;
 
+/**
+ * Panel which displays parameters of a specified object
+ *
+ * @param <T> the type of main object for this table
+ * @param <C> the type of criterias to be used for this table
+ */
 public abstract class StructureTable<T, C> extends GenericPanel<T> 
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private static final String LABEL_CELL_ID = "label";
 	private static final String VALUE_CELL_ID = "value";

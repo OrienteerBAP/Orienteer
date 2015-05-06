@@ -11,7 +11,10 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
-public class AbstractOrienteerModule implements IOrienteerModule
+/**
+ * Abstract dummy {@link IOrienteerModule} to simplify creation of specific Orienteer modules
+ */
+public abstract class AbstractOrienteerModule implements IOrienteerModule
 {
 	private final String name;
 	private final int version;

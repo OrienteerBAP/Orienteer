@@ -6,6 +6,9 @@ import org.orienteer.core.OrienteerWebApplication;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link IModel} to get a name of a specified {@link ODocument}
+ */
 public class ODocumentNameModel extends LoadableDetachableModel<String>
 {
 	private static final long serialVersionUID = 1L;

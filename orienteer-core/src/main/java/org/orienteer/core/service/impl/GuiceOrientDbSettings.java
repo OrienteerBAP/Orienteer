@@ -3,8 +3,12 @@ package org.orienteer.core.service.impl;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbSettings;
 
+/**
+ * Guice enabled {@link IOrientDbSettings}
+ */
 public class GuiceOrientDbSettings extends OrientDbSettings
 {
 

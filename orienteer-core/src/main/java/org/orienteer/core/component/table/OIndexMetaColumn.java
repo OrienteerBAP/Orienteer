@@ -7,9 +7,13 @@ import org.orienteer.core.component.meta.OIndexMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 
 import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
+/**
+ * {@link AbstractModeMetaColumn} for {@link OIndex}ies
+ */
 public class OIndexMetaColumn extends AbstractModeMetaColumn<OIndex<?>, DisplayMode, String, String>
 {
 

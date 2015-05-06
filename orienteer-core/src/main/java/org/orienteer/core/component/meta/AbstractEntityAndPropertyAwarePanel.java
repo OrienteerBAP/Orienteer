@@ -2,8 +2,14 @@ package org.orienteer.core.component.meta;
 
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.property.IEntityAndPropertyAware;
 
+/**
+ * {@link GenericPanel} that aware about: entity, property and a value
+ *
+ * @param <E> the type of an entity
+ * @param <P> the type of a property
+ * @param <V> the type of a value
+ */
 public abstract class AbstractEntityAndPropertyAwarePanel<E, P, V> extends GenericPanel<V> implements IEntityAndPropertyAware<E, P, V>
 {
 	private static final long serialVersionUID = 1L;

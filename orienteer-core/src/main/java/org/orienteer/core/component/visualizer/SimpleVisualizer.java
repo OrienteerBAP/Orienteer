@@ -16,6 +16,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Very simple {@link IVisualizer} which use provided {@link Component}'s classes for view and edit
+ */
 public class SimpleVisualizer extends AbstractSimpleVisualizer
 {
 	private final Class<? extends Component> viewComponentClass;

@@ -16,6 +16,9 @@ import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.tool.ODatabaseExport;
 
+/**
+ * {@link AbstractResource} to export database schema
+ */
 public class DatabaseExportResource extends AbstractResource
 {
 	private static final Logger LOG = LoggerFactory.getLogger(DatabaseExportResource.class);

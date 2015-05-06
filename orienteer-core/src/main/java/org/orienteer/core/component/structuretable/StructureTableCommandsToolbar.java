@@ -6,12 +6,14 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.command.Command;
 
+/**
+ * {@link AbstractStructureTableToolbar} to add {@link Command}s
+ *
+ * @param <P>
+ */
 public class StructureTableCommandsToolbar<P> extends
 		AbstractStructureTableToolbar<P>
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
 

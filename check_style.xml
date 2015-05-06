@@ -13,7 +13,6 @@
         <!-- Checks Javadoc comments for class and interface definitions. -->
         <module name="JavadocType">
             <property name="scope" value="public"/>
-            <property name="severity" value="warning"/>
         </module>
         <!-- Checks for Naming Conventions.              -->
         <!-- See http://checkstyle.sourceforge.net/config_naming.html -->

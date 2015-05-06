@@ -14,7 +14,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.settings.IRequestCycleSettings;
 import org.apache.wicket.util.convert.IConverter;
-import org.orienteer.core.component.property.UIVisualizersRegistry;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.module.IOrienteerModule;
@@ -45,10 +45,7 @@ import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 import de.agilecoders.wicket.webjars.settings.WebjarsSettings;
 
 /**
- * Application object for your web application.
- * If you want to run this application without deploying, run the Start class.
- * 
- * @see org.orienteer.Start#main(String[])
+ * Main {@link WebApplication} for Orienteer bases applications
  */
 public class OrienteerWebApplication extends OrientDbWebApplication
 {

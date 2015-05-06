@@ -29,6 +29,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link GenericPanel} to visualize 'table' for a LINKSET/LINKLIST properties
+ */
 public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 {
 	

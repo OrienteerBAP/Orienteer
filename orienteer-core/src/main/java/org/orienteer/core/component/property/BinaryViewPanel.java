@@ -15,6 +15,11 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link GenericPanel} to view binary parameters (download)
+ *
+ * @param <V>
+ */
 public class BinaryViewPanel<V> extends GenericPanel<V> {
 	
 	private IModel<ODocument> documentModel;

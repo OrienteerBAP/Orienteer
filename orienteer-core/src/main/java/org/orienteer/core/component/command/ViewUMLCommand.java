@@ -16,6 +16,9 @@ import org.orienteer.core.service.IUmlService;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
+/**
+ * Command to show UML for a selected {@link OClass}es
+ */
 public class ViewUMLCommand extends AbstractCheckBoxEnabledModalWindowCommand<OClass>
 {
 	@Inject

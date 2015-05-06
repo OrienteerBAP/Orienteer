@@ -7,6 +7,9 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
 
+/**
+ * {@link GenericPanel} to view {@link Boolean} parameters
+ */
 public class BooleanViewPanel extends GenericPanel<Boolean>
 {
 	private static final long serialVersionUID = 1L;

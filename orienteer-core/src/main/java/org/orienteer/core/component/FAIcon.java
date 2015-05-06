@@ -6,12 +6,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.Strings;
 
+/**
+ * Wicket component to display an icon.
+ * Can be used for Font Awesome and bootstrap icons
+ */
 public class FAIcon extends WebMarkupContainer
 {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public FAIcon(String id, FAIconType iconType)
@@ -47,7 +47,5 @@ public class FAIcon extends WebMarkupContainer
 		}
 		super.onComponentTag(tag);
 	}
-	
-	
 	
 }

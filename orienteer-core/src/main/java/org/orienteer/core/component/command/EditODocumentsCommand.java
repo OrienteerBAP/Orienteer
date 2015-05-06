@@ -14,6 +14,9 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link Command} for {@link OrienteerDataTable} to edit {@link ODocument}
+ */
 public class EditODocumentsCommand extends EditCommand<ODocument> implements ISecuredComponent
 {
 	private final IModel<OClass> oClassModel;

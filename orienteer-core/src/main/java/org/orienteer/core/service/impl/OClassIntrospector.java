@@ -27,11 +27,11 @@ import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.property.UIVisualizersRegistry;
 import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.visualizer.IVisualizer;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.IOClassIntrospector;
 
 import com.google.common.base.Function;
@@ -52,8 +52,14 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
+/**
+ * Implementation of {@link IOClassIntrospector}
+ */
 public class OClassIntrospector implements IOClassIntrospector
 {
+	/**
+	 * {@link Predicate} that checks displayable of an specified {@link OProperty}
+	 */
 	public static class PropertyDisplayablePredicate implements Predicate<OProperty>
 	{
 		public static final PropertyDisplayablePredicate INSTANCE = new PropertyDisplayablePredicate();
@@ -64,6 +70,9 @@ public class OClassIntrospector implements IOClassIntrospector
 		}
 	}
 	
+	/**
+	 * {@link Function} to take an order of an specified {@link OProperty}
+	 */
 	public static class GetOrderOfPropertyFunction implements Function<OProperty, Integer>
 	{
 		public static final GetOrderOfPropertyFunction INSTANCE = new GetOrderOfPropertyFunction();

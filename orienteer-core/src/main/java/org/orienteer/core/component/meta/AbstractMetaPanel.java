@@ -11,17 +11,24 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.visit.ClassVisitFilter;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.orienteer.core.component.property.IMetaContext;
 import org.orienteer.core.service.IMarkupProvider;
 
 import com.google.inject.Inject;
 
+/**
+ * {@link Panel} that can substitute required component according to a provided criteria
+ *
+ * @param <T> the type of an entity
+ * @param <C> the type of a criteria
+ * @param <V> the type of a value
+ */
 public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndPropertyAwarePanel<T, C, V> implements ILabelProvider<String>
 {
 	private static final long serialVersionUID = 1L;

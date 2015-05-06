@@ -5,7 +5,7 @@ import java.util.List;
 import javax.inject.Singleton;
 
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.component.property.UIVisualizersRegistry;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 

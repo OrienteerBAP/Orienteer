@@ -14,6 +14,11 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+/**
+ * {@link Command} to edit schema related entities
+ *
+ * @param <T> the type of an entity to which this command can be applied
+ */
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.UPDATE)
 public class EditSchemaCommand<T> extends EditCommand<T>
 {

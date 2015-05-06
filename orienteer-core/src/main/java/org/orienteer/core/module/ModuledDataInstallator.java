@@ -22,6 +22,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.AbstractDataInstallator;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
+/**
+ * Data installator of modules specific classes
+ */
 public class ModuledDataInstallator extends AbstractDataInstallator
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ModuledDataInstallator.class);

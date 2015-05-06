@@ -5,6 +5,9 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.util.string.Strings;
 import org.pegdown.PegDownProcessor;
 
+/**
+ * {@link IModel} for transformation of markdown to HTML
+ */
 public class MarkDownModel extends LoadableDetachableModel<String>
 {
     private IModel<String> markDawnModel;

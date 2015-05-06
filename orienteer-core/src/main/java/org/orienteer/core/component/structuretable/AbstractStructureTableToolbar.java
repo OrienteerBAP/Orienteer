@@ -3,6 +3,11 @@ package org.orienteer.core.component.structuretable;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
+/**
+ * {@link Panel} to allow add toolbars to a {@link StructureTable}
+ *
+ * @param <P> the type of main object for a table
+ */
 public class AbstractStructureTableToolbar<P> extends Panel
 {
 	private static final long serialVersionUID = 1L;

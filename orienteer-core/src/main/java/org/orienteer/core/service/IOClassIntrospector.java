@@ -14,6 +14,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Utility service for introspection of {@link OClass}
+ */
 public interface IOClassIntrospector
 {
 	public static String DEFAULT_TAB = "parameters";

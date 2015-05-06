@@ -25,6 +25,9 @@ import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+/**
+ * {@link IOrienteerModule} for "perspectives" feature of Orienteer
+ */
 @Singleton
 public class PerspectivesModule extends AbstractOrienteerModule
 {

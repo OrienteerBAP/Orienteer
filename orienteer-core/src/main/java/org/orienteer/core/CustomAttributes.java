@@ -11,6 +11,10 @@ import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * Orienteer needs in additional attributes specified for {@link OClass} and {@link OProperty}
+ * This class allow flexibly access to that custom parameters.
+ */
 public enum CustomAttributes
 {
 	/**
@@ -50,11 +54,17 @@ public enum CustomAttributes
 	 * Name of property which is storing link to a parent entity
 	 */
 	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class, null, false),
-	
+	/**
+	 * Name of a visualization that should be used for property visualization
+	 */
 	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING, "default", false),
-	
+	/**
+	 * Link to an inverse property in respect to this one
+	 */
 	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, null, false),
-
+	/**
+	 * Description of {@link OProperty} or {@link OClass}
+	 */
     DESCRIPTION("orienteer.description",OType.STRING,null,true);
 
 	private final String name;

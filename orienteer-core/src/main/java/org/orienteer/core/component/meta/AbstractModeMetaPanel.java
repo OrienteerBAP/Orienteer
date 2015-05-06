@@ -7,6 +7,14 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.lang.Objects;
 
+/**
+ * {@link AbstractMetaPanel} that can additionally take into consideration display mode.
+ *
+ * @param <T> the type of an entity
+ * @param <K> the type of a display mode
+ * @param <C> the type of a criteria
+ * @param <V> the type of a value
+ */
 public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPanel<T, C, V> {
 
 	private static final long serialVersionUID = 1L;

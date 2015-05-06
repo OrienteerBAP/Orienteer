@@ -15,6 +15,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link IVisualizer} for {@link OType}.STRING properties to allow securely display and modify sensitive information
+ */
 public class PasswordVisualizer extends AbstractSimpleVisualizer
 {
 	public static final String NAME = "password";

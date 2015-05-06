@@ -5,6 +5,9 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+/**
+ * Logout page. Invalidates current session
+ */
 @MountPath("/logout")
 public class LogoutPage extends BasePage<Object> {
 	private static final long serialVersionUID = 1L;

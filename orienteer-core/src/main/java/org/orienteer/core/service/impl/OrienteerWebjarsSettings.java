@@ -9,6 +9,9 @@ import com.google.inject.name.Named;
 
 import de.agilecoders.wicket.webjars.settings.WebjarsSettings;
 
+/**
+ * Guice enabled {@link WebjarsSettings}
+ */
 public class OrienteerWebjarsSettings extends WebjarsSettings
 {
 

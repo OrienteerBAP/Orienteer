@@ -12,8 +12,12 @@ import org.orienteer.core.component.property.OIndexViewPanel;
 import org.orienteer.core.component.property.OPropertyViewPanel;
 
 import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
+/**
+ * {@link OIndexMetaColumn} to refer to {@link OIndex} themselves
+ */
 public class OIndexDefinitionColumn extends OIndexMetaColumn
 {
 	private static final long serialVersionUID = 1L;

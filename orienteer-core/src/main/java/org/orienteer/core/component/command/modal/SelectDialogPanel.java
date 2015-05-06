@@ -31,6 +31,9 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Modal window for selecting an {@link ODocument}
+ */
 public abstract class SelectDialogPanel extends GenericPanel<String>
 {
 	@Inject

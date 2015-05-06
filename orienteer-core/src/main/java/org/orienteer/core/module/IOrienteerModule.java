@@ -6,6 +6,9 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 
+/**
+ * Interface for Orienteer modules
+ */
 public interface IOrienteerModule
 {
 	public String getName();

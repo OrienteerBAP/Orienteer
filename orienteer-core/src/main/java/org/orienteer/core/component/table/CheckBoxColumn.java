@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.model.AbstractCheckBoxModel;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -20,6 +21,13 @@ import org.orienteer.core.component.property.BooleanEditPanel;
 import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
 
+/**
+ * {@link IColumn} to display checkboxes and aggregate selected options
+ *
+ * @param <T> the type of the object that will be rendered in this column's cells
+ * @param <P> the type of a primary key to be used for aggregation
+ * @param <S> the type of the sort property
+ */
 public class CheckBoxColumn<T, P extends Serializable, S> extends AbstractColumn<T, S>
 {
 	private static final JavaScriptResourceReference SELECT_ALL_JS = new JavaScriptResourceReference(CheckBoxColumn.class, "select-all.js");

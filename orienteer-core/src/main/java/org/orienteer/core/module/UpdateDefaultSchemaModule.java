@@ -11,6 +11,9 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
+/**
+ * {@link IOrienteerModule} to fix existing OrientDB schema to make it more Orienteer friendly
+ */
 @Singleton
 public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 {
