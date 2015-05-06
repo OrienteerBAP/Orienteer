@@ -25,7 +25,8 @@
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<name>Orienteer</name>
-	<description>Orienteer - modern data-warehousing system</description>
+	<description>Orienteer - Modern Data Warehouse</description>
+	<url>http://orienteer.org</url>
 	<scm>
 	    <url>https://github.com/OrienteerDW/Orienteer</url>
 	    <connection>scm:git:ssh://github.com/OrienteerDW/Orienteer.git</connection>
