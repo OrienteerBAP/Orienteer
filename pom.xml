@@ -72,14 +72,14 @@
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
 	</properties>
-	<repositories>
+     <!--<repositories>
        <repository>
          <id>snapshots-repo</id>
          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
          <releases><enabled>false</enabled></releases>
          <snapshots><enabled>true</enabled></snapshots>
        </repository>
-     </repositories>
+     </repositories>-->
 	<modules>
 		<module>orienteer-core</module>
 		<module>orienteer-war</module>
@@ -235,10 +235,10 @@
 			<version>2.5</version>
 			<configuration>
 			    <autoVersionSubmodules>true</autoVersionSubmodules>
-			    <useReleaseProfile>false</useReleaseProfile>
 			    <releaseProfiles>release</releaseProfiles>
 			    <goals>deploy</goals>
 			    <tagNameFormat>v@{project.version}</tagNameFormat>
+			    <arguments>-Pskip-integration-tests</arguments>
 			</configuration>
 		    </plugin>
 		    <plugin>
