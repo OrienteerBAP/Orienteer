@@ -6,5 +6,8 @@ var gridster = $('#${componentId}> ul')
 						widget_base_dimensions: [width/2-2*margin, 300],
 						draggable: {
 				            handle: 'div.panel-heading'
-						}
+						},
+						resize: {
+				            enabled: true
+				        }
 					});
