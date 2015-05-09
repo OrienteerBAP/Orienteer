@@ -163,15 +163,20 @@
 			    <version>0.4.4</version>
 		    </dependency>
 		    <dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>font-awesome</artifactId>
-			<version>4.2.0</version>
+				<groupId>org.webjars</groupId>
+				<artifactId>font-awesome</artifactId>
+				<version>4.2.0</version>
 		    </dependency>
 		    <dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>3.3.2</version>
+				<groupId>org.webjars</groupId>
+				<artifactId>bootstrap</artifactId>
+				<version>3.3.2</version>
 		    </dependency>
+		    <dependency>
+			    <groupId>org.webjars</groupId>
+			    <artifactId>gridster.js</artifactId>
+			    <version>0.5.6</version>
+			</dependency>
 		    <!-- LOGGING DEPENDENCIES - LOG4J -->
 		    <dependency>
 			    <groupId>org.slf4j</groupId>
@@ -290,7 +295,7 @@
                         <executions>
                             <execution>
                                 <id>checkstyle</id>
-                                <phase>validate</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>check</goal>
                                 </goals>
