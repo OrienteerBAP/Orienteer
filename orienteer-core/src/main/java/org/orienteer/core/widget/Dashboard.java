@@ -1,5 +1,8 @@
 package org.orienteer.core.widget;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
@@ -11,6 +14,8 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.template.PackageTextTemplate;
+import org.apache.wicket.util.template.TextTemplate;
 
 import com.google.inject.Inject;
 
@@ -70,13 +75,18 @@ public class Dashboard<T> extends GenericPanel<T> {
 		tag.append("class", "gridster orienteer", " ");
 	}
 	
+	@SuppressWarnings("resource")
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
 		response.render(JavaScriptHeaderItem.forReference(GRIDSTER_JS));
 		response.render(CssHeaderItem.forReference(GRIDSTER_CSS));
 		response.render(CssHeaderItem.forReference(WIDGET_CSS));
-		response.render(OnDomReadyHeaderItem.forScript("$('#"+getMarkupId()+"> ul').gridster({widget_margins: [10, 10],widget_base_dimensions: [400, 300]})"));
+		Map<String, Object> variables = new HashMap<String, Object>();
+		variables.put("componentId", getMarkupId());
+		TextTemplate template = new PackageTextTemplate(Dashboard.class, "widget.tmpl.js");
+		String script = template.asString(variables);
+		response.render(OnDomReadyHeaderItem.forScript(script));
 	}
 
 }

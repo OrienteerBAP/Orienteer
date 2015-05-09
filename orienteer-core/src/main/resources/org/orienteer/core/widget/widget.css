@@ -23,9 +23,13 @@
     transition: opacity .6s;
 }
 
+.gs-w div.panel-heading {
+	cursor: pointer;
+}
+
+
 .gridster .gs-w {
     background: #DDD;
-    cursor: pointer;
 }
 
 .gridster .player {
