@@ -5,14 +5,6 @@
     background-color: #EFEFEF;
 }
 
-.gridster.orienteer > ul > li {
-    font-size: 1em;
-    font-weight: bold;
-    text-align: center;
-    line-height: 100%;
-}
-
-
 .gridster.orienteer {
     margin: 0 auto;
     opacity: .8;
@@ -23,8 +15,13 @@
     transition: opacity .6s;
 }
 
-.gs-w div.panel-heading {
-	cursor: pointer;
+.gs-w > div.panel {
+    height: 100%;
+}
+
+.gs-w div.panel > div.panel-heading {
+    cursor: pointer;
+    font-weight: bold;
 }
 
 

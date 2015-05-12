@@ -18,6 +18,8 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		super(id, model);
 		add(newIcon("icon"));
 		add(new Label("title", getTitleModel()));
+		setOutputMarkupId(true);
+		setOutputMarkupPlaceholderTag(true);
 	}
 	
 	protected abstract FAIcon newIcon(String id);
