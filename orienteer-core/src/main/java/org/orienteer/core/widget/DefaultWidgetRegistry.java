@@ -10,20 +10,23 @@ import org.apache.wicket.model.IModel;
 
 import com.google.inject.Singleton;
 
+/**
+ * Default implementation of {@link IWidgetRegistry}
+ */
 @Singleton
 public class DefaultWidgetRegistry implements IWidgetRegistry {
 	
-	private List<IWidgetDescription<?>> widgetDescriptions = new ArrayList<IWidgetDescription<?>>();
+	private List<IWidgetDescriptor<?>> widgetDescriptions = new ArrayList<IWidgetDescriptor<?>>();
 	
 	@Override
-	public List<IWidgetDescription<?>> listWidgetDescriptions() {
+	public List<IWidgetDescriptor<?>> listWidgetDescriptors() {
 		return Collections.unmodifiableList(widgetDescriptions);
 	}
 
 	@Override
-	public IWidgetDescription<?> lookupById(String id) {
+	public IWidgetDescriptor<?> lookupById(String id) {
 		if(id==null) return null;
-		for(IWidgetDescription<?> description : widgetDescriptions)
+		for(IWidgetDescriptor<?> description : widgetDescriptions)
 		{
 			if(id.equals(description.getId())) return description;
 		}
@@ -32,28 +35,28 @@ public class DefaultWidgetRegistry implements IWidgetRegistry {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<IWidgetDescription<T>> lookupByType(Class<T> typeClass) {
-		List<IWidgetDescription<T>> ret = new ArrayList<IWidgetDescription<T>>();
-		for(IWidgetDescription<?> description : widgetDescriptions)
+	public <T> List<IWidgetDescriptor<T>> lookupByType(Class<T> typeClass) {
+		List<IWidgetDescriptor<T>> ret = new ArrayList<IWidgetDescriptor<T>>();
+		for(IWidgetDescriptor<?> description : widgetDescriptions)
 		{
-			if(typeClass.equals(description.getType())) ret.add((IWidgetDescription<T>)description);
+			if(typeClass.equals(description.getType())) ret.add((IWidgetDescriptor<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> IWidgetDescription<T> lookupByWidgetClass( Class<? extends AbstractWidget<T>> widgetClass) {
+	public <T> IWidgetDescriptor<T> lookupByWidgetClass( Class<? extends AbstractWidget<T>> widgetClass) {
 		if(widgetClass==null) return null;
-		for(IWidgetDescription<?> description : widgetDescriptions)
+		for(IWidgetDescriptor<?> description : widgetDescriptions)
 		{
-			if(widgetClass.equals(description.getWidgetClass())) return (IWidgetDescription<T>)description;
+			if(widgetClass.equals(description.getWidgetClass())) return (IWidgetDescriptor<T>)description;
 		}
 		return null;
 	}
 
 	@Override
-	public IWidgetRegistry register(IWidgetDescription<?> description) {
+	public IWidgetRegistry register(IWidgetDescriptor<?> description) {
 		widgetDescriptions.add(description);
 		return this;
 	}
@@ -62,7 +65,7 @@ public class DefaultWidgetRegistry implements IWidgetRegistry {
 	public <T> IWidgetRegistry register(final Class<? extends AbstractWidget<T>> widgetClass) {
 		final Widget widget = widgetClass.getAnnotation(Widget.class);
 		if(widget==null) throw new WicketRuntimeException("There is no a @Widget annotation on "+widgetClass.getName());
-		return register(new IWidgetDescription<T>() {
+		return register(new IWidgetDescriptor<T>() {
 
 			@Override
 			public String getId() {

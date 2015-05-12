@@ -2,7 +2,12 @@ package org.orienteer.core.widget;
 
 import org.apache.wicket.model.IModel;
 
-public interface IWidgetDescription<T> {
+/**
+ * Interface for classes which represent some widget descriptor
+ *
+ * @param <T>
+ */
+public interface IWidgetDescriptor<T> {
 	public String getId();
 	public Class<T> getType();
 	public Class<? extends AbstractWidget<T>> getWidgetClass();

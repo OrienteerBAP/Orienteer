@@ -7,6 +7,9 @@ import org.orienteer.core.widget.Dashboard;
 import org.orienteer.core.widget.TestWidget;
 import org.wicketstuff.annotation.mount.MountPath;
 
+/**
+ * Test page for widgets. Temporal.
+ */
 @MountPath("/widget")
 public class WidgetPage extends OrienteerBasePage<String> {
 

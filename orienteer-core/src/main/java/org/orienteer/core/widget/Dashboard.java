@@ -19,6 +19,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -34,6 +35,11 @@ import com.google.inject.Inject;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
+/**
+ * Dashboard is {@link Panel} to allow manipulation with a set of {@link AbstractWidget}s
+ *
+ * @param <T> the type of main data object
+ */
 public class Dashboard<T> extends GenericPanel<T> {
 	
 	private final static WebjarsJavaScriptResourceReference GRIDSTER_JS = new WebjarsJavaScriptResourceReference("/gridster.js/current/jquery.gridster.js");
@@ -107,7 +113,7 @@ public class Dashboard<T> extends GenericPanel<T> {
 		return this;
 	}
 	
-	public Dashboard<T> addWidget(IWidgetDescription<T> description)
+	public Dashboard<T> addWidget(IWidgetDescriptor<T> description)
 	{
 		return addWidget(description.instanciate(newWidgetId(), getModel()));
 	}

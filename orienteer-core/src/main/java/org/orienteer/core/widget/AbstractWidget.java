@@ -7,6 +7,11 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.FAIcon;
 
+/**
+ * Abstract root class for widgets
+ *
+ * @param <T> the type of main data object linked to this widget
+ */
 public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	
 	private Integer col;

@@ -9,6 +9,9 @@ import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 
+/**
+ * Test widget - just for implementation period
+ */
 @Widget(id="test", type=String.class)
 public class TestWidget extends AbstractWidget<String> {
 
