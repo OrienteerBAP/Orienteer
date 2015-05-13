@@ -148,8 +148,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UpdateDefaultSchemaModule.class);
 		registerModule(PerspectivesModule.class);
 		registerModule(OWidgetsModule.class);
-		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
-		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
+		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
+		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		mountOrientDbRestApi();
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 	}

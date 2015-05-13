@@ -18,6 +18,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import com.google.common.primitives.Booleans;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.hook.ORecordHook.DISTRIBUTED_EXECUTION_MODE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -39,6 +40,46 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 	public static final String OPROPERTY_VARIATION="variation";
 	public static final String OPROPERTY_ACTIVE="active";
 	public static final String OPROPERTY_VALUE="value";
+	
+	/**
+	 * {@link ORecordHook} to invalidate localization cache if something changed
+	 */
+	public static class LocalizationInvalidationHook extends ODocumentHookAbstract {
+		
+		public LocalizationInvalidationHook(ODatabaseDocument database) {
+			super(database);
+			setIncludeClasses(OCLASS_LOCALIZATION);
+		}
+		
+		private void invalidateCache()
+		{
+			OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+			if(app!=null)
+			{
+				app.getResourceSettings().getLocalizer().clearCache();
+			}
+		}
+		
+		@Override
+		public void onRecordAfterCreate(ODocument iDocument) {
+			invalidateCache();
+		}
+
+		@Override
+		public void onRecordAfterUpdate(ODocument iDocument) {
+			invalidateCache();
+		}
+
+		@Override
+		public void onRecordAfterDelete(ODocument iDocument) {
+			invalidateCache();
+		}
+
+		@Override
+		public DISTRIBUTED_EXECUTION_MODE getDistributedExecutionMode() {
+			return DISTRIBUTED_EXECUTION_MODE.BOTH;
+		}
+	};
 	
 	private static class OrienteerStringResourceLoader implements IStringResourceLoader
 	{
@@ -141,41 +182,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		app.getResourceSettings().getStringResourceLoaders().add(new OrienteerStringResourceLoader());
-		app.getOrientDbSettings().getORecordHooks().add(new ODocumentHookAbstract() {
-			
-			{
-				setIncludeClasses(OCLASS_LOCALIZATION);
-			}
-			
-			private void invalidateCache()
-			{
-				OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
-				if(app!=null)
-				{
-					app.getResourceSettings().getLocalizer().clearCache();
-				}
-			}
-			
-			@Override
-			public void onRecordAfterCreate(ODocument iDocument) {
-				invalidateCache();
-			}
-
-			@Override
-			public void onRecordAfterUpdate(ODocument iDocument) {
-				invalidateCache();
-			}
-
-			@Override
-			public void onRecordAfterDelete(ODocument iDocument) {
-				invalidateCache();
-			}
-
-			@Override
-			public DISTRIBUTED_EXECUTION_MODE getDistributedExecutionMode() {
-				return DISTRIBUTED_EXECUTION_MODE.BOTH;
-			}
-		});
+		app.getOrientDbSettings().getORecordHooks().add(LocalizationInvalidationHook.class);
 	}
 	
 	

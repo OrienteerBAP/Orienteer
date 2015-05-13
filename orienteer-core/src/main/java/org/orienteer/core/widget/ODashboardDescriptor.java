@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.wicket.util.lang.Objects;
+
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
@@ -82,6 +84,15 @@ public class ODashboardDescriptor extends ODocumentWrapper{
 		docs.retainAll(widgetsToSet);
 		widgetsToSet.removeAll(docs);
 		docs.addAll(widgetsToSet);
+		document.field(OPROPERTY_WIDGETS, docs);
+		return this;
+	}
+	
+	public ODashboardDescriptor addWidget(OWidgetDescriptor widget) {
+		if(!equals(widget.getDashboard())) widget.setDashboard(this);
+		List<ODocument> docs = document.field(OPROPERTY_WIDGETS);
+		if(docs==null) docs = new ArrayList<ODocument>();
+		docs.add(widget.getDocument());
 		document.field(OPROPERTY_WIDGETS, docs);
 		return this;
 	}

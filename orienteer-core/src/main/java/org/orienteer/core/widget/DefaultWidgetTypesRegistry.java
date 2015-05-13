@@ -32,14 +32,38 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		}
 		return null;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T, S extends IWidgetSettings> List<IWidgetType<T, S>> lookupByDefaultDomain(String domain) {
+		List<IWidgetType<T, S>> ret = new ArrayList<IWidgetType<T, S>>();
+		for(IWidgetType<?, ?> description : widgetDescriptions)
+		{
+			if(domain.equals(description.getDefaultDomain())) ret.add((IWidgetType<T, S>)description);
+		}
+		return Collections.unmodifiableList(ret);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T, S extends IWidgetSettings> List<IWidgetType<T, S>> lookupByDefaultDomainAndTab(
+			String domain, String tab) {
+		List<IWidgetType<T, S>> ret = new ArrayList<IWidgetType<T, S>>();
+		for(IWidgetType<?, ?> description : widgetDescriptions)
+		{
+			if(domain.equals(description.getDefaultDomain())
+					&& tab.equals(description.getDefaultTab())) ret.add((IWidgetType<T, S>)description);
+		}
+		return Collections.unmodifiableList(ret);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<IWidgetType<T, ?>> lookupByType(Class<T> typeClass) {
-		List<IWidgetType<T, ?>> ret = new ArrayList<IWidgetType<T, ?>>();
+	public <T, S extends IWidgetSettings> List<IWidgetType<T, S>> lookupByType(Class<T> typeClass) {
+		List<IWidgetType<T, S>> ret = new ArrayList<IWidgetType<T, S>>();
 		for(IWidgetType<?, ?> description : widgetDescriptions)
 		{
-			if(typeClass.equals(description.getType())) ret.add((IWidgetType<T, ?>)description);
+			if(typeClass.equals(description.getType())) ret.add((IWidgetType<T, S>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}

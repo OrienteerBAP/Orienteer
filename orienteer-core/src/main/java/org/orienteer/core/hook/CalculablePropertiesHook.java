@@ -35,6 +35,10 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 	private Map<String, Integer> schemaVersions = new ConcurrentHashMap<String, Integer>();
 	private Table<String, String, List<String>> calcProperties = HashBasedTable.create();
 	
+	public CalculablePropertiesHook(ODatabaseDocument database) {
+		super(database);
+	}
+
 	@Override
 	public DISTRIBUTED_EXECUTION_MODE getDistributedExecutionMode() {
 		return DISTRIBUTED_EXECUTION_MODE.SOURCE_NODE;

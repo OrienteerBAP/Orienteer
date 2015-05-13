@@ -17,6 +17,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeEvent;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeTimeLine;
@@ -35,7 +36,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ReferencesConsistencyHook.class);
 	private int currentSchemaVersion=-1;
-	private LoadingCache<OClass, Collection<OProperty>> cache 
+	private static final LoadingCache<OClass, Collection<OProperty>> CACHE 
 								= CacheBuilder.newBuilder().build(new CacheLoader<OClass, Collection<OProperty>>() {
 
 									@Override
@@ -65,6 +66,10 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				}
 			};
 			
+	public ReferencesConsistencyHook(ODatabaseDocument database) {
+		super(database);
+	}
+
 	private boolean enter(ODocument doc)
 	{
 		if(doc.getSchemaClass()==null || HOOK_DISABLED.get()) return false;
@@ -108,10 +113,10 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 		int version = ODatabaseRecordThreadLocal.INSTANCE.get().getMetadata().getSchema().getVersion();
 		if(version>currentSchemaVersion)
 		{
-			cache.invalidateAll();
+			CACHE.invalidateAll();
 			currentSchemaVersion=version;
 		}
-		return cache;
+		return CACHE;
 	}
 
 	@Override

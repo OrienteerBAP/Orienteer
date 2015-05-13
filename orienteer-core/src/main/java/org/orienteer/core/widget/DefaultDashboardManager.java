@@ -58,7 +58,18 @@ public class DefaultDashboardManager implements IDashboardManager{
 			descriptor = new ODashboardDescriptor();
 			descriptor.setDomain(domain);
 			descriptor.setTab(tab);
-			//TODO: add links for widget types
+			List<IWidgetType<Object, IWidgetSettings>> widgets = widgetRegistry.lookupByDefaultDomainAndTab(domain, tab);
+			for(int i=0;i<widgets.size();i++)
+			{
+				IWidgetType<Object, IWidgetSettings> type = widgets.get(i);
+				OWidgetDescriptor widgetDescriptor = new OWidgetDescriptor();
+				widgetDescriptor.setTypeId(type.getId());
+				widgetDescriptor.setCol(1);
+				widgetDescriptor.setRow(i+1);
+				widgetDescriptor.setSizeX(2);
+				widgetDescriptor.setSizeY(1);
+				descriptor.addWidget(widgetDescriptor);
+			}
 		}
 		return descriptor;
 	}
