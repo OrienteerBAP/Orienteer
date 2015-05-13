@@ -19,6 +19,7 @@ import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.ModuledDataInstallator;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.core.module.UpdateDefaultSchemaModule;
@@ -146,6 +147,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(OrienteerLocalizationModule.class);
 		registerModule(UpdateDefaultSchemaModule.class);
 		registerModule(PerspectivesModule.class);
+		registerModule(OWidgetsModule.class);
 		getOrientDbSettings().getORecordHooks().add(new CalculablePropertiesHook());
 		getOrientDbSettings().getORecordHooks().add(new ReferencesConsistencyHook());
 		mountOrientDbRestApi();

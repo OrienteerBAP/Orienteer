@@ -1,7 +1,9 @@
 package org.orienteer.core.widget;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -31,6 +33,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
@@ -40,20 +43,23 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
  *
  * @param <T> the type of main data object
  */
-public class Dashboard<T> extends GenericPanel<T> {
+public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	private final static WebjarsJavaScriptResourceReference GRIDSTER_JS = new WebjarsJavaScriptResourceReference("/gridster.js/current/jquery.gridster.js");
 	private final static WebjarsCssResourceReference GRIDSTER_CSS = new WebjarsCssResourceReference("/gridster.js/current/jquery.gridster.css");
-	private final static CssResourceReference WIDGET_CSS = new CssResourceReference(Dashboard.class, "widget.css");
+	private final static CssResourceReference WIDGET_CSS = new CssResourceReference(DashboardPanel.class, "widget.css");
 	
 	@Inject
-	private IWidgetRegistry widgetRegistry;
+	private IWidgetTypesRegistry widgetRegistry;
+	
+	@Inject
+	private IDashboardManager dashboardManager;
 	
 	private RepeatingView repeatingView;
 	
 	private AbstractDefaultAjaxBehavior ajaxBehavior;
 	
-	public Dashboard(String id, IModel<T> model) {
+	public DashboardPanel(String id, String domain, String tab, IModel<T> model) {
 		super(id, model);
 		repeatingView = new RepeatingView("widgets");
 		add(repeatingView);
@@ -73,14 +79,40 @@ public class Dashboard<T> extends GenericPanel<T> {
 				updateDashboardByJson(dashboard);
 			}
 		});
+		
+		ODashboardDescriptor descriptor = dashboardManager.getDashboard(domain, tab);
+		updateDashboardByDescriptor(descriptor);
+	}
+	
+	private void updateDashboardByDescriptor(ODashboardDescriptor descriptor) {
+		Set<OWidgetDescriptor> widgets =  descriptor.getWidgets();
+		for (OWidgetDescriptor oWidgetDescriptor : widgets) {
+			String typeId = oWidgetDescriptor.getTypeId();
+			IWidgetType<T, IWidgetSettings> widgetType = (IWidgetType<T, IWidgetSettings>)widgetRegistry.lookupByTypeId(typeId);
+			Class<? extends IWidgetSettings> settingsType = widgetType.getSettingsType();
+			IWidgetSettings settings;
+			if(!settingsType.isInstance(oWidgetDescriptor))
+			{
+				try {
+					settings = settingsType.getConstructor(ODocument.class).newInstance(oWidgetDescriptor.getDocument());
+				} catch (Exception e) {
+					throw new WicketRuntimeException("Can't instanciate settings for a widget", e);
+				} 
+			}
+			else
+			{
+				settings = oWidgetDescriptor;
+			}
+			addWidget(widgetType, settings);
+		}
 	}
 	
 	private void updateDashboardByJson(String dashboard) {
-		final Map<String, AbstractWidget<?>> widgetsByMarkupId = new HashMap<String, AbstractWidget<?>>();
-		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<?>, Void>() {
+		final Map<String, AbstractWidget<?, IWidgetSettings>> widgetsByMarkupId = new HashMap<String, AbstractWidget<?, IWidgetSettings>>();
+		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<?, IWidgetSettings>, Void>() {
 
 			@Override
-			public void component(AbstractWidget<?> widget, IVisit<Void> visit) {
+			public void component(AbstractWidget<?, IWidgetSettings> widget, IVisit<Void> visit) {
 				widgetsByMarkupId.put(widget.getMarkupId(), widget);
 				visit.dontGoDeeper();
 			}
@@ -91,11 +123,13 @@ public class Dashboard<T> extends GenericPanel<T> {
 			for(int i=0; i<jsonArray.length();i++) {
 				JSONObject jsonWidget = jsonArray.getJSONObject(i);
 				String markupId = jsonWidget.getString("id");
-				AbstractWidget<?> widget = widgetsByMarkupId.get(markupId);
-				widget.setCol(jsonWidget.getInt("col"));
-				widget.setRow(jsonWidget.getInt("row"));
-				widget.setSizeX(jsonWidget.getInt("size_x"));
-				widget.setSizeY(jsonWidget.getInt("size_y"));
+				AbstractWidget<?, IWidgetSettings> widget = widgetsByMarkupId.get(markupId);
+				IWidgetSettings settings = widget.getSettings();
+				settings.setCol(jsonWidget.getInt("col"));
+				settings.setRow(jsonWidget.getInt("row"));
+				settings.setSizeX(jsonWidget.getInt("size_x"));
+				settings.setSizeY(jsonWidget.getInt("size_y"));
+				settings.persist();
 			}
 		} catch (JSONException e) {
 			throw new WicketRuntimeException("Can't handle dashboard update", e);
@@ -107,15 +141,15 @@ public class Dashboard<T> extends GenericPanel<T> {
 		return repeatingView.newChildId();
 	}
 	
-	public Dashboard<T> addWidget(AbstractWidget<T> widget)
+	public DashboardPanel<T> addWidget(AbstractWidget<T, ?> widget)
 	{
 		repeatingView.add(widget);
 		return this;
 	}
 	
-	public Dashboard<T> addWidget(IWidgetDescriptor<T> description)
+	public DashboardPanel<T> addWidget(IWidgetType<T, IWidgetSettings> description, IWidgetSettings settings)
 	{
-		return addWidget(description.instanciate(newWidgetId(), getModel()));
+		return addWidget(description.instanciate(newWidgetId(), settings, getModel()));
 	}
 	
 	@Override
@@ -124,10 +158,11 @@ public class Dashboard<T> extends GenericPanel<T> {
 		int row = 1;
 		for(Component child : repeatingView)
 		{
-			AbstractWidget<?> widget = (AbstractWidget<?>) child;
+			AbstractWidget<?, IWidgetSettings> widget = (AbstractWidget<?, IWidgetSettings>) child;
 			widget.configure();
-			if(widget.getCol()==null) widget.setCol(1);
-			if(widget.getRow()==null) widget.setRow(row++);
+			/*IWidgetSettings settings = widget.getSettings();
+			if(settings.getCol()==null) settings.setCol(1);
+			if(settings.getRow()==null) settings.setRow(row++);*/
 		}
 	}
 	
@@ -147,7 +182,7 @@ public class Dashboard<T> extends GenericPanel<T> {
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("componentId", getMarkupId());
 		variables.put("callBackScript", ajaxBehavior.getCallbackScript());
-		TextTemplate template = new PackageTextTemplate(Dashboard.class, "widget.tmpl.js");
+		TextTemplate template = new PackageTextTemplate(DashboardPanel.class, "widget.tmpl.js");
 		String script = template.asString(variables);
 		response.render(OnDomReadyHeaderItem.forScript(script));
 	}

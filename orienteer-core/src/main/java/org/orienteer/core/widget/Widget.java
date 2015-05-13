@@ -15,5 +15,8 @@ import com.google.inject.BindingAnnotation;
 public @interface Widget {
 	public String id();
 	public Class<?> type();
-
+	public Class<?> settingsType() default IWidgetSettings.class;
+	public String defaultDomain();
+	public String defaultTab();
+	public boolean multi() default false;
 }
