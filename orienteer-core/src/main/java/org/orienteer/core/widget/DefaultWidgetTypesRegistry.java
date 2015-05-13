@@ -16,17 +16,17 @@ import com.google.inject.Singleton;
 @Singleton
 public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
-	private List<IWidgetType<?, ?>> widgetDescriptions = new ArrayList<IWidgetType<?, ?>>();
+	private List<IWidgetType<?>> widgetDescriptions = new ArrayList<IWidgetType<?>>();
 	
 	@Override
-	public List<IWidgetType<?, ?>> listWidgetTypes() {
+	public List<IWidgetType<?>> listWidgetTypes() {
 		return Collections.unmodifiableList(widgetDescriptions);
 	}
 
 	@Override
-	public IWidgetType<?, ?> lookupByTypeId(String id) {
+	public IWidgetType<?> lookupByTypeId(String id) {
 		if(id==null) return null;
-		for(IWidgetType<?, ?> description : widgetDescriptions)
+		for(IWidgetType<?> description : widgetDescriptions)
 		{
 			if(id.equals(description.getId())) return description;
 		}
@@ -35,61 +35,61 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, S extends IWidgetSettings> List<IWidgetType<T, S>> lookupByDefaultDomain(String domain) {
-		List<IWidgetType<T, S>> ret = new ArrayList<IWidgetType<T, S>>();
-		for(IWidgetType<?, ?> description : widgetDescriptions)
+	public <T> List<IWidgetType<T>> lookupByDefaultDomain(String domain) {
+		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
+		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			if(domain.equals(description.getDefaultDomain())) ret.add((IWidgetType<T, S>)description);
+			if(domain.equals(description.getDefaultDomain())) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, S extends IWidgetSettings> List<IWidgetType<T, S>> lookupByDefaultDomainAndTab(
+	public <T> List<IWidgetType<T>> lookupByDefaultDomainAndTab(
 			String domain, String tab) {
-		List<IWidgetType<T, S>> ret = new ArrayList<IWidgetType<T, S>>();
-		for(IWidgetType<?, ?> description : widgetDescriptions)
+		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
+		for(IWidgetType<?> description : widgetDescriptions)
 		{
 			if(domain.equals(description.getDefaultDomain())
-					&& tab.equals(description.getDefaultTab())) ret.add((IWidgetType<T, S>)description);
+					&& tab.equals(description.getDefaultTab())) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, S extends IWidgetSettings> List<IWidgetType<T, S>> lookupByType(Class<T> typeClass) {
-		List<IWidgetType<T, S>> ret = new ArrayList<IWidgetType<T, S>>();
-		for(IWidgetType<?, ?> description : widgetDescriptions)
+	public <T> List<IWidgetType<T>> lookupByType(Class<T> typeClass) {
+		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
+		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			if(typeClass.equals(description.getType())) ret.add((IWidgetType<T, S>)description);
+			if(typeClass.equals(description.getType())) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, S extends IWidgetSettings> IWidgetType<T, S> lookupByWidgetClass( Class<? extends AbstractWidget<T, S>> widgetClass) {
+	public <T> IWidgetType<T> lookupByWidgetClass( Class<? extends AbstractWidget<T>> widgetClass) {
 		if(widgetClass==null) return null;
-		for(IWidgetType<?, ?> description : widgetDescriptions)
+		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			if(widgetClass.equals(description.getWidgetClass())) return (IWidgetType<T, S>)description;
+			if(widgetClass.equals(description.getWidgetClass())) return (IWidgetType<T>)description;
 		}
 		return null;
 	}
 
 	@Override
-	public IWidgetTypesRegistry register(IWidgetType<?, ?> description) {
+	public IWidgetTypesRegistry register(IWidgetType<?> description) {
 		widgetDescriptions.add(description);
 		return this;
 	}
 
 	@Override
-	public <T, S extends IWidgetSettings> IWidgetTypesRegistry register(final Class<? extends AbstractWidget<T, S>> widgetClass) {
+	public <T> IWidgetTypesRegistry register(final Class<? extends AbstractWidget<T>> widgetClass) {
 		final Widget widget = widgetClass.getAnnotation(Widget.class);
 		if(widget==null) throw new WicketRuntimeException("There is no a @Widget annotation on "+widgetClass.getName());
-		return register(new IWidgetType<T, S>() {
+		return register(new IWidgetType<T>() {
 
 			@Override
 			public String getId() {
@@ -100,12 +100,6 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			@Override
 			public Class<T> getType() {
 				return (Class<T>)widget.type();
-			}
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			public Class<S> getSettingsType() {
-				return (Class<S>) widget.settingsType();
 			}
 			
 			@Override
@@ -119,7 +113,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			}
 
 			@Override
-			public Class<? extends AbstractWidget<T, S>> getWidgetClass() {
+			public Class<? extends AbstractWidget<T>> getWidgetClass() {
 				return widgetClass;
 			}
 			
@@ -129,9 +123,9 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			}
 
 			@Override
-			public AbstractWidget<T, S> instanciate(String componentId, S settings, IModel<T> model) {
+			public AbstractWidget<T> instanciate(String componentId, IModel<T> model) {
 				try {
-					return getWidgetClass().getConstructor(String.class, getSettingsType(), IModel.class).newInstance(componentId, settings, model);
+					return getWidgetClass().getConstructor(String.class, IModel.class).newInstance(componentId, model);
 				} catch (Exception e) {
 					throw new WicketRuntimeException("Can't instanciate widget for descriptor: "+this , e);
 				} 

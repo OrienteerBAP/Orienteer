@@ -1,7 +1,9 @@
 package org.orienteer.core.widget;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,10 +52,11 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	private final static CssResourceReference WIDGET_CSS = new CssResourceReference(DashboardPanel.class, "widget.css");
 	
 	@Inject
-	private IWidgetTypesRegistry widgetRegistry;
-	
-	@Inject
 	private IDashboardManager dashboardManager;
+	
+	private String domain;
+	
+	private String tab;
 	
 	private RepeatingView repeatingView;
 	
@@ -61,6 +64,8 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	public DashboardPanel(String id, String domain, String tab, IModel<T> model) {
 		super(id, model);
+		this.domain = domain;
+		this.tab = tab;
 		repeatingView = new RepeatingView("widgets");
 		add(repeatingView);
 		setOutputMarkupId(true);
@@ -80,39 +85,15 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			}
 		});
 		
-		ODashboardDescriptor descriptor = dashboardManager.getDashboard(domain, tab);
-		updateDashboardByDescriptor(descriptor);
-	}
-	
-	private void updateDashboardByDescriptor(ODashboardDescriptor descriptor) {
-		Set<OWidgetDescriptor> widgets =  descriptor.getWidgets();
-		for (OWidgetDescriptor oWidgetDescriptor : widgets) {
-			String typeId = oWidgetDescriptor.getTypeId();
-			IWidgetType<T, IWidgetSettings> widgetType = (IWidgetType<T, IWidgetSettings>)widgetRegistry.lookupByTypeId(typeId);
-			Class<? extends IWidgetSettings> settingsType = widgetType.getSettingsType();
-			IWidgetSettings settings;
-			if(!settingsType.isInstance(oWidgetDescriptor))
-			{
-				try {
-					settings = settingsType.getConstructor(ODocument.class).newInstance(oWidgetDescriptor.getDocument());
-				} catch (Exception e) {
-					throw new WicketRuntimeException("Can't instanciate settings for a widget", e);
-				} 
-			}
-			else
-			{
-				settings = oWidgetDescriptor;
-			}
-			addWidget(widgetType, settings);
-		}
+		dashboardManager.initializeDashboard(this, domain, tab);
 	}
 	
 	private void updateDashboardByJson(String dashboard) {
-		final Map<String, AbstractWidget<?, IWidgetSettings>> widgetsByMarkupId = new HashMap<String, AbstractWidget<?, IWidgetSettings>>();
-		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<?, IWidgetSettings>, Void>() {
+		final Map<String, AbstractWidget<?>> widgetsByMarkupId = new HashMap<String, AbstractWidget<?>>();
+		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<?>, Void>() {
 
 			@Override
-			public void component(AbstractWidget<?, IWidgetSettings> widget, IVisit<Void> visit) {
+			public void component(AbstractWidget<?> widget, IVisit<Void> visit) {
 				widgetsByMarkupId.put(widget.getMarkupId(), widget);
 				visit.dontGoDeeper();
 			}
@@ -123,13 +104,12 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			for(int i=0; i<jsonArray.length();i++) {
 				JSONObject jsonWidget = jsonArray.getJSONObject(i);
 				String markupId = jsonWidget.getString("id");
-				AbstractWidget<?, IWidgetSettings> widget = widgetsByMarkupId.get(markupId);
-				IWidgetSettings settings = widget.getSettings();
-				settings.setCol(jsonWidget.getInt("col"));
-				settings.setRow(jsonWidget.getInt("row"));
-				settings.setSizeX(jsonWidget.getInt("size_x"));
-				settings.setSizeY(jsonWidget.getInt("size_y"));
-				settings.persist();
+				AbstractWidget<?> widget = widgetsByMarkupId.get(markupId);
+				widget.setCol(jsonWidget.getInt("col"));
+				widget.setRow(jsonWidget.getInt("row"));
+				widget.setSizeX(jsonWidget.getInt("size_x"));
+				widget.setSizeY(jsonWidget.getInt("size_y"));
+				dashboardManager.storeDashboard(this, domain, tab); 
 			}
 		} catch (JSONException e) {
 			throw new WicketRuntimeException("Can't handle dashboard update", e);
@@ -141,15 +121,29 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		return repeatingView.newChildId();
 	}
 	
-	public DashboardPanel<T> addWidget(AbstractWidget<T, ?> widget)
+	public List<AbstractWidget<T>> getWidgets()
+	{
+		final List<AbstractWidget<T>> ret = new ArrayList<AbstractWidget<T>>();
+		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<T>, Void>() {
+
+			@Override
+			public void component(AbstractWidget<T> object, IVisit<Void> visit) {
+				ret.add(object);
+				visit.dontGoDeeper();
+			}
+		});
+		return ret;
+	}
+	
+	public DashboardPanel<T> addWidget(AbstractWidget<T> widget)
 	{
 		repeatingView.add(widget);
 		return this;
 	}
 	
-	public DashboardPanel<T> addWidget(IWidgetType<T, IWidgetSettings> description, IWidgetSettings settings)
+	public DashboardPanel<T> addWidget(IWidgetType<T> description)
 	{
-		return addWidget(description.instanciate(newWidgetId(), settings, getModel()));
+		return addWidget(description.instanciate(newWidgetId(), getModel()));
 	}
 	
 	@Override
@@ -158,7 +152,7 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		int row = 1;
 		for(Component child : repeatingView)
 		{
-			AbstractWidget<?, IWidgetSettings> widget = (AbstractWidget<?, IWidgetSettings>) child;
+			AbstractWidget<?> widget = (AbstractWidget<?>) child;
 			widget.configure();
 			/*IWidgetSettings settings = widget.getSettings();
 			if(settings.getCol()==null) settings.setCol(1);

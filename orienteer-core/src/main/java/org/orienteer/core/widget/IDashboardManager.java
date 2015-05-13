@@ -11,8 +11,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @ImplementedBy(DefaultDashboardManager.class)
 public interface IDashboardManager {
 	public List<String> listTabs(String domain);
-	public ODashboardDescriptor getExistingDashboard(String domain, String tab);
-	public ODashboardDescriptor getDashboard(String domain, String tab);
-	public IDashboardManager saveDashboard(ODashboardDescriptor dashboard);
-	public IDashboardManager saveDashboard(ODashboardDescriptor dashboard, ODocument identity);
+	public <T> void initializeDashboard(DashboardPanel<T> dashboard, String domain, String tab);
+	public <T> void storeDashboard(DashboardPanel<T> dashboard, String domain, String tab);
 }

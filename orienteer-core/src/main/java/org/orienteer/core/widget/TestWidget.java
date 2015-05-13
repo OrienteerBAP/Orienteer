@@ -13,16 +13,12 @@ import org.orienteer.core.component.FAIconType;
  * Test widget - just for implementation period
  */
 @Widget(id="test", type=String.class, defaultDomain="test", defaultTab="test")
-public class TestWidget extends AbstractWidget<String, IWidgetSettings> {
+public class TestWidget extends AbstractWidget<String> {
 
 	private int counter = 0;
 	
 	public TestWidget(String id, IModel<String> model) {
-		this(id, new RuntimeWidgetSettings(), model);
-	}
-	
-	public TestWidget(String id, IWidgetSettings settings, IModel<String> model) {
-		super(id, settings,model);
+		super(id, model);
 		add(new Label("label", model));
 		add(new Link<String>("link") {
 

@@ -2,12 +2,8 @@ package org.orienteer.core.module;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.core.widget.IDashboardManager;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.orienteer.core.widget.TestWidget;
-
-import static org.orienteer.core.widget.ODashboardDescriptor.*;
-import static org.orienteer.core.widget.OWidgetDescriptor.*;
 
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -20,6 +16,20 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 @Singleton
 public class OWidgetsModule extends AbstractOrienteerModule {
 
+	public static final String OCLASS_DASHBOARD = "ODashboard";
+	public static final String OPROPERTY_DOMAIN = "domain";
+	public static final String OPROPERTY_TAB = "tab";
+	public static final String OPROPERTY_LINKED_IDENTITY = "linked";
+	public static final String OPROPERTY_WIDGETS = "widgets";
+	
+	public static final String OCLASS_WIDGET = "OWidget";
+	public static final String OPROPERTY_DASHBOARD = "dashboard";
+	public static final String OPROPERTY_TYPE_ID = "typeId";
+	public static final String OPROPERTY_COL = "col";
+	public static final String OPROPERTY_ROW = "row";
+	public static final String OPROPERTY_SIZE_X = "sizeX";
+	public static final String OPROPERTY_SIZE_Y = "sizeY";
+	
 	public OWidgetsModule() {
 		super("widgets", 1);
 	}
