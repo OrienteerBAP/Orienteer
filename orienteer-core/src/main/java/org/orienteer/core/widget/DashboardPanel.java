@@ -33,6 +33,7 @@ import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.widget.command.AddWidgetCommand;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -58,7 +59,9 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	private String tab;
 	
-	private RepeatingView repeatingView;
+	private RepeatingView commands;
+	
+	private RepeatingView widgets;
 	
 	private AbstractDefaultAjaxBehavior ajaxBehavior;
 	
@@ -66,8 +69,11 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		super(id, model);
 		this.domain = domain;
 		this.tab = tab;
-		repeatingView = new RepeatingView("widgets");
-		add(repeatingView);
+		commands = new RepeatingView("commands");
+		commands.add(new AddWidgetCommand(commands.newChildId()));
+		add(commands);
+		widgets = new RepeatingView("widgets");
+		add(widgets);
 		setOutputMarkupId(true);
 		add(ajaxBehavior = new AbstractDefaultAjaxBehavior() {
 			
@@ -85,7 +91,7 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			}
 		});
 		
-		dashboardManager.initializeDashboard(this, domain, tab);
+		dashboardManager.initializeDashboard(this);
 	}
 	
 	private void updateDashboardByJson(String dashboard) {
@@ -117,12 +123,12 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	}
 	
 	public void storeDashboard() {
-		dashboardManager.storeDashboard(this, domain, tab); 
+		dashboardManager.storeDashboard(this); 
 	}
 	
 	public String newWidgetId()
 	{
-		return repeatingView.newChildId();
+		return widgets.newChildId();
 	}
 	
 	public List<AbstractWidget<T>> getWidgets()
@@ -141,7 +147,7 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	public DashboardPanel<T> addWidget(AbstractWidget<T> widget)
 	{
-		repeatingView.add(widget);
+		widgets.add(widget);
 		return this;
 	}
 	
@@ -150,11 +156,19 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		return addWidget(description.instanciate(newWidgetId(), getModel()));
 	}
 	
+	public String getDomain() {
+		return domain;
+	}
+
+	public String getTab() {
+		return tab;
+	}
+
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
 		int row = 1;
-		for(Component child : repeatingView)
+		for(Component child : widgets)
 		{
 			AbstractWidget<?> widget = (AbstractWidget<?>) child;
 			widget.configure();

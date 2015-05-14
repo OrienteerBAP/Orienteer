@@ -11,6 +11,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @ImplementedBy(DefaultDashboardManager.class)
 public interface IDashboardManager {
 	public List<String> listTabs(String domain);
-	public <T> void initializeDashboard(DashboardPanel<T> dashboard, String domain, String tab);
-	public <T> void storeDashboard(DashboardPanel<T> dashboard, String domain, String tab);
+	public <T> void initializeDashboard(DashboardPanel<T> dashboard);
+	public <T> void storeDashboard(DashboardPanel<T> dashboard);
 }

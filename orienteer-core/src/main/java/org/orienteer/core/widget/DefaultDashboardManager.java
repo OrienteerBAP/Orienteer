@@ -49,7 +49,9 @@ public class DefaultDashboardManager implements IDashboardManager{
 	
 	
 	@Override
-	public <T> void initializeDashboard(DashboardPanel<T> dashboard, String domain, String tab) {
+	public <T> void initializeDashboard(DashboardPanel<T> dashboard) {
+		String domain = dashboard.getDomain();
+		String tab = dashboard.getTab();
 		ODocument doc = getExistingDashboard(domain, tab);
 		if(doc!=null)
 		{
@@ -88,8 +90,9 @@ public class DefaultDashboardManager implements IDashboardManager{
 	}
 	
 	@Override
-	public <T> void storeDashboard(DashboardPanel<T> dashboard, String domain,
-			String tab) {
+	public <T> void storeDashboard(DashboardPanel<T> dashboard) {
+		String domain = dashboard.getDomain();
+		String tab = dashboard.getTab();
 		ODatabaseDocument db = getDatabase();
 		ODocument doc = getExistingDashboard(domain, tab);
 		if(doc==null) {
