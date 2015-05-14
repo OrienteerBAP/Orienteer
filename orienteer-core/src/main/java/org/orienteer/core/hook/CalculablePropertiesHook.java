@@ -104,10 +104,12 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 		return RESULT.RECORD_NOT_CHANGED;
 	}
 	
-	@Override
+	/*
+	 * Temporal commenting out! It should be fixed in OrientDB. Issue #4158
+	 * @Override
 	public void onRecordAfterCreate(ODocument iDocument) {
 		onRecordAfterRead(iDocument);
-	}
+	}*/
 
 	@Override
 	public void onRecordAfterUpdate(ODocument iDocument) {
