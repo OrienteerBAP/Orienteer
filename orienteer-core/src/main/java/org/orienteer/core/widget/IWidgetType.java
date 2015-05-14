@@ -2,6 +2,8 @@ package org.orienteer.core.widget;
 
 import org.apache.wicket.model.IModel;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+
 /**
  * Interface for classes which represent some widget descriptor
  *
@@ -12,6 +14,7 @@ public interface IWidgetType<T> {
 	public String getDefaultDomain();
 	public String getDefaultTab();
 	public Class<T> getType();
+	public String getOClassName();
 	public Class<? extends AbstractWidget<T>> getWidgetClass();
 	public boolean isMultiWidget();
 	public AbstractWidget<T> instanciate(String componentId, IModel<T> model);

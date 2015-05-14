@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.orienteer.core.module.OWidgetsModule;
+
 import com.google.inject.BindingAnnotation;
 
 /**
@@ -15,6 +17,7 @@ import com.google.inject.BindingAnnotation;
 public @interface Widget {
 	public String id();
 	public Class<?> type();
+	public String oClass() default OWidgetsModule.OCLASS_WIDGET;
 	public String defaultDomain();
 	public String defaultTab();
 	public boolean multi() default false;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.OrienteerWebSession;
 
@@ -16,6 +17,7 @@ import static org.orienteer.core.module.OWidgetsModule.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
@@ -88,6 +90,7 @@ public class DefaultDashboardManager implements IDashboardManager{
 	@Override
 	public <T> void storeDashboard(DashboardPanel<T> dashboard, String domain,
 			String tab) {
+		ODatabaseDocument db = getDatabase();
 		ODocument doc = getExistingDashboard(domain, tab);
 		if(doc==null) {
 			doc = new ODocument(OCLASS_DASHBOARD);
@@ -118,7 +121,11 @@ public class DefaultDashboardManager implements IDashboardManager{
 				}
 			}
 			if(widgetDoc==null) {
-				widgetDoc = new ODocument(OCLASS_WIDGET);
+				String oClassName = type.getOClassName();
+				if(oClassName==null) oClassName = OCLASS_WIDGET;
+				OClass oClass = db.getMetadata().getSchema().getClass(oClassName);
+				if(oClass==null || !oClass.isSubClassOf(OCLASS_WIDGET)) throw new WicketRuntimeException("Wrong OClass specified for widget settings: "+oClassName);
+				widgetDoc = new ODocument(oClass);
 				widgetDoc.field(OPROPERTY_TYPE_ID, typeId);
 				widgets.add(widgetDoc);
 				widget.saveSettings(widgetDoc);

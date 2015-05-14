@@ -9,10 +9,12 @@ import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 /**
  * Test widget - just for implementation period
  */
-@Widget(id="test", type=String.class, defaultDomain="test", defaultTab="test")
+@Widget(id="test", type=String.class, defaultDomain="test", defaultTab="test"/*, oClass="TestWidget"*/)
 public class TestWidget extends AbstractWidget<String> {
 
 	private int counter = 0;
@@ -42,6 +44,19 @@ public class TestWidget extends AbstractWidget<String> {
 	@Override
 	protected IModel<String> getTitleModel() {
 		return Model.of("Test widget");
+	}
+	
+	@Override
+	public void loadSettings(ODocument doc) {
+		super.loadSettings(doc);
+		Integer counter = doc.field("counter");
+		this.counter=counter!=null?counter:0;
+	}
+	
+	@Override
+	public void saveSettings(ODocument doc) {
+		super.saveSettings(doc);
+		doc.field("counter", counter);
 	}
 
 }

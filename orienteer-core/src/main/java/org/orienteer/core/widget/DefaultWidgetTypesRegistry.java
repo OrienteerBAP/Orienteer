@@ -9,6 +9,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
  * Default implementation of {@link IWidgetTypesRegistry}
@@ -100,6 +101,11 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			@Override
 			public Class<T> getType() {
 				return (Class<T>)widget.type();
+			}
+			
+			@Override
+			public String getOClassName() {
+				return widget.oClass();
 			}
 			
 			@Override
