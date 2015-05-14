@@ -27,6 +27,7 @@ public class TestWidget extends AbstractWidget<String> {
 			@Override
 			public void onClick() {
 				counter++;
+				getDashboardPanel().storeDashboard();
 			}
 		}.setBody(new PropertyModel<String>(this, "linkBody")));
 	}

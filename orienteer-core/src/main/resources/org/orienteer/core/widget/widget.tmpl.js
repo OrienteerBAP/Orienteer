@@ -10,6 +10,7 @@ gridster = $('#${componentId}> ul')
 					.gridster({
 						widget_margins: [margin, margin],
 						widget_base_dimensions: [width/2-2*margin, 300],
+						min_cols: 2,
 						serialize_params : function($w, wgd) { 
 											return { 
 												id: $w.attr('id'),

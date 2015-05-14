@@ -2,7 +2,6 @@
 	margin: 0;
 	padding: 0;
     list-style-type: none;
-    background-color: #EFEFEF;
 }
 
 .gridster.orienteer {
@@ -13,6 +12,7 @@
     -o-transition: opacity .6s;
     -ms-transition: opacity .6s;
     transition: opacity .6s;
+    background-color: #EFEFEF;
 }
 
 .gs-w > div.panel {

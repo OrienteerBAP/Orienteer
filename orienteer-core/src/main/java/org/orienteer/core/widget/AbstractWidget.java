@@ -1,11 +1,13 @@
 package org.orienteer.core.widget;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.FAIcon;
+
 import static org.orienteer.core.module.OWidgetsModule.*;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -28,6 +30,15 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		add(new Label("title", getTitleModel()));
 		setOutputMarkupId(true);
 		setOutputMarkupPlaceholderTag(true);
+	}
+	
+	public DashboardPanel<T> getDashboardPanel() {
+		DashboardPanel<T> dashboard = findParent(DashboardPanel.class);
+		if(dashboard==null)
+		{
+			throw new WicketRuntimeException("No dashboard found for widget: "+this);
+		}
+		return dashboard;
 	}
 	
 	protected abstract FAIcon newIcon(String id);

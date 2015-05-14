@@ -109,11 +109,15 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 				widget.setRow(jsonWidget.getInt("row"));
 				widget.setSizeX(jsonWidget.getInt("size_x"));
 				widget.setSizeY(jsonWidget.getInt("size_y"));
-				dashboardManager.storeDashboard(this, domain, tab); 
+				storeDashboard();
 			}
 		} catch (JSONException e) {
 			throw new WicketRuntimeException("Can't handle dashboard update", e);
 		}
+	}
+	
+	public void storeDashboard() {
+		dashboardManager.storeDashboard(this, domain, tab); 
 	}
 	
 	public String newWidgetId()
