@@ -29,6 +29,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	public static final String OPROPERTY_ROW = "row";
 	public static final String OPROPERTY_SIZE_X = "sizeX";
 	public static final String OPROPERTY_SIZE_Y = "sizeY";
+	public static final String OPROPERTY_HIDDEN = "hidden";
 	
 	public OWidgetsModule() {
 		super("widgets", 1);
@@ -49,7 +50,8 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 					.oProperty(OPROPERTY_COL, OType.INTEGER, 30)
 					.oProperty(OPROPERTY_ROW, OType.INTEGER, 40)
 					.oProperty(OPROPERTY_SIZE_X, OType.INTEGER, 50)
-					.oProperty(OPROPERTY_SIZE_Y, OType.INTEGER, 60);
+					.oProperty(OPROPERTY_SIZE_Y, OType.INTEGER, 60)
+					.oProperty(OPROPERTY_HIDDEN, OType.BOOLEAN, 60);
 		helper.setupRelationship(OCLASS_DASHBOARD, OPROPERTY_WIDGETS, OCLASS_WIDGET, OPROPERTY_DASHBOARD);
 	}
 	

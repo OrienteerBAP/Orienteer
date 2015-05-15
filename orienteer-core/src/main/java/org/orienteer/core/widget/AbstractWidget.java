@@ -26,6 +26,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	private int row=1;
 	private int sizeX=1;
 	private int sizeY=1;
+	private boolean hidden=false;
 	
 	private RepeatingView commands;
 	
@@ -34,7 +35,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		add(newIcon("icon"));
 		add(new Label("title", getTitleModel()));
 		setOutputMarkupId(true);
-		setOutputMarkupPlaceholderTag(true);
+//		setOutputMarkupPlaceholderTag(true);
 		commands = new RepeatingView("commands");
 		commands.add(new AjaxCommand<T>(commands.newChildId(), "command.delete") {
 
@@ -42,7 +43,17 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 			public void onClick(AjaxRequestTarget target) {
 				DashboardPanel<T> dashboard = getDashboardPanel();
 				dashboard.deleteWidget(AbstractWidget.this);
-				target.add(dashboard);
+//				target.add(dashboard);
+				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').data('gridster').remove_widget($('#"+AbstractWidget.this.getMarkupId()+"'))"); 
+			}
+		});
+		commands.add(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
+
+			@Override
+			public void onClick(AjaxRequestTarget target) {
+				setHidden(true);
+				DashboardPanel<T> dashboard = getDashboardPanel();
+				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').data('gridster').remove_widget($('#"+AbstractWidget.this.getMarkupId()+"'))");
 			}
 		});
 		add(commands);
@@ -60,6 +71,12 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	protected abstract FAIcon newIcon(String id);
 	
 	protected abstract IModel<String> getTitleModel();
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		setVisibilityAllowed(!hidden);
+	}
 	
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
@@ -102,12 +119,21 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		this.sizeY = sizeY;
 	}
 	
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
 	public void loadSettings(ODocument doc) {
 		if(doc==null) return;
 		row = doc.field(OPROPERTY_ROW);
 		col = doc.field(OPROPERTY_COL);
 		sizeX = doc.field(OPROPERTY_SIZE_X);
 		sizeY = doc.field(OPROPERTY_SIZE_Y);
+		hidden = doc.field(OPROPERTY_HIDDEN);
 	}
 	
 	public void saveSettings(ODocument doc) {
@@ -116,5 +142,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		doc.field(OPROPERTY_COL, col);
 		doc.field(OPROPERTY_SIZE_X, sizeX);
 		doc.field(OPROPERTY_SIZE_Y, sizeY);
+		doc.field(OPROPERTY_HIDDEN, hidden);
 	}
 }
