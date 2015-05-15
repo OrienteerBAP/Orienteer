@@ -156,6 +156,12 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		return addWidget(description.instanciate(newWidgetId(), getModel()));
 	}
 	
+	public DashboardPanel<T> deleteWidget(AbstractWidget<T> widget)
+	{
+		widgets.remove(widget);
+		return this;
+	}
+	
 	public String getDomain() {
 		return domain;
 	}

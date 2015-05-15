@@ -7,14 +7,10 @@
 					<button type="button"
 						class="btn btn-default btn-xs dropdown-toggle"
 						data-toggle="dropdown" aria-expanded="false">
-						Actions <span class="caret"></span>
+						<wicket:message key="command.actions">Actions</wicket:message> <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu pull-right" role="menu">
-						<li><a href="#">Action</a></li>
-						<li><a href="#">Another action</a></li>
-						<li><a href="#">Something else here</a></li>
-						<li class="divider"></li>
-						<li><a href="#">Separated link</a></li>
+						<li wicket:id="commands"></li>
 					</ul>
 				</div>
 			</div>

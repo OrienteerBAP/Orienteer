@@ -2,11 +2,14 @@ package org.orienteer.core.widget;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.FAIcon;
+import org.orienteer.core.component.command.AjaxCommand;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
 
@@ -24,12 +27,25 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	private int sizeX=1;
 	private int sizeY=1;
 	
+	private RepeatingView commands;
+	
 	public AbstractWidget(String id, IModel<T> model) {
 		super(id, model);
 		add(newIcon("icon"));
 		add(new Label("title", getTitleModel()));
 		setOutputMarkupId(true);
 		setOutputMarkupPlaceholderTag(true);
+		commands = new RepeatingView("commands");
+		commands.add(new AjaxCommand<T>(commands.newChildId(), "command.delete") {
+
+			@Override
+			public void onClick(AjaxRequestTarget target) {
+				DashboardPanel<T> dashboard = getDashboardPanel();
+				dashboard.deleteWidget(AbstractWidget.this);
+				target.add(dashboard);
+			}
+		});
+		add(commands);
 	}
 	
 	public DashboardPanel<T> getDashboardPanel() {
