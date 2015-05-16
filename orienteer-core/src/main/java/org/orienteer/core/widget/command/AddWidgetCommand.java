@@ -1,6 +1,7 @@
 package org.orienteer.core.widget.command;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.core.util.string.ComponentRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapSize;
@@ -8,9 +9,15 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.command.modal.ImportDialogPanel;
+import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetType;
 import org.orienteer.core.widget.command.modal.AddWidgetDialog;
+
+import com.google.common.escape.CharEscaper;
+import com.google.common.escape.CharEscaperBuilder;
+import com.google.common.escape.Escaper;
+import com.google.common.escape.Escapers;
 
 /**
  * Command for {@link DashboardPanel} to add new widget
@@ -18,6 +25,12 @@ import org.orienteer.core.widget.command.modal.AddWidgetDialog;
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
 public class AddWidgetCommand<T> extends AbstractModalWindowCommand<T> {
+	
+	private static final Escaper HTML_JS_ESCAPER = Escapers.builder()
+														   .addEscape('\'', "\\'")
+														   .addEscape('\r', "\\n")
+														   .addEscape('\n', "")
+														   .build();
 
 	public AddWidgetCommand(String id) {
 		super(id, "command.add.widget");
@@ -34,10 +47,17 @@ public class AddWidgetCommand<T> extends AbstractModalWindowCommand<T> {
 			@Override
 			protected void onSelectWidgetType(IWidgetType<T> type,
 					AjaxRequestTarget target) {
-				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.addWidget(type);
 				modal.close(target);
-				target.add(dashboard);
+				DashboardPanel<T> dashboard = getDashboardPanel();
+				AbstractWidget<T> widget = dashboard.addWidget(type);
+//				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').data('gridster').add_widget('<li id=\\'"+widget.getMarkupId()+"\\'></li>', 1, 2, 1, 10)");
+				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').append('<li id=\\'"+widget.getMarkupId()+"\\'></li>')");
+				target.add(widget);
+				target.appendJavaScript("var gridster = $('#"+dashboard.getMarkupId()+" > ul').data('gridster');\n"
+						+ "gridster.add_widget($('#"+widget.getMarkupId()+"'));\n"
+						+ "gridster.gridsterChanged();");
+//				target.prependJavaScript("debugger");
+//				String widgetHtml = ComponentRenderer.renderComponent(widget).toString();
 			}
 		});
 	}

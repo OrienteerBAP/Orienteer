@@ -145,13 +145,13 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		return ret;
 	}
 	
-	public DashboardPanel<T> addWidget(AbstractWidget<T> widget)
+	public AbstractWidget<T> addWidget(AbstractWidget<T> widget)
 	{
 		widgets.add(widget);
-		return this;
+		return widget;
 	}
 	
-	public DashboardPanel<T> addWidget(IWidgetType<T> description)
+	public AbstractWidget<T> addWidget(IWidgetType<T> description)
 	{
 		return addWidget(description.instanciate(newWidgetId(), getModel()));
 	}

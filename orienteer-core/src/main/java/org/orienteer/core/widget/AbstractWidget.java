@@ -41,22 +41,26 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.deleteWidget(AbstractWidget.this);
-//				target.add(dashboard);
-				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').data('gridster').remove_widget($('#"+AbstractWidget.this.getMarkupId()+"'))"); 
+				sendAjaxUIDeleteWidget(target);
+				getDashboardPanel().deleteWidget(AbstractWidget.this);
 			}
 		});
 		commands.add(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
+				sendAjaxUIDeleteWidget(target);
 				setHidden(true);
-				DashboardPanel<T> dashboard = getDashboardPanel();
-				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').data('gridster').remove_widget($('#"+AbstractWidget.this.getMarkupId()+"'))");
 			}
 		});
 		add(commands);
+	}
+	
+	private void sendAjaxUIDeleteWidget(AjaxRequestTarget target) {
+		DashboardPanel<T> dashboard = getDashboardPanel();
+		target.prependJavaScript("var gridster = $('#"+dashboard.getMarkupId()+" > ul').data('gridster');\n"
+						+ "gridster.remove_widget($('#"+AbstractWidget.this.getMarkupId()+"'));\n"
+						+ "gridster.gridsterChanged();");
 	}
 	
 	public DashboardPanel<T> getDashboardPanel() {

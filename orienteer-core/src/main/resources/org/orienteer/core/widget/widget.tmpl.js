@@ -29,3 +29,4 @@ gridster = $('#${componentId}> ul')
 				            stop: gridsterChanged
 				        }
 					}).data('gridster');
+gridster.gridsterChanged = gridsterChanged;
