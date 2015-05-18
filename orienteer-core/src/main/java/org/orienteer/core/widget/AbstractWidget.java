@@ -4,10 +4,13 @@ import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.command.AjaxCommand;
 
@@ -147,5 +150,15 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		doc.field(OPROPERTY_SIZE_X, sizeX);
 		doc.field(OPROPERTY_SIZE_Y, sizeY);
 		doc.field(OPROPERTY_HIDDEN, hidden);
+	}
+	
+	@Override
+	public void renderHead(IHeaderResponse response) {
+		super.renderHead(response);
+		if(getWebRequest().isAjax())
+		{
+			String script = "$('#"+getDashboardPanel().getMarkupId()+" > ul').data('gridster').ajaxUpdate('"+getMarkupId()+"');";
+			response.render(OnDomReadyHeaderItem.forScript(script));
+		}
 	}
 }
