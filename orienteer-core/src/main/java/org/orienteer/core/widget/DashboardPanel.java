@@ -34,6 +34,7 @@ import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.widget.command.AddWidgetCommand;
+import org.orienteer.core.widget.command.UnhideWidgetCommand;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -70,7 +71,8 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		this.domain = domain;
 		this.tab = tab;
 		commands = new RepeatingView("commands");
-		commands.add(new AddWidgetCommand(commands.newChildId()));
+		commands.add(new AddWidgetCommand<T>(commands.newChildId()));
+		commands.add(new UnhideWidgetCommand<T>(commands.newChildId()));
 		add(commands);
 		widgets = new RepeatingView("widgets");
 		add(widgets);
@@ -203,6 +205,10 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		TextTemplate template = new PackageTextTemplate(DashboardPanel.class, "widget.tmpl.js");
 		String script = template.asString(variables);
 		response.render(OnDomReadyHeaderItem.forScript(script));
+	}
+	
+	public RepeatingView getWidgetsContainer() {
+		return widgets;
 	}
 
 }

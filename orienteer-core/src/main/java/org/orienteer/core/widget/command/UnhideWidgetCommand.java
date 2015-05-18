@@ -1,49 +1,50 @@
 package org.orienteer.core.widget.command;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.core.util.string.ComponentRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
-import org.orienteer.core.component.command.modal.ImportDialogPanel;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
-import org.orienteer.core.widget.IWidgetType;
-import org.orienteer.core.widget.command.modal.AddWidgetDialog;
+import org.orienteer.core.widget.IDashboardManager;
+import org.orienteer.core.widget.command.modal.UnhideWidgetDialog;
 
-import com.google.common.escape.CharEscaper;
-import com.google.common.escape.CharEscaperBuilder;
-import com.google.common.escape.Escaper;
-import com.google.common.escape.Escapers;
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
- * Command for {@link DashboardPanel} to add new widget
+ * Command for {@link DashboardPanel} to unhide a widget
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-public class AddWidgetCommand<T> extends AbstractModalWindowCommand<T> {
+public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<T> {
 	
-	public AddWidgetCommand(String id) {
-		super(id, "command.add.widget");
+	@Inject
+	private IDashboardManager dashboardManager;
+	
+	public UnhideWidgetCommand(String id) {
+		super(id, "command.unhide");
 		setIcon(FAIconType.plus_circle);
-		setBootstrapType(BootstrapType.SUCCESS);
+		setBootstrapType(BootstrapType.PRIMARY);
 		setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 	}
 
 	@Override
 	protected void initializeContent(final ModalWindow modal) {
-		modal.setTitle(new ResourceModel("command.add.widget"));
-		modal.setContent(new AddWidgetDialog<T>(modal.getContentId()) {
+		modal.setTitle(new ResourceModel("command.unhide"));
+		modal.setContent(new UnhideWidgetDialog<T>(modal.getContentId()) {
 
 			@Override
-			protected void onSelectWidgetType(IWidgetType<T> type,
+			protected void onSelectWidget(AbstractWidget<T> widget,
 					AjaxRequestTarget target) {
 				modal.close(target);
+				widget.setHidden(false);
 				DashboardPanel<T> dashboard = getDashboardPanel();
-				AbstractWidget<T> widget = dashboard.addWidget(type);
+				
 //				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').data('gridster').add_widget('<li id=\\'"+widget.getMarkupId()+"\\'></li>', 1, 2, 1, 10)");
 				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').append('<li id=\\'"+widget.getMarkupId()+"\\'></li>')");
 				target.add(widget);

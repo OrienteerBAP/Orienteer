@@ -28,6 +28,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 public class DefaultDashboardManager implements IDashboardManager{
 	
 	private IWidgetTypesRegistry widgetRegistry;
+	
 	@Inject
 	public DefaultDashboardManager(IWidgetTypesRegistry widgetRegistry) {
 		this.widgetRegistry = widgetRegistry;
@@ -47,6 +48,14 @@ public class DefaultDashboardManager implements IDashboardManager{
 		return new ArrayList<String>(tabs);
 	}
 	
+	@Override
+	public <T> AbstractWidget<T> createWidgetFromDocument(DashboardPanel<T> dashboard, ODocument widgetDoc) {
+		IWidgetType<T> type = (IWidgetType<T>)widgetRegistry.lookupByTypeId((String) widgetDoc.field(OPROPERTY_TYPE_ID));
+		AbstractWidget<T> widget = type.instanciate(dashboard.newWidgetId(), dashboard.getModel());
+		widget.loadSettings(widgetDoc);
+		return widget;
+	}
+	
 	
 	@Override
 	public <T> void initializeDashboard(DashboardPanel<T> dashboard) {
@@ -57,10 +66,7 @@ public class DefaultDashboardManager implements IDashboardManager{
 		{
 			List<ODocument> widgets = doc.field(OPROPERTY_WIDGETS);
 			for (ODocument widgetDoc : widgets) {
-				IWidgetType<T> type = (IWidgetType<T>)widgetRegistry.lookupByTypeId((String) widgetDoc.field(OPROPERTY_TYPE_ID));
-				AbstractWidget<T> widget = type.instanciate(dashboard.newWidgetId(), dashboard.getModel());
-				widget.loadSettings(widgetDoc);
-				dashboard.addWidget(widget);
+				dashboard.addWidget(createWidgetFromDocument(dashboard, widgetDoc));
 			}
 		}
 		else
@@ -77,6 +83,10 @@ public class DefaultDashboardManager implements IDashboardManager{
 				dashboard.addWidget(widget);
 			}
 		}
+	}
+	
+	public ODocument getExistingDashboard(DashboardPanel<?> dashboard) {
+		return getExistingDashboard(dashboard.getDomain(), dashboard.getTab());
 	}
 
 	private ODocument getExistingDashboard(String domain, String tab) {

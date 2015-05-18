@@ -35,9 +35,6 @@ gridster.ajaxUpdate = function(id)
 {
 	var w = $('#'+id);
 	var gr = gridster;
-	console.log(w);
-	console.log(gr.$widgets);
-	debugger;
 	var i;
 	for(i=0; i< gr.$widgets.length; i++) 
 	{
