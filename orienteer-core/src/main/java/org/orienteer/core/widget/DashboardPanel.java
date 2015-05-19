@@ -33,10 +33,15 @@ import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.widget.command.AddWidgetCommand;
 import org.orienteer.core.widget.command.UnhideWidgetCommand;
 
+import static org.orienteer.core.module.OWidgetsModule.*;
+
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
@@ -55,6 +60,9 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	@Inject
 	private IDashboardManager dashboardManager;
+	
+	@Inject
+	private IWidgetTypesRegistry widgetTypesRegistry;
 	
 	private String domain;
 	
@@ -93,7 +101,28 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			}
 		});
 		
-		dashboardManager.initializeDashboard(this);
+		ODocument doc = dashboardManager.getExistingDashboard(domain, tab);
+		if(doc!=null)
+		{
+			List<ODocument> widgets = doc.field(OPROPERTY_WIDGETS);
+			for (ODocument widgetDoc : widgets) {
+				addWidget(createWidgetFromDocument(widgetDoc));
+			}
+		}
+		else
+		{
+			List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDefaultDomainAndTab(domain, tab);
+			for(int i=0;i<widgets.size();i++)
+			{
+				IWidgetType<T> type = widgets.get(i);
+				AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel());
+				widget.setCol(1);
+				widget.setRow(i+1);
+				widget.setSizeX(2);
+				widget.setSizeY(1);
+				addWidget(widget);
+			}
+		}
 	}
 	
 	private void updateDashboardByJson(String dashboard) {
@@ -124,8 +153,68 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		}
 	}
 	
+	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
+		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId((String) widgetDoc.field(OPROPERTY_TYPE_ID));
+		AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel());
+		widget.loadSettings(widgetDoc);
+		return widget;
+	}
+	
 	public void storeDashboard() {
-		dashboardManager.storeDashboard(this); 
+		ODatabaseDocument db = OrienteerWebSession.get().getDatabase();
+		ODocument doc = dashboardManager.getExistingDashboard(domain, tab);
+		if(doc==null) {
+			doc = new ODocument(OCLASS_DASHBOARD);
+			doc.field(OPROPERTY_DOMAIN, domain);
+			doc.field(OPROPERTY_TAB, tab);
+			doc.save();
+		}
+		List<ODocument> widgets = doc.field(OPROPERTY_WIDGETS);
+		if(widgets==null) {
+			widgets = new ArrayList<ODocument>();
+			doc.field(OPROPERTY_WIDGETS, widgets);
+		}
+		
+		List<ODocument> handledWidgets = new ArrayList<ODocument>();
+		
+		List<AbstractWidget<T>> components = getWidgets();
+		for (AbstractWidget<T> widget : components) {
+			IWidgetType<T> type = widgetTypesRegistry.lookupByWidgetClass((Class<? extends AbstractWidget<T>>)widget.getClass());
+			String typeId = type.getId();
+			ODocument widgetDoc=null;
+			for (ODocument candidate : widgets) {
+				if(handledWidgets.contains(candidate)) continue;
+				if(typeId.equals(candidate.field(OPROPERTY_TYPE_ID)))
+				{
+					handledWidgets.add(candidate);
+					widgetDoc = candidate;
+					break;
+				}
+			}
+			if(widgetDoc==null) {
+				String oClassName = type.getOClassName();
+				if(oClassName==null) oClassName = OCLASS_WIDGET;
+				OClass oClass = db.getMetadata().getSchema().getClass(oClassName);
+				if(oClass==null || !oClass.isSubClassOf(OCLASS_WIDGET)) throw new WicketRuntimeException("Wrong OClass specified for widget settings: "+oClassName);
+				widgetDoc = new ODocument(oClass);
+				widgetDoc.field(OPROPERTY_TYPE_ID, typeId);
+				widgets.add(widgetDoc);
+				widget.saveSettings(widgetDoc);
+			}
+			else
+			{
+				widget.saveSettings(widgetDoc);
+				widgetDoc.save();
+			}
+		}
+		
+		List<ODocument> widgetsToRemove = new ArrayList<ODocument>(widgets);
+		widgetsToRemove.removeAll(handledWidgets);
+		for (ODocument toRemove : widgetsToRemove) {
+			toRemove.delete();
+		}
+		
+		doc.save();
 	}
 	
 	public String newWidgetId()

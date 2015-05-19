@@ -11,8 +11,5 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @ImplementedBy(DefaultDashboardManager.class)
 public interface IDashboardManager {
 	public List<String> listTabs(String domain);
-	public <T> AbstractWidget<T> createWidgetFromDocument(DashboardPanel<T> dashboard, ODocument doc);
-	public ODocument getExistingDashboard(DashboardPanel<?> dashboard);
-	public <T> void initializeDashboard(DashboardPanel<T> dashboard);
-	public <T> void storeDashboard(DashboardPanel<T> dashboard);
+	public ODocument getExistingDashboard(String domain, String tab);
 }
