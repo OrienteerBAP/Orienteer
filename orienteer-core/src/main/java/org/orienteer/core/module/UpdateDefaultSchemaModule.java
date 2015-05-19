@@ -7,6 +7,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.PasswordVisualizer;
 import org.orienteer.core.util.OSchemaHelper;
 
+import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -50,6 +51,8 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	
 	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
 	{
+		//Make DB a graphDB
+		Orient.instance().getDatabaseFactory().checkSchema(db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		if(helper.existsClass(OCLASS_FUNCTION))
 		{
