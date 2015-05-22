@@ -14,6 +14,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.command.AjaxCommand;
 
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import static org.orienteer.core.module.OWidgetsModule.*;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -33,8 +34,11 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	
 	private RepeatingView commands;
 	
-	public AbstractWidget(String id, IModel<T> model) {
+	private IModel<ODocument> widgetDocumentModel;
+	
+	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
+		this.widgetDocumentModel = widgetDocumentModel;
 		add(newIcon("icon"));
 		add(new Label("title", getTitleModel()));
 		setOutputMarkupId(true);
@@ -57,6 +61,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 			}
 		});
 		add(commands);
+		loadSettings();
 	}
 	
 	private void sendAjaxUIDeleteWidget(AjaxRequestTarget target) {
@@ -73,6 +78,14 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 			throw new WicketRuntimeException("No dashboard found for widget: "+this);
 		}
 		return dashboard;
+	}
+	
+	public IModel<ODocument> getWidgetDocumentModel() {
+		return widgetDocumentModel;
+	}
+	
+	public ODocument getWidgetDocument() {
+		return widgetDocumentModel.getObject();
 	}
 	
 	protected abstract FAIcon newIcon(String id);
@@ -134,7 +147,8 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		this.hidden = hidden;
 	}
 
-	public void loadSettings(ODocument doc) {
+	public void loadSettings() {
+		ODocument doc = widgetDocumentModel.getObject();
 		if(doc==null) return;
 		row = doc.field(OPROPERTY_ROW);
 		col = doc.field(OPROPERTY_COL);
@@ -143,13 +157,15 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		hidden = doc.field(OPROPERTY_HIDDEN);
 	}
 	
-	public void saveSettings(ODocument doc) {
+	public void saveSettings() {
+		ODocument doc = widgetDocumentModel.getObject();
 		if(doc==null) return;
 		doc.field(OPROPERTY_ROW, row);
 		doc.field(OPROPERTY_COL, col);
 		doc.field(OPROPERTY_SIZE_X, sizeX);
 		doc.field(OPROPERTY_SIZE_Y, sizeY);
 		doc.field(OPROPERTY_HIDDEN, hidden);
+		doc.save();
 	}
 	
 	@Override

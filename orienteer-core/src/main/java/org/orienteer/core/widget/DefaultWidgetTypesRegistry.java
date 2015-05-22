@@ -8,8 +8,11 @@ import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Default implementation of {@link IWidgetTypesRegistry}
@@ -129,9 +132,11 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			}
 
 			@Override
-			public AbstractWidget<T> instanciate(String componentId, IModel<T> model) {
+			public AbstractWidget<T> instanciate(String componentId, IModel<T> model, ODocument widgetDoc) {
 				try {
-					return getWidgetClass().getConstructor(String.class, IModel.class).newInstance(componentId, model);
+					return getWidgetClass()
+							.getConstructor(String.class, IModel.class, IModel.class)
+							.newInstance(componentId, model, new ODocumentModel(widgetDoc).setPreserveDraft(true));
 				} catch (Exception e) {
 					throw new WicketRuntimeException("Can't instanciate widget for descriptor: "+this , e);
 				} 

@@ -37,6 +37,7 @@ import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.widget.command.AddWidgetCommand;
 import org.orienteer.core.widget.command.UnhideWidgetCommand;
 
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import static org.orienteer.core.module.OWidgetsModule.*;
 
 import com.google.inject.Inject;
@@ -74,6 +75,8 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	private AbstractDefaultAjaxBehavior ajaxBehavior;
 	
+	private IModel<ODocument> dashboardDocumentModel = new ODocumentModel();
+	
 	public DashboardPanel(String id, String domain, String tab, IModel<T> model) {
 		super(id, model);
 		this.domain = domain;
@@ -101,9 +104,10 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			}
 		});
 		
-		ODocument doc = dashboardManager.getExistingDashboard(domain, tab);
+		ODocument doc = dashboardManager.getExistingDashboard(domain, tab, model);
 		if(doc!=null)
 		{
+			dashboardDocumentModel.setObject(doc);
 			List<ODocument> widgets = doc.field(OPROPERTY_WIDGETS);
 			for (ODocument widgetDoc : widgets) {
 				addWidget(createWidgetFromDocument(widgetDoc));
@@ -115,7 +119,7 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			for(int i=0;i<widgets.size();i++)
 			{
 				IWidgetType<T> type = widgets.get(i);
-				AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel());
+				AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(type));
 				widget.setCol(1);
 				widget.setRow(i+1);
 				widget.setSizeX(2);
@@ -155,64 +159,28 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
 		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId((String) widgetDoc.field(OPROPERTY_TYPE_ID));
-		AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel());
-		widget.loadSettings(widgetDoc);
+		AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), widgetDoc);
 		return widget;
 	}
 	
 	public void storeDashboard() {
 		ODatabaseDocument db = OrienteerWebSession.get().getDatabase();
-		ODocument doc = dashboardManager.getExistingDashboard(domain, tab);
+		ODocument doc = dashboardDocumentModel.getObject();
 		if(doc==null) {
 			doc = new ODocument(OCLASS_DASHBOARD);
 			doc.field(OPROPERTY_DOMAIN, domain);
 			doc.field(OPROPERTY_TAB, tab);
 			doc.save();
+			dashboardDocumentModel.setObject(doc);
 		}
-		List<ODocument> widgets = doc.field(OPROPERTY_WIDGETS);
-		if(widgets==null) {
-			widgets = new ArrayList<ODocument>();
-			doc.field(OPROPERTY_WIDGETS, widgets);
-		}
-		
-		List<ODocument> handledWidgets = new ArrayList<ODocument>();
 		
 		List<AbstractWidget<T>> components = getWidgets();
+		List<ODocument> widgets = new ArrayList<ODocument>();
 		for (AbstractWidget<T> widget : components) {
-			IWidgetType<T> type = widgetTypesRegistry.lookupByWidgetClass((Class<? extends AbstractWidget<T>>)widget.getClass());
-			String typeId = type.getId();
-			ODocument widgetDoc=null;
-			for (ODocument candidate : widgets) {
-				if(handledWidgets.contains(candidate)) continue;
-				if(typeId.equals(candidate.field(OPROPERTY_TYPE_ID)))
-				{
-					handledWidgets.add(candidate);
-					widgetDoc = candidate;
-					break;
-				}
-			}
-			if(widgetDoc==null) {
-				String oClassName = type.getOClassName();
-				if(oClassName==null) oClassName = OCLASS_WIDGET;
-				OClass oClass = db.getMetadata().getSchema().getClass(oClassName);
-				if(oClass==null || !oClass.isSubClassOf(OCLASS_WIDGET)) throw new WicketRuntimeException("Wrong OClass specified for widget settings: "+oClassName);
-				widgetDoc = new ODocument(oClass);
-				widgetDoc.field(OPROPERTY_TYPE_ID, typeId);
-				widgets.add(widgetDoc);
-				widget.saveSettings(widgetDoc);
-			}
-			else
-			{
-				widget.saveSettings(widgetDoc);
-				widgetDoc.save();
-			}
+			widget.saveSettings();
+			widgets.add(widget.getWidgetDocument());
 		}
-		
-		List<ODocument> widgetsToRemove = new ArrayList<ODocument>(widgets);
-		widgetsToRemove.removeAll(handledWidgets);
-		for (ODocument toRemove : widgetsToRemove) {
-			toRemove.delete();
-		}
+		doc.field(OPROPERTY_WIDGETS, widgets);
 		
 		doc.save();
 	}
@@ -244,7 +212,7 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	public AbstractWidget<T> addWidget(IWidgetType<T> description)
 	{
-		return addWidget(description.instanciate(newWidgetId(), getModel()));
+		return addWidget(description.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(description)));
 	}
 	
 	public DashboardPanel<T> deleteWidget(AbstractWidget<T> widget)
@@ -298,6 +266,12 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	public RepeatingView getWidgetsContainer() {
 		return widgets;
+	}
+	
+	@Override
+	protected void detachModel() {
+		super.detachModel();
+		dashboardDocumentModel.detach();
 	}
 
 }

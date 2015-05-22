@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.OrienteerWebSession;
 
@@ -35,7 +36,7 @@ public class DefaultDashboardManager implements IDashboardManager{
 	}
 
 	@Override
-	public List<String> listTabs(String domain) {
+	public List<String> listTabs(String domain, IModel<?> dataModel) {
 		Set<String> tabs = new HashSet<String>();
 		if(domain!=null)
 		{
@@ -48,7 +49,8 @@ public class DefaultDashboardManager implements IDashboardManager{
 		return new ArrayList<String>(tabs);
 	}
 	
-	public ODocument getExistingDashboard(String domain, String tab) {
+	@Override
+	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel) {
 		ODatabaseDocument db = getDatabase();
 		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_DASHBOARD+
 											" where "+OPROPERTY_DOMAIN+" = ?"+
@@ -58,7 +60,17 @@ public class DefaultDashboardManager implements IDashboardManager{
 		else return dashboards.get(0);
 	}
 	
-
+	@Override
+	public ODocument createWidgetDocument(IWidgetType<?> widgetType) {
+		String oClassName = widgetType.getOClassName();
+		if(oClassName==null) oClassName = OCLASS_WIDGET;
+		OClass oClass = getDatabase().getMetadata().getSchema().getClass(oClassName);
+		if(oClass==null || !oClass.isSubClassOf(OCLASS_WIDGET)) throw new WicketRuntimeException("Wrong OClass specified for widget settings: "+oClassName);
+		ODocument widgetDoc = new ODocument(oClass);
+		widgetDoc.field(OPROPERTY_TYPE_ID, widgetType.getId());
+		return widgetDoc;
+	}
+	
 	private ODatabaseDocument getDatabase()
 	{
 		return OrienteerWebSession.get().getDatabase();
