@@ -17,6 +17,7 @@ import org.orienteer.core.component.command.AjaxCommand;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import static org.orienteer.core.module.OWidgetsModule.*;
 
+import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -48,27 +49,22 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-				sendAjaxUIDeleteWidget(target);
-				getDashboardPanel().deleteWidget(AbstractWidget.this);
+				DashboardPanel<T> dashboard = getDashboardPanel();
+				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
+				dashboard.deleteWidget(AbstractWidget.this);
 			}
 		});
 		commands.add(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-				sendAjaxUIDeleteWidget(target);
+				DashboardPanel<T> dashboard = getDashboardPanel();
+				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
 				setHidden(true);
 			}
 		});
 		add(commands);
 		loadSettings();
-	}
-	
-	private void sendAjaxUIDeleteWidget(AjaxRequestTarget target) {
-		DashboardPanel<T> dashboard = getDashboardPanel();
-		target.prependJavaScript("var gridster = $('#"+dashboard.getMarkupId()+" > ul').data('gridster');\n"
-						+ "gridster.remove_widget($('#"+AbstractWidget.this.getMarkupId()+"'));\n"
-						+ "gridster.gridsterChanged();");
 	}
 	
 	public DashboardPanel<T> getDashboardPanel() {
@@ -150,11 +146,12 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	public void loadSettings() {
 		ODocument doc = widgetDocumentModel.getObject();
 		if(doc==null) return;
-		row = doc.field(OPROPERTY_ROW);
-		col = doc.field(OPROPERTY_COL);
-		sizeX = doc.field(OPROPERTY_SIZE_X);
-		sizeY = doc.field(OPROPERTY_SIZE_Y);
-		hidden = doc.field(OPROPERTY_HIDDEN);
+		
+		row = Objects.firstNonNull((Integer)doc.field(OPROPERTY_ROW), 1);
+		col = Objects.firstNonNull((Integer)doc.field(OPROPERTY_COL), 1);
+		sizeX = Objects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_X), 2);
+		sizeY = Objects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_Y), 1);
+		hidden = Objects.firstNonNull((Boolean)doc.field(OPROPERTY_HIDDEN), false);
 	}
 	
 	public void saveSettings() {
@@ -169,12 +166,8 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	}
 	
 	@Override
-	public void renderHead(IHeaderResponse response) {
-		super.renderHead(response);
-		if(getWebRequest().isAjax())
-		{
-			String script = "$('#"+getDashboardPanel().getMarkupId()+" > ul').data('gridster').ajaxUpdate('"+getMarkupId()+"');";
-			response.render(OnDomReadyHeaderItem.forScript(script));
-		}
+	protected void onInitialize() {
+		super.onInitialize();
+		getDashboardPanel().getDashboardSupport().initWidget(this);
 	}
 }

@@ -44,15 +44,7 @@ public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<T> {
 				modal.close(target);
 				widget.setHidden(false);
 				DashboardPanel<T> dashboard = getDashboardPanel();
-				
-//				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').data('gridster').add_widget('<li id=\\'"+widget.getMarkupId()+"\\'></li>', 1, 2, 1, 10)");
-				target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').append('<li id=\\'"+widget.getMarkupId()+"\\'></li>')");
-				target.add(widget);
-				target.appendJavaScript("var gridster = $('#"+dashboard.getMarkupId()+" > ul').data('gridster');\n"
-						+ "gridster.add_widget($('#"+widget.getMarkupId()+"'));\n"
-						+ "gridster.gridsterChanged();");
-//				target.prependJavaScript("debugger");
-//				String widgetHtml = ComponentRenderer.renderComponent(widget).toString();
+				dashboard.getDashboardSupport().ajaxAddWidget(widget, target);
 			}
 		});
 	}

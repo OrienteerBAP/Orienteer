@@ -36,6 +36,7 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.widget.command.AddWidgetCommand;
 import org.orienteer.core.widget.command.UnhideWidgetCommand;
+import org.orienteer.core.widget.support.IDashboardSupport;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import static org.orienteer.core.module.OWidgetsModule.*;
@@ -55,15 +56,14 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
  */
 public class DashboardPanel<T> extends GenericPanel<T> {
 	
-	private final static WebjarsJavaScriptResourceReference GRIDSTER_JS = new WebjarsJavaScriptResourceReference("/gridster.js/current/jquery.gridster.js");
-	private final static WebjarsCssResourceReference GRIDSTER_CSS = new WebjarsCssResourceReference("/gridster.js/current/jquery.gridster.css");
-	private final static CssResourceReference WIDGET_CSS = new CssResourceReference(DashboardPanel.class, "widget.css");
-	
 	@Inject
 	private IDashboardManager dashboardManager;
 	
 	@Inject
 	private IWidgetTypesRegistry widgetTypesRegistry;
+	
+	@Inject
+	private IDashboardSupport dashboardSupport;
 	
 	private String domain;
 	
@@ -88,21 +88,7 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		widgets = new RepeatingView("widgets");
 		add(widgets);
 		setOutputMarkupId(true);
-		add(ajaxBehavior = new AbstractDefaultAjaxBehavior() {
-			
-			@Override
-			protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-				super.updateAjaxAttributes(attributes);
-				attributes.getDynamicExtraParameters().add("return {dashboard: JSON.stringify(serialized)};");
-				attributes.setMethod(Method.POST);
-			}
-			@Override
-			protected void respond(AjaxRequestTarget target) {
-				String dashboard = RequestCycle.get().getRequest().getRequestParameters()
-													 .getParameterValue("dashboard").toString();
-				updateDashboardByJson(dashboard);
-			}
-		});
+		
 		
 		ODocument doc = dashboardManager.getExistingDashboard(domain, tab, model);
 		if(doc!=null)
@@ -127,36 +113,11 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 				addWidget(widget);
 			}
 		}
+		
+		dashboardSupport.initDashboardPanel(this);
 	}
 	
-	private void updateDashboardByJson(String dashboard) {
-		final Map<String, AbstractWidget<?>> widgetsByMarkupId = new HashMap<String, AbstractWidget<?>>();
-		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<?>, Void>() {
-
-			@Override
-			public void component(AbstractWidget<?> widget, IVisit<Void> visit) {
-				widgetsByMarkupId.put(widget.getMarkupId(), widget);
-				visit.dontGoDeeper();
-			}
-			
-		});
-		try {
-			JSONArray jsonArray = new JSONArray(dashboard);
-			for(int i=0; i<jsonArray.length();i++) {
-				JSONObject jsonWidget = jsonArray.getJSONObject(i);
-				String markupId = jsonWidget.getString("id");
-				AbstractWidget<?> widget = widgetsByMarkupId.get(markupId);
-				widget.setCol(jsonWidget.getInt("col"));
-				widget.setRow(jsonWidget.getInt("row"));
-				widget.setSizeX(jsonWidget.getInt("size_x"));
-				widget.setSizeY(jsonWidget.getInt("size_y"));
-				storeDashboard();
-			}
-		} catch (JSONException e) {
-			throw new WicketRuntimeException("Can't handle dashboard update", e);
-		}
-	}
-	
+		
 	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
 		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId((String) widgetDoc.field(OPROPERTY_TYPE_ID));
 		AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), widgetDoc);
@@ -164,7 +125,6 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	}
 	
 	public void storeDashboard() {
-		ODatabaseDocument db = OrienteerWebSession.get().getDatabase();
 		ODocument doc = dashboardDocumentModel.getObject();
 		if(doc==null) {
 			doc = new ODocument(OCLASS_DASHBOARD);
@@ -229,43 +189,12 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		return tab;
 	}
 
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		int row = 1;
-		for(Component child : widgets)
-		{
-			AbstractWidget<?> widget = (AbstractWidget<?>) child;
-			widget.configure();
-			/*IWidgetSettings settings = widget.getSettings();
-			if(settings.getCol()==null) settings.setCol(1);
-			if(settings.getRow()==null) settings.setRow(row++);*/
-		}
-	}
-	
-	@Override
-	protected void onComponentTag(ComponentTag tag) {
-		super.onComponentTag(tag);
-		tag.append("class", "gridster orienteer", " ");
-	}
-	
-	@SuppressWarnings("resource")
-	@Override
-	public void renderHead(IHeaderResponse response) {
-		super.renderHead(response);
-		response.render(JavaScriptHeaderItem.forReference(GRIDSTER_JS));
-		response.render(CssHeaderItem.forReference(GRIDSTER_CSS));
-		response.render(CssHeaderItem.forReference(WIDGET_CSS));
-		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("componentId", getMarkupId());
-		variables.put("callBackScript", ajaxBehavior.getCallbackScript());
-		TextTemplate template = new PackageTextTemplate(DashboardPanel.class, "widget.tmpl.js");
-		String script = template.asString(variables);
-		response.render(OnDomReadyHeaderItem.forScript(script));
-	}
-	
 	public RepeatingView getWidgetsContainer() {
 		return widgets;
+	}
+	
+	public IDashboardSupport getDashboardSupport() {
+		return dashboardSupport;
 	}
 	
 	@Override
