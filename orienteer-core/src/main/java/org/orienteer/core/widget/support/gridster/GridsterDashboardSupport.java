@@ -36,93 +36,17 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
  */
 public class GridsterDashboardSupport implements IDashboardSupport {
 	
-	private final static WebjarsJavaScriptResourceReference GRIDSTER_JS = new WebjarsJavaScriptResourceReference("/gridster.js/current/jquery.gridster.js");
-	private final static WebjarsCssResourceReference GRIDSTER_CSS = new WebjarsCssResourceReference("/gridster.js/current/jquery.gridster.css");
-	private final static CssResourceReference WIDGET_CSS = new CssResourceReference(GridsterDashboardSupport.class, "widget.css");
+	final static WebjarsJavaScriptResourceReference GRIDSTER_JS = new WebjarsJavaScriptResourceReference("/gridster.js/current/jquery.gridster.js");
+	final static WebjarsCssResourceReference GRIDSTER_CSS = new WebjarsCssResourceReference("/gridster.js/current/jquery.gridster.css");
+	final static CssResourceReference WIDGET_CSS = new CssResourceReference(GridsterDashboardSupport.class, "widget.css");
 
-	private class GridsterAjaxBehavior extends AbstractDefaultAjaxBehavior {
-		
-		@Override
-		protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-			super.updateAjaxAttributes(attributes);
-			attributes.getDynamicExtraParameters().add("return {dashboard: JSON.stringify(serialized)};");
-			attributes.setMethod(Method.POST);
-		}
-		@Override
-		protected void respond(AjaxRequestTarget target) {
-			String dashboard = RequestCycle.get().getRequest().getRequestParameters()
-												 .getParameterValue("dashboard").toString();
-			updateDashboardByJson((DashboardPanel<?>)getComponent(), dashboard);
-		}
-		
-		@Override
-		protected void onComponentTag(ComponentTag tag) {
-			super.onComponentTag(tag);
-			tag.append("class", "gridster orienteer", " ");
-		}
-		
-		@Override
-		public void renderHead(Component component, IHeaderResponse response) {
-			super.renderHead(component, response);
-			response.render(JavaScriptHeaderItem.forReference(GRIDSTER_JS));
-			response.render(CssHeaderItem.forReference(GRIDSTER_CSS));
-			response.render(CssHeaderItem.forReference(WIDGET_CSS));
-			Map<String, Object> variables = new HashMap<String, Object>();
-			variables.put("componentId", component.getMarkupId());
-			variables.put("callBackScript", getCallbackScript());
-			TextTemplate template = new PackageTextTemplate(GridsterDashboardSupport.class, "widget.tmpl.js");
-			String script = template.asString(variables);
-			response.render(OnDomReadyHeaderItem.forScript(script));
-		}
-	}
-	
 	public void initDashboardPanel(DashboardPanel<?> dashboard) {
 		dashboard.add(new GridsterAjaxBehavior());
-		
-	}
-	
-	public void updateDashboardByJson(DashboardPanel<?> dashboard, String data) {
-		final Map<String, AbstractWidget<?>> widgetsByMarkupId = new HashMap<String, AbstractWidget<?>>();
-		dashboard.visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<?>, Void>() {
-
-			@Override
-			public void component(AbstractWidget<?> widget, IVisit<Void> visit) {
-				widgetsByMarkupId.put(widget.getMarkupId(), widget);
-				visit.dontGoDeeper();
-			}
-			
-		});
-		try {
-			JSONArray jsonArray = new JSONArray(data);
-			for(int i=0; i<jsonArray.length();i++) {
-				JSONObject jsonWidget = jsonArray.getJSONObject(i);
-				String markupId = jsonWidget.getString("id");
-				AbstractWidget<?> widget = widgetsByMarkupId.get(markupId);
-				widget.setCol(jsonWidget.getInt("col"));
-				widget.setRow(jsonWidget.getInt("row"));
-				widget.setSizeX(jsonWidget.getInt("size_x"));
-				widget.setSizeY(jsonWidget.getInt("size_y"));
-				dashboard.storeDashboard();
-			}
-		} catch (JSONException e) {
-			throw new WicketRuntimeException("Can't handle dashboard update", e);
-		}
 	}
 	
 	@Override
 	public void initWidget(AbstractWidget<?> widget) {
-		widget.add(new Behavior() {
-			@Override
-			public void renderHead(Component component, IHeaderResponse response) {
-				super.renderHead(component, response);
-				AbstractWidget<?> widget = (AbstractWidget<?>) component;
-				if(widget.getWebRequest().isAjax())
-				{
-					String script = "$('#"+widget.getDashboardPanel().getMarkupId()+" > ul').data('gridster').ajaxUpdate('"+widget.getMarkupId()+"');";
-					response.render(OnDomReadyHeaderItem.forScript(script));
-				}
-			}
-		});
+		widget.add(new GridsterWidgetBehaviour());
 	}
 	
 	@Override
@@ -137,7 +61,7 @@ public class GridsterDashboardSupport implements IDashboardSupport {
 	
 	@Override
 	public void ajaxDeleteWidget(AbstractWidget<?> widget, AjaxRequestTarget target) {
-		DashboardPanel dashboard = widget.getDashboardPanel();
+		DashboardPanel<?> dashboard = widget.getDashboardPanel();
 		target.prependJavaScript("var gridster = $('#"+dashboard.getMarkupId()+" > ul').data('gridster');\n"
 						+ "gridster.remove_widget($('#"+widget.getMarkupId()+"'));\n"
 						+ "gridster.gridsterChanged();");
