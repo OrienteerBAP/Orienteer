@@ -14,7 +14,7 @@ import com.google.inject.Inject;
  * Test page for widgets. Temporal.
  */
 @MountPath("/widget")
-public class WidgetPage extends OrienteerBasePage<String> {
+public class WidgetPage extends AbstractWidgetPage<String> {
 	
 	@Inject
 	IDashboardManager dashboardManager;
@@ -30,16 +30,15 @@ public class WidgetPage extends OrienteerBasePage<String> {
 	public WidgetPage(PageParameters parameters) {
 		super(parameters);
 	}
-	
+
 	@Override
-	public void initialize() {
-		super.initialize();
-		IModel<String> model = Model.of("This is a test. This is a test");
-		DashboardPanel<String> dashboard = new DashboardPanel<String>("dashboard", "test", "test", model);
-//		dashboard.addWidget(new TestWidget(dashboard.newWidgetId(), model));
-//		dashboard.addWidget(new TestWidget(dashboard.newWidgetId(), model));
-//		dashboard.addWidget(new TestWidget(dashboard.newWidgetId(), model));
-		add(dashboard);
+	public String getDomain() {
+		return "test";
+	}
+
+	@Override
+	public String getTab() {
+		return "test";
 	}
 	
 }

@@ -22,9 +22,10 @@ class GridsterWidgetBehaviour extends Behavior {
 				"multiple components; it is already attached to component " + component +
 				", but component " + hostComponent + " wants to be attached too");
 		}
-		if(!(component instanceof AbstractWidget))
+		if(!(hostComponent instanceof AbstractWidget))
 		{
-			throw new IllegalStateException("This behaviour can be attached only to "+AbstractWidget.class.getSimpleName());
+			throw new IllegalStateException("This behaviour can be attached only to "+AbstractWidget.class.getSimpleName()+
+																			", but this one: "+hostComponent.getClass().getName());
 		}
 
 		component = (AbstractWidget<?>)hostComponent;
