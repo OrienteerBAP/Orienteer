@@ -8,13 +8,14 @@ import org.apache.wicket.util.io.IClusterable;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.support.gridster.GridsterDashboardSupport;
+import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
 
 import com.google.inject.ImplementedBy;
 
 /**
  * Interface for different dashboard implementations
  */
-@ImplementedBy(GridsterDashboardSupport.class)
+@ImplementedBy(JQueryDashboardSupport.class)
 public interface IDashboardSupport extends IClusterable{
 
 	public void initDashboardPanel(DashboardPanel<?> dashboard);

@@ -25,7 +25,7 @@ class GridsterWidgetBehaviour extends Behavior {
 		if(!(hostComponent instanceof AbstractWidget))
 		{
 			throw new IllegalStateException("This behaviour can be attached only to "+AbstractWidget.class.getSimpleName()+
-																			", but this one: "+hostComponent.getClass().getName());
+											", but this one: "+hostComponent.getClass().getName());
 		}
 
 		component = (AbstractWidget<?>)hostComponent;

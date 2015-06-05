@@ -8,11 +8,13 @@ import org.orienteer.core.widget.IDashboardManager;
 
 import com.google.inject.Inject;
 
+/**
+ * Abstract class for all pages that use widgets approach
+ *
+ * @param <T> the type of a main object for this page
+ */
 public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	
-	@Inject
-	private IDashboardManager dashboardManager;
-
 	public AbstractWidgetPage() {
 		super();
 	}

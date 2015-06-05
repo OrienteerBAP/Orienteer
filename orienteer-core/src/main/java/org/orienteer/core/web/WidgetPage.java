@@ -16,9 +16,6 @@ import com.google.inject.Inject;
 @MountPath("/widget")
 public class WidgetPage extends AbstractWidgetPage<String> {
 	
-	@Inject
-	IDashboardManager dashboardManager;
-
 	public WidgetPage() {
 		super();
 	}
