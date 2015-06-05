@@ -7,6 +7,8 @@ import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.support.IDashboardSupport;
 import org.orienteer.core.widget.support.gridster.GridsterDashboardSupport;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
 /**
@@ -39,5 +41,18 @@ public class JQueryDashboardSupport implements IDashboardSupport {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void saveSettings(AbstractWidget<?> widget, ODocument doc) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadSettings(AbstractWidget<?> widget, ODocument doc) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 
 }

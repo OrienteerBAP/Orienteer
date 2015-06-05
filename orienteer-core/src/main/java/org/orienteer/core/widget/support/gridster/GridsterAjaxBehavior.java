@@ -58,10 +58,11 @@ class GridsterAjaxBehavior extends AbstractDefaultAjaxBehavior {
 				JSONObject jsonWidget = jsonArray.getJSONObject(i);
 				String markupId = jsonWidget.getString("id");
 				AbstractWidget<?> widget = widgetsByMarkupId.get(markupId);
-				widget.setCol(jsonWidget.getInt("col"));
-				widget.setRow(jsonWidget.getInt("row"));
-				widget.setSizeX(jsonWidget.getInt("size_x"));
-				widget.setSizeY(jsonWidget.getInt("size_y"));
+				GridsterWidgetBehavior behaviour = GridsterWidgetBehavior.getBehaviour(widget);
+				behaviour.setCol(jsonWidget.getInt("col"));
+				behaviour.setRow(jsonWidget.getInt("row"));
+				behaviour.setSizeX(jsonWidget.getInt("size_x"));
+				behaviour.setSizeY(jsonWidget.getInt("size_y"));
 				dashboard.storeDashboard();
 			}
 		} catch (JSONException e) {

@@ -27,10 +27,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	
-	private int col=1;
-	private int row=1;
-	private int sizeX=1;
-	private int sizeY=1;
 	private boolean hidden=false;
 	
 	private RepeatingView commands;
@@ -64,7 +60,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 			}
 		});
 		add(commands);
-		loadSettings();
 	}
 	
 	public DashboardPanel<T> getDashboardPanel() {
@@ -94,47 +89,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		setVisibilityAllowed(!hidden);
 	}
 	
-	@Override
-	protected void onComponentTag(ComponentTag tag) {
-		super.onComponentTag(tag);
-		tag.put("data-row", getRow());
-		tag.put("data-col", getCol());
-		tag.put("data-sizex", getSizeX());
-		tag.put("data-sizey", getSizeY());
-	}
-	
-	public int getCol() {
-		return col;
-	}
-
-	public void setCol(int col) {
-		this.col = col;
-	}
-
-	public int getRow() {
-		return row;
-	}
-
-	public void setRow(int row) {
-		this.row = row;
-	}
-
-	public int getSizeX() {
-		return sizeX;
-	}
-
-	public void setSizeX(int sizeX) {
-		this.sizeX = sizeX;
-	}
-
-	public int getSizeY() {
-		return sizeY;
-	}
-
-	public void setSizeY(int sizeY) {
-		this.sizeY = sizeY;
-	}
-	
 	public boolean isHidden() {
 		return hidden;
 	}
@@ -146,22 +100,16 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	public void loadSettings() {
 		ODocument doc = widgetDocumentModel.getObject();
 		if(doc==null) return;
-		
-		row = Objects.firstNonNull((Integer)doc.field(OPROPERTY_ROW), 1);
-		col = Objects.firstNonNull((Integer)doc.field(OPROPERTY_COL), 1);
-		sizeX = Objects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_X), 2);
-		sizeY = Objects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_Y), 1);
 		hidden = Objects.firstNonNull((Boolean)doc.field(OPROPERTY_HIDDEN), false);
+		getDashboardPanel().getDashboardSupport().loadSettings(this, doc);
 	}
 	
 	public void saveSettings() {
 		ODocument doc = widgetDocumentModel.getObject();
 		if(doc==null) return;
-		doc.field(OPROPERTY_ROW, row);
-		doc.field(OPROPERTY_COL, col);
-		doc.field(OPROPERTY_SIZE_X, sizeX);
-		doc.field(OPROPERTY_SIZE_Y, sizeY);
+		getDashboardPanel().getDashboardSupport().saveSettings(this, doc);
 		doc.field(OPROPERTY_HIDDEN, hidden);
+		//TODO: remove save() from here
 		doc.save();
 	}
 	
@@ -169,5 +117,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	protected void onInitialize() {
 		super.onInitialize();
 		getDashboardPanel().getDashboardSupport().initWidget(this);
+		loadSettings();
 	}
 }

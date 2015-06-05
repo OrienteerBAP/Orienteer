@@ -11,16 +11,19 @@ import org.orienteer.core.widget.support.gridster.GridsterDashboardSupport;
 import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
 
 import com.google.inject.ImplementedBy;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Interface for different dashboard implementations
  */
-@ImplementedBy(JQueryDashboardSupport.class)
+@ImplementedBy(GridsterDashboardSupport.class)
 public interface IDashboardSupport extends IClusterable{
 
 	public void initDashboardPanel(DashboardPanel<?> dashboard);
 	public void initWidget(AbstractWidget<?> widget);
 	public void ajaxAddWidget(AbstractWidget<?> widget, AjaxRequestTarget target);
 	public void ajaxDeleteWidget(AbstractWidget<?> widget, AjaxRequestTarget target);
+	public void saveSettings(AbstractWidget<?> widget, ODocument doc);
+	public void loadSettings(AbstractWidget<?> widget, ODocument doc);
 //	public void updateDashboardByJson(DashboardPanel<?> dashboard, String data);
 }

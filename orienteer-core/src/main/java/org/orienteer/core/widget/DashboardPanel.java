@@ -106,10 +106,10 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			{
 				IWidgetType<T> type = widgets.get(i);
 				AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(type));
-				widget.setCol(1);
+				/*widget.setCol(1);
 				widget.setRow(i+1);
 				widget.setSizeX(2);
-				widget.setSizeY(1);
+				widget.setSizeY(1);*/
 				addWidget(widget);
 			}
 		}

@@ -28,6 +28,8 @@ import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.support.IDashboardSupport;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
@@ -46,7 +48,7 @@ public class GridsterDashboardSupport implements IDashboardSupport {
 	
 	@Override
 	public void initWidget(AbstractWidget<?> widget) {
-		widget.add(new GridsterWidgetBehaviour());
+		widget.add(new GridsterWidgetBehavior());
 	}
 	
 	@Override
@@ -65,6 +67,16 @@ public class GridsterDashboardSupport implements IDashboardSupport {
 		target.prependJavaScript("var gridster = $('#"+dashboard.getMarkupId()+" > ul').data('gridster');\n"
 						+ "gridster.remove_widget($('#"+widget.getMarkupId()+"'));\n"
 						+ "gridster.gridsterChanged();");
+	}
+	
+	@Override
+	public void saveSettings(AbstractWidget<?> widget, ODocument doc) {
+		GridsterWidgetBehavior.getBehaviour(widget).saveSettings(doc);
+	}
+	
+	@Override
+	public void loadSettings(AbstractWidget<?> widget, ODocument doc) {
+		GridsterWidgetBehavior.getBehaviour(widget).loadSettings(doc);
 	}
 
 }
