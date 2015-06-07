@@ -44,7 +44,6 @@ class JQueryDashboardAjaxBehavior extends AbstractDefaultAjaxBehavior {
 		try {
 			JSONArray jsonArray = new JSONArray(data);
 			RepeatingView widgetsContainer = dashboard.getWidgetsContainer();
-			if(jsonArray.length()!=widgetsContainer.size()) throw new WicketRuntimeException("Widgets sizes mismatch");
 			for(int i=0; i<jsonArray.length();i++) {
 				String markupId = jsonArray.getString(i);
 				AbstractWidget<?> widget = (AbstractWidget<?>) widgetsContainer.get(i);

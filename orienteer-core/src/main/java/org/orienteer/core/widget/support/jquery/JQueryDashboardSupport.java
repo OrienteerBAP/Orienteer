@@ -25,34 +25,30 @@ public class JQueryDashboardSupport implements IDashboardSupport {
 
 	@Override
 	public void initWidget(AbstractWidget<?> widget) {
-		// TODO Auto-generated method stub
-		
+		//NOP
 	}
 
 	@Override
 	public void ajaxAddWidget(AbstractWidget<?> widget, AjaxRequestTarget target) {
-		// TODO Auto-generated method stub
-		
+		DashboardPanel<?> dashboard = widget.getDashboardPanel();
+		target.prependJavaScript("$('#"+dashboard.getMarkupId()+" > ul').append('<li id=\\'"+widget.getMarkupId()+"\\'></li>')");
+		target.add(widget);
 	}
 
 	@Override
 	public void ajaxDeleteWidget(AbstractWidget<?> widget,
 			AjaxRequestTarget target) {
-		// TODO Auto-generated method stub
-		
+		target.prependJavaScript("$('#"+widget.getMarkupId()+"').remove();");
 	}
 
 	@Override
 	public void saveSettings(AbstractWidget<?> widget, ODocument doc) {
-		// TODO Auto-generated method stub
-		
+		//NOP
 	}
 
 	@Override
 	public void loadSettings(AbstractWidget<?> widget, ODocument doc) {
-		// TODO Auto-generated method stub
-		
+		//NOP
 	}
-	
 
 }
