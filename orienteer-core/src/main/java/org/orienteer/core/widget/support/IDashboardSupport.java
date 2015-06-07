@@ -16,7 +16,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Interface for different dashboard implementations
  */
-@ImplementedBy(GridsterDashboardSupport.class)
+@ImplementedBy(JQueryDashboardSupport.class)
 public interface IDashboardSupport extends IClusterable{
 
 	public void initDashboardPanel(DashboardPanel<?> dashboard);
