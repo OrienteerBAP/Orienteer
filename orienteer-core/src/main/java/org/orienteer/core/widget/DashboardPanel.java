@@ -181,6 +181,12 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		return this;
 	}
 	
+	@Override
+	protected void onComponentTag(ComponentTag tag) {
+		super.onComponentTag(tag);
+		tag.append("class", "dashboard", " ");
+	}
+	
 	public String getDomain() {
 		return domain;
 	}

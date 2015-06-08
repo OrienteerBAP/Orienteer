@@ -4,5 +4,7 @@ sortable.sortable({
   update: function( event, ui ) {
 	  var serialized = sortable.children("li").map(function(i, e){return e.id}).toArray();
 	  ${callBackScript}
-  }
+  },
+  placeholder: "dashboard-placeholder",
+  forcePlaceholderSize: true
 });
