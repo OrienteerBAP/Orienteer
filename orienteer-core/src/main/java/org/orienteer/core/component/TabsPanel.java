@@ -30,8 +30,8 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
  */
 public class TabsPanel<T> extends GenericPanel<T>
 {
-	private static final CssResourceReference TABDROP_CSS = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");
-	private static final JavaScriptResourceReference TABDROP_JS = new JavaScriptResourceReference(TabsPanel.class, "tabdrop/bootstrap-tabdrop.js");
+	public static final CssResourceReference TABDROP_CSS = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");
+	public static final JavaScriptResourceReference TABDROP_JS = new JavaScriptResourceReference(TabsPanel.class, "tabdrop/bootstrap-tabdrop.js");
 	
 	private ListView<T> tabs;
 	private IModel<T> defaultTabModel;

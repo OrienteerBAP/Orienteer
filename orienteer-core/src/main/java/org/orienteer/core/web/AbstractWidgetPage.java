@@ -1,10 +1,18 @@
 package org.orienteer.core.web;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.orienteer.core.component.TabbedPanel;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardManager;
+
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import com.google.inject.Inject;
 
@@ -14,6 +22,45 @@ import com.google.inject.Inject;
  * @param <T> the type of a main object for this page
  */
 public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
+	
+	private class DashboardTab implements ITab {
+		
+		private String tab;
+		private IModel<String> titleModel;
+		
+		private DashboardPanel dashboard;
+		
+		public DashboardTab(String tab) {
+			this(tab, newTabNameModel(tab));
+		}
+		
+		public DashboardTab(String tab, IModel<String> titleModel) {
+			this.tab = tab;
+			this.titleModel = titleModel;
+		}
+
+		@Override
+		public IModel<String> getTitle() {
+			return titleModel;
+		}
+
+		@Override
+		public WebMarkupContainer getPanel(String containerId) {
+			if(dashboard==null) {
+				dashboard = new DashboardPanel<T>(containerId, getDomain(), tab, getModel());
+			}
+			return dashboard;
+		}
+
+		@Override
+		public boolean isVisible() {
+			return true;
+		}
+		
+	}
+	
+	@Inject
+	protected IDashboardManager dashboardManager;
 	
 	public AbstractWidgetPage() {
 		super();
@@ -30,11 +77,29 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	@Override
 	public void initialize() {
 		super.initialize();
-		add(new DashboardPanel<T>("dashboard", getDomain(), getTab(), getModel()));
+		add(new TabbedPanel<DashboardTab>("dashboardTabs", getDashboardTabs()));
+	}
+	
+	protected IModel<String> newTabNameModel(String tabName)
+	{
+		return new SimpleNamingModel<String>(tabName);
+	}
+	
+	protected List<DashboardTab> getDashboardTabs() {
+		List<String> tabs = getTabs();
+		List<DashboardTab> ret = new ArrayList<DashboardTab>(tabs.size());
+		for (String tab : tabs) {
+			ret.add(new DashboardTab(tab));
+		}
+		
+		return ret;
+	}
+	
+	public List<String> getTabs() {
+		return dashboardManager.listTabs(getDomain(), getModel());
 	}
 	
 	public abstract String getDomain();
 	
-	public abstract String getTab();
 	
 }

@@ -19,6 +19,6 @@ public @interface Widget {
 	public Class<?> type();
 	public String oClass() default OWidgetsModule.OCLASS_WIDGET;
 	public String defaultDomain();
-	public String defaultTab();
+	public String defaultTab() default "";
 	public boolean multi() default false;
 }

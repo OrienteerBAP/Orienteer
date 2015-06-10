@@ -16,7 +16,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Test widget - just for implementation period
  */
-@Widget(id="test", type=String.class, defaultDomain="test", defaultTab="test"/*, oClass="TestWidget"*/)
+@Widget(id="test", type=String.class, defaultDomain="test"/*, oClass="TestWidget"*/)
 public class TestWidget extends AbstractWidget<String> {
 
 	public TestWidget(String id, IModel<String> model, IModel<ODocument> widgetDocumentModel) {

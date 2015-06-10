@@ -1,5 +1,8 @@
 package org.orienteer.core.web;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -34,8 +37,8 @@ public class WidgetPage extends AbstractWidgetPage<String> {
 	}
 
 	@Override
-	public String getTab() {
-		return "test";
+	public List<String> getTabs() {
+		return Arrays.asList("test", "test2", "test3");
 	}
 	
 }

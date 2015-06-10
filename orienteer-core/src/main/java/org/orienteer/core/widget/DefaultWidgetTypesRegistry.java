@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
@@ -55,8 +56,10 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
 		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			if(domain.equals(description.getDefaultDomain())
-					&& tab.equals(description.getDefaultTab())) ret.add((IWidgetType<T>)description);
+			String defaultDomain = description.getDefaultDomain();
+			String defaultTab = description.getDefaultTab();
+			if(domain.equals(defaultDomain)
+					&& (Strings.isEmpty(defaultTab) || tab.equals(defaultTab))) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
