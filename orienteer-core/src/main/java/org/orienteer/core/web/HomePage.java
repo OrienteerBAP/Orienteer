@@ -2,7 +2,7 @@ package org.orienteer.core.web;
 
 import org.apache.wicket.markup.html.pages.RedirectPage;
 import org.apache.wicket.request.flow.RedirectToUrlException;
-import org.wicketstuff.annotation.mount.MountPath;
+import org.orienteer.core.MountPath;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 

@@ -27,6 +27,7 @@ import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.MountPath;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.SchemaPageHeader;
@@ -58,7 +59,6 @@ import org.orienteer.core.component.table.OPropertyMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.model.ExtendedOPropertiesDataProvider;
 import org.orienteer.core.web.OrienteerBasePage;
-import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.EnumNamingModel;

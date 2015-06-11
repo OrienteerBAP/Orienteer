@@ -9,12 +9,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.MountPath;
 import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.IOClassIntrospector;
-import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 

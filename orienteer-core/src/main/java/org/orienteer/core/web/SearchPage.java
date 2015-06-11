@@ -18,6 +18,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.MountPath;
 import org.orienteer.core.component.TabsPanel;
 import org.orienteer.core.component.command.CreateODocumentCommand;
 import org.orienteer.core.component.command.DeleteODocumentCommand;
@@ -26,7 +27,6 @@ import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.IOClassIntrospector;
-import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;

@@ -123,11 +123,6 @@
 			    <version>${wicket.version}</version>
 		    </dependency>
 		    <dependency>
-			    <groupId>org.wicketstuff</groupId>
-			    <artifactId>wicketstuff-annotation</artifactId>
-			    <version>${wicketstuff.version}</version>
-		    </dependency>
-		    <dependency>
 			    <groupId>com.orientechnologies</groupId>
 			    <artifactId>orientdb-core</artifactId>
 			    <version>${orientdb.version}</version>

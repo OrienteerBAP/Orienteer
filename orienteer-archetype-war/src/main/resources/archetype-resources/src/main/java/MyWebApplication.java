@@ -2,7 +2,6 @@ package ${package};
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
-import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
 public class MyWebApplication extends OrienteerWebApplication
 {
@@ -10,7 +9,7 @@ public class MyWebApplication extends OrienteerWebApplication
 	public void init()
 	{
 		super.init();
-		new AnnotatedMountScanner().scanPackage("${package}.web").mount(this);
+		mountPages("${package}.web");
 		registerModule(DataModel.class);
 	}
 	

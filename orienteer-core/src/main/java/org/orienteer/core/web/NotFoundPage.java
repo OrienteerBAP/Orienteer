@@ -2,7 +2,7 @@ package org.orienteer.core.web;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.wicketstuff.annotation.mount.MountPath;
+import org.orienteer.core.MountPath;
 
 /**
  * Error page for 404 code (resource not found)

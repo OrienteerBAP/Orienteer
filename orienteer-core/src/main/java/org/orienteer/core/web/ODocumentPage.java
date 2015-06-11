@@ -18,6 +18,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.MountPath;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.SchemaPageHeader;
@@ -31,7 +32,6 @@ import org.orienteer.core.component.property.OClassViewPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.IOClassIntrospector;
-import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;

@@ -1,7 +1,7 @@
 package org.orienteer.core.web;
 
+import org.orienteer.core.MountPath;
 import org.orienteer.core.OrienteerWebApplication;
-import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 

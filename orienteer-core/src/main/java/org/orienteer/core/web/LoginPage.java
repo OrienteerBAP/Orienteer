@@ -3,7 +3,7 @@ package org.orienteer.core.web;
 import org.apache.wicket.authroles.authentication.panel.SignInPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.wicketstuff.annotation.mount.MountPath;
+import org.orienteer.core.MountPath;
 
 /**
  * Default login page

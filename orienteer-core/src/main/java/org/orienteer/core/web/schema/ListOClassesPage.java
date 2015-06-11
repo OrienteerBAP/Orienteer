@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.MountPath;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.OClassPageLink;
@@ -32,7 +33,6 @@ import org.orienteer.core.component.table.OClassMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.OrienteerBasePage;
-import org.wicketstuff.annotation.mount.MountPath;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
