@@ -139,7 +139,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 				try {
 					return getWidgetClass()
 							.getConstructor(String.class, IModel.class, IModel.class)
-							.newInstance(componentId, model, new ODocumentModel(widgetDoc).setPreserveDraft(true));
+							.newInstance(componentId, model, new ODocumentModel(widgetDoc));
 				} catch (Exception e) {
 					throw new WicketRuntimeException("Can't instanciate widget for descriptor: "+this , e);
 				} 
