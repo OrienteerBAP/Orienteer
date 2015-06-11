@@ -68,7 +68,7 @@ import com.orientechnologies.orient.core.sql.OSQLEngine;
  *
  * @param <V> type of a value
  */
-public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V>
+public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V> implements IDisplayModeAware
 {
 	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>();
 	public static final List<OType> LINKED_TYPE_OPTIONS;

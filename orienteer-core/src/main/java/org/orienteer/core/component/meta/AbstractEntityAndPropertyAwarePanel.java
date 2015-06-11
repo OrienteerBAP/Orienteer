@@ -33,31 +33,37 @@ public abstract class AbstractEntityAndPropertyAwarePanel<E, P, V> extends Gener
 	
 	protected abstract IModel<V> resolveValueModel();
 	
+	@Override
 	public IModel<E> getEntityModel()
 	{
 		return entityModel;
 	}
 	
+	@Override
 	public IModel<P> getPropertyModel()
 	{
 		return propertyModel;
 	}
 	
+	@Override
 	public IModel<V> getValueModel()
 	{
 		return getModel();
 	}
 	
+	@Override
 	public E getEntityObject()
 	{
 		return getEntityModel().getObject();
 	}
 	
+	@Override
 	public P getPropertyObject()
 	{
 		return getPropertyModel().getObject();
 	}
 	
+	@Override
 	public V getValueObject()
 	{
 		return getValueModel().getObject();

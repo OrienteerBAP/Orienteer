@@ -11,6 +11,7 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
+import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
@@ -32,7 +33,9 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 	private IOClassIntrospector oClassIntrospector;
 	
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
-	private SaveODocumentCommand saveODocumentCommand;;
+	private SaveODocumentCommand saveODocumentCommand;
+	
+	private IModel<DisplayMode> displayModeModel = DisplayMode.VIEW.asModel();
 
 	public ODocumentPropertiesWidget(String id, IModel<ODocument> model,
 			IModel<ODocument> widgetDocumentModel) {
@@ -50,7 +53,7 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 					protected Component getValueComponent(String id,
 							IModel<OProperty> rowModel) {
 						//TODO: remove static displaymode
-						return new ODocumentMetaPanel<Object>(id, DisplayMode.VIEW.asModel(), ODocumentPropertiesWidget.this.getModel(), rowModel);
+						return new ODocumentMetaPanel<Object>(id, displayModeModel, ODocumentPropertiesWidget.this.getModel(), rowModel);
 					}
 		};
 		form.add(propertiesStructureTable);
@@ -60,23 +63,24 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		//TODO: remove static displaymode
-		IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
-		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayMode));
-		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, displayMode));
+		IDisplayModeAware parent = findParent(IDisplayModeAware.class);
+		if(parent!=null) {
+			displayModeModel.setObject(parent.getModeObject());
+		}
+		
+		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayModeModel));
+		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, displayModeModel));
 	}
 	
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		//TODO: remove static displaymode
-		IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
-		if(DisplayMode.EDIT.equals(displayMode.getObject()))
+		if(DisplayMode.EDIT.equals(displayModeModel.getObject()))
 		{
 			saveODocumentCommand.configure();
 			if(!saveODocumentCommand.determineVisibility())
 			{
-				displayMode.setObject(DisplayMode.VIEW);
+				displayModeModel.setObject(DisplayMode.VIEW);
 			}
 		}
 	}

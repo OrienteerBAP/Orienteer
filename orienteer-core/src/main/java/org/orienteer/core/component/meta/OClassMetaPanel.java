@@ -57,7 +57,7 @@ import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
  *
  * @param <V> type of a value
  */
-public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V>
+public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V> implements IDisplayModeAware
 {
 	public static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
 	static

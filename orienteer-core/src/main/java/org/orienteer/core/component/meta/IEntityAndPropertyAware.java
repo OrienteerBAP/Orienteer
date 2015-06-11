@@ -13,7 +13,13 @@ public interface IEntityAndPropertyAware<E, P, V>
 {
 	public IModel<E> getEntityModel();
 	
+	public E getEntityObject();
+	
 	public IModel<P> getPropertyModel();
 	
+	public P getPropertyObject();
+	
 	public IModel<V> getValueModel();
+	
+	public V getValueObject();
 }

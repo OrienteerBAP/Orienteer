@@ -41,7 +41,7 @@ import com.orientechnologies.orient.core.sql.OSQLEngine;
  *
  * @param <V> type of a value
  */
-public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, DisplayMode, String, V>
+public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, DisplayMode, String, V> implements IDisplayModeAware
 {
 	private static final List<String> INDEX_TYPES;
 	

@@ -15,7 +15,7 @@ import org.apache.wicket.util.lang.Objects;
  * @param <C> the type of a criteria
  * @param <V> the type of a value
  */
-public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPanel<T, C, V> {
+public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPanel<T, C, V> implements IModeAware<K> {
 
 	private static final long serialVersionUID = 1L;
 	private IModel<K> modeModel;
@@ -34,10 +34,12 @@ public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPane
 		this.modeModel = modeModel;
 	}
 
+	@Override
 	public IModel<K> getModeModel() {
 		return modeModel;
 	}
 	
+	@Override
 	public K getModeObject()
 	{
 		return getModeModel().getObject();

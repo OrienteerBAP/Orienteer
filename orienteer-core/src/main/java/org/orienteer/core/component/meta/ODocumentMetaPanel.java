@@ -42,7 +42,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <V> type of a value
  */
-public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> {
+public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> implements IDisplayModeAware {
 	
 	private static final long serialVersionUID = 1L;
 	

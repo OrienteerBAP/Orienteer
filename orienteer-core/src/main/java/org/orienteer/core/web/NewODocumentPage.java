@@ -10,6 +10,8 @@ import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.ODocumentPageHeader;
+import org.orienteer.core.component.meta.IDisplayModeAware;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.wicketstuff.annotation.mount.MountPath;
@@ -24,10 +26,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * Widgets based page for {@link ODocument}s display
  */
 @MountPath("/newdoc/#{rid}/#{mode}")
-public class NewODocumentPage extends AbstractWidgetPage<ODocument> {
+public class NewODocumentPage extends AbstractWidgetPage<ODocument> implements IDisplayModeAware {
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
+	
+	private IModel<DisplayMode> displayModeModel = DisplayMode.VIEW.asModel();
 
 	public NewODocumentPage() {
 		super();
@@ -39,6 +43,8 @@ public class NewODocumentPage extends AbstractWidgetPage<ODocument> {
 
 	public NewODocumentPage(PageParameters parameters) {
 		super(parameters);
+		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
+		if(mode!=null) displayModeModel.setObject(mode);
 	}
 	
 	@Override
@@ -95,6 +101,15 @@ public class NewODocumentPage extends AbstractWidgetPage<ODocument> {
 	protected Component newPageHeaderComponent(String componentId) {
 		return new ODocumentPageHeader(componentId, getModel());
 	}
+
+	@Override
+	public IModel<DisplayMode> getModeModel() {
+		return displayModeModel;
+	}
 	
+	@Override
+	public DisplayMode getModeObject() {
+		return displayModeModel.getObject();
+	}
 
 }
