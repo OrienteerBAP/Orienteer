@@ -1,6 +1,7 @@
 package org.orienteer.core.module;
 
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.orienteer.core.widget.TestWidget;
@@ -60,6 +61,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		super.onInitialize(app, db);
 		IWidgetTypesRegistry registry = app.getServiceInstance(IWidgetTypesRegistry.class);
 		registry.register(TestWidget.class);
+		registry.register(ODocumentPropertiesWidget.class);
 	}
 
 }
