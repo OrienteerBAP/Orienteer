@@ -32,6 +32,9 @@ import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
+import org.orienteer.core.widget.AbstractWidget;
+import org.orienteer.core.widget.IWidgetTypesRegistry;
+import org.orienteer.core.widget.Widget;
 
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
@@ -157,6 +160,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		mountOrientDbRestApi();
+		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 	}
 
@@ -220,11 +224,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		
 		for(ClassInfo classInfo : classPath.getTopLevelClassesRecursive(packageName)) {
 			Class<?> clazz = classInfo.load();
-			if(!IRequestablePage.class.isAssignableFrom(clazz)) 
-					throw new WicketRuntimeException("@"+MountPath.class.getSimpleName()+" should be only on pages");
-			Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
-			MountPath mountPath = classInfo.load().getAnnotation(MountPath.class);
+			MountPath mountPath = clazz.getAnnotation(MountPath.class);
 			if(mountPath!=null) {
+				if(!IRequestablePage.class.isAssignableFrom(clazz)) 
+					throw new WicketRuntimeException("@"+MountPath.class.getSimpleName()+" should be only on pages");
+				Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
 				String path = mountPath.value();
 				if ("/".equals(mountPath)) {
 					mount(new HomePageMapper(pageClass));
@@ -234,4 +238,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		}
 	}
 	
+	public void registerWidgets(String packageName) {
+		IWidgetTypesRegistry registry = getServiceInstance(IWidgetTypesRegistry.class);
+		registry.register(packageName);
+	}
 }

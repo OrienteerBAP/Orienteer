@@ -7,9 +7,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.MountPath;
+import org.orienteer.core.component.widget.TestWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardManager;
-import org.orienteer.core.widget.TestWidget;
 
 import com.google.inject.Inject;
 

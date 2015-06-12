@@ -119,7 +119,9 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 		
 	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
-		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId((String) widgetDoc.field(OPROPERTY_TYPE_ID));
+		String typeId = widgetDoc.field(OPROPERTY_TYPE_ID);
+		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(typeId);
+		if(type==null) throw new WicketRuntimeException("Widget with typeId="+typeId+" was not found");
 		AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), widgetDoc);
 		return widget;
 	}

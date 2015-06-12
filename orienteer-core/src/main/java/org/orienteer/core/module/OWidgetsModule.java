@@ -1,11 +1,18 @@
 package org.orienteer.core.module;
 
+import java.io.IOException;
+
+import org.apache.wicket.WicketRuntimeException;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.widget.TestWidget;
 import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
-import org.orienteer.core.widget.TestWidget;
+import org.orienteer.core.widget.Widget;
 
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
@@ -56,12 +63,4 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		helper.setupRelationship(OCLASS_DASHBOARD, OPROPERTY_WIDGETS, OCLASS_WIDGET, OPROPERTY_DASHBOARD);
 	}
 	
-	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-		super.onInitialize(app, db);
-		IWidgetTypesRegistry registry = app.getServiceInstance(IWidgetTypesRegistry.class);
-		registry.register(TestWidget.class);
-		registry.register(ODocumentPropertiesWidget.class);
-	}
-
 }

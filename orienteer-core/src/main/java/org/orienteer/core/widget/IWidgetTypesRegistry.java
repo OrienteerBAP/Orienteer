@@ -17,4 +17,5 @@ public interface IWidgetTypesRegistry {
 	public <T> IWidgetType<T> lookupByWidgetClass(Class<? extends AbstractWidget<T>> widgetClass);
 	public IWidgetTypesRegistry register(IWidgetType<?> description);
 	public <T> IWidgetTypesRegistry register(Class<? extends AbstractWidget<T>> widgetClass);
+	public IWidgetTypesRegistry register(String packageName);
 }

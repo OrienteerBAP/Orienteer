@@ -1,4 +1,4 @@
-package org.orienteer.core.widget;
+package org.orienteer.core.component.widget;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -10,6 +10,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.widget.AbstractWidget;
+import org.orienteer.core.widget.Widget;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
