@@ -34,7 +34,9 @@ import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.command.AddWidgetCommand;
+import org.orienteer.core.widget.command.SilentSaveDashboardCommand;
 import org.orienteer.core.widget.command.UnhideWidgetCommand;
 import org.orienteer.core.widget.support.IDashboardSupport;
 
@@ -75,6 +77,8 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	
 	private AbstractDefaultAjaxBehavior ajaxBehavior;
 	
+	private IModel<DisplayMode> dashboardModeModel = DisplayMode.VIEW.asModel();
+	
 	private IModel<ODocument> dashboardDocumentModel = new ODocumentModel();
 	
 	public DashboardPanel(String id, String domain, String tab, IModel<T> model) {
@@ -84,6 +88,7 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		commands = new RepeatingView("commands");
 		commands.add(new AddWidgetCommand<T>(commands.newChildId()));
 		commands.add(new UnhideWidgetCommand<T>(commands.newChildId()));
+		commands.add(new SilentSaveDashboardCommand<T>(commands.newChildId()));
 		add(commands);
 		widgets = new RepeatingView("widgets");
 		add(widgets);
@@ -106,10 +111,6 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 			{
 				IWidgetType<T> type = widgets.get(i);
 				AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(type));
-				/*widget.setCol(1);
-				widget.setRow(i+1);
-				widget.setSizeX(2);
-				widget.setSizeY(1);*/
 				addWidget(widget);
 			}
 		}
@@ -118,9 +119,11 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	}
 	
 		
+	@SuppressWarnings("unchecked")
 	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
 		String typeId = widgetDoc.field(OPROPERTY_TYPE_ID);
 		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(typeId);
+		//TODO if type was not found we should show some dummy widget
 		if(type==null) throw new WicketRuntimeException("Widget with typeId="+typeId+" was not found");
 		AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), widgetDoc);
 		return widget;

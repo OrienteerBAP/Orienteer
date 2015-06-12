@@ -55,7 +55,6 @@ class JQueryDashboardAjaxBehavior extends AbstractDefaultAjaxBehavior {
 					}
 				}
 			}
-			dashboard.storeDashboard();
 		} catch (JSONException e) {
 			throw new WicketRuntimeException("Can't handle dashboard update", e);
 		}
