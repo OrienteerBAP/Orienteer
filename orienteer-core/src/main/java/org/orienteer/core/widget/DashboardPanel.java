@@ -34,8 +34,11 @@ import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.command.AddWidgetCommand;
+import org.orienteer.core.widget.command.CancelSaveDashboardCommand;
+import org.orienteer.core.widget.command.ConfigureDashboardCommand;
 import org.orienteer.core.widget.command.SilentSaveDashboardCommand;
 import org.orienteer.core.widget.command.UnhideWidgetCommand;
 import org.orienteer.core.widget.support.IDashboardSupport;
@@ -56,7 +59,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
  *
  * @param <T> the type of main data object
  */
-public class DashboardPanel<T> extends GenericPanel<T> {
+public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware {
 	
 	@Inject
 	private IDashboardManager dashboardManager;
@@ -70,6 +73,8 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	private String domain;
 	
 	private String tab;
+	
+	private ConfigureDashboardCommand<T> configureCommand;
 	
 	private RepeatingView commands;
 	
@@ -85,10 +90,12 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		super(id, model);
 		this.domain = domain;
 		this.tab = tab;
+		add(configureCommand = new ConfigureDashboardCommand<T>("configure"));
 		commands = new RepeatingView("commands");
 		commands.add(new AddWidgetCommand<T>(commands.newChildId()));
 		commands.add(new UnhideWidgetCommand<T>(commands.newChildId()));
 		commands.add(new SilentSaveDashboardCommand<T>(commands.newChildId()));
+		commands.add(new CancelSaveDashboardCommand<T>(commands.newChildId()));
 		add(commands);
 		widgets = new RepeatingView("widgets");
 		add(widgets);
@@ -192,6 +199,18 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 		tag.append("class", "dashboard", " ");
 	}
 	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		if(DisplayMode.EDIT.equals(dashboardModeModel.getObject())) {
+			commands.setVisibilityAllowed(true);
+			configureCommand.setVisibilityAllowed(false);
+		} else {
+			commands.setVisibilityAllowed(false);
+			configureCommand.setVisibilityAllowed(true);
+		}
+	}
+	
 	public String getDomain() {
 		return domain;
 	}
@@ -212,6 +231,19 @@ public class DashboardPanel<T> extends GenericPanel<T> {
 	protected void detachModel() {
 		super.detachModel();
 		dashboardDocumentModel.detach();
+		dashboardModeModel.detach();
+	}
+
+
+	@Override
+	public IModel<DisplayMode> getModeModel() {
+		return dashboardModeModel;
+	}
+
+
+	@Override
+	public DisplayMode getModeObject() {
+		return dashboardModeModel.getObject();
 	}
 
 }

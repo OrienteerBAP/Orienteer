@@ -17,6 +17,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
+import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.Widget;
 
 import com.google.inject.Inject;
@@ -63,7 +64,7 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		IDisplayModeAware parent = findParent(IDisplayModeAware.class);
+		IDisplayModeAware parent = findParent(DashboardPanel.class).findParent(IDisplayModeAware.class);
 		if(parent!=null) {
 			displayModeModel.setObject(parent.getModeObject());
 		}

@@ -9,24 +9,24 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.DashboardPanel;
 
 /**
- * Command to save silently current dashboard
+ * Command to cancel modification of a dashboard
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-public class SilentSaveDashboardCommand<T> extends AjaxCommand<T> {
+public class CancelSaveDashboardCommand<T> extends AjaxCommand<T> {
 
-	public SilentSaveDashboardCommand(String id) {
-		super(id, "command.save");
-		setIcon(FAIconType.save);
-		setBootstrapType(BootstrapType.PRIMARY);
+	public CancelSaveDashboardCommand(String id) {
+		super(id, "command.cancel");
+		setIcon(FAIconType.times);
+		setBootstrapType(BootstrapType.DEFAULT);
 		setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 	}
 	
 	@Override
 	public void onClick(AjaxRequestTarget target) {
 		DashboardPanel<?> dashboard = findParent(DashboardPanel.class);
-		dashboard.storeDashboard();
 		dashboard.getModeModel().setObject(DisplayMode.VIEW);
 		target.add(dashboard);
 	}
+
 }
