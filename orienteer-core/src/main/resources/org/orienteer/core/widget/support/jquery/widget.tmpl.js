@@ -5,6 +5,7 @@ sortable.sortable({
 	  var serialized = sortable.children("li").map(function(i, e){return e.id}).toArray();
 	  ${callBackScript}
   },
+  disabled: ${disabled},
   placeholder: "dashboard-placeholder",
   forcePlaceholderSize: true
 });

@@ -61,3 +61,8 @@ gridster.ajaxUpdate = function(id)
     w.addClass('gs-w');
     gr.options.resize.enabled && gr.add_resize_handle(w);
 }
+
+if(${disabled}) {
+	gridster.disable();
+	gridster.disable_resize();
+}

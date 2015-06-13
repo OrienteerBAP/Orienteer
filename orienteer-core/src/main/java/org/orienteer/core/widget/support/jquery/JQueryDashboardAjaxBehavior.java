@@ -23,6 +23,7 @@ import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 
@@ -63,11 +64,13 @@ class JQueryDashboardAjaxBehavior extends AbstractDefaultAjaxBehavior {
 	@Override
 	public void renderHead(Component component, IHeaderResponse response) {
 		super.renderHead(component, response);
+		DashboardPanel<?> dashboard = (DashboardPanel<?>)component;
 		response.render(JavaScriptHeaderItem.forReference(JQueryDashboardSupport.JQUERY_UI_JS));
 		response.render(CssHeaderItem.forReference(JQueryDashboardSupport.WIDGET_CSS));
 		Map<String, Object> variables = new HashMap<String, Object>();
-		variables.put("componentId", component.getMarkupId());
+		variables.put("componentId", dashboard.getMarkupId());
 		variables.put("callBackScript", getCallbackScript());
+		variables.put("disabled", !DisplayMode.EDIT.equals(dashboard.getModeObject()));
 		TextTemplate template = new PackageTextTemplate(JQueryDashboardAjaxBehavior.class, "widget.tmpl.js");
 		String script = template.asString(variables);
 		response.render(OnDomReadyHeaderItem.forScript(script));

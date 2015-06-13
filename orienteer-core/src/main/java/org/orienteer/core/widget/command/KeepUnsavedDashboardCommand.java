@@ -9,14 +9,14 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.DashboardPanel;
 
 /**
- * Command to cancel modification of a dashboard
+ * Command to cancel modification of a dashboard. State kept unsaved
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-public class CancelSaveDashboardCommand<T> extends AjaxCommand<T> {
+public class KeepUnsavedDashboardCommand<T> extends AjaxCommand<T> {
 
-	public CancelSaveDashboardCommand(String id) {
-		super(id, "command.cancel");
+	public KeepUnsavedDashboardCommand(String id) {
+		super(id, "command.keep.widget");
 		setIcon(FAIconType.times);
 		setBootstrapType(BootstrapType.DEFAULT);
 		setBootstrapSize(BootstrapSize.EXTRA_SMALL);

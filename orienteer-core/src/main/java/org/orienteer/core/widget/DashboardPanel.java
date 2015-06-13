@@ -37,7 +37,7 @@ import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.command.AddWidgetCommand;
-import org.orienteer.core.widget.command.CancelSaveDashboardCommand;
+import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
 import org.orienteer.core.widget.command.ConfigureDashboardCommand;
 import org.orienteer.core.widget.command.SilentSaveDashboardCommand;
 import org.orienteer.core.widget.command.UnhideWidgetCommand;
@@ -95,7 +95,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		commands.add(new AddWidgetCommand<T>(commands.newChildId()));
 		commands.add(new UnhideWidgetCommand<T>(commands.newChildId()));
 		commands.add(new SilentSaveDashboardCommand<T>(commands.newChildId()));
-		commands.add(new CancelSaveDashboardCommand<T>(commands.newChildId()));
+		commands.add(new KeepUnsavedDashboardCommand<T>(commands.newChildId()));
 		add(commands);
 		widgets = new RepeatingView("widgets");
 		add(widgets);
