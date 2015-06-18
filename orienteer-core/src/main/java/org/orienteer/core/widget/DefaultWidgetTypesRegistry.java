@@ -81,11 +81,11 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> IWidgetType<T> lookupByWidgetClass( Class<? extends AbstractWidget<T>> widgetClass) {
+	public IWidgetType<?> lookupByWidgetClass( Class<? extends AbstractWidget<?>> widgetClass) {
 		if(widgetClass==null) return null;
 		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			if(widgetClass.equals(description.getWidgetClass())) return (IWidgetType<T>)description;
+			if(widgetClass.equals(description.getWidgetClass())) return description;
 		}
 		return null;
 	}

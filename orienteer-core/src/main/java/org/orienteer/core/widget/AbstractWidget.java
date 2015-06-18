@@ -36,8 +36,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
 		this.widgetDocumentModel = widgetDocumentModel;
-		add(newIcon("icon"));
-		add(new Label("title", getTitleModel()));
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
 		commands = new RepeatingView("commands");
@@ -109,13 +107,13 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		if(doc==null) return;
 		getDashboardPanel().getDashboardSupport().saveSettings(this, doc);
 		doc.field(OPROPERTY_HIDDEN, hidden);
-		//TODO: remove save() from here
-		doc.save();
 	}
 	
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
+		add(newIcon("icon"));
+		add(new Label("title", getTitleModel()));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
 	}

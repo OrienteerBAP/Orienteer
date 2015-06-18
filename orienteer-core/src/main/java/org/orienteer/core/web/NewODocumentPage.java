@@ -13,13 +13,17 @@ import org.orienteer.core.MountPath;
 import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.widget.document.ExtendedVisualizerWidget;
+import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.widget.DashboardPanel;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -100,6 +104,26 @@ public class NewODocumentPage extends AbstractWidgetPage<ODocument> implements I
 	@Override
 	protected Component newPageHeaderComponent(String componentId) {
 		return new ODocumentPageHeader(componentId, getModel());
+	}
+	
+	@Override
+	protected DashboardPanel<ODocument> newDashboard(String id, String domain,
+			String tab, IModel<ODocument> model) {
+		return new DashboardPanel<ODocument>(id, domain, tab, model) {
+			@Override
+			protected void buildDashboard() {
+				ODocument widgetDoc = dashboardManager.createWidgetDocument(ODocumentPropertiesWidget.class);
+				addWidget(new ODocumentPropertiesWidget(newWidgetId(), getModel(), new ODocumentModel(widgetDoc)));
+				
+				List<? extends OProperty> properties = oClassIntrospector.listProperties(getModelObject().getSchemaClass(), getTab(), true);
+				
+				for (OProperty oProperty : properties) {
+					widgetDoc = dashboardManager.createWidgetDocument(ExtendedVisualizerWidget.class);
+					widgetDoc.field("property", oProperty.getName());
+					addWidget(new ExtendedVisualizerWidget(newWidgetId(), getModel(), new ODocumentModel(widgetDoc)));
+				}
+			}
+		};
 	}
 
 	@Override

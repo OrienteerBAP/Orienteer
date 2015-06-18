@@ -71,6 +71,12 @@ public class DefaultDashboardManager implements IDashboardManager{
 		return widgetDoc;
 	}
 	
+	@Override
+	public ODocument createWidgetDocument(
+			Class<? extends AbstractWidget<?>> widgetClass) {
+		return createWidgetDocument(widgetRegistry.lookupByWidgetClass(widgetClass));
+	}
+	
 	private ODatabaseDocument getDatabase()
 	{
 		return OrienteerWebSession.get().getDatabase();

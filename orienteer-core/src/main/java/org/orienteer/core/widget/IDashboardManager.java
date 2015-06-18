@@ -13,6 +13,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @ImplementedBy(DefaultDashboardManager.class)
 public interface IDashboardManager {
 	public ODocument createWidgetDocument(IWidgetType<?> widgetType);
+	public ODocument createWidgetDocument(Class<? extends AbstractWidget<?>> widgetClass);
 	public List<String> listTabs(String domain, IModel<?> dataModel);
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel);
 }

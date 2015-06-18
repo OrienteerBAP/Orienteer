@@ -62,10 +62,10 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
 public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware {
 	
 	@Inject
-	private IDashboardManager dashboardManager;
+	protected IDashboardManager dashboardManager;
 	
 	@Inject
-	private IWidgetTypesRegistry widgetTypesRegistry;
+	protected IWidgetTypesRegistry widgetTypesRegistry;
 	
 	@Inject
 	private IDashboardSupport dashboardSupport;
@@ -113,16 +113,21 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		}
 		else
 		{
-			List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDefaultDomainAndTab(domain, tab);
-			for(int i=0;i<widgets.size();i++)
-			{
-				IWidgetType<T> type = widgets.get(i);
-				AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(type));
-				addWidget(widget);
-			}
+			buildDashboard();
 		}
 		
 		dashboardSupport.initDashboardPanel(this);
+	}
+	
+	protected void buildDashboard() {
+		
+		List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDefaultDomainAndTab(domain, tab);
+		for(int i=0;i<widgets.size();i++)
+		{
+			IWidgetType<T> type = widgets.get(i);
+			AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(type));
+			addWidget(widget);
+		}
 	}
 	
 		
@@ -150,7 +155,9 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		List<ODocument> widgets = new ArrayList<ODocument>();
 		for (AbstractWidget<T> widget : components) {
 			widget.saveSettings();
-			widgets.add(widget.getWidgetDocument());
+			ODocument widgetDoc = widget.getWidgetDocument();
+			widgetDoc.save();
+			widgets.add(widgetDoc);
 		}
 		doc.field(OPROPERTY_WIDGETS, widgets);
 		
