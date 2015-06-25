@@ -1,56 +1,36 @@
 package org.orienteer.core.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedMap;
-
-import org.apache.wicket.Application;
-import org.apache.wicket.Localizer;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.Strings;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.orienteer.core.CustomAttributes;
-import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.table.CheckBoxColumn;
-import org.orienteer.core.component.table.OEntityColumn;
-import org.orienteer.core.component.table.OPropertyValueColumn;
-import org.orienteer.core.component.visualizer.IVisualizer;
-import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
-import org.orienteer.core.service.IOClassIntrospector;
-
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
+import org.apache.wicket.Application;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
+import org.apache.wicket.model.IModel;
+import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.table.CheckBoxColumn;
+import org.orienteer.core.component.table.OClassNameColumn;
+import org.orienteer.core.component.table.OEntityColumn;
+import org.orienteer.core.component.table.OPropertyValueColumn;
+import org.orienteer.core.component.visualizer.IVisualizer;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.service.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
+
+import java.util.*;
 
 /**
  * Implementation of {@link IOClassIntrospector}
@@ -101,6 +81,9 @@ public class OClassIntrospector implements IOClassIntrospector
 		OProperty nameProperty = getNameProperty(oClass);
 		OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
 		columns.add(entityColumn);
+		if (!oClass.getSubclasses().isEmpty()) {
+			columns.add(new OClassNameColumn(oClass, modeModel));
+		}
 		for (OProperty oProperty : properties)
 		{
 			if(nameProperty==null || !nameProperty.equals(oProperty))
@@ -212,6 +195,23 @@ public class OClassIntrospector implements IOClassIntrospector
 
 	@Override
 	public OProperty getNameProperty(OClass oClass) {
+		if(oClass==null) return null;
+		OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
+		if(ret!=null) return ret;
+		ret = oClass.getProperty("name");
+		if(ret!=null) return ret;
+		for(OProperty p: oClass.properties())
+		{
+			if(!p.getType().isMultiValue())
+			{
+				ret = p;
+				if(OType.STRING.equals(p.getType())) break;
+			}
+		}
+		return ret;
+	}
+
+	public OProperty getClassNameProperty(OClass oClass) {
 		if(oClass==null) return null;
 		OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
 		if(ret!=null) return ret;
