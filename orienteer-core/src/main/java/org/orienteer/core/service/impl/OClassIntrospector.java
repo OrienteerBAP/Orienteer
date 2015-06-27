@@ -20,7 +20,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.CheckBoxColumn;
-import org.orienteer.core.component.table.OClassNameColumn;
+import org.orienteer.core.component.table.ODocumentClassColumn;
 import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.visualizer.IVisualizer;
@@ -82,7 +82,7 @@ public class OClassIntrospector implements IOClassIntrospector
 		OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
 		columns.add(entityColumn);
 		if (!oClass.getSubclasses().isEmpty()) {
-			columns.add(new OClassNameColumn(oClass, modeModel));
+			columns.add(new ODocumentClassColumn<String>());
 		}
 		for (OProperty oProperty : properties)
 		{
@@ -211,23 +211,6 @@ public class OClassIntrospector implements IOClassIntrospector
 		return ret;
 	}
 
-	public OProperty getClassNameProperty(OClass oClass) {
-		if(oClass==null) return null;
-		OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
-		if(ret!=null) return ret;
-		ret = oClass.getProperty("name");
-		if(ret!=null) return ret;
-		for(OProperty p: oClass.properties())
-		{
-			if(!p.getType().isMultiValue())
-			{
-				ret = p;
-				if(OType.STRING.equals(p.getType())) break;
-			}
-		}
-		return ret;
-	}
-	
 	@Override
 	public String getDocumentName(ODocument doc) {
 		if(doc==null) return Application.get().getResourceSettings().getLocalizer().getString("nodoc", null);
