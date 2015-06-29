@@ -95,5 +95,10 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 	protected IModel<String> getTitleModel() {
 		return new ResourceModel("wigget.document.properties");
 	}
+	
+	@Override
+	protected String getWidgetStyleClass() {
+		return "strict";
+	}
 
 }

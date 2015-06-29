@@ -88,3 +88,12 @@ footer div.powered
 {
 	text-align:center
 }
+
+/*Styles for widgets*/
+li.strict caption {
+	display: none;
+}
+
+li.strict div.panel-body {
+    padding: 0;
+}

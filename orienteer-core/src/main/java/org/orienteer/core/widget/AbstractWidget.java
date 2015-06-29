@@ -117,4 +117,17 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
 	}
+	
+	@Override
+	protected void onComponentTag(ComponentTag tag) {
+		super.onComponentTag(tag);
+		String widgetStyleClass = getWidgetStyleClass();
+		if(widgetStyleClass!=null) {
+			tag.append("class", widgetStyleClass, " ");
+		}
+	}
+	
+	protected String getWidgetStyleClass() {
+		return null;
+	}
 }

@@ -84,5 +84,10 @@ public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
 		super.detachModels();
 		propertyModel.detach();
 	}
+	
+	@Override
+	protected String getWidgetStyleClass() {
+		return "strict";
+	}
 
 }
