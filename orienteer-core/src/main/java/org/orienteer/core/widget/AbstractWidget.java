@@ -89,6 +89,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	}
 	
 	public void addCommand(Command<T> command) {
+		command.setBootstrapType(null);
 		commands.add(command);
 	}
 	

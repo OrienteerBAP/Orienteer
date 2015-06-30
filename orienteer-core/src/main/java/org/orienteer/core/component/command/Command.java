@@ -45,6 +45,7 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
 	private static final long serialVersionUID = 1L;
 	private String icon;
 	private AbstractLink link;
+	private String btnCssClass;
 	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
 	private BootstrapSize bootstrapSize = BootstrapSize.DEFAULT;
 	
@@ -83,8 +84,7 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
         super(commandId);
         link = newLink("command");
         link.setOutputMarkupId(true);
-        link.add(new AttributeAppender("class", new PropertyModel<String>(this, "bootstrapType.btnCssClass"), " "));
-        link.add(new AttributeAppender("class", new PropertyModel<String>(this, "bootstrapSize.btnCssClass"), " "));
+        link.add(new AttributeAppender("class", new PropertyModel<String>(this, "btnCssClass"), " "));
         link.add(new Label("label", labelModel).setRenderBodyOnly(true));
         link.add(new FAIcon("icon", new PropertyModel<String>(this, "icon")));
         link.add(DISABLED_LINK_BEHAVIOR);
@@ -133,8 +133,24 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
     	return link;
     }
 	
+    public String getBtnCssClass() {
+    	if(btnCssClass!=null) return btnCssClass;
+    	else {
+    		BootstrapType type = getBootstrapType();
+    		if(type==null) return null;
+			StringBuilder sb = new StringBuilder();
+			sb.append("btn ").append(type.getBtnCssClass());
+			BootstrapSize size = getBootstrapSize();
+			if(size!=null) sb.append(' ').append(size.getBtnCssClass());
+			return sb.toString();
+    	}
+	}
 
-    @Override
+	public void setBtnCssClass(String btnCssClass) {
+		this.btnCssClass = btnCssClass;
+	}
+
+	@Override
 	public Command<T> setBootstrapType(BootstrapType type) {
     	this.bootstrapType = type;
 		return this;
