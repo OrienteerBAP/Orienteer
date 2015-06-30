@@ -3,6 +3,7 @@ package org.orienteer.core.widget;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
@@ -13,6 +14,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.Command;
+import org.orienteer.core.web.ODocumentPage;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import static org.orienteer.core.module.OWidgetsModule.*;
@@ -38,8 +41,37 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		this.widgetDocumentModel = widgetDocumentModel;
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
-		commands = new RepeatingView("commands");
-		commands.add(new AjaxCommand<T>(commands.newChildId(), "command.delete") {
+		add(commands = new RepeatingView("commands"));
+		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
+			
+			@Override
+			public void onClick(AjaxRequestTarget target) {
+				ODocument doc = getWidgetDocument();
+				if(doc.getIdentity().isPersistent()) {
+					setResponsePage(new ODocumentPage(doc));
+				}
+				else {
+					String alert = "alert('"+JavaScriptUtils.escapeQuotes(getLocalizer().getString("warning.widget.nosettings", AbstractWidget.this))+"')";
+					target.appendJavaScript(alert);
+				}
+			}
+		});
+		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
+			
+			@Override
+			public void onClick(AjaxRequestTarget target) {
+				DashboardPanel<T> dashboard = getDashboardPanel();
+				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
+				setHidden(true);
+			}
+			
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+				setVisible(getDashboardPanel().getModeObject().canModify());
+			}
+		});
+		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.delete") {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
@@ -47,17 +79,17 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
 				dashboard.deleteWidget(AbstractWidget.this);
 			}
-		});
-		commands.add(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
-
+			
 			@Override
-			public void onClick(AjaxRequestTarget target) {
-				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
-				setHidden(true);
+			protected void onConfigure() {
+				super.onConfigure();
+				setVisible(getDashboardPanel().getModeObject().canModify());
 			}
 		});
-		add(commands);
+	}
+	
+	public void addCommand(Command<T> command) {
+		commands.add(command);
 	}
 	
 	public DashboardPanel<T> getDashboardPanel() {
