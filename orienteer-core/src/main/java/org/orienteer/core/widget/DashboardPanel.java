@@ -198,7 +198,22 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	public AbstractWidget<T> addWidget(IWidgetType<T> description)
 	{
-		return addWidget(description.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(description)));
+		return addWidget(description, dashboardManager.createWidgetDocument(description));
+	}
+	
+	public AbstractWidget<T> addWidget(IWidgetType<T> description, ODocument widgetDoc)
+	{
+		return addWidget(description.instanciate(newWidgetId(), getModel(), widgetDoc));
+	}
+	
+	public AbstractWidget<T> addWidget(String widgetId)
+	{
+		return addWidget((IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(widgetId));
+	}
+	
+	public AbstractWidget<T> addWidget(String widgetId, ODocument widgetDoc)
+	{
+		return addWidget((IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(widgetId), widgetDoc);
 	}
 	
 	public DashboardPanel<T> deleteWidget(AbstractWidget<T> widget)

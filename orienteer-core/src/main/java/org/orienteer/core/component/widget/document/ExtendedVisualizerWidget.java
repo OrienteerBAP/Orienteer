@@ -21,8 +21,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * This is temporal widget/adapter between widgets and old approach with {@link IVisualizer}s
  */
-@Widget(defaultDomain="document", id = "extended", type = ODocument.class)
+@Widget(defaultDomain="document", id = ExtendedVisualizerWidget.WIDGET_TYPE_ID, type = ODocument.class)
 public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
+	
+	public static final String WIDGET_TYPE_ID = "extended";
 
 	private IModel<OProperty> propertyModel = new OPropertyModel(null);
 	

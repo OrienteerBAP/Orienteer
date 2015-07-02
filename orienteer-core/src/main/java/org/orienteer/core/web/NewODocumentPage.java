@@ -112,15 +112,15 @@ public class NewODocumentPage extends AbstractWidgetPage<ODocument> implements I
 		return new DashboardPanel<ODocument>(id, domain, tab, model) {
 			@Override
 			protected void buildDashboard() {
-				ODocument widgetDoc = dashboardManager.createWidgetDocument(ODocumentPropertiesWidget.class);
-				addWidget(new ODocumentPropertiesWidget(newWidgetId(), getModel(), new ODocumentModel(widgetDoc)));
+				addWidget(ODocumentPropertiesWidget.WIDGET_TYPE_ID);
 				
 				List<? extends OProperty> properties = oClassIntrospector.listProperties(getModelObject().getSchemaClass(), getTab(), true);
 				
+				ODocument widgetDoc;
 				for (OProperty oProperty : properties) {
 					widgetDoc = dashboardManager.createWidgetDocument(ExtendedVisualizerWidget.class);
 					widgetDoc.field("property", oProperty.getName());
-					addWidget(new ExtendedVisualizerWidget(newWidgetId(), getModel(), new ODocumentModel(widgetDoc)));
+					addWidget(ExtendedVisualizerWidget.WIDGET_TYPE_ID, widgetDoc);
 				}
 			}
 		};
