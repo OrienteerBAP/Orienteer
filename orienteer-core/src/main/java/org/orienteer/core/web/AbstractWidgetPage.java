@@ -62,6 +62,8 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	@Inject
 	protected IDashboardManager dashboardManager;
 	
+	protected TabbedPanel<DashboardTab> tabbedPanel;
+	
 	public AbstractWidgetPage() {
 		super();
 	}
@@ -77,7 +79,16 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	@Override
 	public void initialize() {
 		super.initialize();
-		add(new TabbedPanel<DashboardTab>("dashboardTabs", getDashboardTabs()));
+		add(tabbedPanel = new TabbedPanel<DashboardTab>("dashboardTabs", getDashboardTabs()));
+	}
+	
+	public boolean isHideTabsIfSingle() {
+		return tabbedPanel.isHideIfSingle();
+	}
+	
+	public AbstractWidgetPage<T> setHideTabsIfSingle(boolean hideTabsIfSingle) {
+		tabbedPanel.setHideIfSingle(hideTabsIfSingle);
+		return this;
 	}
 	
 	protected IModel<String> newTabNameModel(String tabName)

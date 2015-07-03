@@ -20,6 +20,8 @@ import org.apache.wicket.model.IModel;
  *            have no special needs here.
  */
 public class TabbedPanel<T extends ITab> extends org.apache.wicket.extensions.markup.html.tabs.TabbedPanel<T> {
+	
+	private boolean hideIfSingle=true;
 
 	public TabbedPanel(String id, List<T> tabs, IModel<Integer> model) {
 		super(id, tabs, model);
@@ -29,9 +31,24 @@ public class TabbedPanel<T extends ITab> extends org.apache.wicket.extensions.ma
 		super(id, tabs);
 	}
 	
+	public boolean isHideIfSingle() {
+		return hideIfSingle;
+	}
+
+	public TabbedPanel<T> setHideIfSingle(boolean hideIfSingle) {
+		this.hideIfSingle = hideIfSingle;
+		return this;
+	}
+
 	@Override
 	protected String getSelectedTabCssClass() {
 		return "active";
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		get("tabs-container").setVisibilityAllowed(!(hideIfSingle && getTabs().size()<2));
 	}
 	
 	@Override
