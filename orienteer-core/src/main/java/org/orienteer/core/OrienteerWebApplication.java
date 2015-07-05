@@ -17,6 +17,7 @@ import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.IRequestCycleSettings;
 import org.apache.wicket.util.convert.IConverter;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
@@ -78,8 +79,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject(optional=true)
 	@Named("wicket.render.strategy")
 	private IRequestCycleSettings.RenderStrategy renderStrategy;
-	
-	
+
+	@Inject
+	@Named("orienteer.image.logo")
+	private String imageLogoPath;
+
 	@Inject
 	public OrienteerWebApplication()
 	{
@@ -142,6 +146,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		WicketWebjars.install(this, webjarSettings);
 		mountPages("org.orienteer.core.web");
 		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);
+		mountResource(imageLogoPath, new SharedResourceReference(BasePage.class, "logo.png"));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		IPackageResourceGuard packageResourceGuard = getResourceSettings().getPackageResourceGuard();

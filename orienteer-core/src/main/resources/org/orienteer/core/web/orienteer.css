@@ -97,3 +97,8 @@ li.strict caption {
 li.strict div.panel-body {
     padding: 0;
 }
+
+.img-logo {
+	width: 30px;
+	margin: 2px;
+}
