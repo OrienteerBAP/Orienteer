@@ -11,6 +11,7 @@ import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.component.command.CreateODocumentCommand;
 import org.orienteer.core.component.command.DeleteODocumentCommand;
 import org.orienteer.core.component.command.EditODocumentsCommand;
+import org.orienteer.core.component.command.CopyODocumentCommand;
 import org.orienteer.core.component.command.ReleaseODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.command.SelectODocumentCommand;
@@ -61,6 +62,7 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 			table.addCommand(new CreateODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
 			table.addCommand(new EditODocumentsCommand(table, modeModel, linkedClass).add(securityBehaviour));
 			table.addCommand(new SaveODocumentsCommand(table, modeModel).add(securityBehaviour));
+			table.addCommand(new CopyODocumentCommand(table, linkedClass).add(securityBehaviour));
 			table.addCommand(new DeleteODocumentCommand(table, linkedClass).add(securityBehaviour));
 			table.addCommand(new SelectODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
 			table.addCommand(new ReleaseODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
