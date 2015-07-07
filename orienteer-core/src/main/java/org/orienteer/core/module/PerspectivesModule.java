@@ -95,7 +95,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				item = new ODocument(OCLASS_ITEM);
 				item.field("name", "Schema");
 				item.field("icon", "cubes");
-				item.field("url", "/classes");
+				item.field("url", "/schema");
 				item.field("perspective", perspective);
 				item.save();
 				

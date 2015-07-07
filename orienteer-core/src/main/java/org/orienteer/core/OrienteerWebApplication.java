@@ -231,7 +231,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 				Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
 				String mainPath = mountPath.value();
 				String[] alt = mountPath.alt();
-				for(int i=-1;i<alt.length;i++)
+				for(int i=alt.length-1;i>=-1;i--)
 				{
 					String path = i<0?mainPath:alt[i];
 					if ("/".equals(path)) {
