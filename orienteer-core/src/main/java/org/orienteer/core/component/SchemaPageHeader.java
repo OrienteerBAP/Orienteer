@@ -13,6 +13,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.property.AbstractLinkViewPanel;
 import org.orienteer.core.web.schema.ListOClassesPage;
+import org.orienteer.core.web.schema.SchemaPage;
 
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -33,7 +34,7 @@ public class SchemaPageHeader extends Panel {
 
 			@Override
 			protected AbstractLink newLink(String id) {
-				return new BookmarkablePageLink<Object>(id, ListOClassesPage.class)
+				return new BookmarkablePageLink<Object>(id, SchemaPage.class)
 									.setBody(new ResourceModel("menu.list.class"));
 			}
 		});

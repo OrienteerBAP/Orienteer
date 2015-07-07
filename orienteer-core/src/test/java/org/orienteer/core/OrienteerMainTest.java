@@ -22,6 +22,7 @@ import org.orienteer.core.web.schema.ListOClassesPage;
 import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.web.schema.OIndexPage;
 import org.orienteer.core.web.schema.OPropertyPage;
+import org.orienteer.core.web.schema.SchemaPage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class OrienteerMainTest
 	@Before
 	public void performLogin()
 	{
-		tester.startPage(ListOClassesPage.class);
+		tester.startPage(SchemaPage.class);
 		if(tester.getLastRenderedPage() instanceof LoginPage)
 		{
 			FormTester formTester = tester.newFormTester("signInPanel:signInForm");
@@ -70,7 +71,7 @@ public class OrienteerMainTest
             formTester.setValue("password", settings.getDBInstallatorUserPassword());
             formTester.submit();
 		}
-		tester.assertRenderedPage(ListOClassesPage.class);
+		tester.assertRenderedPage(SchemaPage.class);
 	}
 	
 	@Test
@@ -82,8 +83,8 @@ public class OrienteerMainTest
 	@Test
 	public void testMainPages() throws Exception
 	{
-		tester.startPage(ListOClassesPage.class);
-		tester.assertRenderedPage(ListOClassesPage.class);
+		tester.startPage(SchemaPage.class);
+		tester.assertRenderedPage(SchemaPage.class);
 	}
 	
 	@Test

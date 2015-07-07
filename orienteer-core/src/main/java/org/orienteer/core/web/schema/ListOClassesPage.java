@@ -50,8 +50,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Page to show all registered classes
+ * @deprecated use {@link SchemaPage} instead
  */
-@MountPath("/classes")
+//@MountPath("/classes")
+@Deprecated
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class ListOClassesPage extends OrienteerBasePage<Object> {
 

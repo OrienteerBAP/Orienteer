@@ -12,7 +12,7 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 /**
  * Page to show schema
  */
-@MountPath("/schema")
+@MountPath(value="/schema", alt={"/classes"})
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class SchemaPage extends AbstractWidgetPage<Void> {
 
