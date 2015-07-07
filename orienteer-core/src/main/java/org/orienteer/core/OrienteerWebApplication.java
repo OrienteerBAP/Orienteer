@@ -146,7 +146,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		WicketWebjars.install(this, webjarSettings);
 		mountPages("org.orienteer.core.web");
 		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);
-		mountResource(imageLogoPath, new SharedResourceReference(BasePage.class, "logo.png"));
+		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		IPackageResourceGuard packageResourceGuard = getResourceSettings().getPackageResourceGuard();
