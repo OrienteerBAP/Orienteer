@@ -13,5 +13,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface MountPath {
-	String value() default "";
+	String value();
+	String[] alt() default {};
 }

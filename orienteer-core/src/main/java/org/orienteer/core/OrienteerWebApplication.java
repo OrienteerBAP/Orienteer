@@ -229,11 +229,16 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 				if(!IRequestablePage.class.isAssignableFrom(clazz)) 
 					throw new WicketRuntimeException("@"+MountPath.class.getSimpleName()+" should be only on pages");
 				Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
-				String path = mountPath.value();
-				if ("/".equals(mountPath)) {
-					mount(new HomePageMapper(pageClass));
+				String mainPath = mountPath.value();
+				String[] alt = mountPath.alt();
+				for(int i=-1;i<alt.length;i++)
+				{
+					String path = i<0?mainPath:alt[i];
+					if ("/".equals(path)) {
+						mount(new HomePageMapper(pageClass));
+					}
+					mount(new MountedMapper(path, pageClass));
 				}
-				mount(new MountedMapper(path, pageClass));
 			}
 		}
 	}
