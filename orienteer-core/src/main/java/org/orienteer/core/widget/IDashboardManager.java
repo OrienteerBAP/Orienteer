@@ -1,6 +1,7 @@
 package org.orienteer.core.widget;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.model.IModel;
 
@@ -16,4 +17,5 @@ public interface IDashboardManager {
 	public ODocument createWidgetDocument(Class<? extends AbstractWidget<?>> widgetClass);
 	public List<String> listTabs(String domain, IModel<?> dataModel);
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel);
+	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel, Map<String, Object> criteriesMap);
 }

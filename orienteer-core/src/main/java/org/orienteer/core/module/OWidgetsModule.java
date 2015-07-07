@@ -27,6 +27,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	public static final String OCLASS_DASHBOARD = "ODashboard";
 	public static final String OPROPERTY_DOMAIN = "domain";
 	public static final String OPROPERTY_TAB = "tab";
+	public static final String OPROPERTY_CLASS = "class";
 	public static final String OPROPERTY_LINKED_IDENTITY = "linked";
 	public static final String OPROPERTY_WIDGETS = "widgets";
 	
@@ -51,7 +52,8 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 					.oProperty(OPROPERTY_DOMAIN, OType.STRING, 10).oIndex(INDEX_TYPE.NOTUNIQUE).markDisplayable()
 					.oProperty(OPROPERTY_TAB, OType.STRING, 20).oIndex(INDEX_TYPE.NOTUNIQUE).markDisplayable()
 					.oProperty(OPROPERTY_LINKED_IDENTITY, OType.LINK, 30).markDisplayable()
-					.oProperty(OPROPERTY_WIDGETS, OType.LINKLIST, 40).assignVisualization("table");
+					.oProperty(OPROPERTY_CLASS, OType.STRING, 40)
+					.oProperty(OPROPERTY_WIDGETS, OType.LINKLIST, 50).assignVisualization("table");
 		helper.oClass(OCLASS_WIDGET)
 					.oProperty(OPROPERTY_DASHBOARD, OType.LINK, 10).markDisplayable().markAsLinkToParent()
 					.oProperty(OPROPERTY_TYPE_ID, OType.STRING, 20).markDisplayable().markAsDocumentName()

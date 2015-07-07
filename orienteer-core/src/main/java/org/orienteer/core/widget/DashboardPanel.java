@@ -108,8 +108,20 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		add(widgets);
 		setOutputMarkupId(true);
 		
-		
-		ODocument doc = dashboardManager.getExistingDashboard(domain, tab, model);
+		loadDashboard();
+		dashboardSupport.initDashboardPanel(this);
+	}
+	
+	public ODocument loadDashboard() {
+		return loadDashboard(lookupDashboardDocument(domain, tab, getModel()));
+	}
+	
+	/**
+	 * Load this dashboard from specified dashboard document. If document is null: default dashboard will be built
+	 * @param doc dashboard document
+	 * @return document from which this document was built
+	 */
+	public ODocument loadDashboard(ODocument doc) {
 		if(doc!=null)
 		{
 			dashboardDocumentModel.setObject(doc);
@@ -122,8 +134,11 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		{
 			buildDashboard();
 		}
-		
-		dashboardSupport.initDashboardPanel(this);
+		return doc;
+	}
+	
+	protected ODocument lookupDashboardDocument(String domain, String tab, IModel<T> model) {
+		return dashboardManager.getExistingDashboard(domain, tab, getModel());
 	}
 	
 	protected void buildDashboard() {
@@ -148,7 +163,11 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return widget;
 	}
 	
-	public void storeDashboard() {
+	/**
+	 * Store dashboard configuration in a document
+	 * @return document - can't be null
+	 */
+	public ODocument storeDashboard() {
 		ODocument doc = dashboardDocumentModel.getObject();
 		if(doc==null) {
 			doc = new ODocument(OCLASS_DASHBOARD);
@@ -169,6 +188,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		doc.field(OPROPERTY_WIDGETS, widgets);
 		
 		doc.save();
+		return doc;
 	}
 	
 	public String newWidgetId()
@@ -273,6 +293,14 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	@Override
 	public DisplayMode getModeObject() {
 		return dashboardModeModel.getObject();
+	}
+	
+	public IModel<ODocument> getDashboardDocumentModel() {
+		return dashboardDocumentModel;
+	}
+	
+	public ODocument getDashboardDocument() {
+		return dashboardDocumentModel.getObject();
 	}
 
 }

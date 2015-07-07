@@ -1,6 +1,10 @@
 package org.orienteer.core.web;
 
+import static org.orienteer.core.module.OWidgetsModule.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,15 +20,18 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.widget.document.ExtendedVisualizerWidget;
 import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.model.ODocumentNameModel;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.DashboardPanel;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * Widgets based page for {@link ODocument}s display
@@ -110,6 +117,15 @@ public class NewODocumentPage extends AbstractWidgetPage<ODocument> implements I
 	protected DashboardPanel<ODocument> newDashboard(String id, String domain,
 			String tab, IModel<ODocument> model) {
 		return new DashboardPanel<ODocument>(id, domain, tab, model) {
+			
+			@Override
+			protected ODocument lookupDashboardDocument(String domain,
+					String tab, IModel<ODocument> model) {
+				Map<String, Object> criteriesMap = new HashMap<String, Object>();
+				criteriesMap.put(OWidgetsModule.OPROPERTY_CLASS, model.getObject().getSchemaClass().getName());
+				return dashboardManager.getExistingDashboard(domain, tab, model, criteriesMap);
+			}
+			
 			@Override
 			protected void buildDashboard() {
 				addWidget(ODocumentPropertiesWidget.WIDGET_TYPE_ID);
@@ -122,6 +138,14 @@ public class NewODocumentPage extends AbstractWidgetPage<ODocument> implements I
 					widgetDoc.field("property", oProperty.getName());
 					addWidget(ExtendedVisualizerWidget.WIDGET_TYPE_ID, widgetDoc);
 				}
+			}
+			
+			@Override
+			public ODocument storeDashboard() {
+				ODocument doc = super.storeDashboard();
+				doc.field("class", getModelObject().getSchemaClass().getName());
+				doc.save();
+				return doc;
 			}
 		};
 	}

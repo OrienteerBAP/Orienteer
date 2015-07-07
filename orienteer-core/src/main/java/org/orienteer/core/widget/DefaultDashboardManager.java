@@ -55,7 +55,25 @@ public class DefaultDashboardManager implements IDashboardManager{
 		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_DASHBOARD+
 											" where "+OPROPERTY_DOMAIN+" = ?"+
 											" and "+OPROPERTY_TAB+" = ?"), domain, tab);
-		//TODO: Add analysis of dashboards
+		if(dashboards==null || dashboards.isEmpty()) return null;
+		else return dashboards.get(0);
+	}
+	
+	@Override
+	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel, Map<String, Object> criteriesMap) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select from ").append(OCLASS_DASHBOARD).append(" where ")
+		   .append(OPROPERTY_DOMAIN).append(" = ? and ")
+		   .append(OPROPERTY_TAB).append(" = ?");
+		List<Object> args = new ArrayList<Object>();
+		args.add(domain);
+		args.add(tab);
+		for(Map.Entry<String, Object> entry: criteriesMap.entrySet()) {
+			sql.append(" and ").append(entry.getKey()).append(" = ?");
+			args.add(entry.getValue());
+		}
+		ODatabaseDocument db = getDatabase();
+		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>(sql.toString()), args.toArray());
 		if(dashboards==null || dashboards.isEmpty()) return null;
 		else return dashboards.get(0);
 	}
