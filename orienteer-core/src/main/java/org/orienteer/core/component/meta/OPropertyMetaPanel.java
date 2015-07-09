@@ -96,7 +96,8 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(CustomAttributes.HIDDEN.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALCULABLE.getName());
 		OPROPERTY_ATTRS.add(CustomAttributes.CALC_SCRIPT.getName());
-		
+		OPROPERTY_ATTRS.add(OPropertyPrototyper.DEFAULT_VALUE);
+
 		// Only single value types are allowed for linked type.
 		LINKED_TYPE_OPTIONS = ListAvailableOTypesModel.orderTypes(Collections2.filter(Arrays.asList(OType.values()), new Predicate<OType>() {
 
@@ -158,6 +159,10 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				entity.setCollate((String)value);
 			}
+			else if(OPropertyPrototyper.DEFAULT_VALUE.equals(critery))
+			{
+				entity.setDefaultValue((String) value);
+			}
 			else if((custom = CustomAttributes.fromString(critery))!=null)
 			{
 				custom.setValue(entity, value);
@@ -213,8 +218,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new Label(id, getModel());
 			}
-			else if(CustomAttributes.match(critery, CustomAttributes.PROP_INVERSE))
-			{
+			else if(CustomAttributes.match(critery, CustomAttributes.PROP_INVERSE)) {
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
 			}
 			else if(CustomAttributes.match(critery, CustomAttributes.CALC_SCRIPT))
@@ -278,7 +282,10 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				return new CheckBox(id, (IModel<Boolean>)getModel());
 			}
-			else if(OPropertyPrototyper.MIN.equals(critery) || OPropertyPrototyper.MAX.equals(critery) || OPropertyPrototyper.REGEXP.equals(critery))
+			else if(OPropertyPrototyper.MIN.equals(critery)
+					|| OPropertyPrototyper.MAX.equals(critery)
+					|| OPropertyPrototyper.REGEXP.equals(critery)
+					|| OPropertyPrototyper.DEFAULT_VALUE.equals(critery))
 			{
 				return new TextField<V>(id, getModel());
 			}
