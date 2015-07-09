@@ -159,10 +159,6 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			{
 				entity.setCollate((String)value);
 			}
-			else if(OPropertyPrototyper.DEFAULT_VALUE.equals(critery))
-			{
-				entity.setDefaultValue((String) value);
-			}
 			else if((custom = CustomAttributes.fromString(critery))!=null)
 			{
 				custom.setValue(entity, value);
