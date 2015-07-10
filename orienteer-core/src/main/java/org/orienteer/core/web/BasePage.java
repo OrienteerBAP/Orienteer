@@ -95,6 +95,8 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	
 	public void initialize()
 	{
+		//TO BO sure that DB was initialized
+		getDatabase();
 	}
 	
 	@Override

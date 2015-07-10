@@ -12,7 +12,6 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.property.AbstractLinkViewPanel;
-import org.orienteer.core.web.schema.ListOClassesPage;
 import org.orienteer.core.web.schema.SchemaPage;
 
 import com.orientechnologies.orient.core.index.OIndex;

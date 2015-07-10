@@ -2,10 +2,7 @@ package org.orienteer.core.component.command;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttributes;
-import org.orienteer.core.component.BootstrapType;
-import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -69,7 +66,7 @@ public class CreateODocumentCommand extends AbstractCreateCommand<ODocument> imp
 				}
 			}
 		}
-		setResponsePage(new ODocumentPage(doc).setDisplayMode(DisplayMode.EDIT));
+		setResponsePage(new ODocumentPage(doc).setModeObject(DisplayMode.EDIT));
 	}
 
 	@Override

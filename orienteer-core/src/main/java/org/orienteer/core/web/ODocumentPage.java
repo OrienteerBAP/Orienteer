@@ -1,70 +1,53 @@
 package org.orienteer.core.web;
 
+import static org.orienteer.core.module.OWidgetsModule.*;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.orienteer.core.CustomAttributes;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.MountPath;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.ODocumentPageHeader;
-import org.orienteer.core.component.SchemaPageHeader;
-import org.orienteer.core.component.TabsPanel;
-import org.orienteer.core.component.command.EditCommand;
-import org.orienteer.core.component.command.EditODocumentCommand;
-import org.orienteer.core.component.command.SaveODocumentCommand;
-import org.orienteer.core.component.meta.ODocumentMetaPanel;
+import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.property.OClassViewPanel;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+import org.orienteer.core.component.widget.document.ExtendedVisualizerWidget;
+import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.model.ODocumentNameModel;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.widget.DashboardPanel;
 
-import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
 import com.google.inject.Inject;
-import com.orientechnologies.common.thread.OPollerThread;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
- * Default page to display an {@link ODocument}
+ * Widgets based page for {@link ODocument}s display
  */
 @MountPath("/doc/#{rid}/#{mode}")
-public class ODocumentPage extends AbstractODocumentPage {
-
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	private TabsPanel<String> tabsPanel;
-	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
-	private WebMarkupContainer extendedPropertiesContainer;
-	private SaveODocumentCommand saveODocumentCommand;
-
-	private IModel<String> tabModel;
-	private IModel<DisplayMode> displayMode = DisplayMode.VIEW.asModel();
-
+public class ODocumentPage extends AbstractWidgetPage<ODocument> implements IDisplayModeAware {
+	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
+	
+	private IModel<DisplayMode> displayModeModel = DisplayMode.VIEW.asModel();
 
+	public ODocumentPage() {
+		super();
+	}
+	
 	public ODocumentPage(ODocument doc)
 	{
 		this(new ODocumentModel(doc));
@@ -77,129 +60,114 @@ public class ODocumentPage extends AbstractODocumentPage {
 	public ODocumentPage(PageParameters parameters) {
 		super(parameters);
 		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
-		if(mode!=null) displayMode.setObject(mode);
-		String tab = parameters.get("tab").toOptionalString();
-		tabModel.setObject(tab);
+		if(mode!=null) displayModeModel.setObject(mode);
+	}
+	
+	@Override
+	protected IModel<ODocument> resolveByPageParameters(PageParameters parameters) {
+		String rid = parameters.get("rid").toOptionalString();
+		if(rid!=null)
+		{
+			try
+			{
+				return new ODocumentModel(new ORecordId(rid));
+			} catch (IllegalArgumentException e)
+			{
+				//NOP Support of case with wrong rid
+			}
+		}
+		return new ODocumentModel((ODocument)null);
 	}
 
 	@Override
-	public void initialize() {
-		super.initialize();
-		tabModel = Model.of();
-        tabsPanel = new TabsPanel<String>("tabs", tabModel, new LoadableDetachableModel<List<String>>() {
-
-			@Override
-			protected List<String> load() {
-				return oClassIntrospector.listTabs(getDocument().getSchemaClass());
-			}
-		})
-		{
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void onTabClick(AjaxRequestTarget target) {
-				target.add(propertiesStructureTable);
-				target.add(extendedPropertiesContainer);
-			}
-
-		};
-		add(tabsPanel);
-
-		Form<ODocument> form = new Form<ODocument>("form", getModel());
-		IModel<List<? extends OProperty>> propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
-			@Override
-			protected List<? extends OProperty> load() {
-				return oClassIntrospector.listProperties(getDocument().getSchemaClass(), tabModel.getObject(), false);
-			}
-		};
-		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", getModel(), propertiesModel){
-
-					@Override
-					protected Component getValueComponent(String id,
-							IModel<OProperty> rowModel) {
-						return new ODocumentMetaPanel<Object>(id, displayMode, getDocumentModel(), rowModel);
-					}
-		};
-		form.add(propertiesStructureTable);
-		add(form);
-
-		//Extended components
-		propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
-			@Override
-			protected List<? extends OProperty> load() {
-				return oClassIntrospector.listProperties(getDocument().getSchemaClass(), tabModel.getObject(), true);
-			}
-		};
-		extendedPropertiesContainer = new WebMarkupContainer("extendedPropertiesContainer");
-		extendedPropertiesContainer.setOutputMarkupPlaceholderTag(true);
-		ListView<OProperty> extendedPropertiesListView = new ListView<OProperty>("extendedProperties", propertiesModel) {
-
-			@Override
-			protected void populateItem(ListItem<OProperty> item) {
-				Form<?> form = new Form<Object>("form");
-				OProperty oProperty = item.getModelObject();
-				String component = CustomAttributes.VISUALIZATION_TYPE.getValue(oProperty);
-				form.add(OrienteerWebApplication.get()
-							.getUIVisualizersRegistry()
-							.getComponentFactory(oProperty.getType(), component)
-							.createComponent("component", DisplayMode.VIEW, getDocumentModel(), 
-												item.getModel(), 
-												new DynamicPropertyValueModel<Object>(getDocumentModel(), item.getModel())));
-				item.add(form);
-			}
-		};
-		extendedPropertiesContainer.add(extendedPropertiesListView);
-		add(extendedPropertiesContainer);
+	public String getDomain() {
+		return "document";
 	}
 	
-	public DisplayMode getDisplayMode()
-	{
-		return displayMode.getObject();
+	@Override
+	public List<String> getTabs() {
+		return oClassIntrospector.listTabs(getModelObject().getSchemaClass());
 	}
-
-	public ODocumentPage setDisplayMode(DisplayMode displayMode)
-	{
-		this.displayMode.setObject(displayMode);
-		return this;
-	}
-
+	
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
 		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
-		String defaultTab = CustomAttributes.TAB.<String>getValue(getDocument().getSchemaClass(),IOClassIntrospector.DEFAULT_TAB);
-		tabsPanel.setDefaultTabModel(Model.of(defaultTab));
-		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayMode));
-		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, displayMode));
 	}
-
-
-
+	
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		if(DisplayMode.EDIT.equals(displayMode.getObject()))
+		ODocument doc = getModelObject();
+		if(doc==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+		//Support of case when metadata was changed in parallel
+		else if(Strings.isEmpty(doc.getClassName()) && doc.getIdentity().isValid())
 		{
-			saveODocumentCommand.configure();
-			if(!saveODocumentCommand.determineVisibility())
-			{
-				displayMode.setObject(DisplayMode.VIEW);
-			}
+			getDatabase().reload();
+			if(Strings.isEmpty(doc.getClassName()))  throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 		}
-//        if (tabModel.getObject()==null)
-//        tabModel.setObject(CustomAttributes.TAB.<String>getValue(getDocument().getSchemaClass(),IOClassIntrospector.DEFAULT_TAB));
 	}
-
+	
 	@Override
 	public IModel<String> getTitleModel() {
-		return new ODocumentNameModel(getDocumentModel());
+		return new ODocumentNameModel(getModel());
 	}
 
 	@Override
 	protected Component newPageHeaderComponent(String componentId) {
 		return new ODocumentPageHeader(componentId, getModel());
 	}
+	
+	@Override
+	protected DashboardPanel<ODocument> newDashboard(String id, String domain,
+			String tab, IModel<ODocument> model) {
+		return new DashboardPanel<ODocument>(id, domain, tab, model) {
+			
+			@Override
+			protected ODocument lookupDashboardDocument(String domain,
+					String tab, IModel<ODocument> model) {
+				Map<String, Object> criteriesMap = new HashMap<String, Object>();
+				criteriesMap.put(OWidgetsModule.OPROPERTY_CLASS, model.getObject().getSchemaClass().getName());
+				return dashboardManager.getExistingDashboard(domain, tab, model, criteriesMap);
+			}
+			
+			@Override
+			protected void buildDashboard() {
+				addWidget(ODocumentPropertiesWidget.WIDGET_TYPE_ID);
+				
+				List<? extends OProperty> properties = oClassIntrospector.listProperties(getModelObject().getSchemaClass(), getTab(), true);
+				
+				ODocument widgetDoc;
+				for (OProperty oProperty : properties) {
+					widgetDoc = dashboardManager.createWidgetDocument(ExtendedVisualizerWidget.class);
+					widgetDoc.field("property", oProperty.getName());
+					addWidget(ExtendedVisualizerWidget.WIDGET_TYPE_ID, widgetDoc);
+				}
+			}
+			
+			@Override
+			public ODocument storeDashboard() {
+				ODocument doc = super.storeDashboard();
+				doc.field("class", getModelObject().getSchemaClass().getName());
+				doc.save();
+				return doc;
+			}
+		};
+	}
 
-
+	@Override
+	public IModel<DisplayMode> getModeModel() {
+		return displayModeModel;
+	}
+	
+	@Override
+	public DisplayMode getModeObject() {
+		return displayModeModel.getObject();
+	}
+	
+	public ODocumentPage setModeObject(DisplayMode mode) {
+		displayModeModel.setObject(mode);
+		return this;
+	}
 
 }

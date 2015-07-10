@@ -3,15 +3,9 @@ package org.orienteer.core.web;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.event.Broadcast;
-import org.apache.wicket.event.IEvent;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -30,14 +24,12 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
 import org.orienteer.core.module.PerspectivesModule;
-import org.orienteer.core.web.schema.ListOClassesPage;
-
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
+
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Root page for pages which require Orienteers highlevel UI: top navigation bar and left menu

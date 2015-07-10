@@ -1,5 +1,7 @@
 package org.orienteer.core;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -7,24 +9,18 @@ import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.junit.runner.RunWith;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.service.OrienteerModule;
-import org.orienteer.core.service.OrienteerModuleTest;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.ODocumentPage;
-import org.orienteer.core.web.schema.ListOClassesPage;
 import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.web.schema.OIndexPage;
 import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.web.schema.SchemaPage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
+import org.orienteer.testenv.TestEnvOrienteerWebApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +34,6 @@ import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import org.orienteer.junit.OrienteerTestModule;
-import org.orienteer.testenv.TestEnvOrienteerWebApplication;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
@@ -114,7 +107,7 @@ public class OrienteerMainTest
 			tester.startPage(new ODocumentPage(doc));
 			tester.assertRenderedPage(ODocumentPage.class);
 			LOG.info("Rendering EDIT document page for class '"+oClass.getName()+"'");
-			tester.startPage(new ODocumentPage(doc).setDisplayMode(DisplayMode.EDIT));
+			tester.startPage(new ODocumentPage(doc).setModeObject(DisplayMode.EDIT));
 			tester.assertRenderedPage(ODocumentPage.class);
 		}
 	}

@@ -1,24 +1,19 @@
 package org.orienteer.core.widget;
 
-import org.apache.wicket.Component;
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
+
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.web.ODocumentPage;
-
-import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import static org.orienteer.core.module.OWidgetsModule.*;
 
 import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.record.impl.ODocument;
