@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.web.BrowseOClassPage;
+import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.core.web.schema.OClassPage;

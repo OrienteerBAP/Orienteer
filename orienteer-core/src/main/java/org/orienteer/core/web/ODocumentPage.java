@@ -148,7 +148,7 @@ public class ODocumentPage extends AbstractWidgetPage<ODocument> implements IDis
 			@Override
 			public ODocument storeDashboard() {
 				ODocument doc = super.storeDashboard();
-				doc.field("class", getModelObject().getSchemaClass().getName());
+				doc.field(OWidgetsModule.OPROPERTY_CLASS, getModelObject().getSchemaClass().getName());
 				doc.save();
 				return doc;
 			}
