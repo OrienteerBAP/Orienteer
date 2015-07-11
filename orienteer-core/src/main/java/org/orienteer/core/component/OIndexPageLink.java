@@ -7,6 +7,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.web.schema.OIndexPage;
+import org.orienteer.core.web.schema.OIndexPage;
 
 import com.orientechnologies.orient.core.index.OIndex;
 

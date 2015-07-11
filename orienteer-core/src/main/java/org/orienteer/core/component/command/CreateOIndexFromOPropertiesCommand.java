@@ -12,6 +12,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.web.schema.OIndexPage;
+import org.orienteer.core.web.schema.OIndexPage;
 
 import ru.ydn.wicket.wicketorientdb.model.OIndexModel;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
@@ -74,7 +75,7 @@ public class CreateOIndexFromOPropertiesCommand extends
 			}));
 			OClass oClass = classModel!=null?classModel.getObject():null;
 			if(oClass==null) oClass = objects.get(0).getOwnerClass();
-			setResponsePage(new OIndexPage(new OIndexModel(OIndexPrototyper.newPrototype(oClass.getName(), fields))).setDisplayMode(DisplayMode.EDIT));
+			setResponsePage(new OIndexPage(new OIndexModel(OIndexPrototyper.newPrototype(oClass.getName(), fields))).setModeObject(DisplayMode.EDIT));
 		}
 	}
 

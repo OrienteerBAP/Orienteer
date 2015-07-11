@@ -15,6 +15,7 @@ import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.ODocumentPage;
+import org.orienteer.core.web.schema.OIndexPage;
 import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.web.schema.OIndexPage;
