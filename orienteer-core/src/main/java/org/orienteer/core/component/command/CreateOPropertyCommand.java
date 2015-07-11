@@ -5,6 +5,7 @@ import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.web.schema.OPropertyPage;
 
@@ -40,7 +41,7 @@ public class CreateOPropertyCommand extends AbstractCreateCommand<OProperty> {
 		OClass oClass = classModel.getObject();
 		OProperty newProperty = OPropertyPrototyper.newPrototype(oClass.getName());
 		CustomAttributes.ORDER.setValue(newProperty, findMaxOrder(oClass)+10);
-		setResponsePage(new OPropertyPage(new OPropertyModel(newProperty)).setDisplayMode(DisplayMode.EDIT));
+		setResponsePage(new OPropertyPage(new OPropertyModel(newProperty)).setModeObject(DisplayMode.EDIT));
 	}
 	
 	public int findMaxOrder(OClass oClass)

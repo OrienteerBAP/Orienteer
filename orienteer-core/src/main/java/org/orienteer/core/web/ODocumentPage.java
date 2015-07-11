@@ -37,13 +37,11 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
  * Widgets based page for {@link ODocument}s display
  */
 @MountPath("/doc/#{rid}/#{mode}")
-public class ODocumentPage extends AbstractWidgetPage<ODocument> implements IDisplayModeAware {
+public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument> {
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 	
-	private IModel<DisplayMode> displayModeModel = DisplayMode.VIEW.asModel();
-
 	public ODocumentPage() {
 		super();
 	}
@@ -60,7 +58,7 @@ public class ODocumentPage extends AbstractWidgetPage<ODocument> implements IDis
 	public ODocumentPage(PageParameters parameters) {
 		super(parameters);
 		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
-		if(mode!=null) displayModeModel.setObject(mode);
+		if(mode!=null) setModeObject(mode);
 	}
 	
 	@Override
@@ -153,21 +151,6 @@ public class ODocumentPage extends AbstractWidgetPage<ODocument> implements IDis
 				return doc;
 			}
 		};
-	}
-
-	@Override
-	public IModel<DisplayMode> getModeModel() {
-		return displayModeModel;
-	}
-	
-	@Override
-	public DisplayMode getModeObject() {
-		return displayModeModel.getObject();
-	}
-	
-	public ODocumentPage setModeObject(DisplayMode mode) {
-		displayModeModel.setObject(mode);
-		return this;
 	}
 
 }

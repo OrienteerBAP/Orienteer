@@ -118,4 +118,10 @@ public class OClassesWidget extends AbstractWidget<Void> {
 		return new ResourceModel("class.list.title");
 	}
 
+	@Override
+	protected String getWidgetStyleClass() {
+		return "strict";
+	}
+	
+
 }

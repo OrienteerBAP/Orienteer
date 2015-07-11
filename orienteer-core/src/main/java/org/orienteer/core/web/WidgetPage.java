@@ -17,6 +17,7 @@ import com.google.inject.Inject;
  * Test page for widgets. Temporal.
  */
 @MountPath("/widget")
+//TODO: Delete
 public class WidgetPage extends AbstractWidgetPage<String> {
 	
 	public WidgetPage() {

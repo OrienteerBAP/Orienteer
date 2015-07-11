@@ -18,6 +18,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Test widget - just for implementation period
  */
+//TODO Delete
 @Widget(id="test", type=String.class, defaultDomain="test"/*, oClass="TestWidget"*/)
 public class TestWidget extends AbstractWidget<String> {
 

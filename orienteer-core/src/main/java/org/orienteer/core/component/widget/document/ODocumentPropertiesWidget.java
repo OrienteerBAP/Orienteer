@@ -16,6 +16,7 @@ import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.Widget;
@@ -28,7 +29,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * Widget to show registered parameters for a document on particular tab
  */
 @Widget(defaultDomain="document", id = ODocumentPropertiesWidget.WIDGET_TYPE_ID, type = ODocument.class)
-public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
+public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument>{
 	
 	public static final String WIDGET_TYPE_ID = "parameters";
 	
@@ -38,8 +39,6 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
 	private SaveODocumentCommand saveODocumentCommand;
 	
-	private IModel<DisplayMode> displayModeModel = DisplayMode.VIEW.asModel();
-
 	public ODocumentPropertiesWidget(String id, IModel<ODocument> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
@@ -56,7 +55,7 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 					protected Component getValueComponent(String id,
 							IModel<OProperty> rowModel) {
 						//TODO: remove static displaymode
-						return new ODocumentMetaPanel<Object>(id, displayModeModel, ODocumentPropertiesWidget.this.getModel(), rowModel);
+						return new ODocumentMetaPanel<Object>(id, getModeModel(), ODocumentPropertiesWidget.this.getModel(), rowModel);
 					}
 		};
 		form.add(propertiesStructureTable);
@@ -66,24 +65,19 @@ public class ODocumentPropertiesWidget extends AbstractWidget<ODocument>{
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		IDisplayModeAware parent = findParent(DashboardPanel.class).findParent(IDisplayModeAware.class);
-		if(parent!=null) {
-			displayModeModel.setObject(parent.getModeObject());
-		}
-		
-		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, displayModeModel));
-		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, displayModeModel));
+		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, getModeModel()));
+		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, getModeModel()));
 	}
 	
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		if(DisplayMode.EDIT.equals(displayModeModel.getObject()))
+		if(DisplayMode.EDIT.equals(getModeObject()))
 		{
 			saveODocumentCommand.configure();
 			if(!saveODocumentCommand.determineVisibility())
 			{
-				displayModeModel.setObject(DisplayMode.VIEW);
+				setModeObject(DisplayMode.VIEW);
 			}
 		}
 	}
