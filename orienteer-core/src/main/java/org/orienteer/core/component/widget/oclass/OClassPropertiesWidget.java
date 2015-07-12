@@ -35,7 +35,7 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
- * Widget to show and modify {@link OClass} configuration
+ * Widget to show and modify properties of a {@link OClass}
  */
 @Widget(id="class-properties", defaultDomain="class", defaultTab="configuration", type=OClass.class)
 public class OClassPropertiesWidget extends AbstractModeAwareWidget<OClass> {
