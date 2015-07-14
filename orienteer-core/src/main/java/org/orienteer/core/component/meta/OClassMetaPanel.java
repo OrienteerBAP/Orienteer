@@ -1,35 +1,6 @@
 package org.orienteer.core.component.meta;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.wicket.Application;
-import org.apache.wicket.Component;
-import org.apache.wicket.Session;
-import org.apache.wicket.core.util.lang.PropertyResolver;
-import org.apache.wicket.core.util.lang.PropertyResolverConverter;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.lang.Args;
-import org.apache.wicket.validation.IValidator;
-import org.orienteer.core.CustomAttributes;
-import org.orienteer.core.component.property.BooleanEditPanel;
-import org.orienteer.core.component.property.BooleanViewPanel;
-import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.property.OClassViewPanel;
-import org.orienteer.core.component.property.OPropertyViewPanel;
-import org.orienteer.core.model.ListOClassesModel;
-
 import com.google.common.base.Predicate;
-import com.orientechnologies.orient.core.collate.OCollate;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -39,18 +10,31 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClust
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.security.ORule;
-import com.orientechnologies.orient.core.sql.OSQLEngine;
-
+import org.apache.wicket.Application;
+import org.apache.wicket.Component;
+import org.apache.wicket.Session;
+import org.apache.wicket.core.util.lang.PropertyResolver;
+import org.apache.wicket.core.util.lang.PropertyResolverConverter;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.validation.IValidator;
+import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.component.property.*;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
-import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
-import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Meta panel for {@link OClass}
@@ -95,6 +79,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			OClusterSelectionStrategy strategy = entity.getClusterSelection();
 			return (V)(strategy!=null?strategy.getName():null);
 		}
+		else if(OClassPrototyper.SUPER_CLASS.equals(critery))
+		{
+			List<OClass> superClasses = entity.getSuperClasses();
+			return (V)(superClasses != null ? new ArrayList<OClass>(superClasses) : new ArrayList<OClass>());
+		}
 		else if((custom = CustomAttributes.fromString(critery))!=null)
 		{
 			return custom.getValue(entity);
@@ -115,6 +104,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			if("clusterSelection".equals(critery))
 			{
 				if(value!=null) entity.setClusterSelection(value.toString());
+			}
+			else if (OClassPrototyper.SUPER_CLASS.equals(critery))
+			{
+				if(value!=null) entity.setSuperClasses((List<OClass>) value);
 			}
 			else if((custom = CustomAttributes.fromString(critery))!=null)
 			{
@@ -151,7 +144,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			}
 			else if(OClassPrototyper.SUPER_CLASS.equals(critery))
 			{
-				return new OClassViewPanel(id,  (IModel<OClass>)getModel());
+				return new MultipleOClassesViewPanel(id, (IModel<List<OClass>>)getModel());
 			}
 			if("abstract".equals(critery) || "strictMode".equals(critery))
 			{
@@ -178,23 +171,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
 				else if("superClass".equals(critery))
 				{
-					return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListOClassesModel(), new IChoiceRenderer<OClass>() {
-
-						/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-						@Override
-						public Object getDisplayValue(OClass object) {
-							return new OClassNamingModel(object).getObject();
-						}
-
-						@Override
-						public String getIdValue(OClass object, int index) {
-							return object.getName();
-						}
-					}).setNullValid(true);
+					return new OClassMultiSelectPanel(id, (IModel<Collection<OClass>>)getModel());
 				}
 				else if("clusterSelection".equals(critery))
 				{
