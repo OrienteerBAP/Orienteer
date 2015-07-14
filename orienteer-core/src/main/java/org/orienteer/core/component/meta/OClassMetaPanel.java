@@ -10,6 +10,9 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClust
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.security.ORule;
+import com.vaynberg.wicket.select2.DragAndDropBehavior;
+import com.vaynberg.wicket.select2.Select2MultiChoice;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -23,6 +26,9 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.IValidator;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.component.property.*;
+import org.orienteer.core.model.ListOClassesModel;
+import org.orienteer.core.model.OClassTextChoiceProvider;
+
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
@@ -79,9 +85,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			OClusterSelectionStrategy strategy = entity.getClusterSelection();
 			return (V)(strategy!=null?strategy.getName():null);
 		}
-		else if(OClassPrototyper.SUPER_CLASS.equals(critery))
+		else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
 		{
 			List<OClass> superClasses = entity.getSuperClasses();
+			// Additional wrapping to ArrayList is required , because getSuperClasses return unmodifiable list
 			return (V)(superClasses != null ? new ArrayList<OClass>(superClasses) : new ArrayList<OClass>());
 		}
 		else if((custom = CustomAttributes.fromString(critery))!=null)
@@ -101,13 +108,9 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		try
 		{
 			CustomAttributes custom;
-			if("clusterSelection".equals(critery))
+			if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
 			{
 				if(value!=null) entity.setClusterSelection(value.toString());
-			}
-			else if (OClassPrototyper.SUPER_CLASS.equals(critery))
-			{
-				if(value!=null) entity.setSuperClasses((List<OClass>) value);
 			}
 			else if((custom = CustomAttributes.fromString(critery))!=null)
 			{
@@ -142,11 +145,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
 			}
-			else if(OClassPrototyper.SUPER_CLASS.equals(critery))
+			else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
 			{
 				return new MultipleOClassesViewPanel(id, (IModel<List<OClass>>)getModel());
 			}
-			if("abstract".equals(critery) || "strictMode".equals(critery))
+			if(OClassPrototyper.ABSTRACT.equals(critery) || OClassPrototyper.STRICT_MODE.equals(critery))
 			{
 				return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
 			}
@@ -157,11 +160,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		}
 		else if(DisplayMode.EDIT.equals(mode))
 		{
-				if("name".equals(critery) || "shortName".equals(critery))
+				if(OClassPrototyper.NAME.equals(critery) || OClassPrototyper.SHORT_NAME.equals(critery))
 				{
 					return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.CLASS_NAME_VALIDATOR);
 				}
-				else if("abstract".equals(critery) || "strictMode".equals(critery))
+				else if(OClassPrototyper.ABSTRACT.equals(critery) || "strictMode".equals(critery))
 				{
 					return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
 				}
@@ -169,11 +172,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				{
 					return new TextField<V>(id, getModel()).setType(Float.class);
 				}
-				else if("superClass".equals(critery))
+				else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
 				{
-					return new OClassMultiSelectPanel(id, (IModel<Collection<OClass>>)getModel());
+					return new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE).add(new DragAndDropBehavior());
 				}
-				else if("clusterSelection".equals(critery))
+				else if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
 				}

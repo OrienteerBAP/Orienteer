@@ -25,6 +25,8 @@ import org.orienteer.core.service.IMarkupProvider;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
+import com.vaynberg.wicket.select2.Select2Choice;
+import com.vaynberg.wicket.select2.Select2MultiChoice;
 
 /**
  * Implementation of {@link IMarkupProvider}
@@ -47,6 +49,8 @@ public class MarkupProvider implements IMarkupProvider
 		registerMarkupContent(Panel.class, "<div wicket:id=\"component\"></div>");
 		registerMarkupContent(AbstractLink.class, "<a wicket:id=\"component\"></a>");
 		registerMarkupContent(StructureTable.class, "<table wicket:id=\"component\"></table>");
+		registerMarkupContent(Select2MultiChoice.class, "<input type=\"hidden\" wicket:id=\"component\" class=\"form-control\"/>");
+		registerMarkupContent(Select2Choice.class, "<input type=\"hidden\" wicket:id=\"component\"/>");
 	}
 	
 	@Override

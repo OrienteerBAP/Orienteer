@@ -59,7 +59,7 @@ public class OClassesWidget extends AbstractWidget<Void> {
 		List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
 		columns.add(new CheckBoxColumn<OClass, String, String>(OClassClassNameConverter.INSTANCE));
 		columns.add(new OClassColumn(OClassPrototyper.NAME, modeModel));
-		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASS, modeModel));
+		columns.add(new OClassMetaColumn(OClassPrototyper.SUPER_CLASSES, modeModel));
 		columns.add(new OClassMetaColumn(OClassPrototyper.ABSTRACT, modeModel));
 		columns.add(new OClassMetaColumn(OClassPrototyper.STRICT_MODE, modeModel));
 		columns.add(new PropertyColumn<OClass, String>(new ResourceModel("class.count"), "count", "count"));

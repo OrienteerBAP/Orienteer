@@ -102,3 +102,7 @@ li.strict div.panel-body {
 	width: 30px;
 	margin: 2px;
 }
+
+div.select2-container.form-control {
+	padding: 0;
+}
