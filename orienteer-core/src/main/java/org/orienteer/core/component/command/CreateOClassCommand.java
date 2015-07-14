@@ -4,6 +4,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.web.schema.NewOClassPage;
 import org.orienteer.core.web.schema.OClassPage;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
@@ -35,7 +36,7 @@ public class CreateOClassCommand extends AbstractCreateCommand<OClass>
 
 	@Override
 	public void onClick() {
-		setResponsePage(new OClassPage(new OClassModel(OClassPrototyper.newPrototype())).setDisplayMode(DisplayMode.EDIT));
+		setResponsePage(new NewOClassPage(new OClassModel(OClassPrototyper.newPrototype())).setModeObject(DisplayMode.EDIT));
 	}
 
 }

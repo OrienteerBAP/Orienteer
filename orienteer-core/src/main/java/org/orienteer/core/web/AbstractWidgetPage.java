@@ -110,6 +110,15 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		return dashboardManager.listTabs(getDomain(), getModel());
 	}
 	
+	public AbstractWidgetPage<T> selectedTab(String tab) {
+		if(tab==null) return this;
+		List<DashboardTab> tabs = tabbedPanel.getTabs();
+		for(int i=0; i<tabs.size();i++) {
+			if(tab.equals(tabs.get(i).tab)) tabbedPanel.setSelectedTab(i);
+		}
+		return this;
+	}
+	
 	protected DashboardPanel<T> newDashboard(String id, String domain, String tab, IModel<T> model) {
 		return new DashboardPanel<T>(id, domain, tab, model);
 	}

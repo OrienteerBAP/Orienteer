@@ -37,6 +37,12 @@ public class NewOClassPage extends AbstractWidgetDisplayModeAwarePage<OClass> {
 		DisplayMode mode = DisplayMode.parse(parameters.get("mode").toOptionalString());
 		if(mode!=null) setModeObject(mode);
 	}
+	
+	@Override
+	public void initialize() {
+		super.initialize();
+		selectedTab("configuration");
+	}
 
 	@Override
 	protected IModel<OClass> resolveByPageParameters(

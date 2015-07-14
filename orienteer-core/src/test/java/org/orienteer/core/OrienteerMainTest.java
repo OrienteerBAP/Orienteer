@@ -15,6 +15,7 @@ import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.ODocumentPage;
+import org.orienteer.core.web.schema.NewOClassPage;
 import org.orienteer.core.web.schema.OIndexPage;
 import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.web.schema.OClassPage;
@@ -126,8 +127,8 @@ public class OrienteerMainTest
 			parameters.clearNamed();
 			parameters.set("className", oClass.getName());
 			LOG.info("Rendering page for class '"+oClass.getName()+"'");
-			tester.startPage(OClassPage.class, parameters);
-			tester.assertRenderedPage(OClassPage.class);
+			tester.startPage(NewOClassPage.class, parameters);
+			tester.assertRenderedPage(NewOClassPage.class);
 			Collection<OProperty> properties = oClass.properties();
 			for (OProperty oProperty : properties)
 			{
