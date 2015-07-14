@@ -24,6 +24,7 @@ public class GuiceRule implements MethodRule
 			public void evaluate() throws Throwable {
 				Injector injector = injectorProvider.get();
 				injector.injectMembers(target);
+				base.evaluate();
 			}
 		};
 	}
