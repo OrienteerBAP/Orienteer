@@ -1,10 +1,8 @@
 package org.orienteer.core.component.command;
 
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.web.schema.NewOClassPage;
 import org.orienteer.core.web.schema.OClassPage;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
@@ -14,8 +12,6 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
-import com.orientechnologies.orient.core.metadata.security.ORule;
 
 /**
  * {@link Command} to create {@link OClass}
@@ -36,7 +32,7 @@ public class CreateOClassCommand extends AbstractCreateCommand<OClass>
 
 	@Override
 	public void onClick() {
-		setResponsePage(new NewOClassPage(new OClassModel(OClassPrototyper.newPrototype())).setModeObject(DisplayMode.EDIT));
+		setResponsePage(new OClassPage(new OClassModel(OClassPrototyper.newPrototype())).setModeObject(DisplayMode.EDIT));
 	}
 
 }

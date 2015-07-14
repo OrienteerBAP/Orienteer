@@ -1,7 +1,6 @@
 package org.orienteer.core.component.widget.oclass;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -11,12 +10,10 @@ import org.orienteer.core.component.command.EditSchemaCommand;
 import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.meta.OClassMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**

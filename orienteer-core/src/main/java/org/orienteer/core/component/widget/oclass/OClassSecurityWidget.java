@@ -20,7 +20,6 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.LinkViewPanel;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 

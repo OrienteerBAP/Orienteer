@@ -20,13 +20,11 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.web.schema.OClassPage;
+
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
-
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 
 /**
  * Main class for all commands
