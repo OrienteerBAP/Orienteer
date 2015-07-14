@@ -45,7 +45,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to list all classes in the schema
  */
-@Widget(defaultDomain="schema", defaultTab="classes", id="list-oclasses",type=Void.class)
+@Widget(domain="schema", tab="classes", id="list-oclasses")
 public class OClassesWidget extends AbstractWidget<Void> {
 
 	

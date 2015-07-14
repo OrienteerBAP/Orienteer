@@ -143,7 +143,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	protected void buildDashboard() {
 		
-		List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDefaultDomainAndTab(domain, tab);
+		List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDomainAndTab(domain, tab);
 		for(int i=0;i<widgets.size();i++)
 		{
 			IWidgetType<T> type = widgets.get(i);

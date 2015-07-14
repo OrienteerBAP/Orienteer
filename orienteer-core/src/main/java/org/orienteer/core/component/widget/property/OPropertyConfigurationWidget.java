@@ -21,7 +21,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show and modify {@link OProperty} configuration
  */
-@Widget(id="property-configuration", defaultDomain="property", defaultTab="configuration", type=OProperty.class)
+@Widget(id="property-configuration", domain="property", tab="configuration")
 public class OPropertyConfigurationWidget extends AbstractModeAwareWidget<OProperty> {
 	
 	private OrienteerStructureTable<OProperty, String> structureTable;

@@ -26,7 +26,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to list all documents of a class
  */
-@Widget(id="list-all", type=OClass.class, defaultDomain="browse", defaultTab="list")
+@Widget(id="list-all", domain="browse", tab="list")
 public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 	
 	@Inject

@@ -14,10 +14,7 @@ public interface IWidgetType<T> {
 	public String getId();
 	public String getDefaultDomain();
 	public String getDefaultTab();
-	public Class<T> getType();
 	public String getOClassName();
 	public Class<? extends AbstractWidget<T>> getWidgetClass();
-	public boolean isMultiWidget();
 	public AbstractWidget<T> instanciate(String componentId, IModel<T> model, ODocument widgetDocument);
-	public boolean compatible(T testObject);
 }

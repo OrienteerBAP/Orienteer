@@ -16,9 +16,7 @@ import com.google.inject.BindingAnnotation;
 @Target({ElementType.TYPE})
 public @interface Widget {
 	public String id();
-	public Class<?> type();
 	public String oClass() default OWidgetsModule.OCLASS_WIDGET;
-	public String defaultDomain();
-	public String defaultTab() default "";
-	public boolean multi() default false;
+	public String domain();
+	public String tab() default "";
 }

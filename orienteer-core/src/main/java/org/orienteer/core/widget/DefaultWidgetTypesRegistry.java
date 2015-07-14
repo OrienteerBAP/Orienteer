@@ -44,7 +44,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<IWidgetType<T>> lookupByDefaultDomain(String domain) {
+	public <T> List<IWidgetType<T>> lookupByDomain(String domain) {
 		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
 		for(IWidgetType<?> description : widgetDescriptions)
 		{
@@ -55,7 +55,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<IWidgetType<T>> lookupByDefaultDomainAndTab(
+	public <T> List<IWidgetType<T>> lookupByDomainAndTab(
 			String domain, String tab) {
 		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
 		for(IWidgetType<?> description : widgetDescriptions)
@@ -64,17 +64,6 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			String defaultTab = description.getDefaultTab();
 			if(domain.equals(defaultDomain)
 					&& (Strings.isEmpty(defaultTab) || tab.equals(defaultTab))) ret.add((IWidgetType<T>)description);
-		}
-		return Collections.unmodifiableList(ret);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> List<IWidgetType<T>> lookupByType(Class<T> typeClass) {
-		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
-		for(IWidgetType<?> description : widgetDescriptions)
-		{
-			if(typeClass.equals(description.getType())) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
@@ -107,12 +96,6 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 				return widget.id();
 			}
 
-			@SuppressWarnings("unchecked")
-			@Override
-			public Class<T> getType() {
-				return (Class<T>)widget.type();
-			}
-			
 			@Override
 			public String getOClassName() {
 				return widget.oClass();
@@ -120,22 +103,17 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			
 			@Override
 			public String getDefaultDomain() {
-				return widget.defaultDomain();
+				return widget.domain();
 			}
 			
 			@Override
 			public String getDefaultTab() {
-				return widget.defaultTab();
+				return widget.tab();
 			}
 
 			@Override
 			public Class<? extends AbstractWidget<T>> getWidgetClass() {
 				return widgetClass;
-			}
-			
-			@Override
-			public boolean isMultiWidget() {
-				return widget.multi();
 			}
 
 			@Override
@@ -149,11 +127,6 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 				} 
 			}
 
-			@Override
-			public boolean compatible(T testObject) {
-				return getType().isInstance(testObject);
-			}
-			
 			@Override
 			public String toString() {
 				return widget.toString();

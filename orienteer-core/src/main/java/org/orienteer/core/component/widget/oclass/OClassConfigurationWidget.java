@@ -19,7 +19,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show and modify {@link OClass} configuration
  */
-@Widget(id="class-configuration", defaultDomain="class", defaultTab="configuration", type=OClass.class)
+@Widget(id="class-configuration", domain="class", tab="configuration")
 public class OClassConfigurationWidget extends AbstractModeAwareWidget<OClass> {
 	
 	private OrienteerStructureTable<OClass, String> structureTable;

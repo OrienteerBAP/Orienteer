@@ -38,7 +38,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show and modify security settings of a {@link OClass}
  */
-@Widget(id="class-security", defaultDomain="class", defaultTab="security", type=OClass.class)
+@Widget(id="class-security", domain="class", tab="security")
 public class OClassSecurityWidget extends AbstractWidget<OClass> {
 	
 	private class SecurityRightsColumn extends AbstractColumn<ORole, String>
