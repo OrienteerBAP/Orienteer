@@ -44,7 +44,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show and modify {@link OIndex}ies of an {@link OClass}
  */
-@Widget(id="class-indexies", domain="class", tab="configuration")
+@Widget(id="class-indexies", domain="class", tab="configuration", order=20)
 public class OClassIndexiesWidget extends AbstractModeAwareWidget<OClass> {
 	
 	private IModel<Boolean> showParentIndexesModel = Model.<Boolean>of(true);

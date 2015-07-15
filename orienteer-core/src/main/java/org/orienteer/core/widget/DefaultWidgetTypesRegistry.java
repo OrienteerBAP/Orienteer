@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
@@ -13,6 +15,8 @@ import org.orienteer.core.OrienteerWebApplication;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Singleton;
@@ -25,11 +29,19 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @Singleton
 public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
-	private List<IWidgetType<?>> widgetDescriptions = new ArrayList<IWidgetType<?>>();
+	private TreeSet<IWidgetType<?>> widgetDescriptions = new TreeSet<IWidgetType<?>>(new Comparator<IWidgetType<?>>() {
+
+		@Override
+		public int compare(IWidgetType<?> o1, IWidgetType<?> o2) {
+			int ret = Integer.compare(o1.getOrder(), o2.getOrder());
+			if(ret==0) ret=o1.getId().compareTo(o2.getId());
+			return ret;
+		}
+	});
 	
 	@Override
 	public List<IWidgetType<?>> listWidgetTypes() {
-		return Collections.unmodifiableList(widgetDescriptions);
+		return Collections.unmodifiableList(new ArrayList<IWidgetType<?>>(widgetDescriptions));
 	}
 
 	@Override
@@ -48,7 +60,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
 		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			if(domain.equals(description.getDefaultDomain())) ret.add((IWidgetType<T>)description);
+			if(domain.equals(description.getDomain())) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
@@ -60,8 +72,8 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
 		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			String defaultDomain = description.getDefaultDomain();
-			String defaultTab = description.getDefaultTab();
+			String defaultDomain = description.getDomain();
+			String defaultTab = description.getTab();
 			if(domain.equals(defaultDomain)
 					&& (Strings.isEmpty(defaultTab) || tab.equals(defaultTab))) ret.add((IWidgetType<T>)description);
 		}
@@ -102,13 +114,18 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			}
 			
 			@Override
-			public String getDefaultDomain() {
+			public String getDomain() {
 				return widget.domain();
 			}
 			
 			@Override
-			public String getDefaultTab() {
+			public String getTab() {
 				return widget.tab();
+			}
+			
+			@Override
+			public int getOrder() {
+				return widget.order();
 			}
 
 			@Override

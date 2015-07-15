@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
@@ -37,16 +38,17 @@ public class DefaultDashboardManager implements IDashboardManager{
 
 	@Override
 	public List<String> listTabs(String domain, IModel<?> dataModel) {
-		Set<String> tabs = new HashSet<String>();
+		List<String> tabs = new ArrayList<String>();
 		if(domain!=null)
 		{
 			for(IWidgetType<?> widgetDescriptor : widgetRegistry.listWidgetTypes())
 			{
-				if(domain.equals(widgetDescriptor.getDefaultDomain())) tabs.add(widgetDescriptor.getDefaultTab());
+				//To preserve order from widget registry
+				if(domain.equals(widgetDescriptor.getDomain()) && !tabs.contains(widgetDescriptor.getTab())) 
+						tabs.add(widgetDescriptor.getTab());
 			}
 		}
-		//TBD Load from DB(cache)
-		return new ArrayList<String>(tabs);
+		return tabs;
 	}
 	
 	@Override

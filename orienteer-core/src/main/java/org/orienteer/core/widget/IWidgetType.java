@@ -12,9 +12,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public interface IWidgetType<T> {
 	public String getId();
-	public String getDefaultDomain();
-	public String getDefaultTab();
+	public String getDomain();
+	public String getTab();
 	public String getOClassName();
+	public int getOrder();
 	public Class<? extends AbstractWidget<T>> getWidgetClass();
 	public AbstractWidget<T> instanciate(String componentId, IModel<T> model, ODocument widgetDocument);
 }

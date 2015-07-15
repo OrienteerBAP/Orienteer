@@ -37,7 +37,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show and modify properties of a {@link OClass}
  */
-@Widget(id="class-properties", domain="class", tab="configuration")
+@Widget(id="class-properties", domain="class", tab="configuration", order=10)
 public class OClassPropertiesWidget extends AbstractModeAwareWidget<OClass> {
 
 	private IModel<Boolean> showParentPropertiesModel = Model.<Boolean>of(true);

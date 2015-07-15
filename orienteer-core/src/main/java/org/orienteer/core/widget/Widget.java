@@ -19,4 +19,5 @@ public @interface Widget {
 	public String oClass() default OWidgetsModule.OCLASS_WIDGET;
 	public String domain();
 	public String tab() default "";
+	public int order() default 0;
 }
