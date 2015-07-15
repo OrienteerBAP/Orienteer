@@ -65,7 +65,17 @@ public enum CustomAttributes
 	/**
 	 * Description of {@link OProperty} or {@link OClass}
 	 */
-    DESCRIPTION("orienteer.description",OType.STRING,null,true);
+    DESCRIPTION("orienteer.description",OType.STRING,null,true),
+
+	/**
+	 *	Access levels ("_allow", "_allowRead", "_allowUpdate", or "_allowDelete") granted on document creation.
+	 */
+	ON_CREATE_FIELDS("onCreate.fields",OType.STRING,null,true),
+
+	/**
+	 * Identity type ("user" or "role") who will get access rights on document creation.
+	 */
+	ON_CREATE_IDENTITY_TYPE("onCreate.identityType",OType.STRING,null,true);
 
 	private final String name;
 	private final OType type;
