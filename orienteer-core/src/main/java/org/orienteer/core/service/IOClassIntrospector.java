@@ -30,5 +30,6 @@ public interface IOClassIntrospector
 	public List<OProperty> listProperties(OClass oClass, Predicate<OProperty>... predicates);
 	public ISortableDataProvider<ODocument, String> prepareDataProviderForProperty(OProperty property, IModel<ODocument> documentModel);
 	public OProperty getNameProperty(OClass oClass);
+	public List<String> getOClassAttributes(OClass oClass);
 	public String getDocumentName(ODocument doc);
 }

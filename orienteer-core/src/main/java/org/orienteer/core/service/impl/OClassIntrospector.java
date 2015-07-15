@@ -16,6 +16,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.OClasses;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.property.DisplayMode;
@@ -28,6 +29,7 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
 import java.util.*;
@@ -37,6 +39,16 @@ import java.util.*;
  */
 public class OClassIntrospector implements IOClassIntrospector
 {
+	private static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
+	static
+	{
+		//Index:OCLASS_ATTRS.indexOf(OClassPrototyper.NAME)+1
+		OCLASS_ATTRS.add(2, CustomAttributes.DESCRIPTION.getName());
+		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
+		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
+		OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
+	}
+
 	/**
 	 * {@link Predicate} that checks displayable of an specified {@link OProperty}
 	 */
@@ -209,6 +221,19 @@ public class OClassIntrospector implements IOClassIntrospector
 			}
 		}
 		return ret;
+	}
+
+	@Override
+	public List<String> getOClassAttributes(OClass oClass) {
+		List<String> attrs = new ArrayList<String>(OCLASS_ATTRS);
+		if (oClass != null) {
+			if (oClass.isSubClassOf(OClasses.ORestricted.name())) {
+				attrs.add(CustomAttributes.ON_CREATE_FIELDS.getName());
+				attrs.add(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
+			}
+		}
+
+		return attrs;
 	}
 
 	@Override

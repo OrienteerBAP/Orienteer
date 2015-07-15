@@ -1,5 +1,6 @@
 package org.orienteer.core.component.widget.oclass;
 
+import com.google.inject.Inject;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -10,6 +11,7 @@ import org.orienteer.core.component.command.EditSchemaCommand;
 import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.meta.OClassMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
@@ -21,14 +23,17 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 @Widget(id="class-configuration", domain="class", tab="configuration")
 public class OClassConfigurationWidget extends AbstractModeAwareWidget<OClass> {
-	
+
+	@Inject
+	private IOClassIntrospector inspector;
+
 	private OrienteerStructureTable<OClass, String> structureTable;
 	
 	public OClassConfigurationWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<OClass> form = new Form<OClass>("form");
-		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), OClassMetaPanel.OCLASS_ATTRS) {
+		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), inspector.getOClassAttributes(model.getObject())) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {

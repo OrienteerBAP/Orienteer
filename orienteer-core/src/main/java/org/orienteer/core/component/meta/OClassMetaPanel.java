@@ -1,6 +1,9 @@
 package org.orienteer.core.component.meta;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -12,7 +15,6 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORound
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.vaynberg.wicket.select2.DragAndDropBehavior;
 import com.vaynberg.wicket.select2.Select2MultiChoice;
-
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -26,9 +28,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.IValidator;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.component.property.*;
-import org.orienteer.core.model.ListOClassesModel;
 import org.orienteer.core.model.OClassTextChoiceProvider;
-
+import org.orienteer.core.model.OnCreateFieldsTextChoiceProvider;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
@@ -49,16 +50,6 @@ import java.util.List;
  */
 public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V> implements IDisplayModeAware
 {
-	public static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
-	static
-	{
-		//Index:OCLASS_ATTRS.indexOf(OClassPrototyper.NAME)+1
-		OCLASS_ATTRS.add(2, CustomAttributes.DESCRIPTION.getName());
-		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
-		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
-		OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
-	}
-	
 	private static final Predicate<OProperty> IS_LINK_PROPERTY = new Predicate<OProperty>() {
 
 		@Override
@@ -70,12 +61,15 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	private static final long serialVersionUID = 1L;
 	private static final List<String> CLUSTER_SELECTIONS = 
 			Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
+
+	private static final List<String> ON_CREATE_IDENTITY_SELECTIONS =
+			Arrays.asList(new String[]{"user", "role"});
 	
 	public OClassMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<OClass> entityModel, IModel<String> criteryModel) {
 		super(id, modeModel, entityModel, criteryModel);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected V getValue(OClass entity, String critery) {
@@ -90,6 +84,13 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			List<OClass> superClasses = entity.getSuperClasses();
 			// Additional wrapping to ArrayList is required , because getSuperClasses return unmodifiable list
 			return (V)(superClasses != null ? new ArrayList<OClass>(superClasses) : new ArrayList<OClass>());
+		}
+		else if((CustomAttributes.ON_CREATE_FIELDS.getName().equals(critery)) && (custom = CustomAttributes.fromString(critery)) != null)
+		{
+			String onCreateFields = custom.getValue(entity);
+			return (V)(!Strings.isNullOrEmpty(onCreateFields)
+					? Lists.newArrayList(onCreateFields.split(","))
+					: new ArrayList<String>());
 		}
 		else if((custom = CustomAttributes.fromString(critery))!=null)
 		{
@@ -112,9 +113,20 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				if(value!=null) entity.setClusterSelection(value.toString());
 			}
+			else if((CustomAttributes.ON_CREATE_FIELDS.getName().equals(critery)) && (custom = CustomAttributes.fromString(critery)) != null)
+			{
+				if(value!=null)
+				{
+					custom.setValue(entity, Joiner.on(",").join((List<String>) value));
+				}
+			}
 			else if((custom = CustomAttributes.fromString(critery))!=null)
 			{
 				custom.setValue(entity, value);
+			}
+			else if (OClassPrototyper.SUPER_CLASSES.equals(critery))
+			{
+				if(value!=null) entity.setSuperClasses((List<OClass>) value);
 			}
 			else
 			{
@@ -145,8 +157,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
 			}
-			else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
-			{
+			else if(OClassPrototyper.SUPER_CLASSES.equals(critery)) {
 				return new MultipleOClassesViewPanel(id, (IModel<List<OClass>>)getModel());
 			}
 			if(OClassPrototyper.ABSTRACT.equals(critery) || OClassPrototyper.STRICT_MODE.equals(critery))
@@ -173,7 +184,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 					return new TextField<V>(id, getModel()).setType(Float.class);
 				}
 				else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
-				{
+ 				{
 					return new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE).add(new DragAndDropBehavior());
 				}
 				else if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
@@ -203,6 +214,14 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
                 {
                     return new TextField<V>(id,getModel());
                 }
+				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_FIELDS))
+				{
+					return new Select2MultiChoice(id, getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE);
+				}
+				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_IDENTITY_TYPE))
+				{
+					return new DropDownChoice<String>(id, (IModel<String>)getModel(), ON_CREATE_IDENTITY_SELECTIONS);
+				}
 				else
 				{
 					return new Label(id, getModel());
