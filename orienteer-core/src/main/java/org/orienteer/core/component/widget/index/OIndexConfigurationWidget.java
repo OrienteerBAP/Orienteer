@@ -24,7 +24,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show and modify {@link OIndex} configuration
  */
-@Widget(id="index-configuration", domain="index", tab="configuration")
+@Widget(id="index-configuration", domain="index", tab="configuration", autoEnable=true)
 public class OIndexConfigurationWidget extends AbstractModeAwareWidget<OIndex<?>> {
 	
 	private OrienteerStructureTable<OIndex<?>, String> structureTable;

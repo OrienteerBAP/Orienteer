@@ -21,7 +21,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show and modify {@link OClass} configuration
  */
-@Widget(id="class-configuration", domain="class", tab="configuration")
+@Widget(id="class-configuration", domain="class", tab="configuration", autoEnable=true)
 public class OClassConfigurationWidget extends AbstractModeAwareWidget<OClass> {
 
 	@Inject

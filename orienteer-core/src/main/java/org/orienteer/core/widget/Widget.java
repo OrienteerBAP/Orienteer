@@ -20,5 +20,5 @@ public @interface Widget {
 	public String domain();
 	public String tab() default "";
 	public int order() default 0;
-	public boolean autoEnable() default true;
+	public boolean autoEnable() default false;
 }

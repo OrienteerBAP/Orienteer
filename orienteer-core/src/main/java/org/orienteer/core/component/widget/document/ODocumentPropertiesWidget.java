@@ -28,7 +28,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget to show registered parameters for a document on particular tab
  */
-@Widget(domain="document", id = ODocumentPropertiesWidget.WIDGET_TYPE_ID)
+@Widget(domain="document", id = ODocumentPropertiesWidget.WIDGET_TYPE_ID, autoEnable=true)
 public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument>{
 	
 	public static final String WIDGET_TYPE_ID = "parameters";
