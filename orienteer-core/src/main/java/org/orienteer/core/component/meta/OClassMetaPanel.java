@@ -13,8 +13,10 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClust
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.security.ORule;
+import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
 import com.vaynberg.wicket.select2.DragAndDropBehavior;
 import com.vaynberg.wicket.select2.Select2MultiChoice;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
@@ -27,13 +29,16 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.validation.IValidator;
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.model.OClassTextChoiceProvider;
 import org.orienteer.core.model.OnCreateFieldsTextChoiceProvider;
+
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
@@ -50,6 +55,18 @@ import java.util.List;
  */
 public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V> implements IDisplayModeAware
 {
+	public static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
+	static
+	{
+		//Index:OCLASS_ATTRS.indexOf(OClassPrototyper.NAME)+1
+		OCLASS_ATTRS.add(2, CustomAttributes.DESCRIPTION.getName());
+		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
+		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
+		OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
+		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_FIELDS.getName());
+		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
+	}
+	
 	private static final Predicate<OProperty> IS_LINK_PROPERTY = new Predicate<OProperty>() {
 
 		@Override
@@ -185,7 +202,9 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
 				else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
  				{
-					return new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE).add(new DragAndDropBehavior());
+					return new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE)
+							.add(new DragAndDropBehavior())
+							.add(new RefreshMetaContextOnChangeBehaviour());
 				}
 				else if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
 				{
@@ -228,6 +247,26 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
 		}
 		else return null;
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		String critery = getPropertyObject();
+		if(OClassPrototyper.SUPER_CLASSES.equals(critery))
+		{
+			Collection<OClass> superClasses = (Collection<OClass>)getEnteredValue();
+			AbstractMetaPanel<OClass, String, ?> onCreateFieldsPanel = getMetaComponent(CustomAttributes.ON_CREATE_FIELDS.getName());
+			AbstractMetaPanel<OClass, String, ?> onCreateIdentityTypePanel = getMetaComponent(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
+			if(onCreateFieldsPanel!=null || onCreateIdentityTypePanel!=null) {
+				boolean visibility = false;
+				for(OClass superClass : superClasses) {
+					if(visibility = superClass.isSubClassOf(OSecurityShared.RESTRICTED_CLASSNAME)) break;
+				}
+				if(onCreateFieldsPanel!=null) onCreateFieldsPanel.setVisibilityAllowed(visibility);
+				if(onCreateIdentityTypePanel!=null) onCreateIdentityTypePanel.setVisibilityAllowed(visibility);
+			}
+		}
 	}
 
 	@Override

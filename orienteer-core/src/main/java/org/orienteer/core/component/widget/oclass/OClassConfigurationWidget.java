@@ -33,7 +33,7 @@ public class OClassConfigurationWidget extends AbstractModeAwareWidget<OClass> {
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<OClass> form = new Form<OClass>("form");
-		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), inspector.getOClassAttributes(model.getObject())) {
+		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), OClassMetaPanel.OCLASS_ATTRS) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
