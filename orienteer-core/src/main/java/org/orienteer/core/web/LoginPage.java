@@ -1,6 +1,7 @@
 package org.orienteer.core.web;
 
 import org.apache.wicket.authroles.authentication.panel.SignInPanel;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.MountPath;
@@ -16,6 +17,7 @@ public class LoginPage extends BasePage<Object>
 	public LoginPage()
 	{
 		super();
+		add(new Label("prompt", new ResourceModel("orienteer.login.prompt", null)).setEscapeModelStrings(false));
 		SignInPanel signInPanel = new SignInPanel("signInPanel", true);
 		signInPanel.setRememberMe(false);
 		add(signInPanel);

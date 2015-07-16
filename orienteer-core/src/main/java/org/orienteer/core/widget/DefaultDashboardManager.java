@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Objects;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
@@ -43,9 +44,10 @@ public class DefaultDashboardManager implements IDashboardManager{
 		{
 			for(IWidgetType<?> widgetDescriptor : widgetRegistry.listWidgetTypes())
 			{
+				String tabToAdd = widgetDescriptor.getTab();
 				//To preserve order from widget registry
-				if(domain.equals(widgetDescriptor.getDomain()) && !tabs.contains(widgetDescriptor.getTab())) 
-						tabs.add(widgetDescriptor.getTab());
+				if(domain.equals(widgetDescriptor.getDomain()) && !Strings.isEmpty(tabToAdd) && !tabs.contains(tabToAdd)) 
+						tabs.add(tabToAdd);
 			}
 		}
 		return tabs;

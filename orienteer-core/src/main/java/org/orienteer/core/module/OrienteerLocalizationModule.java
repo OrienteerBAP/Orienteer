@@ -98,6 +98,9 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 		
 		public String loadStringResource(final String key, Locale locale, final String style, final String variation)
 		{
+			if(Strings.isEmpty(key)) {
+				System.out.println("Empty!");
+			}
 			final String language = locale!=null?locale.getLanguage():null;
 			return new DBClosure<String>() {
 
@@ -158,7 +161,6 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 
 	@Override
 	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
-		OSchema schema = db.getMetadata().getSchema();
 		OSchemaHelper.bind(db)
 		.oClass(OCLASS_LOCALIZATION)
 			.oProperty(OPROPERTY_KEY, OType.STRING)
@@ -168,7 +170,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 			.oProperty(OPROPERTY_STYLE, OType.STRING)
 			.oProperty(OPROPERTY_VARIATION, OType.STRING)
 			.oProperty(OPROPERTY_ACTIVE, OType.BOOLEAN)
-			.oProperty(OPROPERTY_VALUE, OType.STRING)
+			.oProperty(OPROPERTY_VALUE, OType.STRING).assignVisualization("textarea")
 			.orderProperties(OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE)
 			.switchDisplayable(true, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
 	}

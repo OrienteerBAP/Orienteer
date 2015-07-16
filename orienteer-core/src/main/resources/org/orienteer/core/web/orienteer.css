@@ -106,3 +106,7 @@ li.strict div.panel-body {
 div.select2-container.form-control {
 	padding: 0;
 }
+
+div.signin-panel {
+	margin-top: 1em;
+}
