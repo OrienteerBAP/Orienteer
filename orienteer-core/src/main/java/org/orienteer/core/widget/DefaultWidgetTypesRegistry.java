@@ -127,6 +127,11 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			public int getOrder() {
 				return widget.order();
 			}
+			
+			@Override
+			public boolean isAutoEnable() {
+				return widget.autoEnable();
+			}
 
 			@Override
 			public Class<? extends AbstractWidget<T>> getWidgetClass() {

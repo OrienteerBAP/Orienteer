@@ -12,7 +12,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget for free HTML/JS widget for documents page
  */
-@Widget(id="document-html-js-pane", domain="document", oClass=AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME)
+@Widget(id="document-html-js-pane", domain="document", oClass=AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, autoEnable=false)
 public class ODocumentHtmlJsPaneWidget extends
 		AbstractHtmlJsPaneWidget<ODocument> {
 

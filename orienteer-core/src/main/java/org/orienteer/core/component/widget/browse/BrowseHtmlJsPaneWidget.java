@@ -16,7 +16,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Widget for free HTML/JS widget for browse page
  */
-@Widget(id="browse-html-js-pane", domain="browse", oClass=AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, order=10)
+@Widget(id="browse-html-js-pane", domain="browse", oClass=AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, order=10, autoEnable=false)
 public class BrowseHtmlJsPaneWidget extends AbstractHtmlJsPaneWidget<OClass> {
 
 	public BrowseHtmlJsPaneWidget(String id, IModel<OClass> model,
