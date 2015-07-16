@@ -34,8 +34,8 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 
 	@Override
 	public OSchemaHelper oClass(
-			String className) {
-		return (OSchemaHelper) super.oClass(className);
+			String className, String... superClasses) {
+		return (OSchemaHelper) super.oClass(className, superClasses);
 	}
 	
 	public OSchemaHelper oProperty(
@@ -71,6 +71,12 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	@Override
 	public OSchemaHelper linkedClass(String className) {
 		return (OSchemaHelper) super.linkedClass(className);
+	}
+	
+	@Override
+	public OSchemaHelper linkedType(
+			OType linkedType) {
+		return (OSchemaHelper) super.linkedType(linkedType);
 	}
 	
 	public OSchemaHelper order(int order)

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.widget.AbstractHtmlJsPaneWidget;
 import org.orienteer.core.component.widget.TestWidget;
 import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.util.OSchemaHelper;
@@ -41,7 +42,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	public static final String OPROPERTY_HIDDEN = "hidden";
 	
 	public OWidgetsModule() {
-		super("widgets", 1);
+		super("widgets", 2);
 	}
 	
 	@Override
@@ -63,6 +64,28 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 					.oProperty(OPROPERTY_SIZE_Y, OType.INTEGER, 60)
 					.oProperty(OPROPERTY_HIDDEN, OType.BOOLEAN, 60);
 		helper.setupRelationship(OCLASS_DASHBOARD, OPROPERTY_WIDGETS, OCLASS_WIDGET, OPROPERTY_DASHBOARD);
+		installHtmlJsPaneSchema(db); 
+	}
+	
+	@Override
+	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+			int oldVersion, int newVersion) {
+		int updateTo = oldVersion+1;
+		switch(updateTo) {
+			case 2:
+			installHtmlJsPaneSchema(db);
+		}
+		if(updateTo<newVersion) onUpdate(app, db, updateTo, newVersion);
+	}
+	
+	protected void installHtmlJsPaneSchema(ODatabaseDocument db) {
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		helper.oClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
+				.oProperty("title", OType.STRING, 0)
+				.oProperty("html", OType.STRING, 10).assignVisualization("textarea")
+				.oProperty("script", OType.STRING, 20).assignVisualization("textarea")
+				.oProperty("resources", OType.EMBEDDEDLIST, 30).linkedType(OType.STRING);
+				
 	}
 	
 }
