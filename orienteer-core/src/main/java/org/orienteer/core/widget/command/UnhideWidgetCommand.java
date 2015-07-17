@@ -47,6 +47,8 @@ public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<T> {
 				dashboard.getDashboardSupport().ajaxAddWidget(widget, target);
 			}
 		});
+		modal.setAutoSize(true);
+		modal.setMinimalWidth(300);
 	}
 
 }

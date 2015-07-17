@@ -29,6 +29,73 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @Singleton
 public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
+	private static class AnnotatedWidgetType<T> implements IWidgetType<T> {
+		
+		private Class<? extends AbstractWidget<T>> widgetClass;
+		private Widget widget;
+		
+		private AnnotatedWidgetType(Class<? extends AbstractWidget<T>> widgetClass, Widget widget) {
+			this.widgetClass = widgetClass;
+			this.widget = widget;
+		}
+		
+		public static <T> IWidgetType<T> create(Class<? extends AbstractWidget<T>> widgetClass) {
+			Widget ann = widgetClass.getAnnotation(Widget.class);
+			return ann!=null?new AnnotatedWidgetType<T>(widgetClass, ann):null;
+		}
+
+		@Override
+		public String getId() {
+			return widget.id();
+		}
+
+		@Override
+		public String getOClassName() {
+			return widget.oClass();
+		}
+		
+		@Override
+		public String getDomain() {
+			return widget.domain();
+		}
+		
+		@Override
+		public String getTab() {
+			return widget.tab();
+		}
+		
+		@Override
+		public int getOrder() {
+			return widget.order();
+		}
+		
+		@Override
+		public boolean isAutoEnable() {
+			return widget.autoEnable();
+		}
+
+		@Override
+		public Class<? extends AbstractWidget<T>> getWidgetClass() {
+			return widgetClass;
+		}
+
+		@Override
+		public AbstractWidget<T> instanciate(String componentId, IModel<T> model, ODocument widgetDoc) {
+			try {
+				return getWidgetClass()
+						.getConstructor(String.class, IModel.class, IModel.class)
+						.newInstance(componentId, model, new ODocumentModel(widgetDoc));
+			} catch (Exception e) {
+				throw new WicketRuntimeException("Can't instanciate widget for descriptor: "+this , e);
+			} 
+		}
+
+		@Override
+		public String toString() {
+			return widget.toString();
+		}
+	}
+	
 	private TreeSet<IWidgetType<?>> widgetDescriptions = new TreeSet<IWidgetType<?>>(new Comparator<IWidgetType<?>>() {
 
 		@Override
@@ -99,61 +166,9 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 
 	@Override
 	public <T> IWidgetTypesRegistry register(final Class<? extends AbstractWidget<T>> widgetClass) {
-		final Widget widget = widgetClass.getAnnotation(Widget.class);
-		if(widget==null) throw new WicketRuntimeException("There is no a @Widget annotation on "+widgetClass.getName());
-		return register(new IWidgetType<T>() {
-
-			@Override
-			public String getId() {
-				return widget.id();
-			}
-
-			@Override
-			public String getOClassName() {
-				return widget.oClass();
-			}
-			
-			@Override
-			public String getDomain() {
-				return widget.domain();
-			}
-			
-			@Override
-			public String getTab() {
-				return widget.tab();
-			}
-			
-			@Override
-			public int getOrder() {
-				return widget.order();
-			}
-			
-			@Override
-			public boolean isAutoEnable() {
-				return widget.autoEnable();
-			}
-
-			@Override
-			public Class<? extends AbstractWidget<T>> getWidgetClass() {
-				return widgetClass;
-			}
-
-			@Override
-			public AbstractWidget<T> instanciate(String componentId, IModel<T> model, ODocument widgetDoc) {
-				try {
-					return getWidgetClass()
-							.getConstructor(String.class, IModel.class, IModel.class)
-							.newInstance(componentId, model, new ODocumentModel(widgetDoc));
-				} catch (Exception e) {
-					throw new WicketRuntimeException("Can't instanciate widget for descriptor: "+this , e);
-				} 
-			}
-
-			@Override
-			public String toString() {
-				return widget.toString();
-			}
-		});
+		IWidgetType<T> widgetType = AnnotatedWidgetType.create(widgetClass);
+		if(widgetType==null) throw new WicketRuntimeException("There is no a @Widget annotation on "+widgetClass.getName());
+		return register(widgetType);
 	}
 	
 	@Override

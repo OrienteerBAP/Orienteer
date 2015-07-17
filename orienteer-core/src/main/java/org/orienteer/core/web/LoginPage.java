@@ -17,7 +17,7 @@ public class LoginPage extends BasePage<Object>
 	public LoginPage()
 	{
 		super();
-		add(new Label("prompt", new ResourceModel("orienteer.login.prompt", null)).setEscapeModelStrings(false));
+		add(new Label("prompt", new ResourceModel("orienteer.login.prompt", "")).setEscapeModelStrings(false));
 		SignInPanel signInPanel = new SignInPanel("signInPanel", true);
 		signInPanel.setRememberMe(false);
 		add(signInPanel);

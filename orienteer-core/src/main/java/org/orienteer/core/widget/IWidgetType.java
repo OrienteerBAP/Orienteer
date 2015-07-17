@@ -1,6 +1,7 @@
 package org.orienteer.core.widget;
 
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.io.IClusterable;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -10,7 +11,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main data
  */
-public interface IWidgetType<T> {
+public interface IWidgetType<T> extends IClusterable {
 	public String getId();
 	public String getDomain();
 	public String getTab();
