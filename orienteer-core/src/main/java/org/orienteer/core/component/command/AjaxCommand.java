@@ -73,6 +73,7 @@ public abstract class AjaxCommand<T> extends Command<T>
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				AjaxCommand.this.onClick(target);
+				trySendActionPerformed();
 			}
         };
 	}

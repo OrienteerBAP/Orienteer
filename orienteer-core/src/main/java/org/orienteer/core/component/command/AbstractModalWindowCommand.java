@@ -65,6 +65,7 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 		modal.setAutoSize(true);
 		add(modal);
 		initializeContent(modal);
+		setAutoNotify(false);
 	}
 	
 	protected abstract void initializeContent(ModalWindow modal);

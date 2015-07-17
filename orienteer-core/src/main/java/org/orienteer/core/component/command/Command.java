@@ -4,9 +4,11 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -20,6 +22,7 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.event.ActionPerformedEvent;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
@@ -31,7 +34,7 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
  *
  * @param <T> the type of an entity to which this command can be applied
  */
-public abstract class Command<T> extends Panel implements IBootstrapAware
+public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAware
 {
 	private static final AttributeModifier DISABLED_LINK_BEHAVIOR = new AttributeModifier("disabled", AttributeModifier.VALUELESS_ATTRIBUTE_ADD)
 	{
@@ -46,10 +49,12 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
 	private String btnCssClass;
 	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
 	private BootstrapSize bootstrapSize = BootstrapSize.DEFAULT;
+	private boolean changingModel=false;
+	private boolean autoNotify=true;
 	
 	public Command(IModel<?> labelModel, StructureTableCommandsToolbar<T> toolbar)
     {
-        this(toolbar.newChildId(), labelModel);
+        this(toolbar.newChildId(), labelModel, toolbar.getModel());
     }
 	
     public Command(IModel<?> labelModel, DataTableCommandsToolbar<T> toolbar)
@@ -74,12 +79,22 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
 
     public Command(String commandId, String labelKey)
     {
-        this(commandId, new ResourceModel(labelKey));
+        this(commandId, labelKey, null);
     }
-
+    
+    public Command(String commandId, String labelKey, IModel<T> model)
+    {
+        this(commandId, new ResourceModel(labelKey), model);
+    }
+    
     public Command(String commandId, IModel<?> labelModel)
     {
-        super(commandId);
+    	this(commandId, labelModel, null);
+    }
+
+    public Command(String commandId, IModel<?> labelModel, IModel<T> model)
+    {
+        super(commandId, model);
         link = newLink("command");
         link.setOutputMarkupId(true);
         link.add(new AttributeAppender("class", new PropertyModel<String>(this, "btnCssClass"), " "));
@@ -107,6 +122,7 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
 			public void onClick()
             {
                 Command.this.onClick();
+                trySendActionPerformed();
             }
         };
     }
@@ -178,6 +194,39 @@ public abstract class Command<T> extends Panel implements IBootstrapAware
 	public OSchema getSchema()
 	{
 		return getDatabase().getMetadata().getSchema();
+	}
+	
+	public boolean isChangingModel() {
+		return changingModel;
+	}
+	
+	public Command<T> setChandingModel(boolean changingModel) {
+		this.changingModel = changingModel;
+		return this;
+	}
+	
+	public boolean isAutoNotify() {
+		return autoNotify;
+	}
+
+	public Command<T> setAutoNotify(boolean autoNotify) {
+		this.autoNotify = autoNotify;
+		return this;
+	}
+	
+	/**
+	 * Send {@link ActionPerformedEvent} only of auto notify is enabled
+	 */
+	protected void trySendActionPerformed() {
+		if(isAutoNotify()) sendActionPerformed();
+	}
+	
+	protected void sendActionPerformed() {
+		send(getPage(), Broadcast.BREADTH, newActionPerformedEvent());
+	}
+	
+	protected ActionPerformedEvent<T> newActionPerformedEvent() {
+		return new ActionPerformedEvent<T>(this);
 	}
 
 	public abstract void onClick();

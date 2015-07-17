@@ -70,6 +70,7 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				AjaxFormCommand.this.onSubmit(target, form);
+				trySendActionPerformed();
 			}
 			
 		};

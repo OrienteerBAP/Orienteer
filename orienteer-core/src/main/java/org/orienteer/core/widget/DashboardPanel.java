@@ -50,6 +50,7 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import static org.orienteer.core.module.OWidgetsModule.*;
 
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;

@@ -53,6 +53,7 @@ public abstract class AbstractCreateCommand<T> extends Command<T>
 		super.onInitialize();
 		setIcon(FAIconType.plus);
 		setBootstrapType(BootstrapType.PRIMARY);
+		setAutoNotify(false);
 	}
 
 }

@@ -54,6 +54,7 @@ public class EditCommand<T> extends AjaxCommand<T>
 		super.onInitialize();
 		setIcon(FAIconType.edit);
 		setBootstrapType(BootstrapType.PRIMARY);
+		setAutoNotify(false);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package org.orienteer.core.component.widget.oclass;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
@@ -26,10 +27,12 @@ import org.orienteer.core.component.table.OIndexMetaColumn;
 import org.orienteer.core.component.table.OPropertyDefinitionColumn;
 import org.orienteer.core.component.table.OPropertyMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.model.ExtendedOPropertiesDataProvider;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
+import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
@@ -75,6 +78,7 @@ public class OClassIndexiesWidget extends AbstractModeAwareWidget<OClass> {
 		iTable.setCaptionModel(new ResourceModel("class.indexies"));
 		iForm.add(iTable);
 		add(iForm);
+		add(DisableIfPrototypeBehavior.INSTANCE);
 	}
 
 	@Override
@@ -90,5 +94,14 @@ public class OClassIndexiesWidget extends AbstractModeAwareWidget<OClass> {
 	@Override
 	protected String getWidgetStyleClass() {
 		return "strict";
+	}
+	
+	@Override
+	public void onActionPerformed(ActionPerformedEvent<?> event,
+			IEvent<?> wicketEvent) {
+		if(event.ofType(OClass.class) && event.getCommand().isChangingModel() && event.isAjax()) {
+			event.getTarget().add(this);
+			wicketEvent.dontBroadcastDeeper();
+		}
 	}
 }

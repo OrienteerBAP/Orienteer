@@ -1,5 +1,6 @@
 package org.orienteer.core.component.structuretable;
 
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -8,7 +9,7 @@ import org.apache.wicket.model.IModel;
  *
  * @param <P> the type of main object for a table
  */
-public class AbstractStructureTableToolbar<P> extends Panel
+public class AbstractStructureTableToolbar<P> extends GenericPanel<P>
 {
 	private static final long serialVersionUID = 1L;
 
@@ -22,7 +23,7 @@ public class AbstractStructureTableToolbar<P> extends Panel
 	 * @param table
 	 *            data table this toolbar will be attached to
 	 */
-	public AbstractStructureTableToolbar(final IModel<?> model, final StructureTable<P, ?> table)
+	public AbstractStructureTableToolbar(final IModel<P> model, final StructureTable<P, ?> table)
 	{
 		super(table.newToolbarId(), model);
 		this.table = table;
@@ -36,7 +37,7 @@ public class AbstractStructureTableToolbar<P> extends Panel
 	 */
 	public AbstractStructureTableToolbar(final StructureTable<P, ?> table)
 	{
-		this(null, table);
+		this(table.getModel(), table);
 	}
 
 	/**

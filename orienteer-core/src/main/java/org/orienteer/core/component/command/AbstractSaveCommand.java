@@ -39,6 +39,7 @@ public class AbstractSaveCommand<T> extends AjaxFormCommand<T> {
 		super.onInitialize();
 		setIcon(FAIconType.save);
 		setBootstrapType(BootstrapType.PRIMARY);
+		setChandingModel(true);
 	}
 
 	@Override
