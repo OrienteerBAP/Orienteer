@@ -1,22 +1,22 @@
 package org.orienteer.core.module;
 
-import java.io.IOException;
+import java.util.List;
 
-import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.widget.AbstractHtmlJsPaneWidget;
-import org.orienteer.core.component.widget.TestWidget;
-import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.core.widget.AbstractWidget;
+import org.orienteer.core.widget.IWidgetType;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
-import org.orienteer.core.widget.Widget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
+import com.google.common.base.Predicate;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
@@ -24,6 +24,8 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  */
 @Singleton
 public class OWidgetsModule extends AbstractOrienteerModule {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OWidgetsModule.class);
 
 	public static final String OCLASS_DASHBOARD = "ODashboard";
 	public static final String OPROPERTY_DOMAIN = "domain";
@@ -40,6 +42,9 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	public static final String OPROPERTY_SIZE_X = "sizeX";
 	public static final String OPROPERTY_SIZE_Y = "sizeY";
 	public static final String OPROPERTY_HIDDEN = "hidden";
+	
+	@Inject
+	private IWidgetTypesRegistry registry;
 	
 	public OWidgetsModule() {
 		super("widgets", 2);
@@ -76,6 +81,37 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 			installHtmlJsPaneSchema(db);
 		}
 		if(updateTo<newVersion) onUpdate(app, db, updateTo, newVersion);
+	}
+	
+	@Override
+	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+		if(!checkWidgetClassesInstallation(db)) {
+			LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			LOG.error("!!! NOT ALL WIDGET CLASSES WERE INSTALLED !!!");
+			LOG.error("!!!          TRYING TO REINSTALL          !!!");
+			LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			onInstall(app, db);
+			if(!checkWidgetClassesInstallation(db)) {
+				LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				LOG.error("!!!   REINSTALL HAS NOT FIXED A PROBLEM   !!!");
+				LOG.error("!!!     SYSTEM MIGHT WORK INCORRECTLY     !!!");
+				LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			}
+		}
+	}
+	
+	private boolean checkWidgetClassesInstallation(ODatabaseDocument db) {
+		final OSchema schema = db.getMetadata().getSchema();
+		List<IWidgetType<?>> notInstalled = registry.listWidgetTypes(new Predicate<IWidgetType<Object>>() {
+
+			@Override
+			public boolean apply(IWidgetType<Object> input) {
+				String oClassName = input.getOClassName();
+				if(Strings.isEmpty(oClassName)) return false;
+				return !schema.existsClass(oClassName);
+			}
+		});
+		return notInstalled==null || notInstalled.isEmpty();
 	}
 	
 	protected void installHtmlJsPaneSchema(ODatabaseDocument db) {
