@@ -92,7 +92,7 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 
 	@Override
 	protected IModel<String> getTitleModel() {
-		return new ResourceModel("wigget.document.properties");
+		return new ResourceModel("widget.document.properties");
 	}
 	
 	@Override
