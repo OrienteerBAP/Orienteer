@@ -50,9 +50,8 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		@Override
 		public WebMarkupContainer getPanel(String containerId) {
 			if(dashboard==null) {
-				dashboard = newDashboard(containerId, getDomain(), tab, getModel());
+				dashboard = newDashboard(containerId, getDomain(), tab, getModel(), getWidgetsFilter());
 			}
-			dashboard.setWidgetsFilter(getWidgetsFilter());
 			return dashboard;
 		}
 
@@ -125,8 +124,8 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		return this;
 	}
 	
-	protected DashboardPanel<T> newDashboard(String id, String domain, String tab, IModel<T> model) {
-		return new DashboardPanel<T>(id, domain, tab, model);
+	protected DashboardPanel<T> newDashboard(String id, String domain, String tab, IModel<T> model, IWidgetFilter<T> widgetsFilter) {
+		return new DashboardPanel<T>(id, domain, tab, model, widgetsFilter);
 	}
 	
 	public IWidgetFilter<T> getWidgetsFilter() {

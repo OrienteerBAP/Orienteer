@@ -94,10 +94,11 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	private IWidgetFilter<T> widgetsFilter;
 	
-	public DashboardPanel(String id, String domain, String tab, IModel<T> model) {
+	public DashboardPanel(String id, String domain, String tab, IModel<T> model, IWidgetFilter<T> widgetsFilter) {
 		super(id, model);
 		this.domain = domain;
 		this.tab = tab;
+		this.widgetsFilter = widgetsFilter;
 		WebMarkupContainer commandsContainer = new WebMarkupContainer("commandsContainer");
 		OSecurityHelper.secureComponent(commandsContainer, OSecurityHelper.requireOClass(OWidgetsModule.OCLASS_DASHBOARD, OrientPermission.UPDATE));
 		commandsContainer.add(configureCommand = new ConfigureDashboardCommand<T>("configure"));

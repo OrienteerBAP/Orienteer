@@ -87,14 +87,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	}
 	
 	@Override
-	public List<String> getTabs() {
-		return oClassIntrospector.listTabs(getModelObject().getSchemaClass());
-	}
-	
-	@Override
-	protected void onInitialize() {
-		super.onInitialize();
-		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+	public void initialize() {
 		setWidgetsFilter(new IWidgetFilter<ODocument>() {
 			
 			@Override
@@ -111,6 +104,25 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 				}
 			}
 		});
+		super.initialize();
+	}
+	
+	@Override
+	public List<String> getTabs() {
+		List<String> tabs = oClassIntrospector.listTabs(getModelObject().getSchemaClass());
+		List<String> widgetsTabs = super.getTabs();
+		if(widgetsTabs!=null) {
+			for(String widgetTab: widgetsTabs) {
+				if(!tabs.contains(widgetTab)) tabs.add(widgetTab);
+			}
+		}
+		return tabs;
+	}
+	
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 	}
 	
 	@Override
@@ -138,8 +150,8 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	
 	@Override
 	protected DashboardPanel<ODocument> newDashboard(String id, String domain,
-			String tab, IModel<ODocument> model) {
-		return new DashboardPanel<ODocument>(id, domain, tab, model) {
+			String tab, IModel<ODocument> model, IWidgetFilter<ODocument> filter) {
+		return new DashboardPanel<ODocument>(id, domain, tab, model, filter) {
 			
 			@Override
 			protected ODocument lookupDashboardDocument(String domain,
@@ -151,7 +163,8 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 			
 			@Override
 			protected void buildDashboard() {
-				addWidget(ODocumentPropertiesWidget.WIDGET_TYPE_ID);
+				super.buildDashboard();
+				//addWidget(ODocumentPropertiesWidget.WIDGET_TYPE_ID); //It will be added automatically!
 				
 				List<? extends OProperty> properties = oClassIntrospector.listProperties(getModelObject().getSchemaClass(), getTab(), true);
 				

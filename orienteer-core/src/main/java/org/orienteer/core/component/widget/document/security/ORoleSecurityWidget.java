@@ -1,6 +1,8 @@
-package org.orienteer.core.component.widget.oclass;
+package org.orienteer.core.component.widget.document.security;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.wicket.Component;
@@ -9,10 +11,13 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.model.AbstractCheckBoxModel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
@@ -20,19 +25,20 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractSaveCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.BooleanEditPanel;
-import org.orienteer.core.component.property.LinkViewPanel;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.widget.oclass.OClassSecurityWidget;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
+import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
+import ru.ydn.wicket.wicketorientdb.behavior.SecurityBehavior;
 import ru.ydn.wicket.wicketorientdb.model.EnumNamingModel;
-import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
-import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+import ru.ydn.wicket.wicketorientdb.model.JavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ORole;
@@ -40,12 +46,12 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
- * Widget to show and modify security settings of a {@link OClass}
+ * Widget to configure security on ORole
  */
-@Widget(id="class-security", domain="class", tab="security", order=30, autoEnable=true)
-public class OClassSecurityWidget extends AbstractWidget<OClass> {
+@Widget(id="role-security", domain="document", tab="security", order=30, autoEnable=true, selector="ORole")
+public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 	
-	private class SecurityRightsColumn extends AbstractColumn<ORole, String>
+	private class SecurityRightsColumn extends AbstractColumn<String, String>
 	{
 		private final OrientPermission permission;
 		public SecurityRightsColumn(OrientPermission permission)
@@ -55,73 +61,76 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 		}
 
 		@Override
-		public void populateItem(Item<ICellPopulator<ORole>> cellItem,
-				String componentId, IModel<ORole> rowModel) {
+		public void populateItem(Item<ICellPopulator<String>> cellItem,
+				String componentId, IModel<String> rowModel) {
 			cellItem.add(new BooleanEditPanel(componentId, getSecurityRightsModel(rowModel)));
 		}
 		
-		protected IModel<Boolean> getSecurityRightsModel(final IModel<ORole> rowModel)
+		protected IModel<Boolean> getSecurityRightsModel(final IModel<String> rowModel)
 		{
 			return new AbstractCheckBoxModel() {
 				
+				@SuppressWarnings("deprecation")
 				@Override
 				public void unselect() {
-					ORole oRole = rowModel.getObject();
-					oRole.revoke(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
+					ORole oRole = roleModel.getObject();
+					oRole.revoke(rowModel.getObject(), permission.getPermissionFlag());
 					oRole.save();
 				}
 				
+				@SuppressWarnings("deprecation")
 				@Override
 				public void select() {
-					ORole oRole = rowModel.getObject();
-					oRole.grant(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
+					ORole oRole = roleModel.getObject();
+					oRole.grant(rowModel.getObject(), permission.getPermissionFlag());
 					oRole.save();
 				}
 				
+				@SuppressWarnings("deprecation")
 				@Override
 				public boolean isSelected() {
-					ORole oRole = rowModel.getObject();
-					return oRole.allow(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
+					ORole oRole = roleModel.getObject();
+					return oRole.allow(rowModel.getObject(), permission.getPermissionFlag());
 				}
 				
-				private String getSecurityResourceSpecific()
-				{
-					return OClassSecurityWidget.this.getModelObject().getName();
-				}
 			};
 		}
 	}
 	
-	public OClassSecurityWidget(String id, IModel<OClass> model,
+	private IModel<ORole> roleModel = new LoadableDetachableModel<ORole>() {
+
+		@Override
+		protected ORole load() {
+			return getDatabase().getMetadata().getSecurity().getRole(ORoleSecurityWidget.this.getModelObject());
+		}
+	};
+	
+	public ORoleSecurityWidget(String id, IModel<ODocument> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<OClass> sForm = new Form<OClass>("form");
-		OSecurityHelper.secureComponent(sForm, OSecurityHelper.requireOClass("ORole", Component.ENABLE, OrientPermission.UPDATE));
+		sForm.add(new SecurityBehavior(model, Component.ENABLE, OrientPermission.UPDATE));
 		
-		List<IColumn<ORole, String>> sColumns = new ArrayList<IColumn<ORole,String>>();
-		OClass oRoleClass = OrientDbWebSession.get().getDatabase().getMetadata().getSchema().getClass("ORole");
-		sColumns.add(new AbstractColumn<ORole, String>(new OClassNamingModel(oRoleClass), "name") {
-
-			@Override
-			public void populateItem(Item<ICellPopulator<ORole>> cellItem,
-					String componentId, IModel<ORole> rowModel) {
-				cellItem.add(new LinkViewPanel(componentId, new PropertyModel<ODocument>(rowModel, "document")));
-			}
-		});
+		List<IColumn<String, String>> sColumns = new ArrayList<IColumn<String, String>>();
+		sColumns.add(new PropertyColumn<String, String>(new ResourceModel("orule"), ""));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.CREATE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.READ));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.UPDATE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.DELETE));
 		
-		OQueryDataProvider<ORole> sProvider = new OQueryDataProvider<ORole>("select from ORole", ORole.class);
-		sProvider.setSort("name", SortOrder.ASCENDING);
-		OrienteerDataTable<ORole, String> sTable = new OrienteerDataTable<ORole, String>("security", sColumns, sProvider ,20);
-		Command<ORole> saveCommand = new AbstractSaveCommand<ORole>(sTable, null);
+		JavaSortableDataProvider<String, String> provider = new JavaSortableDataProvider<String, String>(new PropertyModel<Collection<String>>(this, "ruleSet"));
+		OrienteerDataTable<String, String> sTable = new OrienteerDataTable<String, String>("table", sColumns, provider ,20);
+		Command<String> saveCommand = new AbstractSaveCommand<String>(sTable, null);
 		sTable.addCommand(saveCommand);
-		sTable.setCaptionModel(new ResourceModel("class.security"));
 		sForm.add(sTable);
 		add(sForm);
-		add(DisableIfPrototypeBehavior.INSTANCE);
+		add(DisableIfDocumentNotSavedBehavior.INSTANCE);
+	}
+	
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	public Collection<String> getRuleSet() {
+		ORole role = roleModel.getObject();
+		return role!=null?role.getRules().keySet():Collections.EMPTY_SET;
 	}
 
 	@Override
@@ -142,7 +151,8 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 	@Override
 	public void onActionPerformed(ActionPerformedEvent<?> event,
 			IEvent<?> wicketEvent) {
-		if(event.ofType(OClass.class) && event.getCommand().isChangingModel() && event.isAjax()) {
+		if(event.ofType(ODocument.class) && event.getCommand().isChangingModel() 
+				&& event.isAjax() && ((ODocument)event.getObject()).getSchemaClass().isSubClassOf("ORole")) {
 			event.getTarget().add(this);
 			wicketEvent.dontBroadcastDeeper();
 		}

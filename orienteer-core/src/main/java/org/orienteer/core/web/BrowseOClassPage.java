@@ -12,6 +12,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.DashboardPanel;
+import org.orienteer.core.widget.IWidgetFilter;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
@@ -58,9 +59,9 @@ public class BrowseOClassPage extends AbstractWidgetPage<OClass> implements ISec
 	
 	@Override
 	protected DashboardPanel<OClass> newDashboard(String id, String domain,
-			String tab, IModel<OClass> model) {
+			String tab, IModel<OClass> model, IWidgetFilter<OClass> filter) {
 		
-		return new DashboardPanel<OClass>(id, domain, tab, model) {
+		return new DashboardPanel<OClass>(id, domain, tab, model, filter) {
 			@Override
 			protected ODocument lookupDashboardDocument(String domain,
 					String tab, IModel<OClass> model) {

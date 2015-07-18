@@ -45,6 +45,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	
 	private ListView<C> listView;
 	private long toolbarIdCounter;
+	private IModel<List<? extends C>> criteriesModel;
 	
 	public StructureTable(String id, IModel<T> model, List<? extends C> list) {
 		this(id, model, Model.ofList(list));
@@ -52,6 +53,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 
 	public StructureTable(String id, IModel<T> model, IModel<List<? extends C>> criteriesModel) {
 		super(id, model);
+		this.criteriesModel = criteriesModel;
 		setOutputMarkupPlaceholderTag(true);
 		caption = new Caption("caption", Model.of(""));
 		topToolbars = new ToolbarsContainer("topToolbars");
@@ -117,6 +119,10 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 		return this;
 	}
 	
+	public IModel<List<? extends C>> getCriteriesModel() {
+		return criteriesModel;
+	}
+
 	public boolean getReuseItems()
 	{
 		return listView.getReuseItems();
@@ -150,6 +156,12 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 		Args.notNull(toolbar, "toolbar");
 
 		container.getRepeatingView().add(toolbar);
+	}
+	
+	@Override
+	public void detachModels() {
+		super.detachModels();
+		if(criteriesModel!=null) criteriesModel.detach();
 	}
 	
 	private static class ToolbarsContainer extends WebMarkupContainer

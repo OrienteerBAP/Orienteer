@@ -11,13 +11,17 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.web.ODocumentPage;
 
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
 import com.google.common.base.Objects;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -171,5 +175,9 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 	
 	public void onActionPerformed(ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
 		
+	}
+	
+	protected ODatabaseDocument getDatabase() {
+		return OrientDbWebSession.get().getDatabase();
 	}
 }
