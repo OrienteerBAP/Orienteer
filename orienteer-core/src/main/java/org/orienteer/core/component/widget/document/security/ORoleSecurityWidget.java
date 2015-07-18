@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -22,9 +24,11 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.command.AbstractDeleteCommand;
 import org.orienteer.core.component.command.AbstractSaveCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.BooleanEditPanel;
+import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.widget.oclass.OClassSecurityWidget;
 import org.orienteer.core.event.ActionPerformedEvent;
@@ -40,6 +44,7 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+import com.google.common.base.Converter;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.ORule;
@@ -112,6 +117,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 		sForm.add(new SecurityBehavior(model, Component.ENABLE, OrientPermission.UPDATE));
 		
 		List<IColumn<String, String>> sColumns = new ArrayList<IColumn<String, String>>();
+		sColumns.add(new CheckBoxColumn<String, String, String>(Converter.<String>identity()));
 		sColumns.add(new PropertyColumn<String, String>(new ResourceModel("orule"), ""));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.CREATE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.READ));
@@ -120,8 +126,18 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 		
 		JavaSortableDataProvider<String, String> provider = new JavaSortableDataProvider<String, String>(new PropertyModel<Collection<String>>(this, "ruleSet"));
 		OrienteerDataTable<String, String> sTable = new OrienteerDataTable<String, String>("table", sColumns, provider ,20);
-		Command<String> saveCommand = new AbstractSaveCommand<String>(sTable, null);
-		sTable.addCommand(saveCommand);
+		sTable.addCommand(new AbstractSaveCommand<String>(sTable, null));
+		sTable.addCommand(new AbstractDeleteCommand<String>(sTable) {
+
+			@Override
+			protected void perfromSingleAction(AjaxRequestTarget target,
+					String object) {
+				ODocument role = ORoleSecurityWidget.this.getModelObject();
+				Map<String, Object> rules = role.field("rules");
+				rules.remove(object);
+				role.save();
+			}
+		});
 		sForm.add(sTable);
 		add(sForm);
 		add(DisableIfDocumentNotSavedBehavior.INSTANCE);
@@ -129,8 +145,9 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	public Collection<String> getRuleSet() {
-		ORole role = roleModel.getObject();
-		return role!=null?role.getRules().keySet():Collections.EMPTY_SET;
+		ODocument role = getModelObject();
+		Map<String, Object> rules = role.field("rules");
+		return rules!=null?rules.keySet():Collections.EMPTY_SET;
 	}
 
 	@Override
@@ -156,6 +173,12 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 			event.getTarget().add(this);
 			wicketEvent.dontBroadcastDeeper();
 		}
+	}
+	
+	@Override
+	public void detachModels() {
+		super.detachModels();
+		roleModel.detach();
 	}
 
 }
