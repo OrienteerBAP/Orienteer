@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.wicket.model.IModel;
 
+import com.google.common.base.Predicate;
 import com.google.inject.ImplementedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -15,7 +16,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public interface IDashboardManager {
 	public ODocument createWidgetDocument(IWidgetType<?> widgetType);
 	public ODocument createWidgetDocument(Class<? extends AbstractWidget<?>> widgetClass);
-	public List<String> listTabs(String domain, IModel<?> dataModel);
+	public <T> List<String> listTabs(String domain, Predicate<IWidgetType<T>> filter);
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel);
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel, Map<String, Object> criteriesMap);
 }

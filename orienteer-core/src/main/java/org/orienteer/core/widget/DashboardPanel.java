@@ -50,6 +50,7 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import static org.orienteer.core.module.OWidgetsModule.*;
 
+import com.google.common.base.Predicate;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -90,6 +91,8 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	private IModel<DisplayMode> dashboardModeModel = DisplayMode.VIEW.asModel();
 	
 	private IModel<ODocument> dashboardDocumentModel = new ODocumentModel();
+	
+	private IWidgetFilter<T> widgetsFilter;
 	
 	public DashboardPanel(String id, String domain, String tab, IModel<T> model) {
 		super(id, model);
@@ -144,7 +147,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	protected void buildDashboard() {
 		
-		List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDomainAndTab(domain, tab);
+		List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDomainAndTab(domain, tab, getWidgetsFilter());
 		for(int i=0;i<widgets.size();i++)
 		{
 			IWidgetType<T> type = widgets.get(i);
@@ -153,6 +156,15 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 				addWidget(widget);
 			}
 		}
+	}
+	
+	public IWidgetFilter<T> getWidgetsFilter() {
+		return widgetsFilter;
+	}
+	
+	public DashboardPanel<T> setWidgetsFilter(IWidgetFilter<T> widgetsFilter) {
+		this.widgetsFilter = widgetsFilter;
+		return this;
 	}
 	
 		

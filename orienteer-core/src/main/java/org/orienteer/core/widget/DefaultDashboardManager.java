@@ -17,6 +17,7 @@ import org.orienteer.core.OrienteerWebSession;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
 
+import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -38,11 +39,11 @@ public class DefaultDashboardManager implements IDashboardManager{
 	}
 
 	@Override
-	public List<String> listTabs(String domain, IModel<?> dataModel) {
+	public <T> List<String> listTabs(String domain, Predicate<IWidgetType<T>> filter) {
 		List<String> tabs = new ArrayList<String>();
 		if(domain!=null)
 		{
-			for(IWidgetType<?> widgetDescriptor : widgetRegistry.listWidgetTypes())
+			for(IWidgetType<?> widgetDescriptor : widgetRegistry.lookupByDomain(domain, filter))
 			{
 				String tabToAdd = widgetDescriptor.getTab();
 				//To preserve order from widget registry

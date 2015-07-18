@@ -23,12 +23,16 @@ import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.DashboardPanel;
+import org.orienteer.core.widget.IWidgetFilter;
+import org.orienteer.core.widget.IWidgetType;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
+import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -91,6 +95,22 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	protected void onInitialize() {
 		super.onInitialize();
 		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+		setWidgetsFilter(new IWidgetFilter<ODocument>() {
+			
+			@Override
+			public boolean apply(IWidgetType<ODocument> input) {
+				if(Strings.isEmpty(input.getSelector())) return true;
+				else {
+					ODocument doc = ODocumentPage.this.getModelObject();
+					if(doc!=null) {
+						OClass oClass = doc.getSchemaClass();
+						return oClass!=null?oClass.isSubClassOf(input.getSelector()):false;
+					} else {
+						return false;
+					}
+				}
+			}
+		});
 	}
 	
 	@Override

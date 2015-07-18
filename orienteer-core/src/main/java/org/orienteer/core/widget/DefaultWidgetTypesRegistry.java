@@ -3,6 +3,7 @@ package org.orienteer.core.widget;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.orienteer.core.OrienteerWebApplication;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
@@ -73,6 +75,11 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		public boolean isAutoEnable() {
 			return widget.autoEnable();
 		}
+		
+		@Override
+		public String getSelector() {
+			return widget.selector();
+		}
 
 		@Override
 		public Class<? extends AbstractWidget<T>> getWidgetClass() {
@@ -106,9 +113,12 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		}
 	});
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<IWidgetType<?>> listWidgetTypes() {
-		return Collections.unmodifiableList(new ArrayList<IWidgetType<?>>(widgetDescriptions));
+	public <T> List<IWidgetType<?>> listWidgetTypes(Predicate<IWidgetType<T>> filter) {
+		Collection<IWidgetType<?>> ret = widgetDescriptions;
+		if(filter!=null) ret = Collections2.filter(ret, (Predicate)filter);
+		return Collections.unmodifiableList(new ArrayList<IWidgetType<?>>(ret));
 	}
 
 	@Override
@@ -123,11 +133,12 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> List<IWidgetType<T>> lookupByDomain(String domain) {
+	public <T> List<IWidgetType<T>> lookupByDomain(String domain, Predicate<IWidgetType<T>> filter) {
 		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
 		for(IWidgetType<?> description : widgetDescriptions)
 		{
-			if(domain.equals(description.getDomain())) ret.add((IWidgetType<T>)description);
+			if(domain.equals(description.getDomain())
+					&& (filter==null || filter.apply((IWidgetType<T>)description))) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}
@@ -135,14 +146,15 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<IWidgetType<T>> lookupByDomainAndTab(
-			String domain, String tab) {
+			String domain, String tab, Predicate<IWidgetType<T>> filter) {
 		List<IWidgetType<T>> ret = new ArrayList<IWidgetType<T>>();
 		for(IWidgetType<?> description : widgetDescriptions)
 		{
 			String defaultDomain = description.getDomain();
 			String defaultTab = description.getTab();
 			if(domain.equals(defaultDomain)
-					&& (Strings.isEmpty(defaultTab) || tab.equals(defaultTab))) ret.add((IWidgetType<T>)description);
+					&& (Strings.isEmpty(defaultTab) || tab.equals(defaultTab))
+					&& (filter==null || filter.apply((IWidgetType<T>)description))) ret.add((IWidgetType<T>)description);
 		}
 		return Collections.unmodifiableList(ret);
 	}

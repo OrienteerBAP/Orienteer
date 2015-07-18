@@ -18,6 +18,7 @@ public interface IWidgetType<T> extends IClusterable {
 	public String getOClassName();
 	public int getOrder();
 	public boolean isAutoEnable();
+	public String getSelector();
 	public Class<? extends AbstractWidget<T>> getWidgetClass();
 	public AbstractWidget<T> instanciate(String componentId, IModel<T> model, ODocument widgetDocument);
 }

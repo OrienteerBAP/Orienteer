@@ -21,4 +21,5 @@ public @interface Widget {
 	public String tab() default "";
 	public int order() default 0;
 	public boolean autoEnable() default false;
+	public String selector() default "";
 }

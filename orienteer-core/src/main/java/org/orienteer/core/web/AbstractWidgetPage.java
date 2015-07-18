@@ -11,9 +11,12 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.TabbedPanel;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardManager;
+import org.orienteer.core.widget.IWidgetFilter;
+import org.orienteer.core.widget.IWidgetType;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
+import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 
 /**
@@ -49,6 +52,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 			if(dashboard==null) {
 				dashboard = newDashboard(containerId, getDomain(), tab, getModel());
 			}
+			dashboard.setWidgetsFilter(getWidgetsFilter());
 			return dashboard;
 		}
 
@@ -63,6 +67,8 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	protected IDashboardManager dashboardManager;
 	
 	protected TabbedPanel<DashboardTab> tabbedPanel;
+	
+	private IWidgetFilter<T> widgetsFilter;
 	
 	public AbstractWidgetPage() {
 		super();
@@ -107,7 +113,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	}
 	
 	public List<String> getTabs() {
-		return dashboardManager.listTabs(getDomain(), getModel());
+		return dashboardManager.listTabs(getDomain(), getWidgetsFilter());
 	}
 	
 	public AbstractWidgetPage<T> selectedTab(String tab) {
@@ -123,6 +129,14 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		return new DashboardPanel<T>(id, domain, tab, model);
 	}
 	
+	public IWidgetFilter<T> getWidgetsFilter() {
+		return widgetsFilter;
+	}
+
+	public void setWidgetsFilter(IWidgetFilter<T> widgetsFilter) {
+		this.widgetsFilter = widgetsFilter;
+	}
+
 	public abstract String getDomain();
 	
 	

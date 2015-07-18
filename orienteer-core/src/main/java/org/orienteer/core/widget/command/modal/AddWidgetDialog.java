@@ -97,7 +97,7 @@ public abstract class AddWidgetDialog<T> extends Panel {
 	
 	public List<IWidgetType<T>> getAvailableWidgetTypes() {
 		DashboardPanel<T> dashboard = getDashboardPanel();
-		return registry.lookupByDomainAndTab(dashboard.getDomain(), dashboard.getTab());
+		return registry.lookupByDomainAndTab(dashboard.getDomain(), dashboard.getTab(), dashboard.getWidgetsFilter());
 	}
 	
 }
