@@ -37,6 +37,13 @@ public class CopyODocumentCommand extends AbstractCopyCommand<ODocument> impleme
 
     @Override
     protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
+        if(objects.size() > 1)
+        {
+            String message = getLocalizer().getString("alert.onlyoneshouldbeselected", this).replace("\"", "\\\"");
+            target.appendJavaScript("alert(\""+message+"\")");
+            return;
+        }
+
         super.performMultiAction(target, objects);
         getDatabase().commit(true);
         getDatabase().begin();
