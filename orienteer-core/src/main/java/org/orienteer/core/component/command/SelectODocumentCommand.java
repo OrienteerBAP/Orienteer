@@ -40,10 +40,11 @@ public class SelectODocumentCommand extends AbstractModalWindowCommand<ODocument
 	@Override
 	protected void initializeContent(ModalWindow modal) {
 		modal.setTitle(new ResourceModel("command.select.modal.title"));
-		modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, new PropertyModel<OClass>(propertyModel, "linkedClass")) {
-			
+		boolean multiValue = propertyModel.getObject().getType().isMultiValue();
+		modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, new PropertyModel<OClass>(propertyModel, "linkedClass"), multiValue) {
+
 			@Override
-			protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects) {
+			protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects, boolean selectMore) {
 				if(objects==null || objects.isEmpty()) return true;
 				OType oType = propertyModel.getObject().getType();
 				
@@ -77,7 +78,17 @@ public class SelectODocumentCommand extends AbstractModalWindowCommand<ODocument
 					doc.save();
 					return true;
 				}
-				
+
+				if (!selectMore) {
+					send(SelectODocumentCommand.this, Broadcast.BUBBLE, target);
+				}
+				return true;
+			}
+		});
+
+		modal.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
+			@Override
+			public boolean onCloseButtonClicked(AjaxRequestTarget target) {
 				send(SelectODocumentCommand.this, Broadcast.BUBBLE, target);
 				return true;
 			}
