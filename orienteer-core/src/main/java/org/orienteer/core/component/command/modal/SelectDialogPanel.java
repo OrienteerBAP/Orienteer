@@ -44,6 +44,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	private boolean canChangeClass;
 	private WebMarkupContainer resultsContainer;
 	private IModel<OClass> selectedClassModel;
+	private TextField<String> queryField;
 
 	public SelectDialogPanel(String id, final ModalWindow modal, IModel<OClass> initialClass, boolean isMultiValue)
 	{
@@ -60,7 +61,9 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 		this.selectedClassModel = new OClassModel(initialClass!=null?initialClass: getClasses().get(0));
 		
 		Form<String> form = new Form<String>("form", getModel());
-		form.add(new TextField<String>("query", getModel()));
+		queryField = new TextField<String>("query", getModel());
+		queryField.setOutputMarkupId(true);
+		form.add(queryField);
 		form.add(new AjaxButton("search") {
 
 			@Override
@@ -128,7 +131,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 					protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 						if(onSelect(target, objects, false)) modal.close(target);
 					}
-					
+
 				});
 
 		if (isMultiValue) {
@@ -141,7 +144,8 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 
 				@Override
 				protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
-					onSelect(target, objects, true);
+					if (onSelect(target, objects, true))
+						target.focusComponent(queryField);
 				}
 
 			});
