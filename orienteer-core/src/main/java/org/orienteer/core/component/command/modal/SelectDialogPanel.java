@@ -40,19 +40,21 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	private IOClassIntrospector oClassIntrospector;
 	
 	private ModalWindow modal;
+	private boolean isMultiValue;
 	private boolean canChangeClass;
 	private WebMarkupContainer resultsContainer;
 	private IModel<OClass> selectedClassModel;
-	
-	public SelectDialogPanel(String id, final ModalWindow modal, IModel<OClass> initialClass)
+
+	public SelectDialogPanel(String id, final ModalWindow modal, IModel<OClass> initialClass, boolean isMultiValue)
 	{
-		this(id, modal, initialClass.getObject(), initialClass.getObject()==null);
+		this(id, modal, initialClass.getObject(), initialClass.getObject()==null, isMultiValue);
 	}
 	
-	public SelectDialogPanel(String id, final ModalWindow modal, OClass initialClass, boolean canChangeClass)
+	public SelectDialogPanel(String id, final ModalWindow modal, OClass initialClass, boolean canChangeClass, boolean isMultiValue)
 	{
 		super(id, Model.of(""));
 		this.modal = modal;
+		this.isMultiValue = isMultiValue;
 		this.modal.setMinimalHeight(400);
 		this.canChangeClass = canChangeClass || initialClass==null;
 		this.selectedClassModel = new OClassModel(initialClass!=null?initialClass: getClasses().get(0));
@@ -124,12 +126,28 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 
 					@Override
 					protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
-						if(onSelect(target, objects)) modal.close(target);
+						if(onSelect(target, objects, false)) modal.close(target);
 					}
 					
 				});
+
+		if (isMultiValue) {
+			table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.selectAndSearchMode"), table) {
+
+				{
+					setBootstrapType(BootstrapType.SUCCESS);
+					setIcon(FAIconType.hand_o_right);
+				}
+
+				@Override
+				protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
+					onSelect(target, objects, true);
+				}
+
+			});
+		}
 		resultsContainer.addOrReplace(table);
 	}
-	
-	protected abstract boolean onSelect(AjaxRequestTarget target, List<ODocument> objects);
+
+	protected abstract boolean onSelect(AjaxRequestTarget target, List<ODocument> objects, boolean selectMore);
 }

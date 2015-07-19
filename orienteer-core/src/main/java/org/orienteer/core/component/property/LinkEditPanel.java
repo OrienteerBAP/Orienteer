@@ -41,10 +41,10 @@ public class LinkEditPanel extends FormComponentPanel<ODocument>
 		modal.setAutoSize(true);
 		add(modal);
 		modal.setTitle(new ResourceModel("command.select.modal.title"));
-		modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, new PropertyModel<OClass>(propertyModel, "linkedClass")) {
-			
+		modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, new PropertyModel<OClass>(propertyModel, "linkedClass"), false) {
+
 			@Override
-			protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects) {
+			protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects, boolean selectMore) {
 				if(objects==null || objects.size()==0) return true;
 				if(objects.size()>1)
 				{
