@@ -4,9 +4,12 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.web.ODocumentPage;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -46,7 +49,7 @@ public class CopyODocumentCommand extends AbstractCopyCommand<ODocument> impleme
             copy.field(fieldName, object.field(fieldName));
         }
 
-        copy.save();
+        setResponsePage(new ODocumentPage(new ODocumentModel(copy)).setModeObject(DisplayMode.EDIT));
     }
 
     @Override
