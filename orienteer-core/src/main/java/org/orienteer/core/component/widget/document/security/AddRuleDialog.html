@@ -1,0 +1,15 @@
+<wicket:panel>
+<form wicket:id="form">
+  <div class="form-group">
+    <label wicket:for="resource"><wicket:message key="orule.resource">Resource</wicket:message></label>
+    <select wicket:id="resource" class="form-control"></select>
+  </div>
+  <div class="form-group">
+    <label wicket:for="specific"><wicket:message key="orule.specific">Specific</wicket:message></label>
+    <input type="text" class="form-control" wicket:id="specific">
+  </div>
+  <button type="submit" class="btn btn-default" wicket:id="submit">
+    <wicket:message key="command.submit">Submit</wicket:message>
+  </button>
+</form>
+</wicket:panel>
