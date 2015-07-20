@@ -27,6 +27,10 @@ import org.orienteer.core.component.property.LinkEditPanel;
 import org.orienteer.core.component.property.LinkViewPanel;
 import org.orienteer.core.component.property.LinksCollectionEditPanel;
 import org.orienteer.core.component.property.LinksCollectionViewPanel;
+import org.orienteer.core.service.IOClassIntrospector;
+
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -119,44 +123,13 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 		else return null;
 	}
 
-	@Override
 	public <V extends Serializable> Component createNonSchemaFieldComponent(String id, DisplayMode mode, IModel<ODocument> documentModel,
-																			Object value, OType oType) {
-		if (!(value instanceof Serializable))
-			return new EmptyPanel(id);
-
-		IModel<V> valueModel = Model.of((V)value);
-		if(DisplayMode.VIEW.equals(mode))
-		{
-			switch(oType)
-			{
-				case DATE:
-					return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_CONVERTER);
-				case DATETIME:
-					return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_TIME_CONVERTER);
-				case BOOLEAN:
-					return new BooleanViewPanel(id, (IModel<Boolean>) valueModel);
-				default:
-					return new Label(id, valueModel);
-			}
-		}
-		else if(DisplayMode.EDIT.equals(mode))
-		{
-			switch(oType)
-			{
-				case BOOLEAN:
-					return new CheckBox(id, (IModel<Boolean>) valueModel);
-				case DATE:
-					return new DateField(id, (IModel<Date>) valueModel);
-				case DATETIME:
-					return new DateTimeField(id, (IModel<Date>) valueModel);
-				default:
-					TextField<V> ret = new TextField<V>(id, valueModel);
-					Class<?> javaOType = oType.getDefaultJavaType();
-					if(javaOType!=null) ret.setType(javaOType);
-					return ret;
-			}
-		}
-		else return null;
+																			String field, Object value, OType oType) {
+		IOClassIntrospector introspector = OrienteerWebApplication.get().getServiceInstance(IOClassIntrospector.class);
+		ODocument doc = documentModel.getObject();
+		OProperty virtualizedProperty = introspector.virtualizeField(doc, field);
+		IModel<OProperty> propertyModel = new OPropertyModel(virtualizedProperty);
+		IModel<V> valueModel = new DynamicPropertyValueModel<V>(documentModel, propertyModel);
+		return createComponent(id, mode, documentModel, propertyModel, oType, valueModel);
 	}
 }

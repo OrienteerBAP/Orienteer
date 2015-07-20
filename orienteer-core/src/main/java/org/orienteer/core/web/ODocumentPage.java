@@ -168,8 +168,6 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 				super.buildDashboard();
 				//addWidget(ODocumentPropertiesWidget.WIDGET_TYPE_ID); //It will be added automatically!
 
-				addWidget(ODocumentNonRegisteredPropertiesWidget.WIDGET_TYPE_ID);
-
 				List<? extends OProperty> properties = oClassIntrospector.listProperties(getModelObject().getSchemaClass(), getTab(), true);
 				
 				ODocument widgetDoc;

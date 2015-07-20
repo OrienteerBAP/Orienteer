@@ -9,6 +9,7 @@ import com.google.common.collect.Ordering;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -32,6 +33,7 @@ import org.orienteer.core.service.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
 import java.util.*;
@@ -246,6 +248,60 @@ public class OClassIntrospector implements IOClassIntrospector
 				return doc.toString();
 			}
 		}
+	}
+	
+	@Override
+	public OProperty virtualizeField(ODocument doc, String field) {
+		OProperty property = OPropertyPrototyper.newPrototype(doc.getClassName());
+		property.setName(field);
+		OType oType = doc.fieldType(field);
+		property.setType(oType);
+		switch (oType) {
+			case LINK:
+				ODocument link = doc.field(field);
+				if(link!=null) property.setLinkedClass(link.getSchemaClass());
+				break;
+			case LINKBAG:
+			case LINKLIST:
+			case LINKSET:
+				Collection<ODocument> collection = doc.field(field);
+				if(collection!=null && !collection.isEmpty()) {
+					link = collection.iterator().next();
+					if(link!=null) property.setLinkedClass(link.getSchemaClass());
+				}
+				break;
+			case LINKMAP:
+				Map<String, ODocument> map = doc.field(field);
+				if(map!=null && !map.isEmpty()) {
+					link = map.values().iterator().next();
+					if(link!=null) property.setLinkedClass(link.getSchemaClass());
+				}
+				break;
+			case EMBEDDED:
+				Object value = doc.field(field);
+				OType linkedType = OType.getTypeByValue(value);
+				if(OType.EMBEDDED.equals(linkedType)) property.setLinkedClass(((ODocument)value).getSchemaClass());
+				else property.setLinkedType(linkedType);
+				break;
+			case EMBEDDEDSET:
+			case EMBEDDEDLIST:
+				Collection<Object> objectCollection = doc.field(field);
+				if(objectCollection!=null && !objectCollection.isEmpty()) {
+					value = objectCollection.iterator().next();
+					property.setLinkedType(OType.getTypeByValue(value));
+				}
+				break;
+			case EMBEDDEDMAP:
+				Map<String, Object> objectMap = doc.field(field);
+				if(objectMap!=null && !objectMap.isEmpty()) {
+					value = objectMap.values().iterator().next();
+					property.setLinkedType(OType.getTypeByValue(value));
+				}
+				break;
+			default:
+				break;
+		}
+		return property;
 	}
 
 }

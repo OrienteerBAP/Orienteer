@@ -54,8 +54,4 @@ public abstract class AbstractSimpleVisualizer implements IVisualizer
 		return supportedTypes;
 	}
 
-	@Override
-	public <V extends Serializable> Component createNonSchemaFieldComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, Object value, OType oType) {
-		throw new UnsupportedOperationException("createNonSchemaFieldComponent() available only for DefaultVisualizer");
-	}
 }

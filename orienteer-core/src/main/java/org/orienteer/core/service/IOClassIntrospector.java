@@ -31,4 +31,5 @@ public interface IOClassIntrospector
 	public ISortableDataProvider<ODocument, String> prepareDataProviderForProperty(OProperty property, IModel<ODocument> documentModel);
 	public OProperty getNameProperty(OClass oClass);
 	public String getDocumentName(ODocument doc);
+	public OProperty virtualizeField(ODocument doc, String field);
 }

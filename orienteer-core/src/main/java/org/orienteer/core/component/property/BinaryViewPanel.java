@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.AbstractResource.ResourceResponse;
 import org.apache.wicket.request.resource.IResource.Attributes;
@@ -22,26 +23,48 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class BinaryViewPanel<V> extends GenericPanel<V> {
 	
-	private IModel<ODocument> documentModel;
-	private IModel<OProperty> propertyModel;
-	private IModel<V> valueModel;
+	private IModel<String> nameModel;
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 
 	@SuppressWarnings("unchecked")
-	public BinaryViewPanel(String id, IModel<ODocument> docModel, IModel<OProperty> propModel, IModel<V> valueModel) {
+	public BinaryViewPanel(String id, final IModel<ODocument> docModel, final IModel<OProperty> propModel, IModel<V> valueModel) {
 		super(id, valueModel);
-		this.documentModel = docModel;
-		this.propertyModel = propModel;
+		
+		nameModel = new LoadableDetachableModel<String>() {
+
+			@Override
+			protected String load() {
+				String filename = oClassIntrospector.getDocumentName(docModel.getObject());
+				filename += "."+propModel.getObject().getName()+".bin";
+				return filename;
+			}
+			
+			@Override
+			public void detach() {
+				super.detach();
+				docModel.detach();
+				propModel.detach();
+			}
+		};
+		
+		initialize();
+	}
+	
+	public BinaryViewPanel(String id, IModel<String> nameModel, IModel<V> valueModel) {
+		super(id, valueModel);
+		this.nameModel = nameModel;
+	}
+	
+	protected void initialize() {
 		add(new ResourceLink<byte[]>("data", new AbstractResource() {
 			
 			@Override
 			protected ResourceResponse newResourceResponse(Attributes attributes) {
 			     ResourceResponse resourceResponse = new ResourceResponse();
 			     resourceResponse.setContentType("application/octet-stream");
-			     String filename = oClassIntrospector.getDocumentName(documentModel.getObject());
-			     filename += "."+propertyModel.getObject().getName()+".bin";
+			     String filename = nameModel.getObject();
 			     resourceResponse.setFileName(filename);
 			     resourceResponse.setWriteCallback(new WriteCallback()
 			     {
@@ -55,6 +78,12 @@ public class BinaryViewPanel<V> extends GenericPanel<V> {
 			     return resourceResponse;
 			}
 		}));
+	}
+	
+	@Override
+	public void detachModels() {
+		super.detachModels();
+		nameModel.detach();
 	}
 	
 }
