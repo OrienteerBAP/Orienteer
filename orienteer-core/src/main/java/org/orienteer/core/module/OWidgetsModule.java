@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.widget.AbstractHtmlJsPaneWidget;
+import org.orienteer.core.component.widget.document.ExternalPageWidget;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.widget.IWidgetType;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
@@ -42,6 +43,8 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	public static final String OPROPERTY_SIZE_X = "sizeX";
 	public static final String OPROPERTY_SIZE_Y = "sizeY";
 	public static final String OPROPERTY_HIDDEN = "hidden";
+	public static final String OPROPERTY_PAGE_URL = "pageUrl";
+	public static final String OPROPERTY_STYLE = "style";
 	
 	@Inject
 	private IWidgetTypesRegistry registry;
@@ -121,7 +124,9 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 				.oProperty("html", OType.STRING, 10).assignVisualization("textarea")
 				.oProperty("script", OType.STRING, 20).assignVisualization("textarea")
 				.oProperty("resources", OType.EMBEDDEDLIST, 30).linkedType(OType.STRING);
-				
+
+		helper.oClass(ExternalPageWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
+				.oProperty("pageUrl", OType.STRING, 0)
+				.oProperty("style", OType.STRING, 10);
 	}
-	
 }
