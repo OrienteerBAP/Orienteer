@@ -2,12 +2,13 @@ package org.orienteer.core.web;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
@@ -18,6 +19,7 @@ import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.widget.document.ExtendedVisualizerWidget;
+import org.orienteer.core.component.widget.document.ODocumentNonRegisteredPropertiesWidget;
 import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.OWidgetsModule;
@@ -165,7 +167,9 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 			protected void buildDashboard() {
 				super.buildDashboard();
 				//addWidget(ODocumentPropertiesWidget.WIDGET_TYPE_ID); //It will be added automatically!
-				
+
+				addWidget(ODocumentNonRegisteredPropertiesWidget.WIDGET_TYPE_ID);
+
 				List<? extends OProperty> properties = oClassIntrospector.listProperties(getModelObject().getSchemaClass(), getTab(), true);
 				
 				ODocument widgetDoc;
