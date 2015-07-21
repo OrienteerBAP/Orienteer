@@ -235,7 +235,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
                 }
 				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_FIELDS))
 				{
-					return new Select2MultiChoice(id, getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE);
+					return new Select2MultiChoice(id, getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE).setRequired(true);
 				}
 				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_IDENTITY_TYPE))
 				{
