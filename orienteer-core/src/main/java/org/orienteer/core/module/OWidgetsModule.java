@@ -72,7 +72,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 					.oProperty(OPROPERTY_SIZE_Y, OType.INTEGER, 60)
 					.oProperty(OPROPERTY_HIDDEN, OType.BOOLEAN, 60);
 		helper.setupRelationship(OCLASS_DASHBOARD, OPROPERTY_WIDGETS, OCLASS_WIDGET, OPROPERTY_DASHBOARD);
-		installHtmlJsPaneSchema(db); 
+		installWidgetsSchemaV2(db); 
 	}
 	
 	@Override
@@ -81,7 +81,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		int updateTo = oldVersion+1;
 		switch(updateTo) {
 			case 2:
-			installHtmlJsPaneSchema(db);
+			installWidgetsSchemaV2(db);
 		}
 		if(updateTo<newVersion) onUpdate(app, db, updateTo, newVersion);
 	}
@@ -117,7 +117,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		return notInstalled==null || notInstalled.isEmpty();
 	}
 	
-	protected void installHtmlJsPaneSchema(ODatabaseDocument db) {
+	protected void installWidgetsSchemaV2(ODatabaseDocument db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
 				.oProperty("title", OType.STRING, 0)

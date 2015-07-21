@@ -20,12 +20,6 @@ public abstract class AbstractCheckBoxEnabledModalWindowCommand<T> extends
 	protected ModalWindow modal;
 	
 	public AbstractCheckBoxEnabledModalWindowCommand(IModel<?> labelModel,
-			DataTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
-	}
-
-	public AbstractCheckBoxEnabledModalWindowCommand(IModel<?> labelModel,
 			OrienteerDataTable<T, ?> table)
 	{
 		super(labelModel, table);

@@ -36,11 +36,6 @@ public class CreateOIndexFromOPropertiesCommand extends
 		AbstractCheckBoxEnabledCommand<OProperty>
 {
 	private IModel<OClass> classModel;
-	public CreateOIndexFromOPropertiesCommand(DataTableCommandsToolbar<OProperty> toolbar, IModel<OClass> classModel)
-	{
-		super(new ResourceModel("command.create.index"), toolbar);
-		this.classModel = classModel;
-	}
 
 	public CreateOIndexFromOPropertiesCommand(OrienteerDataTable<OProperty, ?> table, IModel<OClass> classModel)
 	{

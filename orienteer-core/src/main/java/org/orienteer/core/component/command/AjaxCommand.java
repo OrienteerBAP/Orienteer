@@ -19,11 +19,6 @@ public abstract class AjaxCommand<T> extends Command<T>
 {
 	private static final long serialVersionUID = 1L;
 
-	public AjaxCommand(IModel<?> labelModel, DataTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
-	}
-
 	public AjaxCommand(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
 	{
 		super(labelModel, table);
@@ -32,12 +27,6 @@ public abstract class AjaxCommand<T> extends Command<T>
 	public AjaxCommand(IModel<?> labelModel, OrienteerStructureTable<T, ?> table)
 	{
 		super(labelModel, table);
-	}
-
-	public AjaxCommand(IModel<?> labelModel,
-			StructureTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
 	}
 
 	public AjaxCommand(String commandId, IModel<?> labelModel)

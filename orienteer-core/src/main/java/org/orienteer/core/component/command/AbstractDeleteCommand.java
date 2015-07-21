@@ -23,11 +23,6 @@ public abstract class AbstractDeleteCommand<T> extends AbstractCheckBoxEnabledCo
 		super(new ResourceModel("command.delete"), table);
 		
 	}
-
-	public AbstractDeleteCommand(DataTableCommandsToolbar<T> toolbar)
-	{
-		super(new ResourceModel("command.delete"), toolbar);
-	}
 	
 	@Override
 	protected void onInitialize() {

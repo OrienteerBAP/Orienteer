@@ -24,11 +24,6 @@ public class DeleteOIndexCommand extends AbstractDeleteCommand<OIndex<?>>
 {
 	private OIndexManager indexManager;
 	
-	public DeleteOIndexCommand(DataTableCommandsToolbar<OIndex<?>> toolbar)
-	{
-		super(toolbar);
-	}
-
 	public DeleteOIndexCommand(OrienteerDataTable<OIndex<?>, ?> table)
 	{
 		super(table);

@@ -24,13 +24,6 @@ public class ReleaseODocumentCommand extends
 	private IModel<ODocument> documentModel;
 	private IModel<OProperty> propertyModel;
 
-	public ReleaseODocumentCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
-	{
-		super(new ResourceModel("command.release"), toolbar);
-		this.documentModel = documentModel;
-		this.propertyModel = propertyModel;
-	}
-
 	public ReleaseODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
 	{
 		super(new ResourceModel("command.release"), table);

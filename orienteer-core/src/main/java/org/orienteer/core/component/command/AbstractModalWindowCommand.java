@@ -18,12 +18,6 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 	protected ModalWindow modal;
 
 	public AbstractModalWindowCommand(IModel<?> labelModel,
-			DataTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
-	}
-
-	public AbstractModalWindowCommand(IModel<?> labelModel,
 			OrienteerDataTable<T, ?> table)
 	{
 		super(labelModel, table);
@@ -33,12 +27,6 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 			OrienteerStructureTable<T, ?> table)
 	{
 		super(labelModel, table);
-	}
-
-	public AbstractModalWindowCommand(IModel<?> labelModel,
-			StructureTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
 	}
 
 	public AbstractModalWindowCommand(String commandId, IModel<?> labelModel)

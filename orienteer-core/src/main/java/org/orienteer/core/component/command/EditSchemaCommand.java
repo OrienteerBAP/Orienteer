@@ -29,22 +29,10 @@ public class EditSchemaCommand<T> extends EditCommand<T>
 		super(table, displayModeModel);
 	}
 
-	public EditSchemaCommand(DataTableCommandsToolbar<T> toolbar,
-			IModel<DisplayMode> displayModeModel)
-	{
-		super(toolbar, displayModeModel);
-	}
-
 	public EditSchemaCommand(OrienteerStructureTable<T, ?> structureTable,
 			IModel<DisplayMode> displayModeModel)
 	{
 		super(structureTable, displayModeModel);
-	}
-
-	public EditSchemaCommand(StructureTableCommandsToolbar<T> toolbar,
-			IModel<DisplayMode> displayModeModel)
-	{
-		super(toolbar, displayModeModel);
 	}
 
 }

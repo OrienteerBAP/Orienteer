@@ -17,11 +17,6 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 public abstract class AbstractCreateCommand<T> extends Command<T>
 {
 
-	public AbstractCreateCommand(DataTableCommandsToolbar<T> toolbar)
-	{
-		super(new ResourceModel("command.create"), toolbar);
-	}
-
 	public AbstractCreateCommand(OrienteerDataTable<T, ?> table)
 	{
 		super(new ResourceModel("command.create"), table);
@@ -31,12 +26,6 @@ public abstract class AbstractCreateCommand<T> extends Command<T>
 	{
 		super(new ResourceModel("command.create"), table);
 	}
-
-	public AbstractCreateCommand(StructureTableCommandsToolbar<T> toolbar)
-	{
-		super(new ResourceModel("command.create"), toolbar);
-	}
-
 
 	public AbstractCreateCommand(String commandId, String labelKey)
 	{

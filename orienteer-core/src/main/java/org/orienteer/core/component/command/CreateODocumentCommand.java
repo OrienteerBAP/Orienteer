@@ -39,18 +39,6 @@ public class CreateODocumentCommand extends AbstractCreateCommand<ODocument> imp
 		this.classModel = new PropertyModel<OClass>(propertyModel, "linkedClass");
 	}
 
-	public CreateODocumentCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<OClass> classModel) {
-		super(toolbar);
-		this.classModel = classModel;
-	}
-	
-	public CreateODocumentCommand(DataTableCommandsToolbar<ODocument> toolbar, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
-		super(toolbar);
-		this.documentModel = documentModel;
-		this.propertyModel = propertyModel;
-		this.classModel = new PropertyModel<OClass>(propertyModel, "linkedClass");
-	}
-	
 	@Override
 	public void onClick() {
 		ODocument doc = new ODocument(classModel.getObject());

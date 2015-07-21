@@ -20,10 +20,6 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.DELETE)
 public class DeleteOClassCommand extends AbstractDeleteCommand<OClass> {
 
-	public DeleteOClassCommand(DataTableCommandsToolbar<OClass> toolbar) {
-		super(toolbar);
-	}
-
 	public DeleteOClassCommand(OrienteerDataTable<OClass, ?> table) {
 		super(table);
 	}

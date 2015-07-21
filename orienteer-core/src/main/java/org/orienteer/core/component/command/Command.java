@@ -52,24 +52,14 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	private boolean changingModel=false;
 	private boolean autoNotify=true;
 	
-	public Command(IModel<?> labelModel, StructureTableCommandsToolbar<T> toolbar)
-    {
-        this(toolbar.newChildId(), labelModel, toolbar.getModel());
-    }
-	
-    public Command(IModel<?> labelModel, DataTableCommandsToolbar<T> toolbar)
-    {
-        this(toolbar.newChildId(), labelModel);
-    }
-    
     public Command(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
     {
-        this(labelModel, table.getCommandsToolbar());
+        this(table.getCommandsToolbar().newChildId(), labelModel);
     }
     
     public Command(IModel<?> labelModel, OrienteerStructureTable<T, ?> table)
     {
-        this(labelModel, table.getCommandsToolbar());
+        this(table.getCommandsToolbar().newChildId(), labelModel);
     }
 
     public Command(String labelKey)

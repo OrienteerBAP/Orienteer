@@ -34,12 +34,6 @@ public class AbstractCheckBoxEnabledCommand<T> extends AjaxFormCommand<T>
 		this.table=table;
 		
 	}
-
-	public AbstractCheckBoxEnabledCommand(IModel<?> labelModel, DataTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
-		table = toolbar.getTable();
-	}
 	
 	@SuppressWarnings("unchecked")
 	@Override

@@ -30,18 +30,6 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 		super(labelModel, table);
 	}
 
-	public AjaxFormCommand(IModel<?> labelModel,
-			DataTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
-	}
-
-	public AjaxFormCommand(IModel<?> labelModel,
-			StructureTableCommandsToolbar<T> toolbar)
-	{
-		super(labelModel, toolbar);
-	}
-
 	public AjaxFormCommand(String commandId, IModel<?> labelModel)
 	{
 		super(commandId, labelModel);

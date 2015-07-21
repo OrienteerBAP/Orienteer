@@ -20,11 +20,6 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 public class CreateOClassCommand extends AbstractCreateCommand<OClass>
 {
 
-	public CreateOClassCommand(DataTableCommandsToolbar<OClass> toolbar)
-	{
-		super(toolbar);
-	}
-
 	public CreateOClassCommand(OrienteerDataTable<OClass, ?> table)
 	{
 		super(table);

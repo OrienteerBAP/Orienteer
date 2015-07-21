@@ -17,10 +17,6 @@ public abstract class AbstractCopyCommand<T> extends AbstractCheckBoxEnabledComm
         super(new ResourceModel("command.copy"), table);
     }
 
-    public AbstractCopyCommand(DataTableCommandsToolbar<T> toolbar) {
-        super(new ResourceModel("command.copy"), toolbar);
-    }
-
     @Override
     protected void onInitialize() {
         super.onInitialize();

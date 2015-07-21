@@ -29,26 +29,12 @@ public class EditCommand<T> extends AjaxCommand<T>
 		this.displayModeModel = displayModeModel;
 	}
 
-	public EditCommand(DataTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
-	{
-		super(new ResourceModel("command.edit"), toolbar);
-		this.displayModeModel = displayModeModel;
-	}
-	
 	public EditCommand(OrienteerStructureTable<T, ?> structureTable, IModel<DisplayMode> displayModeModel)
 	{
 		super(new ResourceModel("command.edit"), structureTable);
 		this.displayModeModel = displayModeModel;
 	}
 
-	public EditCommand(StructureTableCommandsToolbar<T> toolbar, IModel<DisplayMode> displayModeModel)
-	{
-		super(new ResourceModel("command.edit"), toolbar);
-		this.displayModeModel = displayModeModel;
-	}
-	
-	
-	
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();

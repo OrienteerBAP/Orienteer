@@ -24,11 +24,6 @@ public class ViewUMLCommand extends AbstractCheckBoxEnabledModalWindowCommand<OC
 	@Inject
 	private IUmlService umlService;
 
-	public ViewUMLCommand(DataTableCommandsToolbar<OClass> toolbar)
-	{
-		super(new ResourceModel("command.viewUml"), toolbar);
-	}
-
 	public ViewUMLCommand(OrienteerDataTable<OClass, ?> table)
 	{
 		super(new ResourceModel("command.viewUml"), table);
