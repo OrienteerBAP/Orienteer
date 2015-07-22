@@ -181,6 +181,17 @@ public enum CustomAttributes
 		}
 	}
 	
+	public <V> V getHierarchicalValue(OClass oClass)
+	{
+		V ret = getValue(oClass);
+		if(ret==null) {
+			for(OClass superClass : oClass.getSuperClasses()) {
+				if((ret=getHierarchicalValue(superClass))!=null) break;
+			}
+		}
+		return ret;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <V> V getValue(OClass oClass)
 	{
@@ -216,6 +227,7 @@ public enum CustomAttributes
 		{
 			if(defaultValue!=null && defaultValue.equals(value)) value = null;
 			String stringValue = value!=null?value.toString():null;
+			if(stringValue.length()==0) stringValue=null;
 			if(encode) stringValue = encodeCustomValue(stringValue);
 			oClass.setCustom(name, stringValue);
 		}

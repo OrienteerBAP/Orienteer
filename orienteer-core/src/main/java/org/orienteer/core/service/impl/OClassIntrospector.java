@@ -128,7 +128,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	public ODocument getParent(ODocument doc) {
 		if(doc==null || doc.getSchemaClass()==null) return null;
 		OClass oClass = doc.getSchemaClass();
-		OProperty parent = CustomAttributes.PROP_PARENT.getValue(oClass);
+		OProperty parent = CustomAttributes.PROP_PARENT.getHierarchicalValue(oClass);
 		if(parent!=null) return doc.field(parent.getName());
 		else return null;
 	}
@@ -203,7 +203,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	@Override
 	public OProperty getNameProperty(OClass oClass) {
 		if(oClass==null) return null;
-		OProperty ret = CustomAttributes.PROP_NAME.getValue(oClass);
+		OProperty ret = CustomAttributes.PROP_NAME.getHierarchicalValue(oClass);
 		if(ret!=null) return ret;
 		ret = oClass.getProperty("name");
 		if(ret!=null) return ret;

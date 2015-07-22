@@ -132,10 +132,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			}
 			else if((CustomAttributes.ON_CREATE_FIELDS.getName().equals(critery)) && (custom = CustomAttributes.fromString(critery)) != null)
 			{
-				if(value!=null)
-				{
-					custom.setValue(entity, Joiner.on(",").join((List<String>) value));
-				}
+				custom.setValue(entity, value!=null?Joiner.on(",").join((List<String>) value):null);
 			}
 			else if((custom = CustomAttributes.fromString(critery))!=null)
 			{
@@ -235,11 +232,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
                 }
 				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_FIELDS))
 				{
-					return new Select2MultiChoice(id, getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE).setRequired(true);
+					return new Select2MultiChoice<String>(id, (IModel<Collection<String>>)getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE);
 				}
 				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_IDENTITY_TYPE))
 				{
-					return new DropDownChoice<String>(id, (IModel<String>)getModel(), ON_CREATE_IDENTITY_SELECTIONS);
+					return new DropDownChoice<String>(id, (IModel<String>)getModel(), ON_CREATE_IDENTITY_SELECTIONS).setNullValid(true);
 				}
 				else
 				{
