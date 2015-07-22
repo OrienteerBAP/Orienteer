@@ -44,6 +44,7 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 		}
 	};
 	private static final long serialVersionUID = 1L;
+	private IModel<?> labelModel;
 	private String icon;
 	private AbstractLink link;
 	private String btnCssClass;
@@ -85,7 +86,13 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
     public Command(String commandId, IModel<?> labelModel, IModel<T> model)
     {
         super(commandId, model);
-        link = newLink("command");
+        this.labelModel = labelModel;
+    }
+    
+    @Override
+    protected void onInitialize() {
+    	super.onInitialize();
+    	link = newLink("command");
         link.setOutputMarkupId(true);
         link.add(new AttributeAppender("class", new PropertyModel<String>(this, "btnCssClass"), " "));
         link.add(new Label("label", labelModel).setRenderBodyOnly(true));

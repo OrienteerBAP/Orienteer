@@ -24,7 +24,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 /**
  * Page to show {@link OClass} specific things: class parameters, properties, indexies and etc.
  */
-@MountPath("/class/${className}")
+@MountPath("/class/${className}/#{mode}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 public class OClassPage extends AbstractWidgetDisplayModeAwarePage<OClass> {
 
@@ -72,6 +72,13 @@ public class OClassPage extends AbstractWidgetDisplayModeAwarePage<OClass> {
 	@Override
 	public String getDomain() {
 		return "class";
+	}
+	
+	public static PageParameters preparePageParameters(OClass oClass, DisplayMode mode) {
+		PageParameters ret = new PageParameters();
+		ret.add("className", oClass.getName());
+		if(!DisplayMode.VIEW.equals(mode)) ret.add("mode", mode.getName());
+		return ret;
 	}
 
 }

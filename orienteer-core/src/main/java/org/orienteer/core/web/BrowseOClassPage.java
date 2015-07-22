@@ -10,7 +10,9 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.MountPath;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.module.OWidgetsModule;
+import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetFilter;
 
@@ -93,6 +95,10 @@ public class BrowseOClassPage extends AbstractWidgetPage<OClass> implements ISec
 	@Override
 	public RequiredOrientResource[] getRequiredResources() {
 		return OSecurityHelper.requireOClass(getModelObject(), OrientPermission.READ);
+	}
+	
+	public static PageParameters preparePageParameters(OClass oClass, DisplayMode mode) {
+		return OClassPage.preparePageParameters(oClass, mode);
 	}
 
 }

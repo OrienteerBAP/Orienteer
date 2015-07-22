@@ -13,10 +13,12 @@ import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.OClassPageLink;
+import org.orienteer.core.component.command.BookmarkablePageLinkCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.command.CreateOClassCommand;
 import org.orienteer.core.component.command.DeleteOClassCommand;
@@ -73,24 +75,11 @@ public class OClassesWidget extends AbstractWidget<Void> {
 			@Override
 			public void populateItem(Item<ICellPopulator<OClass>> cellItem,
 					String componentId, final IModel<OClass> rowModel) {
-				cellItem.add(new Command<OClass>(componentId, "class.browse") {
-					
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					protected AbstractLink newLink(String id) {
-						return new OClassPageLink(id, rowModel, BrowseOClassPage.class, DisplayMode.VIEW.asModel());
-					}
-
-					@Override
-					public void onClick() {
-						//We should not be here
-					}
+				cellItem.add(new BookmarkablePageLinkCommand<OClass>(componentId, "class.browse", BrowseOClassPage.class) {
+					public PageParameters getPageParameters() {
+						return BrowseOClassPage.preparePageParameters(rowModel.getObject(), DisplayMode.VIEW);
+					};
 				}.setIcon(FAIconType.angle_double_down).setBootstrapType(BootstrapType.INFO));
-				
 			}
 		});
 		OClassesDataProvider provider = new OClassesDataProvider();

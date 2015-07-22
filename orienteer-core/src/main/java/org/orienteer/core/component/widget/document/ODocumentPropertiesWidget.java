@@ -7,8 +7,10 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.command.BookmarkablePageLinkCommand;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.meta.IDisplayModeAware;
@@ -16,6 +18,7 @@ import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
@@ -60,6 +63,13 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 		};
 		form.add(propertiesStructureTable);
 		add(form);
+		
+		addCommand(new BookmarkablePageLinkCommand<ODocument>("command.gotoClass", OClassPage.class) {
+			@Override
+			public PageParameters getPageParameters() {
+				return OClassPage.preparePageParameters(ODocumentPropertiesWidget.this.getModelObject().getSchemaClass(), DisplayMode.VIEW);
+			}
+		});
 	}
 	
 	@Override
