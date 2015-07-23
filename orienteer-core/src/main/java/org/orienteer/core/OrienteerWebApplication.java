@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
@@ -17,6 +18,7 @@ import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.IRequestCycleSettings;
 import org.apache.wicket.util.convert.IConverter;
@@ -251,5 +253,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void registerWidgets(String packageName) {
 		IWidgetTypesRegistry registry = getServiceInstance(IWidgetTypesRegistry.class);
 		registry.register(packageName);
+	}
+	
+	@Override
+	public void restartResponseAtSignInPage() {
+		//This is required because home page is dynamic and depends on assigned perspective.
+		if(RequestCycle.get().getRequest().getQueryParameters().getParameterValue(HomePage.FROM_HOME_PARAM).toBoolean(false)) {
+			throw new RestartResponseException(getSignInPageClass());
+		} else super.restartResponseAtSignInPage();
 	}
 }
