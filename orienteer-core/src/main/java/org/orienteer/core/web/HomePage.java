@@ -14,7 +14,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @MountPath("/home")
 public class HomePage extends BasePage
 {
-	public static String FROM_HOME_PARAM = "_fh";
+	public static final String FROM_HOME_PARAM = "_fh";
 	public HomePage()
 	{
 		ODocument perspective = getPerspective();
