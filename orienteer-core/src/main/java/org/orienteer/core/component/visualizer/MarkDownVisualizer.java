@@ -11,7 +11,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.model.MarkDownModel;
-import org.pegdown.PegDownProcessor;
 
 /**
  * {@link IVisualizer} to display and modify markdown in Orienteer

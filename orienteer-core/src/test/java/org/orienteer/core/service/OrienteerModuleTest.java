@@ -55,7 +55,7 @@ public class OrienteerModuleTest {
 		try {
 			System.setProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "non-existing-qualifier");
 			Properties result = OrienteerModule.retrieveProperties();
-			assertEquals(OrienteerModule.PROPERTIES_DEFAULT, result);
+			assertNotNull(result);
 			//system property set
 			File propertyFile = File.createTempFile("orienteer-test-temp", ".properties");
 			

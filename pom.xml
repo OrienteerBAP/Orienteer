@@ -134,6 +134,12 @@
 			    <version>${orientdb.version}</version>
 			    <type>bundle</type>
 		    </dependency>
+		    <dependency>
+			    <groupId>com.orientechnologies</groupId>
+			    <artifactId>orientdb-graphdb</artifactId>
+			    <version>${orientdb.version}</version>
+			    <type>bundle</type>
+		    </dependency>
 		    <!-- INCLUDE THIS IF YOU'RE CONNECTING TO THE SERVER THROUGH THE REMOTE 
 			    ENGINE -->
 		    <dependency>

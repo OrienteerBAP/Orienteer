@@ -29,7 +29,6 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
-import org.parboiled.common.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Arrays;

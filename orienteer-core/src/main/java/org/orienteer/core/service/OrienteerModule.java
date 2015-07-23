@@ -1,8 +1,7 @@
 package org.orienteer.core.service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
@@ -15,12 +14,6 @@ import org.orienteer.core.service.impl.GuiceOrientDbSettings;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.util.LookupResourceHelper;
-import org.orienteer.core.util.LookupResourceHelper.DirFileLookuper;
-import org.orienteer.core.util.LookupResourceHelper.IResourceLookuper;
-import org.orienteer.core.util.LookupResourceHelper.SystemPropertyFileLookuper;
-import org.orienteer.core.util.LookupResourceHelper.SystemPropertyResourceLookuper;
-import org.orienteer.core.util.LookupResourceHelper.SystemPropertyURLLookuper;
-import org.orienteer.core.util.LookupResourceHelper.UpDirectoriesFileLookuper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,21 +24,15 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
-import com.google.inject.ProvisionException;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.server.OServer;
 
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.nio.file.FileSystems;
 
 /**
  * Main module to load Orienteer stuff to Guice
@@ -81,6 +68,8 @@ public class OrienteerModule extends AbstractModule {
 	
 	
 	public final static Properties PROPERTIES_DEFAULT = new Properties();
+	
+	public static final String ORIENTDB_KEY_PREFIX="orientdb.";
 
 	static {
 		InputStream propertiesDefaultInputStream
@@ -108,6 +97,7 @@ public class OrienteerModule extends AbstractModule {
 	protected void configure() {
 		Properties properties = retrieveProperties();
 		Names.bindProperties(binder(), properties);
+		bindOrientDbProperties(properties);
 		String applicationClass = properties.getProperty("orienteer.application");
 		Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
 		if (applicationClass != null) {
@@ -136,6 +126,15 @@ public class OrienteerModule extends AbstractModule {
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
 		bind(UIVisualizersRegistry.class).asEagerSingleton();
 		bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
+	}
+	
+	protected void bindOrientDbProperties(Properties properties) {
+		for(String key : properties.stringPropertyNames()) {
+			if(key.startsWith(ORIENTDB_KEY_PREFIX)) {
+				String subKey = key.substring(ORIENTDB_KEY_PREFIX.length());
+				System.setProperty(subKey, properties.getProperty(key));
+			}
+		}
 	}
 
 	@Provides

@@ -13,10 +13,4 @@
     <users>
 	<user name="root" password="OrienteerDatabase" resources="*"/>
     </users>
-    <properties>
-		<entry name="server.cache.staticResources" value="false"/>
-		<entry name="log.console.level" value="info"/>
-		<entry name="log.file.level" value="fine"/>
-		<entry name="plugin.dynamic" value="false"/>
-    </properties>
 </orient-server>

@@ -71,6 +71,11 @@
 	    </dependency>
 	    <dependency>
 		    <groupId>com.orientechnologies</groupId>
+		    <artifactId>orientdb-graphdb</artifactId>
+		    <type>bundle</type>
+	    </dependency>
+	    <dependency>
+		    <groupId>com.orientechnologies</groupId>
 		    <artifactId>orientdb-client</artifactId>
 		    <type>bundle</type>
 	    </dependency>
@@ -124,16 +129,16 @@
 		<artifactId>servlet-api</artifactId>
 	    </dependency>
         <!-- MARKDOWN DEPENDENCY -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.pegdown</groupId>
             <artifactId>pegdown</artifactId>
             <version>1.4.2</version>
-        </dependency>
-        <dependency>
+        </dependency>-->
+        <!--<dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <version>3.1</version>
-        </dependency>
+        </dependency>-->
 	</dependencies>
 	<build>
 		<finalName>orienteer</finalName>

@@ -6,12 +6,15 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.orientechnologies.common.collection.OCollection;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
+import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.apache.wicket.Application;
@@ -262,6 +265,13 @@ public class OClassIntrospector implements IOClassIntrospector
 				if(link!=null) property.setLinkedClass(link.getSchemaClass());
 				break;
 			case LINKBAG:
+				OCollection<OIdentifiable> bag = doc.field(field);
+				if(bag!=null && bag.size()>0) {
+					OIdentifiable linkIdentifiable = bag.iterator().next();
+					ORecord record = linkIdentifiable!=null?linkIdentifiable.getRecord():null;
+					if(record!=null && record instanceof ODocument) property.setLinkedClass(((ODocument)record).getSchemaClass());
+				}
+				break;
 			case LINKLIST:
 			case LINKSET:
 				Collection<ODocument> collection = doc.field(field);
