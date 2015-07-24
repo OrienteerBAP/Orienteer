@@ -20,6 +20,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
@@ -33,7 +34,7 @@ import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
  * @param <S>
  *            the type of the sorting parameter
  */
-public class OrienteerDataTable<T, S> extends DataTable<T, S>
+public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>
 {
 	/**
 	 * {@link Item} that allows every row to be an {@link IMetaContext}
@@ -94,12 +95,24 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S>
 		return noRecordsToolbar;
 	}
 
+	@Override
 	public OrienteerDataTable<T, S> addCommand(Command<T> command)
 	{
-		commandsToolbar.add(command);
+		commandsToolbar.addCommand(command);
 		return this;
 	}
 	
+	@Override
+	public OrienteerDataTable<T, S> removeCommand(Command<T> command) {
+		commandsToolbar.removeCommand(command);
+		return this;
+	}
+
+	@Override
+	public String newCommandId() {
+		return commandsToolbar.newCommandId();
+	}
+
 	@Override
 	public void onEvent(IEvent<?> event) {
 		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))

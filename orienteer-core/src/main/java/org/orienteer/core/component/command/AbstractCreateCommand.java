@@ -32,11 +32,6 @@ public abstract class AbstractCreateCommand<T> extends Command<T>
 		super(commandId, labelKey);
 	}
 
-	public AbstractCreateCommand(String labelKey)
-	{
-		super(labelKey);
-	}
-	
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();

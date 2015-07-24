@@ -9,6 +9,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 
 /**
@@ -16,7 +17,7 @@ import org.orienteer.core.component.command.Command;
  *
  * @param <T> the type of a data table objects
  */
-public class DataTableCommandsToolbar<T> extends AbstractToolbar
+public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICommandsSupportComponent<T>
 {
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
@@ -30,21 +31,24 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar
         add(span);
     }
 
-    public DataTableCommandsToolbar<T> add(Command<T> command)
-    {
-        commands.add(command);
-        return this;
-    }
+    @Override
+	public DataTableCommandsToolbar<T> addCommand(Command<T> command) {
+		commands.add(command);
+		return this;
+	}
 
-    public String newChildId()
-    {
-        return commands.newChildId();
-    }
-    
-    
-    
+	@Override
+	public DataTableCommandsToolbar<T> removeCommand(Command<T> command) {
+		commands.remove(command);
+		return this;
+	}
 
-    @SuppressWarnings("unchecked")
+	@Override
+	public String newCommandId() {
+		return commands.newChildId();
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public DataTable<T, ?> getTable() {
 		return (DataTable<T, ?>)super.getTable();

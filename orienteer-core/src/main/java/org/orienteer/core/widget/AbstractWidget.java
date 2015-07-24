@@ -13,6 +13,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIcon;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
@@ -29,7 +30,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main data object linked to this widget
  */
-public abstract class AbstractWidget<T> extends GenericPanel<T> {
+public abstract class AbstractWidget<T> extends GenericPanel<T> implements ICommandsSupportComponent<T> {
 	
 	private boolean hidden=false;
 	
@@ -89,11 +90,24 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> {
 		});
 	}
 	
-	public void addCommand(Command<T> command) {
+	@Override
+	public AbstractWidget<T> addCommand(Command<T> command) {
 		command.setBootstrapType(null);
 		commands.add(command);
+		return this;
 	}
 	
+	@Override
+	public AbstractWidget<T> removeCommand(Command<T> command) {
+		commands.remove(command);
+		return this;
+	}
+
+	@Override
+	public String newCommandId() {
+		return commands.newChildId();
+	}
+
 	public DashboardPanel<T> getDashboardPanel() {
 		DashboardPanel<T> dashboard = findParent(DashboardPanel.class);
 		if(dashboard==null)

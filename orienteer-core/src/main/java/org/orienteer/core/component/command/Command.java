@@ -18,6 +18,7 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.IBootstrapAware;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
@@ -53,21 +54,11 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	private boolean changingModel=false;
 	private boolean autoNotify=true;
 	
-    public Command(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
+    public Command(IModel<?> labelModel, ICommandsSupportComponent<T> component)
     {
-        this(table.getCommandsToolbar().newChildId(), labelModel);
+        this(component.newCommandId(), labelModel);
     }
     
-    public Command(IModel<?> labelModel, OrienteerStructureTable<T, ?> table)
-    {
-        this(table.getCommandsToolbar().newChildId(), labelModel);
-    }
-
-    public Command(String labelKey)
-    {
-        this(labelKey, new ResourceModel(labelKey));
-    }
-
     public Command(String commandId, String labelKey)
     {
         this(commandId, labelKey, null);

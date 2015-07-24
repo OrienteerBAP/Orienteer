@@ -30,11 +30,6 @@ public class BookmarkablePageLinkCommand<T> extends Command<T> {
 		this.pageClass = pageClass;
 	}
 
-	public <C extends Page> BookmarkablePageLinkCommand(String labelKey, final Class<C> pageClass) {
-		super(labelKey);
-		this.pageClass = pageClass;
-	}
-
 	public <C extends Page> BookmarkablePageLinkCommand(String commandId, String labelKey, final Class<C> pageClass) {
 		super(commandId, labelKey);
 		this.pageClass = pageClass;

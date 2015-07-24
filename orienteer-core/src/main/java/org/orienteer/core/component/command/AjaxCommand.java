@@ -5,6 +5,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
@@ -19,14 +20,9 @@ public abstract class AjaxCommand<T> extends Command<T>
 {
 	private static final long serialVersionUID = 1L;
 
-	public AjaxCommand(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
+	public AjaxCommand(IModel<?> labelModel, ICommandsSupportComponent<T> component)
 	{
-		super(labelModel, table);
-	}
-
-	public AjaxCommand(IModel<?> labelModel, OrienteerStructureTable<T, ?> table)
-	{
-		super(labelModel, table);
+		super(labelModel, component);
 	}
 
 	public AjaxCommand(String commandId, IModel<?> labelModel)
@@ -37,11 +33,6 @@ public abstract class AjaxCommand<T> extends Command<T>
 	public AjaxCommand(String commandId, String labelKey)
 	{
 		super(commandId, labelKey);
-	}
-
-	public AjaxCommand(String labelKey)
-	{
-		super(labelKey);
 	}
 	
 	@Override

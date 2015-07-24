@@ -135,7 +135,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 		JavaSortableDataProvider<String, String> provider = new JavaSortableDataProvider<String, String>(new PropertyModel<Collection<String>>(this, "ruleSet"));
 		OrienteerDataTable<String, String> sTable = new OrienteerDataTable<String, String>("table", sColumns, provider ,20);
 		sTable.addCommand(new AbstractSaveCommand<String>(sTable, null));
-		sTable.addCommand(new AbstractModalWindowCommand<String>(sTable.getCommandsToolbar().newChildId(), "command.add") {
+		sTable.addCommand(new AbstractModalWindowCommand<String>(sTable.newCommandId(), "command.add") {
 			{
 				setIcon(FAIconType.plus_circle);
 				setBootstrapType(BootstrapType.SUCCESS);

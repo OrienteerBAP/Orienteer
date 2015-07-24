@@ -39,13 +39,6 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 		super(commandId, labelKey);
 	}
 
-	public AbstractModalWindowCommand(String labelKey)
-	{
-		super(labelKey);
-	}
-	
-	
-	
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();

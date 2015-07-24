@@ -64,7 +64,7 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 		form.add(propertiesStructureTable);
 		add(form);
 		
-		addCommand(new BookmarkablePageLinkCommand<ODocument>("command.gotoClass", OClassPage.class) {
+		addCommand(new BookmarkablePageLinkCommand<ODocument>(newCommandId(), "command.gotoClass", OClassPage.class) {
 			@Override
 			public PageParameters getPageParameters() {
 				return OClassPage.preparePageParameters(ODocumentPropertiesWidget.this.getModelObject().getSchemaClass(), DisplayMode.VIEW);

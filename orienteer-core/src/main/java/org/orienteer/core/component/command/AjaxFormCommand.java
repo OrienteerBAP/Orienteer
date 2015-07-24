@@ -40,11 +40,6 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 		super(commandId, labelKey);
 	}
 
-	public AjaxFormCommand(String labelKey)
-	{
-		super(labelKey);
-	}
-
 	@Override
 	protected AbstractLink newLink(String id) {
 		return new AjaxSubmitLink(id)
