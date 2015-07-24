@@ -151,14 +151,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
-		IPackageResourceGuard packageResourceGuard = getResourceSettings().getPackageResourceGuard();
-		if (packageResourceGuard instanceof SecurePackageResourceGuard)
-		{
-			SecurePackageResourceGuard guard = (SecurePackageResourceGuard) packageResourceGuard;
-			//Allow to access only to woff2 - new format from bootstrap
-			guard.addPattern("+*.woff2");
-		}
-		
 		getApplicationListeners().add(new ModuledDataInstallator());
 		registerModule(OrienteerLocalizationModule.class);
 		registerModule(UpdateDefaultSchemaModule.class);
