@@ -64,7 +64,7 @@ public class OClassPage extends AbstractWidgetDisplayModeAwarePage<OClass> {
 
 	@Override
 	protected Component newPageHeaderComponent(String componentId) {
-		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
+		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId, getModel());
 		pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
 		return pageHeader;
 	}
