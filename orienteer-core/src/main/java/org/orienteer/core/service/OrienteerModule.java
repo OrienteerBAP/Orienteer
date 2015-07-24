@@ -122,7 +122,7 @@ public class OrienteerModule extends AbstractModule {
 		bind(WebApplication.class).toProvider(appProvider);
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
-		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class);
+		bind(IOrientDbSettings.class).to(GuiceOrientDbSettings.class).asEagerSingleton();
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
 		bind(UIVisualizersRegistry.class).asEagerSingleton();
 		bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
