@@ -14,6 +14,7 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefau
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.vaynberg.wicket.select2.DragAndDropBehavior;
 import com.vaynberg.wicket.select2.Select2MultiChoice;
 

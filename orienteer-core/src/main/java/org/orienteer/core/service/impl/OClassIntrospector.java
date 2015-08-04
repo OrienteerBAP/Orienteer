@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.common.collection.OCollection;
@@ -31,6 +32,7 @@ import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.service.IOClassIntrospector;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
@@ -242,6 +244,12 @@ public class OClassIntrospector implements IOClassIntrospector
 						return OrienteerWebApplication.DATE_TIME_CONVERTER.convertToString((Date)value, locale);
 					case LINK:
 						return getDocumentName((ODocument)value);
+					case EMBEDDEDMAP:
+						Map<String, String> localizations = (Map<String, String>)value;
+						String localization = localizations.get(locale.getLanguage());
+						if (localization != null) {
+							return localization;
+						}
 					default:
 						return value.toString();
 				}

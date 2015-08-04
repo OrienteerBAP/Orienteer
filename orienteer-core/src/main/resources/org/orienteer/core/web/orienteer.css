@@ -25,6 +25,11 @@ td.checkbox-column
 	width: 15px;
 }
 
+td.combobox-column
+{
+	width: 70px;
+}
+
 tr.commandstoolbar
 {
 	background: #f5f5f5;
@@ -62,6 +67,11 @@ table.table caption
 	font-weight: bold;
 	margin-right: 50%;
 	margin-left: 10px;
+}
+
+.table-add-button
+{
+	margin: 10px;
 }
 
 td.st-label
