@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.vaynberg.wicket.select2.Select2Choice;
 import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.visit.IVisit;
@@ -24,6 +23,7 @@ import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
+import org.orienteer.core.model.LanguagesChoiceProvider;
 import org.orienteer.core.service.IMarkupProvider;
 
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
@@ -39,8 +39,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * @param <V> the type of collection's objects
  */
 public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> {
-	
-	private static class Pair<V> implements Map.Entry<String, V>, Serializable
+
+	protected static class Pair<V> implements Map.Entry<String, V>, Serializable
 	{
 		private String key;
 		private V value;
@@ -93,12 +93,13 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		super(id, new DynamicPropertyValueModel<Map<String, V>>(documentModel, propertyModel));
 		setOutputMarkupId(true);
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
-		final OType oType = propertyModel.getObject().getLinkedType();
+		final OType linkedType = propertyModel.getObject().getLinkedType();
+		final OType oType = linkedType != null ? linkedType : OType.ANY;
 		ListView<Pair<V>> listView = new ListView<Pair<V>>("items", new PropertyModel<List<Pair<V>>>(this, "data")) {
 
 			@Override
 			protected void populateItem(final ListItem<Pair<V>> item) {
-				item.add(new TextField<String>("key", new PropertyModel<String>(item.getModel(), "key"), String.class));
+				item.add(getKeyEditComponent(item));
 				item.add(visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, new PropertyModel<V>(item.getModel(), "value")));
 				item.add(new AjaxFormCommand<Object>("remove", "command.remove")
 						{
@@ -139,6 +140,10 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		}.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 		 .setBootstrapType(BootstrapType.PRIMARY)
 		 .setIcon((String)null));
+	}
+
+	protected TextField<String> getKeyEditComponent(ListItem<Pair<V>> item) {
+		return new TextField<String>("key", new PropertyModel<String>(item.getModel(), "key"), String.class);
 	}
 
 	public List<Pair<V>> getData() {

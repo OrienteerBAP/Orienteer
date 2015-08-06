@@ -40,6 +40,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 	public static final String OPROPERTY_VARIATION="variation";
 	public static final String OPROPERTY_ACTIVE="active";
 	public static final String OPROPERTY_VALUE="value";
+	public static final String ODOCUMENT_LOCALIZATION_VISUALIZER="localization";
 	
 	/**
 	 * {@link ORecordHook} to invalidate localization cache if something changed
