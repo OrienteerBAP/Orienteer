@@ -120,3 +120,7 @@ div.select2-container.form-control {
 div.signin-panel {
 	margin-top: 1em;
 }
+
+div.commands {
+	text-align: right;
+}
