@@ -106,10 +106,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 				System.out.println("Empty!");
 			}
 
-			String customLocale = OrienteerWebSession.get().getCustomLocale();
-			final String language = customLocale != null
-											? customLocale
-											: locale!=null?locale.getLanguage():null;
+			final String language = locale!=null?locale.getLanguage():null;
 			return new DBClosure<String>() {
 
 				@Override
