@@ -10,6 +10,7 @@ import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -34,12 +35,14 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 public class OrienteerLocalizationModule extends AbstractOrienteerModule
 {
 	public static final String OCLASS_LOCALIZATION="OLocalization";
+	public static final String OCLASS_USER="OUser";
 	public static final String OPROPERTY_KEY="key";
 	public static final String OPROPERTY_LANG="lang";
 	public static final String OPROPERTY_STYLE="style";
 	public static final String OPROPERTY_VARIATION="variation";
 	public static final String OPROPERTY_ACTIVE="active";
 	public static final String OPROPERTY_VALUE="value";
+	public static final String OPROPERTY_LOCALE="locale";
 	public static final String ODOCUMENT_LOCALIZATION_VISUALIZER="localization";
 	
 	/**
@@ -102,6 +105,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 			if(Strings.isEmpty(key)) {
 				System.out.println("Empty!");
 			}
+
 			final String language = locale!=null?locale.getLanguage():null;
 			return new DBClosure<String>() {
 
@@ -162,8 +166,8 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 
 	@Override
 	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
-		OSchemaHelper.bind(db)
-		.oClass(OCLASS_LOCALIZATION)
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		helper.oClass(OCLASS_LOCALIZATION)
 			.oProperty(OPROPERTY_KEY, OType.STRING)
 				.markAsDocumentName()
 				.oIndex("key_index", INDEX_TYPE.NOTUNIQUE)
@@ -174,6 +178,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 			.oProperty(OPROPERTY_VALUE, OType.STRING).assignVisualization("textarea")
 			.orderProperties(OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE)
 			.switchDisplayable(true, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
+		helper.oClass(OCLASS_USER).oProperty(OPROPERTY_LOCALE, OType.STRING);
 	}
 
 	@Override

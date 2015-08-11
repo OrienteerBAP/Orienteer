@@ -1,14 +1,18 @@
 package org.orienteer.core;
 
+import com.google.common.base.Strings;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
+import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.module.PerspectivesModule;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
+import java.util.Locale;
 
 /**
  * Orienteer's {@link WebSession} class.
@@ -17,7 +21,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 public class OrienteerWebSession extends OrientDbWebSession
 {
 	private OIdentifiable perspective;
-	
+
 	public OrienteerWebSession(Request request)
 	{
 		super(request);
@@ -34,6 +38,13 @@ public class OrienteerWebSession extends OrientDbWebSession
 		if(ret)
 		{
 			perspective=null;
+			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
+			if (!Strings.isNullOrEmpty(locale)) {
+				Locale localeForLanguage = Locale.forLanguageTag(locale);
+				if (localeForLanguage != null) {
+					OrienteerWebSession.get().setLocale(localeForLanguage);
+				}
+			}
 		}
 		return ret;
 	}
@@ -49,7 +60,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 		this.perspective = perspective;
 		return this;
 	}
-	
+
 	public ODocument getPerspective()
 	{
 		if(perspective instanceof ODocument)
