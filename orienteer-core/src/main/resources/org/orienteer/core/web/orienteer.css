@@ -99,6 +99,30 @@ footer div.powered
 	text-align:center
 }
 
+body {
+    padding-top: 100px;
+    background-color: #f8f8f8;
+}
+
+@media(min-width:768px) {
+    body {
+        padding-top: 50px;
+    }
+}
+
+#wrapper {
+    /*position:absolute;
+    top:0;*/
+    width: 100%;
+}
+
+#page-wrapper {
+    position: static;
+    padding: 0 15px;
+    min-height: 568px;
+    background-color: #fff;
+}
+
 /*Styles for widgets*/
 li.strict caption {
 	display: none;
@@ -123,4 +147,24 @@ div.signin-panel {
 
 div.commands {
 	text-align: right;
+}
+
+@media(min-width:768px) {
+    .navbar-static-side {
+        z-index: 1;
+        position: absolute;
+        width: 250px;
+        margin-top: 51px;
+    }
+
+    .navbar-top-links .dropdown-messages,
+    .navbar-top-links .dropdown-tasks,
+    .navbar-top-links .dropdown-alerts {
+        margin-left: auto;
+    }
+
+    .collapse {
+        display: inherit;
+        visibility: visible;
+    }
 }
