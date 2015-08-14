@@ -63,11 +63,12 @@
 	<properties>
 		<wicket.version>6.20.0</wicket.version>
 		<wicketstuff.version>6.20.0</wicketstuff.version>
-		<orientdb.version>2.1-SNAPSHOT</orientdb.version>
+		<orientdb.version>2.1.0</orientdb.version>
 		<!--<orientdb.version>2.0.8</orientdb.version>-->
 		<wicket.orientdb.version>1.1-SNAPSHOT</wicket.orientdb.version>
 		<!-- <jetty.version>7.6.13.v20130916</jetty.version> -->
 		<jetty.version>7.6.15.v20140411</jetty.version>
+		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
