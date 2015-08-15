@@ -3,6 +3,7 @@ package org.orienteer.core.component.widget.schema;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -33,6 +34,7 @@ import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.OClassColumn;
 import org.orienteer.core.component.table.OClassMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
@@ -112,5 +114,4 @@ public class OClassesWidget extends AbstractWidget<Void> {
 		return "strict";
 	}
 	
-
 }

@@ -6,6 +6,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
@@ -22,18 +23,16 @@ public class AbstractSaveCommand<T> extends AjaxFormCommand<T> {
 	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
 	
-	public AbstractSaveCommand(OrienteerDataTable<T, ?> table, IModel<DisplayMode> displayModeModel)
-	{
-		super(new ResourceModel("command.save"), table);
+	public AbstractSaveCommand(ICommandsSupportComponent<T> component, IModel<DisplayMode> displayModeModel, IModel<T> model) {
+		super(new ResourceModel("command.save"), component, model);
 		this.displayModeModel = displayModeModel;
 	}
-	
-	public AbstractSaveCommand(OrienteerStructureTable<T, ?> table, IModel<DisplayMode> displayModeModel)
-	{
-		super(new ResourceModel("command.save"), table);
+
+	public AbstractSaveCommand(ICommandsSupportComponent<T> component, IModel<DisplayMode> displayModeModel) {
+		super(new ResourceModel("command.save"), component);
 		this.displayModeModel = displayModeModel;
 	}
-	
+
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();

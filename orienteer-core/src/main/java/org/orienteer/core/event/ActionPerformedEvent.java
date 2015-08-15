@@ -38,6 +38,10 @@ public class ActionPerformedEvent<T> {
 
 	public Command<T> getCommand() {
 		return command;
+	} 
+	
+	public boolean isCommandInstanceOf(Class<?> clazz) {
+		return command!=null && clazz.isInstance(command);
 	}
 
 	public T getObject() {

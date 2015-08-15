@@ -2,6 +2,7 @@ package org.orienteer.core.component.command;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -25,20 +26,16 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
  */
 public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISecuredComponent {
 
-	private IModel<T> objectModel;
-	
-	public SaveSchemaCommand(OrienteerDataTable<T, ?> table,
-			IModel<DisplayMode> displayModeModel)
-	{
-		super(table, displayModeModel);
+	public SaveSchemaCommand(ICommandsSupportComponent<T> component,
+			IModel<DisplayMode> displayModeModel, IModel<T> model) {
+		super(component, displayModeModel, model);
 	}
 
-	public SaveSchemaCommand(OrienteerStructureTable<T, ?> table,
-			IModel<DisplayMode> displayModeModel, IModel<T> model) {
-		super(table, displayModeModel, model);
-		objectModel = table.getModel();
+	public SaveSchemaCommand(ICommandsSupportComponent<T> component,
+			IModel<DisplayMode> displayModeModel) {
+		super(component, displayModeModel);
 	}
-	
+
 	@Override
 	public void onClick(AjaxRequestTarget target) {
 		super.onClick(target);
@@ -47,7 +44,7 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 
 	@Override
 	public RequiredOrientResource[] getRequiredResources() {
-		T object = objectModel!=null?objectModel.getObject():null;
+		T object = getModelObject();
 		if(object!=null)
 		{
 			OrientPermission permission = (object instanceof IPrototype<?>)?OrientPermission.CREATE:OrientPermission.UPDATE;
@@ -58,13 +55,4 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 			return new RequiredOrientResource[0];
 		}
 	}
-
-	@Override
-	public void detachModels() {
-		super.detachModels();
-		if(objectModel!=null) objectModel.detach();
-	}
-	
-	
-
 }

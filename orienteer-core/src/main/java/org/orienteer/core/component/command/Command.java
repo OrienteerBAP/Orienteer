@@ -54,9 +54,16 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	private boolean changingModel=false;
 	private boolean autoNotify=true;
 	
-    public Command(IModel<?> labelModel, ICommandsSupportComponent<T> component)
+	@SuppressWarnings("unchecked")
+	public Command(IModel<?> labelModel, ICommandsSupportComponent<T> component)
     {
-        this(component.newCommandId(), labelModel);
+        this(labelModel, component,
+        		component instanceof Component ? (IModel<T>)((Component)component).getDefaultModel() : null);
+    }
+	
+	public Command(IModel<?> labelModel, ICommandsSupportComponent<T> component, IModel<T> model)
+    {
+        this(component.newCommandId(), labelModel, model);
     }
     
     public Command(String commandId, String labelKey)

@@ -60,6 +60,10 @@ public class AbstractCheckBoxEnabledCommand<T> extends AjaxFormCommand<T>
 		this.send(this, Broadcast.BUBBLE, target);
 	}
 	
+	public DataTable<T, ?> getTable() {
+		return table;
+	}
+
 	public List<T> getSelected()
 	{
 		return checkboxColumn.getSelected();

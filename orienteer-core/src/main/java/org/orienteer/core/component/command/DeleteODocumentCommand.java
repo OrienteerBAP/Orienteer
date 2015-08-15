@@ -16,6 +16,7 @@ import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -48,8 +49,10 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 		super.performMultiAction(target, objects);
-		getDatabase().commit(true);
-		getDatabase().begin();
+		ODatabaseDocument db = getDatabase();
+		db.commit(true);
+		db.begin();
+		db.getMetadata().reload();
 	}
 
 	@Override

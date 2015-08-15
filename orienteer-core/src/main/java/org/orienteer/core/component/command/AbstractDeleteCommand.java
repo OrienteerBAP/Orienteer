@@ -29,6 +29,7 @@ public abstract class AbstractDeleteCommand<T> extends AbstractCheckBoxEnabledCo
 		super.onInitialize();
 		setIcon(FAIconType.times_circle);
 		setBootstrapType(BootstrapType.DANGER);
+		setChandingModel(true);
 	}
 
 }

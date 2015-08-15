@@ -20,21 +20,34 @@ public abstract class AjaxCommand<T> extends Command<T>
 {
 	private static final long serialVersionUID = 1L;
 
-	public AjaxCommand(IModel<?> labelModel, ICommandsSupportComponent<T> component)
-	{
+	
+
+	public AjaxCommand(IModel<?> labelModel,
+			ICommandsSupportComponent<T> component, IModel<T> model) {
+		super(labelModel, component, model);
+	}
+
+	public AjaxCommand(IModel<?> labelModel,
+			ICommandsSupportComponent<T> component) {
 		super(labelModel, component);
 	}
 
-	public AjaxCommand(String commandId, IModel<?> labelModel)
-	{
+	public AjaxCommand(String commandId, IModel<?> labelModel, IModel<T> model) {
+		super(commandId, labelModel, model);
+	}
+
+	public AjaxCommand(String commandId, IModel<?> labelModel) {
 		super(commandId, labelModel);
 	}
 
-	public AjaxCommand(String commandId, String labelKey)
-	{
+	public AjaxCommand(String commandId, String labelKey, IModel<T> model) {
+		super(commandId, labelKey, model);
+	}
+
+	public AjaxCommand(String commandId, String labelKey) {
 		super(commandId, labelKey);
 	}
-	
+
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();

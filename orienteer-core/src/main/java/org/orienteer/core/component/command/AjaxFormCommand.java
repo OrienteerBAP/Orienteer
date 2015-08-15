@@ -5,6 +5,7 @@ import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
@@ -19,24 +20,30 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 {
 	private static final long serialVersionUID = 1L;
 
-	public AjaxFormCommand(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
-	{
-		super(labelModel, table);
+	public AjaxFormCommand(IModel<?> labelModel,
+			ICommandsSupportComponent<T> component, IModel<T> model) {
+		super(labelModel, component, model);
 	}
 
 	public AjaxFormCommand(IModel<?> labelModel,
-			OrienteerStructureTable<T, ?> table)
-	{
-		super(labelModel, table);
+			ICommandsSupportComponent<T> component) {
+		super(labelModel, component);
 	}
 
-	public AjaxFormCommand(String commandId, IModel<?> labelModel)
-	{
+	public AjaxFormCommand(String commandId, IModel<?> labelModel,
+			IModel<T> model) {
+		super(commandId, labelModel, model);
+	}
+
+	public AjaxFormCommand(String commandId, IModel<?> labelModel) {
 		super(commandId, labelModel);
 	}
 
-	public AjaxFormCommand(String commandId, String labelKey)
-	{
+	public AjaxFormCommand(String commandId, String labelKey, IModel<T> model) {
+		super(commandId, labelKey, model);
+	}
+
+	public AjaxFormCommand(String commandId, String labelKey) {
 		super(commandId, labelKey);
 	}
 
