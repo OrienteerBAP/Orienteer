@@ -176,6 +176,7 @@ public enum CustomAttributes
 		{
 			if(defaultValue!=null && defaultValue.equals(value)) value = null;
 			String stringValue = value!=null?value.toString():null;
+			if(stringValue!=null && stringValue.length()==0) stringValue=null;
 			if(encode) stringValue = encodeCustomValue(stringValue);
 			property.setCustom(name, stringValue);
 		}
@@ -227,7 +228,7 @@ public enum CustomAttributes
 		{
 			if(defaultValue!=null && defaultValue.equals(value)) value = null;
 			String stringValue = value!=null?value.toString():null;
-			if(stringValue.length()==0) stringValue=null;
+			if(stringValue!=null && stringValue.length()==0) stringValue=null;
 			if(encode) stringValue = encodeCustomValue(stringValue);
 			oClass.setCustom(name, stringValue);
 		}

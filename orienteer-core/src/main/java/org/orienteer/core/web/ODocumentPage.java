@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.meta.IDisplayModeAware;
@@ -107,6 +109,19 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 			}
 		});
 		super.initialize();
+	}
+	
+	@Override
+	protected boolean switchToDefaultTab() {
+		if(super.switchToDefaultTab()) return true;
+		else {
+			ODocument doc = getModelObject();
+			if(doc!=null) {
+				String defaultTab = CustomAttributes.TAB.<String>getValue(doc.getSchemaClass(),IOClassIntrospector.DEFAULT_TAB);
+				return selectTab(defaultTab);
+			}
+			else return false;
+		}
 	}
 	
 	@Override

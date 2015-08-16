@@ -41,7 +41,7 @@ public class OClassPage extends AbstractWidgetDisplayModeAwarePage<OClass> {
 	@Override
 	public void initialize() {
 		super.initialize();
-		selectedTab("configuration");
+		selectTab("configuration");
 	}
 
 	@Override

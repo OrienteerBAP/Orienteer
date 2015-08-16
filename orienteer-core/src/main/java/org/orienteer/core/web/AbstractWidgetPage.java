@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.TabbedPanel;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.widget.DashboardPanel;
@@ -90,6 +91,23 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		add(tabbedPanel = new TabbedPanel<DashboardTab>("dashboardTabs", getDashboardTabs()));
 	}
 	
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+		switchToDefaultTab();
+	}
+	
+	/**
+	 * Set initial tab to default one.
+	 * @return true of switch was actually performed and false otherwise
+	 */
+	protected boolean switchToDefaultTab() {
+		PageParameters parameters = getPageParameters();
+		String tab = parameters.get("tab").toOptionalString();
+		if(Strings.isEmpty(tab)) return false;
+		else return selectTab(tab);
+	}
+	
 	public boolean isHideTabsIfSingle() {
 		return tabbedPanel.isHideIfSingle();
 	}
@@ -118,13 +136,21 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		return dashboardManager.listTabs(getDomain(), getWidgetsFilter());
 	}
 	
-	public AbstractWidgetPage<T> selectedTab(String tab) {
-		if(tab==null) return this;
+	/**
+	 * Select tab
+	 * @param tab the name of tab to select
+	 * @return true if tab was switched and false if there is no such tab;
+	 */
+	public boolean selectTab(String tab) {
+		if(tab==null) return false;
 		List<DashboardTab> tabs = tabbedPanel.getTabs();
 		for(int i=0; i<tabs.size();i++) {
-			if(tab.equals(tabs.get(i).tab)) tabbedPanel.setSelectedTab(i);
+			if(tab.equals(tabs.get(i).tab)) {
+				tabbedPanel.setSelectedTab(i);
+				return true;
+			}
 		}
-		return this;
+		return false;
 	}
 	
 	protected DashboardPanel<T> newDashboard(String id, String domain, String tab, IModel<T> model, IWidgetFilter<T> widgetsFilter) {
