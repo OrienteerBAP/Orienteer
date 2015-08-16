@@ -25,6 +25,7 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
+import org.orienteer.core.event.ActionPerformedEvent;
 
 /**
  * Bootstrap enabled {@link DataTable}
@@ -115,12 +116,23 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 
 	@Override
 	public void onEvent(IEvent<?> event) {
-		if(event.getPayload() instanceof AjaxRequestTarget && Broadcast.BUBBLE.equals(event.getType()))
-		{
-			AjaxRequestTarget target = ((AjaxRequestTarget)event.getPayload());
-			target.add(this);
-			onAjaxUpdate(target);
-			event.stop();
+		
+		if(Broadcast.BUBBLE.equals(event.getType())) {
+			Object payload = event.getPayload();
+			AjaxRequestTarget target=null;
+			if(payload instanceof AjaxRequestTarget) target=(AjaxRequestTarget) payload;
+			else if(payload instanceof ActionPerformedEvent) {
+				target = ((ActionPerformedEvent<?>)payload).getTarget();
+				//This is work around: wicket sometimes invoke model.getObject() before action
+				//and if action change model table can display wrong information
+				getDataProvider().detach();
+			}
+			
+			if(target!=null) {
+				target.add(this);
+				onAjaxUpdate(target);
+				if(target.equals(payload)) event.stop();
+			}
 		}
 	}
 	

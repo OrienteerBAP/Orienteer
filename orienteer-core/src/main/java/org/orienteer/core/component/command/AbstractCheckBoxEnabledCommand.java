@@ -57,7 +57,6 @@ public class AbstractCheckBoxEnabledCommand<T> extends AjaxFormCommand<T>
 	public void onSubmit(AjaxRequestTarget target, Form<?> form) {
 		performMultiAction(target, getSelected());
 		resetSelection();
-		this.send(this, Broadcast.BUBBLE, target);
 	}
 	
 	public DataTable<T, ?> getTable() {

@@ -30,7 +30,6 @@ public class RebuildOIndexCommand extends AjaxCommand<OIndex<?>>
 		OIndex<?> oIndex = oIndexModel.getObject();
 		oIndex.rebuild();
 		getPage().success(getLocalizer().getString("success.complete.rebuild", this));
-		send(this, Broadcast.BUBBLE, target);
 	}
 
 }

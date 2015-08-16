@@ -3,12 +3,15 @@ package org.orienteer.core.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.event.Broadcast;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.TabbedPanel;
+import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardManager;
 import org.orienteer.core.widget.IWidgetFilter;
@@ -134,6 +137,13 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 
 	public void setWidgetsFilter(IWidgetFilter<T> widgetsFilter) {
 		this.widgetsFilter = widgetsFilter;
+	}
+	
+	@Override
+	public void onEvent(IEvent<?> event) {
+		if(event.getPayload() instanceof ActionPerformedEvent && Broadcast.BUBBLE.equals(event.getType())) {
+			send(this, Broadcast.BREADTH, event.getPayload());
+		}
 	}
 
 	public abstract String getDomain();

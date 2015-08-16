@@ -74,7 +74,6 @@ public class LinksCollectionEditPanel<T extends OIdentifiable, M extends Collect
 									values.remove(rowModel.getObject());
 								}
 								doc.save();
-								send(LinksCollectionEditPanel.this, Broadcast.BUBBLE, target);
 							}
 					
 						});

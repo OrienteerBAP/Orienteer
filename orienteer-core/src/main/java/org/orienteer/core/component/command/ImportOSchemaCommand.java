@@ -1,5 +1,6 @@
 package org.orienteer.core.component.command;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
@@ -32,6 +33,13 @@ public class ImportOSchemaCommand extends AbstractModalWindowCommand<OClass>
 	@Override
 	protected void initializeContent(ModalWindow modal) {
 		modal.setTitle(new ResourceModel("command.import.modal.title"));
-		modal.setContent(new ImportDialogPanel(modal.getContentId(), modal));
+		modal.setContent(new ImportDialogPanel(modal.getContentId(), modal) {
+
+			@Override
+			public void onImportFinished(AjaxRequestTarget target) {
+				sendActionPerformed();
+			}
+			
+		});
 	}
 }

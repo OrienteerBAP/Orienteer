@@ -45,7 +45,6 @@ public class AbstractSaveCommand<T> extends AjaxFormCommand<T> {
 	public void onClick(AjaxRequestTarget target) {
 		if(displayModeModel!=null) displayModeModel.setObject(DisplayMode.VIEW);
 		target.add(this);
-		this.send(this, Broadcast.BUBBLE, target);
 	}
 	
 

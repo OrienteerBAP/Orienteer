@@ -47,7 +47,6 @@ public class ShowHideParentsCommand<T> extends AjaxCommand<T>
 		Boolean current = showHideParentModel.getObject();
 		current = current!=null?!current:true;
 		showHideParentModel.setObject(current);
-		send(this, Broadcast.BUBBLE, target);
 	}
 
 	@Override

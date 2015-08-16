@@ -80,7 +80,7 @@ public class SelectODocumentCommand extends AbstractModalWindowCommand<ODocument
 				}
 
 				if (!selectMore) {
-					send(SelectODocumentCommand.this, Broadcast.BUBBLE, target);
+					sendActionPerformed();
 				}
 				return true;
 			}
@@ -89,7 +89,7 @@ public class SelectODocumentCommand extends AbstractModalWindowCommand<ODocument
 		modal.setCloseButtonCallback(new ModalWindow.CloseButtonCallback() {
 			@Override
 			public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-				send(SelectODocumentCommand.this, Broadcast.BUBBLE, target);
+				sendActionPerformed();
 				return true;
 			}
 		});

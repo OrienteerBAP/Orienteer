@@ -36,7 +36,6 @@ public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 	@Override
 	public void onClick(AjaxRequestTarget target) {
 		getDatabase().getMetadata().reload();
-		send(this, Broadcast.BUBBLE, target);
 	}
 
 }

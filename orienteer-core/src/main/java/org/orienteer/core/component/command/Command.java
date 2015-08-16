@@ -217,7 +217,7 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	}
 	
 	protected void sendActionPerformed() {
-		send(getPage(), Broadcast.BREADTH, newActionPerformedEvent());
+		send(this, Broadcast.BUBBLE, newActionPerformedEvent());
 	}
 	
 	protected ActionPerformedEvent<T> newActionPerformedEvent() {

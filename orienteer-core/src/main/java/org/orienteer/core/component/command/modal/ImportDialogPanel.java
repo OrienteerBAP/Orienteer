@@ -24,7 +24,7 @@ import com.orientechnologies.orient.core.db.tool.ODatabaseImport;
 /**
  * Modal window for schema importing
  */
-public class ImportDialogPanel extends Panel
+public abstract class ImportDialogPanel extends Panel
 {
 
 	public ImportDialogPanel(String id, final ModalWindow modal)
@@ -62,11 +62,13 @@ public class ImportDialogPanel extends Panel
 					db.begin();
 				}
 				modal.close(target);
-				send(this, Broadcast.BUBBLE, target);
+				onImportFinished(target);
 			}
 			
 		});
 		add(uploadForm);
 	}
+	
+	public abstract void onImportFinished(AjaxRequestTarget target);
 	
 }

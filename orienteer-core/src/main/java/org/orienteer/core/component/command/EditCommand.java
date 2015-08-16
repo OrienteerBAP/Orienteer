@@ -52,7 +52,6 @@ public class EditCommand<T> extends AjaxCommand<T>
 	public void onClick(AjaxRequestTarget target) {
 		displayModeModel.setObject(DisplayMode.EDIT);
 		target.add(this);
-		this.send(this, Broadcast.BUBBLE, target);
 	}
 
 	@Override
