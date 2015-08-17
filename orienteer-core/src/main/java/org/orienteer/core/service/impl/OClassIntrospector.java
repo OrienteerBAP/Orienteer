@@ -34,6 +34,7 @@ import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.util.CommonUtils;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -245,19 +246,9 @@ public class OClassIntrospector implements IOClassIntrospector
 					case LINK:
 						return getDocumentName((ODocument)value);
 					case EMBEDDEDMAP:
-						Map<String, String> localizations = (Map<String, String>)value;
-						if(localizations!=null) {
-							String localization = localizations.get(locale.getLanguage());
-							if(localization==null) {
-								localization = localizations.get(Locale.getDefault().getLanguage());
-								if(localization==null && localizations.size()>0) {
-									localization = localizations.values().iterator().next();
-								}
-							}
-							if (localization != null) {
-								return localization;
-							}
-						}
+						Map<String, Object> localizations = (Map<String, Object>)value;
+						Object localized = CommonUtils.localizeByMap(localizations, true, locale.getLanguage(), Locale.getDefault().getLanguage());
+						if(localized!=null) return localized.toString();
 					default:
 						return value.toString();
 				}

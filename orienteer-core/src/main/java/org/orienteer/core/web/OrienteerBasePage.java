@@ -81,7 +81,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 					public void onClick() {
 						OrienteerWebSession.get().setPerspecive(getModelObject());
 						OrienteerBasePage.this.info(
-								getLocalizer().getString("info.perspectivechanged", this, new ODocumentPropertyModel<String>(getModel(), "name"))
+								getLocalizer().getString("info.perspectivechanged", this, new ODocumentNameModel(getModel()))
 							);
 					}
 				};

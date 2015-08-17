@@ -87,18 +87,23 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		boolean wasInTransacton = db.getTransaction().isActive();
 		db.commit();
 		for(ODocument doc : db.browseClass(className)) {
-			doc.field("temp", doc.field("name"));
-			doc.field("name", (String) null);
-			doc.save();
+			Object value = doc.field("name");
+			if(value instanceof String) {
+				doc.field("temp", doc.field("name"));
+				doc.field("name", (String) null);
+				doc.save();
+			}
 		}
 		OClass oClass = db.getMetadata().getSchema().getClass(className);
 		oClass.dropProperty("name");
 		OProperty nameProperty = oClass.createProperty("name", OType.EMBEDDEDMAP);
 		CustomAttributes.VISUALIZATION_TYPE.setValue(nameProperty, "localization");
 		for(ODocument doc : db.browseClass(className)) {
-			doc.field("name", CommonUtils.toMap("en", doc.field("temp")));
-			doc.removeField("temp");
-			doc.save();
+			if(doc.containsField("temp")) {
+				doc.field("name", CommonUtils.toMap("en", doc.field("temp")));
+				doc.removeField("temp");
+				doc.save();
+			}
 		}
 		if(wasInTransacton) db.begin();
 	}

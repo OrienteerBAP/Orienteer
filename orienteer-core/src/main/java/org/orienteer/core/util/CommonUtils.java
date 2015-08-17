@@ -22,4 +22,13 @@ public class CommonUtils {
 		}
 		return ret;
 	}
+	
+	public static final Object localizeByMap(Map<String, ?> map, boolean returnFirstIfNoMatch, String... languages) {
+		if(map==null) return null;
+		for(int i=0; i<languages.length;i++) {
+			if(map.containsKey(languages[i])) return map.get(languages[i]);
+		}
+		if(returnFirstIfNoMatch && !map.isEmpty()) return map.values().iterator().next();
+		else return null;
+	}
 }

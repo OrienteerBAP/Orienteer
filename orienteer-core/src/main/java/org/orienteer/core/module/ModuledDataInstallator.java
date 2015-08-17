@@ -51,10 +51,10 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 		{
 			oModuleClass.createProperty(OMODULE_VERSION, OType.INTEGER);
 		}
-		Map<String, Integer> installedModules = new HashMap<String, Integer>();
+		Map<String, ODocument> installedModules = new HashMap<String, ODocument>();
 		for(ODocument doc : db.browseClass(OMODULE_CLASS))
 		{
-			installedModules.put((String)doc.field(OMODULE_NAME), (Integer)doc.field(OMODULE_VERSION, Integer.class));
+			installedModules.put((String)doc.field(OMODULE_NAME), doc);
 		}
 		
 		for(Map.Entry<String, IOrienteerModule> entry: app.getRegisteredModules().entrySet())
@@ -62,18 +62,21 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 			String name = entry.getKey();
 			IOrienteerModule module = entry.getValue();
 			int version = module.getVersion();
-			Integer oldVersion = installedModules.get(name);
-			if(oldVersion==null)
+			ODocument moduleDoc = installedModules.get(name);
+			Integer oldVersion = moduleDoc!=null?(Integer)moduleDoc.field(OMODULE_VERSION, Integer.class):null;
+			if(moduleDoc==null || oldVersion==null)
 			{
 				module.onInstall(app, db);
-				ODocument moduleDoc = new ODocument(oModuleClass);
+				moduleDoc = new ODocument(oModuleClass);
 				moduleDoc.field(OMODULE_NAME, module.getName());
 				moduleDoc.field(OMODULE_VERSION, module.getVersion());
 				moduleDoc.save();
 			}
-			else if(!oldVersion.equals(version))
+			else if(oldVersion<version)
 			{
 				module.onUpdate(app, db, oldVersion, version);
+				moduleDoc.field(OMODULE_VERSION, version);
+				moduleDoc.save();
 			}
 			module.onInitialize(app, db);
 		}
