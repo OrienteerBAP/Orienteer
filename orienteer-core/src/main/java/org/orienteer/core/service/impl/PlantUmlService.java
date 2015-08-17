@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
@@ -163,7 +163,13 @@ public class PlantUmlService implements IUmlService
 	{
 		PrintWriter out = toPrintWriter(writer);
 		out.append(oClass.isAbstract()?"abstract":"class").append(" ").append(oClass.getName());
-		if(oClass.getSuperClass()!=null) out.append(" extends ").append(oClass.getSuperClass().getName());
+		List<OClass> superClasses = oClass.getSuperClasses();
+		if(superClasses!=null && !superClasses.isEmpty()) {
+			for(int i=0; i<superClasses.size();i++){
+				out.append(i==0?" extends ":", ");
+				out.append(superClasses.get(i).getName());
+			}
+		}
 		out.println();
 		for(OProperty property: oClass.declaredProperties())
 		{
@@ -185,16 +191,11 @@ public class PlantUmlService implements IUmlService
 				allClasses.add(oClass);
 				if(goUp)
 				{
-					OClass parent = oClass.getSuperClass();
-					while(parent!=null)
-					{
-						allClasses.add(parent);
-						parent = parent.getSuperClass();
-					}
+					allClasses.addAll(oClass.getAllSuperClasses());
 				}
 				if(goDown)
 				{
-					allClasses.addAll(oClass.getAllBaseClasses());
+					allClasses.addAll(oClass.getAllSubclasses());
 				}
 			}
 		}
