@@ -35,7 +35,7 @@ public class SchemaPageHeader extends Panel {
 			@Override
 			protected AbstractLink newLink(String id) {
 				return new BookmarkablePageLink<Object>(id, SchemaPage.class)
-						.setBody(new ResourceModel("menu.list.class"));
+						.setBody(new ResourceModel("menu.list.schema"));
 			}
 		});
 

@@ -23,6 +23,7 @@ import org.orienteer.core.component.DefaultPageHeader;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
+import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -85,7 +86,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 					}
 				};
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
+						 new Label("name",  new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
 				item.add(link);
 				item.add(highlightActivePerspective);
 			}
@@ -104,7 +105,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 				ExternalLink link = new ExternalLink("link", new ODocumentPropertyModel<String>(itemModel, "url"))
 												.setContextRelative(true);
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-						 new Label("name", new ODocumentPropertyModel<String>(itemModel, "name")).setRenderBodyOnly(true));
+						 new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
 				item.add(link);
 			}
 		});

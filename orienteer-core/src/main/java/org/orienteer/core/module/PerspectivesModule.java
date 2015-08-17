@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -39,14 +40,14 @@ public class PerspectivesModule extends AbstractOrienteerModule
 
 	public PerspectivesModule()
 	{
-		super("perspectives", 1);
+		super("perspectives", 2);
 	}
 
 	@Override
 	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		OSchemaHelper.bind(db)
 			.oClass(OCLASS_PERSPECTIVE)
-				.oProperty("name", OType.STRING)
+				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization")
 					.markAsDocumentName()
 					.oIndex(OCLASS_PERSPECTIVE+".name", INDEX_TYPE.UNIQUE)
 				.oProperty("icon", OType.STRING)
@@ -56,7 +57,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.switchDisplayable(true, "name", "homeUrl")
 				.orderProperties("name", "icon", "homeUrl", "footer", "menu")
 			.oClass(OCLASS_ITEM)
-				.oProperty("name", OType.STRING).markAsDocumentName()
+				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization").markAsDocumentName()
 				.oProperty("icon", OType.STRING)
 				.oProperty("url", OType.STRING)
 				.oProperty("perspective", OType.LINK).markAsLinkToParent()
@@ -67,6 +68,41 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE);
 	}
 	
+	@Override
+	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+			int oldVersion, int newVersion) {
+		int toVersion = oldVersion+1;
+		switch (toVersion) {
+			case 2:
+				convertNameProperty(app, db, OCLASS_PERSPECTIVE);
+				convertNameProperty(app, db, OCLASS_ITEM);
+				break;
+			default:
+				break;
+		}
+		if(toVersion<newVersion) onUpdate(app, db, toVersion, newVersion);
+	}
+	
+	private void convertNameProperty(OrienteerWebApplication app, ODatabaseDocument db, String className) {
+		boolean wasInTransacton = db.getTransaction().isActive();
+		db.commit();
+		for(ODocument doc : db.browseClass(className)) {
+			doc.field("temp", doc.field("name"));
+			doc.field("name", (String) null);
+			doc.save();
+		}
+		OClass oClass = db.getMetadata().getSchema().getClass(className);
+		oClass.dropProperty("name");
+		OProperty nameProperty = oClass.createProperty("name", OType.EMBEDDEDMAP);
+		CustomAttributes.VISUALIZATION_TYPE.setValue(nameProperty, "localization");
+		for(ODocument doc : db.browseClass(className)) {
+			doc.field("name", CommonUtils.toMap("en", doc.field("temp")));
+			doc.removeField("temp");
+			doc.save();
+		}
+		if(wasInTransacton) db.begin();
+	}
+	
 	private ODocument runtimeRepairDefaultPerspective()
 	{
 		return new DBClosure<ODocument>() {
@@ -74,40 +110,40 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			@Override
 			protected ODocument execute(ODatabaseDocument db) {
 				ODocument perspective = new ODocument(OCLASS_PERSPECTIVE);
-				perspective.field("name", DEFAULT_PERSPECTIVE);
+				perspective.field("name", CommonUtils.toMap("en", DEFAULT_PERSPECTIVE));
 				perspective.field("homeUrl", "/classes");
 				perspective.save();
 				
 				ODocument item = new ODocument(OCLASS_ITEM);
-				item.field("name", "Users");
+				item.field("name", CommonUtils.toMap("en", "Users"));
 				item.field("icon", "users");
 				item.field("url", "/browse/OUser");
 				item.field("perspective", perspective);
 				item.save();
 				
 				item = new ODocument(OCLASS_ITEM);
-				item.field("name", "Roles");
+				item.field("name", CommonUtils.toMap("en", "Roles"));
 				item.field("icon", "users");
 				item.field("url", "/browse/ORole");
 				item.field("perspective", perspective);
 				item.save();
 				
 				item = new ODocument(OCLASS_ITEM);
-				item.field("name", "Schema");
+				item.field("name", CommonUtils.toMap("en", "Schema"));
 				item.field("icon", "cubes");
 				item.field("url", "/schema");
 				item.field("perspective", perspective);
 				item.save();
 				
 				item = new ODocument(OCLASS_ITEM);
-				item.field("name", "Localization");
+				item.field("name", CommonUtils.toMap("en", "Localization"));
 				item.field("icon", "language");
 				item.field("url", "/browse/OLocalization");
 				item.field("perspective", perspective);
 				item.save();
 				
 				item = new ODocument(OCLASS_ITEM);
-				item.field("name", "Perspectives");
+				item.field("name", CommonUtils.toMap("en", "Perspectives"));
 				item.field("icon", "desktop");
 				item.field("url", "/browse/OPerspective");
 				item.field("perspective", perspective);
@@ -120,7 +156,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 	
 	public ODocument getPerspectiveByName(ODatabaseDocument db, String name)
 	{
-		List<ODocument> perspectives = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_PERSPECTIVE+" where name=?"), name);
+		List<ODocument> perspectives = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_PERSPECTIVE+" where name CONTAINSVALUE ?"), name);
 		if(perspectives!=null && !perspectives.isEmpty())
 		{
 			return perspectives.get(0);

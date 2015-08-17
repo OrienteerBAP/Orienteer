@@ -246,9 +246,17 @@ public class OClassIntrospector implements IOClassIntrospector
 						return getDocumentName((ODocument)value);
 					case EMBEDDEDMAP:
 						Map<String, String> localizations = (Map<String, String>)value;
-						String localization = localizations.get(locale.getLanguage());
-						if (localization != null) {
-							return localization;
+						if(localizations!=null) {
+							String localization = localizations.get(locale.getLanguage());
+							if(localization==null) {
+								localization = localizations.get(Locale.getDefault().getLanguage());
+								if(localization==null && localizations.size()>0) {
+									localization = localizations.values().iterator().next();
+								}
+							}
+							if (localization != null) {
+								return localization;
+							}
 						}
 					default:
 						return value.toString();
