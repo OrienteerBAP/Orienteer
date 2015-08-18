@@ -1,9 +1,12 @@
 package org.orienteer.core.component.table;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.meta.AbstractMetaPanel;
+import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.LinkViewPanel;
 
@@ -64,16 +67,16 @@ public class OEntityColumn extends OPropertyValueColumn
 	}
 
 	@Override
-	public void populateItem(Item<ICellPopulator<ODocument>> cellItem,
-			String componentId, IModel<ODocument> rowModel) {
-		if(DisplayMode.VIEW.equals(getModeObject()))
-		{
-			cellItem.add(new LinkViewPanel(componentId, rowModel));
-		}
-		else
-		{
-			super.populateItem(cellItem, componentId, rowModel);
-		}
+	protected <V> AbstractMetaPanel<ODocument, OProperty, V> newMetaPanel(
+			String componentId, IModel<OProperty> criteryModel,
+			IModel<ODocument> rowModel) {
+		return new ODocumentMetaPanel<V>(componentId, getModeModel(), rowModel, criteryModel) {
+			@Override
+			protected Component resolveComponent(String id, DisplayMode mode,
+					OProperty property) {
+				return DisplayMode.VIEW.equals(mode)? new LinkViewPanel(id, getEntityModel()) : super.resolveComponent(id, mode, property);
+			}
+		};
 	}
 	
 }

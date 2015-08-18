@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.vaynberg.wicket.select2.Select2Choice;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.IMarkupFragment;
@@ -21,6 +22,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
 import org.orienteer.core.model.LanguagesChoiceProvider;
@@ -81,12 +83,44 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 			this.value = value;
 			return null;
 		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((key == null) ? 0 : key.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Pair other = (Pair) obj;
+			if (key == null) {
+				if (other.key != null)
+					return false;
+			} else if (!key.equals(other.key))
+				return false;
+			return true;
+		}
+		
+		@Override
+		public String toString() {
+			return "Pair: "+key+"="+value;
+		}
 		
 	}
 	private List<Pair<V>> data;
 	
 	@Inject
 	private IMarkupProvider markupProvider;
+	
+	private ListView<Pair<V>> listView;
 	
 	public EmbeddedMapEditPanel(String id, final IModel<ODocument> documentModel, final IModel<OProperty> propertyModel)
 	{
@@ -95,20 +129,22 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
 		final OType linkedType = propertyModel.getObject().getLinkedType();
 		final OType oType = linkedType != null ? linkedType : OType.ANY;
-		ListView<Pair<V>> listView = new ListView<Pair<V>>("items", new PropertyModel<List<Pair<V>>>(this, "data")) {
+		listView = new ListView<Pair<V>>("items", new PropertyModel<List<Pair<V>>>(this, "data")) {
 
 			@Override
 			protected void populateItem(final ListItem<Pair<V>> item) {
 				item.add(getKeyEditComponent(item));
 				item.add(visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, new PropertyModel<V>(item.getModel(), "value")));
-				item.add(new AjaxFormCommand<Object>("remove", "command.remove")
+				item.add(new AjaxCommand<Object>("remove", "command.remove")
 						{
 							@Override
 							public void onClick(AjaxRequestTarget target) {
 								getData().remove(item.getIndex());
 								target.add(EmbeddedMapEditPanel.this);
+								listView.removeAll();
 							}
-						}.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+						}.setAutoNotify(false)
+						 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 						 .setBootstrapType(BootstrapType.DANGER)
 						 .setIcon((String)null));
 			}
@@ -129,15 +165,17 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		};
 		listView.setReuseItems(true);
 		add(listView);
-		add(new AjaxFormCommand("add", "command.add")
+		add(new AjaxCommand("add", "command.add")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				getData().add(new Pair<V>());
 				target.add(EmbeddedMapEditPanel.this);
+				listView.removeAll();
 			}
 			
-		}.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+		}.setAutoNotify(false)
+		 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 		 .setBootstrapType(BootstrapType.PRIMARY)
 		 .setIcon((String)null));
 	}
@@ -150,7 +188,8 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		if(data==null)
 		{
 			this.data = new ArrayList<Pair<V>>();
-			Map<String, V> data = getModelObject();
+			Map<String, V> data = getConvertedInput();
+			if(data==null) data = getModelObject();
 			if(data!=null)
 			{
 				for(Map.Entry<String, V> entry : data.entrySet())

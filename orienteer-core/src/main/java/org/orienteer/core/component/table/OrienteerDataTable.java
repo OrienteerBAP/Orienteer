@@ -18,6 +18,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.NoRecordsToo
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.OddEvenItem;
+import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.ICommandsSupportComponent;
@@ -81,6 +82,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 		addBottomToolbar(navigationToolbar = new OrienteerNavigationToolbar(this));
 		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
+		setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {
