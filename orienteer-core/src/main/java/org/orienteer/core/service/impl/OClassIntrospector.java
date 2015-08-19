@@ -265,6 +265,7 @@ public class OClassIntrospector implements IOClassIntrospector
 		OProperty property = OPropertyPrototyper.newPrototype(doc.getClassName());
 		property.setName(field);
 		OType oType = doc.fieldType(field);
+		if(oType==null) oType=OType.ANY;
 		property.setType(oType);
 		switch (oType) {
 			case LINK:
