@@ -1,7 +1,7 @@
 package org.orienteer.core.web;
 
-import java.util.List;
-
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.OrienteerWebSession;
@@ -25,12 +26,11 @@ import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
 
 /**
  * Root page for pages which require Orienteers highlevel UI: top navigation bar and left menu
@@ -95,18 +95,23 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
-		
+
 		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
 		add(new ListView<ODocument>("perspectiveItems", new ODocumentPropertyModel<List<ODocument>>(perspectiveModel, "menu")) {
 
 			@Override
 			protected void populateItem(ListItem<ODocument> item) {
 				IModel<ODocument> itemModel = item.getModel();
-				ExternalLink link = new ExternalLink("link", new ODocumentPropertyModel<String>(itemModel, "url"))
+				ODocumentPropertyModel<String> urlModel = new ODocumentPropertyModel<String>(itemModel, "url");
+				ExternalLink link = new ExternalLink("link", urlModel)
 												.setContextRelative(true);
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
 						 new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
 				item.add(link);
+				String currentUrl = "/" + RequestCycle.get().getRequest().getUrl();
+				if (currentUrl.equals(urlModel.getObject())) {
+					item.add(new AttributeModifier("class", "active"));
+				}
 			}
 		});
 		
