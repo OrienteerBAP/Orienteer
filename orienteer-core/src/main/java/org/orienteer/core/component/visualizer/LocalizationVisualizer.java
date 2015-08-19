@@ -7,7 +7,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OLocalizationEditPanel;
-import org.orienteer.core.component.property.EmbeddedMapViewPanel;
+import org.orienteer.core.component.property.OLocalizationViewPanel;
 
 /**
  * {@link IVisualizer} to display and modify documents localizations in Orienteer.
@@ -23,7 +23,7 @@ public class LocalizationVisualizer extends AbstractSimpleVisualizer {
         switch (mode)
         {
             case VIEW:
-                return new EmbeddedMapViewPanel<V>(id, documentModel, propertyModel).setEscapeModelStrings(false);
+                return new OLocalizationViewPanel<V>(id, documentModel, propertyModel).setEscapeModelStrings(false);
             case EDIT:
                 return new OLocalizationEditPanel<V>(id, documentModel, propertyModel).setType(String.class);
             default:

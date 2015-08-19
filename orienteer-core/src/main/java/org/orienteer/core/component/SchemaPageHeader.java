@@ -1,5 +1,6 @@
 package org.orienteer.core.component;
 
+import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -16,6 +17,7 @@ import org.orienteer.core.component.property.OClassViewPanel;
 import org.orienteer.core.web.schema.SchemaPage;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -41,10 +43,15 @@ public class SchemaPageHeader extends Panel {
 
 		OClass currentClass = oClassModel.getObject();
 		List<OClass> superClasses;
+		List<OClass> breadCrumbs = new ArrayList<OClass>();
 		if (currentClass != null) {
 			while ((superClasses = currentClass.getSuperClasses()) != null && !superClasses.isEmpty()) {
 				currentClass = superClasses.get(0);
-				addChild(new OClassViewPanel(newChildId(), new OClassModel(currentClass)));
+				breadCrumbs.add(currentClass);
+			}
+
+			for (OClass oClass : Lists.reverse(breadCrumbs)) {
+				addChild(new OClassViewPanel(newChildId(), new OClassModel(oClass)));
 			}
 		}
 	}
