@@ -20,10 +20,13 @@ public class OLocalizationViewPanel<V> extends GenericPanel<V> {
     public OLocalizationViewPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
         super(id, new DynamicPropertyValueModel<V>(documentModel, propertyModel));
         Map<String, String> localizations = documentModel.getObject().field(propertyModel.getObject().getName());
-        String currentLanguage = getLocale().getLanguage();
-        String currentLanguageLocalization = localizations.get(currentLanguage);
-        if (currentLanguageLocalization == null) {
-            currentLanguageLocalization = localizations.get(Locale.getDefault().getLanguage());
+        String currentLanguageLocalization = "";
+        if (localizations != null) {
+            String currentLanguage = getLocale().getLanguage();
+            currentLanguageLocalization = localizations.get(currentLanguage);
+            if (currentLanguageLocalization == null) {
+                currentLanguageLocalization = localizations.get(Locale.getDefault().getLanguage());
+            }
         }
 
         add(new Label("currentLocalization", Strings.nullToEmpty(currentLanguageLocalization)));
