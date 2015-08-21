@@ -1,18 +1,16 @@
 package org.orienteer.core.component.visualizer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.component.property.LinksPropertyDataTablePanel;
-import org.orienteer.core.component.visualizer.*;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
-import com.orientechnologies.orient.core.metadata.schema.OType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Registry for {@link IVisualizer}s
@@ -36,6 +34,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new UrlLinkVisualizer());
 		registerUIComponentFactory(new MarkDownVisualizer());
 		registerUIComponentFactory(new LocalizationVisualizer());
+		registerUIComponentFactory(new ImageVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()

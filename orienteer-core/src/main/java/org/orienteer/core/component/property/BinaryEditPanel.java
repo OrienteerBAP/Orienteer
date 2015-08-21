@@ -10,7 +10,7 @@ import org.apache.wicket.model.IModel;
  */
 public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 	
-	private FileUploadField fileUploadField;
+	protected FileUploadField fileUploadField;
 
 	public BinaryEditPanel(String id, IModel<byte[]> model) {
 		super(id, model);
