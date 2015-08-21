@@ -26,6 +26,8 @@ public class ImageEditPanel extends BinaryEditPanel {
             else {
                 setConvertedInput(bytes);
             }
+        } else if (getModelObject() != null) {
+            setConvertedInput(getModelObject());
         }
     }
 }
