@@ -1,10 +1,16 @@
 package org.orienteer.core.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
-
+import com.google.inject.AbstractModule;
+import com.google.inject.Provider;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.server.OServer;
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.string.Strings;
@@ -16,23 +22,14 @@ import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.util.LookupResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provider;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import com.google.inject.name.Names;
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.server.OServer;
-
-import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
 
 /**
  * Main module to load Orienteer stuff to Guice
@@ -186,6 +183,7 @@ public class OrienteerModule extends AbstractModule {
 			if(qualifierProperties!=null)
 			{
 				loadedProperties.putAll(qualifierProperties);
+				loadedProperties = retrieveSystemProperties(loadedProperties);
 				return loadedProperties;
 			}
 			else
@@ -198,16 +196,18 @@ public class OrienteerModule extends AbstractModule {
 		if(defaultQualifierProperties!=null)
 		{
 			loadedProperties.putAll(defaultQualifierProperties);
+			loadedProperties = retrieveSystemProperties(loadedProperties);
 			return loadedProperties;
 		}
 		else
 		{
 			LOG.info("Properties for qualifier '"+qualifier+"' was not found. Using embedded.");
+			loadedProperties = retrieveSystemProperties(loadedProperties);
 			return loadedProperties;
 		}
 		
 	}
-	
+
 	/**
 	 * Lookup {@link Properties} for a specified qualifier
 	 * @param qualifier qualifier to be used during startup
@@ -228,5 +228,8 @@ public class OrienteerModule extends AbstractModule {
 		}
 	}
 
-	
+	private static Properties retrieveSystemProperties(Properties loadedProperties) {
+		loadedProperties.putAll(System.getProperties());
+		return loadedProperties;
+	}
 }
