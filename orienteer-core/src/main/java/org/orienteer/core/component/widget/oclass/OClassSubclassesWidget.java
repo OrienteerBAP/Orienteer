@@ -34,7 +34,7 @@ public class OClassSubclassesWidget extends AbstractOClassesListWidget<OClass> {
 
     @Override
     protected void addTableCommands(OrienteerDataTable<OClass, String> table, IModel<DisplayMode> modeModel) {
-        table.addCommand(new CreateOClassCommand(table, getModelObject()));
+        table.addCommand(new CreateOClassCommand(table, getModel()));
         table.addCommand(new EditSchemaCommand<OClass>(table, modeModel));
         table.addCommand(new SaveSchemaCommand<OClass>(table, modeModel));
         table.addCommand(new DeleteOClassCommand(table));
