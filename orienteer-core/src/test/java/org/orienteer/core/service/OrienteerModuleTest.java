@@ -15,20 +15,15 @@
  */
 package org.orienteer.core.service;
 
+import org.junit.Test;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.Properties;
 
-import org.junit.Test;
-
 import static org.junit.Assert.*;
-
-import org.junit.Ignore;
-import org.orienteer.core.service.OrienteerModule;
 
 /**
  *
@@ -71,14 +66,18 @@ public class OrienteerModuleTest {
 			assertTrue(result.containsKey("myproperty"));
 			assertEquals("myvalue", result.getProperty("myproperty"));
 			result.remove("myproperty");
-			assertEquals(OrienteerModule.PROPERTIES_DEFAULT, result);
+			Properties orienteerProperties = OrienteerModule.PROPERTIES_DEFAULT;
+			// putting all system properties to orienteer
+			orienteerProperties.putAll(System.getProperties());
+			assertEquals(orienteerProperties, result);
 			//loading from resources
 			System.setProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "test-custom-startup-properties");
 			result = OrienteerModule.retrieveProperties();
 			assertTrue(result.containsKey("customkey"));
 			assertEquals("customvalue", result.getProperty("customkey"));
 			result.remove("customkey");
-			assertEquals(OrienteerModule.PROPERTIES_DEFAULT, result);
+			orienteerProperties.putAll(System.getProperties());
+			assertEquals(orienteerProperties, result);
 		} finally {
 			System.out.println("SETTING BACK OLD QUOLIFIER:"+oldProp);
 			if(oldProp!=null) System.setProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, oldProp);
