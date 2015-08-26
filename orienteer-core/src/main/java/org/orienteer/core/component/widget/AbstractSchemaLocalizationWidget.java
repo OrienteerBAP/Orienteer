@@ -1,5 +1,6 @@
 package org.orienteer.core.component.widget;
 
+import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -8,11 +9,11 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.BootstrapSize;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -27,6 +28,7 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.model.LanguagesChoiceProvider;
 import org.orienteer.core.module.OrienteerLocalizationModule;
+import org.orienteer.core.service.IMarkupProvider;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
@@ -40,7 +42,10 @@ import java.util.List;
  */
 public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAwareWidget<T> {
 
-    private final AjaxCommand<T> ajaxFormCommand;
+    private final AjaxCommand<ODocument> ajaxFormCommand;
+
+    @Inject
+    private IMarkupProvider markupProvider;
 
     private final Form<T> form;
     private final OrienteerDataTable<ODocument, String> table;
@@ -50,6 +55,7 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
         OClass oLocalizationClass = getDatabase().getMetadata().getSchema().getClass(OrienteerLocalizationModule.OCLASS_LOCALIZATION);
 
         final OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from OLocalization where key = :key");
+
         provider.setParameter("key", Model.of(getLocalizationKey(getModelObject())));
 
         form = new Form<T>("form");
@@ -64,11 +70,10 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
         final SaveOLocalizationsCommand saveCommand = new SaveOLocalizationsCommand(table, getModeModel());
         table.addCommand(saveCommand);
         table.setCaptionModel(new ResourceModel("class.localization"));
-
         form.add(table);
         add(form);
 
-        ajaxFormCommand = new AjaxCommand<T>("add", "command.add") {
+        ajaxFormCommand = new AjaxCommand<ODocument>("add", "command.add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ODocument newLocalization = new ODocument(OrienteerLocalizationModule.OCLASS_LOCALIZATION);
@@ -79,7 +84,16 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
                 newLocalization.field(OrienteerLocalizationModule.OPROPERTY_VARIATION, "");
                 newLocalization.field(OrienteerLocalizationModule.OPROPERTY_VALUE, "");
                 newLocalization.field(OrienteerLocalizationModule.OPROPERTY_ACTIVE, false);
+
                 getDatabase().save(newLocalization);
+                table.visitChildren(OrienteerDataTable.MetaContextItem.class, new IVisitor<OrienteerDataTable.MetaContextItem<ODocument, ?>, Void>() {
+
+                    @Override
+                    public void component(OrienteerDataTable.MetaContextItem<ODocument, ?> rowItem, IVisit<Void> visit) {
+                        rowItem.modelChanged();
+                    }
+                });
+
                 target.add(table);
             }
 
@@ -103,9 +117,8 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
             }
         };
 
-        form.add(ajaxFormCommand.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
-                .setBootstrapType(BootstrapType.PRIMARY)
-                .setIcon((String) null));
+        table.addCommand(ajaxFormCommand.setBootstrapType(BootstrapType.PRIMARY)
+                .setIcon(FAIconType.language));
     }
 
     @Override
