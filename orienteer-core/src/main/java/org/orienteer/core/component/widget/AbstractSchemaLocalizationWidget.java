@@ -8,11 +8,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -40,7 +38,7 @@ import java.util.List;
  */
 public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAwareWidget<T> {
 
-    private final AjaxCommand<T> ajaxFormCommand;
+    private final AjaxCommand<ODocument> ajaxFormCommand;
 
     private final Form<T> form;
     private final OrienteerDataTable<ODocument, String> table;
@@ -68,7 +66,7 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
         form.add(table);
         add(form);
 
-        ajaxFormCommand = new AjaxCommand<T>("add", "command.add") {
+        ajaxFormCommand = new AjaxCommand<ODocument>("add", "command.add") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ODocument newLocalization = new ODocument(OrienteerLocalizationModule.OCLASS_LOCALIZATION);
@@ -103,9 +101,8 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
             }
         };
 
-        form.add(ajaxFormCommand.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
-                .setBootstrapType(BootstrapType.PRIMARY)
-                .setIcon((String) null));
+        table.addCommand(ajaxFormCommand.setBootstrapType(BootstrapType.PRIMARY)
+                .setIcon(FAIconType.language));
     }
 
     @Override
