@@ -1,13 +1,9 @@
 package org.orienteer.core.component.property;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.vaynberg.wicket.select2.Select2Choice;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.IMarkupFragment;
@@ -23,17 +19,15 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
-import org.orienteer.core.model.LanguagesChoiceProvider;
 import org.orienteer.core.service.IMarkupProvider;
-
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link FormComponentPanel} to edit embedded {@link Map}

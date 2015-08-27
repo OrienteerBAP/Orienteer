@@ -1,7 +1,6 @@
 package org.orienteer.core.component.command;
 
 import com.google.common.base.Strings;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -36,8 +35,9 @@ public class SaveOLocalizationsCommand extends AbstractSaveCommand<ODocument> {
                     return;
                 }
 
-                if (!Strings.isNullOrEmpty(modelObject.<String> field(OrienteerLocalizationModule.OPROPERTY_LANG))
-                        && !Strings.isNullOrEmpty(modelObject.<String> field(OrienteerLocalizationModule.OPROPERTY_VALUE))) {
+                String localizationLang = modelObject.field(OrienteerLocalizationModule.OPROPERTY_LANG);
+                String localizationValue = modelObject.field(OrienteerLocalizationModule.OPROPERTY_VALUE);
+                if (!Strings.isNullOrEmpty(localizationLang) && !Strings.isNullOrEmpty(localizationValue)) {
                     modelObject.field(OrienteerLocalizationModule.OPROPERTY_ACTIVE, true);
                 }
 

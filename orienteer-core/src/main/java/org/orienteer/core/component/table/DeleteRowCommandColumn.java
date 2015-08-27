@@ -42,13 +42,19 @@ public class DeleteRowCommandColumn extends AbstractModeMetaColumn<ODocument, Di
                         @Override
                         public void onClick(AjaxRequestTarget target) {
                             super.onClick(target);
-                            getDatabase().delete(rowModel.getObject());
+                            rowModel.getObject().delete();
                             target.add(parent);
                         }
+
+                        @Override
+                        protected void onConfigure() {
+                            super.onConfigure();
+                            setVisibilityAllowed(getModeModel().getObject().equals(DisplayMode.EDIT));
+                        }
+
                     }.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
                             .setBootstrapType(BootstrapType.DANGER)
-                            .setIcon((String) null)
-                            .setVisibilityAllowed(getModeModel().getObject().equals(DisplayMode.EDIT));
+                            .setIcon((String) null);
             }
 
             @Override
