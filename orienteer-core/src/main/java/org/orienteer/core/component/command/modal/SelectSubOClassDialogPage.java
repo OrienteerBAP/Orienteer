@@ -87,7 +87,7 @@ public abstract class SelectSubOClassDialogPage extends GenericPanel<OClass> {
 		OClass oClass = getModelObject();
 		if(oClass!=null) {
 			if(CAN_BE_INSTANTIATED.apply(oClass)) ret.add(oClass);
-			ret.addAll(Collections2.filter(oClass.getSubclasses(), CAN_BE_INSTANTIATED));
+			ret.addAll(Collections2.filter(oClass.getAllSubclasses(), CAN_BE_INSTANTIATED));
 		} else {
 			ret.addAll(Collections2.filter(OrienteerWebSession.get().getDatabase().getMetadata().getSchema().getClasses(), CAN_BE_INSTANTIATED));
 		}

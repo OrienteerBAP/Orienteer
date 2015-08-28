@@ -2,6 +2,7 @@ package org.orienteer.core.component.widget.oclass;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
@@ -11,6 +12,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.widget.AbstractOClassesListWidget;
 import org.orienteer.core.widget.Widget;
+
 import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.AbstractListModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
@@ -61,4 +63,9 @@ public class OClassSubclassesWidget extends AbstractOClassesListWidget<OClass> {
     protected IModel<String> getTitleModel() {
         return new ResourceModel("class.subclasses");
     }
+    
+    @Override
+	protected String getWidgetStyleClass() {
+		return "strict";
+	}
 }
