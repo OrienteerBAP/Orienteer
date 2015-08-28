@@ -145,7 +145,7 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 				if(!(index.getDefinition() instanceof OCompositeIndexDefinition)
 						&& (!isProto || index.getDefinition().getFields().size()==1))
 				{
-					return new DropDownChoice<String>(id, (IModel<String>)getModel(), Lists.newArrayList(OSQLEngine.getCollateNames())).setRequired(true);
+					return new DropDownChoice<String>(id, (IModel<String>)getModel(), Lists.newArrayList(OSQLEngine.getCollateNames())).setNullValid(true);
 				}
 			}
 			else if(OIndexPrototyper.DEF_NULLS_IGNORED.equals(critery))
