@@ -67,9 +67,7 @@ public class BrowseOClassPage extends AbstractWidgetPage<OClass> implements ISec
 			@Override
 			protected ODocument lookupDashboardDocument(String domain,
 					String tab, IModel<OClass> model) {
-				Map<String, Object> criteriesMap = new HashMap<String, Object>();
-				criteriesMap.put(OWidgetsModule.OPROPERTY_CLASS, model.getObject().getName());
-				return dashboardManager.getExistingDashboard(domain, tab, model, criteriesMap);
+				return dashboardManager.getExistingDashboard(domain, tab, model, model.getObject());
 			}
 			
 			@Override

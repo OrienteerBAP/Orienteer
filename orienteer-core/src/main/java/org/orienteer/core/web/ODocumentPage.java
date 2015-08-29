@@ -173,9 +173,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 			@Override
 			protected ODocument lookupDashboardDocument(String domain,
 					String tab, IModel<ODocument> model) {
-				Map<String, Object> criteriesMap = new HashMap<String, Object>();
-				criteriesMap.put(OWidgetsModule.OPROPERTY_CLASS, model.getObject().getSchemaClass().getName());
-				return dashboardManager.getExistingDashboard(domain, tab, model, criteriesMap);
+				return dashboardManager.getExistingDashboard(domain, tab, model, model.getObject().getSchemaClass());
 			}
 			
 			@Override
