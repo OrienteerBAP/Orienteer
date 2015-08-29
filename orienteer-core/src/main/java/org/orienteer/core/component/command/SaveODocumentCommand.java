@@ -23,29 +23,25 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> implements ISecuredComponent
 {
 	private static final long serialVersionUID = 1L;
-	private IModel<? extends OIdentifiable> documentModel;
 
 	public SaveODocumentCommand(
 			OrienteerStructureTable<ODocument, ?> structureTable,
 			IModel<DisplayMode> displayModeModel) {
-		super(structureTable, displayModeModel);
-		this.documentModel = structureTable.getModel();
+		super(structureTable, displayModeModel, structureTable.getModel());
 		setIcon(FAIconType.save);
 		setBootstrapType(BootstrapType.PRIMARY);
 	}
 
-
-
 	@Override
 	public void onClick(AjaxRequestTarget target) {
-		documentModel.getObject().getRecord().save();
+		getModelObject().getRecord().save();
 		super.onClick(target);
 	}
 
 	@Override
 	public RequiredOrientResource[] getRequiredResources() {
-		ODocument doc = documentModel.getObject().getRecord();
-		ORID orid = documentModel.getObject().getIdentity();
+		ODocument doc = getModelObject();
+		ORID orid = doc.getIdentity();
 		OrientPermission permission = orid.isNew()?OrientPermission.CREATE:OrientPermission.UPDATE;
 		return OSecurityHelper.requireOClass(doc.getSchemaClass(), permission);
 	}

@@ -1,5 +1,6 @@
 package org.orienteer.core.component.widget.document;
 
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.CustomAttributes;
@@ -8,13 +9,16 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
+import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 
+import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -31,6 +35,7 @@ public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
 	public ExtendedVisualizerWidget(String id, IModel<ODocument> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
+		add(DisableIfDocumentNotSavedBehavior.INSTANCE);
 	}
 	
 	@Override
@@ -90,6 +95,15 @@ public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
 	@Override
 	protected String getWidgetStyleClass() {
 		return "strict";
+	}
+	
+	@Override
+	public void onActionPerformed(ActionPerformedEvent<?> event,
+			IEvent<?> wicketEvent) {
+		if(event.ofType(ODocument.class) && event.getCommand().isChangingModel() && event.isAjax()) {
+			event.getTarget().add(this);
+			wicketEvent.dontBroadcastDeeper();
+		}
 	}
 
 }
