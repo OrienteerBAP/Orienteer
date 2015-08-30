@@ -10,6 +10,7 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.util.lang.Objects;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.service.IOClassIntrospector;
 
 import com.google.inject.Inject;
@@ -50,6 +51,7 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 						}.setDocumentNameAsBody(true));
 			}
 		});
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE);
 	}
 
 }
