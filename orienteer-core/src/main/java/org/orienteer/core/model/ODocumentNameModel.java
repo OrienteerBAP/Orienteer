@@ -26,7 +26,7 @@ public class ODocumentNameModel extends LoadableDetachableModel<String>
 	}
 
 	@Override
-	public void detach() {
+	public void onDetach() {
 		if(documentModel!=null) documentModel.detach();
 	}
 

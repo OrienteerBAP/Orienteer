@@ -2,6 +2,8 @@ package org.orienteer.core.web;
 
 import java.util.List;
 
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -21,6 +23,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.settings.IJavaScriptLibrarySettings;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.module.PerspectivesModule;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -102,7 +105,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		if(get("title")==null) add(new Label("title", getTitleModel()));
+		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE));
 		IModel<String> poweredByModel = new StringResourceModel("poweredby", null, "", version);
 		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
