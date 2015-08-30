@@ -125,6 +125,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 					{
 						setBootstrapType(BootstrapType.SUCCESS);
 						setIcon(FAIconType.hand_o_right);
+						setAutoNotify(false);
 					}
 
 					@Override
@@ -140,6 +141,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 				{
 					setBootstrapType(BootstrapType.SUCCESS);
 					setIcon(FAIconType.hand_o_right);
+					setAutoNotify(false);
 				}
 
 				@Override
