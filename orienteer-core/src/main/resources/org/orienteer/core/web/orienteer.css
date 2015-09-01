@@ -163,8 +163,13 @@ div.commands {
         margin-left: auto;
     }
 
-    .collapse {
-        display: inherit;
-        visibility: visible;
-    }
+.collapse {
+	display: inherit;
+	visibility: visible;
+}
+
+ul.collapse {
+	display: none;
+	visibility: hidden;
+   }
 }

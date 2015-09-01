@@ -5,6 +5,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -103,15 +104,33 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 			protected void populateItem(ListItem<ODocument> item) {
 				IModel<ODocument> itemModel = item.getModel();
 				ODocumentPropertyModel<String> urlModel = new ODocumentPropertyModel<String>(itemModel, "url");
+				ODocumentPropertyModel<List<ODocument>> subItems = new ODocumentPropertyModel<List<ODocument>>(itemModel, "subItems");
+				boolean hasSubItems = subItems.getObject() != null && !subItems.getObject().isEmpty();
 				ExternalLink link = new ExternalLink("link", urlModel)
 												.setContextRelative(true);
 				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
 						 new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
+				link.add(new WebMarkupContainer("secondLevelGlyph").setVisibilityAllowed(hasSubItems));
 				item.add(link);
 				String currentUrl = "/" + RequestCycle.get().getRequest().getUrl();
 				if (currentUrl.equals(urlModel.getObject())) {
 					item.add(new AttributeModifier("class", "active"));
 				}
+
+				item.add(new AttributeModifier("class", "sub-menu"));
+				item.add(new ListView<ODocument>("perspectiveSubItems", subItems) {
+					@Override
+					protected void populateItem(ListItem<ODocument> subItem) {
+						IModel<ODocument> itemModel = subItem.getModel();
+						ODocumentPropertyModel<String> urlModel = new ODocumentPropertyModel<String>(itemModel, "url");
+						ExternalLink link = new ExternalLink("subItemLink", urlModel)
+								.setContextRelative(true);
+
+						link.add(new FAIcon("subItemIcon", new ODocumentPropertyModel<String>(itemModel, "icon")),
+								new Label("subItemName", new ODocumentNameModel(subItem.getModel())).setRenderBodyOnly(true));
+						subItem.add(link);
+					}
+				}.setVisibilityAllowed(hasSubItems));
 			}
 		});
 		

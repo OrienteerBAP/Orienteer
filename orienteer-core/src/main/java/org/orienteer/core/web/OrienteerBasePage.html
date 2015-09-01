@@ -47,7 +47,7 @@
 
             <div class="navbar-default navbar-static-side" role="navigation">
                 <div class="collapse sidebar-collapse">
-                    <ul class="nav nav-pills nav-stacked" id="side-menu">
+                    <ul class="nav nav-pills nav-stacked metismenu" id="side-menu">
                         <li class="sidebar-search">
                         	<form wicket:id="searchForm">
                             <div class="input-group custom-search-form">
@@ -62,9 +62,19 @@
                             <!-- /input-group -->
                         </li>
                         <li wicket:id="perspectiveItems">
-                        	<a href="#" wicket:id="link">
+                        	<a href="#" wicket:id="link" aria-expanded="false">
                         		<i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span>
-                        	</a>
+                                <span wicket:id="secondLevelGlyph" class="glyphicon arrow"></span>
+                            </a>
+                            <wicket:enclosure child="perspectiveSubItems">
+                                <ul aria-expanded="false" style="list-style-type: none;">
+                                    <li wicket:id="perspectiveSubItems">
+                                        <a href="#" wicket:id="subItemLink">
+                                            <i class="fa-fw" wicket:id="subItemIcon"></i><span wicket:id="subItemName"></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </wicket:enclosure>
                         </li>
                     </ul>
                     <!-- /#side-menu -->

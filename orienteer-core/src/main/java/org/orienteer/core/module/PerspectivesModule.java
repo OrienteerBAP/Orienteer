@@ -1,18 +1,5 @@
 package org.orienteer.core.module;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.inject.Singleton;
-
-import org.orienteer.core.CustomAttributes;
-import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.util.CommonUtils;
-import org.orienteer.core.util.OSchemaHelper;
-
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
-
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -25,6 +12,15 @@ import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.util.CommonUtils;
+import org.orienteer.core.util.OSchemaHelper;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import javax.inject.Singleton;
+import java.util.List;
+import java.util.Set;
 
 /**
  * {@link IOrienteerModule} for "perspectives" feature of Orienteer
@@ -34,6 +30,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 {
 	public static final String OCLASS_PERSPECTIVE="OPerspective";
 	public static final String OCLASS_ITEM = "OPerspectiveItem";
+	public static final String OCLASS_SUB_ITEM = "OPerspectiveSubItem";
 	
 	public static final String DEFAULT_PERSPECTIVE = "Default";
 	
@@ -49,7 +46,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			.oClass(OCLASS_PERSPECTIVE)
 				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization")
 					.markAsDocumentName()
-					.oIndex(OCLASS_PERSPECTIVE+".name", INDEX_TYPE.UNIQUE)
+					.oIndex(OCLASS_PERSPECTIVE + ".name", INDEX_TYPE.UNIQUE)
 				.oProperty("icon", OType.STRING)
 				.oProperty("homeUrl", OType.STRING)
 				.oProperty("menu", OType.LINKLIST).assignVisualization("table")
@@ -61,11 +58,21 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("icon", OType.STRING)
 				.oProperty("url", OType.STRING)
 				.oProperty("perspective", OType.LINK).markAsLinkToParent()
+				.oProperty("subItems", OType.LINKLIST).assignVisualization("table")
 				.switchDisplayable(true, "name", "icon", "url")
 				.orderProperties("name", "perspective", "icon", "url")
+			.oClass(OCLASS_SUB_ITEM)
+				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization").markAsDocumentName()
+				.oProperty("icon", OType.STRING)
+				.oProperty("url", OType.STRING)
+				.oProperty("perspectiveItem", OType.LINK).markAsLinkToParent()
+				.switchDisplayable(true, "name", "icon", "url")
+				.orderProperties("name", "perspectiveItem", "icon", "url")
 			.setupRelationship(OCLASS_PERSPECTIVE, "menu", OCLASS_ITEM, "perspective")
-			.oClass(OSecurityShared.IDENTITY_CLASSNAME)
-				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE);
+				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE)
+			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_SUB_ITEM, "perspectiveItem")
+				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_ITEM)
+            .oClass(OSecurityShared.IDENTITY_CLASSNAME);
 	}
 	
 	@Override
@@ -153,7 +160,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				item.field("url", "/browse/OPerspective");
 				item.field("perspective", perspective);
 				item.save();
-				
+
 				return perspective;
 			}
 		}.execute();
@@ -218,7 +225,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		OSchema schema  = db.getMetadata().getSchema();
-		if(schema.getClass(OCLASS_PERSPECTIVE)==null || schema.getClass(OCLASS_ITEM)==null)
+		if(schema.getClass(OCLASS_PERSPECTIVE)==null || schema.getClass(OCLASS_ITEM)==null || schema.getClass(OCLASS_SUB_ITEM)==null)
 		{
 			//Repair
 			onInstall(app, db);
