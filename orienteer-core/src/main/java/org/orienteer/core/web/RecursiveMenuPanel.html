@@ -1,0 +1,22 @@
+<wicket:panel>
+    <li wicket:id="items">
+        <a href="#" wicket:id="link" aria-expanded="false">
+            <i class="fa-fw" wicket:id="icon"></i>
+            <span wicket:id="name"></span>
+            <span wicket:id="menuLevelGlyph" class="glyphicon arrow"></span>
+        </a>
+        <wicket:enclosure child="subItems">
+            <ul aria-expanded="false" style="list-style-type: none;">
+                <li wicket:id="subItems">
+                    <a href="#" wicket:id="subItemLink">
+                        <i class="fa-fw" style="text-decoration: none;" wicket:id="subItemIcon"></i>
+                        <span wicket:id="subItemName"></span>
+                        <span wicket:id="subItemGlyph" class="glyphicon arrow"></span>
+                    </a>
+                    <ul wicket:id="nestedItems" aria-expanded="false" style="list-style-type: none;">
+                    </ul>
+                </li>
+            </ul>
+        </wicket:enclosure>
+    </li>
+</wicket:panel>

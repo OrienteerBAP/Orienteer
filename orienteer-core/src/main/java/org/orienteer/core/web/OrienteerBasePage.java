@@ -1,7 +1,6 @@
 package org.orienteer.core.web;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -9,14 +8,12 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
-import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.OrienteerWebSession;
@@ -97,23 +94,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
 
 		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
-		add(new ListView<ODocument>("perspectiveItems", new ODocumentPropertyModel<List<ODocument>>(perspectiveModel, "menu")) {
-
-			@Override
-			protected void populateItem(ListItem<ODocument> item) {
-				IModel<ODocument> itemModel = item.getModel();
-				ODocumentPropertyModel<String> urlModel = new ODocumentPropertyModel<String>(itemModel, "url");
-				ExternalLink link = new ExternalLink("link", urlModel)
-												.setContextRelative(true);
-				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-						 new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
-				item.add(link);
-				String currentUrl = "/" + RequestCycle.get().getRequest().getUrl();
-				if (currentUrl.equals(urlModel.getObject())) {
-					item.add(new AttributeModifier("class", "active"));
-				}
-			}
-		});
+		add(new RecursiveMenuPanel("perspectiveItems", new ODocumentPropertyModel<List<ODocument>>(perspectiveModel, "menu")));
 		
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));

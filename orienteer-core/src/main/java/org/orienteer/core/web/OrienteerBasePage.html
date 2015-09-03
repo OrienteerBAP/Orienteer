@@ -47,7 +47,7 @@
 
             <div class="navbar-default navbar-static-side" role="navigation">
                 <div class="collapse sidebar-collapse">
-                    <ul class="nav nav-pills nav-stacked" id="side-menu">
+                    <ul class="nav nav-pills nav-stacked metismenu" id="side-menu">
                         <li class="sidebar-search">
                         	<form wicket:id="searchForm">
                             <div class="input-group custom-search-form">
@@ -61,11 +61,7 @@
                             </form>
                             <!-- /input-group -->
                         </li>
-                        <li wicket:id="perspectiveItems">
-                        	<a href="#" wicket:id="link">
-                        		<i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span>
-                        	</a>
-                        </li>
+                        <wicket:fragment wicket:id="perspectiveItems"></wicket:fragment>
                     </ul>
                     <!-- /#side-menu -->
                 </div>
