@@ -30,8 +30,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 {
 	public static final String OCLASS_PERSPECTIVE="OPerspective";
 	public static final String OCLASS_ITEM = "OPerspectiveItem";
-	public static final String OCLASS_SUB_ITEM = "OPerspectiveSubItem";
-	
+
 	public static final String DEFAULT_PERSPECTIVE = "Default";
 	
 
@@ -58,19 +57,13 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("icon", OType.STRING)
 				.oProperty("url", OType.STRING)
 				.oProperty("perspective", OType.LINK).markAsLinkToParent()
+				.oProperty("perspectiveItem", OType.LINK).markAsLinkToParent()
 				.oProperty("subItems", OType.LINKLIST).assignVisualization("table")
 				.switchDisplayable(true, "name", "icon", "url")
 				.orderProperties("name", "perspective", "icon", "url")
-			.oClass(OCLASS_SUB_ITEM)
-				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization").markAsDocumentName()
-				.oProperty("icon", OType.STRING)
-				.oProperty("url", OType.STRING)
-				.oProperty("perspectiveItem", OType.LINK).markAsLinkToParent()
-				.switchDisplayable(true, "name", "icon", "url")
-				.orderProperties("name", "perspectiveItem", "icon", "url")
-			.setupRelationship(OCLASS_PERSPECTIVE, "menu", OCLASS_ITEM, "perspective")
+				.setupRelationship(OCLASS_PERSPECTIVE, "menu", OCLASS_ITEM, "perspective")
 				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE)
-			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_SUB_ITEM, "perspectiveItem")
+			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_ITEM, "perspectiveItem")
 				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_ITEM)
             .oClass(OSecurityShared.IDENTITY_CLASSNAME);
 	}
@@ -225,7 +218,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		OSchema schema  = db.getMetadata().getSchema();
-		if(schema.getClass(OCLASS_PERSPECTIVE)==null || schema.getClass(OCLASS_ITEM)==null || schema.getClass(OCLASS_SUB_ITEM)==null)
+		if(schema.getClass(OCLASS_PERSPECTIVE)==null || schema.getClass(OCLASS_ITEM)==null)
 		{
 			//Repair
 			onInstall(app, db);
