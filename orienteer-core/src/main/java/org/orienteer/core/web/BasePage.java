@@ -1,13 +1,5 @@
 package org.orienteer.core.web;
 
-import java.util.List;
-
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.PriorityHeaderItem;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
@@ -47,12 +39,12 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	private static final long serialVersionUID = 1L;
 	public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
 	public static final CssResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
-	public static final CssResourceReference METISMENU_CSS = new WebjarsCssResourceReference("metisMenu/1.1.3/metisMenu.min.css");
+	public static final CssResourceReference METISMENU_CSS = new WebjarsCssResourceReference("metisMenu/current/metisMenu.min.css");
 	public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
 	public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
 	
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
-	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/1.1.3/metisMenu.min.js");
+	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
 
 	@Inject
 	@Named("version")
