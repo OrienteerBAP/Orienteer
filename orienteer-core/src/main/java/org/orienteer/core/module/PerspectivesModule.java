@@ -36,7 +36,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 
 	public PerspectivesModule()
 	{
-		super("perspectives", 2);
+		super("perspectives", 3);
 	}
 
 	@Override
@@ -76,6 +76,9 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			case 2:
 				convertNameProperty(app, db, OCLASS_PERSPECTIVE);
 				convertNameProperty(app, db, OCLASS_ITEM);
+				break;
+			case 3:
+				onInstall(app, db);
 				break;
 			default:
 				break;
