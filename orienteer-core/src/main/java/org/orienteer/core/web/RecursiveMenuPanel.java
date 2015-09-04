@@ -1,7 +1,9 @@
 package org.orienteer.core.web;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -12,30 +14,40 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.model.ODocumentNameModel;
+import org.orienteer.core.module.PerspectivesModule;
+
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Panel to display recursive tree menu.
  */
 public class RecursiveMenuPanel extends GenericPanel<ODocument> {
+	
+	private int level = -1;
 
     @Override
     public void renderHead(IHeaderResponse response) {
+		if(level<=1) {
             response.render(OnDomReadyHeaderItem.forScript(
-                    "var cur = $(\"li.active\");" +
+                    "var cur = $(\"#"+getMarkupId()+" li.active\");" +
                     "cur.parents('ul').collapse('show');" +
                     "cur.parents('li').addClass(\"active\");"));
+		}
     }
 
-    public RecursiveMenuPanel(String id, ODocumentPropertyModel<List<ODocument>> model) {
-        super(id);
-
-        add(new ListView<ODocument>("items", model) {
+    public RecursiveMenuPanel(String id, IModel<ODocument> item) {
+        super(id, item);
+        setOutputMarkupId(true);
+        add(new ListView<ODocument>("items", new PropertyModel<List<ODocument>>(this, "items")) {
 
             @Override
             protected void populateItem(ListItem<ODocument> item) {
@@ -52,34 +64,61 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
                 if (isActiveItem(urlModel)) {
                     item.add(new AttributeModifier("class", "active"));
                 }
-
-                item.add(new ListView<ODocument>("subItems", subItems) {
-                    @Override
-                    protected void populateItem(ListItem<ODocument> subItem) {
-                        IModel<ODocument> itemModel = subItem.getModel();
-                        ODocumentPropertyModel<List<ODocument>> subSubItemsModel = new ODocumentPropertyModel<List<ODocument>>(itemModel, "subItems");
-                        ODocumentPropertyModel<String> urlModel = new ODocumentPropertyModel<String>(itemModel, "url");
-                        ExternalLink link = new ExternalLink("subItemLink", urlModel)
-                                .setContextRelative(true);
-
-                        if (isActiveItem(urlModel)) {
-                            subItem.add(new AttributeModifier("class", "active"));
-                        }
-                        boolean hasSubSubItems = subSubItemsModel.getObject() != null && !subSubItemsModel.getObject().isEmpty();
-                        link.add(new FAIcon("subItemIcon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-                                new Label("subItemName", new ODocumentNameModel(subItem.getModel())).setRenderBodyOnly(true),
-                                new WebMarkupContainer("subItemGlyph").setVisibilityAllowed(hasSubSubItems));
-                        subItem.add(link);
-
-                        if(hasSubSubItems) {
-                            subItem.add(new RecursiveMenuPanel("nestedItems", subSubItemsModel));
-                        } else {
-                            subItem.add(new EmptyPanel("nestedItems").setVisible(false));
-                        }
-                    }
-                }.setVisibilityAllowed(hasSubItems));
+                item.add(new RecursiveMenuPanel("subItems", itemModel)); 
             }
         });
+    }
+    
+    public List<ODocument> getItems() {
+    	return getItems(getModelObject());
+    }
+    
+    public List<ODocument> getItems(ODocument doc) {
+    	if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_PERSPECTIVE)) {
+    		return (List<ODocument>)doc.field("menu");
+    	} else if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_ITEM)) {
+    		return (List<ODocument>)doc.field("subItems");
+    	} else {
+    		return null;
+    	}
+    }
+    
+    @Override
+    protected void onConfigure() {
+    	super.onConfigure();
+    	List<ODocument> subItems = getItems();
+    	setVisible(subItems!=null && !subItems.isEmpty());
+    }
+    
+    @Override
+    protected void onComponentTag(ComponentTag tag) {
+    	super.onComponentTag(tag);
+    	String addClass = level==1?"nav-first-level":
+    						(level==2?"nav-second-level":
+    							(level==3?"nav-third-level":"nav-"+level+"-level"));
+    	tag.append("class", addClass, " ");
+    }
+    
+    @Override
+    protected void onReAdd() {
+    	super.onReAdd();
+    	initLevel();
+    }
+    
+    @Override
+    protected void onInitialize() {
+    	super.onInitialize();
+    	initLevel();
+    }
+    
+    protected int getLevel() {
+    	if(level<0) initLevel();
+    	return level;
+    }
+    
+    private void initLevel() {
+    	RecursiveMenuPanel parentMenuPanel = findParent(RecursiveMenuPanel.class);
+    	level = parentMenuPanel==null?1:parentMenuPanel.getLevel()+1;
     }
 
     private boolean isActiveItem(ODocumentPropertyModel<String> urlModel) {

@@ -173,3 +173,7 @@ ul.collapse {
 	visibility: hidden;
    }
 }
+
+ul.nav-subitems>li.active{
+    background-color: #ddd;	
+}

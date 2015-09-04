@@ -94,7 +94,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
 
 		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
-		add(new RecursiveMenuPanel("perspectiveItems", new ODocumentPropertyModel<List<ODocument>>(perspectiveModel, "menu")));
+		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
 		
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));

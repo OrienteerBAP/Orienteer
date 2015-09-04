@@ -47,22 +47,17 @@
 
             <div class="navbar-default navbar-static-side" role="navigation">
                 <div class="collapse sidebar-collapse">
-                    <ul class="nav nav-pills nav-stacked metismenu" id="side-menu">
-                        <li class="sidebar-search">
-                        	<form wicket:id="searchForm">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button" wicket:id="search">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
-                            </form>
-                            <!-- /input-group -->
-                        </li>
-                        <wicket:fragment wicket:id="perspectiveItems"></wicket:fragment>
-                    </ul>
+                    <form wicket:id="searchForm" class="sidebar-search">
+	                    <div class="input-group custom-search-form">
+	                        <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
+	                        <span class="input-group-btn">
+	                        <button class="btn btn-default" type="button" wicket:id="search">
+	                            <i class="fa fa-search"></i>
+	                        </button>
+	                        </span>
+	                    </div>
+                    </form>
+                    <ul class="nav nav-pills nav-stacked metismenu" wicket:id="perspectiveItems"></ul>
                     <!-- /#side-menu -->
                 </div>
                 <!-- /.sidebar-collapse -->
