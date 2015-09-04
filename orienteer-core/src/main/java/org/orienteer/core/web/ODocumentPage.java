@@ -92,6 +92,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	
 	@Override
 	public void initialize() {
+		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 		setWidgetsFilter(new IWidgetFilter<ODocument>() {
 			
 			@Override
@@ -135,13 +136,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		}
 		return tabs;
 	}
-	
-	@Override
-	protected void onInitialize() {
-		super.onInitialize();
-		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
-	}
-	
+		
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
