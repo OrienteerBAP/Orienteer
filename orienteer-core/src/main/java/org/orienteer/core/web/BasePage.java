@@ -5,8 +5,10 @@ import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
+
 import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.WebPage;
@@ -22,7 +24,9 @@ import org.apache.wicket.settings.IJavaScriptLibrarySettings;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
+import org.orienteer.core.component.AjaxIndicator;
 import org.orienteer.core.module.PerspectivesModule;
+
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
@@ -102,6 +106,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
 									.setEscapeModelStrings(false).setRenderBodyOnly(true));
+		if(get("indicator")==null) add(new AjaxIndicator("indicator"));
 	}
 
 	@Override
