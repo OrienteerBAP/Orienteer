@@ -14,20 +14,15 @@ public class ImageEditPanel extends BinaryEditPanel {
     }
 
     @Override
-    protected void convertInput() {
+    public void validate() {
+        super.validate();
         FileUpload fileUpload = fileUploadField.getFileUpload();
-        if(fileUpload!=null)
-        {
+        if(fileUpload!=null) {
             byte[] bytes = fileUpload.getBytes();
             boolean isImage = new Tika().detect(bytes).startsWith("image/");
             if (!isImage) {
                 error(getString("errors.wrong.image.uploaded"));
             }
-            else {
-                setConvertedInput(bytes);
-            }
-        } else if (getModelObject() != null) {
-            setConvertedInput(getModelObject());
         }
     }
 }
