@@ -4,6 +4,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.orienteer.core.OrienteerWebApplication;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -12,17 +14,20 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class ODocumentNameModel extends LoadableDetachableModel<String>
 {
 	private static final long serialVersionUID = 1L;
-	private IModel<ODocument> documentModel;
+	private IModel<? extends OIdentifiable> documentModel;
 	
-	public ODocumentNameModel(IModel<ODocument> documentModel)
+	public ODocumentNameModel(IModel<? extends OIdentifiable> documentModel)
 	{
 		this.documentModel = documentModel;
 	}
 	
 	@Override
 	protected String load() {
-		ODocument doc = documentModel!=null?documentModel.getObject():null;
-		return doc!=null?OrienteerWebApplication.get().getOClassIntrospector().getDocumentName(doc):null;
+		OIdentifiable id = documentModel!=null?documentModel.getObject():null;
+		ORecord doc = id!=null?id.getRecord():null;
+		return doc!=null && doc instanceof ODocument
+				?OrienteerWebApplication.get().getOClassIntrospector().getDocumentName((ODocument)doc)
+				:null;
 	}
 
 	@Override
