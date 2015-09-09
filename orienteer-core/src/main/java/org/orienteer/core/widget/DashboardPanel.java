@@ -173,10 +173,8 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
 		String typeId = widgetDoc.field(OPROPERTY_TYPE_ID);
 		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(typeId);
-		//TODO if type was not found we should show some dummy widget
-		if(type==null) throw new WicketRuntimeException("Widget with typeId="+typeId+" was not found");
-		AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), widgetDoc);
-		return widget;
+		return  type!=null ? type.instanciate(newWidgetId(), getModel(), widgetDoc)
+						   : new NotFoundWidget<T>(newWidgetId(), getModel(), new ODocumentModel(widgetDoc));
 	}
 	
 	/**
