@@ -25,7 +25,12 @@ public abstract class AddRuleDialog extends Panel {
 
 	public AddRuleDialog(String id) {
 		super(id);
-		Form<Object> form = new Form<Object>("form");
+		Form<Object> form = new Form<Object>("form") {
+			@Override
+			public Form<?> getRootForm() {
+				return this;
+			}
+		};
 		form.add(new DropDownChoice<ORule.ResourceGeneric>("resource", resourceModel, 
 								Arrays.asList(ORule.ResourceGeneric.values()), new ChoiceRenderer<ORule.ResourceGeneric>("name"))
 					.setNullValid(true));

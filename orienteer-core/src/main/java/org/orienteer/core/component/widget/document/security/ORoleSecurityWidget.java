@@ -164,7 +164,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 						rules.put(rule, Byte.valueOf((byte)0));
 						doc.save();
 						modal.close(target);
-						target.add(ORoleSecurityWidget.this);
+						sendActionPerformed();
 					}
 					
 				});
