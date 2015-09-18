@@ -53,9 +53,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
 	{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(OMVRBTreeRIDProvider.PERSISTENT_CLASS_NAME)
-			  .oClass("V")
-			  .oClass("E");
+		helper.oClass(OMVRBTreeRIDProvider.PERSISTENT_CLASS_NAME);
 		if(helper.existsClass(OCLASS_FUNCTION))
 		{
 			helper.oClass(OCLASS_FUNCTION)
