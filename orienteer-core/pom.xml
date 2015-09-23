@@ -87,6 +87,7 @@
 			<artifactId>tika-core</artifactId>
 			<version>1.10</version>
 		</dependency>
+
 		<!-- WEB JARS -->
 	    <dependency>
 		    <groupId>de.agilecoders.wicket.webjars</groupId>
