@@ -38,8 +38,14 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 
 	@Override
 	public void onClick(AjaxRequestTarget target) {
-		super.onClick(target);
-		getDatabase().getMetadata().reload();
+		boolean isActiveTransaction = getDatabase().getTransaction().isActive();
+		if(isActiveTransaction) getDatabase().commit(); // Schema changes should be done outside of transaction
+		try {
+			super.onClick(target);
+			getDatabase().getMetadata().reload();
+		} finally {
+			if(isActiveTransaction) getDatabase().begin();
+		}
 	}
 
 	@Override

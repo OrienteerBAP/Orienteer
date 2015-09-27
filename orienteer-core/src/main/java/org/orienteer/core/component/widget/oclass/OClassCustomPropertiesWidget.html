@@ -1,0 +1,20 @@
+<wicket:extend>
+    <form wicket:id="form">
+        <table wicket:id="table" class="table table-condensed table-hover"></table>
+    </form>
+<wicket:fragment wicket:id="addDialog">
+<form wicket:id="form">
+  <div class="form-group">
+    <label wicket:for="key"><wicket:message key="class.custom.key">Key</wicket:message></label>
+    <input type="text" class="form-control" wicket:id="key">
+  </div>
+  <div class="form-group">
+    <label wicket:for="value"><wicket:message key="class.custom.value">Value</wicket:message></label>
+    <textarea class="form-control" wicket:id="value"></textarea>
+  </div>
+  <button type="submit" class="btn btn-default" wicket:id="submit">
+    <wicket:message key="command.submit">Submit</wicket:message>
+  </button>
+</form>
+</wicket:fragment>
+</wicket:extend>

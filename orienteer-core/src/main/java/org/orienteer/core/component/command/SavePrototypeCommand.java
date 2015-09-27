@@ -33,10 +33,14 @@ public class SavePrototypeCommand<T> extends AbstractSaveCommand<T>
 		T object = model!=null?model.getObject():null;
 		if(object instanceof IPrototype)
 		{
-			getDatabase().commit();
-			((IPrototype<?>)object).realizePrototype();
-			model.detach();
-			getDatabase().begin();
+			boolean isActiveTransaction = getDatabase().getTransaction().isActive();
+			if(isActiveTransaction) getDatabase().commit();
+			try {
+				((IPrototype<?>)object).realizePrototype();
+				model.detach();
+			} finally {
+				if(isActiveTransaction) getDatabase().begin();
+			}
 		}
 		super.onClick(target);
 	}

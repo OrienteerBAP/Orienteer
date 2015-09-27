@@ -96,7 +96,7 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
     @Override
 	protected void onConfigure() {
 		super.onConfigure();
-		IModel<List<? extends OProperty>> propertiesModel = propertiesStructureTable.getCriteriesModel();
+		IModel<? extends List<? extends OProperty>> propertiesModel = propertiesStructureTable.getCriteriesModel();
 		List<? extends OProperty> properties = propertiesModel.getObject();
 		setVisible(properties!=null && !properties.isEmpty());
 		if(DisplayMode.EDIT.equals(getModeObject()))

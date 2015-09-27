@@ -24,7 +24,7 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	private static final long serialVersionUID = 1L;
 	private StructureTableCommandsToolbar<T> commandsToolbar;
 
-	public OrienteerStructureTable(String id, IModel<T> model, IModel<List<? extends C>> criteriesModel)
+	public OrienteerStructureTable(String id, IModel<T> model, IModel<? extends List<? extends C>> criteriesModel)
 	{
 		super(id, model, criteriesModel);
 		initialize();
@@ -65,10 +65,7 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	}
 
 	@Override
-	protected Component getValueComponent(String id, IModel<C> rowModel) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	protected abstract Component getValueComponent(String id, IModel<C> rowModel);
 
 	public OrienteerStructureTable<T, C> setCaptionModel(IModel<String> captionModel)
 	{

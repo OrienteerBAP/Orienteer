@@ -1,6 +1,7 @@
 package org.orienteer.core.component.widget.oclass;
 
 import com.google.inject.Inject;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -14,6 +15,8 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
+
+import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -32,7 +35,7 @@ public class OClassConfigurationWidget extends AbstractModeAwareWidget<OClass> {
 	public OClassConfigurationWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		Form<OClass> form = new Form<OClass>("form");
+		Form<OClass> form = new TransactionlessForm<OClass>("form");
 		structureTable  = new OrienteerStructureTable<OClass, String>("attributes", getModel(), OClassMetaPanel.OCLASS_ATTRS) {
 
 			@Override

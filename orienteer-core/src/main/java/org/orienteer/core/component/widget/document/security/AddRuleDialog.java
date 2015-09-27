@@ -13,6 +13,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
+import ru.ydn.wicket.wicketorientdb.components.RootForm;
+
 import com.orientechnologies.orient.core.metadata.security.ORule;
 
 /**
@@ -25,12 +27,7 @@ public abstract class AddRuleDialog extends Panel {
 
 	public AddRuleDialog(String id) {
 		super(id);
-		Form<Object> form = new Form<Object>("form") {
-			@Override
-			public Form<?> getRootForm() {
-				return this;
-			}
-		};
+		Form<Object> form = new RootForm<Object>("form");
 		form.add(new DropDownChoice<ORule.ResourceGeneric>("resource", resourceModel, 
 								Arrays.asList(ORule.ResourceGeneric.values()), new ChoiceRenderer<ORule.ResourceGeneric>("name"))
 					.setNullValid(true));

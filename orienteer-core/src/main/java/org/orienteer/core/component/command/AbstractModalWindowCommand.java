@@ -3,6 +3,7 @@ package org.orienteer.core.component.command;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
@@ -18,15 +19,9 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 	protected ModalWindow modal;
 
 	public AbstractModalWindowCommand(IModel<?> labelModel,
-			OrienteerDataTable<T, ?> table)
+			ICommandsSupportComponent<T> component)
 	{
-		super(labelModel, table);
-	}
-
-	public AbstractModalWindowCommand(IModel<?> labelModel,
-			OrienteerStructureTable<T, ?> table)
-	{
-		super(labelModel, table);
+		super(labelModel, component);
 	}
 
 	public AbstractModalWindowCommand(String commandId, IModel<?> labelModel)
