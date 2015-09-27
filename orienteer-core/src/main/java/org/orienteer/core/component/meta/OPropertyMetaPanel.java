@@ -226,7 +226,8 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 					|| OPropertyPrototyper.NOT_NULL.equals(critery)
 					|| CustomAttributes.match(critery, CustomAttributes.UI_READONLY, 
 													   CustomAttributes.DISPLAYABLE,
-													   CustomAttributes.CALCULABLE))
+													   CustomAttributes.CALCULABLE,
+													   CustomAttributes.HIDDEN))
 			{
 				return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
 			}

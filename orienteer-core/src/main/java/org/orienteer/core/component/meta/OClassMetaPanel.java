@@ -190,7 +190,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				{
 					return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.CLASS_NAME_VALIDATOR);
 				}
-				else if(OClassPrototyper.ABSTRACT.equals(critery) || "strictMode".equals(critery))
+				else if(OClassPrototyper.ABSTRACT.equals(critery) || OClassPrototyper.STRICT_MODE.equals(critery))
 				{
 					return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
 				}
