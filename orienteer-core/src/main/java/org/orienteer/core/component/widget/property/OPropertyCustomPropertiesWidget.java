@@ -1,4 +1,4 @@
-package org.orienteer.core.component.widget.oclass;
+package org.orienteer.core.component.widget.property;
 
 import java.util.Collection;
 
@@ -6,18 +6,20 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.widget.AbstractSchemaCustomPropertiesWidget;
 import org.orienteer.core.widget.Widget;
 
-import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyCustomModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
- * Widget to show custom properties of an {@link OClass}
+ * Widget to show custom properties of an {@link OProperty}
  */
-@Widget(id="class-custom", domain="class", tab="configuration", order=30, autoEnable=true)
-public class OClassCustomPropertiesWidget extends AbstractSchemaCustomPropertiesWidget<OClass> {
-
-	public OClassCustomPropertiesWidget(String id, IModel<OClass> model,
+@Widget(id="property-custom", domain="property", tab="configuration", order=30, autoEnable=true)
+public class OPropertyCustomPropertiesWidget extends
+		AbstractSchemaCustomPropertiesWidget<OProperty> {
+	
+	public OPropertyCustomPropertiesWidget(String id, IModel<OProperty> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 	}
@@ -34,10 +36,9 @@ public class OClassCustomPropertiesWidget extends AbstractSchemaCustomProperties
 
 	@Override
 	protected IModel<String> createCustomModel(
-			IModel<OClass> schemaObjectModel, IModel<String> customPropertyModel) {
-		return new OClassCustomModel(schemaObjectModel, customPropertyModel);
+			IModel<OProperty> schemaObjectModel,
+			IModel<String> customPropertyModel) {
+		return new OPropertyCustomModel(schemaObjectModel, customPropertyModel);
 	}
-	
-	
-	
+
 }
