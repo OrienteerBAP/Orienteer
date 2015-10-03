@@ -1,16 +1,20 @@
 package org.orienteer.core.service;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
+import com.google.inject.util.Modules;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.server.OServer;
+
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+
 import org.apache.wicket.Localizer;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.string.Strings;
@@ -22,6 +26,7 @@ import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.util.LookupResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
@@ -29,7 +34,10 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
+import java.util.ServiceLoader;
 
 /**
  * Main module to load Orienteer stuff to Guice
@@ -123,6 +131,9 @@ public class OrienteerModule extends AbstractModule {
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
 		bind(UIVisualizersRegistry.class).asEagerSingleton();
 		bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
+		
+		//Load modules from classpath
+		install(loadFromClasspath());
 	}
 	
 	protected void bindOrientDbProperties(Properties properties) {
@@ -232,4 +243,16 @@ public class OrienteerModule extends AbstractModule {
 		loadedProperties.putAll(System.getProperties());
 		return loadedProperties;
 	}
+	
+    public Module loadFromClasspath() {
+        List<Module> runtime = new LinkedList<Module>();
+        List<Module> overrides = new LinkedList<Module>();
+        for (Module module : ServiceLoader.load(Module.class)) {
+            if (module.getClass().isAnnotationPresent(OverrideModule.class))
+                overrides.add(module);
+            else
+                runtime.add(module);
+        }
+        return overrides.isEmpty() ? Modules.combine(runtime) : Modules.override(runtime).with(overrides);
+    }
 }

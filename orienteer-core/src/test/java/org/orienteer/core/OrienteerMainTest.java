@@ -1,6 +1,6 @@
 package org.orienteer.core;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Collection;
 
@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.service.CustomTestModule;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.ODocumentPage;
@@ -71,6 +72,13 @@ public class OrienteerMainTest
 	public void testWebApplicationRedefenition()
 	{
 		assertTrue(tester.getApplication() instanceof TestEnvOrienteerWebApplication);
+	}
+	
+	@Test
+	public void testLoadingCustomGuiceModule() {
+		assertEquals(CustomTestModule.RANDOM_STRING, 
+				((OrienteerWebApplication)tester.getApplication())
+						.getServiceInstance(CustomTestModule.ITestInterface.class).getKey());
 	}
 	
 	@Test
