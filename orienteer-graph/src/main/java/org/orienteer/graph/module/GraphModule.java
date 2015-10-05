@@ -20,8 +20,6 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 @Singleton
 public class GraphModule extends AbstractOrienteerModule {
 
-	private static OrientGraphFactory graphFactory;
-
 	protected GraphModule() {
 		super("graph", 1);
 
@@ -31,12 +29,6 @@ public class GraphModule extends AbstractOrienteerModule {
 	@Override
 	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		onUpdate(app, db, 0, getVersion());
-	}
-
-	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-		IOrientDbSettings dbSettings = OrienteerWebApplication.get().getOrientDbSettings();
-		graphFactory = new OrientGraphFactory(dbSettings.getDBUrl(), dbSettings.getDBUserName(), dbSettings.getDBUserPassword());
 	}
 
 	@Override
@@ -52,22 +44,6 @@ public class GraphModule extends AbstractOrienteerModule {
 				break;
 		}
 		if(oldVersion+1<newVersion) onUpdate(app, db, oldVersion + 1, newVersion);
-	}
-
-	@Override
-	public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db) {
-		if (graphFactory != null)
-			graphFactory.close();
-	}
-
-	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
-		if (graphFactory != null)
-			graphFactory.close();
-	}
-
-	public static OrientGraphFactory getGraphFactory() {
-		return graphFactory;
 	}
 
 	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)

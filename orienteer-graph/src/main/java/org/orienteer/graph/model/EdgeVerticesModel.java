@@ -3,10 +3,14 @@ package org.orienteer.graph.model;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.tinkerpop.blueprints.impls.orient.OrientBaseGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
+
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.graph.module.GraphModule;
+
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractListModel;
 
@@ -26,7 +30,7 @@ public class EdgeVerticesModel extends AbstractListModel<ODocument> {
 
     @Override
     protected Collection<ODocument> getData() {
-        OrientGraph tx = GraphModule.getGraphFactory().getTx();
+        OrientGraph tx = OrienteerWebApplication.get().getServiceInstance(OrientGraph.class);
 
         try {
             if (edgeModel.getObject() != null && edgeModel.getObject().getIdentity() != null) {

@@ -6,7 +6,7 @@ import org.apache.wicket.util.tester.WicketTester;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.service.InstanceOfMatcher;
 import org.orienteer.core.service.OrienteerModule;
-import org.orienteer.core.service.OrienteerServletModule;
+import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.service.OverrideModule;
 
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;

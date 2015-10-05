@@ -46,10 +46,10 @@ public class OrienteerModuleTest {
 	@Test
 	public void testRetrieveProperties() throws MalformedURLException, IOException {
 		//clear system property
-		String oldProp = System.clearProperty(OrienteerServletModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME);
+		String oldProp = System.clearProperty(OrienteerInitModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME);
 		try {
-			System.setProperty(OrienteerServletModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "non-existing-qualifier");
-			Properties result = OrienteerServletModule.retrieveProperties();
+			System.setProperty(OrienteerInitModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "non-existing-qualifier");
+			Properties result = OrienteerInitModule.retrieveProperties();
 			assertNotNull(result);
 			//system property set
 			File propertyFile = File.createTempFile("orienteer-test-temp", ".properties");
@@ -61,18 +61,18 @@ public class OrienteerModuleTest {
 				writer.close();
 			}
 			System.setProperty("orienteer-test-temp.properties", propertyFile.getAbsolutePath());
-			System.setProperty(OrienteerServletModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "orienteer-test-temp");
-			result = OrienteerServletModule.retrieveProperties();
+			System.setProperty(OrienteerInitModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "orienteer-test-temp");
+			result = OrienteerInitModule.retrieveProperties();
 			assertTrue(result.containsKey("myproperty"));
 			assertEquals("myvalue", result.getProperty("myproperty"));
 			result.remove("myproperty");
-			Properties orienteerProperties = OrienteerServletModule.PROPERTIES_DEFAULT;
+			Properties orienteerProperties = OrienteerInitModule.PROPERTIES_DEFAULT;
 			// putting all system properties to orienteer
 			orienteerProperties.putAll(System.getProperties());
 			assertEquals(orienteerProperties, result);
 			//loading from resources
-			System.setProperty(OrienteerServletModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "test-custom-startup-properties");
-			result = OrienteerServletModule.retrieveProperties();
+			System.setProperty(OrienteerInitModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "test-custom-startup-properties");
+			result = OrienteerInitModule.retrieveProperties();
 			assertTrue(result.containsKey("customkey"));
 			assertEquals("customvalue", result.getProperty("customkey"));
 			result.remove("customkey");
@@ -80,7 +80,7 @@ public class OrienteerModuleTest {
 			assertEquals(orienteerProperties, result);
 		} finally {
 			System.out.println("SETTING BACK OLD QUOLIFIER:"+oldProp);
-			if(oldProp!=null) System.setProperty(OrienteerServletModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, oldProp);
+			if(oldProp!=null) System.setProperty(OrienteerInitModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, oldProp);
 		}
 		
 	}

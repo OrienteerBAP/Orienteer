@@ -55,9 +55,9 @@ import com.google.inject.util.Modules;
  * <li>lookup of resource 'myapplication.properties' in a classpath</li>
  * </ol>
  */
-public class OrienteerServletModule extends ServletModule {
+public class OrienteerInitModule extends ServletModule {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(OrienteerServletModule.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OrienteerInitModule.class);
 	
 	public static final String ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME = "orienteer.qualifier";
 	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER = "orienteer";

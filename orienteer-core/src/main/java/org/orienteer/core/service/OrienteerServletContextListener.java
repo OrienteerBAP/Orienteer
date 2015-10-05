@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 
 /**
- * {@link GuiceServletContextListener} to provide either predefinedInjector or create a new one by {@link OrienteerServletModule}
+ * {@link GuiceServletContextListener} to provide either predefinedInjector or create a new one by {@link OrienteerInitModule}
  */
 public class OrienteerServletContextListener extends
 		GuiceServletContextListener {
@@ -14,7 +14,7 @@ public class OrienteerServletContextListener extends
 
 	@Override
 	protected Injector getInjector() {
-		return predefinedInjector!=null?predefinedInjector:Guice.createInjector(new OrienteerServletModule());
+		return predefinedInjector!=null?predefinedInjector:Guice.createInjector(new OrienteerInitModule());
 	}
 
 }
