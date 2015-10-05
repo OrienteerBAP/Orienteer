@@ -6,6 +6,8 @@ import org.apache.wicket.util.tester.WicketTester;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.service.InstanceOfMatcher;
 import org.orienteer.core.service.OrienteerModule;
+import org.orienteer.core.service.OrienteerServletModule;
+import org.orienteer.core.service.OverrideModule;
 
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.junit.WicketOrientDbTester;
@@ -23,11 +25,9 @@ import com.google.inject.spi.TypeListener;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 
+@OverrideModule
 public class OrienteerTestModule extends AbstractModule
 {
-	static {
-		System.setProperty(OrienteerModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "orienteer-test");
-	}
 
 	@Override
 	protected void configure() {
