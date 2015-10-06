@@ -1,24 +1,20 @@
 package org.orienteer.graph.module;
 
 import com.google.inject.Singleton;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.component.visualizer.PasswordVisualizer;
 import org.orienteer.core.module.AbstractOrienteerModule;
-import org.orienteer.core.service.OrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDProvider;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 /**
  * {@link AbstractOrienteerModule} to provide graph extentions
  */
 @Singleton
 public class GraphModule extends AbstractOrienteerModule {
+
+	public static final String EDGE_CLASS_NAME = "E";
+	public static final String VERTEX_CLASS_NAME = "V";
 
 	protected GraphModule() {
 		super("graph", 1);
@@ -49,8 +45,8 @@ public class GraphModule extends AbstractOrienteerModule {
 	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
 	{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass("V")
-			  .oClass("E");
+		helper.oClass(VERTEX_CLASS_NAME)
+			  .oClass(EDGE_CLASS_NAME);
 	}
 
 }

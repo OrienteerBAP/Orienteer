@@ -16,6 +16,8 @@ import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
+import org.orienteer.graph.component.command.CreateEdgeCommand;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 /**
@@ -39,6 +41,7 @@ public class NeighborsWidget extends AbstractWidget<ODocument> {
 
         OrienteerDataTable<ODocument, String> table =
             new OrienteerDataTable<ODocument, String>("neighbors", Lists.newArrayList(entityColumn), provider, 20);
+        table.addCommand(new CreateEdgeCommand(table, getModel()));
         form.add(table);
         add(form);
     }
@@ -51,5 +54,10 @@ public class NeighborsWidget extends AbstractWidget<ODocument> {
     @Override
     protected IModel<String> getTitleModel() {
         return new StringResourceModel("widget.document.neighbours.title", new ODocumentNameModel(getModel()));
+    }
+
+    @Override
+    protected String getWidgetStyleClass() {
+        return "strict";
     }
 }
