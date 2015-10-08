@@ -16,6 +16,7 @@ import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
+import org.orienteer.graph.component.command.CreateEdgeCommand;
 import org.orienteer.graph.model.VertexEdgesDataProvider;
 
 /**
@@ -37,6 +38,8 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 
         OrienteerDataTable<ODocument, String> table =
                 new OrienteerDataTable<ODocument, String>("edges", Lists.newArrayList(entityColumn), new VertexEdgesDataProvider(getModel()), 20);
+        table.addCommand(new CreateEdgeCommand(table, getModel()));
+
         form.add(table);
         add(form);
     }
@@ -49,5 +52,10 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
     @Override
     protected IModel<String> getTitleModel() {
         return new StringResourceModel("widget.document.edges.title", new ODocumentNameModel(getModel()));
+    }
+
+    @Override
+    protected String getWidgetStyleClass() {
+        return "strict";
     }
 }
