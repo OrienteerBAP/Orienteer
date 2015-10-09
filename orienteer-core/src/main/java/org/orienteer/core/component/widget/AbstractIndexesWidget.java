@@ -3,12 +3,14 @@ package org.orienteer.core.component.widget;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
@@ -19,6 +21,7 @@ import org.orienteer.core.component.table.OIndexMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
+
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
 import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
@@ -61,16 +64,7 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
         iTable.setCaptionModel(new ResourceModel("class.indexies"));
         iForm.add(iTable);
         add(iForm);
-        add(DisableIfPrototypeBehavior.INSTANCE);
-    }
-
-    @Override
-    public void onActionPerformed(ActionPerformedEvent<?> event,
-                                  IEvent<?> wicketEvent) {
-        if(event.ofType(OClass.class) && event.getCommand().isChangingModel() && event.isAjax()) {
-            event.getTarget().add(this);
-            wicketEvent.dontBroadcastDeeper();
-        }
+        add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
     }
 
     protected abstract String getCaptionResourceKey();

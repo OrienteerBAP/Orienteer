@@ -24,6 +24,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -185,7 +186,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 		});
 		sForm.add(sTable);
 		add(sForm);
-		add(DisableIfDocumentNotSavedBehavior.INSTANCE);
+		add(DisableIfDocumentNotSavedBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
 	}
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })
@@ -208,16 +209,6 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 	@Override
 	protected String getWidgetStyleClass() {
 		return "strict";
-	}
-	
-	@Override
-	public void onActionPerformed(ActionPerformedEvent<?> event,
-			IEvent<?> wicketEvent) {
-		if(event.ofType(ODocument.class) && event.getCommand().isChangingModel() 
-				&& event.isAjax() && ((ODocument)event.getObject()).getSchemaClass().isSubClassOf("ORole")) {
-			event.getTarget().add(this);
-			wicketEvent.dontBroadcastDeeper();
-		}
 	}
 	
 	@Override

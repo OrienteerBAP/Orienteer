@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
@@ -51,6 +52,7 @@ public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
 										propertyModel, 
 										new DynamicPropertyValueModel<Object>(getModel(), propertyModel)));
 		add(form);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE);
 	}
 
 	@Override
@@ -97,13 +99,4 @@ public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
 		return "strict";
 	}
 	
-	@Override
-	public void onActionPerformed(ActionPerformedEvent<?> event,
-			IEvent<?> wicketEvent) {
-		if(event.ofType(ODocument.class) && event.getCommand().isChangingModel() && event.isAjax()) {
-			event.getTarget().add(this);
-			wicketEvent.dontBroadcastDeeper();
-		}
-	}
-
 }

@@ -15,6 +15,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractSaveCommand;
@@ -121,7 +122,7 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 		sTable.setCaptionModel(new ResourceModel("class.security"));
 		sForm.add(sTable);
 		add(sForm);
-		add(DisableIfPrototypeBehavior.INSTANCE);
+		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
 	}
 
 	@Override
@@ -137,15 +138,6 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 	@Override
 	protected String getWidgetStyleClass() {
 		return "strict";
-	}
-	
-	@Override
-	public void onActionPerformed(ActionPerformedEvent<?> event,
-			IEvent<?> wicketEvent) {
-		if(event.ofType(OClass.class) && event.getCommand().isChangingModel() && event.isAjax()) {
-			event.getTarget().add(this);
-			wicketEvent.dontBroadcastDeeper();
-		}
 	}
 
 }

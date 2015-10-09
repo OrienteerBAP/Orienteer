@@ -20,6 +20,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -150,7 +151,7 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 		});
 		form.add(structureTable);
 		add(form);
-		add(DisableIfPrototypeBehavior.INSTANCE);
+		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
 	}
 	
 	public boolean isHideSystem() {

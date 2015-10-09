@@ -11,6 +11,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.CreateOIndexFromOPropertiesCommand;
@@ -79,7 +80,7 @@ public class OClassPropertiesWidget extends AbstractModeAwareWidget<OClass> {
 		pTable.setCaptionModel(new ResourceModel("class.properties"));
 		pForm.add(pTable);
 		add(pForm);
-		add(DisableIfPrototypeBehavior.INSTANCE);
+		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
 	}
 
 	@Override
@@ -97,13 +98,4 @@ public class OClassPropertiesWidget extends AbstractModeAwareWidget<OClass> {
 		return "strict";
 	}
 	
-	@Override
-	public void onActionPerformed(ActionPerformedEvent<?> event,
-			IEvent<?> wicketEvent) {
-		if(event.ofType(OClass.class) && event.getCommand().isChangingModel() && event.isAjax()) {
-			event.getTarget().add(this);
-			wicketEvent.dontBroadcastDeeper();
-		}
-	}
-
 }
