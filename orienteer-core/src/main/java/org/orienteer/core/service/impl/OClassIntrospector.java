@@ -22,6 +22,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
@@ -30,6 +31,7 @@ import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.ODocumentClassColumn;
 import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
+import org.orienteer.core.component.table.OUnknownEntityColumn;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.OrienteerLocalizationModule;
@@ -88,29 +90,34 @@ public class OClassIntrospector implements IOClassIntrospector
 
 	@Override
 	public List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, boolean withCheckbox, IModel<DisplayMode> modeModel) {
-		List<OProperty> properties = getDisplayableProperties(oClass);
-		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>(properties.size()+2);
-		if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
-		OProperty nameProperty = getNameProperty(oClass);
-		OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
-		columns.add(entityColumn);
-		if (!oClass.getSubclasses().isEmpty()) {
-			columns.add(new ODocumentClassColumn<String>());
-		}
-		for (OProperty oProperty : properties)
-		{
-			if(nameProperty==null || !nameProperty.equals(oProperty))
+		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
+		if(oClass!=null) {
+			List<OProperty> properties = getDisplayableProperties(oClass);
+			if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
+			OProperty nameProperty = getNameProperty(oClass);
+			OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
+			columns.add(entityColumn);
+			if (!oClass.getSubclasses().isEmpty()) {
+				columns.add(new ODocumentClassColumn<String>());
+			}
+			for (OProperty oProperty : properties)
 			{
-				Class<?> javaType = oProperty.getType().getDefaultJavaType();
-				if(javaType!=null && Comparable.class.isAssignableFrom(javaType))
+				if(nameProperty==null || !nameProperty.equals(oProperty))
 				{
-					columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty, modeModel));
-				}
-				else
-				{
-					columns.add(new OPropertyValueColumn(oProperty, modeModel));
+					Class<?> javaType = oProperty.getType().getDefaultJavaType();
+					if(javaType!=null && Comparable.class.isAssignableFrom(javaType))
+					{
+						columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty, modeModel));
+					}
+					else
+					{
+						columns.add(new OPropertyValueColumn(oProperty, modeModel));
+					}
 				}
 			}
+		} else {
+			columns.add(new OUnknownEntityColumn(new ResourceModel("document.name")));
+			columns.add(new ODocumentClassColumn<String>());
 		}
 		return columns;
 	}

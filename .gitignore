@@ -13,6 +13,7 @@ build.cmd
 databases/
 /Orienteer/
 /orienteer-core/Orienteer/
+/orienteer-graph/Orienteer/
 .idea/
 *.iml
 *.log

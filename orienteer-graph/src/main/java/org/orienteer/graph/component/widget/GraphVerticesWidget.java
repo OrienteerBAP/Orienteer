@@ -25,7 +25,7 @@ import org.orienteer.graph.model.EdgeVerticesModel;
 /**
  * Widget for displaying vertices of graph edge.
  */
-@Widget(id="vertices", domain="document", order=10, autoEnable=false)
+@Widget(id="vertices", domain="document", order=10, autoEnable=false, selector="E")
 public class GraphVerticesWidget extends AbstractWidget<ODocument> {
 
     @Inject

@@ -1,9 +1,14 @@
 package org.orienteer.graph.component.widget;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.StringResourceModel;
@@ -14,33 +19,34 @@ import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.impl.OClassIntrospector;
+import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.graph.component.command.CreateEdgeCommand;
+
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 /**
  * Widget for displaying vertex neighbors.
  */
-@Widget(id="neighbors", domain="document", order=10, autoEnable=false)
-public class NeighborsWidget extends AbstractWidget<ODocument> {
+@Widget(id="neighbors", domain="document", order=10, autoEnable=false, selector="V")
+public class GraphNeighborsWidget extends AbstractModeAwareWidget<ODocument> {
 
     @Inject
     private OClassIntrospector oClassIntrospector;
 
-    public NeighborsWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
+    public GraphNeighborsWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         Form<ODocument> form = new Form<ODocument>("form");
         OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand(both()) from "+getModelObject().getIdentity());
-
-        OProperty nameProperty = oClassIntrospector.getNameProperty(getModelObject().getSchemaClass());
-        OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
+        OClass commonParent = provider.probeOClass(20);
+        List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, getModeModel());
 
         OrienteerDataTable<ODocument, String> table =
-            new OrienteerDataTable<ODocument, String>("neighbors", Lists.newArrayList(entityColumn), provider, 20);
+            new OrienteerDataTable<ODocument, String>("neighbors", columns, provider, 20);
         table.addCommand(new CreateEdgeCommand(table, getModel()));
         form.add(table);
         add(form);

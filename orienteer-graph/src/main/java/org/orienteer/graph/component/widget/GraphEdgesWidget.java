@@ -22,7 +22,7 @@ import org.orienteer.graph.model.VertexEdgesDataProvider;
 /**
  * Widget for displaying and editing vertex edges.
  */
-@Widget(id="edges", domain="document", order=10, autoEnable=false)
+@Widget(id="edges", domain="document", order=10, autoEnable=false, selector="V")
 public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 
     @Inject
