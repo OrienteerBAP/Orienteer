@@ -7,7 +7,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-      	<include>org.eclipse.jetty.aggregate:jetty-all-server</include>
+      	<include>org.eclipse.jetty.aggregate:jetty-all</include>
       	<include>javax.servlet:servlet-api</include>
       </includes>
       <unpack>true</unpack>
@@ -16,7 +16,7 @@
     </dependencySet>
     <dependencySet>
       <excludes>
-      	<exclude>org.eclipse.jetty.aggregate:jetty-all-server</exclude>
+      	<exclude>org.eclipse.jetty.aggregate:jetty-all</exclude>
       	<exclude>javax.servlet:servlet-api</exclude>
       </excludes>
       <unpack>false</unpack>

@@ -45,7 +45,7 @@ public class PasswordsPanel extends FormComponentPanel<String>
 	}
 
 	@Override
-	protected void convertInput()
+	public void convertInput()
  	{
  		setConvertedInput(password.getConvertedInput());
  	}

@@ -1,7 +1,6 @@
 package org.orienteer.core;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,15 +12,12 @@ import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
-import org.apache.wicket.markup.html.IPackageResourceGuard;
-import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
-import org.apache.wicket.settings.IRequestCycleSettings;
-import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.settings.RequestCycleSettings;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
@@ -35,15 +31,12 @@ import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
-import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
-import org.orienteer.core.widget.Widget;
 
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.rest.OrientDBHttpAPIResource;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -55,7 +48,6 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
-import de.agilecoders.wicket.webjars.settings.WebjarsSettings;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -80,7 +72,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	
 	@Inject(optional=true)
 	@Named("wicket.render.strategy")
-	private IRequestCycleSettings.RenderStrategy renderStrategy;
+	private RequestCycleSettings.RenderStrategy renderStrategy;
 
 	@Inject
 	@Named("orienteer.image.logo")

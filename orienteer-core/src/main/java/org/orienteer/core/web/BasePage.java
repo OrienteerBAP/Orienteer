@@ -20,7 +20,7 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.apache.wicket.settings.IJavaScriptLibrarySettings;
+import org.apache.wicket.settings.JavaScriptLibrarySettings;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
@@ -102,7 +102,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	protected void onInitialize() {
 		super.onInitialize();
 		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE));
-		IModel<String> poweredByModel = new StringResourceModel("poweredby", null, "", version);
+		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(version);
 		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
 									.setEscapeModelStrings(false).setRenderBodyOnly(true));
@@ -117,7 +117,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		response.render(CssHeaderItem.forReference(METISMENU_CSS));
 		response.render(CssHeaderItem.forReference(ORIENTEER_CSS));
 		super.renderHead(response);
-		IJavaScriptLibrarySettings javaScriptSettings =          
+		JavaScriptLibrarySettings javaScriptSettings =          
 				getApplication().getJavaScriptLibrarySettings();
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.
 				forReference(javaScriptSettings.getJQueryReference())));

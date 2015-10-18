@@ -4,12 +4,13 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.vaynberg.wicket.select2.Response;
-import com.vaynberg.wicket.select2.TextChoiceProvider;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+
+import org.wicketstuff.select2.Response;
+import org.wicketstuff.select2.TextChoiceProvider;
 
 /**
  * {@link com.vaynberg.wicket.select2.ChoiceProvider} for combobox of language codes.

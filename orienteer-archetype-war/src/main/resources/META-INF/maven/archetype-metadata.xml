@@ -5,8 +5,11 @@
 			<defaultValue>${project.version}</defaultValue>
 		</requiredProperty>
 		<requiredProperty key="wicketOrientDBVersion">
-            <defaultValue>${wicket.orientdb.version}</defaultValue>
-        </requiredProperty>
+		    <defaultValue>${wicket.orientdb.version}</defaultValue>
+		</requiredProperty>
+		<requiredProperty key="jettyVersion">
+			<defaultValue>${jetty.version}</defaultValue>
+		</requiredProperty>
 	</requiredProperties>
 	<fileSets>
 		<fileSet filtered="true" packaged="true" encoding="UTF-8">

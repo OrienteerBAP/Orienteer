@@ -2,13 +2,14 @@ package org.orienteer.core.component.property;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.vaynberg.wicket.select2.Select2Choice;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.model.LanguagesChoiceProvider;
+import org.wicketstuff.select2.Select2Choice;
 
 /**
  * Panel for editing OLocalization embedded maps.

@@ -3,8 +3,10 @@ package org.orienteer.standalone;
 import java.net.URL;
 import java.security.ProtectionDomain;
 
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -46,14 +48,19 @@ public class ServerRunner
 		if(server==null)
 		{
 	        server = new Server();
-	        SocketConnector connector = new SocketConnector();
-	
-	        // Set some timeout options to make debugging easier.
-	        connector.setMaxIdleTime(timeout);
-	        connector.setSoLingerTime(-1);
-	        if(host!=null) connector.setHost(host);
-	        connector.setPort(port);
-	        server.addConnector(connector);
+	        
+	        HttpConfiguration httpConfig = new HttpConfiguration();
+			httpConfig.setSecureScheme("https");
+			httpConfig.setSecurePort(8443);
+			httpConfig.setOutputBufferSize(32768);
+
+			ServerConnector http = new ServerConnector(server, new HttpConnectionFactory(httpConfig));
+			if(host!=null) http.setHost(host);
+			http.setPort(8080);
+			http.setIdleTimeout(timeout);
+
+			server.addConnector(http);
+			
 	        Resource.setDefaultUseCaches(false);
 	
 	        WebAppContext bb = new WebAppContext();

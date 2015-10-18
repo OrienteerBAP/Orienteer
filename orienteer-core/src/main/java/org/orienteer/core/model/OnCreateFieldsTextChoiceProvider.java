@@ -2,12 +2,13 @@ package org.orienteer.core.model;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.vaynberg.wicket.select2.Response;
-import com.vaynberg.wicket.select2.TextChoiceProvider;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import org.wicketstuff.select2.Response;
+import org.wicketstuff.select2.TextChoiceProvider;
 
 /**
  * {@link TextChoiceProvider} for "onCreate.fields" multiSelect.
@@ -43,4 +44,5 @@ public class OnCreateFieldsTextChoiceProvider extends TextChoiceProvider<String>
     public Collection<String> toChoices(Collection<String> ids) {
         return ids;
     }
+
 }

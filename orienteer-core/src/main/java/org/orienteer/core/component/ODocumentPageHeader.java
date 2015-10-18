@@ -45,7 +45,7 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 				item.add(new ODocumentPageLink("link", item.getModel())
 						{
 							@Override
-							protected boolean isLinkEnabled() {
+							public boolean isEnabledInHierarchy() {
 								return !Objects.isEqual(getModelObject(), ODocumentPageHeader.this.getModelObject());
 							}
 						}.setDocumentNameAsBody(true));

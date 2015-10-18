@@ -22,11 +22,11 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.lang.Generics;
 import org.orienteer.core.component.structuretable.StructureTable;
 import org.orienteer.core.service.IMarkupProvider;
+import org.wicketstuff.select2.Select2Choice;
+import org.wicketstuff.select2.Select2MultiChoice;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
-import com.vaynberg.wicket.select2.Select2Choice;
-import com.vaynberg.wicket.select2.Select2MultiChoice;
 
 /**
  * Implementation of {@link IMarkupProvider}

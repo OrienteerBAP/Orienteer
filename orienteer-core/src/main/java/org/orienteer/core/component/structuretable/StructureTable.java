@@ -47,11 +47,11 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	private long toolbarIdCounter;
 	private IModel<? extends List<? extends C>> criteriesModel;
 	
-	public StructureTable(String id, IModel<T> model, List<? extends C> list) {
+	public StructureTable(String id, IModel<T> model, List<C> list) {
 		this(id, model, Model.ofList(list));
 	}
 
-	public StructureTable(String id, IModel<T> model, IModel<? extends List<? extends C>> criteriesModel) {
+	public StructureTable(String id, IModel<T> model, IModel<? extends List<C>> criteriesModel) {
 		super(id, model);
 		this.criteriesModel = criteriesModel;
 		setOutputMarkupPlaceholderTag(true);

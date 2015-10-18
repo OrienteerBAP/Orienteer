@@ -117,7 +117,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 	}
 	
 	@Override
-	protected void convertInput() {
+	public void convertInput() {
 		M converted;
 		List<T> storedData = getData();
 		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {

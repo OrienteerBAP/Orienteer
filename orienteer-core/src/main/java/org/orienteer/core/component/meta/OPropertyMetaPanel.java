@@ -45,6 +45,7 @@ import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
+import ru.ydn.wicket.wicketorientdb.utils.OClassChoiceRenderer;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 import com.google.common.base.Function;
@@ -254,20 +255,8 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else if(OPropertyPrototyper.LINKED_CLASS.equals(critery))
 			{
-				return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListOClassesModel(), new IChoiceRenderer<OClass>() {
-
-					private static final long serialVersionUID = 1L;
-
-					@Override
-					public Object getDisplayValue(OClass object) {
-						return new OClassNamingModel(object).getObject();
-					}
-
-					@Override
-					public String getIdValue(OClass object, int index) {
-						return object.getName();
-					}
-				}).setNullValid(true).add(new RefreshMetaContextOnChangeBehaviour());
+				return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListOClassesModel(), OClassChoiceRenderer.INSTANCE)
+																.setNullValid(true).add(new RefreshMetaContextOnChangeBehaviour());
 			}
 			else if(OPropertyPrototyper.COLLATE.equals(critery))
 			{

@@ -88,7 +88,7 @@ public class LinkEditPanel extends FormComponentPanel<ODocument>
 	}
 
 	@Override
-	protected void convertInput() {
+	public void convertInput() {
 		super.convertInput();
 		setConvertedInput(inputDocument.getObject());
 	}

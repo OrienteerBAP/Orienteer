@@ -24,13 +24,13 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	private static final long serialVersionUID = 1L;
 	private StructureTableCommandsToolbar<T> commandsToolbar;
 
-	public OrienteerStructureTable(String id, IModel<T> model, IModel<? extends List<? extends C>> criteriesModel)
+	public OrienteerStructureTable(String id, IModel<T> model, IModel<? extends List<C>> criteriesModel)
 	{
 		super(id, model, criteriesModel);
 		initialize();
 	}
 
-	public OrienteerStructureTable(String id, IModel<T> model, List<? extends C> list)
+	public OrienteerStructureTable(String id, IModel<T> model, List<C> list)
 	{
 		super(id, model, list);
 		initialize();

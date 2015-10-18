@@ -52,9 +52,9 @@ public class EmbeddedStructureTable extends OrienteerStructureTable<ODocument, O
 	
 	public EmbeddedStructureTable(String id, IModel<ODocument> mainDocumentModel, final IModel<OProperty> propertyModel, IModel<DisplayMode> displayModeModel) {
 		super(id, new EmbeddedDocumentDynamicValueModel(mainDocumentModel, propertyModel), 
-							new LoadableDetachableModel<List<? extends OProperty>>() {
+							new LoadableDetachableModel<List<OProperty>>() {
 								@Override
-								protected List<? extends OProperty> load() {
+								protected List<OProperty> load() {
 									IOClassIntrospector oClassIntrospector = OrienteerWebApplication.get().getOClassIntrospector();
 									OClass linkedClass = propertyModel.getObject().getLinkedClass();
 									return oClassIntrospector.listProperties(linkedClass, new Predicate<OProperty>() {

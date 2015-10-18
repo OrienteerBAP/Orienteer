@@ -203,7 +203,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 	}
 	
 	@Override
-	protected void convertInput() {
+	public void convertInput() {
 		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
 
 			@Override

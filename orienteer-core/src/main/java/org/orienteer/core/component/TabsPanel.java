@@ -39,7 +39,7 @@ public class TabsPanel<T> extends GenericPanel<T>
 	{
 		this(id, model, Model.ofList(tabs));
 	}
-	public TabsPanel(String id, IModel<T> model, IModel<? extends List<? extends T>> tabsModel)
+	public TabsPanel(String id, IModel<T> model, IModel<? extends List<T>> tabsModel)
 	{
 		super(id, model);
 		setOutputMarkupPlaceholderTag(true);

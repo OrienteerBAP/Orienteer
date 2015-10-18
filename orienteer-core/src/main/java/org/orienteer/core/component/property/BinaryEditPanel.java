@@ -40,7 +40,7 @@ public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 	}
 
 	@Override
-	protected void convertInput() {
+	public void convertInput() {
 		if (clear.getConvertedInput())
 		{
 			setConvertedInput(null);

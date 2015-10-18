@@ -60,11 +60,11 @@
 		</license>
 	</licenses>
 	<properties>
-		<wicket.version>6.20.0</wicket.version>
-		<wicketstuff.version>6.20.0</wicketstuff.version>
+		<wicket.version>7.0.0</wicket.version>
+		<wicketstuff.version>7.0.0</wicketstuff.version>
 		<orientdb.version>2.1.4</orientdb.version>
 		<wicket.orientdb.version>1.2-SNAPSHOT</wicket.orientdb.version>
-		<jetty.version>7.6.15.v20140411</jetty.version>
+		<jetty.version>9.2.11.v20150529</jetty.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
@@ -166,7 +166,7 @@
 		    <dependency>
 			    <groupId>de.agilecoders.wicket.webjars</groupId>
 			    <artifactId>wicket-webjars</artifactId>
-			    <version>0.4.4</version>
+			    <version>0.5.3</version>
 		    </dependency>
 		    <dependency>
 				<groupId>org.webjars</groupId>
@@ -216,7 +216,7 @@
 		    <!--  JETTY DEPENDENCIES FOR TESTING  -->
 		    <dependency>
 			    <groupId>org.eclipse.jetty.aggregate</groupId>
-			    <artifactId>jetty-all-server</artifactId>
+			    <artifactId>jetty-all</artifactId>
 			    <version>${jetty.version}</version>
 			    <scope>provided</scope>
 		    </dependency>
@@ -242,8 +242,8 @@
 			    <artifactId>maven-compiler-plugin</artifactId>
 			    <version>2.5.1</version>
 			    <configuration>
-				    <source>1.6</source>
-				    <target>1.6</target>
+				    <source>1.7</source>
+				    <target>1.7</target>
 				    <encoding>UTF-8</encoding>
 				    <showWarnings>true</showWarnings>
 				    <showDeprecation>true</showDeprecation>

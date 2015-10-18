@@ -55,9 +55,9 @@
 		    <artifactId>wicket-guice</artifactId>
 	    </dependency>
 		<dependency>
-			<groupId>com.vaynberg.wicket.select2</groupId>
-			<artifactId>wicket-select2</artifactId>
-			<version>2.2.3</version>
+			<groupId>org.wicketstuff</groupId>
+			<artifactId>wicketstuff-select2</artifactId>
+			<version>${wicketstuff.version}</version>
 		</dependency>
 	    <dependency>
 		    <groupId>com.orientechnologies</groupId>
@@ -205,7 +205,7 @@
 		       </executions>
      		</plugin>	
 		    <plugin>
-			    <groupId>org.mortbay.jetty</groupId>
+			    <groupId>org.eclipse.jetty</groupId>
 			    <artifactId>jetty-maven-plugin</artifactId>
 			    <version>${jetty.version}</version>
 			    <configuration>
@@ -225,7 +225,7 @@
 			    <dependencies>
 				<dependency>
 					<groupId>org.eclipse.jetty.aggregate</groupId>
-					<artifactId>jetty-all-server</artifactId>
+					<artifactId>jetty-all</artifactId>
 					<version>${jetty.version}</version>
 				</dependency>
 			    </dependencies>

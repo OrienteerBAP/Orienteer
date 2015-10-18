@@ -15,8 +15,6 @@ import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORound
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.vaynberg.wicket.select2.DragAndDropBehavior;
-import com.vaynberg.wicket.select2.Select2MultiChoice;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
@@ -34,6 +32,8 @@ import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.model.OClassTextChoiceProvider;
 import org.orienteer.core.model.OnCreateFieldsTextChoiceProvider;
+import org.wicketstuff.select2.DragAndDropBehavior;
+import org.wicketstuff.select2.Select2MultiChoice;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;

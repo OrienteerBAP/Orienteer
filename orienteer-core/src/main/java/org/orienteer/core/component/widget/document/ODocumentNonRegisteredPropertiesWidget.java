@@ -57,9 +57,9 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
         super(id, model, widgetDocumentModel);
 
         Form<ODocument> form = new Form<ODocument>("form", getModel());
-        IModel<List<? extends OProperty>> propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
+        IModel<List<OProperty>> propertiesModel = new LoadableDetachableModel<List<OProperty>>() {
 			@Override
-			protected List<? extends OProperty> load() {
+			protected List<OProperty> load() {
 				ODocument doc = model.getObject();
 				Set<String> fieldNames = new HashSet<String>(Arrays.asList(doc.fieldNames()));
 				Set<String> propertiesNames = doc.getSchemaClass().propertiesMap().keySet();

@@ -67,7 +67,7 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 		super(id, model, widgetDocumentModel);
 		
 		Form<T> form = new TransactionlessForm<T>("form", model);
-		structureTable = new OrienteerStructureTable<T, String>("table", model, new PropertyModel<List<? extends String>>(this, "custom")) {
+		structureTable = new OrienteerStructureTable<T, String>("table", model, new PropertyModel<List<String>>(this, "custom")) {
 
 			@Override
 			protected Component getValueComponent(String id,

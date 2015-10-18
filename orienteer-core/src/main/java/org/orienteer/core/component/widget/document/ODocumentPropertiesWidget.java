@@ -46,9 +46,9 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<ODocument> form = new Form<ODocument>("form", getModel());
-		IModel<List<? extends OProperty>> propertiesModel = new LoadableDetachableModel<List<? extends OProperty>>() {
+		IModel<List<OProperty>> propertiesModel = new LoadableDetachableModel<List<OProperty>>() {
 			@Override
-			protected List<? extends OProperty> load() {
+			protected List<OProperty> load() {
 				return oClassIntrospector.listProperties(getModelObject().getSchemaClass(), getDashboardPanel().getTab(), false);
 			}
 		};
