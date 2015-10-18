@@ -69,6 +69,7 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 				public void unselect() {
 					ORole oRole = rowModel.getObject();
 					oRole.revoke(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
+                    oRole.revoke(ORule.ResourceGeneric.CLUSTER, getSecurityResourceSpecific(), permission.getPermissionFlag());
 					oRole.save();
 				}
 				
@@ -76,6 +77,7 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 				public void select() {
 					ORole oRole = rowModel.getObject();
 					oRole.grant(ORule.ResourceGeneric.CLASS, getSecurityResourceSpecific(), permission.getPermissionFlag());
+                    oRole.grant(ORule.ResourceGeneric.CLUSTER, getSecurityResourceSpecific(), permission.getPermissionFlag());
 					oRole.save();
 				}
 				
