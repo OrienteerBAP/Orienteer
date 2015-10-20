@@ -15,7 +15,6 @@
 ### Demo
 
 - [Main Demo Server](http://demo.orienteer.org)
-- [Heroku Demo Server](http://heroku.orienteer.org)
 
 Default users:
 - admin/admin
@@ -31,7 +30,7 @@ There are two options for Orienteer installation:
 
 #### Embedded
 
-Orienteer is J2EE compatible Web Application and can be installed on all famous J2EE containers:
+Orienteer is Java Servlet 3.1 web application and can be installed on all famous compatible containers:
 
 - Jboss
 - Weblogic
@@ -86,7 +85,7 @@ orientdb.db.installator.password=admin    //Password for OrientDB user used for 
 ### Setup of development environment 
 
 #### Prerequisites
-1. java 6+
+1. java 7+
 2. git
 3. maven
 4. OrientDB, if you want to use OrientDB remotely
