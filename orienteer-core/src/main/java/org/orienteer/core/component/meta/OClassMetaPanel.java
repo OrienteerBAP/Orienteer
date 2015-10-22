@@ -21,6 +21,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.core.util.lang.PropertyResolverConverter;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -64,6 +65,8 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
 		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
 		OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
+        OCLASS_ATTRS.add(CustomAttributes.SORT_BY.getName());
+        OCLASS_ATTRS.add(CustomAttributes.ORDER_BY.getName());
 		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_FIELDS.getName());
 		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
 	}
@@ -168,7 +171,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		}
 		if(DisplayMode.VIEW.equals(mode))
 		{
-			if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME, CustomAttributes.PROP_PARENT))
+			if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME, CustomAttributes.PROP_PARENT, CustomAttributes.SORT_BY))
 			{
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
 			}
@@ -223,6 +226,14 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 					}).setNullValid(true);
 				}
+                else if(CustomAttributes.match(critery, CustomAttributes.SORT_BY))
+                {
+                    return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null));
+                }
+                else if(CustomAttributes.match(critery, CustomAttributes.ORDER_BY))
+                {
+                    return new DropDownChoice<String>(id, (IModel<String>)getModel(), Arrays.asList(SortOrder.ASCENDING.name(), SortOrder.DESCENDING.name()));
+                }
                 else if(CustomAttributes.match(critery,CustomAttributes.DESCRIPTION))
                 {
                     return new TextArea<V>(id, getModel());
