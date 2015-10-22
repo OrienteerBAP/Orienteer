@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.util.string.Strings;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -75,7 +76,15 @@ public enum CustomAttributes
 	/**
 	 * Identity type ("user" or "role") who will get access rights on document creation.
 	 */
-	ON_CREATE_IDENTITY_TYPE("onCreate.identityType",OType.STRING,null,true);
+	ON_CREATE_IDENTITY_TYPE("onCreate.identityType",OType.STRING,null,true),
+    /**
+     * Property name by which to sort data by default
+     */
+    SORT_BY("sort.by", OType.LINK, OProperty.class, null, false),
+    /**
+     * Order in which to sort data
+     */
+    ORDER_BY("order.by", OType.STRING, null, false);
 
 	private final String name;
 	private final OType type;
