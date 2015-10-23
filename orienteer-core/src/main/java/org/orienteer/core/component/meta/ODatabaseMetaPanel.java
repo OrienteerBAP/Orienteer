@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
+import static com.orientechnologies.orient.core.db.ODatabase.STATUS;
 
 /**
  * Meta panel for {@link ODatabase}
@@ -36,15 +37,13 @@ public class ODatabaseMetaPanel<V> extends AbstractComplexModeMetaPanel<ODatabas
     static
     {
         for(ATTRIBUTES attr: ATTRIBUTES.values()) {
-            if(ATTRIBUTES.CUSTOM != attr) {
-                ODATABASE_ATTRS.add(attr.name());
-            }
+            ODATABASE_ATTRS.add(attr.name());
         }
     }
 
     private static final long serialVersionUID = 1L;
     private static final List<String> CLUSTER_SELECTIONS =
-            Arrays.asList(new String[]{ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME});
+            Arrays.asList(ODefaultClusterSelectionStrategy.NAME, ORoundRobinClusterSelectionStrategy.NAME, OBalancedClusterSelectionStrategy.NAME);
 
     public ODatabaseMetaPanel(String id, IModel<DisplayMode> modeModel, IModel<ODatabase> entityModel,
                               IModel<String> criteryModel) {
@@ -63,12 +62,12 @@ public class ODatabaseMetaPanel<V> extends AbstractComplexModeMetaPanel<ODatabas
         db.commit();
         try
         {
-//            if(ATTRIBUTES.CLUSTERSELECTION.name().equals(critery))
-//            {
-//                if(value!=null) entity.set(ATTRIBUTES.valueOf(critery), value.toString());
-//            } else {
+            if(ATTRIBUTES.CLUSTERSELECTION.name().equals(critery))
+            {
+                if(value!=null) entity.set(ATTRIBUTES.valueOf(critery), value.toString());
+            } else {
                 entity.set(ATTRIBUTES.valueOf(critery), value);
-//            }
+            }
         } finally
         {
             db.begin();
@@ -84,22 +83,21 @@ public class ODatabaseMetaPanel<V> extends AbstractComplexModeMetaPanel<ODatabas
         }
         if(DisplayMode.VIEW.equals(mode))
         {
-//            if(ATTRIBUTES.VALIDATION.name().equals(critery))
-//            {
-//                return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
-//            }
             return new Label(id, getModel());
         }
         else if(DisplayMode.EDIT.equals(mode)) {
-//            if(ATTRIBUTES.CLUSTERSELECTION.name().equals(critery))
-//            {
-//                return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
-//            } else if(ATTRIBUTES.VALIDATION.name().equals(critery))
-//            {
-//                return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
-//            } else {
+            if(ATTRIBUTES.CLUSTERSELECTION.name().equals(critery))
+            {
+                return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
+            } else if(ATTRIBUTES.STATUS.name().equals(critery))
+            {
+                return new DropDownChoice<STATUS>(id, (IModel<STATUS>)getModel(), Arrays.asList(STATUS.values()));
+            } else if(ATTRIBUTES.TYPE.name().equals(critery) || ATTRIBUTES.CUSTOM.name().equals(critery) || ATTRIBUTES.VALIDATION.name().equals(critery)){
+                return resolveComponent(id, DisplayMode.VIEW, critery);
+            }
+            else {
                 return new TextField<V>(id, getModel()).setType(String.class);
-//            }
+            }
         }
             return null;
     }
