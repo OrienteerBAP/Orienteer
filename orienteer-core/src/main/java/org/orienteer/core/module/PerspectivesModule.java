@@ -7,18 +7,22 @@ import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.metadata.security.OIdentity;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
+
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.inject.Singleton;
+
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +69,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE)
 			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_ITEM, "perspectiveItem")
 				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_ITEM)
-            .oClass(OSecurityShared.IDENTITY_CLASSNAME);
+            .oClass(OIdentity.CLASS_NAME);
 	}
 	
 	@Override

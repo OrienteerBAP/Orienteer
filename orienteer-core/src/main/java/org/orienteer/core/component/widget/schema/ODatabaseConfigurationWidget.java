@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.db.ODatabase;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -17,8 +18,10 @@ import org.orienteer.core.component.meta.ODatabaseMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
+
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
+import ru.ydn.wicket.wicketorientdb.model.CurrentDatabaseModel;
 
 /**
  * Widget to configure database attributes
@@ -26,12 +29,12 @@ import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
 @Widget(domain="schema", tab="database", id="odatabase-configuration", order=40, autoEnable=true)
 public class ODatabaseConfigurationWidget extends AbstractModeAwareWidget<Void> {
 
-    private OrienteerStructureTable<ODatabase, String> structureTable;
+    private OrienteerStructureTable<ODatabase<?>, String> structureTable;
 
     public ODatabaseConfigurationWidget(String id, IModel<Void> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
-        Form<ODatabase> form = new Form<ODatabase>("form");
-        structureTable  = new OrienteerStructureTable<ODatabase, String>("attributes", new PropertyModel<ODatabase>(this, "database"), ODatabaseMetaPanel.ODATABASE_ATTRS) {
+        Form<ODatabase<?>> form = new Form<ODatabase<?>>("form");
+        structureTable  = new OrienteerStructureTable<ODatabase<?>, String>("attributes", CurrentDatabaseModel.<ODatabase<?>>getInstance(), ODatabaseMetaPanel.ODATABASE_ATTRS) {
 
             @Override
             protected Component getValueComponent(String id, final IModel<String> rowModel) {
@@ -39,8 +42,8 @@ public class ODatabaseConfigurationWidget extends AbstractModeAwareWidget<Void> 
             }
 
         };
-        structureTable.addCommand(new EditSchemaCommand<ODatabase>(structureTable, getModeModel()));
-        structureTable.addCommand(new SaveSchemaCommand<ODatabase>(structureTable, getModeModel()));
+        structureTable.addCommand(new EditSchemaCommand<ODatabase<?>>(structureTable, getModeModel()));
+        structureTable.addCommand(new SaveSchemaCommand<ODatabase<?>>(structureTable, getModeModel()));
 
         form.add(structureTable);
         add(form);

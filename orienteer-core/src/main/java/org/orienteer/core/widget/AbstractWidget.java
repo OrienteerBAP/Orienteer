@@ -191,7 +191,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		
 	}
 	
-	public ODatabaseDocument getDatabase() {
+	protected ODatabaseDocument getDatabase() {
 		return OrientDbWebSession.get().getDatabase();
 	}
 }
