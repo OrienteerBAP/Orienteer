@@ -20,7 +20,9 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Meta panel for {@link OCluster}
@@ -29,6 +31,7 @@ import java.util.Arrays;
  */
 public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster, DisplayMode, String, V> implements IDisplayModeAware
 {
+    public static final List<String> OCLUSTER_ATTRS = new ArrayList<String>(Arrays.asList(OClustersWidget.NAME, OClustersWidget.CONFLICT_STRATEGY, OClustersWidget.COUNT));
     public OClusterMetaPanel(String id, IModel<DisplayMode> modeModel, IModel<OCluster> entityModel, IModel<String> criteryModel) {
         super(id, modeModel, entityModel, criteryModel);
     }

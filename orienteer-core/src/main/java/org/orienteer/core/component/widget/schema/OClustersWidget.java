@@ -1,11 +1,9 @@
 package org.orienteer.core.component.widget.schema;
 
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.storage.OCluster;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -14,7 +12,9 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditSchemaCommand;
 import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.table.*;
+import org.orienteer.core.component.table.OClusterColumn;
+import org.orienteer.core.component.table.OClusterMetaColumn;
+import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
@@ -31,7 +31,6 @@ public class OClustersWidget extends AbstractWidget<Void> {
     public static final String NAME = "name";
     public static final String COUNT = "recordsSize";
     public static final String CONFLICT_STRATEGY = "recordConflictStrategy";
-    public static final String STATUS = "status";
 
     public OClustersWidget(String id, IModel<Void> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
@@ -39,11 +38,9 @@ public class OClustersWidget extends AbstractWidget<Void> {
         Form<?> form = new Form<Object>("form");
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         List<IColumn<OCluster, String>> columns = new ArrayList<IColumn<OCluster,String>>();
-//        columns.add(new OClassColumn(OClassPrototyper.NAME, modeModel));
-        columns.add(new OClusterMetaColumn(NAME, modeModel));
+        columns.add(new OClusterColumn(NAME, modeModel));
         columns.add(new OClusterMetaColumn(CONFLICT_STRATEGY, modeModel));
         columns.add(new OClusterMetaColumn(COUNT, modeModel));
-//        columns.add(new PropertyColumn<OCluster, String>(new ResourceModel("cluster.count"), "count", "count"));
 
         AbstractJavaSortableDataProvider<OCluster, String> provider =  new OClustersDataProvider();
         provider.setSort(NAME, SortOrder.ASCENDING);
