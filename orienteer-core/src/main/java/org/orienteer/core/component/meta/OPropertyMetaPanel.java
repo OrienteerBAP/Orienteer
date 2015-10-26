@@ -241,7 +241,8 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		{
 			if(OPropertyPrototyper.NAME.equals(critery))
 			{
-				return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.FIELD_NAME_VALIDATOR).setRequired(true);
+				return new TextField<V>(id, getModel()).setType(String.class).setRequired(true)
+										.add((IValidator<V>)OSchemaNamesValidator.FIELD_NAME_VALIDATOR).setRequired(true);
 			}
 			else if(OPropertyPrototyper.TYPE.equals(critery))
 			{

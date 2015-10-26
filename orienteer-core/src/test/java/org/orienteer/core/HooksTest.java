@@ -9,6 +9,7 @@ import javax.inject.Provider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.junit.OrienteerTestRunner;
 
 import static org.junit.Assert.*;
@@ -18,6 +19,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -31,6 +33,7 @@ public class HooksTest
 	private static final String TEST_CLASS_A = "TestClassA";
 	private static final String TEST_CLASS_B = "TestClassB";
 	private static final String TEST_CLASS_C = "TestClassC";
+	private static final String TEST_CLASS_CALLBACK = "TestClassCallbacks";
 	@Test
 	public void testCalculableHook() throws Exception
 	{
@@ -281,6 +284,45 @@ public class HooksTest
 		} finally
 		{
 			schema.dropClass(TEST_CLASS_C);
+			OrientDbWebSession.get().signOut();
+		}
+	}
+	
+	private static class TestCallback implements CallbackHook.ICallback {
+		
+		@Override
+		public boolean call(TYPE iType, ODocument doc) {
+			assertEquals("testname", doc.field("name"));
+			doc.field("callback"+iType, "executed", OType.STRING);
+			return true;
+		}
+	};
+	
+	@Test
+	public void testCallbackHook() throws Exception {
+		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		OSchema schema = db.getMetadata().getSchema();
+		OClass oClass = schema.createClass(TEST_CLASS_CALLBACK);
+		oClass.createProperty("name", OType.STRING);
+		try {
+			ODocument doc = new ODocument(oClass);
+			doc.field("name", "testname");
+			TestCallback callback = new TestCallback();
+			CallbackHook.registerCallback(doc, TYPE.AFTER_CREATE, callback);
+			CallbackHook.registerCallback(doc, TYPE.BEFORE_CREATE, callback);
+			doc.save();
+			assertEquals("executed", doc.field("callback"+TYPE.AFTER_CREATE));
+			assertEquals("executed", doc.field("callback"+TYPE.BEFORE_CREATE));
+			assertFalse(doc.containsField("__callbacks__"));
+			doc.reload();
+			assertFalse(doc.containsField("__callbacks__"));
+			assertFalse(doc.containsField("callback"+TYPE.AFTER_READ)); 
+			CallbackHook.registerCallback(doc, TYPE.AFTER_READ, callback);
+			doc.reload();
+			assertEquals("executed", doc.field("callback"+TYPE.AFTER_READ));
+		} finally {
+			schema.dropClass(TEST_CLASS_CALLBACK);
 			OrientDbWebSession.get().signOut();
 		}
 	}

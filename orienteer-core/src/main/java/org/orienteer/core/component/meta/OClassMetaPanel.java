@@ -24,6 +24,7 @@ import org.apache.wicket.core.util.lang.PropertyResolverConverter;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -191,7 +192,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		{
 				if(OClassPrototyper.NAME.equals(critery) || OClassPrototyper.SHORT_NAME.equals(critery))
 				{
-					return new TextField<V>(id, getModel()).setType(String.class).add((IValidator<V>)OSchemaNamesValidator.CLASS_NAME_VALIDATOR);
+					FormComponent<V> ret = new TextField<V>(id, getModel()).setType(String.class)
+									.add((IValidator<V>)OSchemaNamesValidator.CLASS_NAME_VALIDATOR);
+					if(OClassPrototyper.NAME.equals(critery)) ret.setRequired(true);
+					return ret;
 				}
 				else if(OClassPrototyper.ABSTRACT.equals(critery) || OClassPrototyper.STRICT_MODE.equals(critery))
 				{

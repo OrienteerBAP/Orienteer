@@ -36,8 +36,7 @@ public class BooleanViewPanel extends GenericPanel<Boolean>
 			@Override
 			protected void onComponentTag(ComponentTag tag) {
 				super.onComponentTag(tag);
-				boolean value = getModelObject();
-				tag.append("class", value?"fa-check-circle text-success":"fa-times-circle text-danger", " ");
+				tag.append("class", effectiveValue?"fa-check-circle text-success":"fa-times-circle text-danger", " ");
 			}
 
 			@Override

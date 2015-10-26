@@ -20,6 +20,7 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
+import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.ModuledDataInstallator;
@@ -150,6 +151,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(OWidgetsModule.class);
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
+		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
 		mountOrientDbRestApi();
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
