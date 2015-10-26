@@ -29,6 +29,6 @@ public class OClusterMetaColumn extends AbstractModeMetaColumn<OCluster, Display
 
     @Override
     protected IModel<String> newLabelModel() {
-        return new SimpleNamingModel<String>("cluster", getCriteryModel());
+        return new SimpleNamingModel<String>("cluster."+ getCriteryModel().getObject().toLowerCase());
     }
 }
