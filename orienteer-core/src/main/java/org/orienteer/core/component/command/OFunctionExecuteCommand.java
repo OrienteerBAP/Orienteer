@@ -50,6 +50,13 @@ public class OFunctionExecuteCommand extends AjaxFormCommand<OFunctionExecutionM
     }
 
     @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        OFunctionExecutionModel object = getModel().getObject();
+        this.setEnabled(object != null && object.getName()!=null);
+    }
+
+    @Override
     public RequiredOrientResource[] getRequiredResources() {
         return new RequiredOrientResource[0];
     }
