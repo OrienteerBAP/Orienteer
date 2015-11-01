@@ -66,8 +66,10 @@ public class ODocumentFunctionExecutionWidget extends AbstractModeAwareWidget<OD
         model.setName((String) doc.field(OFunctionExecutionModel.NAME));
         List<String> parameters = doc.field(OFunctionExecutionModel.PARAMETERS);
         Map<String, String> params = new LinkedHashMap<>();
-        for(String param : parameters) {
-            params.put(param, "");
+        if(parameters != null) {
+            for (String param : parameters) {
+                params.put(param, "");
+            }
         }
         model.setParameters(params);
         return model;
