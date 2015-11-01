@@ -10,6 +10,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -27,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+
 /**
  * {@link Command} for execution {@link OFunction}
  */
@@ -34,6 +38,8 @@ public class OFunctionExecuteCommand extends AjaxFormCommand<OFunctionExecutionM
 
     public OFunctionExecuteCommand(OrienteerStructureTable<OFunctionExecutionModel, String> propertiesStructureTable) {
         super(new ResourceModel("command.execute"), propertiesStructureTable);
+        setIcon(FAIconType.save);
+        setBootstrapType(BootstrapType.PRIMARY);
     }
 
     @Override
@@ -53,7 +59,18 @@ public class OFunctionExecuteCommand extends AjaxFormCommand<OFunctionExecutionM
     protected void onInitialize() {
         super.onInitialize();
         OFunctionExecutionModel object = getModel().getObject();
-        this.setEnabled(object != null && object.getName()!=null);
+        ODocument oDocument = object.getDocument();
+        boolean enabled = oDocument != null && nonNull(oDocument, asList("name", "code", "language"));
+        this.setEnabled(enabled);
+    }
+
+    private boolean nonNull(ODocument oDocument, List<String> fields) {
+        for(String field: fields) {
+            if (oDocument.field(field) == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
