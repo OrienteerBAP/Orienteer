@@ -6,7 +6,7 @@ layout: default
 ## Orienteer
 ![Orienteer](images/orienteer.png)
 
-### What is Orienteer 
+### What is Orienteer
 
 **Orienteer** is Data Warehouse System on top of OrientDB. It allows you:
 
@@ -25,7 +25,7 @@ Default users:
 - reader/reader
 - writer/writer
 
-*Demo might be unavailable. Please consider to use localbuild and run.*
+*Demo might be unavailable. Please consider to use local build and run.*
 
 ### Orienteer installation
 
@@ -75,10 +75,11 @@ orientdb.url=remote:localhost/Orienteer   //OrientDB server URL
 orientdb.db.username=reader               //Default OrientDB user (will be used for guests as well)
 orientdb.db.password=reader               //Password for default OrientDB user
 orientdb.db.installator.username=admin    //OrientDB user to user for administrative stuff
-orientdb.db.installator.password=admin    //Password for OrientDB user used for administrative stuff 
+orientdb.db.installator.password=admin    //Password for OrientDB user used for administrative stuff
+wicket.render.strategy=ONE_PASS_RENDER    //Wicket rendering strategy
 ```
 
-### Setup of development environment 
+### Setup of development environment
 
 #### Prerequisites
 1. java 6+
@@ -118,4 +119,3 @@ mvn jetty:run
 ```
 ##### Goto the application
 Open http://localhost:8080 is in your browser
-
