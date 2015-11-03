@@ -688,21 +688,10 @@ footer {
 .social li a .fa-inverse {
     color: #7860a8;
 }
-.copyright {
-  float: left;
-}
-.f-nav {
-    float: right;
-}
-
 .f-nav li a {
     color: #fff;
 }
-@media (max-width: 1200px) {
-    .f-nav, .copyright {
-      float: none;
-    }
-}
+
 @media only screen and (max-width : 768px) {
     .f-nav {
       display: none;
