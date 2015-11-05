@@ -1,5 +1,6 @@
 package org.orienteer.core.component.meta;
 
+import com.orientechnologies.orient.core.metadata.function.OFunction;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -10,7 +11,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import java.util.*;
 
 /**
- * Meta panel for {@link com.orientechnologies.orient.core.storage.OCluster}
+ * Meta panel for {@link OFunction}
  *
  * @param <V> type of a value
  */

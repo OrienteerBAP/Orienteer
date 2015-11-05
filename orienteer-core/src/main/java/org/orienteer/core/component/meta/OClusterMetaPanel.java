@@ -36,9 +36,9 @@ import java.util.*;
  */
 public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster, DisplayMode, String, V> implements IDisplayModeAware
 {
-    public static final List<String> OCLUSTER_ATTRS = new ArrayList<String>(Arrays.asList(OClustersWidget.NAME,
+    public static final List<String> OCLUSTER_ATTRS = Arrays.asList(OClustersWidget.NAME,
             OClustersWidget.CONFLICT_STRATEGY, OClustersWidget.COUNT, OClustersWidget.COMPRESSION,
-            OClustersWidget.RECORD_GROW_FACTOR, OClustersWidget.RECORD_OVERFLOW_GROW_FACTOR, OClustersWidget.USE_WAL));
+            OClustersWidget.RECORD_GROW_FACTOR, OClustersWidget.RECORD_OVERFLOW_GROW_FACTOR, OClustersWidget.USE_WAL);
 
     public static final List<String> COMPRESSIONS = new ArrayList<String>();
 
