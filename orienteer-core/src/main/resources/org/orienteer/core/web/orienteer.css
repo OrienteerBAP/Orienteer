@@ -20,6 +20,11 @@ tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
 	margin-right:0.5em;
 }
 
+div.select2-container
+{
+    min-width: 100px;
+}
+
 td.checkbox-column
 {
 	width: 15px;
