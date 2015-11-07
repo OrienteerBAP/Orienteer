@@ -2,7 +2,6 @@ package org.orienteer.core.component.meta;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.model.OFunctionTextChoiceProvider;
@@ -37,7 +36,7 @@ public class OTriggerMetaPanel<V> extends AbstractComplexModeMetaPanel<OTriggerM
             return (V) entity.getTrigger();
         }
         if(critery.equals(OTriggerModel.FUNCTION)) {
-            return (V) entity.getFunctionName();
+            return (V) entity.getFunction();
         }
         return null;
     }
@@ -45,7 +44,7 @@ public class OTriggerMetaPanel<V> extends AbstractComplexModeMetaPanel<OTriggerM
     @Override
     protected void setValue(OTriggerModel triggerModel, String critery, V value) {
         if (critery.equals(OTriggerModel.FUNCTION)) {
-            triggerModel.setFunctionName((String)value);
+            triggerModel.setFunction((String) value);
         }
     }
 
@@ -66,6 +65,6 @@ public class OTriggerMetaPanel<V> extends AbstractComplexModeMetaPanel<OTriggerM
 
     @Override
     protected IModel<String> newLabelModel() {
-        return new SimpleNamingModel<String>("function.execution." + getPropertyModel().getObject());
+        return new SimpleNamingModel<String>(getPropertyModel().getObject());
     }
 }
