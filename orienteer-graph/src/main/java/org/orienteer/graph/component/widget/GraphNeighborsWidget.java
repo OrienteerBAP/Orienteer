@@ -30,7 +30,7 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 /**
  * Widget for displaying vertex neighbors.
  */
-@Widget(id="neighbors", domain="document", order=10, autoEnable=false, selector="V")
+@Widget(id="neighbors", domain="document", order=10, autoEnable=true, selector="V")
 public class GraphNeighborsWidget extends AbstractModeAwareWidget<ODocument> {
 
     @Inject
