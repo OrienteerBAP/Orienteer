@@ -9,16 +9,16 @@ import java.io.Serializable;
 */
 public class OTriggerModel implements Serializable {
     public static final String TRIGGER = "trigger";
-    public static final String FUNCTION = "functionName";
+    public static final String FUNCTION = "function";
 
     private String trigger;
-    private String functionName;
+    private String function;
     private ODocument document;
 
-    public OTriggerModel(ODocument document, String trigger, String functionName) {
+    public OTriggerModel(ODocument document, String trigger, String function) {
         this.document = document;
         this.trigger = trigger;
-        this.functionName = functionName;
+        this.function = function;
     }
 
     public OTriggerModel(ODocument document) {
@@ -33,12 +33,12 @@ public class OTriggerModel implements Serializable {
         this.trigger = trigger;
     }
 
-    public String getFunctionName() {
-        return functionName;
+    public String getFunction() {
+        return function;
     }
 
-    public void setFunctionName(String function) {
-        this.functionName = function;
+    public void setFunction(String function) {
+        this.function = function;
     }
 
     public ODocument getDocument() {

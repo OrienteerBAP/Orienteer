@@ -21,6 +21,7 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
+import org.orienteer.core.component.meta.OTriggerMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
@@ -45,6 +46,7 @@ import java.util.Set;
 public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWidget<ODocument> {
 
     public static final String WIDGET_TYPE_ID = "nonregistered";
+    public static final String O_TRIGGERED = "OTriggered";
 
     @Inject
     private IOClassIntrospector oClassIntrospector;
@@ -64,6 +66,9 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
 				Set<String> fieldNames = new HashSet<String>(Arrays.asList(doc.fieldNames()));
 				Set<String> propertiesNames = doc.getSchemaClass().propertiesMap().keySet();
 				fieldNames.removeAll(propertiesNames);
+                if(doc.getSchemaClass().getSuperClassesNames().contains(O_TRIGGERED)) {
+                    fieldNames.removeAll(OTriggerMetaPanel.OTRIGGER_LIST);
+                }
 				List<OProperty> ret = new ArrayList<OProperty>(fieldNames.size());
 				for (String field : fieldNames) {
 					ret.add(oClassIntrospector.virtualizeField(doc, field));
