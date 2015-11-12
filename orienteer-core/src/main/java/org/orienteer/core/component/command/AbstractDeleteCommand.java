@@ -20,9 +20,15 @@ public abstract class AbstractDeleteCommand<T> extends AbstractCheckBoxEnabledCo
 	
 	public AbstractDeleteCommand(OrienteerDataTable<T, ?> table)
 	{
-		super(new ResourceModel("command.delete"), table);
+		this(new ResourceModel("command.delete"), table);
 		
 	}
+
+    public AbstractDeleteCommand(IModel<?> labelModel, OrienteerDataTable<T, ?> table)
+    {
+        super(labelModel, table);
+
+    }
 	
 	@Override
 	protected void onInitialize() {
