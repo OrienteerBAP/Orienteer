@@ -80,8 +80,8 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 	
 	@Override
 	protected DisplayMode getEffectiveMode(DisplayMode mode, OProperty property) {
-		if(mode.canModify()
-				&& (property.isReadonly() || (Boolean)CustomAttributes.UI_READONLY.getValue(property)))
+		if(mode.canModify() && property!= null
+                && (property.isReadonly() || (Boolean)CustomAttributes.UI_READONLY.getValue(property)))
 		{
 			return DisplayMode.VIEW;
 		}

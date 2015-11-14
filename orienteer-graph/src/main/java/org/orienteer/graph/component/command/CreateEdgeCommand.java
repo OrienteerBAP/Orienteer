@@ -10,6 +10,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.command.modal.SelectDialogPanel;
@@ -38,6 +39,8 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
     public CreateEdgeCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentIModel) {
         super(new ResourceModel("command.link"), table);
         setBootstrapType(BootstrapType.PRIMARY);
+        setIcon(FAIconType.plus);
+        setAutoNotify(false);
         this.classModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
         this.documentModel = documentIModel;
     }

@@ -10,6 +10,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.command.modal.SelectDialogPanel;
@@ -37,6 +38,8 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
     public CreateVertexCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentIModel) {
         super(new ResourceModel("command.create"), table);
         setBootstrapType(BootstrapType.PRIMARY);
+        setIcon(FAIconType.plus);
+        setAutoNotify(false);
         this.classModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
         this.documentModel = documentIModel;
     }
@@ -65,6 +68,7 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
                             @Override
                             public void onClose(AjaxRequestTarget target)
                             {
+                                //setResponsePage(new ODocumentPage(new ODocumentModel(documentModel.getObject())).setModeObject(DisplayMode.VIEW));
                                 target.add(getPage());
                             }
                         });
@@ -87,7 +91,7 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
         OrientGraph tx = null;
         try {
             tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
-            OrientVertex newVertex = tx.addVertex(vertexClass, (String) null);
+            OrientVertex newVertex = tx.addVertex(vertexClass.getName(), (String) null);
             OrientVertex vertex = tx.getVertex(documentModel.getObject().getIdentity());
             tx.addEdge(null, vertex, newVertex, edgeClass.getName());
 
