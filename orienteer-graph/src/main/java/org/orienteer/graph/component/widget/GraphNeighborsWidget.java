@@ -54,7 +54,7 @@ public class GraphNeighborsWidget extends AbstractModeAwareWidget<ODocument> {
         table.addCommand(new CreateVertexCommand(table, getModel()));
         table.addCommand(new CreateEdgeCommand(table, getModel()));
         table.addCommand(new DeleteEdgeCommand(table, getModel()));
-        table.addCommand(new DeleteVertexCommand(table));
+        table.addCommand(new DeleteVertexCommand(table, getModel()));
         form.add(table);
         add(form);
     }

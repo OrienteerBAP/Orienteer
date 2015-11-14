@@ -14,7 +14,9 @@ import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.command.modal.SelectDialogPanel;
 import org.orienteer.core.component.command.modal.SelectSubOClassDialogPage;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.graph.module.GraphModule;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
@@ -55,16 +57,26 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
                     @Override
                     protected void onSelect(AjaxRequestTarget target, final OClass selectedOEdgeClass) {
                         createVertex(selectedOVertexClass, selectedOEdgeClass);
+
+                        modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
+                        {
+                            private static final long serialVersionUID = 1L;
+
+                            @Override
+                            public void onClose(AjaxRequestTarget target)
+                            {
+                                target.add(getPage());
+                            }
+                        });
                     }
                 });
 
                 modal.show(target);
+
             }
         };
         modal.setContent(selectVertexClassDialog);
     }
-
-
 
     @Override
     public RequiredOrientResource[] getRequiredResources() {
