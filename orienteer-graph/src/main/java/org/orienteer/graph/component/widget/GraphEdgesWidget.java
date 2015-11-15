@@ -5,9 +5,14 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.component.FAIcon;
@@ -15,7 +20,9 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentsCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.property.LinkViewPanel;
 import org.orienteer.core.component.table.OEntityColumn;
+import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.impl.OClassIntrospector;
@@ -24,6 +31,8 @@ import org.orienteer.core.widget.Widget;
 import org.orienteer.graph.component.command.CreateEdgeCommand;
 import org.orienteer.graph.component.command.DeleteEdgeCommand;
 import org.orienteer.graph.model.VertexEdgesDataProvider;
+import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import java.util.List;
 
@@ -45,10 +54,25 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
         VertexEdgesDataProvider vertexEdgesDataProvider = new VertexEdgesDataProvider(getModel());
         OClass commonParent = vertexEdgesDataProvider.probeOClass(20);
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
+        commonParent.declaredProperties();
+        commonParent.properties();
+        columns.add(new AbstractColumn<ODocument, String>(new SimpleNamingModel<String>("in"), null) {
+            @Override
+            public void populateItem(Item<ICellPopulator<ODocument>> components, String s, IModel<ODocument> documentIModel) {
+                IModel<ODocument> vertex = Model.of((ODocument)documentIModel.getObject().field("in"));
+                components.add(new LinkViewPanel(s, vertex));
+            }
+        });
+        columns.add(new AbstractColumn<ODocument, String>(new SimpleNamingModel<String>("out"), null) {
+            @Override
+            public void populateItem(Item<ICellPopulator<ODocument>> components, String s, IModel<ODocument> documentIModel) {
+                IModel<ODocument> vertex = Model.of((ODocument)documentIModel.getObject().field("out"));
+                components.add(new LinkViewPanel(s, vertex));
+            }
+        });
 
         OrienteerDataTable<ODocument, String> table =
                 new OrienteerDataTable<ODocument, String>("edges", columns, vertexEdgesDataProvider, 20);
-//        table.addCommand(new CreateEdgeCommand(table, getModel()));
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
         table.addCommand(new DeleteEdgeCommand(table, getModel()));
