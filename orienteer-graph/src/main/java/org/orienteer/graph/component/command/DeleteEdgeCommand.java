@@ -36,10 +36,15 @@ public class DeleteEdgeCommand extends AbstractDeleteCommand<ODocument> implemen
 
     public DeleteEdgeCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel)
 	{
-		super(new ResourceModel("command.unlink"), table);
+		this(new ResourceModel("command.unlink"), table, documentModel);
+	}
+
+    public DeleteEdgeCommand(ResourceModel labelModel, OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel)
+    {
+        super(labelModel, table);
         this.documentModel = documentModel;
         this.classModel = new OClassModel(GraphModule.EDGE_CLASS_NAME);
-	}
+    }
 	
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
