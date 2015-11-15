@@ -51,7 +51,7 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 //        table.addCommand(new CreateEdgeCommand(table, getModel()));
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
-        table.addCommand(new DeleteEdgeCommand(new ResourceModel("command.delete"), table, getModel()));
+        table.addCommand(new DeleteEdgeCommand(table, getModel()));
 
         form.add(table);
         add(form);

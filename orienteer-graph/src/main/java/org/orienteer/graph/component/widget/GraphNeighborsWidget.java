@@ -25,11 +25,8 @@ import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import org.orienteer.graph.component.command.CreateEdgeCommand;
+import org.orienteer.graph.component.command.*;
 
-import org.orienteer.graph.component.command.CreateVertexCommand;
-import org.orienteer.graph.component.command.DeleteEdgeCommand;
-import org.orienteer.graph.component.command.DeleteVertexCommand;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
@@ -55,7 +52,7 @@ public class GraphNeighborsWidget extends AbstractWidget<ODocument> {
             new OrienteerDataTable<ODocument, String>("neighbors", columns, provider, 20);
         table.addCommand(new CreateVertexCommand(table, getModel()));
         table.addCommand(new CreateEdgeCommand(table, getModel()));
-        table.addCommand(new DeleteEdgeCommand(table, getModel()));
+        table.addCommand(new UnlinkVertexCommand(table, getModel()));
         table.addCommand(new DeleteVertexCommand(table, getModel()));
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
