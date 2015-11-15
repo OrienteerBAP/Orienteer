@@ -13,19 +13,17 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.component.command.modal.SelectDialogPanel;
 import org.orienteer.core.component.command.modal.SelectSubOClassDialogPage;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.graph.module.GraphModule;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
-
-import java.util.List;
 
 /**
  * {@link Command} to create neighbour vertex
@@ -68,8 +66,8 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
                             @Override
                             public void onClose(AjaxRequestTarget target)
                             {
-                                //setResponsePage(new ODocumentPage(new ODocumentModel(documentModel.getObject())).setModeObject(DisplayMode.VIEW));
-                                target.add(getPage());
+                                setResponsePage(new ODocumentPage(new ODocumentModel(documentModel.getObject())).setModeObject(DisplayMode.VIEW));
+                                //target.add(getPage());
                             }
                         });
                     }
@@ -88,17 +86,9 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
     }
 
     private void createVertex(OClass vertexClass, OClass edgeClass) {
-        OrientGraph tx = null;
-        try {
-            tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
-            OrientVertex newVertex = tx.addVertex(vertexClass.getName(), (String) null);
-            OrientVertex vertex = tx.getVertex(documentModel.getObject().getIdentity());
-            tx.addEdge(null, vertex, newVertex, edgeClass.getName());
-
-        }
-        finally {
-            if (tx != null)
-                tx.shutdown();
-        }
+        OrientGraph tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
+        OrientVertex newVertex = tx.addVertex(vertexClass.getName(), (String) null);
+        OrientVertex vertex = tx.getVertex(documentModel.getObject().getIdentity());
+        tx.addEdge(null, vertex, newVertex, edgeClass.getName());
     }
 }
