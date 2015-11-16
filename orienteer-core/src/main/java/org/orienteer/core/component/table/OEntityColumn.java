@@ -74,6 +74,9 @@ public class OEntityColumn extends OPropertyValueColumn
 			@Override
 			protected Component resolveComponent(String id, DisplayMode mode,
 					OProperty property) {
+                if(property == null) {
+                    return new LinkViewPanel(id, getEntityModel());
+                }
 				return DisplayMode.VIEW.equals(mode)? new LinkViewPanel(id, getEntityModel()) : super.resolveComponent(id, mode, property);
 			}
 		};
