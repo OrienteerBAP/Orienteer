@@ -61,10 +61,8 @@
 	</licenses>
 	<properties>
 		<wicket.version>7.1.0</wicket.version>
-		<wicketstuff.version>7.1.0</wicketstuff.version>
-		<!-- Version for wicketstuff components which was not updated-->
-		<wicketstuff.falldown.version>7.0.0</wicketstuff.falldown.version>
-		<orientdb.version>2.1.4</orientdb.version>
+		<wicketstuff.version>7.0.0</wicketstuff.version>
+		<orientdb.version>2.1.5</orientdb.version>
 		<wicket.orientdb.version>1.2-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.2.11.v20150529</jetty.version>
 		<enableAssertions>false</enableAssertions>
@@ -126,7 +124,7 @@
 		    <dependency>
 			    <groupId>org.wicketstuff</groupId>
 			    <artifactId>wicketstuff-select2</artifactId>
-			    <version>${wicketstuff.falldown.version}</version>
+			    <version>${wicketstuff.version}</version>
 		    </dependency>
 		    <dependency>
 			    <groupId>com.orientechnologies</groupId>

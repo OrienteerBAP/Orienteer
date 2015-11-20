@@ -207,9 +207,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
 				else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
  				{
-					return new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE)
-							.add(new DragAndDropBehavior())
-							.add(new RefreshMetaContextOnChangeBehaviour());
+					Select2MultiChoice choice = new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE);
+					choice.getSettings().setAllowClear(true);
+					choice.add(new DragAndDropBehavior());
+					choice.add(new RefreshMetaContextOnChangeBehaviour());
+					return choice;
 				}
 				else if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
 				{
