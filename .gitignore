@@ -14,6 +14,7 @@ databases/
 /Orienteer/
 /orienteer-core/Orienteer/
 /orienteer-graph/Orienteer/
+/orienteer-pages/Orienteer/
 .idea/
 *.iml
 *.log
