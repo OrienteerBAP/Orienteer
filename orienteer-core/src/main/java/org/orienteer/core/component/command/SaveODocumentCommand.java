@@ -12,6 +12,7 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import org.orienteer.core.web.ODocumentPage;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -35,7 +36,7 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 	@Override
 	public void onClick(AjaxRequestTarget target) {
 		getModelObject().getRecord().save();
-		super.onClick(target);
+        setResponsePage(new ODocumentPage(getModelObject()).setModeObject(DisplayMode.VIEW));
 	}
 
 	@Override
