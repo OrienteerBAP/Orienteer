@@ -36,7 +36,7 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 	@Override
 	public void onClick(AjaxRequestTarget target) {
 		getModelObject().getRecord().save();
-        setResponsePage(new ODocumentPage(getModelObject()).setModeObject(DisplayMode.VIEW));
+        super.onClick();
 	}
 
 	@Override
