@@ -6,7 +6,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.pages.module.PagesModule;
 
 /**
- * Wicket {@link IInitializer} for Orienteer Graph module
+ * Wicket {@link IInitializer} for Orienteer Pages module
  */
 public class Initializer implements IInitializer {
 
@@ -14,6 +14,7 @@ public class Initializer implements IInitializer {
 	public void init(Application application) {
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		app.registerModule(PagesModule.class);
+		app.mount(new PagesCompoundRequestMapper());
 	}
 
 	@Override

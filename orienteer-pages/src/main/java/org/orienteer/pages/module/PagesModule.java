@@ -10,7 +10,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
- * {@link AbstractOrienteerModule} to provide graph extentions
+ * {@link AbstractOrienteerModule} to provide extentions for Orienteer Pages
  */
 @Singleton
 public class PagesModule extends AbstractOrienteerModule {
