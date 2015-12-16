@@ -14,7 +14,6 @@ public class Initializer implements IInitializer {
 	public void init(Application application) {
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		app.registerModule(PagesModule.class);
-		app.mount(new PagesCompoundRequestMapper());
 	}
 
 	@Override

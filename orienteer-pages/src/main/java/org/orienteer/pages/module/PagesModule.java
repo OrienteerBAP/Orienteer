@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.pages.PagesCompoundRequestMapper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -22,6 +23,8 @@ public class PagesModule extends AbstractOrienteerModule {
 	public static final String OPROPERTY_PATH="path";
 	public static final String OPROPERTY_EMBEDDED="embedded";
 	public static final String OPROPERTY_DOCUMENT="document";
+	
+	private PagesCompoundRequestMapper pagesCompoundRequestMapper;
 
 	protected PagesModule() {
 		super("pages", 1);
@@ -59,6 +62,17 @@ public class PagesModule extends AbstractOrienteerModule {
 				.oProperty(OPROPERTY_CONTENT, OType.STRING, 30).assignVisualization("textarea")
 				.oProperty(OPROPERTY_EMBEDDED, OType.BOOLEAN, 40)
 				.oProperty(OPROPERTY_DOCUMENT, OType.LINK, 50);
+	}
+	
+	@Override
+	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+		super.onInitialize(app, db);
+		app.mount(pagesCompoundRequestMapper = new PagesCompoundRequestMapper());
+		app.getOrientDbSettings().getORecordHooks().add(PagesHook.class);
+	}
+	
+	public PagesCompoundRequestMapper getPagesCompoundRequestMapper() {
+		return pagesCompoundRequestMapper;
 	}
 
 }

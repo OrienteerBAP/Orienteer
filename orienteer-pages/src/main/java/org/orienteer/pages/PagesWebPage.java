@@ -39,7 +39,8 @@ public class PagesWebPage extends WebPage implements IMarkupResourceStreamProvid
 
 	@Override
 	public String getCacheKey(MarkupContainer container, Class<?> containerClass) {
-		return "OPage-"+pageDocumentModel.getIdentity().toString();
+		ODocument pageDoc = pageDocumentModel.getObject();
+		return "OPage-"+pageDoc.getIdentity().toString()+"?v"+pageDoc.getVersion();
 	}
 
 	@Override
