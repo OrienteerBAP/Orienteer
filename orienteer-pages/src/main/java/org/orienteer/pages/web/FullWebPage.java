@@ -1,4 +1,4 @@
-package org.orienteer.pages;
+package org.orienteer.pages.web;
 
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
@@ -10,6 +10,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
+import org.orienteer.pages.OPageParametersEncoder;
 import org.orienteer.pages.module.PagesModule;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
@@ -19,35 +20,32 @@ import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
- * Orienteer Pages {@link WebPage}
+ * {@link WebPage} to show content as whole page
  */
-public class PagesWebPage extends WebPage implements IMarkupResourceStreamProvider, IMarkupCacheKeyProvider {
+public class FullWebPage extends WebPage implements IMarkupResourceStreamProvider, IMarkupCacheKeyProvider {
 	
-	private final ODocumentModel pageDocumentModel;
+	private final PageDelegate delegate;
 
-	public PagesWebPage(PageParameters parameters) {
+	public FullWebPage(PageParameters parameters) {
 		super(parameters);
-		String orid = parameters.get(OPageParametersEncoder.PAGE_IDENTITY).toString();
-		pageDocumentModel = new ODocumentModel(new ORecordId(orid));
+		delegate = new PageDelegate(parameters);
 	}
 	
 	@Override
 	public void detachModels() {
 		super.detachModels();
-		pageDocumentModel.detach();
+		delegate.detach();
 	}
 
 	@Override
 	public String getCacheKey(MarkupContainer container, Class<?> containerClass) {
-		ODocument pageDoc = pageDocumentModel.getObject();
-		return "OPage-"+pageDoc.getIdentity().toString()+"?v"+pageDoc.getVersion();
+		return delegate.getCacheKey(container, containerClass);
 	}
 
 	@Override
 	public IResourceStream getMarkupResourceStream(MarkupContainer container,
 			Class<?> containerClass) {
-		return new StringResourceStream((String) pageDocumentModel.getObject().field(PagesModule.OPROPERTY_CONTENT), "text/html");
+		return delegate.getMarkupResourceStream(container, containerClass);
 	}
-	
 	
 }

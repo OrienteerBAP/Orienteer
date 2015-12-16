@@ -57,7 +57,6 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 	public void initialize() {
 		super.initialize();
 		add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
-		add(newPageHeaderComponent("pageHeader"));
 		
 		final AttributeAppender highlightActivePerspective = new AttributeAppender("class", "active")
 		{
@@ -113,6 +112,12 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		searchForm.add(new TextField<String>("query", queryModel));
 		searchForm.add(new AjaxButton("search"){});
 		add(searchForm);
+	}
+	
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+		add(newPageHeaderComponent("pageHeader"));
 	}
 	
 	protected Component newPageHeaderComponent(String componentId)
