@@ -5,8 +5,11 @@ import org.apache.wicket.markup.DefaultMarkupResourceStreamProvider;
 import org.apache.wicket.markup.IMarkupCacheKeyProvider;
 import org.apache.wicket.markup.IMarkupResourceStreamProvider;
 import org.apache.wicket.markup.MarkupFactory;
+import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.util.SetModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.util.resource.IResourceStream;
@@ -29,18 +32,22 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 	
 	private static final IMarkupResourceStreamProvider DEFAULT_MARKUP_PROVIDER = new DefaultMarkupResourceStreamProvider();
 	
+	private final WebPage page;
 	private final ODocumentModel pageDocumentModel;
 	
-	public PageDelegate(PageParameters parameters) {
-		this(parameters.get(OPageParametersEncoder.PAGE_IDENTITY).toString());
+	public PageDelegate(WebPage page, PageParameters parameters) {
+		this(page, parameters.get(OPageParametersEncoder.PAGE_IDENTITY).toString(), parameters.get("rid").toOptionalString());
 	}
 	
-	public PageDelegate(String orid) {
-		this(new ORecordId(orid));
+	public PageDelegate(WebPage page, String pageOrid, String docOrid) {
+		this(page, new ORecordId(pageOrid), Strings.isEmpty(docOrid)?null:new ORecordId(docOrid));
 	}
 	
-	public PageDelegate(ORID orid) {
-		pageDocumentModel = new ODocumentModel(orid);
+	public PageDelegate(WebPage page, ORID pageOrid, ORID docOrid) {
+		this.page = page;
+		this.pageDocumentModel = new ODocumentModel(pageOrid);
+		ODocument doc = (ODocument)(docOrid!=null?docOrid.getRecord():pageDocumentModel.getObject().field(PagesModule.OPROPERTY_DOCUMENT));
+		if(doc!=null) page.setDefaultModel(new ODocumentModel(doc));
 	}
 
 	@Override

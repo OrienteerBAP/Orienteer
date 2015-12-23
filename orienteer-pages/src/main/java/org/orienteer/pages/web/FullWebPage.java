@@ -28,7 +28,7 @@ public class FullWebPage extends WebPage implements IMarkupResourceStreamProvide
 
 	public FullWebPage(PageParameters parameters) {
 		super(parameters);
-		delegate = new PageDelegate(parameters);
+		delegate = new PageDelegate(this, parameters);
 	}
 	
 	@Override

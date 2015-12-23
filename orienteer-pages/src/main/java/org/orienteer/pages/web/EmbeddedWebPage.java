@@ -20,7 +20,7 @@ public class EmbeddedWebPage extends OrienteerBasePage<Object> implements IMarku
 
 	public EmbeddedWebPage(PageParameters parameters) {
 		super(parameters);
-		delegate = new PageDelegate(parameters);
+		delegate = new PageDelegate(this, parameters);
 	}
 	
 	@Override
