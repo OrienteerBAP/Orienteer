@@ -18,6 +18,7 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
+import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.CallbackHook;
@@ -145,6 +146,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
+		getPageSettings().addComponentResolver(new WicketPropertyResolver());
 		registerModule(OrienteerLocalizationModule.class);
 		registerModule(UpdateDefaultSchemaModule.class);
 		registerModule(PerspectivesModule.class);
