@@ -1,6 +1,12 @@
 package org.orienteer.pages.web;
 
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.markup.DefaultMarkupCacheKeyProvider;
 import org.apache.wicket.markup.DefaultMarkupResourceStreamProvider;
 import org.apache.wicket.markup.IMarkupCacheKeyProvider;
 import org.apache.wicket.markup.IMarkupResourceStreamProvider;
@@ -15,12 +21,20 @@ import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.pages.OPageParametersEncoder;
 import org.orienteer.pages.module.PagesModule;
 
+import com.orientechnologies.common.concur.resource.OPartitionedObjectPool;
+import com.orientechnologies.common.log.OLogManager;
+import com.orientechnologies.orient.core.Orient;
+import com.orientechnologies.orient.core.command.script.OScriptManager;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.schedule.OSchedulerListener.SCHEDULER_STATUS;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
@@ -31,6 +45,7 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCacheKeyProvider, IDetachable, IClusterable{
 	
 	private static final IMarkupResourceStreamProvider DEFAULT_MARKUP_PROVIDER = new DefaultMarkupResourceStreamProvider();
+	private static final IMarkupCacheKeyProvider DEFAULT_MARKUP_CACHKEY_PROVIDER = new DefaultMarkupCacheKeyProvider();
 	
 	private final WebPage page;
 	private final ODocumentModel pageDocumentModel;
@@ -48,6 +63,32 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 		this.pageDocumentModel = new ODocumentModel(pageOrid);
 		ODocument doc = (ODocument)(docOrid!=null?docOrid.getRecord():pageDocumentModel.getObject().field(PagesModule.OPROPERTY_DOCUMENT));
 		if(doc!=null) page.setDefaultModel(new ODocumentModel(doc));
+		String script = pageDocumentModel.getObject().field(PagesModule.OPROPERTY_SCRIPT);
+		if(!Strings.isEmpty(script)) {
+			OScriptManager scriptManager = Orient.instance().getScriptManager();
+			ODatabaseDocument db = OrienteerWebSession.get().getDatabase();
+			final OPartitionedObjectPool.PoolEntry<ScriptEngine> entry = 
+					scriptManager.acquireDatabaseEngine(db.getName(), "javascript");
+			final ScriptEngine scriptEngine = entry.object;
+			Bindings binding = null;
+		    try {
+				binding = scriptManager.bind(scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE), 
+												(ODatabaseDocumentTx) db, null, null);
+				binding.put("page", page);
+				binding.put("pageDoc", pageDocumentModel.getObject());
+				binding.put("doc", doc);
+				try {
+					scriptEngine.eval(script);
+				} catch (ScriptException e) {
+					scriptManager.throwErrorMessage(e, script);
+				}
+			} finally {
+				if (scriptManager != null && binding != null) {
+					scriptManager.unbind(binding, null, null);
+					scriptManager.releaseDatabaseEngine("javascript", db.getName(), entry);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -61,8 +102,13 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 
 	@Override
 	public String getCacheKey(MarkupContainer container, Class<?> containerClass) {
-		ODocument pageDoc = pageDocumentModel.getObject();
-		return "OPage-"+pageDoc.getIdentity().toString()+"?v"+pageDoc.getVersion();
+		if(container.getClass().equals(containerClass)) {
+			ODocument pageDoc = pageDocumentModel.getObject();
+			return "OPage-"+pageDoc.getIdentity().toString()+"?v"+pageDoc.getVersion();
+		} else {
+			return DEFAULT_MARKUP_CACHKEY_PROVIDER.getCacheKey(container, containerClass);
+		}
+		
 	}
 
 	@Override

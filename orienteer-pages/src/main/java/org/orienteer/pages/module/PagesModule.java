@@ -20,6 +20,7 @@ public class PagesModule extends AbstractOrienteerModule {
 	public static final String OPROPERTY_TITLE="title";
 	public static final String OPROPERTY_DESCRIPTION="description";
 	public static final String OPROPERTY_CONTENT="content";
+	public static final String OPROPERTY_SCRIPT="script";
 	public static final String OPROPERTY_PATH="path";
 	public static final String OPROPERTY_EMBEDDED="embedded";
 	public static final String OPROPERTY_DOCUMENT="document";
@@ -60,8 +61,9 @@ public class PagesModule extends AbstractOrienteerModule {
 				.oProperty(OPROPERTY_PATH, OType.STRING, 10)
 				.oProperty(OPROPERTY_DESCRIPTION, OType.STRING, 20).assignVisualization("textarea")
 				.oProperty(OPROPERTY_CONTENT, OType.STRING, 30).assignVisualization("textarea")
-				.oProperty(OPROPERTY_EMBEDDED, OType.BOOLEAN, 40)
-				.oProperty(OPROPERTY_DOCUMENT, OType.LINK, 50);
+				.oProperty(OPROPERTY_SCRIPT, OType.STRING, 40).assignVisualization("textarea")
+				.oProperty(OPROPERTY_EMBEDDED, OType.BOOLEAN, 50)
+				.oProperty(OPROPERTY_DOCUMENT, OType.LINK, 60);
 	}
 	
 	@Override
