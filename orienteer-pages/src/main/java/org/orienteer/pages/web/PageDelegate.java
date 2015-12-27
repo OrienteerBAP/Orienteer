@@ -18,6 +18,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.SetModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.IClusterable;
+import org.apache.wicket.util.resource.AbstractStringResourceStream;
+import org.apache.wicket.util.resource.IFixedLocationResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.string.Strings;
@@ -46,6 +48,29 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 	
 	private static final IMarkupResourceStreamProvider DEFAULT_MARKUP_PROVIDER = new DefaultMarkupResourceStreamProvider();
 	private static final IMarkupCacheKeyProvider DEFAULT_MARKUP_CACHKEY_PROVIDER = new DefaultMarkupCacheKeyProvider();
+	
+	private static class OPageResourceStream extends AbstractStringResourceStream implements IFixedLocationResourceStream {
+
+		private String content;
+		private String location;
+		
+		public OPageResourceStream(ODocument page, String wrapTag) {
+			super("text/html");
+			content = (String) page.field(PagesModule.OPROPERTY_CONTENT);
+			if(!Strings.isEmpty(wrapTag)) content = "<"+wrapTag+">"+content+"</"+wrapTag+">";
+			location="OPage"+page.getIdentity()+"?v"+page.getVersion();
+		}
+		@Override
+		public String locationAsString() {
+			return location;
+		}
+
+		@Override
+		protected String getString() {
+			return content;
+		}
+		
+	}
 	
 	private final WebPage page;
 	private final ODocumentModel pageDocumentModel;
@@ -102,13 +127,8 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 
 	@Override
 	public String getCacheKey(MarkupContainer container, Class<?> containerClass) {
-		if(container.getClass().equals(containerClass)) {
-			ODocument pageDoc = pageDocumentModel.getObject();
-			return "OPage-"+pageDoc.getIdentity().toString()+"?v"+pageDoc.getVersion();
-		} else {
-			return DEFAULT_MARKUP_CACHKEY_PROVIDER.getCacheKey(container, containerClass);
-		}
-		
+		ODocument pageDoc = pageDocumentModel.getObject();
+		return DEFAULT_MARKUP_CACHKEY_PROVIDER.getCacheKey(container, containerClass)+"_"+pageDoc.getIdentity().toString()+"_v"+pageDoc.getVersion();
 	}
 
 	@Override
@@ -120,9 +140,7 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 	public IResourceStream getMarkupResourceStream(MarkupContainer container,
 			Class<?> containerClass, String wrapTag) {
 		if(container.getClass().equals(containerClass)) {
-			String content = (String) pageDocumentModel.getObject().field(PagesModule.OPROPERTY_CONTENT);
-			if(!Strings.isEmpty(wrapTag)) content = "<"+wrapTag+">"+content+"</"+wrapTag+">";
-			return new StringResourceStream(content, "text/html");
+			return new OPageResourceStream(pageDocumentModel.getObject(), wrapTag);
 		} else {
 			return DEFAULT_MARKUP_PROVIDER.getMarkupResourceStream(container, containerClass);
 		}
