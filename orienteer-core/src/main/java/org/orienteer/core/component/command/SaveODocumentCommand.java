@@ -4,6 +4,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
@@ -13,6 +14,7 @@ import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.orienteer.core.web.ODocumentPage;
+
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -28,7 +30,13 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 	public SaveODocumentCommand(
 			OrienteerStructureTable<ODocument, ?> structureTable,
 			IModel<DisplayMode> displayModeModel) {
-		super(structureTable, displayModeModel, structureTable.getModel());
+		this(structureTable, displayModeModel, structureTable.getModel());
+	}
+	
+	public SaveODocumentCommand(
+			ICommandsSupportComponent<ODocument> component,
+			IModel<DisplayMode> displayModeModel, IModel<ODocument> model) {
+		super(component, displayModeModel, model);
 		setIcon(FAIconType.save);
 		setBootstrapType(BootstrapType.PRIMARY);
 	}
