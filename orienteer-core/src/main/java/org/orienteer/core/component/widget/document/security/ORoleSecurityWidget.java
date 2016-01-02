@@ -145,7 +145,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 			@Override
 			protected void initializeContent(final ModalWindow modal) {
 				modal.setTitle(new ResourceModel("command.add.widget"));
-				modal.setContent(new AddRuleDialog(modal.getContentId()) {
+				modal.setContent(new AddRuleDialog(modal) {
 
 					@Override
 					protected void onRuleEntered(AjaxRequestTarget target,
