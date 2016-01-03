@@ -20,8 +20,9 @@ public class NotFoundWidget<T> extends AbstractWidget<T> {
 	public NotFoundWidget(String id, IModel<T> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
+		ODocument widgetDoc = widgetDocumentModel.getObject();
 		add(new Label("error", new StringResourceModel("widget.error.notfound", widgetDocumentModel)
-										.setParameters(widgetDocumentModel.getObject().field(OWidgetsModule.OPROPERTY_TYPE_ID))));
+										.setParameters(widgetDoc!=null?widgetDoc.field(OWidgetsModule.OPROPERTY_TYPE_ID):"null")));
 	}
 
 	@Override

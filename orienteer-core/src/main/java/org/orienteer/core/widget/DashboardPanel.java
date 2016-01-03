@@ -171,8 +171,8 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		
 	@SuppressWarnings("unchecked")
 	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
-		String typeId = widgetDoc.field(OPROPERTY_TYPE_ID);
-		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(typeId);
+		IWidgetType<T> type = null;
+		if(widgetDoc!=null) type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId((String)widgetDoc.field(OPROPERTY_TYPE_ID));
 		return  type!=null ? type.instanciate(newWidgetId(), getModel(), widgetDoc)
 						   : new NotFoundWidget<T>(newWidgetId(), getModel(), new ODocumentModel(widgetDoc));
 	}
