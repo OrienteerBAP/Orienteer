@@ -1,0 +1,20 @@
+<wicket:extend>
+    <form wicket:id="form">
+      <table class="table table-condensed">
+        <tr>
+            <td class="form-inline">
+               <wicket:container wicket:id="args">
+                    <input wicket:id="arg" class="form-control"/>           
+               </wicket:container>     
+            </td>
+            <td wicket:id="execute"></td>
+            <td wicket:id="refresh"></td>
+        </tr>
+        <tr>
+            <td colspan="3" class="st-value">
+                <textarea wicket:id="result"  class="form-control"></textarea>
+            </td>
+        </tr>
+      </table>
+    </form>
+</wicket:extend>

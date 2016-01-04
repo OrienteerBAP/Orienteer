@@ -137,7 +137,7 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 		return this;
 	}
 
-	AbstractLink getLink()
+	public AbstractLink getLink()
     {
     	return link;
     }
