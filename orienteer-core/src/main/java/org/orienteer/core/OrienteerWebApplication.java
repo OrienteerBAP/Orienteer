@@ -65,10 +65,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	private IWebjarsSettings webjarSettings;
 	
 	@Inject
-	@Named("orienteer.production")
-	private boolean production;
-	
-	@Inject
 	@Named("orientdb.embedded")
 	private boolean embedded;
 	
@@ -80,10 +76,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
 
-	@Inject
-	public OrienteerWebApplication()
-	{
+	
+	@Inject(optional=true)
+	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
 		setConfigurationType(production?RuntimeConfigurationType.DEPLOYMENT:RuntimeConfigurationType.DEVELOPMENT);
+		return this;
 	}
 	
 	@Inject
