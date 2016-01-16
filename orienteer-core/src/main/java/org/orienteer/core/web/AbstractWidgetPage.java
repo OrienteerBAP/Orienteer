@@ -119,7 +119,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	
 	protected IModel<String> newTabNameModel(String tabName)
 	{
-		return new SimpleNamingModel<String>(tabName);
+		return new SimpleNamingModel<String>("tab", tabName);
 	}
 	
 	protected List<DashboardTab> getDashboardTabs() {
