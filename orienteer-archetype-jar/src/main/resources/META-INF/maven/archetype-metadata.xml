@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor name="quickstart">
+    <requiredProperties>
+		<requiredProperty key="orienteerVersion">
+			<defaultValue>${project.version}</defaultValue>
+		</requiredProperty>
+		<requiredProperty key="wicketOrientDBVersion">
+		    <defaultValue>${wicket.orientdb.version}</defaultValue>
+		</requiredProperty>
+		<requiredProperty key="jettyVersion">
+			<defaultValue>${jetty.version}</defaultValue>
+		</requiredProperty>
+	</requiredProperties>
+	<fileSets>
+		<fileSet filtered="true" packaged="true" encoding="UTF-8">
+			<directory>src/main/java</directory>
+			<includes>
+				<include>**/*.java</include>
+				<include>**/*.html</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="true" packaged="true" encoding="UTF-8">
+			<directory>src/test/java</directory>
+			<includes>
+				<include>**/*.java</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="false" packaged="false" encoding="UTF-8">
+			<directory>src/test/resources</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="true" packaged="false" encoding="UTF-8">
+			<directory></directory>
+			<includes>
+				<include>README.md</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="false" packaged="false" encoding="UTF-8">
+			<directory>src/main/resources</directory>
+			<includes>
+				<include>log4j.properties</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="true" packaged="true" encoding="UTF-8">
+			<directory>src/main/resources</directory>
+			<excludes>
+				<exclude>log4j.properties</exclude>
+			</excludes>
+		</fileSet>
+	</fileSets>
+</archetype-descriptor>

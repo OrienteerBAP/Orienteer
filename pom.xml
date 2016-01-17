@@ -83,6 +83,7 @@
 		<module>orienteer-war</module>
 		<module>orienteer-standalone</module>
 		<module>orienteer-archetype-war</module>
+		<module>orienteer-archetype-jar</module>
 		<module>orienteer-graph</module>
 		<module>orienteer-pages</module>
   </modules>
