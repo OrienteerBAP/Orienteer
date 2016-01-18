@@ -1,7 +1,9 @@
 package ${package};
 
-import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.module.IOrienteerModule;
 
+import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 
 import static org.junit.Assert.*;
@@ -22,6 +24,10 @@ public class TestModule
 	@Test
 	public void testModuleLoaded()
 	{
-	    //TBD
+	    OrienteerWebApplication app = tester.getApplication();
+	    assertNotNull(app);
+	    IOrienteerModule module = app.getModuleByName("${artifactId}");
+	    assertNotNull(module);
+	    assertTrue(module instanceof Module);
 	}
 }
