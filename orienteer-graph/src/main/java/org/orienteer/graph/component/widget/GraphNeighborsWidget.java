@@ -46,6 +46,7 @@ public class GraphNeighborsWidget extends AbstractWidget<ODocument> {
         Form<ODocument> form = new Form<ODocument>("form");
         OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand(both()) from "+getModelObject().getIdentity());
         OClass commonParent = provider.probeOClass(20);
+        if(commonParent==null) commonParent = getSchema().getClass("V");
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
 
         OrienteerDataTable<ODocument, String> table =

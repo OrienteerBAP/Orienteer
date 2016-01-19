@@ -53,6 +53,7 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 
         VertexEdgesDataProvider vertexEdgesDataProvider = new VertexEdgesDataProvider(getModel());
         OClass commonParent = vertexEdgesDataProvider.probeOClass(20);
+        if(commonParent==null) commonParent = getSchema().getClass("E");
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
         commonParent.declaredProperties();
         commonParent.properties();

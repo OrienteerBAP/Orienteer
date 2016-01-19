@@ -23,6 +23,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -193,5 +194,9 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected ODatabaseDocument getDatabase() {
 		return OrientDbWebSession.get().getDatabase();
+	}
+	
+	protected OSchema getSchema() {
+		return OrientDbWebSession.get().getSchema();
 	}
 }

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
@@ -133,9 +134,9 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		return OrientDbWebSession.get().getDatabase();
 	}
 	
-	public ODatabaseDocument getDatabaseDocument()
+	public OSchema getSchema()
 	{
-		return (ODatabaseDocument)((ODatabaseDocumentInternal) getDatabase()).getDatabaseOwner();
+		return OrientDbWebSession.get().getSchema();
 	}
 	
 	public IModel<String> getTitleModel()
