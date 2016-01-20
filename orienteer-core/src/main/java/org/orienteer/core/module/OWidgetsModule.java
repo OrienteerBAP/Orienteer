@@ -17,9 +17,12 @@ import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.sql.query.OSQLQuery;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * {@link IOrienteerModule} to install widget specific things
@@ -39,6 +42,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	public static final String OCLASS_WIDGET = "OWidget";
 	public static final String OPROPERTY_DASHBOARD = "dashboard";
 	public static final String OPROPERTY_TYPE_ID = "typeId";
+	public static final String OPROPERTY_TITLE = "title";
 	public static final String OPROPERTY_COL = "col";
 	public static final String OPROPERTY_ROW = "row";
 	public static final String OPROPERTY_SIZE_X = "sizeX";
@@ -51,7 +55,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	private IWidgetTypesRegistry registry;
 	
 	public OWidgetsModule() {
-		super("widgets", 2);
+		super("widgets", 3);
 	}
 	
 	@Override
@@ -65,6 +69,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 					.oProperty(OPROPERTY_CLASS, OType.STRING, 40)
 					.oProperty(OPROPERTY_WIDGETS, OType.LINKLIST, 50).assignVisualization("table");
 		helper.oClass(OCLASS_WIDGET)
+					.oProperty(OPROPERTY_TITLE, OType.EMBEDDEDMAP, 0).assignVisualization("localization")
 					.oProperty(OPROPERTY_DASHBOARD, OType.LINK, 10).markDisplayable().markAsLinkToParent()
 					.oProperty(OPROPERTY_TYPE_ID, OType.STRING, 20).markDisplayable().markAsDocumentName()
 					.oProperty(OPROPERTY_COL, OType.INTEGER, 30)
@@ -74,6 +79,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 					.oProperty(OPROPERTY_HIDDEN, OType.BOOLEAN, 60);
 		helper.setupRelationship(OCLASS_DASHBOARD, OPROPERTY_WIDGETS, OCLASS_WIDGET, OPROPERTY_DASHBOARD);
 		installWidgetsSchemaV2(db); 
+		installWidgetsSchemaV3(db);
 	}
 	
 	@Override
@@ -82,7 +88,9 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		int updateTo = oldVersion+1;
 		switch(updateTo) {
 			case 2:
-			installWidgetsSchemaV2(db);
+				installWidgetsSchemaV2(db);
+			case 3:
+				installWidgetsSchemaV3(db);
 		}
 		if(updateTo<newVersion) onUpdate(app, db, updateTo, newVersion);
 	}
@@ -132,5 +140,19 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 
         helper.oClass(CalculatedDocumentsWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
                 .oProperty("query", OType.STRING, 0).assignVisualization("textarea");
+	}
+	
+	protected void installWidgetsSchemaV3(ODatabaseDocument db) {
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		OClass widgetClass = helper.oClass(OCLASS_WIDGET).getOClass();
+		if(!widgetClass.existsProperty(OPROPERTY_TITLE)) {
+			db.query(new OSQLSynchQuery<Void>("UPDATE "+OCLASS_WIDGET+" REMOVE title"));
+		}
+		OClass classToFix = db.getMetadata().getSchema()
+						.getClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME);
+		if(classToFix!=null && classToFix.existsProperty("title") && !widgetClass.existsProperty("title")) classToFix.dropProperty("title");
+		
+		helper.oClass(OCLASS_WIDGET)
+			.oProperty(OPROPERTY_TITLE, OType.EMBEDDEDMAP, 0).assignVisualization("localization");
 	}
 }
