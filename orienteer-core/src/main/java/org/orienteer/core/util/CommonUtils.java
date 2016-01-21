@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.util.convert.IConverter;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 
 /**
  * Common for Orienteer utility methods
@@ -30,5 +33,19 @@ public class CommonUtils {
 		}
 		if(returnFirstIfNoMatch && !map.isEmpty()) return map.values().iterator().next();
 		else return null;
+	}
+	
+	public static final String objectToString(Object value) {
+		return objectToString(value, "");
+	}
+	
+	public static final String objectToString(Object value, String defaultValue) {
+		String ret = null;
+		if(value!=null) {
+			final Class<?> objectClass = value.getClass();
+			final IConverter converter = OrienteerWebApplication.get().getConverterLocator().getConverter(objectClass);
+			ret = converter.convertToString(value, OrienteerWebSession.get().getLocale());
+		}
+		return ret!=null?ret:defaultValue;
 	}
 }
