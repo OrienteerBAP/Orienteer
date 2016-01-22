@@ -207,7 +207,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
 				else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
  				{
-					Select2MultiChoice choice = new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE);
+					//TODO Remove workaround when it will be fixed
+					Select2MultiChoice choice = new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE) {
+						public boolean isInputNullable() { return true;};
+					};
 					choice.getSettings().setAllowClear(true);
 					choice.add(new DragAndDropBehavior());
 					choice.add(new RefreshMetaContextOnChangeBehaviour());
