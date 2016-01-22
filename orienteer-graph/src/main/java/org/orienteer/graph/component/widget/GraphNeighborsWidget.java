@@ -67,7 +67,7 @@ public class GraphNeighborsWidget extends AbstractWidget<ODocument> {
     }
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new StringResourceModel("widget.document.neighbours.title", new ODocumentNameModel(getModel()));
     }
 

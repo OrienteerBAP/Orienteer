@@ -65,7 +65,7 @@ public class TestWidget extends AbstractWidget<String> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return Model.of("Test widget");
 	}
 	

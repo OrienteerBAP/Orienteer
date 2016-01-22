@@ -31,7 +31,7 @@ public class NotFoundWidget<T> extends AbstractWidget<T> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("widget.error");
 	}
 

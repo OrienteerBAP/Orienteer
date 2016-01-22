@@ -88,7 +88,7 @@ public class CalculatedDocumentsWidget extends AbstractWidget<ODocument> {
     }
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("widget.document.calculated");
     }
 

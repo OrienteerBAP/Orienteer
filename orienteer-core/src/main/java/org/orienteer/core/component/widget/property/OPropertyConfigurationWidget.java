@@ -50,7 +50,7 @@ public class OPropertyConfigurationWidget extends AbstractModeAwareWidget<OPrope
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("property.configuration");
 	}
 	

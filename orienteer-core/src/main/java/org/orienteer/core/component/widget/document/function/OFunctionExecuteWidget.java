@@ -116,7 +116,7 @@ public class OFunctionExecuteWidget extends AbstractWidget<ODocument> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("widget.document.function-executor");
 	}
 

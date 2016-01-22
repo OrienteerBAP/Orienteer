@@ -88,7 +88,7 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
     }
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new StringResourceModel("widget.document.edges.title", new ODocumentNameModel(getModel()));
     }
 

@@ -48,7 +48,7 @@ public class OClassesWidget extends AbstractOClassesListWidget<Void> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("class.list.title");
 	}
 

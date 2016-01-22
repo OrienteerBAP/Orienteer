@@ -67,7 +67,7 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     }
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new StringResourceModel("widget.document.vertices.title", new ODocumentNameModel(getModel()));
     }
 }

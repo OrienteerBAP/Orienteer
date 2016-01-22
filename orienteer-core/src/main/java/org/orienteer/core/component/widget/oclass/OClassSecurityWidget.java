@@ -133,7 +133,7 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("class.security");
 	}
 	

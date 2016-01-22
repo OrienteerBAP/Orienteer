@@ -60,7 +60,7 @@ public class OIndexConfigurationWidget extends AbstractModeAwareWidget<OIndex<?>
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("index.configuration");
 	}
 	

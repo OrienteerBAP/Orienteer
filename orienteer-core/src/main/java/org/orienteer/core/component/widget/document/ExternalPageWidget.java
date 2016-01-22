@@ -41,7 +41,7 @@ public class ExternalPageWidget extends AbstractWidget<ODocument> {
     }
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new LoadableDetachableModel<String>() {
             @Override
             protected String load() {

@@ -57,7 +57,7 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new StringResourceModel("class.browse.title", new OClassNamingModel(getModel()));
 	}
 	

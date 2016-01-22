@@ -115,7 +115,7 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
     }
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("widget.document.unregistered.properties");
     }
     

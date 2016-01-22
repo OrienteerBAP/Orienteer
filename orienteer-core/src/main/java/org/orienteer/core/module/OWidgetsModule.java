@@ -146,7 +146,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		OClass widgetClass = helper.oClass(OCLASS_WIDGET).getOClass();
 		if(!widgetClass.existsProperty(OPROPERTY_TITLE)) {
-			db.query(new OSQLSynchQuery<Void>("UPDATE "+OCLASS_WIDGET+" REMOVE title"));
+			db.command(new OSQLSynchQuery<Void>("UPDATE "+OCLASS_WIDGET+" REMOVE title"));
 		}
 		OClass classToFix = db.getMetadata().getSchema()
 						.getClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME);

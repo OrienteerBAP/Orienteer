@@ -202,7 +202,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("class.security");
 	}
 	

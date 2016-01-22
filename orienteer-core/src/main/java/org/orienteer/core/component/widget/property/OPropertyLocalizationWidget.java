@@ -25,7 +25,7 @@ public class OPropertyLocalizationWidget extends AbstractSchemaLocalizationWidge
     }
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("class.localization");
     }
 

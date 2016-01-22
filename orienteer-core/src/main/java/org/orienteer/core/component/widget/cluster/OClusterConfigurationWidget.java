@@ -48,7 +48,7 @@ public class OClusterConfigurationWidget extends AbstractModeAwareWidget<OCluste
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("cluster.configuration");
 	}
 	

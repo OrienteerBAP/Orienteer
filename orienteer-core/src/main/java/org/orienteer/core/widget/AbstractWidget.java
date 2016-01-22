@@ -17,9 +17,13 @@ import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
+import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
+import ru.ydn.wicket.wicketorientdb.model.NvlModel;
+import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -126,9 +130,16 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		return widgetDocumentModel.getObject();
 	}
 	
+	protected final IModel<String> getTitleModel() {
+		return new NvlModel<String>(new FunctionModel<Object, String>(
+												new ODocumentPropertyModel<Object>(getWidgetDocumentModel(), "title"), 
+												LocalizeFunction.getInstance()), 
+											getDefaultTitleModel());
+	}
+	
 	protected abstract FAIcon newIcon(String id);
 	
-	protected abstract IModel<String> getTitleModel();
+	protected abstract IModel<String> getDefaultTitleModel();
 	
 	@Override
 	protected void onConfigure() {

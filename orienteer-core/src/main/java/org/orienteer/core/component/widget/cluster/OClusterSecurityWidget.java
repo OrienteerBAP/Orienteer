@@ -128,7 +128,7 @@ public class OClusterSecurityWidget extends AbstractWidget<OCluster> {
 	}
 
 	@Override
-	protected IModel<String> getTitleModel() {
+	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("cluster.security");
 	}
 	

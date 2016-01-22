@@ -72,7 +72,7 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
     protected abstract OIndexiesDataProvider getIndexDataProvider();
 
     @Override
-    protected IModel<String> getTitleModel() {
+    protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel(getCaptionResourceKey());
     }
 
