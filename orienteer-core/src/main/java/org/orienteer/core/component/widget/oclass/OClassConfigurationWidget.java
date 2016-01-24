@@ -23,6 +23,7 @@ import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
+import ru.ydn.wicket.wicketorientdb.utils.OSchemaUtils;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -60,6 +61,12 @@ public class OClassConfigurationWidget extends AbstractModeAwareWidget<OClass> {
 			@Override
 			public PageParameters getPageParameters() {
 				return BrowseOClassPage.preparePageParameters(OClassConfigurationWidget.this.getModelObject(), DisplayMode.VIEW);
+			}
+			
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+				setVisible(OSchemaUtils.isNotNullOrPrototype(OClassConfigurationWidget.this.getModelObject()));
 			}
 		});
 	}

@@ -129,10 +129,10 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	protected void installWidgetsSchemaV2(ODatabaseDocument db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
-				.oProperty("title", OType.STRING, 0)
 				.oProperty("html", OType.STRING, 10).assignVisualization("textarea")
 				.oProperty("script", OType.STRING, 20).assignVisualization("textarea")
 				.oProperty("resources", OType.EMBEDDEDLIST, 30).linkedType(OType.STRING);
+		if(!helper.getOClass().existsProperty("title")) helper.oProperty("title", OType.STRING, 0);
 
 		helper.oClass(ExternalPageWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
 				.oProperty("pageUrl", OType.STRING, 0)
