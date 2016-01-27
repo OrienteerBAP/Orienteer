@@ -8,15 +8,18 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.AbstractDeleteCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.graph.module.GraphModule;
+
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
@@ -37,6 +40,7 @@ public class UnlinkVertexCommand extends AbstractDeleteCommand<ODocument> implem
     public UnlinkVertexCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel)
     {
         super(new ResourceModel("command.unlink"), table);
+        setBootstrapType(BootstrapType.WARNING);
         this.documentModel = documentModel;
         this.classModel = new OClassModel(GraphModule.EDGE_CLASS_NAME);
     }

@@ -38,7 +38,7 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
 
     public CreateEdgeCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentIModel) {
         super(new ResourceModel("command.link"), table);
-        setBootstrapType(BootstrapType.PRIMARY);
+        setBootstrapType(BootstrapType.SUCCESS);
         setIcon(FAIconType.plus);
         setAutoNotify(false);
         this.classModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
