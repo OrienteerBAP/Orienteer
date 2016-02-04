@@ -4,10 +4,12 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.orienteer.core.component.meta.OClassMetaPanel;
 import org.orienteer.core.model.LanguagesChoiceProvider;
 import org.wicketstuff.select2.Select2Choice;
 
@@ -22,8 +24,9 @@ public class OLocalizationEditPanel<V> extends EmbeddedMapEditPanel<V> {
     }
 
     @Override
-    protected TextField<String> getKeyEditComponent(ListItem<EmbeddedMapEditPanel.Pair<V>> item) {
+    protected Component getKeyEditComponent(ListItem<EmbeddedMapEditPanel.Pair<V>> item) {
         Select2Choice<String> select2 = new Select2Choice<String>("key", new PropertyModel<String>(item.getModel(), "key"), LanguagesChoiceProvider.INSTANCE);
+        select2.getSettings().setCloseOnSelect(true).setTheme(OClassMetaPanel.BOOTSTRAP_SELECT2_THEME);
         select2.add(new AttributeModifier("style", "width: 100%"));
         return select2;
     }

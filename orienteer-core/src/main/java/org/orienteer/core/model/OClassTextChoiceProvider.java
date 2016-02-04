@@ -2,8 +2,9 @@ package org.orienteer.core.model;
 
 import java.util.Collection;
 
+import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.select2.Response;
-import org.wicketstuff.select2.TextChoiceProvider;
+import org.wicketstuff.select2.ChoiceProvider;
 
 import ru.ydn.wicket.wicketorientdb.utils.OClassClassNameConverter;
 
@@ -14,19 +15,21 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 /**
  * {@link TextChoiceProvider} for {@link OClass}es
  */
-public class OClassTextChoiceProvider extends TextChoiceProvider<OClass> {
+public class OClassTextChoiceProvider extends ChoiceProvider<OClass> {
 	
 	public static final OClassTextChoiceProvider INSTANCE = new OClassTextChoiceProvider();
 
 	@Override
     public void query(final String s, int i, Response<OClass> response) {
-		response.addAll(ListOClassesModel.load(new Predicate<OClass>() {
-			
-			@Override
-			public boolean apply(OClass input) {
-				return input.getName().contains(s);
-			}
-		}));
+		if(!Strings.isEmpty(s)) {
+			response.addAll(ListOClassesModel.load(new Predicate<OClass>() {
+				
+				@Override
+				public boolean apply(OClass input) {
+					return input.getName().contains(s);
+				}
+			}));
+		}
     }
 
     @Override
@@ -34,13 +37,13 @@ public class OClassTextChoiceProvider extends TextChoiceProvider<OClass> {
         return Collections2.transform(collection, OClassClassNameConverter.INSTANCE.reverse());
     }
 
-    @Override
-    protected String getDisplayText(OClass choice) {
+	@Override
+    public String getDisplayValue(OClass choice) {
         return choice.getName();
     }
 
     @Override
-    protected Object getId(OClass choice) {
+    public String getIdValue(OClass choice) {
         return choice.getName();
     }
 

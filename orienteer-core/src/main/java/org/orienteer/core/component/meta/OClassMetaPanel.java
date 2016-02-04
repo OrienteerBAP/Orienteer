@@ -28,13 +28,15 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.validation.IValidator;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.model.OClassTextChoiceProvider;
 import org.orienteer.core.model.OnCreateFieldsTextChoiceProvider;
-import org.wicketstuff.select2.DragAndDropBehavior;
+import org.wicketstuff.select2.ISelect2Theme;
+import org.wicketstuff.select2.Select2BootstrapTheme;
 import org.wicketstuff.select2.Select2MultiChoice;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -58,6 +60,13 @@ import java.util.List;
  */
 public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V> implements IDisplayModeAware
 {
+	public static final ISelect2Theme BOOTSTRAP_SELECT2_THEME = new FixedSelect2BootstrapTheme();
+	
+	private static class FixedSelect2BootstrapTheme extends Select2BootstrapTheme implements IClusterable {
+		public FixedSelect2BootstrapTheme() {
+			super(false);
+		}
+	};
 	public static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
 	static
 	{
@@ -207,13 +216,9 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
 				else if(OClassPrototyper.SUPER_CLASSES.equals(critery))
  				{
-					//TODO Remove workaround when it will be fixed
-					Select2MultiChoice choice = new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE) {
-						public boolean isInputNullable() { return true;};
-					};
-					choice.getSettings().setAllowClear(true);
-					choice.add(new DragAndDropBehavior());
+					Select2MultiChoice choice = new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE);
 					choice.add(new RefreshMetaContextOnChangeBehaviour());
+					choice.getSettings().setCloseOnSelect(true).setTheme(BOOTSTRAP_SELECT2_THEME);
 					return choice;
 				}
 				else if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
@@ -253,7 +258,9 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
                 }
 				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_FIELDS))
 				{
-					return new Select2MultiChoice<String>(id, (IModel<Collection<String>>)getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE);
+					Select2MultiChoice<String> choice = new Select2MultiChoice<String>(id, (IModel<Collection<String>>)getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE);
+					choice.getSettings().setCloseOnSelect(true).setTheme(BOOTSTRAP_SELECT2_THEME);
+					return choice;
 				}
 				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_IDENTITY_TYPE))
 				{

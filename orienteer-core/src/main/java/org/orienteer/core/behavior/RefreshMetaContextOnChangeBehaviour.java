@@ -4,6 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
 
@@ -37,6 +38,8 @@ public class RefreshMetaContextOnChangeBehaviour extends AjaxFormSubmitBehavior
 		if(context!=null)
 		{
 			target.add(context.getContextComponent());
+//			String lastFocusedElementId = target.getLastFocusedElementId();
+//			if(!Strings.isEmpty(lastFocusedElementId)) target.appendJavaScript("Wicket.Focus.setFocusOnId(" + lastFocusedElementId + ");");
 		}
 	}
 

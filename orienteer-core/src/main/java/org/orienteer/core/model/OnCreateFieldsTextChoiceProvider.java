@@ -7,13 +7,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.select2.Response;
-import org.wicketstuff.select2.TextChoiceProvider;
+import org.wicketstuff.select2.StringTextChoiceProvider;
 
 /**
  * {@link TextChoiceProvider} for "onCreate.fields" multiSelect.
  */
-public class OnCreateFieldsTextChoiceProvider extends TextChoiceProvider<String> {
+public class OnCreateFieldsTextChoiceProvider extends StringTextChoiceProvider {
 
     private static final List<String> ON_CREATE_FIELDS_SELECTIONS =
             Arrays.asList(new String[]{ "_allow", "_allowRead", "_allowWrite", "_allowDelete" });
@@ -21,28 +22,13 @@ public class OnCreateFieldsTextChoiceProvider extends TextChoiceProvider<String>
     public static final OnCreateFieldsTextChoiceProvider INSTANCE = new OnCreateFieldsTextChoiceProvider();
 
     @Override
-    protected String getDisplayText(String choice) {
-        return choice;
-    }
-
-    @Override
-    protected Object getId(String choice) {
-        return choice;
-    }
-
-    @Override
     public void query(final String term, int page, Response<String> response) {
             response.addAll(Collections2.filter(ON_CREATE_FIELDS_SELECTIONS, new Predicate<String>() {
                 @Override
                 public boolean apply(String s) {
-                    return s.contains(term);
+                    return Strings.isEmpty(term) || s.contains(term);
                 }
             }));
-    }
-
-    @Override
-    public Collection<String> toChoices(Collection<String> ids) {
-        return ids;
     }
 
 }

@@ -174,7 +174,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		 .setIcon((String)null));
 	}
 
-	protected TextField<String> getKeyEditComponent(ListItem<Pair<V>> item) {
+	protected Component getKeyEditComponent(ListItem<Pair<V>> item) {
 		return new TextField<String>("key", new PropertyModel<String>(item.getModel(), "key"), String.class);
 	}
 

@@ -49,8 +49,8 @@ public class MarkupProvider implements IMarkupProvider
 		registerMarkupContent(Panel.class, "<div wicket:id=\"component\"></div>");
 		registerMarkupContent(AbstractLink.class, "<a wicket:id=\"component\"></a>");
 		registerMarkupContent(StructureTable.class, "<table wicket:id=\"component\"></table>");
-		registerMarkupContent(Select2MultiChoice.class, "<input type=\"hidden\" wicket:id=\"component\" class=\"form-control\"/>");
-		registerMarkupContent(Select2Choice.class, "<input type=\"hidden\" wicket:id=\"component\"/>");
+		registerMarkupContent(Select2MultiChoice.class, "<select wicket:id=\"component\" class=\"form-control\"/>");
+		registerMarkupContent(Select2Choice.class, "<select wicket:id=\"component\" class=\"form-control\"/>");
 	}
 	
 	@Override
