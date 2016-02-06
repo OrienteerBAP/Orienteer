@@ -109,7 +109,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 			}
 			
 		};
-		searchForm.add(new TextField<String>("query", queryModel));
+		searchForm.add(new TextField<String>("query", queryModel, String.class));
 		searchForm.add(new AjaxButton("search"){});
 		add(searchForm);
 	}

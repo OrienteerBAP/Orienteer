@@ -61,7 +61,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 		this.selectedClassModel = new OClassModel(initialClass!=null?initialClass: getClasses().get(0));
 		
 		Form<String> form = new Form<String>("form", getModel());
-		queryField = new TextField<String>("query", getModel());
+		queryField = new TextField<String>("query", getModel(), String.class);
 		queryField.setOutputMarkupId(true);
 		form.add(queryField);
 		form.add(new AjaxButton("search") {
