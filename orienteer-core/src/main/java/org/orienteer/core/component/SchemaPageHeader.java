@@ -66,7 +66,7 @@ public class SchemaPageHeader extends GenericPanel<OClass> {
 		});
 		childRepeatingView = new RepeatingView("child");
 		add(childRepeatingView);
-		add(UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_CHANGING_CONTINUE);
 	}
 	
 	public SchemaPageHeader addChild(Component component)

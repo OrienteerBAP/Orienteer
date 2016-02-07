@@ -186,7 +186,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 		});
 		sForm.add(sTable);
 		add(sForm);
-		add(DisableIfDocumentNotSavedBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(DisableIfDocumentNotSavedBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 	
 	@SuppressWarnings({ "unchecked", "deprecation" })

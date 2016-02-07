@@ -80,7 +80,7 @@ public class OClassPropertiesWidget extends AbstractModeAwareWidget<OClass> {
 		pTable.setCaptionModel(new ResourceModel("class.properties"));
 		pForm.add(pTable);
 		add(pForm);
-		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 
 	@Override

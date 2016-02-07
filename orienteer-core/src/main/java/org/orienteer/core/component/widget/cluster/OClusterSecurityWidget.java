@@ -119,7 +119,7 @@ public class OClusterSecurityWidget extends AbstractWidget<OCluster> {
 		sTable.setCaptionModel(new ResourceModel("cluster.security"));
 		sForm.add(sTable);
 		add(sForm);
-		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 
 	@Override

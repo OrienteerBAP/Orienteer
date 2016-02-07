@@ -151,7 +151,7 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 		});
 		form.add(structureTable);
 		add(form);
-		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 	
 	public boolean isHideSystem() {

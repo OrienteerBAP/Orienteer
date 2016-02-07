@@ -11,7 +11,29 @@ import org.orienteer.core.event.ActionPerformedEvent;
  */
 public class UpdateOnActionPerformedEventBehavior extends Behavior {
 	
-	public static final UpdateOnActionPerformedEventBehavior INSTANCE = new UpdateOnActionPerformedEventBehavior();
+	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALL_CONTINUE = new UpdateOnActionPerformedEventBehavior(false);
+	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALL_STOP = new UpdateOnActionPerformedEventBehavior(true);
+	public static final UpdateOnActionPerformedEventBehavior INSTANCE_CHANGING_CONTINUE = new UpdateChangingOnActionPerformedEventBehavior(false);
+	public static final UpdateOnActionPerformedEventBehavior INSTANCE_CHANGING_STOP = new UpdateChangingOnActionPerformedEventBehavior(true);
+	
+	private static class UpdateChangingOnActionPerformedEventBehavior extends UpdateOnActionPerformedEventBehavior {
+		
+		public UpdateChangingOnActionPerformedEventBehavior(boolean stopEvent) {
+			super(stopEvent);
+		}
+
+		@Override
+		protected boolean match(ActionPerformedEvent<?> event,
+				IEvent<?> wicketEvent) {
+			return event.getCommand().isChangingModel();
+		}
+	}
+	
+	private final boolean stopEvent;
+	
+	public UpdateOnActionPerformedEventBehavior(boolean stopEvent) {
+		this.stopEvent = stopEvent;
+	}
 	
 	@Override
 	public void bind(Component component) {
@@ -27,6 +49,7 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 			if(event.isAjax() && match(event, wicketEvent)) {
 				update(component, event, wicketEvent);
 			}
+			if(stopEvent) wicketEvent.stop();
 		}
 	}
 	
@@ -35,6 +58,6 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 	}
 	
 	protected boolean match(ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
-		return event.getCommand().isChangingModel();
+		return true;
 	}
 }

@@ -2,6 +2,7 @@ package org.orienteer.core.component.widget.schema;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.storage.OCluster;
+
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
@@ -17,6 +18,7 @@ import org.orienteer.core.component.table.OClusterMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
+
 import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClustersDataProvider;
 
@@ -68,5 +70,10 @@ public class OClustersWidget extends AbstractWidget<Void> {
     @Override
     protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("cluster.list.title");
+    }
+    
+    @Override
+    protected String getWidgetStyleClass() {
+    	return "strict";
     }
 }

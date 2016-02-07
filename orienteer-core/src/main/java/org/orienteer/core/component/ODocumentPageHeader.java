@@ -51,7 +51,7 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 						}.setDocumentNameAsBody(true));
 			}
 		});
-		add(UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_CHANGING_CONTINUE);
 	}
 
 }

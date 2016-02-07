@@ -21,6 +21,7 @@ import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
@@ -83,6 +84,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
 		setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_STOP);
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {
@@ -130,17 +132,17 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 				getDataProvider().detach();
 			}
 			
-			if(target!=null) {
+			/*if(target!=null) {
 				target.add(this);
 				onAjaxUpdate(target);
 				if(target.equals(payload)) event.stop();
-			}
+			}*/
 		}
 	}
 	
-	public void onAjaxUpdate(AjaxRequestTarget target)
+	/*public void onAjaxUpdate(AjaxRequestTarget target)
 	{
-	}
+	}*/
 
 	@Override
 	public IModel<String> getCaptionModel() {

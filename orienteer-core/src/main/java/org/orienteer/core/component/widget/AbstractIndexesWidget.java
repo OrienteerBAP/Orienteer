@@ -64,7 +64,7 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
         iTable.setCaptionModel(new ResourceModel("class.indexies"));
         iForm.add(iTable);
         add(iForm);
-        add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
+        add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 
     protected abstract String getCaptionResourceKey();

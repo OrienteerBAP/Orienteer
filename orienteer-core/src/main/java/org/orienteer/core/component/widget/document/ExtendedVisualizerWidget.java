@@ -52,7 +52,7 @@ public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
 										propertyModel, 
 										new DynamicPropertyValueModel<Object>(getModel(), propertyModel)));
 		add(form);
-		add(UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 
 	@Override

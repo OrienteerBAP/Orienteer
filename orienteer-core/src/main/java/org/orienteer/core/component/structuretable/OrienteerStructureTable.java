@@ -7,6 +7,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
@@ -38,6 +39,7 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 
 	protected void initialize()
 	{
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_STOP);
 		commandsToolbar = new StructureTableCommandsToolbar<T>(this);
 		addTopToolbar(commandsToolbar);
 	}
@@ -83,7 +85,7 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 		return AbstractMetaPanel.getMetaComponent(this, critery);
 	}
 	
-	@Override
+	/*@Override
 	public void onEvent(IEvent<?> event) {
 		
 		if(Broadcast.BUBBLE.equals(event.getType())) {
@@ -98,7 +100,7 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 				if(target.equals(payload)) event.stop();
 			}
 		}
-	}
+	}*/
 	
 	public void onAjaxUpdate(AjaxRequestTarget target)
 	{

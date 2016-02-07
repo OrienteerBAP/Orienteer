@@ -124,7 +124,7 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 		sTable.setCaptionModel(new ResourceModel("class.security"));
 		sForm.add(sTable);
 		add(sForm);
-		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE);
+		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 
 	@Override
