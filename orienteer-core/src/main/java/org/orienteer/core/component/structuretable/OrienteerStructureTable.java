@@ -39,7 +39,7 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 
 	protected void initialize()
 	{
-		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_STOP);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 		commandsToolbar = new StructureTableCommandsToolbar<T>(this);
 		addTopToolbar(commandsToolbar);
 	}

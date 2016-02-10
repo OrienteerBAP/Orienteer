@@ -84,7 +84,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
 		setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
-		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_STOP);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {

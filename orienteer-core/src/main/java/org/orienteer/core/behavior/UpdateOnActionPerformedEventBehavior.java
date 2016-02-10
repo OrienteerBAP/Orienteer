@@ -3,6 +3,7 @@ package org.orienteer.core.behavior;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.event.IEvent;
+import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
 
@@ -23,9 +24,9 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 		}
 
 		@Override
-		protected boolean match(ActionPerformedEvent<?> event,
+		protected boolean match(Component component, ActionPerformedEvent<?> event,
 				IEvent<?> wicketEvent) {
-			return event.getCommand().isChangingModel();
+			return super.match(component, event, wicketEvent) && event.getCommand().isChangingModel();
 		}
 	}
 	
@@ -46,7 +47,7 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 		Object payload = wicketEvent.getPayload();
 		if(payload instanceof ActionPerformedEvent) {
 			ActionPerformedEvent<?> event = (ActionPerformedEvent<?>)payload;
-			if(event.isAjax() && match(event, wicketEvent)) {
+			if(event.isAjax() && match(component, event, wicketEvent)) {
 				update(component, event, wicketEvent);
 			}
 			if(stopEvent) wicketEvent.stop();
@@ -54,10 +55,11 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 	}
 	
 	protected void update(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
-		event.getTarget().add(component);
+		component.configure();
+		if(component.isVisibleInHierarchy()) event.getTarget().add(component);
 	}
 	
-	protected boolean match(ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
-		return true;
+	protected boolean match(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
+		return Objects.equal(component.getDefaultModelObject(), event.getObject());
 	}
 }
