@@ -2,11 +2,10 @@ package org.orienteer.core.component;
 
 import java.util.List;
 
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.util.lang.Objects;
@@ -45,10 +44,31 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 				item.add(new ODocumentPageLink("link", item.getModel())
 						{
 							@Override
-							public boolean isEnabledInHierarchy() {
-								return !Objects.isEqual(getModelObject(), ODocumentPageHeader.this.getModelObject());
-							}
+							protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
+								super.onComponentTag(tag);
+								if(!isEnabledInHierarchy()) {
+									tag.setName("span");
+									tag.remove("href");
+								}
+							};
 						}.setDocumentNameAsBody(true));
+			}
+			
+			@Override
+			protected ListItem<ODocument> newItem(int index,
+					IModel<ODocument> itemModel) {
+				return new ListItem<ODocument>(index, itemModel){
+					@Override
+					protected void onComponentTag(ComponentTag tag) {
+						super.onComponentTag(tag);
+						if(!isEnabledInHierarchy()) {
+							tag.append("class", "active", " ");
+						}
+					}
+					public boolean isEnabledInHierarchy() {
+						return !Objects.isEqual(getModelObject(), ODocumentPageHeader.this.getModelObject());
+					}
+				};
 			}
 		});
 		add(UpdateOnActionPerformedEventBehavior.INSTANCE_CHANGING_CONTINUE);
