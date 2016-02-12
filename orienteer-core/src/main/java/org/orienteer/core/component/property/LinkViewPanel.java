@@ -14,17 +14,35 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class LinkViewPanel extends AbstractLinkViewPanel<ODocument> {
 
 	private static final long serialVersionUID = 1L;
+	
+	private IModel<?> titleModel;
 
 	public LinkViewPanel(
 			String id,
 			IModel<ODocument> valueModel) {
+		this(id, valueModel, null);
+	}
+	
+	public LinkViewPanel(
+			String id,
+			IModel<ODocument> valueModel, IModel<?> titleModel) {
 		super(id, valueModel);
+		this.titleModel = titleModel;
 	}
 	
 	@Override
 	protected AbstractLink newLink(String id)
 	{
-		return new ODocumentPageLink(id, getModel()).setDocumentNameAsBody(true);
+		ODocumentPageLink link = new ODocumentPageLink(id, getModel());
+		if(titleModel!=null) link.setBody(titleModel);
+		else link.setDocumentNameAsBody(true);
+		return link;
+	}
+	
+	@Override
+	public void detachModels() {
+		super.detachModels();
+		if(titleModel!=null) titleModel.detach();
 	}
 
 }
