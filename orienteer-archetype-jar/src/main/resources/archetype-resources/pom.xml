@@ -64,6 +64,11 @@
             <artifactId>orienteer-pages</artifactId>
             <version>${dollar}{orienteer.version}</version>
         </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-pivottable</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>

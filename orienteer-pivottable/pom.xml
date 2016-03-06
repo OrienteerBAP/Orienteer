@@ -18,8 +18,8 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 	<groupId>org.orienteer</groupId>
-	<artifactId>orienteer-pages</artifactId>
-	<name>orienteer-pages</name>
+	<artifactId>orienteer-pivottable</artifactId>
+	<name>orienteer-pivottable</name>
 	<url>http://orienteer.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -60,7 +60,7 @@
         </dependency>
 	</dependencies>
 	<build>
-		<finalName>orienteer-pages</finalName>
+		<finalName>orienteer-pivottable</finalName>
 		<resources>
 			<resource>
 				<filtering>false</filtering>

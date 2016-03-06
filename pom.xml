@@ -86,6 +86,7 @@
 		<module>orienteer-archetype-jar</module>
 		<module>orienteer-graph</module>
 		<module>orienteer-pages</module>
+		<module>orienteer-pivottable</module>
   </modules>
 	<dependencyManagement>
 	    <dependencies>

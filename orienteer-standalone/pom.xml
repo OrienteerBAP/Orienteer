@@ -37,6 +37,16 @@
             <artifactId>orienteer-graph</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-pages</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-pivottable</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 	    <dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
 			<artifactId>jetty-all</artifactId>

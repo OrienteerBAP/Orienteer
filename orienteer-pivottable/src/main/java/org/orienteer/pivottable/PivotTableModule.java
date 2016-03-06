@@ -1,4 +1,4 @@
-package ${package};
+package org.orienteer.pivottable;
 
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
@@ -10,12 +10,12 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
- * {@link IOrienteerModule} for '${artifactId}' module
+ * {@link IOrienteerModule} for 'orienteer-pivottable' module
  */
-public class Module extends AbstractOrienteerModule{
+public class PivotTableModule extends AbstractOrienteerModule{
 
-	protected Module() {
-		super("${artifactId}", 1);
+	protected PivotTableModule() {
+		super("orienteer-pivottable", 1);
 	}
 	
 	@Override
