@@ -15,7 +15,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
  * {@link IDashboardSupport} for Jquery UI
  */
 public class JQueryDashboardSupport implements IDashboardSupport {
-	final static WebjarsJavaScriptResourceReference JQUERY_UI_JS = new WebjarsJavaScriptResourceReference("/jquery-ui/current/jquery-ui.min.js");
+	public final static WebjarsJavaScriptResourceReference JQUERY_UI_JS = new WebjarsJavaScriptResourceReference("/jquery-ui/current/jquery-ui.min.js");
 	final static CssResourceReference WIDGET_CSS = new CssResourceReference(JQueryDashboardSupport.class, "widget.css");
 	
 	@Override

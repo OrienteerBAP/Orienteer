@@ -30,6 +30,21 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.webjars.bower</groupId>
+		    <artifactId>pivottable</artifactId>
+		    <version>1.6.3</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jquery</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.webjars.bower</groupId>
+					<artifactId>jqueryui</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
         <dependency>
             <groupId>org.orienteer</groupId>
