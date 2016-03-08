@@ -10,6 +10,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
@@ -31,7 +32,8 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 	public BrowsePivotTableWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		add(new PivotPanel("pivot", new StringResourceModel("widget.pivottable.urlpattern.oclass", model), 
+		add(new PivotPanel("pivot", new StringResourceModel("widget.pivottable.urlpattern.oclass", model),
+									DisplayMode.EDIT.asModel(),
 									new PropertyModel<String>(this, "config")));
 	}
 

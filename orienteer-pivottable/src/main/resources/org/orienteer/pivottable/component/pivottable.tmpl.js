@@ -2,10 +2,13 @@
 	var url = '${dataUrl}';
 	var config = JSON.parse('${config}');
 	config.hiddenAttributes = ['@type', '@rid', '@version'];
-	console.log(url);
-	console.log(config);
+	var editMode = ${editMode};
 	
 	$.get( url, function( data ) {
-		$("#${componentId}").pivotUI(data.result, config);
+		if(editMode) {
+			$("#${componentId}").pivotUI(data.result, config);
+		} else {
+			$("#${componentId}").pivot(data.result, config);
+		}
 	});
 }();
