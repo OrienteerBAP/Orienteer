@@ -30,6 +30,14 @@ public class PivotPanel extends GenericPanel<String> {
 	private static final WebjarsJavaScriptResourceReference PIVOT_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/pivot.min.js");
 	private static final CssResourceReference PIVOT_CSS_FIX = new CssResourceReference(PivotPanel.class, "pivottable.css");
 
+	
+	private static final WebjarsJavaScriptResourceReference D3_JS = new WebjarsJavaScriptResourceReference("/webjars/d3/current/d3.min.js");
+	private static final WebjarsJavaScriptResourceReference D3_RENDERERS_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/d3_renderers.min.js");
+	
+	private static final WebjarsCssResourceReference C3_CSS = new WebjarsCssResourceReference("/webjars/c3/current/c3.min.css");
+	private static final WebjarsJavaScriptResourceReference C3_JS = new WebjarsJavaScriptResourceReference("/webjars/c3/current/c3.min.js");
+	private static final WebjarsJavaScriptResourceReference C3_RENDERERS_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/c3_renderers.min.js");
+	
 	private final IModel<String> configModel;
 	private final IModel<DisplayMode> modeModel;
 	
@@ -52,8 +60,13 @@ public class PivotPanel extends GenericPanel<String> {
 		super.renderHead(response);
 		response.render(CssHeaderItem.forReference(PIVOT_CSS));
 		response.render(CssHeaderItem.forReference(PIVOT_CSS_FIX));
+		response.render(CssHeaderItem.forReference(C3_CSS));
 		response.render(JavaScriptHeaderItem.forReference(JQueryDashboardSupport.JQUERY_UI_JS));
 		response.render(JavaScriptHeaderItem.forReference(PIVOT_JS));
+		response.render(JavaScriptHeaderItem.forReference(D3_JS));
+		response.render(JavaScriptHeaderItem.forReference(C3_JS));
+		response.render(JavaScriptHeaderItem.forReference(D3_RENDERERS_JS));
+		response.render(JavaScriptHeaderItem.forReference(C3_RENDERERS_JS));
 		TextTemplate template = new PackageTextTemplate(PivotPanel.class, "pivottable.tmpl.js");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("componentId", getMarkupId());

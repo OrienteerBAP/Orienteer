@@ -45,6 +45,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+		    <groupId>org.webjars.bower</groupId>
+		    <artifactId>d3</artifactId>
+		    <version>3.5.16</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.webjars.bower</groupId>
+		    <artifactId>c3</artifactId>
+		    <version>0.4.10</version>
+		</dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
         <dependency>
             <groupId>org.orienteer</groupId>

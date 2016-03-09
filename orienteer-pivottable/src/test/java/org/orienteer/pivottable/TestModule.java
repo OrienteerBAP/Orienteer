@@ -26,7 +26,7 @@ public class TestModule
 	{
 	    OrienteerWebApplication app = tester.getApplication();
 	    assertNotNull(app);
-	    IOrienteerModule module = app.getModuleByName("orienteer-pivottable");
+	    IOrienteerModule module = app.getModuleByName("pivottable");
 	    assertNotNull(module);
 	    assertTrue(module instanceof PivotTableModule);
 	}
