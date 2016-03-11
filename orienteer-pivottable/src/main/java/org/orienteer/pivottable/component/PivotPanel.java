@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.core.util.lang.WicketObjects;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -11,6 +16,7 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.template.PackageTextTemplate;
@@ -40,12 +46,38 @@ public class PivotPanel extends GenericPanel<String> {
 	
 	private final IModel<String> configModel;
 	private final IModel<DisplayMode> modeModel;
+	private final UpdatePivotTableBehavior updatePivotTableBehavior;
+	
+	private class UpdatePivotTableBehavior extends AbstractDefaultAjaxBehavior {
+
+		@Override
+		protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+			super.updateAjaxAttributes(attributes);
+			attributes.getDynamicExtraParameters().add("return {config: JSON.stringify(cfg)};");
+			attributes.setMethod(Method.POST);
+		}
+		
+		@Override
+		protected void respond(AjaxRequestTarget target) {
+			if(configModel!=null) 
+				configModel.setObject(RequestCycle.get().getRequest().getRequestParameters()
+					 .getParameterValue("config").toString());
+		}
+		
+		@Override
+		public boolean isEnabled(Component component) {
+			DisplayMode mode = modeModel!=null?modeModel.getObject():DisplayMode.VIEW;
+			return DisplayMode.EDIT.equals(mode);
+		}
+		
+	}
 	
 	public PivotPanel(String id, IModel<String> urlModel, IModel<DisplayMode> modeModel, IModel<String> configModel) {
 		super(id, urlModel);
 		setOutputMarkupId(true);
 		this.modeModel = modeModel;
 		this.configModel = configModel;
+		add(updatePivotTableBehavior = new UpdatePivotTableBehavior());
 	}
 	
 	@Override
@@ -73,6 +105,7 @@ public class PivotPanel extends GenericPanel<String> {
 		params.put("dataUrl", getModelObject().replace("'", "\\'"));
 		params.put("config", Strings.defaultIfEmpty(configModel.getObject(), "{}"));
 		params.put("editMode", DisplayMode.EDIT.equals(modeModel.getObject()));
+		params.put("callBackScript", updatePivotTableBehavior.getCallbackScript());
 		template.interpolate(params);
 		response.render(OnDomReadyHeaderItem.forScript(template.asString()));
 	}
