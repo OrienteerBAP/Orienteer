@@ -8,6 +8,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.orienteer.core.behavior.UpdateOnDashboardDisplayModeChangeBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
@@ -33,8 +34,9 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		add(new PivotPanel("pivot", new StringResourceModel("widget.pivottable.urlpattern.oclass", model),
-									DisplayMode.EDIT.asModel(),
+									new PropertyModel<DisplayMode>(this, "displayMode"),
 									new PropertyModel<String>(this, "config")));
+		add(UpdateOnDashboardDisplayModeChangeBehavior.INSTANCE);
 	}
 
 	@Override
@@ -61,6 +63,10 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		ODocument doc = getWidgetDocument();
 		if(doc==null) return;
 		doc.field(PivotTableModule.OPROPERTY_PIVOT_TABLE_CONFIG, config);
+	}
+	
+	public DisplayMode getDisplayMode() {
+		return getDashboardPanel().getModeObject();
 	}
 	
 	public String getConfig() {

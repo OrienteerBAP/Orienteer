@@ -23,6 +23,9 @@
 		if(editMode) {
 			$("#${componentId}").pivotUI(data.result, config);
 		} else {
+			if(config.rendererName) config.renderer = config.renderers[config.rendererName];
+			if(config.aggregatorName) config.aggregator = $.pivotUtilities.aggregators[config.aggregatorName](config.vals);
+			console.log(config);
 			$("#${componentId}").pivot(data.result, config);
 		}
 	});

@@ -103,10 +103,13 @@ public class DefaultDashboardManager implements IDashboardManager{
 				String dashboardClass = candidate.field(OPROPERTY_CLASS);
 				if(dashboardClass==null && selected==null) selected = candidate;
 				else {
-					Integer thisLevel = isSuperClass(schema.getClass(dashboardClass), oClass);
-					if(thisLevel!=null && thisLevel < level) {
-						level = thisLevel;
-						selected = candidate;
+					OClass superClass = schema.getClass(dashboardClass);
+					if(superClass!=null) {
+						Integer thisLevel = isSuperClass(superClass, oClass);
+						if(thisLevel!=null && thisLevel < level) {
+							level = thisLevel;
+							selected = candidate;
+						}
 					}
 				}
 			}

@@ -33,6 +33,21 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 	{
 		super(commandId, labelKey);
 	}
+	
+	public AbstractModalWindowCommand(IModel<?> labelModel,
+			ICommandsSupportComponent<T> component, IModel<T> model) {
+		super(labelModel, component, model);
+	}
+
+	public AbstractModalWindowCommand(String commandId, IModel<?> labelModel,
+			IModel<T> model) {
+		super(commandId, labelModel, model);
+	}
+
+	public AbstractModalWindowCommand(String commandId, String labelKey,
+			IModel<T> model) {
+		super(commandId, labelKey, model);
+	}
 
 	@Override
 	protected void onInitialize() {

@@ -80,7 +80,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	private String tab;
 	
-	private ConfigureDashboardCommand<T> configureCommand;
+	private ConfigureDashboardCommand configureCommand;
 	
 	private RepeatingView commands;
 	
@@ -101,12 +101,12 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		this.widgetsFilter = widgetsFilter;
 		WebMarkupContainer commandsContainer = new WebMarkupContainer("commandsContainer");
 		OSecurityHelper.secureComponent(commandsContainer, OSecurityHelper.requireOClass(OWidgetsModule.OCLASS_DASHBOARD, OrientPermission.UPDATE));
-		commandsContainer.add(configureCommand = new ConfigureDashboardCommand<T>("configure"));
+		commandsContainer.add(configureCommand = new ConfigureDashboardCommand("configure", dashboardDocumentModel));
 		commands = new RepeatingView("commands");
-		commands.add(new AddWidgetCommand<T>(commands.newChildId()));
-		commands.add(new UnhideWidgetCommand<T>(commands.newChildId()));
-		commands.add(new SilentSaveDashboardCommand<T>(commands.newChildId()));
-		commands.add(new KeepUnsavedDashboardCommand<T>(commands.newChildId()));
+		commands.add(new AddWidgetCommand<T>(commands.newChildId(), dashboardDocumentModel));
+		commands.add(new UnhideWidgetCommand<T>(commands.newChildId(), dashboardDocumentModel));
+		commands.add(new SilentSaveDashboardCommand(commands.newChildId(), dashboardDocumentModel));
+		commands.add(new KeepUnsavedDashboardCommand(commands.newChildId(), dashboardDocumentModel));
 		commandsContainer.add(commands);
 		add(commandsContainer);
 		widgets = new RepeatingView("widgets");

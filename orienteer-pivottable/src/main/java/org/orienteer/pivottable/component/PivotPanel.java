@@ -10,6 +10,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
 import org.apache.wicket.core.util.lang.WicketObjects;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -33,7 +34,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
 public class PivotPanel extends GenericPanel<String> {
 	
 	private static final WebjarsCssResourceReference PIVOT_CSS = new WebjarsCssResourceReference("/webjars/pivottable/current/dist/pivot.min.css");
-	private static final WebjarsJavaScriptResourceReference PIVOT_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/pivot.min.js");
+	private static final WebjarsJavaScriptResourceReference PIVOT_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/pivot.js");
 	private static final CssResourceReference PIVOT_CSS_FIX = new CssResourceReference(PivotPanel.class, "pivottable.css");
 
 	

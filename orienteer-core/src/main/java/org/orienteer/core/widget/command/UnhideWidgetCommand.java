@@ -2,6 +2,7 @@ package org.orienteer.core.widget.command;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
@@ -21,13 +22,13 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<T> {
+public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
 	
 	@Inject
 	private IDashboardManager dashboardManager;
 	
-	public UnhideWidgetCommand(String id) {
-		super(id, "command.unhide");
+	public UnhideWidgetCommand(String id, IModel<ODocument> dashboardDocumentModel) {
+		super(id, "command.unhide", dashboardDocumentModel);
 		setIcon(FAIconType.plus_circle);
 		setBootstrapType(BootstrapType.PRIMARY);
 		setBootstrapSize(BootstrapSize.EXTRA_SMALL);

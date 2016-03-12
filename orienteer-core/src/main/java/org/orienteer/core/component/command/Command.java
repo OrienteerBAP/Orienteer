@@ -52,6 +52,7 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
 	private BootstrapSize bootstrapSize = BootstrapSize.DEFAULT;
 	private boolean changingModel=false;
+	private boolean changingDisplayMode=false;
 	private boolean autoNotify=true;
 	
 	@SuppressWarnings("unchecked")
@@ -197,6 +198,15 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	
 	public Command<T> setChandingModel(boolean changingModel) {
 		this.changingModel = changingModel;
+		return this;
+	}
+	
+	public boolean isChangingDisplayMode() {
+		return changingDisplayMode;
+	}
+	
+	public Command<T> setChangingDisplayMode(boolean changingDisplayMode) {
+		this.changingDisplayMode = changingDisplayMode;
 		return this;
 	}
 	
