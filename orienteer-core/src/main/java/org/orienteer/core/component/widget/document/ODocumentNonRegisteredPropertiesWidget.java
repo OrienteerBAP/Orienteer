@@ -41,7 +41,7 @@ import java.util.Set;
 /**
  * Widget to show unregistered parameters for a document on particular tab
  */
-@Widget(domain="document", tab="parameters", id = ODocumentNonRegisteredPropertiesWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+@Widget(domain="document", tab="parameters", id = ODocumentNonRegisteredPropertiesWidget.WIDGET_TYPE_ID, order=20, autoEnable=false)
 public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWidget<ODocument> {
 
     public static final String WIDGET_TYPE_ID = "nonregistered";
@@ -96,9 +96,10 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
     @Override
 	protected void onConfigure() {
 		super.onConfigure();
+		/* Hide if there is no extra properties
 		IModel<? extends List<? extends OProperty>> propertiesModel = propertiesStructureTable.getCriteriesModel();
 		List<? extends OProperty> properties = propertiesModel.getObject();
-		setVisible(properties!=null && !properties.isEmpty());
+		setVisible(properties!=null && !properties.isEmpty());*/
 		if(DisplayMode.EDIT.equals(getModeObject()))
 		{
 			saveODocumentCommand.configure();
