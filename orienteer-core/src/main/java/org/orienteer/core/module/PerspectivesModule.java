@@ -2,6 +2,7 @@ package org.orienteer.core.module;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -40,7 +41,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 
 	public PerspectivesModule()
 	{
-		super("perspectives", 3);
+		super("perspectives", 4);
 	}
 
 	@Override
@@ -49,7 +50,8 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			.oClass(OCLASS_PERSPECTIVE)
 				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization")
 					.markAsDocumentName()
-					.oIndex(OCLASS_PERSPECTIVE + ".name", INDEX_TYPE.UNIQUE)
+					.linkedType(OType.STRING)
+					.oIndex(OCLASS_PERSPECTIVE + ".name_by_value", INDEX_TYPE.UNIQUE, "name by value")
 				.oProperty("icon", OType.STRING)
 				.oProperty("homeUrl", OType.STRING)
 				.oProperty("menu", OType.LINKLIST).assignVisualization("table")
@@ -84,6 +86,10 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			case 3:
 				onInstall(app, db);
 				break;
+			case 4:
+				OIndex<?> index = db.getMetadata().getIndexManager().getIndex(OCLASS_PERSPECTIVE + ".name");
+				if(index!=null) index.delete();
+				onInstall(app, db);
 			default:
 				break;
 		}
