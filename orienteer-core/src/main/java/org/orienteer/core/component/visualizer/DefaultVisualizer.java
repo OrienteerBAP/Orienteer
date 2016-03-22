@@ -112,7 +112,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case EMBEDDEDMAP:
                 	return new EmbeddedMapEditPanel<V>(id, documentModel, propertyModel);
                 case BINARY:
-                	return new BinaryEditPanel(id, (IModel<byte[]>)valueModel);
+                	return new BinaryEditPanel(id, documentModel, propertyModel, (IModel<byte[]>)valueModel);
                 default:
                 	TextField<V> ret = new TextField<V>(id, valueModel);
                 	Class<?> javaOType = oType.getDefaultJavaType();

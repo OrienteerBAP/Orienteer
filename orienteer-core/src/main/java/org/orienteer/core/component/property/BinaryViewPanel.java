@@ -10,6 +10,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.AbstractResource.ResourceResponse;
 import org.apache.wicket.request.resource.IResource.Attributes;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.service.IOClassIntrospector;
 
 import com.google.inject.Inject;
@@ -36,8 +37,11 @@ public class BinaryViewPanel<V> extends GenericPanel<V> {
 
 			@Override
 			protected String load() {
-				String filename = oClassIntrospector.getDocumentName(docModel.getObject());
-				filename += "."+propModel.getObject().getName()+".bin";
+				String filename = docModel.getObject().field(propModel.getObject().getName()+BinaryEditPanel.FILENAME_SUFFIX, String.class);
+				if(Strings.isEmpty(filename)){
+					filename = oClassIntrospector.getDocumentName(docModel.getObject());
+					filename += "."+propModel.getObject().getName()+".bin";
+				}
 				return filename;
 			}
 			
@@ -77,7 +81,7 @@ public class BinaryViewPanel<V> extends GenericPanel<V> {
 			     });
 			     return resourceResponse;
 			}
-		}));
+		}).setBody(nameModel));
 	}
 	
 	@Override
