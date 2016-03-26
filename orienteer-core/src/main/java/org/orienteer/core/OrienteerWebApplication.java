@@ -37,6 +37,7 @@ import org.orienteer.core.widget.IWidgetTypesRegistry;
 
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
@@ -67,6 +68,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orientdb.embedded")
 	private boolean embedded;
+
+	@Inject
+	@Named("orienteer.authenticatelazy")
+	private boolean authenticateLazy;
 	
 	@Inject(optional=true)
 	@Named("wicket.render.strategy")
@@ -152,6 +157,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
 		mountOrientDbRestApi();
+		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 	}
