@@ -18,7 +18,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
-import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
@@ -129,7 +129,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 			protected void populateItem(final ListItem<Pair<V>> item) {
 				item.add(getKeyEditComponent(item));
 				item.add(visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, new PropertyModel<V>(item.getModel(), "value")));
-				item.add(new AjaxCommand<Object>("remove", "command.remove")
+				item.add(new AjaxFormCommand<Object>("remove", "command.remove")
 						{
 							@Override
 							public void onClick(AjaxRequestTarget target) {
@@ -159,7 +159,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		};
 		listView.setReuseItems(true);
 		add(listView);
-		add(new AjaxCommand("add", "command.add")
+		add(new AjaxFormCommand("add", "command.add")
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target) {
@@ -175,7 +175,8 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 	}
 
 	protected Component getKeyEditComponent(ListItem<Pair<V>> item) {
-		return new TextField<String>("key", new PropertyModel<String>(item.getModel(), "key"), String.class);
+		return new TextField<String>("key", new PropertyModel<String>(item.getModel(), "key"), String.class)
+				.setConvertEmptyInputStringToNull(false);
 	}
 
 	public List<Pair<V>> getData() {
