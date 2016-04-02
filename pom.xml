@@ -62,7 +62,7 @@
 	<properties>
 		<wicket.version>7.2.0</wicket.version>
 		<wicketstuff.version>7.2.0</wicketstuff.version>
-		<orientdb.version>2.1.13</orientdb.version>
+		<orientdb.version>2.1.14</orientdb.version>
 		<wicket.orientdb.version>1.2-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.2.11.v20150529</jetty.version>
 		<enableAssertions>false</enableAssertions>
