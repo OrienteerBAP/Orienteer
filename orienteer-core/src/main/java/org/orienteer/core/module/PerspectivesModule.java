@@ -41,7 +41,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 
 	public PerspectivesModule()
 	{
-		super("perspectives", 4);
+		super("perspectives", 5);
 	}
 
 	@Override
@@ -68,6 +68,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.switchDisplayable(true, "name", "icon", "url")
 				.orderProperties("name", "perspective", "icon", "url")
 				.setupRelationship(OCLASS_PERSPECTIVE, "menu", OCLASS_ITEM, "perspective")
+			.oClass(OIdentity.CLASS_NAME)
 				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE)
 			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_ITEM, "perspectiveItem")
 				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_ITEM)
@@ -90,6 +91,10 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				OIndex<?> index = db.getMetadata().getIndexManager().getIndex(OCLASS_PERSPECTIVE + ".name");
 				if(index!=null) index.delete();
 				onInstall(app, db);
+			case 5:
+				OSchemaHelper.bind(db)
+					.oClass(OIdentity.CLASS_NAME)
+					.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE);
 			default:
 				break;
 		}
