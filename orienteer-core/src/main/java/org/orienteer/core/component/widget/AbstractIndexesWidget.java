@@ -23,7 +23,7 @@ import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
-import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
+import ru.ydn.wicket.wicketorientdb.model.OIndexesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.utils.OIndexNameConverter;
 
@@ -44,24 +44,24 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
         super(id, model, widgetDocumentModel);
 
         Form<OClass> iForm = new Form<OClass>("form");
-        IModel<DisplayMode> indexiesDisplayMode = getModeModel();
+        IModel<DisplayMode> indexesDisplayMode = getModeModel();
         List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
         iColumns.add(new CheckBoxColumn<OIndex<?>, String, String>(OIndexNameConverter.INSTANCE));
-        iColumns.add(new OIndexDefinitionColumn(OIndexPrototyper.NAME, indexiesDisplayMode));
-        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.TYPE, indexiesDisplayMode));
-        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_FIELDS, indexiesDisplayMode));
-        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_COLLATE, indexiesDisplayMode));
-        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_NULLS_IGNORED, indexiesDisplayMode));
-        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.SIZE, indexiesDisplayMode));
-        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.KEY_SIZE, indexiesDisplayMode));
+        iColumns.add(new OIndexDefinitionColumn(OIndexPrototyper.NAME, indexesDisplayMode));
+        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.TYPE, indexesDisplayMode));
+        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_FIELDS, indexesDisplayMode));
+        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_COLLATE, indexesDisplayMode));
+        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_NULLS_IGNORED, indexesDisplayMode));
+        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.SIZE, indexesDisplayMode));
+        iColumns.add(new OIndexMetaColumn(OIndexPrototyper.KEY_SIZE, indexesDisplayMode));
 
-        OIndexiesDataProvider iProvider = getIndexDataProvider();
+        OIndexesDataProvider iProvider = getIndexDataProvider();
         iProvider.setSort("name", SortOrder.ASCENDING);
-        iTable = new OrienteerDataTable<OIndex<?>, String>("indexies", iColumns, iProvider ,20);
-        iTable.addCommand(new EditSchemaCommand<OIndex<?>>(iTable, indexiesDisplayMode));
-        iTable.addCommand(new SaveSchemaCommand<OIndex<?>>(iTable, indexiesDisplayMode));
+        iTable = new OrienteerDataTable<OIndex<?>, String>("indexes", iColumns, iProvider ,20);
+        iTable.addCommand(new EditSchemaCommand<OIndex<?>>(iTable, indexesDisplayMode));
+        iTable.addCommand(new SaveSchemaCommand<OIndex<?>>(iTable, indexesDisplayMode));
         iTable.addCommand(new DeleteOIndexCommand(iTable));
-        iTable.setCaptionModel(new ResourceModel("class.indexies"));
+        iTable.setCaptionModel(new ResourceModel("class.indexes"));
         iForm.add(iTable);
         add(iForm);
         add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
@@ -69,7 +69,7 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
 
     protected abstract String getCaptionResourceKey();
 
-    protected abstract OIndexiesDataProvider getIndexDataProvider();
+    protected abstract OIndexesDataProvider getIndexDataProvider();
 
     @Override
     protected IModel<String> getDefaultTitleModel() {

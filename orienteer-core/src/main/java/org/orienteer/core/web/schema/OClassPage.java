@@ -22,7 +22,7 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
- * Page to show {@link OClass} specific things: class parameters, properties, indexies and etc.
+ * Page to show {@link OClass} specific things: class parameters, properties, indexes and etc.
  */
 @MountPath("/class/${className}/#{mode}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)

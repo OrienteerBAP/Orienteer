@@ -7,7 +7,7 @@ import org.orienteer.core.component.widget.AbstractIndexesWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.AbstractListModel;
-import ru.ydn.wicket.wicketorientdb.model.OIndexiesDataProvider;
+import ru.ydn.wicket.wicketorientdb.model.OIndexesDataProvider;
 
 import java.util.Collection;
 
@@ -28,7 +28,7 @@ public class SchemaIndexesWidget extends AbstractIndexesWidget<Void> {
 	}
 
 	@Override
-	protected OIndexiesDataProvider getIndexDataProvider() {
+	protected OIndexesDataProvider getIndexDataProvider() {
 		AbstractListModel<OIndex<?>> allIndexesModel = new AbstractListModel<OIndex<?>>() {
 			@Override
 			protected Collection<OIndex<?>> getData() {
@@ -36,6 +36,6 @@ public class SchemaIndexesWidget extends AbstractIndexesWidget<Void> {
 			}
 		};
 
-		return new OIndexiesDataProvider(allIndexesModel);
+		return new OIndexesDataProvider(allIndexesModel);
 	}
 }
