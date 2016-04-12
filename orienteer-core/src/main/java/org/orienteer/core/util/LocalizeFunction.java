@@ -25,15 +25,10 @@ public class LocalizeFunction<F> implements Function<F, String>, Serializable{
 	public String apply(F input) {
 		Object value = input;
 		if(value instanceof Map) {
-			Map<?,?> map = (Map<?, ?>) value;
-	        if (value != null) {
-	            String currentLanguage = OrienteerWebSession.get().getLocale().getLanguage();
-	            value = map.get(currentLanguage);
-	            if (value == null) {
-	                value = map.get(Locale.getDefault().getLanguage());
-	            }
-	        }
-		}
+            value = CommonUtils.localizeByMap((Map<String, ?>) value, true, 
+            			OrienteerWebSession.get().getLocale().getLanguage(), 
+            			Locale.getDefault().getLanguage());
+		} 
 		return CommonUtils.objectToString(value, null);
 	}
 
