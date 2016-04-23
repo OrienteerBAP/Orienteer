@@ -19,6 +19,7 @@
 	</parent>
 	<artifactId>orienteer-archetype-war</artifactId>
 	<packaging>maven-archetype</packaging>
+	<description>An maven archetype for custom Orienteer based WAR</description>
 
 	<build>
 		<resources>

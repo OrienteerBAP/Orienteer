@@ -19,6 +19,7 @@
 	</parent>
 	<artifactId>orienteer-archetype-jar</artifactId>
 	<packaging>maven-archetype</packaging>
+	<description>An maven archetype for custom Orienteer jar modules</description>
 
 	<build>
 		<resources>

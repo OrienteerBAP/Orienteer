@@ -22,7 +22,7 @@
 	<packaging>pom</packaging>
 	<version>1.2-SNAPSHOT</version>
 	<name>Orienteer</name>
-	<description>Orienteer - Modern Data Warehouse</description>
+	<description>Orienteer - Business Application Platform</description>
 	<url>http://orienteer.org</url>
 	<scm>
 	    <url>https://github.com/OrienteerDW/Orienteer</url>
