@@ -9,6 +9,7 @@ import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link IOrienteerModule} for 'orienteer-pivottable' module
@@ -24,8 +25,9 @@ public class PivotTableModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		onUpdate(app, db, 0, getVersion());
+		return null;
 	}
 
 	@Override
@@ -53,7 +55,13 @@ public class PivotTableModule extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		OrienteerWebApplication.get().registerWidgets("org.orienteer.pivottable.component.widget");
+		app.registerWidgets("org.orienteer.pivottable.component.widget");
+	}
+	
+	@Override
+	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+		super.onDestroy(app, db);
+		app.unregisterWidgets("org.orienteer.pivottable.component.widget");
 	}
 	
 }

@@ -45,7 +45,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 	}
 
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		OSchemaHelper.bind(db)
 			.oClass(OCLASS_PERSPECTIVE)
 				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization")
@@ -73,6 +73,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_ITEM, "perspectiveItem")
 				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_ITEM)
             .oClass(OIdentity.CLASS_NAME);
+		return null;
 	}
 	
 	@Override

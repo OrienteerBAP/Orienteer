@@ -6,6 +6,7 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link AbstractOrienteerModule} to provide graph extentions
@@ -18,13 +19,12 @@ public class GraphModule extends AbstractOrienteerModule {
 
 	protected GraphModule() {
 		super("graph", 1);
-
-		OrienteerWebApplication.get().registerWidgets("org.orienteer.graph.component.widget");
 	}
 	
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		onUpdate(app, db, 0, getVersion());
+		return null;
 	}
 
 	@Override
@@ -47,6 +47,16 @@ public class GraphModule extends AbstractOrienteerModule {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(VERTEX_CLASS_NAME)
 			  .oClass(EDGE_CLASS_NAME);
+	}
+	
+	@Override
+	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+		app.registerWidgets("org.orienteer.graph.component.widget");
+	}
+	
+	@Override
+	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+		app.unregisterWidgets("org.orienteer.graph.component.widget");
 	}
 
 }

@@ -9,6 +9,7 @@ import org.orienteer.pages.PagesCompoundRequestMapper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link AbstractOrienteerModule} to provide extentions for Orienteer Pages
@@ -30,12 +31,12 @@ public class PagesModule extends AbstractOrienteerModule {
 	protected PagesModule() {
 		super("pages", 1);
 
-		OrienteerWebApplication.get().registerWidgets("org.orienteer.pages.component.widget");
 	}
 	
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		onUpdate(app, db, 0, getVersion());
+		return null;
 	}
 
 	@Override
@@ -69,8 +70,16 @@ public class PagesModule extends AbstractOrienteerModule {
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
+		app.registerWidgets("org.orienteer.pages.component.widget");
 		app.mount(pagesCompoundRequestMapper = new PagesCompoundRequestMapper());
 		app.getOrientDbSettings().getORecordHooks().add(PagesHook.class);
+	}
+	
+	@Override
+	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+		app.unregisterWidgets("org.orienteer.pages.component.widget");
+		app.getRootRequestMapperAsCompound().remove(pagesCompoundRequestMapper);
+		app.getOrientDbSettings().getORecordHooks().remove(PagesHook.class);
 	}
 	
 	public PagesCompoundRequestMapper getPagesCompoundRequestMapper() {

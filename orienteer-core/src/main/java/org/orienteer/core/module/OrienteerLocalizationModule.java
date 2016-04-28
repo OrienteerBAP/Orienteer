@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -165,7 +166,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 	}
 
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(OCLASS_LOCALIZATION)
 			.oProperty(OPROPERTY_KEY, OType.STRING)
@@ -179,6 +180,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 			.orderProperties(OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE)
 			.switchDisplayable(true, OPROPERTY_KEY, OPROPERTY_ACTIVE, OPROPERTY_LANG, OPROPERTY_STYLE, OPROPERTY_VARIATION, OPROPERTY_VALUE);
 		helper.oClass(OCLASS_USER).oProperty(OPROPERTY_LOCALE, OType.STRING);
+		return null;
 	}
 
 	@Override
@@ -191,6 +193,15 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		app.getResourceSettings().getStringResourceLoaders().add(new OrienteerStringResourceLoader());
 		app.getOrientDbSettings().getORecordHooks().add(LocalizationInvalidationHook.class);
+	}
+	
+	@Override
+	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+		Iterator<IStringResourceLoader> it = app.getResourceSettings().getStringResourceLoaders().iterator();
+		while (it.hasNext()){
+			if(it.next() instanceof OrienteerStringResourceLoader) it.remove();
+		}
+		app.getOrientDbSettings().getORecordHooks().remove(LocalizationInvalidationHook.class);
 	}
 	
 	

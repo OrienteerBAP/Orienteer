@@ -21,6 +21,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLQuery;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
@@ -59,7 +60,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(OCLASS_DASHBOARD)
@@ -80,6 +81,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		helper.setupRelationship(OCLASS_DASHBOARD, OPROPERTY_WIDGETS, OCLASS_WIDGET, OPROPERTY_DASHBOARD);
 		installWidgetsSchemaV2(db); 
 		installWidgetsSchemaV3(db);
+		return null;
 	}
 	
 	@Override

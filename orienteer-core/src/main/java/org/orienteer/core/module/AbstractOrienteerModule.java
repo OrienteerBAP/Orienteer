@@ -10,6 +10,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Abstract dummy {@link IOrienteerModule} to simplify creation of specific Orienteer modules
@@ -36,28 +37,46 @@ public abstract class AbstractOrienteerModule implements IOrienteerModule
 	}
 
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
-
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+		return null;
 	}
-
-	@Override
+	
 	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
 			int oldVersion, int newVersion) {
-
+		
 	}
 
 	@Override
+	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc,
+			int oldVersion, int newVersion) {
+		onUpdate(app, db, oldVersion, newVersion);
+		return moduleDoc;
+	}
+	
 	public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db) {
-
+		
 	}
 
 	@Override
+	public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+		onUninstall(app, db);
+	}
+	
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-
+		
 	}
 
 	@Override
+	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+		onInitialize(app, db);
+	}
+	
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+		
+	}
 
+	@Override
+	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+		onDestroy(app, db);
 	}
 }

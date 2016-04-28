@@ -18,4 +18,7 @@ public interface IWidgetTypesRegistry {
 	public IWidgetTypesRegistry register(IWidgetType<?> description);
 	public <T> IWidgetTypesRegistry register(Class<? extends AbstractWidget<T>> widgetClass);
 	public IWidgetTypesRegistry register(String packageName);
+	public IWidgetTypesRegistry unregister(IWidgetType<?> description);
+	public <T> IWidgetTypesRegistry unregister(Class<? extends AbstractWidget<T>> widgetClass);
+	public IWidgetTypesRegistry unregister(String packageName);
 }

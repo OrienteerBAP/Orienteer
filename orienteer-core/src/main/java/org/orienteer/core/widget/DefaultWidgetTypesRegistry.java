@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.wicket.WicketRuntimeException;
@@ -103,7 +105,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		}
 	}
 	
-	private TreeSet<IWidgetType<?>> widgetDescriptions = new TreeSet<IWidgetType<?>>(new Comparator<IWidgetType<?>>() {
+	private SortedSet<IWidgetType<?>> widgetDescriptions = Collections.synchronizedSortedSet(new TreeSet<IWidgetType<?>>(new Comparator<IWidgetType<?>>() {
 
 		@Override
 		public int compare(IWidgetType<?> o1, IWidgetType<?> o2) {
@@ -111,7 +113,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 			if(ret==0) ret=o1.getId().compareTo(o2.getId());
 			return ret;
 		}
-	});
+	}));
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -204,5 +206,28 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		}
 		return this;
 	}
+
+	@Override
+	public IWidgetTypesRegistry unregister(IWidgetType<?> description) {
+		widgetDescriptions.remove(description);
+		return this;
+	}
+
+	@Override
+	public <T> IWidgetTypesRegistry unregister(Class<? extends AbstractWidget<T>> widgetClass) {
+		unregister(lookupByWidgetClass(widgetClass));
+		return this;
+	}
+
+	@Override
+	public IWidgetTypesRegistry unregister(String packageName) {
+		Iterator<IWidgetType<?>> it = widgetDescriptions.iterator();
+		while(it.hasNext()) {
+			if(it.next().getWidgetClass().getName().startsWith(packageName)) it.remove(); 
+		}
+		return this;
+	}
+	
+	
 
 }

@@ -11,6 +11,7 @@ import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDProvider;
 
 /**
@@ -31,8 +32,9 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	}
 
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		onUpdate(app, db, 0, getVersion());
+		return null;
 	}
 
 	@Override

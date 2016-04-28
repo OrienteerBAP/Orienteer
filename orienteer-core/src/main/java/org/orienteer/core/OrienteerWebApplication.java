@@ -246,6 +246,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registry.register(packageName);
 	}
 	
+	public void unregisterWidgets(String packageName) {
+		IWidgetTypesRegistry registry = getServiceInstance(IWidgetTypesRegistry.class);
+		registry.unregister(packageName);
+	}
+	
 	@Override
 	public void restartResponseAtSignInPage() {
 		//This is required because home page is dynamic and depends on assigned perspective.

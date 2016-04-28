@@ -7,6 +7,7 @@ import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
@@ -19,10 +20,12 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		//Install data model
+		//Return null of default OModule is enough
+		return null;
 	}
 	
 }
