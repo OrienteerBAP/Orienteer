@@ -61,7 +61,7 @@ public class SchemaPageHeader extends GenericPanel<OClass> {
 
 			@Override
 			protected void populateItem(ListItem<OClass> item) {
-				item.add(new OClassPageLink("link", item.getModel()).setClassNameAsBody(true));
+				item.add(new OClassPageLink("link", item.getModel()).setClassNameAsBody(false));
 			}
 		});
 		childRepeatingView = new RepeatingView("child");

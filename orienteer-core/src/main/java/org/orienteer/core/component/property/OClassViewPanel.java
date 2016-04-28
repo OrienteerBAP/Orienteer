@@ -15,16 +15,17 @@ public class OClassViewPanel extends AbstractLinkViewPanel<OClass> {
 	private static final long serialVersionUID = 1L;
 
 	public OClassViewPanel(String id, IModel<OClass> model) {
-		super(id, model);
+		this(id, model, false);
 	}
-
-	public OClassViewPanel(String id) {
-		super(id);
+	
+	public OClassViewPanel(String id, IModel<OClass> model, boolean localizeClassName) {
+		super(id, model);
+		((OClassPageLink)link).setClassNameAsBody(localizeClassName);
 	}
 	
 	@Override
-	protected AbstractLink newLink(String id) {
-		return new OClassPageLink("link", getModel()).setClassNameAsBody(true);
+	protected OClassPageLink newLink(String id) {
+		return new OClassPageLink("link", getModel());
 	}
 
 }

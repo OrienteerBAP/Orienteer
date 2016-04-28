@@ -13,19 +13,20 @@ import org.apache.wicket.model.IModel;
 public abstract class AbstractLinkViewPanel<T> extends GenericPanel<T> {
 
 	private static final long serialVersionUID = 1L;
+	protected AbstractLink link;
 
 
 	public AbstractLinkViewPanel(
 			String id,
 			IModel<T> valueModel) {
 		super(id, valueModel);
-		add(newLink("link"));
+		add(link = newLink("link"));
 	}
 	
 	public AbstractLinkViewPanel(String id)
 	{
 		super(id);
-		add(newLink("link"));
+		add(link = newLink("link"));
 	}
 
 	protected abstract AbstractLink newLink(String id);

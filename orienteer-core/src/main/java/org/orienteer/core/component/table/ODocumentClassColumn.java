@@ -23,7 +23,7 @@ public class ODocumentClassColumn<S> extends AbstractColumn<ODocument, S> {
 
 	@Override
 	public void populateItem(Item<ICellPopulator<ODocument>> cellItem, String componentId, IModel<ODocument> rowModel) {
-		cellItem.add(new OClassViewPanel(componentId, new PropertyModel<OClass>(rowModel, "schemaClass")));
+		cellItem.add(new OClassViewPanel(componentId, new PropertyModel<OClass>(rowModel, "schemaClass"), true));
 	}
 
 }

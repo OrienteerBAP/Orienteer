@@ -10,6 +10,8 @@ import org.orienteer.core.web.schema.OClassPage;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
+import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
+
 /**
  * {@link BookmarkablePageLink} for {@link OClass}
  */
@@ -69,9 +71,9 @@ public class OClassPageLink extends BookmarkablePageLink<OClass>
 		setVisible(getModelObject()!=null);
 	}
 
-	public OClassPageLink setClassNameAsBody(boolean classNameAsBody)
+	public OClassPageLink setClassNameAsBody(boolean localize)
 	{
-		setBody(classNameAsBody?new PropertyModel<String>(getModel(), "name"):null);
+		setBody(localize?new OClassNamingModel(getModel()) : new PropertyModel<String>(getModel(), "name"));
 		return this;
 	}
 	
