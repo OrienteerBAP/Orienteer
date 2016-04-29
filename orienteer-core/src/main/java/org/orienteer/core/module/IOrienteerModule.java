@@ -60,6 +60,14 @@ public interface IOrienteerModule
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc);
 	
 	/**
+	 * Invoked when module configuration was changed
+	 * @param app {@link OrientDbWebApplication}
+	 * @param db database
+	 * @param moduleDoc module {@link ODocument}
+	 */
+	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc);
+	
+	/**
 	 * Stop this module
 	 * @param app {@link OrientDbWebApplication}
 	 * @param db database

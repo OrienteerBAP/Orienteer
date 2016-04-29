@@ -1,26 +1,21 @@
 package org.orienteer.core.module;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.wicket.Application;
-import org.orienteer.core.CustomAttributes;
+import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.exception.OTransactionException;
-import com.orientechnologies.orient.core.iterator.ORecordIteratorClass;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 import ru.ydn.wicket.wicketorientdb.AbstractDataInstallator;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
@@ -36,12 +31,49 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 	public static final String OMODULE_VERSION = "version";
 	public static final String OMODULE_ACTIVATED = "activated";
 	
+	/**
+	 * {@link ORecordHook} to catch modules configuration changes
+	 *
+	 */
+	public static class OModulesHook extends ODocumentHookAbstract{
+
+		public OModulesHook(ODatabaseDocument database) {
+			super(database);
+			setIncludeClasses(OMODULE_CLASS);
+		}
+		
+		@Override
+		public void onRecordAfterUpdate(ODocument iDocument) {
+			OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+			if(app!=null) {
+				String moduleName = iDocument.field(OMODULE_NAME);
+				IOrienteerModule module = app.getModuleByName(moduleName);
+				if(module!=null) {
+					ODatabaseDocument db = iDocument.getDatabase();
+					if(!Objects.isEqual(iDocument.getOriginalValue(OMODULE_ACTIVATED), iDocument.field(OMODULE_ACTIVATED))) {
+						Object activated = iDocument.field(OMODULE_ACTIVATED);
+						if(activated==null || Boolean.TRUE.equals(activated)) module.onInitialize(app, db, iDocument);
+						else module.onDestroy(app, db, iDocument);
+					}
+					module.onConfigurationChange(app, db, iDocument);
+				}
+			}
+		}
+
+		@Override
+		public DISTRIBUTED_EXECUTION_MODE getDistributedExecutionMode() {
+			return DISTRIBUTED_EXECUTION_MODE.BOTH;
+		}
+		
+	}
+	
 	@Override
 	protected void installData(OrientDbWebApplication application, ODatabaseDocument database) {
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		ODatabaseDocument db = (ODatabaseDocument)database;
 		updateOModuleSchema(db);
 		loadOrienteerModules(app, db);
+		app.getOrientDbSettings().getORecordHooks().add(OModulesHook.class);
 	}
 	
 	protected void updateOModuleSchema(ODatabaseDocument db) {

@@ -71,6 +71,11 @@ public abstract class AbstractOrienteerModule implements IOrienteerModule
 		onInitialize(app, db);
 	}
 	
+	@Override
+	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+		
+	}
+	
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		
 	}
