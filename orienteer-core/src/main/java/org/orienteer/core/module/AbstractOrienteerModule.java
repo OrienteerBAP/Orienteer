@@ -1,5 +1,10 @@
 package org.orienteer.core.module;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 
@@ -19,11 +24,21 @@ public abstract class AbstractOrienteerModule implements IOrienteerModule
 {
 	private final String name;
 	private final int version;
+	private final Set<String> dependencies;
 	
-	protected AbstractOrienteerModule(String name, int version)
+	protected AbstractOrienteerModule(String name, int version) {
+		this(name, version, new HashSet<String>());
+	}
+	
+	protected AbstractOrienteerModule(String name, int version, String... dependencies) {
+		this(name, version, new HashSet<String>(Arrays.asList(dependencies)));
+	}
+	
+	protected AbstractOrienteerModule(String name, int version, Set<String> dependencies)
 	{
 		this.name = name;
 		this.version = version;
+		this.dependencies = Collections.unmodifiableSet(dependencies);
 	}
 
 	@Override
@@ -34,6 +49,11 @@ public abstract class AbstractOrienteerModule implements IOrienteerModule
 	@Override
 	public int getVersion() {
 		return version;
+	}
+	
+	@Override
+	public Set<String> getDependencies() {
+		return dependencies;
 	}
 
 	@Override

@@ -14,11 +14,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @Singleton
 public class GraphModule extends AbstractOrienteerModule {
 
+	public static final String NAME = "graph";
 	public static final String EDGE_CLASS_NAME = "E";
 	public static final String VERTEX_CLASS_NAME = "V";
 
 	protected GraphModule() {
-		super("graph", 1);
+		super(NAME, 1);
 	}
 	
 	@Override

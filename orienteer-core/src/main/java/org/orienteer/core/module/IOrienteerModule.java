@@ -1,5 +1,7 @@
 package org.orienteer.core.module;
 
+import java.util.Set;
+
 import org.orienteer.core.OrienteerWebApplication;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
@@ -12,6 +14,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public interface IOrienteerModule
 {
+	String OMODULE_CLASS = "OModule";
+	String OMODULE_NAME = "name";
+	String OMODULE_VERSION = "version";
+	String OMODULE_ACTIVATED = "activated";
+
 	/**
 	 * Name of the module. Should be static
 	 * @return name of the module
@@ -23,6 +30,12 @@ public interface IOrienteerModule
 	 * @return a version as number
 	 */
 	public int getVersion();
+	
+	/**
+	 * Get dependencies for this module. Dependencies should be static
+	 * @return set with dependencies
+	 */
+	public Set<String> getDependencies();
 	
 	/**
 	 * Install this application in the environment

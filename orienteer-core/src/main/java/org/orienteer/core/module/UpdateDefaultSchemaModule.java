@@ -20,6 +20,7 @@ import com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDProvider
 @Singleton
 public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 {
+	public static final String NAME = "update-default-schema";
 	private static final String OCLASS_FUNCTION="OFunction";
 	private static final String OCLASS_RESTRICTED="ORestricted";
 	private static final String OCLASS_ROLE="ORole";
@@ -28,7 +29,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	
 	public UpdateDefaultSchemaModule()
 	{
-		super("update-default-schema", 1);
+		super(NAME, 1);
 	}
 
 	@Override

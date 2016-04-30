@@ -32,6 +32,8 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 public class OWidgetsModule extends AbstractOrienteerModule {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OWidgetsModule.class);
+	
+	public static final String NAME = "widgets";
 
 	public static final String OCLASS_DASHBOARD = "ODashboard";
 	public static final String OPROPERTY_DOMAIN = "domain";
@@ -56,7 +58,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	private IWidgetTypesRegistry registry;
 	
 	public OWidgetsModule() {
-		super("widgets", 3);
+		super(NAME, 3);
 	}
 	
 	@Override

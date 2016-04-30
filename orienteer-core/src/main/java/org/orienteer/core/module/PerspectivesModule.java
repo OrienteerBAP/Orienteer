@@ -33,6 +33,7 @@ import java.util.Set;
 @Singleton
 public class PerspectivesModule extends AbstractOrienteerModule
 {
+	public static final String NAME = "perspectives";
 	public static final String OCLASS_PERSPECTIVE="OPerspective";
 	public static final String OCLASS_ITEM = "OPerspectiveItem";
 
@@ -41,7 +42,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 
 	public PerspectivesModule()
 	{
-		super("perspectives", 5);
+		super(NAME, 5);
 	}
 
 	@Override

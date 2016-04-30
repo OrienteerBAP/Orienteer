@@ -35,6 +35,8 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 @Singleton
 public class OrienteerLocalizationModule extends AbstractOrienteerModule
 {
+	public static final String NAME = "localization";
+	
 	public static final String OCLASS_LOCALIZATION="OLocalization";
 	public static final String OCLASS_USER="OUser";
 	public static final String OPROPERTY_KEY="key";
@@ -162,7 +164,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 
 	public OrienteerLocalizationModule()
 	{
-		super("localization", 1);
+		super(NAME, 1);
 	}
 
 	@Override

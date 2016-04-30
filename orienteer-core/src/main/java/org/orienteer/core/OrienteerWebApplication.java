@@ -2,7 +2,11 @@ package org.orienteer.core;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.RuntimeConfigurationType;
@@ -60,7 +64,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("L-", true);
 	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("LL", true);
 	
-	private Map<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
+	private LinkedList<IOrienteerModule> registeredModules = new LinkedList<IOrienteerModule>();
 	
 	@Inject
 	private IWebjarsSettings webjarSettings;
@@ -182,20 +186,34 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return OrientDbWebSession.get().getDatabase();
 	}
 
-	public Map<String, IOrienteerModule> getRegisteredModules() {
+	public List<IOrienteerModule> getRegisteredModules() {
 		return registeredModules;
 	}
 	
-	public <M extends IOrienteerModule> M registerModule(Class<M> moduleClass)
+	public synchronized <M extends IOrienteerModule> M registerModule(Class<M> moduleClass)
 	{
 		M module = getServiceInstance(moduleClass);
-		registeredModules.put(module.getName(), module);
+		String name = module.getName();
+		ListIterator<IOrienteerModule> it = registeredModules.listIterator();
+		while(it.hasNext()) {
+			IOrienteerModule other = it.next();
+			Set<String> dependencies = other.getDependencies();
+			if(dependencies!=null && dependencies.contains(name)) {
+				if(it.hasPrevious()) it.previous();
+				break;
+			}
+		}
+		it.add(module);
 		return module;
 	}
 	
 	public IOrienteerModule getModuleByName(String name)
 	{
-		return registeredModules.get(name);
+		if(name==null) return null;
+		for(IOrienteerModule module : registeredModules){
+			if(module.getName().equals(name)) return module;
+		}
+		return null;
 	}
 	
 	public UIVisualizersRegistry getUIVisualizersRegistry()

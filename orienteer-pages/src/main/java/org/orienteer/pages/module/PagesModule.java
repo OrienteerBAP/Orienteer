@@ -17,6 +17,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @Singleton
 public class PagesModule extends AbstractOrienteerModule {
 	
+	public static final String NAME = "pages";
 	public static final String OCLASS_PAGE="OPage";
 	public static final String OPROPERTY_TITLE="title";
 	public static final String OPROPERTY_DESCRIPTION="description";
@@ -29,7 +30,7 @@ public class PagesModule extends AbstractOrienteerModule {
 	private PagesCompoundRequestMapper pagesCompoundRequestMapper;
 
 	protected PagesModule() {
-		super("pages", 1);
+		super(NAME, 1);
 
 	}
 	

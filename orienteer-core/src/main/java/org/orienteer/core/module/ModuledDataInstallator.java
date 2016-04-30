@@ -26,11 +26,6 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 public class ModuledDataInstallator extends AbstractDataInstallator
 {
 	private static final Logger LOG = LoggerFactory.getLogger(ModuledDataInstallator.class);
-	public static final String OMODULE_CLASS = "OModule";
-	public static final String OMODULE_NAME = "name";
-	public static final String OMODULE_VERSION = "version";
-	public static final String OMODULE_ACTIVATED = "activated";
-	
 	/**
 	 * {@link ORecordHook} to catch modules configuration changes
 	 *
@@ -39,19 +34,19 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 
 		public OModulesHook(ODatabaseDocument database) {
 			super(database);
-			setIncludeClasses(OMODULE_CLASS);
+			setIncludeClasses(IOrienteerModule.OMODULE_CLASS);
 		}
 		
 		@Override
 		public void onRecordAfterUpdate(ODocument iDocument) {
 			OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
 			if(app!=null) {
-				String moduleName = iDocument.field(OMODULE_NAME);
+				String moduleName = iDocument.field(IOrienteerModule.OMODULE_NAME);
 				IOrienteerModule module = app.getModuleByName(moduleName);
 				if(module!=null) {
 					ODatabaseDocument db = iDocument.getDatabase();
-					if(!Objects.isEqual(iDocument.getOriginalValue(OMODULE_ACTIVATED), iDocument.field(OMODULE_ACTIVATED))) {
-						Object activated = iDocument.field(OMODULE_ACTIVATED);
+					if(!Objects.isEqual(iDocument.getOriginalValue(IOrienteerModule.OMODULE_ACTIVATED), iDocument.field(IOrienteerModule.OMODULE_ACTIVATED))) {
+						Object activated = iDocument.field(IOrienteerModule.OMODULE_ACTIVATED);
 						if(activated==null || Boolean.TRUE.equals(activated)) module.onInitialize(app, db, iDocument);
 						else module.onDestroy(app, db, iDocument);
 					}
@@ -78,18 +73,19 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 	
 	protected void updateOModuleSchema(ODatabaseDocument db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(OMODULE_CLASS)
-				.oProperty(OMODULE_NAME, OType.STRING, 0).markDisplayable().markAsDocumentName()
-				.oProperty(OMODULE_VERSION, OType.INTEGER, 10).markDisplayable()
-				.oProperty(OMODULE_ACTIVATED, OType.BOOLEAN, 20).markDisplayable().defaultValue("true");
-		db.command(new OCommandSQL("update "+OMODULE_CLASS+" set "+OMODULE_ACTIVATED+" = true where "+OMODULE_ACTIVATED +" is null")).execute();
+		helper.oClass(IOrienteerModule.OMODULE_CLASS)
+				.oProperty(IOrienteerModule.OMODULE_NAME, OType.STRING, 0).markDisplayable().markAsDocumentName()
+				.oProperty(IOrienteerModule.OMODULE_VERSION, OType.INTEGER, 10).markDisplayable()
+				.oProperty(IOrienteerModule.OMODULE_ACTIVATED, OType.BOOLEAN, 20).markDisplayable().defaultValue("true");
+		db.command(new OCommandSQL("update "+IOrienteerModule.OMODULE_CLASS+" set "+IOrienteerModule.OMODULE_ACTIVATED+" = true where "+
+										IOrienteerModule.OMODULE_ACTIVATED +" is null")).execute();
 	}
 	
 	private Map<String, ODocument> getInstalledModules(ODatabaseDocument db) {
 		Map<String, ODocument> installedModules = new HashMap<String, ODocument>();
-		for(ODocument doc : db.browseClass(OMODULE_CLASS))
+		for(ODocument doc : db.browseClass(IOrienteerModule.OMODULE_CLASS))
 		{
-			installedModules.put((String)doc.field(OMODULE_NAME), doc);
+			installedModules.put((String)doc.field(IOrienteerModule.OMODULE_NAME), doc);
 		}
 		return installedModules;
 	}
@@ -97,29 +93,28 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 	protected void loadOrienteerModules(OrienteerWebApplication app, ODatabaseDocument db) {
 		Map<String, ODocument> installedModules = getInstalledModules(db);
 		
-		for(Map.Entry<String, IOrienteerModule> entry: app.getRegisteredModules().entrySet())
+		for(IOrienteerModule module: app.getRegisteredModules())
 		{
-			String name = entry.getKey();
-			IOrienteerModule module = entry.getValue();
+			String name = module.getName();
 			int version = module.getVersion();
 			ODocument moduleDoc = installedModules.get(name);
-			Integer oldVersion = moduleDoc!=null?(Integer)moduleDoc.field(OMODULE_VERSION, Integer.class):null;
+			Integer oldVersion = moduleDoc!=null?(Integer)moduleDoc.field(IOrienteerModule.OMODULE_VERSION, Integer.class):null;
 			if(moduleDoc==null || oldVersion==null)
 			{
 				moduleDoc = module.onInstall(app, db);
-				if(moduleDoc==null) moduleDoc = new ODocument(OMODULE_CLASS);
-				moduleDoc.field(OMODULE_NAME, module.getName());
-				moduleDoc.field(OMODULE_VERSION, module.getVersion());
+				if(moduleDoc==null) moduleDoc = new ODocument(IOrienteerModule.OMODULE_CLASS);
+				moduleDoc.field(IOrienteerModule.OMODULE_NAME, module.getName());
+				moduleDoc.field(IOrienteerModule.OMODULE_VERSION, module.getVersion());
 				moduleDoc.save();
 			}
 			else if(oldVersion<version)
 			{
 				ODocument temp = module.onUpdate(app, db, moduleDoc, oldVersion, version);
 				if(temp!=null) moduleDoc = temp;
-				moduleDoc.field(OMODULE_VERSION, version);
+				moduleDoc.field(IOrienteerModule.OMODULE_VERSION, version);
 				moduleDoc.save();
 			}
-			Boolean activated = moduleDoc.field(OMODULE_ACTIVATED);
+			Boolean activated = moduleDoc.field(IOrienteerModule.OMODULE_ACTIVATED);
 			if(activated==null || activated) module.onInitialize(app, db, moduleDoc);
 		}
 	}
@@ -132,7 +127,7 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 		try
 		{
 			Map<String, ODocument> installedModules = getInstalledModules(db);
-			for(IOrienteerModule module: app.getRegisteredModules().values())
+			for(IOrienteerModule module: app.getRegisteredModules())
 			{
 				try
 				{

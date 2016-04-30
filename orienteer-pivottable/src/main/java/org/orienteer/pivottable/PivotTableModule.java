@@ -16,11 +16,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class PivotTableModule extends AbstractOrienteerModule{
 
+	public static final String NAME = "pivottable";
 	public static final String WIDGET_OCLASS_NAME = "PivotTableWidget";
 	public static final String OPROPERTY_PIVOT_TABLE_CONFIG = "pivotTableConfiguration";
 	
 	protected PivotTableModule() {
-		super("pivottable", 1);
+		super(NAME, 1, OWidgetsModule.NAME);
 		
 	}
 	
