@@ -1,6 +1,9 @@
 package org.orienteer.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,6 +41,8 @@ import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
@@ -61,10 +66,13 @@ import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
  */
 public class OrienteerWebApplication extends OrientDbWebApplication
 {
+	private static final Logger LOG = LoggerFactory.getLogger(OrienteerWebApplication.class);
+	
 	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("L-", true);
 	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("LL", true);
 	
-	private LinkedList<IOrienteerModule> registeredModules = new LinkedList<IOrienteerModule>();
+	private LinkedHashMap<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
+	private boolean registeredModulesSorted = false;
 	
 	@Inject
 	private IWebjarsSettings webjarSettings;
@@ -186,34 +194,47 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return OrientDbWebSession.get().getDatabase();
 	}
 
-	public List<IOrienteerModule> getRegisteredModules() {
-		return registeredModules;
+	public synchronized List<IOrienteerModule> getRegisteredModules() {
+		if(!registeredModulesSorted){
+			LinkedHashMap<String, IOrienteerModule> sorted = new LinkedHashMap<String, IOrienteerModule>();
+			LinkedHashMap<String, IOrienteerModule> unsorted = new LinkedHashMap<>(registeredModules);
+			Set<String> toRemove = new HashSet<>();
+			while(!unsorted.isEmpty()) {
+				for (Map.Entry<String, IOrienteerModule> entry : unsorted.entrySet()) {
+					Set<String> dependencies = entry.getValue().getDependencies();
+					if(dependencies==null || dependencies.isEmpty() || sorted.keySet().containsAll(dependencies)) {
+						sorted.put(entry.getKey(), entry.getValue());
+						toRemove.add(entry.getKey());
+					}
+				}
+				if(!toRemove.isEmpty()) {
+					for (String keyToRemove : toRemove) {
+						unsorted.remove(keyToRemove);
+					}
+				} else {
+					LOG.error("Modules without satisfied dependencies: "+unsorted.keySet());
+					sorted.putAll(unsorted);
+					break;
+				}
+			}
+			registeredModules = sorted;
+			registeredModulesSorted = true;
+			
+		}
+		return new ArrayList<>(registeredModules.values());
 	}
 	
 	public synchronized <M extends IOrienteerModule> M registerModule(Class<M> moduleClass)
 	{
 		M module = getServiceInstance(moduleClass);
-		String name = module.getName();
-		ListIterator<IOrienteerModule> it = registeredModules.listIterator();
-		while(it.hasNext()) {
-			IOrienteerModule other = it.next();
-			Set<String> dependencies = other.getDependencies();
-			if(dependencies!=null && dependencies.contains(name)) {
-				if(it.hasPrevious()) it.previous();
-				break;
-			}
-		}
-		it.add(module);
+		registeredModules.put(module.getName(), getServiceInstance(moduleClass));
+		registeredModulesSorted = false;
 		return module;
 	}
 	
 	public IOrienteerModule getModuleByName(String name)
 	{
-		if(name==null) return null;
-		for(IOrienteerModule module : registeredModules){
-			if(module.getName().equals(name)) return module;
-		}
-		return null;
+		return registeredModules.get(name);
 	}
 	
 	public UIVisualizersRegistry getUIVisualizersRegistry()
