@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.RuntimeConfigurationType;
+import org.apache.wicket.ThreadContext;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
@@ -252,12 +253,27 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	}
 	
 	public void mountPages(String packageName, ClassLoader classLoader) {
+		mountOrUnmountPages(packageName, classLoader, true);
+	}
+
+	public void unmountPages(String packageName) {
+		unmountPages(packageName, OrienteerWebApplication.class.getClassLoader());
+	}
+	
+	public void unmountPages(String packageName, ClassLoader classLoader) {
+		mountOrUnmountPages(packageName, classLoader, false);
+	}
+	
+	
+	private void mountOrUnmountPages(String packageName, ClassLoader classLoader, boolean mount) {
 		ClassPath classPath;
 		try {
 			classPath = ClassPath.from(classLoader);
 		} catch (IOException e) {
 			throw new WicketRuntimeException("Can't scan classpath", e);
 		}
+		//Lets do not try to unmount if shutting down. Related to WICKET-6157 issue
+		if(!mount && !ThreadContext.exists()) return;
 		
 		for(ClassInfo classInfo : classPath.getTopLevelClassesRecursive(packageName)) {
 			Class<?> clazz = classInfo.load();
@@ -271,10 +287,14 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 				for(int i=alt.length-1;i>=-1;i--)
 				{
 					String path = i<0?mainPath:alt[i];
-					if ("/".equals(path)) {
-						mount(new HomePageMapper(pageClass));
+					if(mount) {
+						if ("/".equals(path)) {
+							mount(new HomePageMapper(pageClass));
+						}
+						mount(new MountedMapper(path, pageClass));
+					} else {
+						unmount(path);
 					}
-					mount(new MountedMapper(path, pageClass));
 				}
 			}
 		}

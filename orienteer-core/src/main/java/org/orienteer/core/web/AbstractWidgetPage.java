@@ -9,6 +9,7 @@ import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.TabbedPanel;
@@ -170,6 +171,11 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		if(event.getPayload() instanceof ActionPerformedEvent && Broadcast.BUBBLE.equals(event.getType())) {
 			send(this, Broadcast.BREADTH, event.getPayload());
 		}
+	}
+	
+	@Override
+	public IModel<String> getTitleModel() {
+		return new ResourceModel(getDomain());
 	}
 
 	public abstract String getDomain();

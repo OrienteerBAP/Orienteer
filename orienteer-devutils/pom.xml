@@ -1,4 +1,3 @@
-#set($dollar = '$')
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
    Licensed to the Apache Software Foundation (ASF) under one or more
@@ -21,11 +20,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>${groupId}</groupId>
-	<artifactId>${artifactId}</artifactId>
-	<version>${version}</version>
+	<parent>
+		<groupId>org.orienteer</groupId>
+		<artifactId>orienteer-parent</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+	<artifactId>orienteer-devutils</artifactId>
 	<!-- TODO project name  -->
-	<name>${artifactId}</name>
+	<name>orienteer-devutils</name>
 	<description></description>
 	<!--
 		<organization>
@@ -40,20 +42,17 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-	<properties>
-		<orienteer.version>${orienteerVersion}</orienteer.version>
-		<wicket.orientdb.version>${wicketOrientDBVersion}</wicket.orientdb.version>
-		<jetty.version>${jettyVersion}</jetty.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
-		<wtp.version>none</wtp.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
-			<version>${dollar}{orienteer.version}</version>
+			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+              <groupId>ru.ydn.wicket.wicket-console</groupId>
+              <artifactId>wicket-console</artifactId>
+              <version>1.1-SNAPSHOT</version>
+        </dependency>
 		<!-- <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-graph</artifactId>
@@ -69,23 +68,18 @@
             <artifactId>orienteer-pivottable</artifactId>
             <version>${dollar}{orienteer.version}</version>
         </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-devutils</artifactId>
-            <version>${dollar}{orienteer.version}</version>
-        </dependency>-->
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
-			<version>${dollar}{orienteer.version}</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>
 			<artifactId>wicket-orientdb</artifactId>
-			<version>${dollar}{wicket.orientdb.version}</version>
+			<version>${wicket.orientdb.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -163,37 +157,34 @@
 				<version>2.9</version>
 				<configuration>
 					<downloadSources>true</downloadSources>
-					<wtpversion>${dollar}{wtp.version}</wtpversion>
+					<wtpversion>${wtp.version}</wtpversion>
 				</configuration>
 			</plugin>
-			<!--
-			//Uncomment for quick inplace tests 
 			<plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                <webApp>
-                    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-                    <resourceBase>src/main/resources</resourceBase>
-                    <contextPath>/</contextPath>
-                </webApp>
-                <connectors>
-                    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                        <port>8080</port>
-                        <maxIdleTime>3600000</maxIdleTime>
-                    </connector>
-                </connectors>
-                </configuration>
-                <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.jetty.aggregate</groupId>
-                    <artifactId>jetty-all</artifactId>
-                    <version>${jetty.version}</version>
-                </dependency>
-                </dependencies>
-            </plugin>
-             -->
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-maven-plugin</artifactId>
+			<version>${jetty.version}</version>
+			<configuration>
+			<webApp>
+			    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+			    <resourceBase>src/main/resources</resourceBase>
+			    <contextPath>/</contextPath>
+			</webApp>
+			<connectors>
+			    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+				<port>8080</port>
+				<maxIdleTime>3600000</maxIdleTime>
+			    </connector>
+			</connectors>
+			</configuration>
+			<dependencies>
+			<dependency>
+			    <groupId>org.eclipse.jetty.aggregate</groupId>
+			    <artifactId>jetty-all</artifactId>
+			    <version>${jetty.version}</version>
+			</dependency>
+			</dependencies>
+		    </plugin>
 		</plugins>
 	</build>
 

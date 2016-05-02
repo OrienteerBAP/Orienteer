@@ -87,6 +87,7 @@
 		<module>orienteer-graph</module>
 		<module>orienteer-pages</module>
 		<module>orienteer-pivottable</module>
+    <module>orienteer-devutils</module>
   </modules>
 	<dependencyManagement>
 	    <dependencies>

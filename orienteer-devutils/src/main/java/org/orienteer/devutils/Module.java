@@ -1,4 +1,4 @@
-package ${package};
+package org.orienteer.devutils;
 
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
@@ -11,12 +11,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
- * {@link IOrienteerModule} for '${artifactId}' module
+ * {@link IOrienteerModule} for 'orienteer-devutils' module
  */
 public class Module extends AbstractOrienteerModule{
 
 	protected Module() {
-		super("${artifactId}", 1);
+		super("devutils", 1);
 	}
 	
 	@Override
@@ -31,13 +31,15 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		app.mountPages("${package}.web");
+		app.mountPages("org.orienteer.devutils.web");
+		app.registerWidgets("org.orienteer.devutils.component.widget");
 	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
-		app.unmountPages("${package}.web");
+		app.unmountPages("org.orienteer.devutils.web");
+		app.unregisterWidgets("org.orienteer.devutils.component.widget");
 	}
 	
 }

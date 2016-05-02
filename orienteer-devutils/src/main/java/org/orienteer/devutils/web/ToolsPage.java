@@ -1,7 +1,5 @@
-package org.orienteer.core.web.schema;
+package org.orienteer.devutils.web;
 
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.web.AbstractWidgetPage;
 
@@ -10,15 +8,15 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 /**
- * Page to show schema
+ * Page for devtools
  */
-@MountPath(value="/schema", alt={"/classes"})
+@MountPath(value="/tools")
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
-public class SchemaPage extends AbstractWidgetPage<Void> {
+public class ToolsPage extends AbstractWidgetPage<Void> {
 
 	@Override
 	public String getDomain() {
-		return "schema";
+		return "tools";
 	}
 
 }
