@@ -10,10 +10,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -58,6 +60,8 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	@Inject
 	private PerspectivesModule perspectivesModule;
 	
+	private RepeatingView uiPlugins;
+	
 	public BasePage()
 	{
 		super();
@@ -97,6 +101,8 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	{
 		//TO BO sure that DB was initialized
 		getDatabase();
+		uiPlugins = new RepeatingView("uiPlugins");
+		add(uiPlugins);
 	}
 	
 	@Override
@@ -147,6 +153,18 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public ODocument getPerspective()
 	{
 		return OrienteerWebSession.get().getPerspective();
+	}
+	
+	public RepeatingView getUiPluginsComponentsHolder() {
+		return uiPlugins;
+	}
+	
+	public String nextUiPluginComponentId() { 
+		return uiPlugins.newChildId();
+	}
+	
+	public void addUiPlugin(Component uiPluginPanel) {
+		uiPlugins.add(uiPluginPanel);
 	}
 
 }

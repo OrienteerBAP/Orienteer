@@ -2,12 +2,9 @@ package org.orienteer.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +12,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.datetime.DateConverter;
@@ -22,6 +20,7 @@ import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
@@ -45,12 +44,6 @@ import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Inject;
@@ -61,6 +54,11 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -162,6 +160,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
 		getPageSettings().addComponentResolver(new WicketPropertyResolver());
+		//Remove default BookmarkableMapper to disallow direct accessing of pages through /wicket/bookmarkable/<class>
+		for(IRequestMapper mapper : getRootRequestMapperAsCompound()){
+			if(mapper instanceof BookmarkableMapper) {
+				getRootRequestMapperAsCompound().remove(mapper);
+				break;
+			}
+		}
 		registerModule(OrienteerLocalizationModule.class);
 		registerModule(UpdateDefaultSchemaModule.class);
 		registerModule(PerspectivesModule.class);

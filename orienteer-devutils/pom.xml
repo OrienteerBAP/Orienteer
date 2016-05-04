@@ -53,6 +53,12 @@
               <artifactId>wicket-console</artifactId>
               <version>1.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-devutils</artifactId>
+			<version>${wicket.version}</version>
+		</dependency>
+		        
 		<!-- <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-graph</artifactId>
