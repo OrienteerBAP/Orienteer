@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.10</version>
+			<version>1.12</version>
 		</dependency>
 
 		<!-- WEB JARS -->
@@ -134,7 +134,7 @@
 	    </dependency>
 	    <dependency>
 		<groupId>javax.servlet</groupId>
-		<artifactId>servlet-api</artifactId>
+		<artifactId>javax.servlet-api</artifactId>
 	    </dependency>
         <!-- MARKDOWN DEPENDENCY -->
         <!--<dependency>
@@ -186,7 +186,7 @@
 			<plugin>
 		       <groupId>org.apache.maven.plugins</groupId>
 		       <artifactId>maven-jar-plugin</artifactId>
-		       <version>2.5</version>
+		       <version>2.6</version>
 		       <configuration>
 		        <archive>
 		          <manifest>

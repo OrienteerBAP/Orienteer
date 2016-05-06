@@ -269,6 +269,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountOrUnmountPages(packageName, classLoader, false);
 	}
 	
+	@Override
+	public void unmount(String path) {
+		//Lets do not try to unmount if shutting down. Related to WICKET-6157 issue. 
+		//TODO Should be fixed in wicket 7.4.0. Once released: delete this method
+		if(ThreadContext.exists()) super.unmount(path);
+	}
+	
 	
 	private void mountOrUnmountPages(String packageName, ClassLoader classLoader, boolean mount) {
 		ClassPath classPath;
@@ -277,7 +284,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		} catch (IOException e) {
 			throw new WicketRuntimeException("Can't scan classpath", e);
 		}
-		//Lets do not try to unmount if shutting down. Related to WICKET-6157 issue
+		//Lets do not try to unmount if shutting down. Related to WICKET-6157 issue.
+		//TODO Should be fixed in wicket 7.4.0. Once released: delete the following line
 		if(!mount && !ThreadContext.exists()) return;
 		
 		for(ClassInfo classInfo : classPath.getTopLevelClassesRecursive(packageName)) {
