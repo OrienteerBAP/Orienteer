@@ -35,7 +35,7 @@ public class Module extends AbstractOrienteerModule implements IComponentInitial
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		//Install data model
 		ODocument moduleDoc = new ODocument(OMODULE_CLASS);
-		moduleDoc.field(OMODULE_ACTIVATED, false);
+		moduleDoc.field(OMODULE_ACTIVATE, false);
 		return moduleDoc;
 	}
 	

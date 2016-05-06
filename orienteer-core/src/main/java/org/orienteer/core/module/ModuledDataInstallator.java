@@ -45,8 +45,8 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 				IOrienteerModule module = app.getModuleByName(moduleName);
 				if(module!=null) {
 					ODatabaseDocument db = iDocument.getDatabase();
-					if(!Objects.isEqual(iDocument.getOriginalValue(IOrienteerModule.OMODULE_ACTIVATED), iDocument.field(IOrienteerModule.OMODULE_ACTIVATED))) {
-						Object activated = iDocument.field(IOrienteerModule.OMODULE_ACTIVATED);
+					if(!Objects.isEqual(iDocument.getOriginalValue(IOrienteerModule.OMODULE_ACTIVATE), iDocument.field(IOrienteerModule.OMODULE_ACTIVATE))) {
+						Object activated = iDocument.field(IOrienteerModule.OMODULE_ACTIVATE);
 						if(activated==null || Boolean.TRUE.equals(activated)) module.onInitialize(app, db, iDocument);
 						else module.onDestroy(app, db, iDocument);
 					}
@@ -76,9 +76,9 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 		helper.oClass(IOrienteerModule.OMODULE_CLASS)
 				.oProperty(IOrienteerModule.OMODULE_NAME, OType.STRING, 0).markDisplayable().markAsDocumentName()
 				.oProperty(IOrienteerModule.OMODULE_VERSION, OType.INTEGER, 10).markDisplayable()
-				.oProperty(IOrienteerModule.OMODULE_ACTIVATED, OType.BOOLEAN, 20).markDisplayable().defaultValue("true");
-		db.command(new OCommandSQL("update "+IOrienteerModule.OMODULE_CLASS+" set "+IOrienteerModule.OMODULE_ACTIVATED+" = true where "+
-										IOrienteerModule.OMODULE_ACTIVATED +" is null")).execute();
+				.oProperty(IOrienteerModule.OMODULE_ACTIVATE, OType.BOOLEAN, 20).markDisplayable().defaultValue("true");
+		db.command(new OCommandSQL("update "+IOrienteerModule.OMODULE_CLASS+" set "+IOrienteerModule.OMODULE_ACTIVATE+" = true where "+
+										IOrienteerModule.OMODULE_ACTIVATE +" is null")).execute();
 	}
 	
 	private Map<String, ODocument> getInstalledModules(ODatabaseDocument db) {
@@ -114,8 +114,8 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 				moduleDoc.field(IOrienteerModule.OMODULE_VERSION, version);
 				moduleDoc.save();
 			}
-			Boolean activated = moduleDoc.field(IOrienteerModule.OMODULE_ACTIVATED);
-			if(activated==null || activated) module.onInitialize(app, db, moduleDoc);
+			Boolean activate = moduleDoc.field(IOrienteerModule.OMODULE_ACTIVATE);
+			if(activate==null || activate) module.onInitialize(app, db, moduleDoc);
 		}
 	}
 

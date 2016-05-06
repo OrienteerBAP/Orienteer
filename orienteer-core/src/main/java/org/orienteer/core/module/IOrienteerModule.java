@@ -17,7 +17,7 @@ public interface IOrienteerModule
 	String OMODULE_CLASS = "OModule";
 	String OMODULE_NAME = "name";
 	String OMODULE_VERSION = "version";
-	String OMODULE_ACTIVATED = "activated";
+	String OMODULE_ACTIVATE = "activate";
 
 	/**
 	 * Name of the module. Should be static
