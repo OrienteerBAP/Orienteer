@@ -166,11 +166,6 @@
 			    <artifactId>guice-servlet</artifactId>
 			    <version>4.0</version>
 		    </dependency>
-		    <dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>17.0</version>
-		    </dependency>
 		    <!-- WEB JARS -->
 		    <dependency>
 			    <groupId>de.agilecoders.wicket.webjars</groupId>
@@ -180,7 +175,7 @@
 		    <dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>font-awesome</artifactId>
-				<version>4.3.0-3</version>
+				<version>4.6.1</version>
 		    </dependency>
 		    <dependency>
 				<groupId>org.webjars</groupId>
