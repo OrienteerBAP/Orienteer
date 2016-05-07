@@ -1,25 +1,22 @@
-[![Build Status](https://travis-ci.org/OrienteerDW/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerDW/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/OrienteerDW/Orienteer.svg)](https://coveralls.io/r/OrienteerDW/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/OrienteerDW/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://travis-ci.org/OrienteerDW/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerDW/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/OrienteerDW/Orienteer.svg)](https://coveralls.io/r/OrienteerDW/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/OrienteerDW/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d/badge.svg?style=flat)](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d)
 
 ## Orienteer
-![Orinenteer](http://orienteer.org/images/orienteer.png)
 
 ### What is Orienteer 
 
-**Orienteer** is Data Warehouse System on top of OrientDB. It allows you:
+**Orienteer** is Business Application Platform: 
 
-* Manage you schema
-* Create/Read/Update/Delete documents
-* Create and view customizable reports
-* Extend functionality by flexible visualizations
+* Easy creation of prototype applications
+* Very extendable to fit your needs
+* Dynamic datamodel on top of OrientDB: multi paradygm NoSQL database
+* Developers friendly
+* Scalling and cloud ready
+
+[Orienteer Guidebook](https://orienteer.gitbooks.io/orienteer/content/)
 
 ### Demo
 
-- [Main Demo Server](http://demo.orienteer.org)
-
-Default users:
-- admin/admin
-- reader/reader
-- writer/writer
+- [Master Demo Server](http://demo.orienteer.org)
 
 ### Orienteer installation
 
