@@ -103,7 +103,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 		@Override
 		public boolean apply(OProperty input) {
-			return OType.LINK.equals(input.getType());
+			return input!=null?input.getType().isLink():false;
 		}
 	};
 	

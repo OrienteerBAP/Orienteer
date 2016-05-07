@@ -142,8 +142,28 @@ public class OClassIntrospector implements IOClassIntrospector
 		if(doc==null || doc.getSchemaClass()==null) return null;
 		OClass oClass = doc.getSchemaClass();
 		OProperty parent = CustomAttributes.PROP_PARENT.getHierarchicalValue(oClass);
-		if(parent!=null) return doc.field(parent.getName());
-		else return null;
+		if(parent!=null) {
+			OType type = parent.getType();
+			Object value = doc.field(parent.getName());
+			if(value!=null) {
+				switch (type) {
+					case LINK:
+						return ((OIdentifiable)value).getRecord();
+					case LINKLIST:
+					case LINKBAG:
+					case LINKSET:
+						Collection<OIdentifiable> collection =  (Collection<OIdentifiable>)value;
+						return !collection.isEmpty()?(ODocument)collection.iterator().next().getRecord():null;
+					case LINKMAP:
+						Map<?, ?> map = (Map<?, ?>)value;
+						value = map.isEmpty()?null:map.values().iterator().next();
+						return value instanceof OIdentifiable ? (ODocument)((OIdentifiable)value).getRecord():null;
+				default:
+					return null;
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
