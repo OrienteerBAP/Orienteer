@@ -63,8 +63,6 @@ public class CreateODocumentCommand extends AbstractModalWindowCommand<ODocument
 			//There is no subclasses, so no need to select particular subtype
 			redirectToCreateODocumentPage(null, oClass);
 		} else {
-			//Need to show dialog to select proper subtype
-			target.appendJavaScript( "Wicket.Window.unloadConfirmation = false;" );
 			modal.show(target);
 		}
 	}
@@ -97,6 +95,7 @@ public class CreateODocumentCommand extends AbstractModalWindowCommand<ODocument
 				}
 			}
 		}
+//		target.add(new ODocumentPage(doc).setModeObject(DisplayMode.EDIT));
 		setResponsePage(new ODocumentPage(doc).setModeObject(DisplayMode.EDIT));
 	}
 

@@ -71,7 +71,13 @@ public abstract class SelectSubOClassDialogPage extends GenericPanel<OClass> {
 					@Override
 					public void onClick(AjaxRequestTarget target) {
 						SelectSubOClassDialogPage.this.modal.close(target);
-						onSelect(target, getModelObject());
+						SelectSubOClassDialogPage.this.modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+							
+							@Override
+							public void onClose(AjaxRequestTarget target) {
+								onSelect(target, getModelObject());
+							}
+						});
 					}
 				}.setIcon(FAIconType.plus).setBootstrapType(BootstrapType.INFO));
             }
