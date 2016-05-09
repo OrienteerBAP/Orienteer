@@ -64,14 +64,16 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 		queryField = new TextField<String>("query", getModel(), String.class);
 		queryField.setOutputMarkupId(true);
 		form.add(queryField);
-		form.add(new AjaxButton("search") {
+		AjaxButton searchButton = new AjaxButton("search") {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				super.onSubmit(target, form);
 				target.add(resultsContainer);
 			}
-		});
+		}; 
+		form.add(searchButton);
+		form.setDefaultButton(searchButton);
 		
 		form.add(new TabsPanel<OClass>("tabs", selectedClassModel, new PropertyModel<List<OClass>>(this, "classes"))
 				{
@@ -146,8 +148,12 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 
 				@Override
 				protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
-					if (onSelect(target, objects, true))
+					if (onSelect(target, objects, true)) {
+						resetSelection();
+						target.add(getTable());
 						target.focusComponent(queryField);
+						target.appendJavaScript("$('#"+queryField.getMarkupId()+"').select()");
+					}
 				}
 
 			});
