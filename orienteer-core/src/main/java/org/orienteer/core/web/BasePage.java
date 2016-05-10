@@ -108,7 +108,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS));
+		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS_FOR_CHANGING));
 		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(version);
 		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))

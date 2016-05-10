@@ -16,11 +16,8 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALL_STOP = new UpdateOnActionPerformedEventBehavior(true);
 	public static final UpdateOnActionPerformedEventBehavior INSTANCE_CHANGING_CONTINUE = new UpdateChangingOnActionPerformedEventBehavior(false);
 	public static final UpdateOnActionPerformedEventBehavior INSTANCE_CHANGING_STOP = new UpdateChangingOnActionPerformedEventBehavior(true);
-	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALWAYS = new UpdateChangingOnActionPerformedEventBehavior(false) {
-		protected boolean match(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
-			return true;
-		};
-	};
+	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALWAYS = new UpdateAlwaysOnActionPerformedEventBehavior(false, false);
+	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALWAYS_FOR_CHANGING = new UpdateAlwaysOnActionPerformedEventBehavior(false, true);
 	
 	private static class UpdateChangingOnActionPerformedEventBehavior extends UpdateOnActionPerformedEventBehavior {
 		
@@ -34,6 +31,21 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 			return super.match(component, event, wicketEvent) && event.getCommand().isChangingModel();
 		}
 	}
+
+	private static class UpdateAlwaysOnActionPerformedEventBehavior extends UpdateOnActionPerformedEventBehavior {
+		private final boolean shouldBeChanging;
+		public UpdateAlwaysOnActionPerformedEventBehavior(boolean stopEvent, boolean shouldBeChanging) {
+			super(stopEvent);
+			this.shouldBeChanging = shouldBeChanging;
+		}
+
+		@Override
+		protected boolean match(Component component, ActionPerformedEvent<?> event,
+				IEvent<?> wicketEvent) {
+			return !shouldBeChanging && event.getCommand().isChangingModel();
+		}
+	}
+	
 	
 	private final boolean stopEvent;
 	
