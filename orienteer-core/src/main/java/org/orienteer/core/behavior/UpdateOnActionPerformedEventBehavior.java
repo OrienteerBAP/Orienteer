@@ -16,6 +16,11 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALL_STOP = new UpdateOnActionPerformedEventBehavior(true);
 	public static final UpdateOnActionPerformedEventBehavior INSTANCE_CHANGING_CONTINUE = new UpdateChangingOnActionPerformedEventBehavior(false);
 	public static final UpdateOnActionPerformedEventBehavior INSTANCE_CHANGING_STOP = new UpdateChangingOnActionPerformedEventBehavior(true);
+	public static final UpdateOnActionPerformedEventBehavior INSTANCE_ALWAYS = new UpdateChangingOnActionPerformedEventBehavior(false) {
+		protected boolean match(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
+			return true;
+		};
+	};
 	
 	private static class UpdateChangingOnActionPerformedEventBehavior extends UpdateOnActionPerformedEventBehavior {
 		
