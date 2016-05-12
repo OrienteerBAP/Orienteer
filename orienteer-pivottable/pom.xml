@@ -48,12 +48,12 @@
 		<dependency>
 		    <groupId>org.webjars.bower</groupId>
 		    <artifactId>d3</artifactId>
-		    <version>3.5.16</version>
+		    <version>3.5.17</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.webjars.bower</groupId>
 		    <artifactId>c3</artifactId>
-		    <version>0.4.10</version>
+		    <version>0.4.11</version>
 		</dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
         <dependency>

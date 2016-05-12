@@ -61,7 +61,7 @@
 	</licenses>
 	<properties>
 		<wicket.version>7.3.0</wicket.version>
-		<wicketstuff.version>7.2.0</wicketstuff.version>
+		<wicketstuff.version>7.3.0</wicketstuff.version>
 		<orientdb.version>2.1.16</orientdb.version>
 		<wicket.orientdb.version>1.2-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.2.11.v20150529</jetty.version>
@@ -175,7 +175,7 @@
 		    <dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>font-awesome</artifactId>
-				<version>4.6.1</version>
+				<version>4.6.2</version>
 		    </dependency>
 		    <dependency>
 				<groupId>org.webjars</groupId>
