@@ -67,8 +67,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 {
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerWebApplication.class);
 	
-	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("L-", true);
-	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("LL", true);
+	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("M-", true);
+	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("MM", true);
 	
 	private LinkedHashMap<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	private boolean registeredModulesSorted = false;
