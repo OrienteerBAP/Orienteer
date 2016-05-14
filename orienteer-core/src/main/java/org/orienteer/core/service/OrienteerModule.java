@@ -18,6 +18,8 @@ import com.orientechnologies.orient.server.OServer;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 
 import org.apache.wicket.Localizer;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.export.CSVDataExporter;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.export.IDataExporter;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
@@ -79,6 +81,7 @@ public class OrienteerModule extends AbstractModule {
 		bind(IOClassIntrospector.class).to(OClassIntrospector.class);
 		bind(UIVisualizersRegistry.class).asEagerSingleton();
 		bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
+		bind(IDataExporter.class).to(CSVDataExporter.class);
 	}
 
 	@Provides

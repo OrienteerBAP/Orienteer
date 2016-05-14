@@ -6,11 +6,14 @@ import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.component.command.CreateODocumentCommand;
 import org.orienteer.core.component.command.DeleteODocumentCommand;
 import org.orienteer.core.component.command.EditODocumentsCommand;
+import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.command.CopyODocumentCommand;
 import org.orienteer.core.component.command.ReleaseODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
@@ -54,7 +57,8 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true, modeModel), provider, 20);
-		table.setCaptionModel(new OPropertyNamingModel(property));
+		final OPropertyNamingModel propertyNamingModel = new OPropertyNamingModel(property);
+		table.setCaptionModel(propertyNamingModel);
 		SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
 		if(!isCalculable)
 		{
@@ -72,6 +76,13 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 			table.addCommand(new EditODocumentsCommand(table, modeModel, linkedClass).add(securityBehaviour));
 			table.addCommand(new SaveODocumentsCommand(table, modeModel).add(securityBehaviour));
 		}
+		table.addCommand(new ExportCommand<>(table, new LoadableDetachableModel<String>() {
+			@Override
+			protected String load() {
+				return oClassIntrospector.getDocumentName(LinksPropertyDataTablePanel.this.getModelObject()) +
+				"."+propertyNamingModel.getObject();
+			}
+		}));
 		add(table);
 	}
 

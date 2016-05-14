@@ -2,6 +2,7 @@ package org.orienteer.core.component.widget.browse;
 
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -9,6 +10,7 @@ import org.orienteer.core.component.command.CopyODocumentCommand;
 import org.orienteer.core.component.command.CreateODocumentCommand;
 import org.orienteer.core.component.command.DeleteODocumentCommand;
 import org.orienteer.core.component.command.EditODocumentsCommand;
+import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -47,6 +49,7 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));
 		table.addCommand(new CopyODocumentCommand(table, getModel()));
 		table.addCommand(new DeleteODocumentCommand(table, getModel()));
+		table.addCommand(new ExportCommand<ODocument>(table, new PropertyModel<String>(model, "name")));
 		form.add(table);
 		add(form);
 	}

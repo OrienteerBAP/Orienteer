@@ -20,6 +20,7 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.DeleteODocumentCommand;
 import org.orienteer.core.component.command.EditODocumentsCommand;
+import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -66,6 +67,7 @@ public class CalculatedDocumentsWidget extends AbstractWidget<ODocument> {
         	table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         	table.addCommand(new SaveODocumentsCommand(table, modeModel));
         	table.addCommand(new DeleteODocumentCommand(table, commonParent));
+        	table.addCommand(new ExportCommand<>(table, getTitleModel()));
         	form.add(table);
         	add(new EmptyPanel("error").setVisible(false));
         } else {

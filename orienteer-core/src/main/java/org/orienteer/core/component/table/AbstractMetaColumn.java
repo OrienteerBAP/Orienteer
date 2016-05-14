@@ -3,6 +3,7 @@ package org.orienteer.core.component.table;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.export.IExportableColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
@@ -15,12 +16,11 @@ import org.orienteer.core.component.meta.OIndexMetaPanel;
  * @param <C> the type of criteria for this column
  * @param <S> the type of the sort property
  */
-public abstract class AbstractMetaColumn<T, C, S> extends AbstractColumn<T, S>
+public abstract class AbstractMetaColumn<T, C, S> extends AbstractColumn<T, S> implements IExportableColumn<T, S>
 {
 	private static final long serialVersionUID = 1L;
 	private IModel<C> criteryModel;
 	private IModel<String> labelModel;
-	private AbstractMetaPanel<T, C, ?> metaPanel;
 	
 	public AbstractMetaColumn(IModel<C> criteryModel) {
 		super(null);
@@ -35,7 +35,7 @@ public abstract class AbstractMetaColumn<T, C, S> extends AbstractColumn<T, S>
 	@SuppressWarnings("unchecked")
 	@Override
 	public void populateItem(Item<ICellPopulator<T>> cellItem, String componentId, IModel<T> rowModel) {
-		cellItem.add(metaPanel = newMetaPanel(componentId, criteryModel, rowModel));
+		cellItem.add(newMetaPanel(componentId, criteryModel, rowModel));
 	}
 	
 	public IModel<C> getCriteryModel() {
@@ -63,6 +63,11 @@ public abstract class AbstractMetaColumn<T, C, S> extends AbstractColumn<T, S>
 	@Override
 	public final IModel<String> getDisplayModel() {
 		return getLabelModel();
+	}
+	
+	@Override
+	public IModel<?> getDataModel(IModel<T> rowModel) {
+		return newMetaPanel("exporting", criteryModel, rowModel).getExportableDataModel();
 	}
 
 	@Override

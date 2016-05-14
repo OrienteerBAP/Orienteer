@@ -18,6 +18,7 @@ import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.visit.ClassVisitFilter;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.component.IExportable;
 import org.orienteer.core.service.IMarkupProvider;
 
 import com.google.inject.Inject;
@@ -29,7 +30,7 @@ import com.google.inject.Inject;
  * @param <C> the type of a criteria
  * @param <V> the type of a value
  */
-public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndPropertyAwarePanel<T, C, V> implements ILabelProvider<String>
+public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndPropertyAwarePanel<T, C, V> implements ILabelProvider<String>, IExportable<Object>
 {
 	private static final long serialVersionUID = 1L;
 
@@ -193,6 +194,13 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 								else visit.dontGoDeeper();
 							}
 		});
+	}
+	
+	public IModel<Object> getExportableDataModel() {
+		configure();
+		if(component instanceof IExportable){
+			return ((IExportable) component).getExportableDataModel();
+		} else return (IModel<Object>)getModel();
 	}
 
 	protected abstract IModel<String> newLabelModel();

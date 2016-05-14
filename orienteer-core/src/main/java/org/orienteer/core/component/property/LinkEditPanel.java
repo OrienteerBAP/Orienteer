@@ -10,8 +10,10 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.component.IExportable;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.command.modal.SelectDialogPanel;
+import org.orienteer.core.model.ODocumentNameModel;
 
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
@@ -23,7 +25,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * {@link FormComponentPanel} to edit LINK properties
  */
-public class LinkEditPanel extends FormComponentPanel<ODocument>
+public class LinkEditPanel extends FormComponentPanel<ODocument> implements IExportable<String>
 {
 	protected IModel<ODocument> inputDocument;
 	protected ModalWindow modal;
@@ -85,6 +87,11 @@ public class LinkEditPanel extends FormComponentPanel<ODocument>
 			
 			
 		});
+	}
+	
+	@Override
+	public IModel<String> getExportableDataModel() {
+		return new ODocumentNameModel(inputDocument);
 	}
 
 	@Override
