@@ -1,6 +1,9 @@
 package org.orienteer.pivottable.component;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,11 +22,17 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.MapMaker;
 
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
@@ -44,6 +53,9 @@ public class PivotPanel extends GenericPanel<String> {
 	private static final WebjarsCssResourceReference C3_CSS = new WebjarsCssResourceReference("/webjars/c3/current/c3.min.css");
 	private static final WebjarsJavaScriptResourceReference C3_JS = new WebjarsJavaScriptResourceReference("/webjars/c3/current/c3.min.js");
 	private static final WebjarsJavaScriptResourceReference C3_RENDERERS_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/c3_renderers.min.js");
+	
+	private static final List<String> SUPPORTED_LANGS = Arrays.asList("en", "es", "fr", "nl", "pt", "ru", "tr", "zh");
+	private static final Map<String, WebjarsJavaScriptResourceReference> LANGUAGES_MAP = new HashMap<>();
 	
 	private final IModel<String> configModel;
 	private final IModel<DisplayMode> modeModel;
@@ -88,6 +100,16 @@ public class PivotPanel extends GenericPanel<String> {
 		configModel.detach();
 	}
 	
+	protected JavaScriptResourceReference getLocalizationJSResource(String lang) {
+		if(Strings.isEmpty(lang) || "en".equals(lang)) return null;
+		WebjarsJavaScriptResourceReference ret = LANGUAGES_MAP.get(lang);
+		if(ret==null) {
+			ret = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/pivot."+lang+".min.js");
+			LANGUAGES_MAP.put(lang, ret);
+		}
+		return ret;
+	}
+	
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
@@ -100,6 +122,10 @@ public class PivotPanel extends GenericPanel<String> {
 		response.render(JavaScriptHeaderItem.forReference(C3_JS));
 		response.render(JavaScriptHeaderItem.forReference(D3_RENDERERS_JS));
 		response.render(JavaScriptHeaderItem.forReference(C3_RENDERERS_JS));
+		String lang = getLocale().getLanguage();
+		if(SUPPORTED_LANGS.indexOf(lang)<0) lang = "en";
+		JavaScriptResourceReference langRes = getLocalizationJSResource(lang);
+		if(langRes!=null) response.render(JavaScriptHeaderItem.forReference(langRes));
 		TextTemplate template = new PackageTextTemplate(PivotPanel.class, "pivottable.tmpl.js");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("componentId", getMarkupId());
@@ -107,6 +133,7 @@ public class PivotPanel extends GenericPanel<String> {
 		params.put("config", Strings.defaultIfEmpty(configModel.getObject(), "{}"));
 		params.put("editMode", DisplayMode.EDIT.equals(modeModel.getObject()));
 		params.put("callBackScript", updatePivotTableBehavior.getCallbackScript());
+		params.put("language", lang);
 		template.interpolate(params);
 		response.render(OnDomReadyHeaderItem.forScript(template.asString()));
 	}
