@@ -60,6 +60,7 @@ public class CalculatedDocumentsWidget extends AbstractWidget<ODocument> {
         	OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
         	provider.setParameter("this", model);
         	OClass commonParent = provider.probeOClass(20);
+        	oClassIntrospector.defineDefaultSorting(provider, commonParent);
         	List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
         	OrienteerDataTable<ODocument, String> table =
         			new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);

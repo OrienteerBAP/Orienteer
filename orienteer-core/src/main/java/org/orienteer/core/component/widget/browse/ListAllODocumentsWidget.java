@@ -41,7 +41,7 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		
 		Form<ODocument> form = new Form<ODocument>("form");
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+getModelObject().getName());
-		
+		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
 		table.addCommand(new CreateODocumentCommand(table, getModel()));

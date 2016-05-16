@@ -119,6 +119,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	{
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
 		provider.setParameter("text", getModel());
+		oClassIntrospector.defineDefaultSorting(provider, oClass);
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, true, DisplayMode.VIEW.asModel()), provider, 20);
 		table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.select"), table)

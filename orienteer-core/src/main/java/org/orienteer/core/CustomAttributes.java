@@ -80,11 +80,11 @@ public enum CustomAttributes
     /**
      * Property name by which to sort data by default
      */
-    SORT_BY("sort.by", OType.LINK, OProperty.class, null, false),
+    SORT_BY("orienteer.sortby", OType.LINK, OProperty.class, null, false),
     /**
      * Order in which to sort data
      */
-    ORDER_BY("order.by", OType.STRING, null, false);
+    SORT_ORDER("orienteer.sortorder", OType.BOOLEAN, null, false);
 
 	private final String name;
 	private final OType type;

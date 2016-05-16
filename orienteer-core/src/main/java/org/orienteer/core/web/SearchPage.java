@@ -18,6 +18,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.TabsPanel;
 import org.orienteer.core.component.command.CreateODocumentCommand;
@@ -140,6 +141,7 @@ public class SearchPage extends OrienteerBasePage<String>
 		OQueryDataProvider<ODocument> provider = 
 				new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
 		provider.setParameter("text", getModel());
+		oClassIntrospector.defineDefaultSorting(provider, oClass);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20);

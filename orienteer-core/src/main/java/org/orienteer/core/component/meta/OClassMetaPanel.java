@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.io.IClusterable;
@@ -50,6 +51,7 @@ import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.utils.ResourceChoiceRenderer;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 import java.io.Serializable;
@@ -94,7 +96,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
 		OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
         OCLASS_ATTRS.add(CustomAttributes.SORT_BY.getName());
-        OCLASS_ATTRS.add(CustomAttributes.ORDER_BY.getName());
+        OCLASS_ATTRS.add(CustomAttributes.SORT_ORDER.getName());
 		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_FIELDS.getName());
 		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
 	}
@@ -206,9 +208,13 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			else if(OClassPrototyper.SUPER_CLASSES.equals(critery)) {
 				return new MultipleOClassesViewPanel(id, (IModel<List<OClass>>)getModel());
 			}
-			if(OClassPrototyper.ABSTRACT.equals(critery) || OClassPrototyper.STRICT_MODE.equals(critery))
+			else if(OClassPrototyper.ABSTRACT.equals(critery) || OClassPrototyper.STRICT_MODE.equals(critery))
 			{
 				return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
+			}
+			else if(CustomAttributes.match(critery, CustomAttributes.SORT_ORDER))
+			{
+				return new Label(id, new StringResourceModel("sortorder.${}", getModel()));
 			}
 			else
 			{
@@ -245,7 +251,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
 				else if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME))
 				{
-					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null));
+					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null)).setNullValid(true);
 				}
 				else if(CustomAttributes.match(critery, CustomAttributes.PROP_PARENT))
 				{
@@ -260,11 +266,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				}
                 else if(CustomAttributes.match(critery, CustomAttributes.SORT_BY))
                 {
-                    return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null));
+                    return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null)).setNullValid(true);
                 }
-                else if(CustomAttributes.match(critery, CustomAttributes.ORDER_BY))
+                else if(CustomAttributes.match(critery, CustomAttributes.SORT_ORDER))
                 {
-                    return new DropDownChoice<String>(id, (IModel<String>)getModel(), Arrays.asList(SortOrder.ASCENDING.name(), SortOrder.DESCENDING.name()));
+                	return new DropDownChoice<Boolean>(id, (IModel<Boolean>)getModel(), Arrays.asList(true, false), new ResourceChoiceRenderer<>("sortorder")).setNullValid(true);
                 }
                 else if(CustomAttributes.match(critery,CustomAttributes.DESCRIPTION))
                 {

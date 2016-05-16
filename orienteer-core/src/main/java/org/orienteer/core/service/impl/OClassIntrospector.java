@@ -19,8 +19,10 @@ import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.apache.wicket.Application;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
+import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttributes;
@@ -217,20 +219,22 @@ public class OClassIntrospector implements IOClassIntrospector
 	}
 
 	@Override
-	public ISortableDataProvider<ODocument, String> prepareDataProviderForProperty(
+	public SortableDataProvider<ODocument, String> prepareDataProviderForProperty(
 			OProperty property, IModel<ODocument> documentModel) {
+		SortableDataProvider<ODocument, String> provider;
 		if(CustomAttributes.CALCULABLE.getValue(property, false))
 		{
 			String sql = CustomAttributes.CALC_SCRIPT.getValue(property);
 			sql = sql.replace("?", ":doc");
-			OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
-			provider.setParameter("doc", documentModel);
-			return provider;
+			provider = new OQueryDataProvider<ODocument>(sql).setParameter("doc", documentModel);
 		}
 		else
 		{
-			return new ODocumentLinksDataProvider(documentModel, property);
+			provider =  new ODocumentLinksDataProvider(documentModel, property);
 		}
+		OClass linkedClass = property.getLinkedClass();
+		defineDefaultSorting(provider, linkedClass);
+		return provider;
 	}
 
 	@Override
@@ -347,6 +351,20 @@ public class OClassIntrospector implements IOClassIntrospector
 				break;
 		}
 		return property;
+	}
+
+	@Override
+	public void defineDefaultSorting(SortableDataProvider<ODocument, String> provider, OClass oClass) {
+		if(oClass==null) return;
+		OProperty property = CustomAttributes.SORT_BY.getHierarchicalValue(oClass);
+		Boolean order = CustomAttributes.SORT_ORDER.getHierarchicalValue(oClass);
+		SortOrder sortOrder = order==null?SortOrder.ASCENDING:(order?SortOrder.ASCENDING:SortOrder.DESCENDING);
+    	if(property==null) {
+    		if(order==null) provider.setSort(null);
+    		else provider.setSort("@rid", sortOrder);
+    	} else {
+    		provider.setSort(property.getName(), sortOrder);
+    	}
 	}
 
 }
