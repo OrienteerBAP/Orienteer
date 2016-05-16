@@ -30,7 +30,7 @@ public class FullScreenCommand<T> extends AjaxCommand<T> {
 		configure();
 		target.add(this);
 		AbstractWidget<?> widget = findParent(AbstractWidget.class);
-		target.appendJavaScript("$('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
+		target.appendJavaScript("$('body').toggleClass('noscroll'); $('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
 	}
 
 }

@@ -186,11 +186,15 @@ div.ajax-indicator {
 	border: solid 1px #bbb;
 }
 
+.noscroll {
+	overflow: hidden;
+}
+
 .fullscreen {
 	position: fixed;
 	top: 0; right:0; left:0; bottom:0;
 	margin: 0;
 	z-index: 99999;
-	overflow-y: scroll;
+	overflow: auto;
 	background: white;
 }
