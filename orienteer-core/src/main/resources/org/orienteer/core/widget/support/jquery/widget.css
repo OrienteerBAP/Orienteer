@@ -5,7 +5,7 @@
 
 .dashboard {
     margin: 0 auto;
-    opacity: .8;
+    /*opacity: .8;*/
     background-color: #EFEFEF;
     padding: 5px 10px;
 }
@@ -22,4 +22,9 @@
 li.dashboard-placeholder {
 	background: red;
 	opacity: 0.15;
+}
+
+.ui-sortable-helper {
+	opacity: .9;
+	z-index: 2000 !important;
 }

@@ -58,4 +58,9 @@ public class ODatabaseConfigurationWidget extends AbstractModeAwareWidget<Void> 
     protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("database.configuration");
     }
+    
+    @Override
+    protected String getWidgetStyleClass() {
+    	return "strict";
+    }
 }

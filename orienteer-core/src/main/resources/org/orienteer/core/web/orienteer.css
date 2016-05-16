@@ -185,3 +185,12 @@ div.ajax-indicator {
 	background: white;
 	border: solid 1px #bbb;
 }
+
+.fullscreen {
+	position: fixed;
+	top: 0; right:0; left:0; bottom:0;
+	margin: 0;
+	z-index: 99999;
+	overflow-y: scroll;
+	background: white;
+}

@@ -19,6 +19,7 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
+import org.orienteer.core.widget.command.FullScreenCommand;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
@@ -93,6 +94,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 				setVisible(getDashboardPanel().getModeObject().canModify());
 			}
 		});
+		addCommand(new FullScreenCommand<T>(commands.newChildId()));
 	}
 	
 	@Override
