@@ -32,7 +32,7 @@ public class ExportCommand <T> extends Command<T> {
 		super(new ResourceModel("command.export"), table);
 		this.table = table;
 		this.fileNameModel = fileNameModel;
-		setIcon(FAIconType.arrow_circle_up);
+		setIcon(FAIconType.download);
 		setBootstrapType(BootstrapType.PRIMARY);
 	}
 	

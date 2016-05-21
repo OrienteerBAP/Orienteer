@@ -8,12 +8,16 @@ import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.visit.ClassVisitFilter;
 import org.apache.wicket.util.visit.IVisit;
@@ -196,11 +200,13 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		});
 	}
 	
-	public IModel<Object> getExportableDataModel() {
+	public IModel<?> getExportableDataModel() {
 		configure();
 		if(component instanceof IExportable){
-			return ((IExportable) component).getExportableDataModel();
-		} else return (IModel<Object>)getModel();
+			return ((IExportable<?>) component).getExportableDataModel();
+		} else if(component instanceof Label) {
+			return Model.of(component.getDefaultModelObjectAsString());
+		} else return getModel();
 	}
 
 	protected abstract IModel<String> newLabelModel();

@@ -7,5 +7,5 @@ import org.apache.wicket.model.IModel;
  * @param <V>
  */
 public interface IExportable<V> {
-	public IModel<V> getExportableDataModel();
+	public IModel<? extends V> getExportableDataModel();
 }
