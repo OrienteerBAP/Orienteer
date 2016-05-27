@@ -1,4 +1,4 @@
-highlighter: pygments
+highlighter: rouge
 permalink: pretty
 exclude: ['CNAME', 'Gemfile', 'Gemfile.lock']
 gems:
