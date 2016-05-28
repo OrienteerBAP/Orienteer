@@ -1,0 +1,17 @@
+**/target/
+**/pom.xml.tag
+**/pom.xml.releaseBackup
+**/pom.xml.next
+**/release.properties
+**/*~
+**/*.swp
+**/*.swo
+**/.classpath
+**/.project
+**/.settings/
+build.cmd
+**/databases/
+**/Orienteer/
+**/.idea/
+**/*.iml
+**/*.log
