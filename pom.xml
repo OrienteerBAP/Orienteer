@@ -442,7 +442,7 @@
 											<version>${jetty.version}</version>
 											<type>jar</type>
 											<overWrite>true</overWrite>
-											<outputDirectory>${project.basedir}</outputDirectory>
+											<outputDirectory>${project.basedir}/target/</outputDirectory>
 											<destFileName>jetty-runner.jar</destFileName>
 										</artifactItem>
 									</artifactItems>
