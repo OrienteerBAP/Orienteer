@@ -30,7 +30,8 @@ public class SaveODocumentsCommand extends AbstractSaveCommand<ODocument>
 
 			@Override
 			public void component(MetaContextItem<ODocument, ?> rowItem, IVisit<Void> visit) {
-				rowItem.getModelObject().save();
+				ODocument doc = rowItem.getModelObject();
+				if(doc.isDirty()) doc.save();
 				visit.dontGoDeeper();
 			}
 		});

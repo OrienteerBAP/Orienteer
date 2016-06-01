@@ -45,7 +45,8 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 				IOrienteerModule module = app.getModuleByName(moduleName);
 				if(module!=null) {
 					ODatabaseDocument db = iDocument.getDatabase();
-					if(!Objects.isEqual(iDocument.getOriginalValue(IOrienteerModule.OMODULE_ACTIVATE), iDocument.field(IOrienteerModule.OMODULE_ACTIVATE))) {
+					Object previousActivate = iDocument.getOriginalValue(IOrienteerModule.OMODULE_ACTIVATE);
+					if(previousActivate!=null && !previousActivate.equals(iDocument.field(IOrienteerModule.OMODULE_ACTIVATE))) {
 						Object activated = iDocument.field(IOrienteerModule.OMODULE_ACTIVATE);
 						if(activated==null || Boolean.TRUE.equals(activated)) module.onInitialize(app, db, iDocument);
 						else module.onDestroy(app, db, iDocument);
