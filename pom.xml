@@ -62,7 +62,7 @@
 	<properties>
 		<wicket.version>7.3.0</wicket.version>
 		<wicketstuff.version>7.3.0</wicketstuff.version>
-		<orientdb.version>2.1.18</orientdb.version>
+		<orientdb.version>2.1.19</orientdb.version>
 		<wicket.orientdb.version>1.2-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.2.11.v20150529</jetty.version>
 		<enableAssertions>false</enableAssertions>
@@ -175,7 +175,7 @@
 		    <dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>font-awesome</artifactId>
-				<version>4.6.2</version>
+				<version>4.6.3</version>
 		    </dependency>
 		    <dependency>
 				<groupId>org.webjars</groupId>
@@ -268,7 +268,7 @@
 		    <plugin>
 			<groupId>org.eluder.coveralls</groupId>
 			<artifactId>coveralls-maven-plugin</artifactId>
-			<version>4.1.0</version>
+			<version>4.2.0</version>
 			<configuration>
 			    <sourceEncoding>UTF8</sourceEncoding>
 			</configuration>
@@ -304,7 +304,7 @@
 			<dependency>
 				<groupId>com.puppycrawl.tools</groupId>
 				<artifactId>checkstyle</artifactId>
-				<version>6.18</version>
+				<version>6.19</version>
 			</dependency>
 			</dependencies>
                         <configuration>
