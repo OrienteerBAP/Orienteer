@@ -6,10 +6,25 @@ import org.camunda.bpm.engine.impl.db.AbstractPersistenceSession;
 import org.camunda.bpm.engine.impl.db.DbEntity;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbEntityOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.orientechnologies.orient.core.command.script.OCommandScript;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.db.object.ODatabaseObject;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 
 public class OPersistenceSession extends AbstractPersistenceSession {
 	
-	public OPersistenceSession() {
+	private static final Logger LOG = LoggerFactory.getLogger(OPersistenceSession.class);
+	
+	private final OObjectDatabaseTx db;
+	
+	public OPersistenceSession(ODatabaseDocumentTx db) {
+		this.db = new OObjectDatabaseTx(db);
 	}
 
 	public static void staticInit(OProcessEngineConfiguration config) {
@@ -19,38 +34,33 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	@Override
 	public List<?> selectList(String statement, Object parameter) {
-		// TODO Auto-generated method stub
-		return null;
+		return db.query(new OSQLSynchQuery<>(statement), parameter);
 	}
 
 	@Override
 	public <T extends DbEntity> T selectById(Class<T> type, String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return db.load(new ORecordId(id));
 	}
 
 	@Override
 	public Object selectOne(String statement, Object parameter) {
-		// TODO Auto-generated method stub
-		return null;
+		List<Object> ret = db.query(new OSQLSynchQuery<>(statement, 1), parameter);
+		return ret!=null && !ret.isEmpty()? ret.get(0):null;
 	}
 
 	@Override
 	public void lock(String statement, Object parameter) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void commit() {
-		// TODO Auto-generated method stub
-
+		db.commit();
 	}
 
 	@Override
 	public void rollback() {
-		// TODO Auto-generated method stub
-
+		db.rollback();
 	}
 
 	@Override
@@ -61,50 +71,42 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public void flush() {
-		// TODO Auto-generated method stub
-
+		db.freeze();
 	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		db.close();
 	}
 
 	@Override
 	protected void insertEntity(DbEntityOperation operation) {
-		// TODO Auto-generated method stub
-
+		db.attachAndSave(operation.getEntity());
 	}
 
 	@Override
 	protected void deleteEntity(DbEntityOperation operation) {
-		// TODO Auto-generated method stub
-
+		db.delete(operation.getEntity());
 	}
 
 	@Override
 	protected void deleteBulk(DbBulkOperation operation) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	protected void updateEntity(DbEntityOperation operation) {
-		// TODO Auto-generated method stub
-
+		db.save(operation.getEntity());
 	}
 
 	@Override
 	protected void updateBulk(DbBulkOperation operation) {
-		// TODO Auto-generated method stub
-
+		db.command(new OCommandScript(operation.getStatement()));
 	}
 
 	@Override
 	protected String getDbVersion() {
-		// TODO Auto-generated method stub
-		return null;
+		return "OrientDB";
 	}
 
 	@Override

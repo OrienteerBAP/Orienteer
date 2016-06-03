@@ -3,6 +3,11 @@ package org.orienteer.bpm.camunda;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.interceptor.Session;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
+import org.orienteer.core.OrienteerWebApplication;
+
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
 public class OPersistenceSessionFactory implements SessionFactory{
 
@@ -13,8 +18,7 @@ public class OPersistenceSessionFactory implements SessionFactory{
 
 	@Override
 	public Session openSession() {
-		// TODO Auto-generated method stub
-		return null;
+		return new OPersistenceSession((ODatabaseDocumentTx) ODatabaseRecordThreadLocal.INSTANCE.get());
 	}
 
 }

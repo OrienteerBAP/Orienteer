@@ -48,8 +48,11 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.orientechnologies</groupId> <artifactId>orientdb-object</artifactId> 
-			<version>${orientdb.version}</version> </dependency> -->
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-object</artifactId>
+			<version>${orientdb.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.camunda.bpm</groupId>
 			<artifactId>camunda-engine</artifactId>
