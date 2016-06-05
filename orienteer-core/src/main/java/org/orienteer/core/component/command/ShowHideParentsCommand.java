@@ -15,19 +15,15 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
  *
  * @param <T> the type of an entity to which this command can be applied
  */
-public class ShowHideParentsCommand<T> extends AjaxCommand<T>
+public class ShowHideParentsCommand<T> extends TriggerCommand<T>
 {
 	private static final long serialVersionUID = 1L;
 	private IModel<OClass> classModel;
-	private IModel<Boolean> showHideParentModel;
 
 	public ShowHideParentsCommand(IModel<OClass> classModel, OrienteerDataTable<T, ?> table, IModel<Boolean> showHideParentModel)
 	{
-		super(new StringResourceModel("command.showhide.${}", showHideParentModel), table);
+		super("command.showhide.parent", table,  showHideParentModel);
 		this.classModel = classModel;
-		this.showHideParentModel = showHideParentModel;
-		setIcon(FAIconType.reorder);
-		setBootstrapType(BootstrapType.INFO);
 	}
 	
 	@Override
@@ -40,21 +36,10 @@ public class ShowHideParentsCommand<T> extends AjaxCommand<T>
 		}
 	}
 
-
-
-	@Override
-	public void onClick(AjaxRequestTarget target) {
-		Boolean current = showHideParentModel.getObject();
-		current = current!=null?!current:true;
-		showHideParentModel.setObject(current);
-	}
-
 	@Override
 	public void detachModels() {
 		super.detachModels();
 		if(classModel!=null) classModel.detach();
 	}
-	
-	
 
 }
