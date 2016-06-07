@@ -1,6 +1,8 @@
 package org.orienteer.bpm.camunda;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.AbstractPersistenceSession;
 import org.camunda.bpm.engine.impl.db.DbEntity;
@@ -21,6 +23,12 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OPersistenceSession.class);
 	
+	private static final Map<String, String> STATEMENT_MAPPING = new HashMap<>();
+	
+	{
+//		STATEMENT_MAPPING.put("selectLatestResourcesByDeploymentName", value);
+	}
+	
 	private final OObjectDatabaseTx db;
 	
 	public OPersistenceSession(ODatabaseDocumentTx db) {
@@ -34,16 +42,20 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	@Override
 	public List<?> selectList(String statement, Object parameter) {
+		LOG.info("selectList: '"+statement+"' with '"+parameter+"'");
 		return db.query(new OSQLSynchQuery<>(statement), parameter);
 	}
 
 	@Override
 	public <T extends DbEntity> T selectById(Class<T> type, String id) {
-		return db.load(new ORecordId(id));
+		db.getEntityManager().registerEntityClass(type);
+		return (T)selectOne("select from "+type.getSimpleName()+" where id = ?", id);
+//		return db.load(new ORecordId(id));
 	}
 
 	@Override
 	public Object selectOne(String statement, Object parameter) {
+		LOG.info("selectOne: '"+statement+"' with '"+parameter+"'");
 		List<Object> ret = db.query(new OSQLSynchQuery<>(statement, 1), parameter);
 		return ret!=null && !ret.isEmpty()? ret.get(0):null;
 	}
@@ -81,11 +93,15 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void insertEntity(DbEntityOperation operation) {
+		LOG.info("Registering: "+ operation.getEntityType());
+		db.getEntityManager().registerEntityClass(operation.getEntityType());
 		db.attachAndSave(operation.getEntity());
 	}
 
 	@Override
 	protected void deleteEntity(DbEntityOperation operation) {
+		LOG.info("Registering: "+ operation.getEntityType());
+		db.getEntityManager().registerEntityClass(operation.getEntityType());
 		db.delete(operation.getEntity());
 	}
 
@@ -96,6 +112,8 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void updateEntity(DbEntityOperation operation) {
+		LOG.info("Registering: "+ operation.getEntityType());
+		db.getEntityManager().registerEntityClass(operation.getEntityType());
 		db.save(operation.getEntity());
 	}
 

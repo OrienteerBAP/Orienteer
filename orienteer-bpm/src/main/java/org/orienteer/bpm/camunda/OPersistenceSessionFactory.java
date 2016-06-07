@@ -9,6 +9,8 @@ import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+
 public class OPersistenceSessionFactory implements SessionFactory{
 
 	@Override
@@ -18,7 +20,13 @@ public class OPersistenceSessionFactory implements SessionFactory{
 
 	@Override
 	public Session openSession() {
-		return new OPersistenceSession((ODatabaseDocumentTx) ODatabaseRecordThreadLocal.INSTANCE.get());
+		OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+		IOrientDbSettings settings = app.getOrientDbSettings();
+		ODatabaseDocumentTx db = settings.getDatabasePoolFactory().get(settings.getDBUrl(), 
+										settings.getDBInstallatorUserName(), 
+										settings.getDBInstallatorUserPassword()).acquire();
+//		return new OPersistenceSession((ODatabaseDocumentTx) ODatabaseRecordThreadLocal.INSTANCE.get());
+		return new OPersistenceSession(db);
 	}
 
 }
