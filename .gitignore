@@ -12,10 +12,7 @@ release.properties
 build.cmd
 databases/
 /Orienteer/
-/orienteer-core/Orienteer/
-/orienteer-graph/Orienteer/
-/orienteer-pages/Orienteer/
-/orienteer-pivottable/Orienteer/
+/*/Orienteer/
 .idea/
 *.iml
 *.log
