@@ -117,8 +117,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	
 	private void prepareResults(OClass oClass)
 	{
-		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
-		provider.setParameter("text", getModel());
+		OQueryDataProvider<ODocument> provider = oClassIntrospector.getDataProviderForGenericSearch(oClass, getModel());
 		oClassIntrospector.defineDefaultSorting(provider, oClass);
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, true, DisplayMode.VIEW.asModel()), provider, 20);

@@ -34,4 +34,5 @@ public interface IOClassIntrospector
 	public OProperty getNameProperty(OClass oClass);
 	public String getDocumentName(ODocument doc);
 	public OProperty virtualizeField(ODocument doc, String field);
+	public OQueryDataProvider<ODocument> getDataProviderForGenericSearch(OClass oClass, IModel<String> queryModel);
 }

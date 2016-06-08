@@ -25,6 +25,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDat
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
@@ -39,6 +40,8 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.util.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -53,6 +56,7 @@ import java.util.*;
  */
 public class OClassIntrospector implements IOClassIntrospector
 {
+	private static final Logger LOG = LoggerFactory.getLogger(OClassIntrospector.class);
 
 	/**
 	 * {@link Predicate} that checks displayable of an specified {@link OProperty}
@@ -365,6 +369,24 @@ public class OClassIntrospector implements IOClassIntrospector
     	} else {
     		provider.setSort(property.getName(), sortOrder);
     	}
+	}
+
+	@Override
+	public OQueryDataProvider<ODocument> getDataProviderForGenericSearch(OClass oClass, IModel<String> queryModel) {
+		String searchSql = CustomAttributes.SEARCH_QUERY.getHierarchicalValue(oClass);
+		String sql=null;
+		if(!Strings.isEmpty(searchSql)) {
+			String upper = searchSql.toUpperCase().trim();
+			if(upper.startsWith("SELECT")) sql = searchSql;
+			else if(upper.startsWith("WHERE")) sql = "select from "+oClass.getName()+" "+searchSql;
+			else {
+				LOG.error("Unrecognized search sql: "+searchSql);
+			}
+		}
+		
+		if(sql==null) sql = "select from "+oClass.getName()+" where any() containstext :query";
+		
+		return new OQueryDataProvider<ODocument>(sql).setParameter("query", queryModel);
 	}
 
 }

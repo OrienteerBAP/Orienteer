@@ -35,6 +35,7 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.validation.IValidator;
+import org.apache.wicket.validation.validator.PatternValidator;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.property.*;
@@ -59,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Meta panel for {@link OClass}
@@ -97,6 +99,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
         OCLASS_ATTRS.add(CustomAttributes.SORT_BY.getName());
         OCLASS_ATTRS.add(CustomAttributes.SORT_ORDER.getName());
+        OCLASS_ATTRS.add(CustomAttributes.SEARCH_QUERY.getName());
 		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_FIELDS.getName());
 		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
 	}
@@ -275,6 +278,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
                 else if(CustomAttributes.match(critery,CustomAttributes.DESCRIPTION))
                 {
                     return new TextArea<V>(id, getModel());
+                }
+                else if(CustomAttributes.match(critery, CustomAttributes.SEARCH_QUERY))
+                {
+                    return new TextArea<String>(id, (IModel<String>)getModel())
+                    		.add(new PatternValidator("^(select|where)\\s.*", Pattern.CASE_INSENSITIVE));
                 }
                 else if (CustomAttributes.match(critery,CustomAttributes.TAB))
                 {
