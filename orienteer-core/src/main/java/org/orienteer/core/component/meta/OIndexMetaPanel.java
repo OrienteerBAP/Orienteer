@@ -10,6 +10,7 @@ import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.BooleanViewPanel;
@@ -31,9 +32,11 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OCompositeIndexDefinition;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.index.OIndexDefinition;
+import com.orientechnologies.orient.core.index.OIndexes;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OSQLEngine;
 
 /**
@@ -44,6 +47,7 @@ import com.orientechnologies.orient.core.sql.OSQLEngine;
 public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, DisplayMode, String, V> implements IDisplayModeAware
 {
 	private static final List<String> INDEX_TYPES;
+	private static final List<String> ALGORITHMS = new ArrayList<>(OIndexes.getIndexEngines());
 	
 	static
 	{
@@ -139,6 +143,10 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 			{
 				return new DropDownChoice<String>(id, (IModel<String>)getModel(), INDEX_TYPES).setRequired(true);
 			}
+			else if(OIndexPrototyper.ALGORITHM.equals(critery) && isProto)
+			{
+				return new DropDownChoice<String>(id, (IModel<String>)getModel(), ALGORITHMS).setNullValid(true);
+			}
 			else if(OIndexPrototyper.DEF_COLLATE.equals(critery))
 			{
 				OIndex<?> index = getEntityObject();
@@ -151,6 +159,10 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 			else if(OIndexPrototyper.DEF_NULLS_IGNORED.equals(critery))
 			{
 				return new CheckBox(id, (IModel<Boolean>)getModel());
+			}
+			else if(OIndexPrototyper.METADATA.equals(critery) && isProto)
+			{
+				return new TextArea<>(id, getModel()).setType(ODocument.class);
 			}
 			//Default component for edit is view
 			return resolveComponent(id, DisplayMode.VIEW, critery);
