@@ -13,6 +13,7 @@
     <properties>
       <property name="isDeleteUponUndeploy">false</property>
       <property name="isScanForProcessDefinitions">true</property>
+      <property name="history">none</property>
     </properties>
   </process-archive>
 

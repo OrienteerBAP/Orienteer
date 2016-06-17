@@ -1,5 +1,6 @@
 package org.orienteer.bpm.camunda;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,15 @@ import org.camunda.bpm.engine.impl.db.AbstractPersistenceSession;
 import org.camunda.bpm.engine.impl.db.DbEntity;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbEntityOperation;
+import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.JobEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ResourceEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.VariableInstanceEntity;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +25,7 @@ import com.orientechnologies.orient.core.command.script.OCommandScript;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.db.object.ODatabaseObject;
+import com.orientechnologies.orient.core.entity.OEntityManager;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
@@ -42,27 +53,33 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	@Override
 	public List<?> selectList(String statement, Object parameter) {
-		LOG.info("selectList: '"+statement+"' with '"+parameter+"'");
-		return db.query(new OSQLSynchQuery<>(statement), parameter);
+		LOG.info("selectList: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
+		return new ArrayList<Object>();
+//		return db.query(new OSQLSynchQuery<>(statement), parameter);
 	}
 
 	@Override
 	public <T extends DbEntity> T selectById(Class<T> type, String id) {
-		db.getEntityManager().registerEntityClass(type);
-		return (T)selectOne("select from "+type.getSimpleName()+" where id = ?", id);
+		LOG.info("selectById: "+type+" id="+id);
+		if(!db.getEntityManager().getRegisteredEntities().contains(type)) {
+			LOG.info("SHOULD BE REGISTERED for selectById: "+ type);
+		}
+		return null;
+//		return (T)selectOne("select from "+type.getSimpleName()+" where id = ?", id);
 //		return db.load(new ORecordId(id));
 	}
 
 	@Override
 	public Object selectOne(String statement, Object parameter) {
-		LOG.info("selectOne: '"+statement+"' with '"+parameter+"'");
-		List<Object> ret = db.query(new OSQLSynchQuery<>(statement, 1), parameter);
-		return ret!=null && !ret.isEmpty()? ret.get(0):null;
+		LOG.info("selectOne: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
+		return null;
+//		List<Object> ret = db.query(new OSQLSynchQuery<>(statement, 1), parameter);
+//		return ret!=null && !ret.isEmpty()? ret.get(0):null;
 	}
 
 	@Override
 	public void lock(String statement, Object parameter) {
-
+		LOG.info("lock: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 	}
 
 	@Override
@@ -83,7 +100,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public void flush() {
-		db.freeze();
+		//db.freeze();
 	}
 
 	@Override
@@ -93,33 +110,48 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void insertEntity(DbEntityOperation operation) {
-		LOG.info("Registering: "+ operation.getEntityType());
+		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
+			LOG.info("SHOULD BE REGISTERED for insertEntity: "+ operation.getEntityType());
+			return;
+		}
 		db.getEntityManager().registerEntityClass(operation.getEntityType());
 		db.attachAndSave(operation.getEntity());
 	}
 
 	@Override
 	protected void deleteEntity(DbEntityOperation operation) {
-		LOG.info("Registering: "+ operation.getEntityType());
+		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
+			LOG.info("SHOULD BE REGISTERED for deleteEntity: "+ operation.getEntityType());
+			return;
+		}
 		db.getEntityManager().registerEntityClass(operation.getEntityType());
 		db.delete(operation.getEntity());
 	}
 
 	@Override
 	protected void deleteBulk(DbBulkOperation operation) {
-		// TODO Auto-generated method stub
+		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
+			LOG.info("SHOULD BE REGISTERED for deleteBulk: "+ operation.getEntityType());
+			return;
+		}
 	}
 
 	@Override
 	protected void updateEntity(DbEntityOperation operation) {
-		LOG.info("Registering: "+ operation.getEntityType());
-		db.getEntityManager().registerEntityClass(operation.getEntityType());
+		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
+			LOG.info("SHOULD BE REGISTERED for updateEntity: "+ operation.getEntityType());
+			return;
+		}
 		db.save(operation.getEntity());
 	}
 
 	@Override
 	protected void updateBulk(DbBulkOperation operation) {
-		db.command(new OCommandScript(operation.getStatement()));
+		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
+			LOG.info("SHOULD BE REGISTERED for updateBulk: "+ operation.getEntityType());
+			return;
+		}
+//		db.command(new OCommandScript(operation.getStatement()));
 	}
 
 	@Override
@@ -141,8 +173,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void dbSchemaCreateEngine() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -213,43 +244,36 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public boolean isEngineTablePresent() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isHistoryTablePresent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isIdentityTablePresent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isCmmnTablePresent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isCmmnHistoryTablePresent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isDmnTablePresent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isDmnHistoryTablePresent() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

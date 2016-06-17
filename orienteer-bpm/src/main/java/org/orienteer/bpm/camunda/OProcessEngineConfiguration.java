@@ -16,4 +16,12 @@ public class OProcessEngineConfiguration extends StandaloneProcessEngineConfigur
 		OPersistenceSession.staticInit(this);
 		return processEngine;
 	}
+
+	@Override
+	protected void initSqlSessionFactory() {
+	}
+
+	@Override
+	protected void initDataSource() {
+	}
 }

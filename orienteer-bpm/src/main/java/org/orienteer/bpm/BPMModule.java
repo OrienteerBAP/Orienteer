@@ -3,6 +3,16 @@ package org.orienteer.bpm;
 import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.application.ProcessApplicationUnavailableException;
 import org.camunda.bpm.engine.impl.db.DbEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.JobEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.MeterLogEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.PropertyEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ResourceEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.orienteer.bpm.camunda.OProcessApplication;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
@@ -42,6 +52,21 @@ public class BPMModule extends AbstractOrienteerModule{
 		OObjectDatabaseTx odb = new OObjectDatabaseTx((ODatabaseDocumentTx)db);
 		OEntityManager em = odb.getEntityManager();
 		em.registerEntityClass(DbEntity.class);
+		em.registerEntityClass(ExecutionEntity.class);
+		em.registerEntityClass(VariableInstanceEntity.class);
+		em.registerEntityClass(EventSubscriptionEntity.class);
+		
+		em.registerEntityClass(DeploymentEntity.class);
+		em.registerEntityClass(EventSubscriptionEntity.class);
+		em.registerEntityClass(ExecutionEntity.class);
+		em.registerEntityClass(JobDefinitionEntity.class);
+		em.registerEntityClass(JobEntity.class);
+		em.registerEntityClass(ProcessDefinitionEntity.class);
+		em.registerEntityClass(ResourceEntity.class);
+		em.registerEntityClass(VariableInstanceEntity.class);
+		
+		em.registerEntityClass(PropertyEntity.class);
+		em.registerEntityClass(MeterLogEntity.class);
 		return null;
 	}
 	
