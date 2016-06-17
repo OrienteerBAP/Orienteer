@@ -36,6 +36,8 @@
 			<includes>
 				<include>orienteer.properties</include>
 				<include>orienteer-test.properties</include>
+				<include>Dockerfile</include>
+				<include>.dockerignore</include>
 				<include>README.md</include>
 			</includes>
 		</fileSet>
