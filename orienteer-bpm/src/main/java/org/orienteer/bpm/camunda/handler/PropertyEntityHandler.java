@@ -6,6 +6,7 @@ import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 
 public class PropertyEntityHandler extends AbstractEntityHandler<PropertyEntity> {
 
@@ -17,8 +18,22 @@ public class PropertyEntityHandler extends AbstractEntityHandler<PropertyEntity>
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("name", OType.STRING, 30)
-			  .oProperty("value", OType.STRING, 40);
+		helper.oProperty("value", OType.STRING, 40);
 	}
-
+	
+	@Override
+	protected void initMapping(ODatabaseDocument db) {
+		super.initMapping(db);
+		mappingFromDocToEntity.put("id", "name");
+	}
+	
+	@Statement
+	public void lockDeploymentLockProperty(OPersistenceSession session, Object param) {
+		PropertyEntity lockEntry = read("deployment.lock", session);
+		if(lockEntry==null) {
+			lockEntry = new PropertyEntity("deployment.lock", "true");
+			create(lockEntry, session);
+		}
+	}
+	
 }

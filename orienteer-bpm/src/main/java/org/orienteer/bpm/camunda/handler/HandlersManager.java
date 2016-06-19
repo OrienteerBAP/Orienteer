@@ -21,6 +21,8 @@ public final class HandlersManager {
 	
 	private Map<Class<?>, IEntityHandler<?>> handlers = new HashMap<>();
 	
+	private Map<String, IEntityHandler<?>> statementHandlersCache = new HashMap<>();
+	
 	private HandlersManager() {
 		register(new PropertyEntityHandler(),
 				 new DeploymentEntityHandler(),
@@ -39,10 +41,37 @@ public final class HandlersManager {
 	}
 	
 	public <T extends DbEntity> IEntityHandler<T> getHandler(Class<? extends T> type) {
-		IEntityHandler<T> ret = (IEntityHandler<T>) handlers.get(type);
+		IEntityHandler<T> ret = getHandlerSafe(type);
 		if(ret==null) throw new IllegalStateException("Handler for class '"+type.getName()+"' was not found");
 		return ret;
 	}
+	
+	public <T extends DbEntity> IEntityHandler<T> getHandlerSafe(Class<? extends T> type) {
+		return (IEntityHandler<T>) handlers.get(type);
+	}
+	
+	public <T extends DbEntity> IEntityHandler<T> getHandler(String statement) {
+		IEntityHandler<T> ret = getHandlerSafe(statement);
+		if(ret==null) throw new IllegalStateException("Handler for statement '"+statement+"' was not found");
+		return ret;
+	}
+	
+	public <T extends DbEntity> IEntityHandler<T> getHandlerSafe(String statement) {
+		IEntityHandler<T> ret = null;
+		if(statementHandlersCache.containsKey(statement)) {
+			ret = (IEntityHandler<T>) statementHandlersCache.get(statement);
+		} else {
+			for(IEntityHandler<?> handler:handlers.values()) {
+				if(handler.supportsStatement(statement)) {
+					ret = (IEntityHandler<T>)handler;
+				}
+			}
+			statementHandlersCache.put(statement, ret);
+		}
+		return ret;
+	}
+	
+	
 	
 	public Collection<IEntityHandler<?>> getAllHandlers() {
 		return handlers.values();

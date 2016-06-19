@@ -37,27 +37,42 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	public List<?> selectList(String statement, Object parameter) {
 		LOG.info("selectList: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
-		return new ArrayList<Object>();
-//		return db.query(new OSQLSynchQuery<>(statement), parameter);
+		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
+		if(handler!=null) {
+			return handler.selectList(statement, parameter, this);
+		} else {
+			LOG.error("Handler 'selectList' for statement '"+statement+"' was not found");
+			return new ArrayList<Object>();
+		}
 	}
 
 	@Override
 	public <T extends DbEntity> T selectById(Class<T> type, String id) {
 		LOG.info("selectById: "+type+" id="+id);
-		return HandlersManager.get().getHandler(type).read(id, this);
+		return (T) HandlersManager.get().getHandler(type).read(id, this);
 	}
 
 	@Override
 	public Object selectOne(String statement, Object parameter) {
 		LOG.info("selectOne: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
-		return null;
-//		List<Object> ret = db.query(new OSQLSynchQuery<>(statement, 1), parameter);
-//		return ret!=null && !ret.isEmpty()? ret.get(0):null;
+		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
+		if(handler!=null) {
+			return handler.selectOne(statement, parameter, this);
+		} else {
+			LOG.error("Handler 'selectOne' for statement '"+statement+"' was not found");
+			return null;
+		}
 	}
 
 	@Override
 	public void lock(String statement, Object parameter) {
 		LOG.info("lock: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
+		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
+		if(handler!=null) {
+			handler.lock(statement, parameter, this);
+		} else {
+			LOG.error("Handler 'lock' for statement '"+statement+"' was not found");
+		}
 	}
 
 	@Override
@@ -99,6 +114,12 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	protected void deleteBulk(DbBulkOperation operation) {
 		LOG.info("deleteBulk: statement="+operation.getStatement());
+		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(operation.getStatement());
+		if(handler!=null) {
+			handler.deleteBulk(operation, this);
+		} else {
+			LOG.error("Handler 'deleteBulk' for statement '"+operation.getStatement()+"' was not found");
+		}
 	}
 
 	@Override
@@ -109,6 +130,12 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	protected void updateBulk(DbBulkOperation operation) {
 		LOG.info("updateBulk: statement="+operation.getStatement());
+		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(operation.getStatement());
+		if(handler!=null) {
+			handler.updateBulk(operation, this);
+		} else {
+			LOG.error("Handler 'updateBulk' for statement '"+operation.getStatement()+"' was not found");
+		}
 	}
 
 	@Override

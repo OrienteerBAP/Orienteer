@@ -1,6 +1,9 @@
 package org.orienteer.bpm.camunda.handler;
 
+import java.util.List;
+
 import org.camunda.bpm.engine.impl.db.DbEntity;
+import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
@@ -25,5 +28,13 @@ public interface IEntityHandler<T extends DbEntity> {
 	public Class<T> getEntityClass();
 	public String getSchemaClass();
 	
+	public boolean supportsStatement(String statement);
+	
 	public void applySchema(OSchemaHelper helper);
+	
+	public List<T> selectList(String statement, Object parameter, OPersistenceSession session);
+	public T selectOne(String statement, Object parameter, OPersistenceSession session);
+	public void lock(String statement, Object parameter, OPersistenceSession session);
+	public void deleteBulk(DbBulkOperation operation, OPersistenceSession session);
+	public void updateBulk(DbBulkOperation operation, OPersistenceSession session);
 }
