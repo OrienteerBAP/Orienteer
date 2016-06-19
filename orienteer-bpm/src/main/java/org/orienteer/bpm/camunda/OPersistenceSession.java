@@ -9,47 +9,30 @@ import org.camunda.bpm.engine.impl.db.AbstractPersistenceSession;
 import org.camunda.bpm.engine.impl.db.DbEntity;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbEntityOperation;
-import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.JobEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.ResourceEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.VariableInstanceEntity;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
+import org.orienteer.bpm.camunda.handler.HandlersManager;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.orientechnologies.orient.core.command.script.OCommandScript;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.db.object.ODatabaseObject;
-import com.orientechnologies.orient.core.entity.OEntityManager;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
 
 public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OPersistenceSession.class);
 	
-	private static final Map<String, String> STATEMENT_MAPPING = new HashMap<>();
-	
-	{
-//		STATEMENT_MAPPING.put("selectLatestResourcesByDeploymentName", value);
-	}
-	
-	private final OObjectDatabaseTx db;
+	private final ODatabaseDocumentTx db;
 	
 	public OPersistenceSession(ODatabaseDocumentTx db) {
-		this.db = new OObjectDatabaseTx(db);
+		this.db = db;
 	}
 
 	public static void staticInit(OProcessEngineConfiguration config) {
 	    //TODO
-	  }
-
+	}
+	
+	public ODatabaseDocumentTx getDatabase() {
+		return db;
+	}
 	
 	@Override
 	public List<?> selectList(String statement, Object parameter) {
@@ -61,12 +44,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	public <T extends DbEntity> T selectById(Class<T> type, String id) {
 		LOG.info("selectById: "+type+" id="+id);
-		if(!db.getEntityManager().getRegisteredEntities().contains(type)) {
-			LOG.info("SHOULD BE REGISTERED for selectById: "+ type);
-		}
-		return null;
-//		return (T)selectOne("select from "+type.getSimpleName()+" where id = ?", id);
-//		return db.load(new ORecordId(id));
+		return HandlersManager.get().getHandler(type).read(id, this);
 	}
 
 	@Override
@@ -110,48 +88,27 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void insertEntity(DbEntityOperation operation) {
-		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
-			LOG.info("SHOULD BE REGISTERED for insertEntity: "+ operation.getEntityType());
-			return;
-		}
-		db.getEntityManager().registerEntityClass(operation.getEntityType());
-		db.attachAndSave(operation.getEntity());
+		HandlersManager.get().getHandler(operation.getEntityType()).create(operation.getEntity(), this);
 	}
 
 	@Override
 	protected void deleteEntity(DbEntityOperation operation) {
-		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
-			LOG.info("SHOULD BE REGISTERED for deleteEntity: "+ operation.getEntityType());
-			return;
-		}
-		db.getEntityManager().registerEntityClass(operation.getEntityType());
-		db.delete(operation.getEntity());
+		HandlersManager.get().getHandler(operation.getEntityType()).delete(operation.getEntity(), this);
 	}
 
 	@Override
 	protected void deleteBulk(DbBulkOperation operation) {
-		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
-			LOG.info("SHOULD BE REGISTERED for deleteBulk: "+ operation.getEntityType());
-			return;
-		}
+		LOG.info("deleteBulk: statement="+operation.getStatement());
 	}
 
 	@Override
 	protected void updateEntity(DbEntityOperation operation) {
-		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
-			LOG.info("SHOULD BE REGISTERED for updateEntity: "+ operation.getEntityType());
-			return;
-		}
-		db.save(operation.getEntity());
+		HandlersManager.get().getHandler(operation.getEntityType()).update(operation.getEntity(), this);
 	}
 
 	@Override
 	protected void updateBulk(DbBulkOperation operation) {
-		if(!db.getEntityManager().getRegisteredEntities().contains(operation.getEntityType())) {
-			LOG.info("SHOULD BE REGISTERED for updateBulk: "+ operation.getEntityType());
-			return;
-		}
-//		db.command(new OCommandScript(operation.getStatement()));
+		LOG.info("updateBulk: statement="+operation.getStatement());
 	}
 
 	@Override
