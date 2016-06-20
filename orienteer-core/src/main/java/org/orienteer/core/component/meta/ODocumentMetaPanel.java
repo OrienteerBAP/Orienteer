@@ -74,14 +74,15 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 		if(component instanceof FormComponent)
 		{
 			if(critery.isNotNull()) ((FormComponent<?>)component).setRequired(true);
-			((FormComponent<?>)component).add(new OPropertyValueValidator<Object>(critery));
+			((FormComponent<?>)component).add(new OPropertyValueValidator<Object>(critery, getEntityModel()));
 		}
 	}
 	
 	@Override
 	protected DisplayMode getEffectiveMode(DisplayMode mode, OProperty property) {
 		if(mode.canModify() && property!= null
-                && (property.isReadonly() || (Boolean)CustomAttributes.UI_READONLY.getValue(property)))
+                && (property.isReadonly() || (Boolean)CustomAttributes.UI_READONLY.getValue(property))
+                && !(property.isMandatory() && !getEntityObject().containsField(property.getName())))
 		{
 			return DisplayMode.VIEW;
 		}

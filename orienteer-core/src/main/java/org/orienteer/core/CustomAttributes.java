@@ -84,7 +84,11 @@ public enum CustomAttributes
     /**
      * Order in which to sort data
      */
-    SORT_ORDER("orienteer.sortorder", OType.BOOLEAN, null, false);
+    SORT_ORDER("orienteer.sortorder", OType.BOOLEAN, null, false),
+	/**
+	 * Default search query for class
+	 */
+	SEARCH_QUERY("orienteer.searchquery", OType.STRING, null, true);
 
 	private final String name;
 	private final OType type;

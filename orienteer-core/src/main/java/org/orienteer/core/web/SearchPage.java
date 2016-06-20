@@ -138,9 +138,7 @@ public class SearchPage extends OrienteerBasePage<String>
 	
 	private void prepareResults(OClass oClass)
 	{
-		OQueryDataProvider<ODocument> provider = 
-				new OQueryDataProvider<ODocument>("select from "+oClass.getName()+" where any() containstext :text");
-		provider.setParameter("text", getModel());
+		OQueryDataProvider<ODocument> provider = oClassIntrospector.getDataProviderForGenericSearch(oClass, getModel());
 		oClassIntrospector.defineDefaultSorting(provider, oClass);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		OrienteerDataTable<ODocument, String> table = 

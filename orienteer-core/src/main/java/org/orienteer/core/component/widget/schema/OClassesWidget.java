@@ -1,9 +1,12 @@
 package org.orienteer.core.component.widget.schema;
 
+import com.google.common.base.Predicate;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.io.IClusterable;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
@@ -19,6 +22,24 @@ import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
  */
 @Widget(domain="schema", tab="classes", id="list-oclasses", autoEnable=true)
 public class OClassesWidget extends AbstractOClassesListWidget<Void> {
+	
+	private IModel<Boolean> showAllClassesModel;
+	
+	private static class FilterClassesPredicate implements Predicate<OClass>, IClusterable {
+
+		public final IModel<Boolean> showAllClassesModel;
+		
+		public FilterClassesPredicate(IModel<Boolean> showAllClassesModel) {
+			this.showAllClassesModel = showAllClassesModel;
+		}
+		
+		@Override
+		public boolean apply(OClass input) {
+			Boolean showAll = showAllClassesModel.getObject();
+			return showAll==null || showAll ? true : !input.hasSuperClasses();
+		}
+		
+	}
 
 	public OClassesWidget(String id, IModel<Void> model,
 			IModel<ODocument> widgetDocumentModel) {
@@ -32,6 +53,7 @@ public class OClassesWidget extends AbstractOClassesListWidget<Void> {
 		table.addCommand(new SaveSchemaCommand<OClass>(table, modeModel));
 		table.addCommand(new DeleteOClassCommand(table));
 		table.addCommand(new ReloadOMetadataCommand(table));
+		table.addCommand(new TriggerCommand<>("command.showhide.allclasses", table, showAllClassesModel));
 		table.addCommand(new ExportOSchemaCommand(table));
 		table.addCommand(new ImportOSchemaCommand(table));
 		table.addCommand(new ViewUMLCommand(table));
@@ -39,7 +61,7 @@ public class OClassesWidget extends AbstractOClassesListWidget<Void> {
 
 	@Override
 	protected AbstractJavaSortableDataProvider getOClassesDataProvider() {
-		return new OClassesDataProvider();
+		return new OClassesDataProvider(new FilterClassesPredicate(showAllClassesModel = Model.of(true)));
 	}
 
 	@Override

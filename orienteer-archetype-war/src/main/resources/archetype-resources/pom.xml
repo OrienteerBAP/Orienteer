@@ -107,6 +107,7 @@
 		</dependency>
 	</dependencies>
 	<build>
+		<finalName>${artifactId}</finalName>
 		<resources>
 			<resource>
 				<filtering>false</filtering>
@@ -200,6 +201,16 @@
 		<repository>
 			<id>Apache Nexus</id>
 			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>Sonatype Nexus</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
