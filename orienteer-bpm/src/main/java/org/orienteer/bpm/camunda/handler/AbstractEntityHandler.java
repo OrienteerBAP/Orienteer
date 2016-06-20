@@ -4,11 +4,14 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.util.string.Strings;
+import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.db.DbEntity;
 import org.camunda.bpm.engine.impl.db.HasDbRevision;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
@@ -17,7 +20,11 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 
+import com.github.raymanrt.orientqb.query.Operator;
+import com.github.raymanrt.orientqb.query.Parameter;
+import com.github.raymanrt.orientqb.query.Query;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
@@ -30,6 +37,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+
+
+import static com.github.raymanrt.orientqb.query.Clause.*;
 
 public abstract class AbstractEntityHandler<T extends DbEntity> implements IEntityHandler<T> {
 	
@@ -212,8 +222,8 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	
 	protected List<T> queryList(final OPersistenceSession session, String sql, Object... args) {
 		ODatabaseDocument db = session.getDatabase();
-		List<ODocument> ret = db.query(new OSQLSynchQuery<>(sql, 1), args);
-		if(ret==null) return null;
+		List<ODocument> ret = db.query(new OSQLSynchQuery<>(sql), args);
+		if(ret==null) return Collections.emptyList();
 		return Lists.transform(ret, new Function<ODocument, T>() {
 
 			@Override
@@ -221,6 +231,63 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 				return mapToEntity(input, null, session);
 			}
 		});
+	}
+	
+	protected List<T> query(final OPersistenceSession session, org.camunda.bpm.engine.query.Query<?, ? super T> query, String... ignoreFileds) {
+		return query(session, query, null, ignoreFileds);
+	}
+	
+	protected List<T> query(final OPersistenceSession session, org.camunda.bpm.engine.query.Query<?, ? super T> query, Function<Query, Query> queryManger, String... ignoreFileds) {
+		List<String> ignore = Arrays.asList(ignoreFileds);
+		try {
+			ODatabaseDocument db = session.getDatabase();
+			OClass schemaClass = db.getMetadata().getSchema().getClass(getSchemaClass());
+			Query q = new Query().from(getSchemaClass());
+			List<Object> args = new ArrayList<>();
+			for(PropertyDescriptor pd : BeanUtils.getPropertyDescriptors(query.getClass())) {
+				if(pd.getReadMethod()!=null 
+						&& schemaClass.getProperty(pd.getName())!=null
+						&& !ignore.contains(pd.getName())) {
+					Object value = pd.getReadMethod().invoke(query);
+					if(value!=null) {
+						q.where(clause(pd.getName(), Operator.EQ, Parameter.PARAMETER));
+						args.add(value);
+					}
+				}
+			}
+			if(queryManger!=null) q = queryManger.apply(q);
+			return queryList(session, q.toString(), args.toArray());
+		} catch (Exception e) {
+			throw new ProcessEngineException("Problems with read method of "+query.getClass().getName(), e);
+		} 
+	}
+	
+	protected List<T> query(final OPersistenceSession session, Map<String, ?> query, String... ignoreFileds) {
+		return query(session, query, null, ignoreFileds);
+	}
+	
+	protected List<T> query(final OPersistenceSession session, Map<String, ?> query, Function<Query, Query> queryManger, String... ignoreFileds) {
+		List<String> ignore = Arrays.asList(ignoreFileds);
+		ODatabaseDocument db = session.getDatabase();
+		OClass schemaClass = db.getMetadata().getSchema().getClass(getSchemaClass());
+		Query q = new Query().from(getSchemaClass());
+		List<Object> args = new ArrayList<>();
+		for(Map.Entry<String, ?> entry : query.entrySet()) {
+			if(schemaClass.getProperty(entry.getKey())!=null
+					&& !ignore.contains(entry.getKey())) {
+				Object value = entry.getValue();
+				if(value!=null) {
+					q.where(clause(entry.getKey(), Operator.EQ, Parameter.PARAMETER));
+					args.add(value);
+				}
+			}
+		}
+		if(queryManger!=null) q = queryManger.apply(q);
+		LOG.info("SQL: "+q);
+		LOG.info("Args: "+args);
+		List<T> ret = queryList(session, q.toString(), args.toArray());
+		LOG.info("Res: "+ret);
+		return ret;
 	}
 	
 }

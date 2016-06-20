@@ -7,7 +7,7 @@ import org.camunda.bpm.application.ProcessApplicationUnavailableException;
 import org.orienteer.core.OrienteerWebApplication;
 
 public class OProcessApplicationReference implements ProcessApplicationReference, IClusterable {
-	
+
 	public static final OProcessApplicationReference INSTANCE = new OProcessApplicationReference();
 
 	@Override

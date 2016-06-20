@@ -28,17 +28,17 @@ public class BPMModule extends AbstractOrienteerModule{
 	private ProcessApplicationReference processApplicationReference;
 	
 	protected BPMModule() {
-		super("orienteer-bpm", 1, "devutils");
+		super("bpm", 1, "devutils");
 	}
 	
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(IEntityHandler.BPM_CLASS)
-			  .oClass(IEntityHandler.BPM_ENTITY_CLASS, IEntityHandler.BPM_CLASS)
+		helper.oAbstractClass(IEntityHandler.BPM_CLASS)
+			  .oAbstractClass(IEntityHandler.BPM_ENTITY_CLASS, IEntityHandler.BPM_CLASS)
 			  	.oProperty("id", OType.STRING, 0).oIndex(INDEX_TYPE.UNIQUE)
-			  .oClass(IEntityHandler.BPM_REVISION_CLASS, IEntityHandler.BPM_CLASS)
+			  .oAbstractClass(IEntityHandler.BPM_REVISION_CLASS, IEntityHandler.BPM_CLASS)
 			  	.oProperty("revision", OType.INTEGER, 10);
 		HandlersManager.get().applySchema(helper);
 		return null;

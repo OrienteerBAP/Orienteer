@@ -66,6 +66,16 @@
 			<artifactId>orienteer-devutils</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-ext</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.raymanrt</groupId>
+			<artifactId>orientqb</artifactId>
+			<version>0.2.0</version>
+		</dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
