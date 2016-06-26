@@ -4,6 +4,10 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 
 public class OProcessEngineConfiguration extends StandaloneProcessEngineConfiguration {
+	
+	public OProcessEngineConfiguration() {
+		setExecutionTreePrefetchEnabled(false);
+	}
 
 	@Override
 	protected void initPersistenceProviders() {

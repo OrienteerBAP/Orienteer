@@ -55,6 +55,7 @@ public class TestBPMModule {
 
 	}
 
+	@Test
 	@Deployment(resources = { "example-simple.bpmn" })
 	public void testEndProcessByCancelMessageSimple() {
 		RuntimeService runtimeService = processEngineRule.getRuntimeService();
@@ -67,6 +68,7 @@ public class TestBPMModule {
 		assertProcessEnded(processInstance.getId());
 	}
 
+	@Test
 	@Deployment(resources = { "example-sequence.bpmn" })
 	public void testEndProcessByCancelMessageSequence() {
 		RuntimeService runtimeService = processEngineRule.getRuntimeService();

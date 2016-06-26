@@ -181,10 +181,11 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	}
 	
 	protected <T> T invokeStatement(String statement, Object... args) {
+		Method method = statementMethodsMapping.get(statement);
 		try {
-			return (T) statementMethodsMapping.get(statement).invoke(this, args);
+			return (T) method.invoke(this, args);
 		} catch (Exception e) {
-			throw new IllegalStateException("With good defined handler we should not be here", e);
+			throw new IllegalStateException("With good defined handler we should not be here. Method: "+method, e);
 		}
 	}
 	

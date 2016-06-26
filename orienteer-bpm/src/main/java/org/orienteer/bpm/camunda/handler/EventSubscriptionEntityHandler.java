@@ -3,11 +3,13 @@ package org.orienteer.bpm.camunda.handler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.event.CompensationEventHandler;
 import org.camunda.bpm.engine.impl.persistence.entity.CompensateEventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.MessageEventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.SignalEventSubscriptionEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
@@ -59,14 +61,25 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	}
 	
 	@Statement
-	public List<EventSubscriptionEntity> selectEventSubscriptionsByNameAndExecution(OPersistenceSession session, final ListQueryParameterObject obj) {
-		return query(session, (Map<String, ?>)obj.getParameter(), new Function<Query, Query>() {
-			
-			@Override
-			public Query apply(Query input) {
-				return input.where(Clause.clause("processInstanceId", Operator.EQ, ((Map<String, ?>)obj.getParameter()).get("executionId")));
-			}
-		}, "executionId");
+	public List<EventSubscriptionEntity> selectEventSubscriptionsByNameAndExecution(OPersistenceSession session, final ListQueryParameterObject parameter) {
+		Map<String, String> map=((Map<String, String>)parameter.getParameter());
+		List<EventSubscriptionEntity> result=new ArrayList<EventSubscriptionEntity>();
+		ExecutionEntity entity = HandlersManager.get().getHandler(ExecutionEntity.class).read(map.get("executionId"), session);
+	    if(entity==null){
+	      return result;
+	    }
+	    for(EventSubscriptionEntity eventSubscriptionEntity:entity.getEventSubscriptions()){
+	    	if((!map.containsKey("eventType") || Objects.equals(eventSubscriptionEntity.getEventType(), map.get("eventType"))) 
+	    		 && (!map.containsKey("eventName") || Objects.equals(eventSubscriptionEntity.getEventName(), map.get("eventName")))) {
+	        result.add(eventSubscriptionEntity);
+	      }
+	    }
+	    return result;
+	}
+	
+	@Statement
+	public List<EventSubscriptionEntity> selectEventSubscriptionsByExecution(OPersistenceSession session, ListQueryParameterObject parameter) {
+		return queryList(session, "select from "+getSchemaClass()+" where executionId=?", parameter.getParameter());
 	}
 
 }

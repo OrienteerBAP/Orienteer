@@ -5,14 +5,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.impl.EventSubscriptionQueryValue;
 import org.camunda.bpm.engine.impl.ExecutionQueryImpl;
 import org.camunda.bpm.engine.impl.ProcessInstanceQueryImpl;
 import org.camunda.bpm.engine.impl.QueryVariableValue;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
@@ -65,7 +69,7 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 		/*List<ExecutionEntity> ret =  queryList(session, "SELECT FROM BPMExecution WHERE processInstanceId = ?", query.getProcessInstanceId());
 		LOG.info("Ret!!: "+ret);
 		return ret;*/
-		return query(session, query, new Function<Query, Query>() {
+		List<ExecutionEntity> ret = query(session, query, new Function<Query, Query>() {
 			
 			@Override
 			public Query apply(Query input) {
@@ -73,11 +77,40 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 				return state==null?input: input.where(Clause.clause("suspensionState", Operator.EQ, state.getStateCode()));
 			}
 		},"suspensionState");
+		
+		List<EventSubscriptionQueryValue> subscriptionsQueries = query.getEventSubscriptions();
+		
+		if(subscriptionsQueries!=null && !subscriptionsQueries.isEmpty()) {
+			ret = new ArrayList<>(ret);
+			for(EventSubscriptionQueryValue sub : subscriptionsQueries) {
+				ListIterator<ExecutionEntity> it = ret.listIterator();
+				while(it.hasNext()) {
+					ExecutionEntity entity = it.next();
+					List<EventSubscriptionEntity> subscriptions = entity.getEventSubscriptions();
+					boolean hasMatch = false;
+					for(EventSubscriptionEntity subscription: subscriptions) {
+						if(Objects.equals(sub.getEventName(), subscription.getEventName()) 
+								&& Objects.equals(sub.getEventType(), subscription.getEventType())) {
+							hasMatch = true;
+						}
+					}
+					if(!hasMatch) it.remove();
+				}
+			}
+		}
+		
+		return ret;
 	}
 	
 	@Statement
 	public List<ExecutionEntity> selectExecutionsByProcessInstanceId(OPersistenceSession session, ListQueryParameterObject obj) {
+		LOG.info("processInstanceId to find for:" + obj.getParameter());
 		return queryList(session, "select from "+getSchemaClass()+" where processInstanceId = ?", obj.getParameter());
+	}
+	
+	@Statement
+	public List<ExecutionEntity> selectExecutionsByParentExecutionId(OPersistenceSession session, ListQueryParameterObject parameter) {
+		return queryList(session, "select from "+getSchemaClass()+" where parentId = ?", parameter.getParameter());
 	}
 	
 }
