@@ -138,6 +138,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 				PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(getEntityClass(), mapToEntity.getValue());
 				pd.getWriteMethod().invoke(entity, doc.field(mapToEntity.getKey()));
 			}
+			session.fireEntityLoaded(entity);
 			return entity;
 		} catch (Exception e) {
 			LOG.error("There shouldn't be this exception in case of predefined mapping", e);

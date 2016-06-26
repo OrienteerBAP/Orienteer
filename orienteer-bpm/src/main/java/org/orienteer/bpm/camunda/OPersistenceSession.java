@@ -35,6 +35,11 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	}
 	
 	@Override
+	public void fireEntityLoaded(Object result) {
+		super.fireEntityLoaded(result);
+	}
+	
+	@Override
 	public List<?> selectList(String statement, Object parameter) {
 		LOG.info("selectList: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
@@ -93,7 +98,9 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public void flush() {
-		//db.freeze();
+		boolean isInTransaction = db.getTransaction().isActive();
+		db.commit();
+		if(isInTransaction) db.begin();
 	}
 
 	@Override

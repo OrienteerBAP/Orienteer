@@ -31,7 +31,8 @@ public final class HandlersManager {
 				 new ProcessDefinitionEntityHandler(),
 				 new JobDefinitionEntityHandler(),
 				 new ExecutionEntityHandler(),
-				 new EventSubscriptionEntityHandler());
+				 new EventSubscriptionEntityHandler(),
+				 new VariableInstanceEntityHandler());
 	}
 	
 	public static HandlersManager get() {
