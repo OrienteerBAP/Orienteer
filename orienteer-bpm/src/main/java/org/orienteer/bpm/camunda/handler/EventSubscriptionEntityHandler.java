@@ -61,6 +61,11 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	}
 	
 	@Statement
+	public List<EventSubscriptionEntity> selectEventSubscriptionsByExecutionAndType(OPersistenceSession session, final ListQueryParameterObject parameter) {
+		return selectEventSubscriptionsByNameAndExecution(session, parameter);
+	}
+	
+	@Statement
 	public List<EventSubscriptionEntity> selectEventSubscriptionsByNameAndExecution(OPersistenceSession session, final ListQueryParameterObject parameter) {
 		Map<String, String> map=((Map<String, String>)parameter.getParameter());
 		List<EventSubscriptionEntity> result=new ArrayList<EventSubscriptionEntity>();
@@ -80,6 +85,14 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	@Statement
 	public List<EventSubscriptionEntity> selectEventSubscriptionsByExecution(OPersistenceSession session, ListQueryParameterObject parameter) {
 		return queryList(session, "select from "+getSchemaClass()+" where executionId=?", parameter.getParameter());
+	}
+	
+	@Statement
+	public List<EventSubscriptionEntity> selectEventSubscriptionsByConfiguration(OPersistenceSession session, ListQueryParameterObject params) {
+		Map<String, Object> map = (Map<String, Object>) params.getParameter();
+		return queryList(session, "select from "+getSchemaClass()+" where configuration=? and eventType=?", 
+				map.get("configuration"),
+				map.get("eventType"));
 	}
 
 }
