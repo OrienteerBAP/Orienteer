@@ -11,6 +11,9 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 
+/**
+ * Factory class for {@link PersistenceSession} 
+ */
 public class OPersistenceSessionFactory implements SessionFactory{
 
 	@Override

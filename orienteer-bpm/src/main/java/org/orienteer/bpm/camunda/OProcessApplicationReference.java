@@ -6,6 +6,9 @@ import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.application.ProcessApplicationUnavailableException;
 import org.orienteer.core.OrienteerWebApplication;
 
+/**
+ * Defines {@link ProcessApplicationReference} to currently registered in the system {@link ProcessApplicationInterface} 
+ */
 public class OProcessApplicationReference implements ProcessApplicationReference, IClusterable {
 
 	public static final OProcessApplicationReference INSTANCE = new OProcessApplicationReference();

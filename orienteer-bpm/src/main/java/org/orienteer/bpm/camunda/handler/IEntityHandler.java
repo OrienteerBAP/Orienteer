@@ -11,6 +11,10 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OImmutableClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Interface for any kind of handlers of {@link DbEntity} 
+ * @param <T>
+ */
 public interface IEntityHandler<T extends DbEntity> {
 	
 	public static final String BPM_CLASS = "BPM";

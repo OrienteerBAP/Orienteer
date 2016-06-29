@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ResourceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
@@ -13,6 +14,9 @@ import org.orienteer.core.util.OSchemaHelper;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 
+/**
+ * {@link IEntityHandler} for {@link ResourceEntity} 
+ */
 public class ResourceEntityHandler extends AbstractEntityHandler<ResourceEntity> {
 
 	public ResourceEntityHandler() {
@@ -42,7 +46,10 @@ public class ResourceEntityHandler extends AbstractEntityHandler<ResourceEntity>
 	public List<ResourceEntity> selectLatestResourcesByDeploymentName(OPersistenceSession session, ListQueryParameterObject params) {
 		//{resourcesToFind=[test.bpmn], tenantId=null, deploymentName=Orienteer, source=process application}
 		Map<String, Object> map = (Map<String, Object>) params.getParameter();
-		DeploymentEntity deployment = (DeploymentEntity) HandlersManager.get().getHandler("selectDeploymentByDeploymentName").selectOne("selectDeploymentByDeploymentName", map.get("deploymentName"), session);
+		DeploymentEntity deployment = (DeploymentEntity) HandlersManager.get()
+															.getHandler("selectDeploymentByDeploymentName")
+															.selectOne("selectDeploymentByDeploymentName", 
+																	     map.get("deploymentName"), session);
 		if(deployment==null) return Collections.EMPTY_LIST;
 		else {
 			return queryList(session, "select from "+getSchemaClass()+" where deploymentId=? and name in ?", deployment.getId(), map.get("resourcesToFind"));

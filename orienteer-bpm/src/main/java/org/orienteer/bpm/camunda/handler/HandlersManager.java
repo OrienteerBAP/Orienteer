@@ -13,6 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 
+/**
+ * Manager of all registgered in the system 
+ */
 public final class HandlersManager {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(HandlersManager.class);

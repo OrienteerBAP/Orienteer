@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
@@ -14,6 +15,8 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 
+/**
+ */
 public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<ProcessDefinitionEntity> {
 
 	public ProcessDefinitionEntityHandler() {

@@ -1,8 +1,13 @@
 package org.orienteer.bpm.camunda;
 
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 
+/**
+ * {@link ProcessEngineConfiguration} for OrientDB implementation
+ *
+ */
 public class OProcessEngineConfiguration extends StandaloneProcessEngineConfiguration {
 	
 	public OProcessEngineConfiguration() {

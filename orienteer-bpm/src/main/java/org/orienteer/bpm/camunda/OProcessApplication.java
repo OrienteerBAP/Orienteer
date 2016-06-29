@@ -6,6 +6,9 @@ import org.camunda.bpm.application.ProcessApplicationInterface;
 import org.camunda.bpm.application.ProcessApplicationReference;
 import org.orienteer.core.OrienteerWebApplication;
 
+/**
+ * OrientDB enables {@link AbstractProcessApplication} 
+ */
 public class OProcessApplication extends AbstractProcessApplication {
 
 	public static final String DEFAULT_PROCESS_APPLICATION_NAME = "Orienteer";

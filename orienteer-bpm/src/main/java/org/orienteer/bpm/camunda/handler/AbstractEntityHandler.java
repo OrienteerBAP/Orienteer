@@ -41,9 +41,13 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 import static com.github.raymanrt.orientqb.query.Clause.*;
 
+/**
+ * Abstract implementation of {@link IEntityHandler} 
+ * @param <T> type of {@link DbEntity} to be handled by this instance
+ */
 public abstract class AbstractEntityHandler<T extends DbEntity> implements IEntityHandler<T> {
 	
-	protected final Logger LOG = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private TypeToken<T> type = new TypeToken<T>(getClass()) {};
 	
@@ -141,7 +145,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			session.fireEntityLoaded(entity);
 			return entity;
 		} catch (Exception e) {
-			LOG.error("There shouldn't be this exception in case of predefined mapping", e);
+			logger.error("There shouldn't be this exception in case of predefined mapping", e);
 			throw new IllegalStateException("There shouldn't be this exception in case of predefined mapping", e);
 		}
 	}
@@ -285,10 +289,10 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			}
 		}
 		if(queryManger!=null) q = queryManger.apply(q);
-		LOG.info("SQL: "+q);
-		LOG.info("Args: "+args);
+		logger.info("SQL: "+q);
+		logger.info("Args: "+args);
 		List<T> ret = queryList(session, q.toString(), args.toArray());
-		LOG.info("Res: "+ret);
+		logger.info("Res: "+ret);
 		return ret;
 	}
 	

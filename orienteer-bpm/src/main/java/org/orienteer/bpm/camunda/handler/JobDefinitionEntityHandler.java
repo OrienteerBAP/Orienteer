@@ -1,11 +1,15 @@
 package org.orienteer.bpm.camunda.handler;
 
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * {@link IEntityHandler} for {@link JobDefinitionEntity} 
+ */
 public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinitionEntity> {
 
 	public JobDefinitionEntityHandler() {

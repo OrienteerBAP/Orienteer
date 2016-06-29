@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.AbstractPersistenceSession;
 import org.camunda.bpm.engine.impl.db.DbEntity;
+import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbEntityOperation;
 import org.orienteer.bpm.camunda.handler.HandlersManager;
@@ -16,6 +17,9 @@ import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 
+/**
+ * OrientDB enalbes {@link PersistenceSession} 
+ */
 public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OPersistenceSession.class);

@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.event.CompensationEventHandler;
 import org.camunda.bpm.engine.impl.persistence.entity.CompensateEventSubscriptionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.MessageEventSubscriptionEntity;
@@ -22,6 +23,9 @@ import com.google.common.base.Function;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * {@link IEntityHandler} for {@link EventSubscriptionEntity} 
+ */
 public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventSubscriptionEntity> {
 
 	public EventSubscriptionEntityHandler() {

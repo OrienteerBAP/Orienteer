@@ -10,6 +10,9 @@ import org.orienteer.core.util.OSchemaHelper;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 
+/**
+ * {@link IEntityHandler} for {@link DeploymentEntity} 
+ */
 public class DeploymentEntityHandler extends AbstractEntityHandler<DeploymentEntity> {
 
 	public DeploymentEntityHandler() {

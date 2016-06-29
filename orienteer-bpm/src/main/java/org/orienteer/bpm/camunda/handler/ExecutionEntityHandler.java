@@ -37,6 +37,9 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
+/**
+ * {@link IEntityHandler} for {@link ExecutionEntity} 
+ */
 public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntity> {
 
 	public ExecutionEntityHandler() {
@@ -66,7 +69,7 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 	
 	@Statement
 	public List<ExecutionEntity> selectProcessInstanceByQueryCriteria(OPersistenceSession session, ProcessInstanceQueryImpl query) {
-		return query(session, query, new QueryMangler() {
+		return query(session, query, new IQueryMangler() {
 			
 			@Override
 			public Query apply(Query input) {
@@ -90,7 +93,9 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 				
 				String businessKey = query.getBusinessKey();
 				if(businessKey!=null) {
-					List<ODocument> proc = session.getDatabase().query(new OSQLSynchQuery<>("select processInstanceId from "+getSchemaClass()+" where businessKey=?", 1), businessKey);
+					List<ODocument> proc = session.getDatabase()
+										.query(new OSQLSynchQuery<>("select processInstanceId from "+getSchemaClass()+" where businessKey=?", 1)
+												, businessKey);
 					if(proc!=null && !proc.isEmpty()) {
 						String processInstanceId = proc.get(0).field("processInstanceId");
 						input.where(Clause.clause("processInstanceId", Operator.EQ,  processInstanceId));
@@ -163,7 +168,7 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 	
 	@Statement
 	public List<ExecutionEntity> selectExecutionsByProcessInstanceId(OPersistenceSession session, ListQueryParameterObject obj) {
-		LOG.info("processInstanceId to find for:" + obj.getParameter());
+		logger.info("processInstanceId to find for:" + obj.getParameter());
 		return queryList(session, "select from "+getSchemaClass()+" where processInstanceId = ?", obj.getParameter());
 	}
 	

@@ -3,12 +3,16 @@ package org.orienteer.bpm.camunda.handler;
 import java.util.List;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.VariableInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * {@link IEntityHandler} for {@link VariableInstanceEntity} 
+ */
 public class VariableInstanceEntityHandler extends AbstractEntityHandler<VariableInstanceEntity> {
 
 	public VariableInstanceEntityHandler() {
@@ -37,12 +41,12 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 	@Override
 	public void create(VariableInstanceEntity entity, OPersistenceSession session) {
 		super.create(entity, session);
-		LOG.info("Variable created: "+entity);
+		logger.info("Variable created: "+entity);
 	}
 	
 	@Statement
 	public List<VariableInstanceEntity> selectVariablesByExecutionId(OPersistenceSession session, ListQueryParameterObject parameter) {
-		LOG.info("Looking for variables with executionId: "+parameter.getParameter());
+		logger.info("Looking for variables with executionId: "+parameter.getParameter());
 		return queryList(session, "select from "+getSchemaClass()+" where executionId=?", parameter.getParameter());
 	}
 
