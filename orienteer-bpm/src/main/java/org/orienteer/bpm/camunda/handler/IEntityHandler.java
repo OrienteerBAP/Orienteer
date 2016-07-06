@@ -29,6 +29,8 @@ public interface IEntityHandler<T extends DbEntity> {
 	public T mapToEntity(ODocument doc, T entity, OPersistenceSession session);
 	public ODocument mapToODocument(T entity, ODocument doc, OPersistenceSession session);
 	
+	public boolean hasNeedInCache();
+	
 	public Class<T> getEntityClass();
 	public String getSchemaClass();
 	

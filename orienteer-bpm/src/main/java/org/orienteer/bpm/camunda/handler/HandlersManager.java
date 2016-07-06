@@ -24,6 +24,7 @@ public final class HandlersManager {
 	
 	private Map<Class<?>, IEntityHandler<?>> handlers = new HashMap<>();
 	private Map<Class<?>, IEntityHandler<?>> cachedInheritedHandlers = new HashMap<>();
+	private Map<Class<?>, IEntityHandler<?>> handlerByHandlerClass = new HashMap<>();
 	
 	private Map<String, IEntityHandler<?>> statementHandlersCache = new HashMap<>();
 	
@@ -35,7 +36,9 @@ public final class HandlersManager {
 				 new JobDefinitionEntityHandler(),
 				 new ExecutionEntityHandler(),
 				 new EventSubscriptionEntityHandler(),
-				 new VariableInstanceEntityHandler());
+				 new VariableInstanceEntityHandler(),
+				 new JobEntityHandler(),
+				 new ByteArrayEntityHandler());
 	}
 	
 	public static HandlersManager get() {
@@ -45,8 +48,13 @@ public final class HandlersManager {
 	private void register(IEntityHandler<?>... handlers) {
 		for(IEntityHandler<?> handler : handlers) {
 			this.handlers.put(handler.getEntityClass(), handler);
+			handlerByHandlerClass.put(handler.getClass(), handler);
 		}
 		cachedInheritedHandlers.clear();
+	}
+	
+	public <T extends IEntityHandler<?>> T getHandlerByClass(Class<T> handlerClass) {
+		return (T) handlerByHandlerClass.get(handlerClass);
 	}
 	
 	public <T extends DbEntity> IEntityHandler<T> getHandler(Class<? extends T> type) {

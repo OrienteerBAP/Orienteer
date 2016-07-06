@@ -26,8 +26,8 @@ public class PropertyEntityHandler extends AbstractEntityHandler<PropertyEntity>
 	}
 	
 	@Override
-	protected void initMapping(ODatabaseDocument db) {
-		super.initMapping(db);
+	protected void initMapping(OPersistenceSession session) {
+		super.initMapping(session);
 		mappingFromDocToEntity.put("id", "name");
 	}
 	

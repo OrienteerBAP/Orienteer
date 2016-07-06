@@ -2,6 +2,8 @@ package org.orienteer.bpm;
 
 import org.orienteer.bpm.camunda.OProcessApplicationReference;
 import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
+import org.orienteer.bpm.camunda.handler.ExecutionEntityHandler;
+import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
 
@@ -15,11 +17,18 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.util.ClockUtil;
 import org.camunda.bpm.engine.runtime.Execution;
+import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
@@ -216,10 +225,10 @@ public class TestBPMModule {
 		runtimeService.createMessageCorrelation(null).processInstanceVariableEquals("testString", "NonExisting")
 				.correlateAll();
 		assertProcessNotEnded(processInstance.getId());
-		
+
 		runtimeService.createMessageCorrelation(null).processInstanceVariableEquals("testString", "testVarString")
-		.correlate();
-		
+				.correlate();
+
 		assertProcessEnded(processInstance.getId());
 	}
 
@@ -243,6 +252,120 @@ public class TestBPMModule {
 
 	}
 
+	@Test
+	@Deployment(resources = { "asynch-test.bpmn" })
+	public void testParallelExecution() throws InterruptedException {
+		AsynchTestDelegate.resetExecuted();
+		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("asynchtest");
+//		Thread.sleep(500);
+		describeProcess(processInstance);
+		waitForJobExecutorToProcessAllJobs(10000);
+		//Delay for Process completion
+//			Thread.sleep(5000);
+		assertEquals(2, AsynchTestDelegate.getExecuted());
+//		waitForProcessCompletion(processInstance.getProcessInstanceId(), 20000);
+		assertProcessEnded(processInstance.getId(), true);
+
+	}
+	
+	private static class InterruptTask extends TimerTask {
+	    protected boolean timeLimitExceeded = false;
+	    protected Thread thread;
+	    public InterruptTask(Thread thread) {
+	      this.thread = thread;
+	    }
+	    public boolean isTimeLimitExceeded() {
+	      return timeLimitExceeded;
+	    }
+	    @Override
+	    public void run() {
+	      timeLimitExceeded = true;
+	      thread.interrupt();
+	    }
+	  }
+	
+	public boolean areJobsAvailable() {
+	    List<Job> list = processEngineRule.getManagementService().createJobQuery().list();
+	    LOG.info("JOBS: "+list);
+	    for (Job job : list) {
+	      if (!job.isSuspended() && job.getRetries() > 0 && (job.getDuedate() == null || ClockUtil.getCurrentTime().after(job.getDuedate()))) {
+	        return true;
+	      }
+	    }
+	    return false;
+	  }
+	
+	public void waitForJobExecutorToProcessAllJobs(long maxMillisToWait) {
+//	    JobExecutor jobExecutor = processEngineConfiguration.getJobExecutor();
+//	    jobExecutor.start();
+	    long intervalMillis = 1000;
+
+	    /*int jobExecutorWaitTime = jobExecutor.getWaitTimeInMillis() * 2;
+	    if(maxMillisToWait < jobExecutorWaitTime) {
+	      maxMillisToWait = jobExecutorWaitTime;
+	    }*/
+
+	    try {
+	      Timer timer = new Timer();
+	      InterruptTask task = new InterruptTask(Thread.currentThread());
+	      timer.schedule(task, maxMillisToWait);
+	      boolean areJobsAvailable = true;
+	      try {
+	        while (areJobsAvailable && !task.isTimeLimitExceeded()) {
+	          Thread.sleep(intervalMillis);
+	          try {
+	            areJobsAvailable = areJobsAvailable();
+	          } catch(Throwable t) {
+	            // Ignore, possible that exception occurs due to locking/updating of table on MSSQL when
+	            // isolation level doesn't allow READ of the table
+	          }
+	        }
+	      } catch (InterruptedException e) {
+	      } finally {
+	        timer.cancel();
+	      }
+	      if (areJobsAvailable) {
+	        throw new ProcessEngineException("time limit of " + maxMillisToWait + " was exceeded");
+	      }
+
+	    } finally {
+//	      jobExecutor.shutdown();
+	    }
+	  }
+	
+	public void waitForProcessCompletion(String processIsntanceId, long maxMillisToWait) {
+	    long intervalMillis = 500;
+
+	      Timer timer = new Timer();
+	      InterruptTask task = new InterruptTask(Thread.currentThread());
+	      timer.schedule(task, maxMillisToWait);
+	      boolean isProcessFinished = isProcessFinished(processIsntanceId);
+	      try {
+	        while (!isProcessFinished && !task.isTimeLimitExceeded()) {
+	          Thread.sleep(intervalMillis);
+	          try {
+	            isProcessFinished = isProcessFinished(processIsntanceId);
+	          } catch(Throwable t) {
+	            // Ignore, possible that exception occurs due to locking/updating of table on MSSQL when
+	            // isolation level doesn't allow READ of the table
+	          }
+	        }
+	      } catch (InterruptedException e) {
+	      } finally {
+	        timer.cancel();
+	      }
+	      if (!isProcessFinished) {
+	        throw new ProcessEngineException("Process not finished: time limit of " + maxMillisToWait + " was exceeded");
+	      }
+
+	  }
+	
+	public boolean isProcessFinished(String processInstanceId) {
+		ProcessInstance processInstance = processEngineRule.getProcessEngine().getRuntimeService()
+				.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+		return processInstance==null || processInstance.isEnded();
+	  }
+
 	public void assertProcessNotEnded(String processInstanceId) {
 		ProcessInstance processInstance = processEngineRule.getProcessEngine().getRuntimeService()
 				.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
@@ -252,14 +375,29 @@ public class TestBPMModule {
 					"Expected not finished process instance '" + processInstanceId + "' but it was not in the db");
 		}
 	}
-
+	
 	public void assertProcessEnded(String processInstanceId) {
+		assertProcessEnded(processInstanceId, false);
+	}
+
+	public void assertProcessEnded(String processInstanceId, boolean soft) {
 		ProcessInstance processInstance = processEngineRule.getProcessEngine().getRuntimeService()
 				.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 
-		if (processInstance != null) {
+		if (processInstance != null && (!soft || !processInstance.isEnded())) {
+			describeProcess(processInstance);
+			
 			throw new AssertionFailedError(
 					"expected finished process instance '" + processInstanceId + "' but it was still in the db");
+		}
+	}
+	
+	protected void describeProcess(ProcessInstance processInstance) {
+		LOG.info("Process Isntance Description: "+processInstance.getId());
+		List<Execution> ret = processEngineRule.getProcessEngine().getRuntimeService().createExecutionQuery().processInstanceId(processInstance.getId()).list();
+		ExecutionEntityHandler handler = HandlersManager.get().getHandlerByClass(ExecutionEntityHandler.class);
+		for (Execution exec : ret) {
+			LOG.info("Exec: "+exec+" doc: "+handler.mapToODocument((ExecutionEntity)exec, null, null));
 		}
 	}
 }

@@ -18,6 +18,7 @@ import org.camunda.bpm.engine.impl.ProcessInstanceQueryImpl;
 import org.camunda.bpm.engine.impl.QueryOperator;
 import org.camunda.bpm.engine.impl.QueryVariableValue;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
@@ -67,9 +68,17 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 			  .oProperty("sequenceCounter", OType.LONG, 160);
 	}
 	
+	/*@Override
+	public void delete(ExecutionEntity entity, OPersistenceSession session) {
+		super.delete(entity, session);
+		if(entity.isProcessInstanceExecution()) {
+			logger.info("PROCESS DELITION: "+entity.getId(), new Exception());
+		}
+	}*/
+	
 	@Statement
 	public List<ExecutionEntity> selectProcessInstanceByQueryCriteria(OPersistenceSession session, ProcessInstanceQueryImpl query) {
-		return query(session, query, new IQueryMangler() {
+		return  query(session, query, new IQueryMangler() {
 			
 			@Override
 			public Query apply(Query input) {
@@ -166,9 +175,13 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 		return ret;
 	}
 	
+	@Override
+	public boolean hasNeedInCache() {
+		return true;
+	}
+	
 	@Statement
 	public List<ExecutionEntity> selectExecutionsByProcessInstanceId(OPersistenceSession session, ListQueryParameterObject obj) {
-		logger.info("processInstanceId to find for:" + obj.getParameter());
 		return queryList(session, "select from "+getSchemaClass()+" where processInstanceId = ?", obj.getParameter());
 	}
 	

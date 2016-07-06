@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.AbstractPersistenceSession;
 import org.camunda.bpm.engine.impl.db.DbEntity;
+import org.camunda.bpm.engine.impl.db.EntityLoadListener;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbEntityOperation;
@@ -15,7 +16,13 @@ import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * OrientDB enalbes {@link PersistenceSession} 
@@ -24,7 +31,10 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OPersistenceSession.class);
 	
-	private final ODatabaseDocumentTx db;
+	private ODatabaseDocumentTx db;
+	
+	private BiMap<String, ORID> idToOridCache = HashBiMap.create(10);
+	private Map<String, DbEntity> entitiesCache = new HashMap<>();
 	
 	public OPersistenceSession(ODatabaseDocumentTx db) {
 		this.db = db;
@@ -38,13 +48,34 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 		return db;
 	}
 	
-	@Override
-	public void fireEntityLoaded(Object result) {
-		super.fireEntityLoaded(result);
+	public OSchema getSchema() {
+		return db.getMetadata().getSchema();
+	}
+	
+	public OClass getClass(String className) {
+		return getSchema().getClass(className);
+	}
+	
+	public void fireEntityLoaded(ODocument sourceDoc, Object object, boolean hasNeedInCache) {
+		super.fireEntityLoaded(object);
+		if(object instanceof DbEntity) {
+			DbEntity entity = (DbEntity) object;
+			idToOridCache.put(entity.getId(), sourceDoc.getIdentity());
+			if(hasNeedInCache) entitiesCache.put(entity.getId(), entity);
+		}
+	}
+	
+	public ORID lookupORIDForIdInCache(String id) {
+		return idToOridCache.get(id);
+	}
+	
+	public DbEntity lookupEntityInCache(String id) {
+		return entitiesCache.get(id);
 	}
 	
 	@Override
 	public List<?> selectList(String statement, Object parameter) {
+		db.activateOnCurrentThread();
 		LOG.info("selectList: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
 		if(handler!=null) {
@@ -57,12 +88,14 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public <T extends DbEntity> T selectById(Class<T> type, String id) {
+		db.activateOnCurrentThread();
 		LOG.info("selectById: "+type+" id="+id);
 		return (T) HandlersManager.get().getHandler(type).read(id, this);
 	}
 
 	@Override
 	public Object selectOne(String statement, Object parameter) {
+		db.activateOnCurrentThread();
 		LOG.info("selectOne: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
 		if(handler!=null) {
@@ -75,6 +108,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public void lock(String statement, Object parameter) {
+		db.activateOnCurrentThread();
 		LOG.info("lock: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
 		if(handler!=null) {
@@ -102,28 +136,32 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public void flush() {
-		boolean isInTransaction = db.getTransaction().isActive();
+		/*boolean isInTransaction = db.getTransaction().isActive();
 		db.commit();
-		if(isInTransaction) db.begin();
+		if(isInTransaction) db.begin();*/
 	}
 
 	@Override
 	public void close() {
 		db.close();
+		db = null;
 	}
-
+	
 	@Override
 	protected void insertEntity(DbEntityOperation operation) {
+		db.activateOnCurrentThread();
 		HandlersManager.get().getHandler(operation.getEntityType()).create(operation.getEntity(), this);
 	}
 
 	@Override
 	protected void deleteEntity(DbEntityOperation operation) {
+		db.activateOnCurrentThread();
 		HandlersManager.get().getHandler(operation.getEntityType()).delete(operation.getEntity(), this);
 	}
 
 	@Override
 	protected void deleteBulk(DbBulkOperation operation) {
+		db.activateOnCurrentThread();
 		LOG.info("deleteBulk: statement="+operation.getStatement());
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(operation.getStatement());
 		if(handler!=null) {
@@ -135,11 +173,13 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void updateEntity(DbEntityOperation operation) {
+		db.activateOnCurrentThread();
 		HandlersManager.get().getHandler(operation.getEntityType()).update(operation.getEntity(), this);
 	}
 
 	@Override
 	protected void updateBulk(DbBulkOperation operation) {
+		db.activateOnCurrentThread();
 		LOG.info("updateBulk: statement="+operation.getStatement());
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(operation.getStatement());
 		if(handler!=null) {

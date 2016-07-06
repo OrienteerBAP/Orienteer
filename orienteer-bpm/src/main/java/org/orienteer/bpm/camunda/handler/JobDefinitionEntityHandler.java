@@ -2,6 +2,7 @@ package org.orienteer.bpm.camunda.handler;
 
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
+import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -29,8 +30,8 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	}
 	
 	@Override
-	protected void initMapping(ODatabaseDocument db) {
-		super.initMapping(db);
+	protected void initMapping(OPersistenceSession session) {
+		super.initMapping(session);
 		mappingFromEntityToDoc.remove("jobPriority");
 		mappingFromEntityToDoc.put("overridingJobPriority", "jobPriority");
 	}

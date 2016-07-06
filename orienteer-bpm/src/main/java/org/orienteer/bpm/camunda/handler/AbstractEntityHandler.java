@@ -1,5 +1,7 @@
 package org.orienteer.bpm.camunda.handler;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,23 +10,34 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.wicket.Application;
+import org.apache.wicket.Session;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.core.util.lang.PropertyResolver;
+import org.apache.wicket.core.util.lang.PropertyResolverConverter;
+import org.apache.wicket.core.util.lang.PropertyResolver.IGetAndSet;
 import org.apache.wicket.util.string.Strings;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.db.DbEntity;
 import org.camunda.bpm.engine.impl.db.HasDbRevision;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 
+import com.github.raymanrt.orientqb.query.Clause;
 import com.github.raymanrt.orientqb.query.Operator;
 import com.github.raymanrt.orientqb.query.Parameter;
 import com.github.raymanrt.orientqb.query.Query;
+import com.github.raymanrt.orientqb.query.core.AbstractQuery;
+import com.gitub.raymanrt.orientqb.delete.Delete;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
@@ -33,7 +46,9 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.Reflection;
 import com.google.common.reflect.TypeToken;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -46,6 +61,10 @@ import static com.github.raymanrt.orientqb.query.Clause.*;
  * @param <T> type of {@link DbEntity} to be handled by this instance
  */
 public abstract class AbstractEntityHandler<T extends DbEntity> implements IEntityHandler<T> {
+	
+	private static final PropertyResolverConverter PROPERTY_RESOLVER_CONVERTEER = 
+				new PropertyResolverConverter(OrienteerWebApplication.lookupApplication()
+												.getConverterLocator(), Locale.getDefault());
 	
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -93,9 +112,13 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	}
 	
 	public ODocument readAsDocument(String id, OPersistenceSession session) {
-		ODatabaseDocument db = session.getDatabase();
-		List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+getSchemaClass()+" where id = ?", 1), id);
-		return ret==null || ret.isEmpty()? null : ret.get(0);
+		ORID orid = session.lookupORIDForIdInCache(id);
+		if(orid!=null) return orid.getRecord();
+		else {
+			ODatabaseDocument db = session.getDatabase();
+			List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+getSchemaClass()+" where id = ?", 1), id);
+			return ret==null || ret.isEmpty()? null : ret.get(0);
+		}
 	}
 	
 	@Override
@@ -112,62 +135,98 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		db.command(new OCommandSQL("delete from "+getSchemaClass()+" where id = ?")).execute(id);
 	}
 	
-	protected void checkMapping(ODatabaseDocument db) {
+	protected void checkMapping(OPersistenceSession session) {
 		if(mappingFromDocToEntity==null || mappingFromEntityToDoc==null){
-			initMapping(db);
+			if(session!=null) initMapping(session);
 		}
 	}
 	
-	protected void initMapping(ODatabaseDocument db) {
+	private Method getGetAndSetter;
+	
+	protected IGetAndSet getGetAndSetter(Class<?> clazz, String property) {
+		try {
+			if(getGetAndSetter==null) {
+				getGetAndSetter = PropertyResolver.class.getDeclaredMethod("getGetAndSetter", String.class, Class.class);
+				getGetAndSetter.setAccessible(true);
+			}
+			return (IGetAndSet) getGetAndSetter.invoke(null, property, clazz);
+		} catch (NoSuchMethodException e) {
+			throw new ProcessEngineException("Can't get required method from "+PropertyResolver.class.getSimpleName(), e);
+		} catch (InvocationTargetException e) {
+			Throwable targetExc = e.getTargetException();
+			if(targetExc instanceof WicketRuntimeException) return null;
+			else throw new ProcessEngineException("Exception during defining getters and setters", targetExc);
+		} catch (Exception e) {
+			throw new ProcessEngineException("Can't invoke required method from "+PropertyResolver.class.getSimpleName(), e);
+		}
+		
+	}
+	
+	protected void initMapping(OPersistenceSession session) {
 		mappingFromDocToEntity = new HashMap<>();
 		mappingFromEntityToDoc = new HashMap<>();
-		OClass oClass = db.getMetadata().getSchema().getClass(getSchemaClass());
+		OClass oClass = session.getClass(getSchemaClass());
 		Class<T> entityClass = getEntityClass();
-		for(PropertyDescriptor pd : BeanUtils.getPropertyDescriptors(entityClass)) {
-			if(oClass.getProperty(pd.getName())!=null) {
-				mappingFromDocToEntity.put(pd.getName(), pd.getName());
-				mappingFromEntityToDoc.put(pd.getName(), pd.getName());
+	
+		for(OProperty property : oClass.properties()) {
+			String propertyName = property.getName();
+			IGetAndSet getAndSet = getGetAndSetter(entityClass, propertyName);
+			if(getAndSet!=null) {
+				if(getAndSet.getSetter()!=null) mappingFromDocToEntity.put(propertyName, propertyName);
+				if(getAndSet.getGetter()!=null) mappingFromEntityToDoc.put(propertyName, propertyName);
 			}
 		}
+		
+			/*for(PropertyDescriptor pd : Introspector.getBeanInfo(entityClass).getPropertyDescriptors()) {
+				if(oClass.getProperty(pd.getName())!=null) {
+					if(pd.getWriteMethod()!=null) mappingFromDocToEntity.put(pd.getName(), pd.getName());
+					if(pd.getReadMethod()!=null) mappingFromEntityToDoc.put(pd.getName(), pd.getName());
+				}
+			}*/
  	}
+	
+	
 	
 	@Override
 	public T mapToEntity(ODocument doc, T entity, OPersistenceSession session) {
-		checkMapping(session.getDatabase());
+		checkMapping(session);
 		try {
+			if(hasNeedInCache()) {
+				entity = (T)session.lookupEntityInCache((String)doc.field("id"));
+				if(entity!=null) return entity;
+			}
 			if(entity==null) {
 				entity = getEntityClass().newInstance();
 			}
 			for(Map.Entry<String, String> mapToEntity : mappingFromDocToEntity.entrySet()) {
-				PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(getEntityClass(), mapToEntity.getValue());
-				pd.getWriteMethod().invoke(entity, doc.field(mapToEntity.getKey()));
+				PropertyResolver.setValue(mapToEntity.getValue(), entity, doc.field(mapToEntity.getKey()), PROPERTY_RESOLVER_CONVERTEER);
 			}
-			session.fireEntityLoaded(entity);
+			session.fireEntityLoaded(doc, entity, hasNeedInCache());
 			return entity;
 		} catch (Exception e) {
 			logger.error("There shouldn't be this exception in case of predefined mapping", e);
 			throw new IllegalStateException("There shouldn't be this exception in case of predefined mapping", e);
 		}
 	}
+	
+	@Override
+	public boolean hasNeedInCache() {
+		return false;
+	}
 
 	@Override
 	public ODocument mapToODocument(T entity, ODocument doc, OPersistenceSession session) {
-		checkMapping(session.getDatabase());
-		try {
-			if(doc==null) {
-				doc = new ODocument(getSchemaClass());
-			}
-			for(Map.Entry<String, String> mapToDoc : mappingFromEntityToDoc.entrySet()) {
-				PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(getEntityClass(), mapToDoc.getKey());
-				Object value = pd.getReadMethod().invoke(entity);
-				if(!Objects.equal(value, doc.field(mapToDoc.getValue()))) {
-					doc.field(mapToDoc.getValue(), value);
-				}
-			}
-			return doc;
-		} catch (Exception e) {
-			throw new IllegalStateException("There shouldn't be this exception in case of predefined mapping", e);
+		checkMapping(session);
+		if(doc==null) {
+			doc = new ODocument(getSchemaClass());
 		}
+		for(Map.Entry<String, String> mapToDoc : mappingFromEntityToDoc.entrySet()) {
+			Object value = PropertyResolver.getValue(mapToDoc.getKey(), entity);
+			if(!Objects.equal(value, doc.field(mapToDoc.getValue()))) {
+				doc.field(mapToDoc.getValue(), value);
+			}
+		}
+		return doc;
 	}
 
 	@Override
@@ -230,13 +289,18 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		ODatabaseDocument db = session.getDatabase();
 		List<ODocument> ret = db.query(new OSQLSynchQuery<>(sql), args);
 		if(ret==null) return Collections.emptyList();
-		return Lists.transform(ret, new Function<ODocument, T>() {
+		return new ArrayList<T>(Lists.transform(ret, new Function<ODocument, T>() {
 
 			@Override
 			public T apply(ODocument input) {
 				return mapToEntity(input, null, session);
 			}
-		});
+		}));
+	}
+	
+	protected void command(OPersistenceSession session, String sql, Object... args) {
+		ODatabaseDocument db = session.getDatabase();
+		db.command(new OCommandSQL(sql)).execute(args);
 	}
 	
 	protected List<T> query(final OPersistenceSession session, org.camunda.bpm.engine.query.Query<?, ? super T> query, String... ignoreFileds) {
@@ -244,23 +308,11 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	}
 	
 	protected List<T> query(final OPersistenceSession session, org.camunda.bpm.engine.query.Query<?, ? super T> query, Function<Query, Query> queryManger, String... ignoreFileds) {
-		List<String> ignore = Arrays.asList(ignoreFileds);
 		try {
-			ODatabaseDocument db = session.getDatabase();
-			OClass schemaClass = db.getMetadata().getSchema().getClass(getSchemaClass());
+			OClass schemaClass = session.getClass(getSchemaClass());
 			Query q = new Query().from(getSchemaClass());
 			List<Object> args = new ArrayList<>();
-			for(PropertyDescriptor pd : BeanUtils.getPropertyDescriptors(query.getClass())) {
-				if(pd.getReadMethod()!=null 
-						&& schemaClass.getProperty(pd.getName())!=null
-						&& !ignore.contains(pd.getName())) {
-					Object value = pd.getReadMethod().invoke(query);
-					if(value!=null) {
-						q.where(clause(pd.getName(), Operator.EQ, Parameter.PARAMETER));
-						args.add(value);
-					}
-				}
-			}
+			enrichWhereByBean(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
 			if(queryManger!=null) q = queryManger.apply(q);
 			return queryList(session, q.toString(), args.toArray());
 		} catch (Exception e) {
@@ -273,27 +325,78 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	}
 	
 	protected List<T> query(final OPersistenceSession session, Map<String, ?> query, Function<Query, Query> queryManger, String... ignoreFileds) {
-		List<String> ignore = Arrays.asList(ignoreFileds);
-		ODatabaseDocument db = session.getDatabase();
-		OClass schemaClass = db.getMetadata().getSchema().getClass(getSchemaClass());
+		OClass schemaClass = session.getClass(getSchemaClass());
 		Query q = new Query().from(getSchemaClass());
 		List<Object> args = new ArrayList<>();
+		enrichWhereByMap(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
+		if(queryManger!=null) q = queryManger.apply(q);
+		return queryList(session, q.toString(), args.toArray());
+	}
+	
+	
+	protected void delete(final OPersistenceSession session, org.camunda.bpm.engine.query.Query<?, ? super T> query, String... ignoreFileds) {
+		delete(session, query, null, ignoreFileds);
+	}
+	
+	protected void delete(final OPersistenceSession session, org.camunda.bpm.engine.query.Query<?, ? super T> query, Function<Query, Query> queryManger, String... ignoreFileds) {
+		try {
+			OClass schemaClass = session.getClass(getSchemaClass());
+			Query q = new Query().from(getSchemaClass());
+			List<Object> args = new ArrayList<>();
+			enrichWhereByBean(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
+			if(queryManger!=null) q = queryManger.apply(q);
+			command(session, q.toString(), args.toArray());
+		} catch (Exception e) {
+			throw new ProcessEngineException("Problems with read method of "+query.getClass().getName(), e);
+		} 
+	}
+	
+	protected void delete(final OPersistenceSession session, Map<String, ?> query, String... ignoreFileds) {
+		delete(session, query, null, ignoreFileds);
+	}
+	
+	protected void delete(final OPersistenceSession session, Map<String, ?> query, Function<Query, Query> queryManger, String... ignoreFileds) {
+		OClass schemaClass = session.getClass(getSchemaClass());
+		Query q = new Query().from(getSchemaClass());
+		List<Object> args = new ArrayList<>();
+		enrichWhereByMap(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
+		if(queryManger!=null) q = queryManger.apply(q);
+		command(session, q.toString(), args.toArray());
+	}
+	
+	
+	private void enrichWhereByBean(AbstractQuery q, OClass schemaClass, Object query, List<Object> args, List<String> ignore) 
+														throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		for(PropertyDescriptor pd : BeanUtils.getPropertyDescriptors(query.getClass())) {
+			if(pd.getReadMethod()!=null 
+					&& schemaClass.getProperty(pd.getName())!=null
+					&& !ignore.contains(pd.getName())) {
+				Object value = pd.getReadMethod().invoke(query);
+				if(value!=null) {
+					where(q, clause(pd.getName(), Operator.EQ, Parameter.PARAMETER));
+					args.add(value);
+				}
+			}
+		}
+	}
+	
+	private void enrichWhereByMap(AbstractQuery q, OClass schemaClass, Map<String, ?> query, List<Object> args, List<String> ignore) {
 		for(Map.Entry<String, ?> entry : query.entrySet()) {
 			if(schemaClass.getProperty(entry.getKey())!=null
 					&& !ignore.contains(entry.getKey())) {
 				Object value = entry.getValue();
 				if(value!=null) {
-					q.where(clause(entry.getKey(), Operator.EQ, Parameter.PARAMETER));
+					where(q, clause(entry.getKey(), Operator.EQ, Parameter.PARAMETER));
 					args.add(value);
 				}
 			}
 		}
-		if(queryManger!=null) q = queryManger.apply(q);
-		logger.info("SQL: "+q);
-		logger.info("Args: "+args);
-		List<T> ret = queryList(session, q.toString(), args.toArray());
-		logger.info("Res: "+ret);
-		return ret;
+	}
+	
+	private AbstractQuery where(AbstractQuery q, Clause clause) {
+		if(q instanceof Query)((Query)q).where(clause);
+		else if(q instanceof Delete)((Delete)q).where(clause);
+		return q;
 	}
 	
 }

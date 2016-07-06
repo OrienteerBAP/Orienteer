@@ -10,7 +10,8 @@
 	    <property name="history">none</property>
 	    <!-- To be supported -->
 	    <property name="dbMetricsReporterActivate">false</property>
-	    <property name="jobExecutorActivate">false</property>
+	    <property name="executionTreePrefetchEnabled">false</property>
+	    <!-- <property name="jobExecutorActivate">false</property> -->
     </properties>
   </process-engine>
 
