@@ -132,7 +132,12 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	public void delete(T entity, OPersistenceSession session) {
 		ODatabaseDocument db = session.getDatabase();
 		String id = entity.getId();
-		db.command(new OCommandSQL("delete from "+getSchemaClass()+" where id = ?")).execute(id);
+		ORID orid = session.lookupORIDForIdInCache(id);
+		if(orid!=null) {
+			db.delete(orid);
+		} else {
+			db.command(new OCommandSQL("delete from "+getSchemaClass()+" where id = ?")).execute(id);
+		}
 	}
 	
 	protected void checkMapping(OPersistenceSession session) {

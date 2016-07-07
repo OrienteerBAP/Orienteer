@@ -1,7 +1,11 @@
 package org.orienteer.bpm.camunda.handler;
 
+import java.util.List;
+
+import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
+import org.camunda.bpm.engine.management.JobDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
@@ -34,6 +38,21 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 		super.initMapping(session);
 		mappingFromEntityToDoc.remove("jobPriority");
 		mappingFromEntityToDoc.put("overridingJobPriority", "jobPriority");
+	}
+	
+	@Statement
+	public List<JobDefinitionEntity> selectJobDefinitionsByProcessDefinitionId(OPersistenceSession session, ListQueryParameterObject query) {
+		return queryList(session, "select from "+getSchemaClass()+" where processDefinitionId = ?", query.getParameter());
+	}
+	
+	@Statement
+	public List<JobDefinitionEntity> selectJobDefinitionByQueryCriteria(OPersistenceSession session, JobDefinitionQuery query) {
+		return query(session, query);
+	}
+	
+	@Statement
+	public void deleteJobDefinitionsByProcessDefinitionId(OPersistenceSession session, String processDefinitionId) {
+		command(session, "delete from "+getSchemaClass()+" where processDefinitionId = ?", processDefinitionId);
 	}
 
 	
