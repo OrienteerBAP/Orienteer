@@ -76,7 +76,6 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	public List<?> selectList(String statement, Object parameter) {
 		db.activateOnCurrentThread();
-		LOG.info("selectList: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
 		if(handler!=null) {
 			return handler.selectList(statement, parameter, this);
@@ -89,14 +88,12 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	public <T extends DbEntity> T selectById(Class<T> type, String id) {
 		db.activateOnCurrentThread();
-		LOG.info("selectById: "+type+" id="+id);
 		return (T) HandlersManager.get().getHandler(type).read(id, this);
 	}
 
 	@Override
 	public Object selectOne(String statement, Object parameter) {
 		db.activateOnCurrentThread();
-		LOG.info("selectOne: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
 		if(handler!=null) {
 			return handler.selectOne(statement, parameter, this);
@@ -109,7 +106,6 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	public void lock(String statement, Object parameter) {
 		db.activateOnCurrentThread();
-		LOG.info("lock: '"+statement+"' with '"+parameter+"' of class "+(parameter!=null?parameter.getClass():"NULL"));
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(statement);
 		if(handler!=null) {
 			handler.lock(statement, parameter, this);
@@ -162,7 +158,6 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	protected void deleteBulk(DbBulkOperation operation) {
 		db.activateOnCurrentThread();
-		LOG.info("deleteBulk: statement="+operation.getStatement());
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(operation.getStatement());
 		if(handler!=null) {
 			handler.deleteBulk(operation, this);
@@ -180,7 +175,6 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	@Override
 	protected void updateBulk(DbBulkOperation operation) {
 		db.activateOnCurrentThread();
-		LOG.info("updateBulk: statement="+operation.getStatement());
 		IEntityHandler<?> handler = HandlersManager.get().getHandlerSafe(operation.getStatement());
 		if(handler!=null) {
 			handler.updateBulk(operation, this);

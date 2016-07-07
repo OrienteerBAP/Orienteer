@@ -38,15 +38,8 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 			  .oProperty("concurrentLocal", OType.BOOLEAN, 150);
 	}
 	
-	@Override
-	public void create(VariableInstanceEntity entity, OPersistenceSession session) {
-		super.create(entity, session);
-		logger.info("Variable created: "+entity);
-	}
-	
 	@Statement
 	public List<VariableInstanceEntity> selectVariablesByExecutionId(OPersistenceSession session, ListQueryParameterObject parameter) {
-		logger.info("Looking for variables with executionId: "+parameter.getParameter());
 		return queryList(session, "select from "+getSchemaClass()+" where executionId=?", parameter.getParameter());
 	}
 

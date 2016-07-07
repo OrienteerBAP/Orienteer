@@ -98,5 +98,12 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 				map.get("configuration"),
 				map.get("eventType"));
 	}
+	
+	@Statement
+	public List<EventSubscriptionEntity> selectMessageStartEventSubscriptionByName(OPersistenceSession session, ListQueryParameterObject params) {
+		return queryList(session, "select from "+getSchemaClass()+" where eventType = ? and executionId is null and eventName = ?", 
+								MessageEventSubscriptionEntity.EVENT_TYPE, 
+								params.getParameter());
+	}
 
 }

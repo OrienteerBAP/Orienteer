@@ -181,13 +181,6 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 				if(getAndSet.getGetter()!=null) mappingFromEntityToDoc.put(propertyName, propertyName);
 			}
 		}
-		
-			/*for(PropertyDescriptor pd : Introspector.getBeanInfo(entityClass).getPropertyDescriptors()) {
-				if(oClass.getProperty(pd.getName())!=null) {
-					if(pd.getWriteMethod()!=null) mappingFromDocToEntity.put(pd.getName(), pd.getName());
-					if(pd.getReadMethod()!=null) mappingFromEntityToDoc.put(pd.getName(), pd.getName());
-				}
-			}*/
  	}
 	
 	
