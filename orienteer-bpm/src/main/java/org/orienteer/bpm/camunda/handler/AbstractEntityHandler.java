@@ -206,6 +206,9 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			for(Map.Entry<String, String> mapToEntity : mappingFromDocToEntity.entrySet()) {
 				PropertyResolver.setValue(mapToEntity.getValue(), entity, doc.field(mapToEntity.getKey()), PROPERTY_RESOLVER_CONVERTEER);
 			}
+			if(entity instanceof HasDbRevision) {
+				((HasDbRevision)entity).setRevision(doc.getVersion());
+			}
 			session.fireEntityLoaded(doc, entity, hasNeedInCache());
 			return entity;
 		} catch (Exception e) {
@@ -236,12 +239,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 
 	@Override
 	public void applySchema(OSchemaHelper helper) {
-		Class<?> clazz = type.getRawType();
-		List<String> superClasses = new ArrayList<>();
-		if(DbEntity.class.isAssignableFrom(clazz)) superClasses.add(BPM_ENTITY_CLASS);
-		if(HasDbRevision.class.isAssignableFrom(clazz)) superClasses.add(BPM_REVISION_CLASS);
-		if(superClasses.isEmpty())superClasses.add(BPM_CLASS);
-		helper.oClass(schemaClass, superClasses.toArray(new String[superClasses.size()]));
+		helper.oClass(schemaClass, BPM_ENTITY_CLASS);
 	}
 
 	@Override

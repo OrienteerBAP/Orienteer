@@ -17,9 +17,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public interface IEntityHandler<T extends DbEntity> {
 	
-	public static final String BPM_CLASS = "BPM";
 	public static final String BPM_ENTITY_CLASS = "BPMEntity";
-	public static final String BPM_REVISION_CLASS = "BPMRevision";
 	
 	public void create(T entity, OPersistenceSession session);
 	public T read(String id, OPersistenceSession session);
