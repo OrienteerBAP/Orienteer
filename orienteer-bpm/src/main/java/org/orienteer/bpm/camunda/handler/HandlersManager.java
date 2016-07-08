@@ -39,7 +39,9 @@ public final class HandlersManager {
 				 new VariableInstanceEntityHandler(),
 				 new JobEntityHandler(),
 				 new ByteArrayEntityHandler(),
-				 new TaskEntityHandler());
+				 new TaskEntityHandler(),
+				 new IncidentEntityHandler(),
+				 new CaseDefinitionEntityHandler());
 	}
 	
 	public static HandlersManager get() {

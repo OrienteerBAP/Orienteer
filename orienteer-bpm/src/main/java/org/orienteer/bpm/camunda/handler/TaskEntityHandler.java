@@ -38,7 +38,6 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
                 .oProperty("followUpDate", OType.DATETIME, 180)
                 .oProperty("suspensionState", OType.INTEGER, 190)
                 .oProperty("tenantId", OType.STRING, 200);
-
     }
 
     @Statement
