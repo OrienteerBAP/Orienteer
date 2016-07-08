@@ -38,7 +38,8 @@ public final class HandlersManager {
 				 new EventSubscriptionEntityHandler(),
 				 new VariableInstanceEntityHandler(),
 				 new JobEntityHandler(),
-				 new ByteArrayEntityHandler());
+				 new ByteArrayEntityHandler(),
+				 new TaskEntityHandler());
 	}
 	
 	public static HandlersManager get() {

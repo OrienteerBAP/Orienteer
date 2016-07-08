@@ -266,6 +266,17 @@ public class TestBPMModule {
 
 	}
 
+	/**
+	 * Test task entitites
+	 */
+	@Test
+	@Deployment(resources = {"task-simple.bpmn"})
+	public void testTask() {
+		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("tasksimple");
+		assertProcessNotEnded(processInstance.getId());
+	}
+	/** end task entities */
+
 	private static class InterruptTask extends TimerTask {
 		protected boolean timeLimitExceeded = false;
 		protected Thread thread;
