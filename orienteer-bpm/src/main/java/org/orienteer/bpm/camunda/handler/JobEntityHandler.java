@@ -28,8 +28,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 
+	public static final String OCLASS_NAME = "BPMJob";
+	
 	public JobEntityHandler() {
-		super("BPMJob");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

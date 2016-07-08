@@ -15,8 +15,10 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  */
 public class VariableInstanceEntityHandler extends AbstractEntityHandler<VariableInstanceEntity> {
 
+	public static final String OCLASS_NAME = "BPMVariable"; 
+	
 	public VariableInstanceEntityHandler() {
-		super("BPMVariable");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

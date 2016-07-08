@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.cmmn.entity.repository.CaseDefinitionEntity;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.repository.CaseDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
@@ -11,20 +12,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by kir on 08.07.16.
+ * {@link IEntityHandler} for {@link CaseDefinitionEntity} 
  */
 public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefinitionEntity> {
 
+	public static final String OCLASS_NAME = "BPMCaseDefinition";
+	
     public CaseDefinitionEntityHandler() {
-        super("BPMCaseDefinition");
+        super(OCLASS_NAME);
     }
 
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
 
-        helper.oProperty("id", OType.STRING)
-                .oProperty("category", OType.STRING)
+        helper.oProperty("category", OType.STRING)
                 .oProperty("name", OType.STRING)
                 .oProperty("key", OType.STRING)
                 .oProperty("version", OType.INTEGER)

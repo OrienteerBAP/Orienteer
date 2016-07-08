@@ -24,6 +24,8 @@ import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.externaltask.ExternalTask;
+import org.camunda.bpm.engine.externaltask.LockedExternalTask;
 import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.util.ClockUtil;
@@ -267,15 +269,31 @@ public class TestBPMModule {
 	}
 
 	/**
-	 * Test task entitites
+	 * Test external task entities
 	 */
 	@Test
-	@Deployment(resources = {"task-simple.bpmn"})
-	public void testTask() {
-		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("tasksimple");
+	@Deployment(resources = {"external-task.bpmn"})
+	public void testExternalTask() {
+		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("externaltask");
 		assertProcessNotEnded(processInstance.getId());
+		List<ExternalTask> tasks = processEngineRule.getExternalTaskService().createExternalTaskQuery()
+										.topicName("ExternalTopic")
+										.processInstanceId(processInstance.getId()).list();
+		assertEquals(1, tasks.size());
+		
+		
+		List<LockedExternalTask> lockedTasks = processEngineRule.getExternalTaskService().fetchAndLock(100, "JUnit")
+				.topic("ExternalTopic", 5000).execute();
+		assertFalse(lockedTasks.isEmpty());
+		for(LockedExternalTask task : lockedTasks) {
+			processEngineRule.getExternalTaskService().complete(task.getId(), "JUnit");
+		}
+		tasks = processEngineRule.getExternalTaskService().createExternalTaskQuery()
+				.topicName("ExternalTopic")
+				.processInstanceId(processInstance.getId()).list();
+		assertTrue(tasks.isEmpty());
+		assertProcessEnded(processInstance.getId());
 	}
-	/** end task entities */
 
 	private static class InterruptTask extends TimerTask {
 		protected boolean timeLimitExceeded = false;

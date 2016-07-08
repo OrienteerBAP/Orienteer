@@ -13,9 +13,11 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * {@link IEntityHandler} for {@link ByteArrayEntity} 
  */
 public class ByteArrayEntityHandler extends AbstractEntityHandler<ByteArrayEntity> {
+	
+	public static final String OCLASS_NAME = "BPMByteArray";
 
 	public ByteArrayEntityHandler() {
-		super("BPMByteArray");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

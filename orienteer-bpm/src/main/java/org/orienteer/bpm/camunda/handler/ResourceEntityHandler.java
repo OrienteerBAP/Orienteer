@@ -18,9 +18,11 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
  * {@link IEntityHandler} for {@link ResourceEntity} 
  */
 public class ResourceEntityHandler extends AbstractEntityHandler<ResourceEntity> {
+	
+	public static final String OCLASS_NAME = "BPMResource";
 
 	public ResourceEntityHandler() {
-		super("BPMResource");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

@@ -18,9 +18,11 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
 /**
  */
 public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<ProcessDefinitionEntity> {
+	
+	public static final String OCLASS_NAME = "BPMProcessDefinition";
 
 	public ProcessDefinitionEntityHandler() {
-		super("BPMProcessDefinition");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

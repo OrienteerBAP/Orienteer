@@ -14,9 +14,11 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
  * {@link IEntityHandler} for {@link DeploymentEntity} 
  */
 public class DeploymentEntityHandler extends AbstractEntityHandler<DeploymentEntity> {
+	
+	public static final String OCLASS_NAME = "BPMDeployment"; 
 
 	public DeploymentEntityHandler() {
-		super("BPMDeployment");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

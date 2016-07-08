@@ -1,6 +1,8 @@
 package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+
+import org.camunda.bpm.engine.impl.cmmn.entity.repository.CaseDefinitionEntity;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.IncidentEntity;
 import org.camunda.bpm.engine.runtime.IncidentQuery;
@@ -11,20 +13,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by kir on 08.07.16.
+ * {@link IEntityHandler} for {@link IncidentEntity} 
  */
 public class IncidentEntityHandler extends AbstractEntityHandler<IncidentEntity> {
 
+	public static final String OCLASS_NAME = "BPMIncident";
+	
     public IncidentEntityHandler() {
-        super("BPMIncident");
+        super(OCLASS_NAME);
     }
 
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
 
-        helper.oProperty("id", OType.STRING, 10)
-                .oProperty("incidentTimestamp", OType.DATETIME, 20)
+        helper.oProperty("incidentTimestamp", OType.DATETIME, 20)
                 .oProperty("incidentMessage", OType.STRING, 30)
                 .oProperty("incidentType", OType.STRING, 40)
                 .oProperty("executionId", OType.STRING, 50)
