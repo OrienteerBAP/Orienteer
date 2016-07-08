@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -33,7 +34,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	private ODatabaseDocumentTx db;
 	
-	private BiMap<String, ORID> idToOridCache = HashBiMap.create(10);
+	private BiMap<String, OIdentifiable> idToOIdentifiableCache = HashBiMap.create(10);
 	private Map<String, DbEntity> entitiesCache = new HashMap<>();
 	
 	public OPersistenceSession(ODatabaseDocumentTx db) {
@@ -60,13 +61,18 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 		super.fireEntityLoaded(object);
 		if(object instanceof DbEntity) {
 			DbEntity entity = (DbEntity) object;
-			idToOridCache.put(entity.getId(), sourceDoc.getIdentity());
+			cacheODocument(sourceDoc, entity.getId());
 			if(hasNeedInCache) entitiesCache.put(entity.getId(), entity);
 		}
 	}
 	
-	public ORID lookupORIDForIdInCache(String id) {
-		return idToOridCache.get(id);
+	public void cacheODocument(ODocument doc, String id) {
+		ORID orid = doc.getIdentity();
+		idToOIdentifiableCache.put(id, orid.isPersistent()?orid:doc);
+	}
+	
+	public OIdentifiable lookupOIdentifiableForIdInCache(String id) {
+		return idToOIdentifiableCache.get(id);
 	}
 	
 	public DbEntity lookupEntityInCache(String id) {

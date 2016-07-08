@@ -46,6 +46,7 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.Reflection;
 import com.google.common.reflect.TypeToken;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -103,6 +104,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	public void create(T entity, OPersistenceSession session) {
 		ODocument doc = mapToODocument(entity, null, session);
 		session.getDatabase().save(doc);
+		session.cacheODocument(doc, entity.getId());
 	}
 	
 	@Override
@@ -112,8 +114,8 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	}
 	
 	public ODocument readAsDocument(String id, OPersistenceSession session) {
-		ORID orid = session.lookupORIDForIdInCache(id);
-		if(orid!=null) return orid.getRecord();
+		OIdentifiable oIdentifiable = session.lookupOIdentifiableForIdInCache(id);
+		if(oIdentifiable!=null) return oIdentifiable.getRecord();
 		else {
 			ODatabaseDocument db = session.getDatabase();
 			List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+getSchemaClass()+" where id = ?", 1), id);
@@ -132,9 +134,9 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	public void delete(T entity, OPersistenceSession session) {
 		ODatabaseDocument db = session.getDatabase();
 		String id = entity.getId();
-		ORID orid = session.lookupORIDForIdInCache(id);
-		if(orid!=null) {
-			db.delete(orid);
+		OIdentifiable oIdentifiable = session.lookupOIdentifiableForIdInCache(id);
+		if(oIdentifiable!=null) {
+			db.delete(oIdentifiable.getIdentity());
 		} else {
 			db.command(new OCommandSQL("delete from "+getSchemaClass()+" where id = ?")).execute(id);
 		}
