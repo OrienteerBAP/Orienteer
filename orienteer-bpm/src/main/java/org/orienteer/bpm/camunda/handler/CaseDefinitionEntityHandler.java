@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.cmmn.entity.repository.CaseDefinitionEntity;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.repository.CaseDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
@@ -58,5 +59,50 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
         return queryList(session, "select from " + getSchemaClass() + " where key = ? and tenantId is null " +
                 "and version(select max(version) from" + getSchemaClass() + " where key = ? and tenantId is null)",
                 parameter.getParameter(), parameter.getParameter());
+    }
+
+    @Statement
+    public List<CaseDefinitionEntity> selectLatestCaseDefinitionByKeyAndTenantId(OPersistenceSession session, final ListQueryParameterObject parameter) {
+        Map<String, String> map = (Map<String, String>) parameter.getParameter();
+        String key = map.get("caseDefinitionKey").toString();
+        String tenantId = map.get("tenantId").toString();
+
+        String query = "select from " + getSchemaClass() + " where key = ?  and tenantId = ? and version = (select max(version) " +
+                "from " + getSchemaClass() + " where key = ? and tenantId = ?)";
+        return queryList(session, query, key, tenantId, key, tenantId);
+    }
+
+    @Statement
+    public List<CaseDefinitionEntity> selectCaseDefinitionByKeyVersionAndTenantId(OPersistenceSession session, final ListQueryParameterObject parameter) {
+        Map<String, Object> map = (Map<String, Object>) parameter.getParameter();
+        String key = map.get("caseDefinitionKey").toString();
+        Integer version = Integer.getInteger(map.get("caseDefinitionVersion").toString());
+        String tenantId = map.get("tenantId").toString();
+
+        String query = "select from " + getSchemaClass() + " where key=" + key + " and version=" + version;
+        if (tenantId == null) query += " and tenantId is null";
+        else query += " and tenantid=" + tenantId;
+
+        return queryList(session, query);
+    }
+
+    public CaseDefinitionEntity selectPreviousCaseDefinitionId(OPersistenceSession session, final ListQueryParameterObject parameter) {
+        Map<String, Object> map = (Map<String, Object>) parameter.getParameter();
+        String key = map.get("key").toString();
+        Integer version = Integer.getInteger(map.get("version").toString());
+        String tenantId = map.get("tenantId").toString();
+
+        String query = "select distinct res.* from " + getSchemaClass() + " res where res.key = " + key;
+        query += (tenantId != null ? " and tenantId=" + tenantId : " and tenantId is null" );
+        query += " and res.version = (select max(version) from " + getSchemaClass() + " where key=" + key;
+        query += (tenantId != null ? " and tenantId=" + tenantId : " and tenantId is null" );
+        query += " and version < " + version + ")";
+
+        return querySingle(session, query);
+    }
+
+    @Statement
+    public List<CaseDefinitionEntity> selectCaseDefinitionByQueryCriteria(OPersistenceSession session, final CaseDefinitionQuery query) {
+        return query(session, query);
     }
 }
