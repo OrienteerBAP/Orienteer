@@ -49,11 +49,13 @@ public class BPMModule extends AbstractOrienteerModule{
 		OProcessApplication processApplication = new OProcessApplication();
 		processApplication.deploy();
 		processApplicationReference = processApplication.getReference();
+		app.registerWidgets("org.orienteer.bpm.component.widget");
 	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
+		app.unregisterWidgets("org.orienteer.bpm.component.widget");
 		app.unmountPages("org.orienteer.bpm.web");
 		if(processApplicationReference!=null) {
 			try {
