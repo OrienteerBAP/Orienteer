@@ -40,9 +40,16 @@
 </style>
 </wicket:head>
 <wicket:extend>
+<form wicket:id="form">
+<input wicket:id="xml" type="hidden"/>
 <div class="content modeler">
 	<div class="canvas"></div>
 	<ul class="buttons">
+	  <li>
+	    <a class="js-save active" href title="Save BPMN diagram" wicket:id="save">
+	      <i class="fa fa-floppy-o" aria-hidden="true"></i>
+	    </a>
+	  </li>
 	  <li>
 	    <a class="js-reset active" href title="Reset BPMN diagram">
 	      <i class="fa fa-plus-circle" aria-hidden="true"></i>
@@ -60,4 +67,5 @@
 	  </li>
 	</ul>
 </div>
+</form>
 </wicket:extend>

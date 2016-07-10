@@ -4,11 +4,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.template.PackageTextTemplate;
@@ -48,6 +54,8 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 	
 	private IModel<ODocument> resourceModel;
 	
+	private HiddenField<String> xmlField;
+	
 	public BpmnModelerWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		OQueryModel<ODocument> resourcesModel = new OQueryModel<>("select from "+ResourceEntityHandler.OCLASS_NAME+" where name = :resourceName");
@@ -59,6 +67,17 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 				return a==null || a.isEmpty() ? null: a.get(0);
 			}
 		};
+		Form<?> form = new Form<>("form");
+		form.add(xmlField = new HiddenField<>("xml", Model.of((String)null)));
+		xmlField.setOutputMarkupId(true);
+		xmlField.setModelObject(readBpmn());
+		form.add(new AjaxSubmitLink("save") {
+			@Override
+			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+				saveBpmn(xmlField.getModelObject());
+			}
+		});
+		add(form);
 	}
 
 	@Override
@@ -71,12 +90,28 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 		return new ResourceModel("widget.bpmnmodeler");
 	}
 	
+	public String readBpmn() {
+		ODocument resource = resourceModel.getObject();
+		byte[] xmlBytes = resource!=null?(byte[])resource.field("bytes"):null;
+		return xmlBytes!=null?new String(xmlBytes):null;
+	}
+	
+	public void saveBpmn(String bpmn) {
+		ODocument resource = resourceModel.getObject();
+		if(resource!=null) {
+			resource.field("bytes", bpmn.getBytes());
+		} else {
+			//TODO: Implement creation of new resource
+		}
+		resource.save();
+	}
+	
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
 		response.render(CssHeaderItem.forReference(BPMN_DIAGRAM_CSS));
-		response.render(CssHeaderItem.forReference(BPMN_EMBEDDED_CSS));
-//		response.render(CssHeaderItem.forReference(BPMN_CSS));
+//		response.render(CssHeaderItem.forReference(BPMN_EMBEDDED_CSS));
+		response.render(CssHeaderItem.forReference(BPMN_CSS));
 //		if(DisplayMode.EDIT.equals(modeModel.getObject())) {
 			response.render(JavaScriptHeaderItem.forReference(BPMN_VIEWER_JS));
 			response.render(JavaScriptHeaderItem.forReference(BPMN_MODELER_JS));
@@ -86,10 +121,8 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 		TextTemplate template = new PackageTextTemplate(BpmnModelerWidget.class, "modeler.tmpl.js");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("componentId", getMarkupId());
+		params.put("xmlFieldComponentId", xmlField.getMarkupId());
 		params.put("canEdit", canEdit(getModelObject(), resource));
-		byte[] xmlBytes = resource!=null?(byte[])resource.field("bytes"):null;
-		String xml = xmlBytes!=null?new String(xmlBytes):null;
-		params.put("xml", CommonUtils.escapeAndWrapAsJavaScriptString(xml));
 		response.render(OnDomReadyHeaderItem.forScript(template.asString(params)));
 	}
 	

@@ -6,9 +6,11 @@ var container = $('#${componentId} .modeler');
 
 var canvas = $('#${componentId} .canvas');
 
+var xmlField = $('#${xmlFieldComponentId}');
+
 //var viewer = new BpmnViewer({ container: '#${componentId}', height: 600 });
 var modeler = new BpmnModeler({ container: canvas});
-var xml = ${xml};
+var xml = xmlField.val();
 
 var newDiagram = '<?xml version="1.0" encoding="UTF-8"?>'+
 '<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn">'+
@@ -22,7 +24,7 @@ var newDiagram = '<?xml version="1.0" encoding="UTF-8"?>'+
 '  </bpmndi:BPMNDiagram>'+
 '</bpmn2:definitions>';
 
-if(xml == null) xml = newDiagram;
+if(xml == null || xml == '') xml = newDiagram;
 
 function openDiagram(xml) {
 
@@ -147,14 +149,15 @@ function debounce(func, wait, immediate) {
 
 var exportArtifacts = debounce(function() {
 
-saveSVG(function(err, svg) {
-  setEncoded(downloadSvgLink, 'diagram.svg', err ? null : svg);
-});
+	saveSVG(function(err, svg) {
+	  setEncoded(downloadSvgLink, 'diagram.svg', err ? null : svg);
+	});
 
-saveDiagram(function(err, xml) {
-  setEncoded(downloadLink, 'diagram.bpmn', err ? null : xml);
+	saveDiagram(function(err, xml) {
+		xmlField.val(xml);
+		setEncoded(downloadLink, 'diagram.bpmn', err ? null : xml);
     });
-  }, 500);
+}, 500);
 
 modeler.on('commandStack.changed', exportArtifacts);
 
