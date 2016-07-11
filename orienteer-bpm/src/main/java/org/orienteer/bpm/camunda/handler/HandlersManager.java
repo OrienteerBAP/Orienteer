@@ -43,7 +43,8 @@ public final class HandlersManager {
 				 new IncidentEntityHandler(),
 				 new CaseDefinitionEntityHandler(),
 				 new ExternalTaskEntityHandler(),
-				 new TenantEntityHandler());
+				 new TenantEntityHandler(),
+				 new MeterLogEntityHandler());
 	}
 	
 	public static HandlersManager get() {
