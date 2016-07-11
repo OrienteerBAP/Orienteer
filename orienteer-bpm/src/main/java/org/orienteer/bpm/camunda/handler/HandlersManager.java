@@ -42,6 +42,7 @@ public final class HandlersManager {
 				 new TaskEntityHandler(),
 				 new IncidentEntityHandler(),
 				 new CaseDefinitionEntityHandler(),
+				 new ExternalTaskEntityHandler(),
 				 new TenantEntityHandler());
 	}
 	

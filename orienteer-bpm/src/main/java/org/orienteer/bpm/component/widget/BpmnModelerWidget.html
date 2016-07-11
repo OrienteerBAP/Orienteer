@@ -1,0 +1,63 @@
+<wicket:head>
+<style>
+.modeler {
+	height: 600px;
+}
+
+.modeler .canvas {
+	height: 100%;
+}
+
+
+.buttons {
+  position: relative;
+  bottom: 2em;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: block;
+}
+
+.buttons > li {
+  display: inline-block;
+  margin-right: 10px;
+}
+.buttons > li > a {
+  background: #DDD;
+  color: black;
+  border: solid 1px #666;
+  display: inline-block;
+  padding: 5px;
+}
+
+.buttons a {
+  opacity: 0.3;
+}
+
+.buttons a.active {
+  opacity: 1.0;
+}
+</style>
+</wicket:head>
+<wicket:extend>
+<div class="content modeler">
+	<div class="canvas"></div>
+	<ul class="buttons">
+	  <li>
+	    <a class="js-reset active" href title="Reset BPMN diagram">
+	      <i class="fa fa-plus-circle" aria-hidden="true"></i>
+	    </a>
+	  </li>
+	  <li>
+	    <a class="js-download-diagram" href title="Download BPMN diagram">
+	      <i class="fa fa-download" aria-hidden="true"></i>
+	    </a>
+	  </li>
+	  <li>
+	    <a class="js-download-svg" href title="Download as SVG image">
+	      <i class="fa fa-picture-o" aria-hidden="true"></i>
+	    </a>
+	  </li>
+	</ul>
+</div>
+</wicket:extend>

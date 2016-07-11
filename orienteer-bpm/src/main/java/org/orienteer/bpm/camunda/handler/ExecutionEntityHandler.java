@@ -42,9 +42,11 @@ import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
  * {@link IEntityHandler} for {@link ExecutionEntity} 
  */
 public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntity> {
+	
+	public static final String OCLASS_NAME = "BPMExecution";
 
 	public ExecutionEntityHandler() {
-		super("BPMExecution");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

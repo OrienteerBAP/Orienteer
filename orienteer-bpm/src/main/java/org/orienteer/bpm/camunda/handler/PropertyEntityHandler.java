@@ -14,9 +14,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;import ru.ydn.wic
  */
 public class PropertyEntityHandler extends AbstractEntityHandler<PropertyEntity> {
 
+	public static final String OCLASS_NAME = "BPMProperty";
 	
 	public PropertyEntityHandler() {
-		super("BPMProperty");
+		super(OCLASS_NAME);
 	}
 
 	@Override

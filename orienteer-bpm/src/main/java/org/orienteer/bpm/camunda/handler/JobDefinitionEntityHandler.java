@@ -17,8 +17,10 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  */
 public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinitionEntity> {
 
+	public static final String OCLASS_NAME = "BPMJobDefinition";
+	
 	public JobDefinitionEntityHandler() {
-		super("BPMJobDefinition");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

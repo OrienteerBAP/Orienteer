@@ -27,9 +27,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * {@link IEntityHandler} for {@link EventSubscriptionEntity} 
  */
 public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventSubscriptionEntity> {
+	
+	public static final String OCLASS_NAME = "BPMEventSubscription"; 
 
 	public EventSubscriptionEntityHandler() {
-		super("BPMEventSubscription");
+		super(OCLASS_NAME);
 	}
 	
 	@Override

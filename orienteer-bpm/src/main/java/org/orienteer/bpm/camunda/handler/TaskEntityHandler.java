@@ -2,6 +2,7 @@ package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.task.TaskQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
@@ -9,17 +10,21 @@ import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
 
+/**
+ * {@link IEntityHandler} for {@link TaskEntity} 
+ */
 public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
 
+	public static final String OCLASS_NAME = "BPMTask";
+	
     public TaskEntityHandler() {
-        super("BPMTask");
+        super(OCLASS_NAME);
     }
 
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
-        helper.oProperty("id", OType.STRING, 10)
-                .oProperty("name", OType.STRING, 20)
+        helper.oProperty("name", OType.STRING, 20)
                 .oProperty("parentTaskId", OType.STRING, 30)
                 .oProperty("description", OType.STRING, 40)
                 .oProperty("priority", OType.INTEGER, 50)

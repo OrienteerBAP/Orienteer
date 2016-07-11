@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 
@@ -47,5 +49,15 @@ public class CommonUtils {
 			ret = converter.convertToString(value, OrienteerWebSession.get().getLocale());
 		}
 		return ret!=null?ret:defaultValue;
+	}
+	
+	public static final CharSequence escapeAndWrapAsJavaScriptString(CharSequence content) {
+		if(content==null) return "null";
+		else {
+			content = JavaScriptUtils.escapeQuotes(content);
+			content = "\"" + content + "\""; 
+			content = Strings.replaceAll(content, "\n", "\" + \n\"");
+			return content;
+		}
 	}
 }
