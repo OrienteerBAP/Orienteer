@@ -310,7 +310,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			OClass schemaClass = session.getClass(getSchemaClass());
 			Query q = new Query().from(getSchemaClass());
 			List<Object> args = new ArrayList<>();
-			enrichWhereByBean(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
+			enrichWhereByBean(session, q, schemaClass, query, args, Arrays.asList(ignoreFileds));
 			if(queryManger!=null) q = queryManger.apply(q);
 			return queryList(session, q.toString(), args.toArray());
 		} catch (Exception e) {
@@ -326,7 +326,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		OClass schemaClass = session.getClass(getSchemaClass());
 		Query q = new Query().from(getSchemaClass());
 		List<Object> args = new ArrayList<>();
-		enrichWhereByMap(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
+		enrichWhereByMap(session, q, schemaClass, query, args, Arrays.asList(ignoreFileds));
 		if(queryManger!=null) q = queryManger.apply(q);
 		return queryList(session, q.toString(), args.toArray());
 	}
@@ -341,7 +341,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			OClass schemaClass = session.getClass(getSchemaClass());
 			Query q = new Query().from(getSchemaClass());
 			List<Object> args = new ArrayList<>();
-			enrichWhereByBean(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
+			enrichWhereByBean(session, q, schemaClass, query, args, Arrays.asList(ignoreFileds));
 			if(queryManger!=null) q = queryManger.apply(q);
 			command(session, q.toString(), args.toArray());
 		} catch (Exception e) {
@@ -357,34 +357,38 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		OClass schemaClass = session.getClass(getSchemaClass());
 		Query q = new Query().from(getSchemaClass());
 		List<Object> args = new ArrayList<>();
-		enrichWhereByMap(q, schemaClass, query, args, Arrays.asList(ignoreFileds));
+		enrichWhereByMap(session, q, schemaClass, query, args, Arrays.asList(ignoreFileds));
 		if(queryManger!=null) q = queryManger.apply(q);
 		command(session, q.toString(), args.toArray());
 	}
 	
 	
-	private void enrichWhereByBean(AbstractQuery q, OClass schemaClass, Object query, List<Object> args, List<String> ignore) 
+	private void enrichWhereByBean(OPersistenceSession session, AbstractQuery q, OClass schemaClass, Object query, List<Object> args, List<String> ignore) 
 														throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		checkMapping(session);
 		for(PropertyDescriptor pd : BeanUtils.getPropertyDescriptors(query.getClass())) {
 			if(pd.getReadMethod()!=null 
-					&& schemaClass.getProperty(pd.getName())!=null
+					&& mappingFromEntityToDoc.containsKey(pd.getName())
 					&& !ignore.contains(pd.getName())) {
+				String docMapping = mappingFromEntityToDoc.get(pd.getName());
 				Object value = pd.getReadMethod().invoke(query);
 				if(value!=null) {
-					where(q, clause(pd.getName(), Operator.EQ, Parameter.PARAMETER));
+					where(q, clause(docMapping, Operator.EQ, Parameter.PARAMETER));
 					args.add(value);
 				}
 			}
 		}
 	}
 	
-	private void enrichWhereByMap(AbstractQuery q, OClass schemaClass, Map<String, ?> query, List<Object> args, List<String> ignore) {
+	private void enrichWhereByMap(OPersistenceSession session, AbstractQuery q, OClass schemaClass, Map<String, ?> query, List<Object> args, List<String> ignore) {
+		checkMapping(session);
 		for(Map.Entry<String, ?> entry : query.entrySet()) {
-			if(schemaClass.getProperty(entry.getKey())!=null
+			if(mappingFromEntityToDoc.containsKey(entry.getKey())
 					&& !ignore.contains(entry.getKey())) {
+				String docMapping = mappingFromEntityToDoc.get(entry.getKey());
 				Object value = entry.getValue();
 				if(value!=null) {
-					where(q, clause(entry.getKey(), Operator.EQ, Parameter.PARAMETER));
+					where(q, clause(docMapping, Operator.EQ, Parameter.PARAMETER));
 					args.add(value);
 				}
 			}
