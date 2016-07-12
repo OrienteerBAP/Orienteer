@@ -74,6 +74,31 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		return (OSchemaHelper) super.oIndex(name, type, fields);
 	}
 	
+	
+	public OSchemaHelper set(OClass.ATTRIBUTES attr, Object value) 
+	{
+		super.set(attr, value);
+		return this;
+	}
+	
+	public OSchemaHelper set(OProperty.ATTRIBUTES attr, Object value) 
+	{
+		super.set(attr, value);
+		return this;
+	}
+	
+	public OSchemaHelper notNull()
+	{
+		super.notNull();
+		return this;
+	}
+	
+	public OSchemaHelper notNull(boolean value)
+	{
+		super.notNull(value);
+		return this;
+	}
+	
 	@Override
 	public OSchemaHelper linkedClass(String className) {
 		return (OSchemaHelper) super.linkedClass(className);

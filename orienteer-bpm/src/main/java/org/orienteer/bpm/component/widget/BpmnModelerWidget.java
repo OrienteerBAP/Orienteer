@@ -17,8 +17,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
+import org.camunda.bpm.BpmPlatform;
 import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.ResourceEntityHandler;
 import org.orienteer.core.component.FAIcon;
@@ -56,6 +58,8 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 	
 	private HiddenField<String> xmlField;
 	
+	private boolean canEdit;
+	
 	public BpmnModelerWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		OQueryModel<ODocument> resourcesModel = new OQueryModel<>("select from "+ResourceEntityHandler.OCLASS_NAME+" where name = :resourceName");
@@ -71,12 +75,13 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 		form.add(xmlField = new HiddenField<>("xml", Model.of((String)null)));
 		xmlField.setOutputMarkupId(true);
 		xmlField.setModelObject(readBpmn());
+		canEdit = canEdit(getModelObject(), resourceModel.getObject());
 		form.add(new AjaxSubmitLink("save") {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				saveBpmn(xmlField.getModelObject());
 			}
-		});
+		}.setVisible(canEdit));
 		add(form);
 	}
 
@@ -98,11 +103,19 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 	
 	public void saveBpmn(String bpmn) {
 		ODocument resource = resourceModel.getObject();
-		if(resource!=null) {
-			resource.field("bytes", bpmn.getBytes());
-		} else {
-			//TODO: Implement creation of new resource
+		if(resource==null) {
+			ODocument pd = getModelObject();
+			String resourceName = pd.field("resourceName");
+			if(Strings.isEmpty(resourceName)) {
+				resourceName = pd.field("name")+".bpmn";
+				pd.field("resourceName", resourceName);
+				pd.save();
+			}
+			resource = new ODocument(ResourceEntityHandler.OCLASS_NAME);
+			resource.field("name", resourceName);
+			resource.field("deploymentId", pd.field("deploymentId"));
 		}
+		resource.field("bytes", bpmn.getBytes());
 		resource.save();
 	}
 	
@@ -117,18 +130,20 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 			response.render(JavaScriptHeaderItem.forReference(BPMN_MODELER_JS));
 //		} else {
 //		}
-		ODocument resource = resourceModel.getObject();
 		TextTemplate template = new PackageTextTemplate(BpmnModelerWidget.class, "modeler.tmpl.js");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("componentId", getMarkupId());
 		params.put("xmlFieldComponentId", xmlField.getMarkupId());
-		params.put("canEdit", canEdit(getModelObject(), resource));
+		params.put("canEdit", canEdit);
 		response.render(OnDomReadyHeaderItem.forScript(template.asString(params)));
 	}
 	
 	protected boolean canEdit(ODocument processDefinition, ODocument resource) {
 		return OSecurityHelper.isAllowed(processDefinition, OrientPermission.UPDATE)
-				&& OSecurityHelper.isAllowed(resource, OrientPermission.UPDATE);
+				&& (resource!=null
+						? OSecurityHelper.isAllowed(resource, OrientPermission.UPDATE)
+						: OSecurityHelper.isAllowed(getSchema().getClass(ResourceEntityHandler.OCLASS_NAME), 
+														OrientPermission.CREATE, OrientPermission.UPDATE));
 	}
 	
 	@Override

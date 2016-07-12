@@ -9,6 +9,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -28,12 +29,12 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("key", OType.STRING, 30)
+		helper.oProperty("name", OType.STRING, 10).markAsDocumentName().notNull(true)
+			  .oProperty("key", OType.STRING, 30).notNull(true)
 		      .oProperty("resourceName", OType.STRING, 35)
 			  .oProperty("category", OType.STRING, 40)
-			  .oProperty("name", OType.STRING, 50)
 			  .oProperty("deploymentId", OType.STRING, 60)
-			  .oProperty("suspensionState", OType.INTEGER, 70);
+			  .oProperty("suspensionState", OType.INTEGER, 70).defaultValue("1").notNull();
 	}
 	
 	@Statement

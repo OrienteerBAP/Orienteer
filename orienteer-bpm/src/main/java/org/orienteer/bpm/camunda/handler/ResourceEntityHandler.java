@@ -31,7 +31,7 @@ public class ResourceEntityHandler extends AbstractEntityHandler<ResourceEntity>
 		helper.oProperty("name", OType.STRING, 0)
 			  .oProperty("deploymentId", OType.STRING, 10)
 			  .oProperty("bytes", OType.BINARY, 20)
-			  .oProperty("generated", OType.BOOLEAN, 40);
+			  .oProperty("generated", OType.BOOLEAN, 40).defaultValue("true").notNull();
 	}
 	
 	@Statement

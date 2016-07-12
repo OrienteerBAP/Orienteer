@@ -2,10 +2,12 @@ package org.orienteer.bpm;
 
 import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.application.ProcessApplicationUnavailableException;
+import org.orienteer.bpm.camunda.BpmnHook;
 import org.orienteer.bpm.camunda.OProcessApplication;
 import org.orienteer.bpm.camunda.handler.AbstractEntityHandler;
 import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
@@ -36,7 +38,9 @@ public class BPMModule extends AbstractOrienteerModule{
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oAbstractClass(IEntityHandler.BPM_ENTITY_CLASS)
-			  	.oProperty("id", OType.STRING, 0).oIndex(INDEX_TYPE.UNIQUE);
+			  	.oProperty("id", OType.STRING, 0)
+			  		.updateCustomAttribute(CustomAttributes.UI_READONLY, true)
+			  		.oIndex(INDEX_TYPE.UNIQUE);
 		HandlersManager.get().applySchema(helper);
 		return null;
 	}
@@ -50,6 +54,7 @@ public class BPMModule extends AbstractOrienteerModule{
 		processApplication.deploy();
 		processApplicationReference = processApplication.getReference();
 		app.registerWidgets("org.orienteer.bpm.component.widget");
+		app.getOrientDbSettings().getORecordHooks().add(BpmnHook.class);
 	}
 	
 	@Override
@@ -57,6 +62,7 @@ public class BPMModule extends AbstractOrienteerModule{
 		super.onDestroy(app, db);
 		app.unregisterWidgets("org.orienteer.bpm.component.widget");
 		app.unmountPages("org.orienteer.bpm.web");
+		app.getOrientDbSettings().getORecordHooks().remove(BpmnHook.class);
 		if(processApplicationReference!=null) {
 			try {
 				processApplicationReference.getProcessApplication().undeploy();

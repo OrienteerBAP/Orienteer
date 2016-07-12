@@ -8,8 +8,10 @@ var canvas = $('#${componentId} .canvas');
 
 var xmlField = $('#${xmlFieldComponentId}');
 
+var canEdit = ${canEdit};
+
 //var viewer = new BpmnViewer({ container: '#${componentId}', height: 600 });
-var modeler = new BpmnModeler({ container: canvas});
+var modeler = canEdit ? new BpmnModeler({ container: canvas}) : new BpmnViewer({ container: canvas});
 var xml = xmlField.val();
 
 var newDiagram = '<?xml version="1.0" encoding="UTF-8"?>'+
