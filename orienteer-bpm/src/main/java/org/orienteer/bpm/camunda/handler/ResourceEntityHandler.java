@@ -28,8 +28,8 @@ public class ResourceEntityHandler extends AbstractEntityHandler<ResourceEntity>
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("name", OType.STRING, 0)
-			  .oProperty("deployment", OType.LINK, 10).assignVisualization("listbox")
+		helper.oProperty("name", OType.STRING, 0).markAsDocumentName().markDisplayable()
+			  .oProperty("deployment", OType.LINK, 10).assignVisualization("listbox").markDisplayable()
 			  .oProperty("bytes", OType.BINARY, 20)
 			  .oProperty("generated", OType.BOOLEAN, 40).defaultValue("true").notNull();
 	}

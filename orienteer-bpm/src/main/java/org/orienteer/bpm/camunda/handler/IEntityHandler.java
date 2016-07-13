@@ -24,6 +24,8 @@ public interface IEntityHandler<T extends DbEntity> {
 	public void update(T entity, OPersistenceSession session);
 	public void delete(T entity, OPersistenceSession session);
 	
+	public ODocument readAsDocument(String id, OPersistenceSession session);
+	
 	public T mapToEntity(ODocument doc, T entity, OPersistenceSession session);
 	public ODocument mapToODocument(T entity, ODocument doc, OPersistenceSession session);
 	
@@ -31,6 +33,7 @@ public interface IEntityHandler<T extends DbEntity> {
 	
 	public Class<T> getEntityClass();
 	public String getSchemaClass();
+	public String getPkField();
 	
 	public boolean supportsStatement(String statement);
 	

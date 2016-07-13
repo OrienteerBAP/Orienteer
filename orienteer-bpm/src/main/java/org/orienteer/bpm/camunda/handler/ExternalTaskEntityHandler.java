@@ -39,7 +39,7 @@ public class ExternalTaskEntityHandler extends AbstractEntityHandler<ExternalTas
 			  .oProperty("processDefinitionKey", OType.STRING, 100)
 			  .oProperty("activityId", OType.STRING, 110)
 			  .oProperty("activityInstanceId", OType.STRING, 120)
-			  .oProperty("tenantId", OType.STRING, 130)
+//			  .oProperty("tenantId", OType.STRING, 130) // Tenants are not supported
 			  .oProperty("priority", OType.LONG, 140);
 	}
 	

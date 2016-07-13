@@ -23,7 +23,7 @@ public class PropertyEntityHandler extends AbstractEntityHandler<PropertyEntity>
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("value", OType.STRING, 40);
+		helper.oProperty("value", OType.STRING, 40).markDisplayable();
 	}
 	
 	@Override

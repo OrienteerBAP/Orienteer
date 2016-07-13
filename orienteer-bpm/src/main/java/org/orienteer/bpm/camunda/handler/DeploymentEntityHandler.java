@@ -24,8 +24,8 @@ public class DeploymentEntityHandler extends AbstractEntityHandler<DeploymentEnt
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("name", OType.STRING, 0)
-			  .oProperty("deploymentTime", OType.DATETIME, 30).defaultValue("sysdate()")
+		helper.oProperty("name", OType.STRING, 0).markAsDocumentName().markDisplayable()
+			  .oProperty("deploymentTime", OType.DATETIME, 30).defaultValue("sysdate()").markDisplayable()
 			  .oProperty("processDefinitions", OType.LINKLIST, 40).assignVisualization("table")
 			  .oProperty("resources", OType.LINKLIST, 50).assignVisualization("table");
 	}

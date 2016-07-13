@@ -37,7 +37,7 @@ public class IncidentEntityHandler extends AbstractEntityHandler<IncidentEntity>
                 .oProperty("causeIncidentId", OType.STRING, 90)
                 .oProperty("rootCauseIncidentId", OType.STRING, 100)
                 .oProperty("configuration", OType.STRING, 110)
-                .oProperty("tenantId", OType.STRING, 120)
+//                .oProperty("tenantId", OType.STRING, 120) // Tenants are not supported
                 .oProperty("jobDefinitionId", OType.STRING, 130);
     }
 

@@ -289,7 +289,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public boolean isIdentityTablePresent() {
-		return false;
+		return true;
 	}
 
 	@Override

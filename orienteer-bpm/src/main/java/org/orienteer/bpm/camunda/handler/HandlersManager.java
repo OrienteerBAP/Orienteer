@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
  * Manager of all registgered in the system 
@@ -26,6 +27,7 @@ public final class HandlersManager {
 	private Map<Class<?>, IEntityHandler<?>> handlers = new HashMap<>();
 	private Map<Class<?>, IEntityHandler<?>> cachedInheritedHandlers = new HashMap<>();
 	private Map<Class<?>, IEntityHandler<?>> handlerByHandlerClass = new HashMap<>();
+	private Map<String, IEntityHandler<?>> handlerBySchemaClass = new HashMap<>();
 	
 	private Map<String, IEntityHandler<?>> statementHandlersCache = new HashMap<>();
 	
@@ -45,7 +47,8 @@ public final class HandlersManager {
 				 new CaseDefinitionEntityHandler(),
 				 new ExternalTaskEntityHandler(),
 				 new TenantEntityHandler(),
-				 new MeterLogEntityHandler());
+				 new MeterLogEntityHandler(), 
+				 new UserEntityHandler());
 	}
 	
 	public static HandlersManager get() {
@@ -56,8 +59,17 @@ public final class HandlersManager {
 		for(IEntityHandler<?> handler : handlers) {
 			this.handlers.put(handler.getEntityClass(), handler);
 			handlerByHandlerClass.put(handler.getClass(), handler);
+			handlerBySchemaClass.put(handler.getSchemaClass(), handler);
 		}
 		cachedInheritedHandlers.clear();
+	}
+	
+	public <T extends IEntityHandler<?>> T getHandlerBySchemaClass(String schemaClass) {
+		return (T) handlerBySchemaClass.get(schemaClass);
+	}
+	
+	public <T extends IEntityHandler<?>> T getHandlerBySchemaClass(OClass schemaClass) {
+		return schemaClass!=null?(T)getHandlerBySchemaClass(schemaClass.getName()):null;
 	}
 	
 	public <T extends IEntityHandler<?>> T getHandlerByClass(Class<T> handlerClass) {

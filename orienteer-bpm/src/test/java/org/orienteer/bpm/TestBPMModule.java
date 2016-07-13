@@ -4,6 +4,8 @@ import org.orienteer.bpm.camunda.OProcessApplicationReference;
 import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
 import org.orienteer.bpm.camunda.handler.ExecutionEntityHandler;
 import org.orienteer.bpm.camunda.handler.HandlersManager;
+import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
+import org.orienteer.bpm.camunda.handler.UserEntityHandler;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
 
@@ -44,6 +46,8 @@ import org.junit.runner.RunWith;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.sun.jna.platform.win32.WinNT.LOGICAL_PROCESSOR_RELATIONSHIP;
 
 import junit.framework.AssertionFailedError;
@@ -300,7 +304,10 @@ public class TestBPMModule {
 	public void testUserTask() {
 		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("user-task");
 		assertProcessNotEnded(processInstance.getId());
-//		processEngineRule.getIdentityService().
+		ODatabaseDocument db = tester.getDatabase();
+		for(ODocument doc : db.browseClass(TaskEntityHandler.OCLASS_NAME)){
+			System.out.println("Task: "+doc);
+		}
 	}
 	
 

@@ -26,14 +26,14 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
 
-        helper.oProperty("category", OType.STRING)
-                .oProperty("name", OType.STRING)
-                .oProperty("key", OType.STRING)
-                .oProperty("version", OType.INTEGER)
-                .oProperty("deploymentId", OType.STRING)
-                .oProperty("resourceName", OType.STRING)
-                .oProperty("diagramResourceName", OType.STRING)
-                .oProperty("tenantId", OType.STRING);
+        helper.oProperty("category", OType.STRING, 10)
+                .oProperty("name", OType.STRING, 0)
+                .oProperty("key", OType.STRING, 20)
+                .oProperty("version", OType.INTEGER, 30)
+                .oProperty("deploymentId", OType.STRING, 40)
+                .oProperty("resourceName", OType.STRING, 50)
+                .oProperty("diagramResourceName", OType.STRING, 60);
+//                .oProperty("tenantId", OType.STRING); // Tenants are not supported
     }
 
     @Statement

@@ -4,6 +4,7 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.jobexecutor.FoxFailedJobCommandFactory;
+import org.camunda.bpm.engine.impl.persistence.GenericManagerFactory;
 
 /**
  * {@link ProcessEngineConfiguration} for OrientDB implementation
@@ -14,6 +15,7 @@ public class OProcessEngineConfiguration extends StandaloneProcessEngineConfigur
 	@Override
 	protected void initPersistenceProviders() {
 		addSessionFactory(new OPersistenceSessionFactory());
+		setIdentityProviderSessionFactory(identityProviderSessionFactory);
 	}
 
 	@Override
@@ -46,5 +48,10 @@ public class OProcessEngineConfiguration extends StandaloneProcessEngineConfigur
 		if (failedJobCommandFactory == null) {
 	      failedJobCommandFactory = new FoxFailedJobCommandFactory();
 	    }
+	}
+	
+	@Override
+	protected void initIdentityProviderSessionFactory() {
+		identityProviderSessionFactory = new GenericManagerFactory(OIdentityServiceProvider.class);
 	}
 }
