@@ -63,7 +63,7 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
-		helper.linkedClass(JobEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "jobs");
+		helper.linkedClass(DeploymentEntityHandler.OCLASS_NAME);
 	}
 
 	@Override

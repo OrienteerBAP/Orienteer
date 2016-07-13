@@ -31,7 +31,7 @@ public class ByteArrayEntityHandler extends AbstractEntityHandler<ByteArrayEntit
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
-		helper.linkedClass(ByteArrayEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "byteArrays");
+		helper.linkedClass(DeploymentEntityHandler.OCLASS_NAME);
 	}
 
 	@Statement
