@@ -30,7 +30,7 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
                 .oProperty("name", OType.STRING, 0)
                 .oProperty("key", OType.STRING, 20)
                 .oProperty("version", OType.INTEGER, 30)
-                .oProperty("deployment", OType.STRING, 40)
+                .oProperty("deployment", OType.LINK, 40)
                 .oProperty("resourceName", OType.STRING, 50)
                 .oProperty("diagramResourceName", OType.STRING, 60);
 //                .oProperty("tenantId", OType.STRING); // Tenants are not supported
@@ -39,7 +39,7 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
     @Override
     public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
-        helper.setupRelationship(CaseDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "caseDefinitions");
+        helper.linkedClass(CaseDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "caseDefinitions");
     }
 
     @Statement

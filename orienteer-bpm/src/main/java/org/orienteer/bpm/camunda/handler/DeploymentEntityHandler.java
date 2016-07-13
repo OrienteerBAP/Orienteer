@@ -36,7 +36,6 @@ public class DeploymentEntityHandler extends AbstractEntityHandler<DeploymentEnt
 		super.applyRelationships(helper);
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
 		helper.setupRelationship(ResourceEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "resources");
-		helper.setupRelationship(ByteArrayEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "byteArrays");
 	}
 	
 	
