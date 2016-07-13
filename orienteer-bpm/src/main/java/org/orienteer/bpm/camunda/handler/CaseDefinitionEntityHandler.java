@@ -30,21 +30,27 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
                 .oProperty("name", OType.STRING, 0)
                 .oProperty("key", OType.STRING, 20)
                 .oProperty("version", OType.INTEGER, 30)
-                .oProperty("deploymentId", OType.STRING, 40)
+                .oProperty("deployment", OType.STRING, 40)
                 .oProperty("resourceName", OType.STRING, 50)
                 .oProperty("diagramResourceName", OType.STRING, 60);
 //                .oProperty("tenantId", OType.STRING); // Tenants are not supported
     }
 
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+        helper.setupRelationship(CaseDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "caseDefinitions");
+    }
+
     @Statement
     public List<CaseDefinitionEntity> selectCaseDefinitionByDeploymentId(OPersistenceSession session, final ListQueryParameterObject parameter) {
-        return queryList(session, "select from " + getSchemaClass() + " where deploymentId=?", parameter.getParameter());
+        return queryList(session, "select from " + getSchemaClass() + " where deployment.id=?", parameter.getParameter());
     }
 
     @Statement
     public List<CaseDefinitionEntity> selectCaseDefinitionByDeploymentAndKey(OPersistenceSession session, final ListQueryParameterObject parameter) {
         Map<String, String> map = (Map<String, String>) parameter.getParameter();
-        return queryList(session, "select from " + getSchemaClass() + " where deploymentId=? and key=?",
+        return queryList(session, "select from " + getSchemaClass() + " where deployment.id=? and key=?",
                 map.get("deploymentId"), map.get("key"));
     }
 

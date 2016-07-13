@@ -53,13 +53,19 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 			  .oProperty("repeat", OType.STRING, 140)
 			  .oProperty("jobHandlerType", OType.STRING, 150)
 			  .oProperty("JobHandlerConfigurationRaw", OType.STRING, 160)
-			  .oProperty("deploymentId", OType.STRING, 170)
+			  .oProperty("deployment", OType.LINK, 170)
 			  .oProperty("suspensionState", OType.INTEGER, 180)
 			  .oProperty("jobDefinitionId", OType.STRING, 190)
 			  .oProperty("sequenceCounter", OType.LONG, 200)
 			  .oProperty("priority", OType.LONG, 210);
 	}
-	
+
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "jobs");
+	}
+
 	@Override
 	public JobEntity mapToEntity(ODocument doc, JobEntity entity, OPersistenceSession session) {
 		if(entity==null) {
