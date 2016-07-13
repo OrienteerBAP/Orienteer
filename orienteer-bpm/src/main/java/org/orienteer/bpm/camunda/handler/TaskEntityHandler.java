@@ -61,12 +61,12 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
     }
 
     @Statement
-    public List<TaskEntity> selectTasksByCaseExecutionId(OPersistenceSession session, final ListQueryParameterObject parameter) {
+    public List<TaskEntity> selectTaskByCaseExecutionId(OPersistenceSession session, final ListQueryParameterObject parameter) {
         return queryList(session, "select from " + getSchemaClass() + " where caseExecutionId=?", parameter.getParameter());
     }
 
     @Statement
-    public List<TaskEntity> selectTasksByQueryCriteria(OPersistenceSession session, TaskQuery query) {
+    public List<TaskEntity> selectTaskByQueryCriteria(OPersistenceSession session, TaskQuery query) {
         return query(session, query);
     }
 }

@@ -2,6 +2,7 @@ package org.orienteer.bpm.camunda.handler;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.DbEntity;
@@ -115,8 +116,12 @@ public final class HandlersManager {
 	}
 	
 	public void applySchema(OSchemaHelper helper) {
-		for(IEntityHandler<?> handler : getAllHandlers()) {
+		Collection<IEntityHandler<?>> allHandlers = getAllHandlers();
+		for(IEntityHandler<?> handler : allHandlers) {
 			handler.applySchema(helper);
+		}
+		for(IEntityHandler<?> handler : allHandlers) {
+			handler.applyRelationships(helper);
 		}
 		
 	}

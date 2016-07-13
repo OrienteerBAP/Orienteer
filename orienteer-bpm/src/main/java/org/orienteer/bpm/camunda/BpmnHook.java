@@ -10,6 +10,7 @@ import org.orienteer.bpm.camunda.handler.DeploymentEntityHandler;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -36,10 +37,10 @@ public class BpmnHook extends ODocumentHookAbstract {
 			res = RESULT.RECORD_CHANGED;
 		}
 		if(iDocument.getSchemaClass().isSubClassOf(ProcessDefinitionEntityHandler.OCLASS_NAME)) {
-			String deploymentId = iDocument.field("deploymentId");
-			if(Strings.isEmpty(deploymentId)) {
-				ODocument deployment = getOrCreateDeployment();
-				iDocument.field("deploymentId", deployment.field("id"));
+			OIdentifiable deployment = iDocument.field("deployment");
+			if(deployment==null) {
+				deployment = getOrCreateDeployment();
+				iDocument.field("deployment", deployment);
 				res = RESULT.RECORD_CHANGED;
 			}
 		}

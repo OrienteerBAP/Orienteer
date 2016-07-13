@@ -29,38 +29,37 @@ public class ResourceEntityHandler extends AbstractEntityHandler<ResourceEntity>
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
 		helper.oProperty("name", OType.STRING, 0)
-			  .oProperty("deploymentId", OType.STRING, 10)
+			  .oProperty("deployment", OType.LINK, 10).assignVisualization("listbox")
 			  .oProperty("bytes", OType.BINARY, 20)
 			  .oProperty("generated", OType.BOOLEAN, 40).defaultValue("true").notNull();
 	}
 	
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(ResourceEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "resources");
+	}
+	
 	@Statement
 	public ResourceEntity selectResourceByDeploymentIdAndResourceName(OPersistenceSession session, Map<String, Object> map) {
-		return querySingle(session, "select from "+getSchemaClass()+" where deploymentId=? and name=?", map.get("deploymentId"), map.get("resourceName")); 
+		return querySingle(session, "select from "+getSchemaClass()+" where deployment.id=? and name=?", map.get("deploymentId"), map.get("resourceName")); 
 	}
 	
 	@Statement
 	public List<ResourceEntity> selectResourcesByDeploymentId(OPersistenceSession session, ListQueryParameterObject param) {
-		return queryList(session, "select from "+getSchemaClass()+" where deploymentId=?", param.getParameter()); 
+		return queryList(session, "select from "+getSchemaClass()+" where deployment.id=?", param.getParameter()); 
 	}
 	
 	@Statement
 	public List<ResourceEntity> selectLatestResourcesByDeploymentName(OPersistenceSession session, ListQueryParameterObject params) {
 		//{resourcesToFind=[test.bpmn], tenantId=null, deploymentName=Orienteer, source=process application}
 		Map<String, Object> map = (Map<String, Object>) params.getParameter();
-		DeploymentEntity deployment = (DeploymentEntity) HandlersManager.get()
-															.getHandler("selectDeploymentByDeploymentName")
-															.selectOne("selectDeploymentByDeploymentName", 
-																	     map.get("deploymentName"), session);
-		if(deployment==null) return Collections.EMPTY_LIST;
-		else {
-			return queryList(session, "select from "+getSchemaClass()+" where deploymentId=? and name in ?", deployment.getId(), map.get("resourcesToFind"));
-		}
+		return queryList(session, "select from "+getSchemaClass()+" where deployment.name=? and name in ?", map.get("deploymentName"), map.get("resourcesToFind"));
 	}
 	
 	@Statement
 	public void deleteResourcesByDeploymentId(OPersistenceSession session, String deploymentId) {
-		session.getDatabase().command(new OCommandSQL("delete from "+getSchemaClass()+" where deploymentId = ?"))
+		session.getDatabase().command(new OCommandSQL("delete from "+getSchemaClass()+" where deployment.id = ?"))
 									.execute(deploymentId);
 	}
 

@@ -87,6 +87,24 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		return this;
 	}
 	
+	public OSchemaHelper defaultValue(String defaultValue)
+	{
+		super.defaultValue(defaultValue);
+		return this;
+	}
+	
+	public OSchemaHelper min(String min)
+	{
+		super.min(min);
+		return this;
+	}
+	
+	public OSchemaHelper max(String max)
+	{
+		super.max(max);
+		return this;
+	}
+	
 	public OSchemaHelper notNull()
 	{
 		super.notNull();
@@ -240,6 +258,5 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		CustomAttributes.PROP_INVERSE.setValue(property2, property1);
 		return this;
 	}
-	
 	
 }

@@ -35,6 +35,7 @@ public interface IEntityHandler<T extends DbEntity> {
 	public boolean supportsStatement(String statement);
 	
 	public void applySchema(OSchemaHelper helper);
+	public void applyRelationships(OSchemaHelper helper);
 	
 	public List<T> selectList(String statement, Object parameter, OPersistenceSession session);
 	public T selectOne(String statement, Object parameter, OPersistenceSession session);

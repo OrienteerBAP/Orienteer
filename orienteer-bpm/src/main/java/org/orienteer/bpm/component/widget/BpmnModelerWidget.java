@@ -113,7 +113,7 @@ public class BpmnModelerWidget extends AbstractWidget<ODocument> {
 			}
 			resource = new ODocument(ResourceEntityHandler.OCLASS_NAME);
 			resource.field("name", resourceName);
-			resource.field("deploymentId", pd.field("deploymentId"));
+			resource.field("deployment", pd.field("deployment"));
 		}
 		resource.field("bytes", bpmn.getBytes());
 		resource.save();

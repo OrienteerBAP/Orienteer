@@ -294,6 +294,15 @@ public class TestBPMModule {
 		assertTrue(tasks.isEmpty());
 		assertProcessEnded(processInstance.getId());
 	}
+	
+	@Test
+	@Deployment(resources = {"user-task.bpmn"})
+	public void testUserTask() {
+		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("user-task");
+		assertProcessNotEnded(processInstance.getId());
+//		processEngineRule.getIdentityService().
+	}
+	
 
 	private static class InterruptTask extends TimerTask {
 		protected boolean timeLimitExceeded = false;

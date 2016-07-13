@@ -44,6 +44,11 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 	public List<VariableInstanceEntity> selectVariablesByExecutionId(OPersistenceSession session, ListQueryParameterObject parameter) {
 		return queryList(session, "select from "+getSchemaClass()+" where executionId=?", parameter.getParameter());
 	}
+	
+	@Statement
+	public List<VariableInstanceEntity> selectVariablesByTaskId(OPersistenceSession session, ListQueryParameterObject parameter) {
+		return queryList(session, "select from "+getSchemaClass()+" where taskId=?", parameter.getParameter());
+	}
 
 	
 }

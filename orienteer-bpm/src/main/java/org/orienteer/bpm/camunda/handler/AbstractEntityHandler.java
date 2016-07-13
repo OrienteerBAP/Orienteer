@@ -114,11 +114,15 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	}
 	
 	public ODocument readAsDocument(String id, OPersistenceSession session) {
+		return readAsDocument(id, session, getSchemaClass());
+	}
+	
+	protected ODocument readAsDocument(String id, OPersistenceSession session, String schemaClass) {
 		OIdentifiable oIdentifiable = session.lookupOIdentifiableForIdInCache(id);
 		if(oIdentifiable!=null) return oIdentifiable.getRecord();
 		else {
 			ODatabaseDocument db = session.getDatabase();
-			List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+getSchemaClass()+" where id = ?", 1), id);
+			List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+schemaClass+" where id = ?", 1), id);
 			return ret==null || ret.isEmpty()? null : ret.get(0);
 		}
 	}
@@ -177,10 +181,15 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	
 		for(OProperty property : oClass.properties()) {
 			String propertyName = property.getName();
-			IGetAndSet getAndSet = getGetAndSetter(entityClass, propertyName);
+			String beanPropertyName = propertyName;
+			if(property.getType().isLink()) {
+				propertyName+=".id";
+				beanPropertyName+="Id";
+			}
+			IGetAndSet getAndSet = getGetAndSetter(entityClass, beanPropertyName);
 			if(getAndSet!=null) {
-				if(getAndSet.getSetter()!=null) mappingFromDocToEntity.put(propertyName, propertyName);
-				if(getAndSet.getGetter()!=null) mappingFromEntityToDoc.put(propertyName, propertyName);
+				if(getAndSet.getSetter()!=null) mappingFromDocToEntity.put(propertyName, beanPropertyName);
+				if(getAndSet.getGetter()!=null) mappingFromEntityToDoc.put(beanPropertyName, propertyName);
 			}
 		}
  	}
@@ -225,8 +234,25 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		}
 		for(Map.Entry<String, String> mapToDoc : mappingFromEntityToDoc.entrySet()) {
 			Object value = PropertyResolver.getValue(mapToDoc.getKey(), entity);
-			if(!Objects.equal(value, doc.field(mapToDoc.getValue()))) {
-				doc.field(mapToDoc.getValue(), value);
+			String docField = mapToDoc.getValue();
+			if(!Objects.equal(value, doc.field(docField))) {
+				if(docField.endsWith(".id")) {
+					docField = docField.substring(0, docField.length()-".id".length());
+					if(value!=null)
+					{
+						String referToId = value.toString();
+						OIdentifiable referTo = session.lookupOIdentifiableForIdInCache(referToId);
+						if(referTo==null) {
+							referTo = readAsDocument(referToId, session, BPM_ENTITY_CLASS);
+						}
+						doc.field(docField, referTo);
+					} else
+					{
+						doc.field(docField, (Object) null);
+					}
+				} else {
+					doc.field(docField, value);
+				}
 			}
 		}
 		return doc;
@@ -234,6 +260,11 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 
 	@Override
 	public void applySchema(OSchemaHelper helper) {
+		helper.oClass(schemaClass, BPM_ENTITY_CLASS);
+	}
+	
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
 		helper.oClass(schemaClass, BPM_ENTITY_CLASS);
 	}
 

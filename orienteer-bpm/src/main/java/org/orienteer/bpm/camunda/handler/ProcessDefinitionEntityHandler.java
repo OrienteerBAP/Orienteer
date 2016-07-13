@@ -33,8 +33,14 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 			  .oProperty("key", OType.STRING, 30).notNull(true)
 		      .oProperty("resourceName", OType.STRING, 35)
 			  .oProperty("category", OType.STRING, 40)
-			  .oProperty("deploymentId", OType.STRING, 60)
+			  .oProperty("deployment", OType.LINK, 60).assignVisualization("listbox")
 			  .oProperty("suspensionState", OType.INTEGER, 70).defaultValue("1").notNull();
+	}
+	
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
 	}
 	
 	@Statement
@@ -49,7 +55,7 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 	
 	@Statement
 	public List<ProcessDefinitionEntity> selectProcessDefinitionByDeploymentId(OPersistenceSession session, ListQueryParameterObject param) {
-		return queryList(session, "select from "+getSchemaClass()+" where deploymentId = ?", param.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where deployment.id = ?", param.getParameter());
 	}
 	
 	@Statement
@@ -65,12 +71,12 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 	
 	@Statement
 	public ProcessDefinitionEntity selectProcessDefinitionByDeploymentAndKey(OPersistenceSession session, Map<String, Object> map) {
-		return querySingle(session, "select from "+getSchemaClass()+" where deploymentId = ? and key = ?", map.get("deploymentId"), map.get("processDefinitionKey"));
+		return querySingle(session, "select from "+getSchemaClass()+" where deployment.id = ? and key = ?", map.get("deploymentId"), map.get("processDefinitionKey"));
 	}
 	
 	@Statement
 	public void deleteProcessDefinitionsByDeploymentId(OPersistenceSession session, String deploymentId) {
-		session.getDatabase().command(new OCommandSQL("delete from "+getSchemaClass()+" where deploymentId = ?"))
+		session.getDatabase().command(new OCommandSQL("delete from "+getSchemaClass()+" where deployment.id = ?"))
 									.execute(deploymentId);
 	}
 
