@@ -37,9 +37,9 @@ public class MeterLogEntityHandler extends AbstractEntityHandler<MeterLogEntity>
         if (map.containsKey("reporter") && map.get("reporter") != null)
             query += " and reporter = " + map.get("reporter").toString();
         if (map.containsKey("startDate") && map.get("startDate") != null)
-            query += " and timestamp > " + new Date(map.get("startDate").toString());
+            query += " and timestamp > " + new Date(Long.valueOf(map.get("startDate").toString()));
         if (map.containsKey("endDate") && map.get("endDate") != null)
-            query += " and timestamp < " + new Date(map.get("endDate").toString());
+            query += " and timestamp < " + new Date(Long.valueOf(map.get("endDate").toString()));
 
         return Long.valueOf(queryList(session, query).get(0).toString());
     }
