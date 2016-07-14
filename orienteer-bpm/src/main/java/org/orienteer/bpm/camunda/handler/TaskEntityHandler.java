@@ -38,7 +38,7 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
                 .oProperty("delegationStateString", OType.STRING, 90)
                 .oProperty("executionId", OType.STRING, 100)
                 .oProperty("processInstanceId", OType.STRING, 110)
-                .oProperty("processDefinitionId", OType.STRING, 120)
+                .oProperty("processDefinitions", OType.LINK, 120)
                 .oProperty("caseExecutionId", OType.STRING, 130)
                 .oProperty("caseInstanceId", OType.STRING, 140)
                 .oProperty("caseDefinitionId", OType.STRING, 150)
@@ -53,6 +53,7 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
     public void applyRelationships(OSchemaHelper helper) {
     	super.applyRelationships(helper);
     	helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "assignee", UserEntityHandler.OCLASS_NAME, "assignedTasks");
+        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "processDefinitions", ProcessDefinitionEntityHandler.OCLASS_NAME);
     }
     
     @Override

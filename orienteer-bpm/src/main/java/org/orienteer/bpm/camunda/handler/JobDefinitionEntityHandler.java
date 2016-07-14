@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler;
 import java.util.List;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
 import org.camunda.bpm.engine.management.JobDefinitionQuery;
@@ -26,7 +27,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("processDefinitionId", OType.STRING, 10)
+		helper.oProperty("processDefinitions", OType.LINK, 10)
 			  .oProperty("processDefinitionKey", OType.STRING, 20)
 			  .oProperty("activityId", OType.STRING, 30)
 			  .oProperty("jobType", OType.STRING, 40)
@@ -34,7 +35,13 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 			  .oProperty("jobPriority", OType.LONG, 60)
 			  .oProperty("suspensionState", OType.INTEGER, 70);
 	}
-	
+
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(JobDefinitionEntityHandler.OCLASS_NAME, "processDefinitions", JobEntityHandler.OCLASS_NAME);
+	}
+
 	@Override
 	protected void initMapping(OPersistenceSession session) {
 		super.initMapping(session);
@@ -44,7 +51,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	
 	@Statement
 	public List<JobDefinitionEntity> selectJobDefinitionsByProcessDefinitionId(OPersistenceSession session, ListQueryParameterObject query) {
-		return queryList(session, "select from "+getSchemaClass()+" where processDefinitionId = ?", query.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where processDefinitions.id = ?", query.getParameter());
 	}
 	
 	@Statement
@@ -54,7 +61,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	
 	@Statement
 	public void deleteJobDefinitionsByProcessDefinitionId(OPersistenceSession session, String processDefinitionId) {
-		command(session, "delete from "+getSchemaClass()+" where processDefinitionId = ?", processDefinitionId);
+		command(session, "delete from "+getSchemaClass()+" where processDefinitions.id = ?", processDefinitionId);
 	}
 
 	

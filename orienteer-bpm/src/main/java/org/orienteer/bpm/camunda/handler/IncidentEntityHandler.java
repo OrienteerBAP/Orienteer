@@ -33,12 +33,18 @@ public class IncidentEntityHandler extends AbstractEntityHandler<IncidentEntity>
                 .oProperty("executionId", OType.STRING, 50)
                 .oProperty("activityId", OType.STRING, 60)
                 .oProperty("processInstanceId", OType.STRING, 70)
-                .oProperty("processDefinitionId", OType.STRING, 80)
+                .oProperty("processDefinitions", OType.LINK, 80)
                 .oProperty("causeIncidentId", OType.STRING, 90)
                 .oProperty("rootCauseIncidentId", OType.STRING, 100)
                 .oProperty("configuration", OType.STRING, 110)
 //                .oProperty("tenantId", OType.STRING, 120) // Tenants are not supported
                 .oProperty("jobDefinitionId", OType.STRING, 130);
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+        helper.setupRelationship(IncidentEntityHandler.OCLASS_NAME, "processDefinitions", ProcessDefinitionEntityHandler.OCLASS_NAME);
     }
 
     @Statement
