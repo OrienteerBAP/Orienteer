@@ -258,5 +258,15 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		CustomAttributes.PROP_INVERSE.setValue(property2, property1);
 		return this;
 	}
+
+	public OSchemaHelper setupRelationship(String class1Name, String propertyName, String class2Name) {
+		OClass class1 = schema.getClass(class1Name);
+		OProperty property = class1.getProperty(propertyName);
+		OClass class2 = schema.getClass(class2Name);
+
+		if (!Objects.equals(property.getLinkedClass(), class2)) property.setLinkedClass(class2);
+
+		return this;
+	}
 	
 }

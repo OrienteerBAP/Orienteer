@@ -39,7 +39,7 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
     @Override
     public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
-        helper.linkedClass(CaseDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "caseDefinitions");
+        helper.setupRelationship(CaseDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
     }
 
     @Statement
