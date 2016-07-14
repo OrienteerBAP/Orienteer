@@ -45,7 +45,7 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 			  .oProperty("executionId", OType.STRING, 60)
 			  .oProperty("processInstanceId", OType.STRING, 70)
 			  .oProperty("executionId", OType.STRING, 80)
-			  .oProperty("processDefinitions", OType.LINK, 90)
+			  .oProperty("processDefinitionId", OType.STRING, 90)
 			  .oProperty("processDefinitionKey", OType.STRING, 100)
 			  .oProperty("retries", OType.INTEGER, 110)
 			  .oProperty("exceptionByteArrayId", OType.STRING, 120)
