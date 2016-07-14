@@ -54,7 +54,7 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 		super.applySchema(helper);
 		helper.oProperty("processInstanceId", OType.STRING, 10)
 			  .oProperty("parentId", OType.STRING, 20)
-			  .oProperty("processDefinitionId", OType.STRING, 30)
+			  .oProperty("processDefinitions", OType.LINKLIST, 30).assignVisualization("table")
 			  .oProperty("businessKey", OType.STRING, 30)
 			  .oProperty("superExecutionId", OType.STRING, 40)
 			  .oProperty("superCaseExecutionId", OType.STRING, 50)
@@ -69,14 +69,11 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 			  .oProperty("cachedEntityState", OType.INTEGER, 150)
 			  .oProperty("sequenceCounter", OType.LONG, 160);
 	}
-	
-	/*@Override
-	public void delete(ExecutionEntity entity, OPersistenceSession session) {
-		super.delete(entity, session);
-		if(entity.isProcessInstanceExecution()) {
-			logger.info("PROCESS DELITION: "+entity.getId(), new Exception());
-		}
-	}*/
+
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(ExecutionEntityHandler.OCLASS_NAME, "processDefinitions", ProcessDefinitionEntityHandler.OCLASS_NAME);
+	}
 	
 	@Statement
 	public List<ExecutionEntity> selectProcessInstanceByQueryCriteria(OPersistenceSession session, ProcessInstanceQueryImpl query) {
@@ -197,7 +194,7 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 	@Statement
 	public List<String> selectProcessInstanceIdsByProcessDefinitionId(OPersistenceSession session, ListQueryParameterObject parameter) {
 		ODatabaseDocument db = session.getDatabase();
-		List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where processDefinitionId = ?"), parameter.getParameter());
+		List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where processDefinitions.id = ?"), parameter.getParameter());
 		return Lists.transform(resultSet, GET_ID_FUNCTION);
 	}
 	

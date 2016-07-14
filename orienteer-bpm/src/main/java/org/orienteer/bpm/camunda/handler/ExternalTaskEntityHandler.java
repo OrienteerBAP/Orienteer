@@ -35,14 +35,20 @@ public class ExternalTaskEntityHandler extends AbstractEntityHandler<ExternalTas
 			  .oProperty("suspensionState", OType.INTEGER, 60)
 			  .oProperty("executionId", OType.STRING, 70)
 			  .oProperty("processInstanceId", OType.STRING, 80)
-			  .oProperty("processDefinitionId", OType.STRING, 90)
+			  .oProperty("processDefinitions", OType.LINK, 90)
 			  .oProperty("processDefinitionKey", OType.STRING, 100)
 			  .oProperty("activityId", OType.STRING, 110)
 			  .oProperty("activityInstanceId", OType.STRING, 120)
 //			  .oProperty("tenantId", OType.STRING, 130) // Tenants are not supported
 			  .oProperty("priority", OType.LONG, 140);
 	}
-	
+
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(ExternalTaskEntityHandler.OCLASS_NAME, "processDefinitions", ProcessDefinitionEntityHandler.OCLASS_NAME);
+	}
+
 	@Statement
 	public List<ExternalTaskEntity> selectExternalTaskByQueryCriteria(OPersistenceSession session, ExternalTaskQuery query) {
 		return query(session, query);
