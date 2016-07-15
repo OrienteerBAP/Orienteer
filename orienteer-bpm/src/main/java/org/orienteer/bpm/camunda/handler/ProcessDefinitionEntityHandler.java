@@ -34,13 +34,17 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 		      .oProperty("resourceName", OType.STRING, 35)
 			  .oProperty("category", OType.STRING, 40)
 			  .oProperty("deployment", OType.LINK, 60).assignVisualization("listbox")
-			  .oProperty("suspensionState", OType.INTEGER, 70).defaultValue("1").notNull();
+			  .oProperty("executions", OType.LINKLIST, 70).assignVisualization("table")
+			  .oProperty("suspensionState", OType.INTEGER, 80).defaultValue("1").notNull()
+		      .oProperty("tasks", OType.LINKLIST, 90).assignVisualization("table");
 	}
 	
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
+		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "executions", ExecutionEntityHandler.OCLASS_NAME, "processDefinition");
+		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "processDefinition");
 	}
 	
 	@Statement
