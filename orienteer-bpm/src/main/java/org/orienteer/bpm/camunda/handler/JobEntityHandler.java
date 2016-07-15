@@ -42,10 +42,9 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 			  .oProperty("lockExpirationTime", OType.DATETIME, 30)
 			  .oProperty("lockOwner", OType.STRING, 40)
 			  .oProperty("exclusive", OType.BOOLEAN, 50)
-			  .oProperty("executionId", OType.STRING, 60)
+			  .oProperty("execution", OType.LINK, 60).assignVisualization("listbox")
 			  .oProperty("processInstanceId", OType.STRING, 70)
-			  .oProperty("executionId", OType.STRING, 80)
-			  .oProperty("processDefinitionId", OType.STRING, 90)
+			  .oProperty("processDefinition", OType.LINK, 90).assignVisualization("listbox")
 			  .oProperty("processDefinitionKey", OType.STRING, 100)
 			  .oProperty("retries", OType.INTEGER, 110)
 			  .oProperty("exceptionByteArrayId", OType.STRING, 120)
@@ -64,7 +63,8 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
 		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
-		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "processDefinitions", ProcessDefinitionEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 	
 	@Statement
 	public List<JobEntity> selectJobsByExecutionId(OPersistenceSession session, ListQueryParameterObject query) {
-		return queryList(session, "select from "+getSchemaClass()+" where executionId = ?", query.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where execution.id = ?", query.getParameter());
 	}
 	
 }

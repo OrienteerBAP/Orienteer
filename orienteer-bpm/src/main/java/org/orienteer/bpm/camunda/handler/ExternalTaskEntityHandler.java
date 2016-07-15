@@ -33,9 +33,9 @@ public class ExternalTaskEntityHandler extends AbstractEntityHandler<ExternalTas
 			  .oProperty("errorMessage", OType.STRING, 40)
 			  .oProperty("lockExpirationTime", OType.DATETIME, 50)
 			  .oProperty("suspensionState", OType.INTEGER, 60)
-			  .oProperty("executionId", OType.STRING, 70)
+			  .oProperty("execution", OType.LINK, 70).assignVisualization("listbox")
 			  .oProperty("processInstanceId", OType.STRING, 80)
-			  .oProperty("processDefinitions", OType.LINK, 90)
+			  .oProperty("processDefinition", OType.LINK, 90).assignVisualization("listbox")
 			  .oProperty("processDefinitionKey", OType.STRING, 100)
 			  .oProperty("activityId", OType.STRING, 110)
 			  .oProperty("activityInstanceId", OType.STRING, 120)
@@ -46,7 +46,8 @@ public class ExternalTaskEntityHandler extends AbstractEntityHandler<ExternalTas
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
-		helper.setupRelationship(ExternalTaskEntityHandler.OCLASS_NAME, "processDefinitions", ProcessDefinitionEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(ExternalTaskEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(ExternalTaskEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
 	}
 
 	@Statement
@@ -56,7 +57,7 @@ public class ExternalTaskEntityHandler extends AbstractEntityHandler<ExternalTas
 	
 	@Statement
 	public List<ExternalTaskEntity> selectExternalTasksByExecutionId(OPersistenceSession session, ListQueryParameterObject query) {
-		return queryList(session, "select from "+getSchemaClass()+" where executionId = ?", query.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where execution.id = ?", query.getParameter());
 	}
 	
 	@Statement

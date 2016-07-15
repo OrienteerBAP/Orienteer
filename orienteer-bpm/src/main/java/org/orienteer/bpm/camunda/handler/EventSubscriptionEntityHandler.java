@@ -39,13 +39,19 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 		super.applySchema(helper);
 		helper.oProperty("eventType", OType.STRING, 10)
 			  .oProperty("eventName", OType.STRING, 20)
-			  .oProperty("executionId", OType.STRING, 30)
+			  .oProperty("execution", OType.LINK, 30).assignVisualization("listbox")
 			  .oProperty("processInstanceId", OType.STRING, 40)
 			  .oProperty("activityId", OType.STRING, 50)
 			  .oProperty("configuration", OType.STRING, 60)
 			  .oProperty("created", OType.DATETIME, 70);
 	}
-	
+
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(EventSubscriptionEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME, "eventSubscriptions");
+	}
+
 	@Override
 	public EventSubscriptionEntity mapToEntity(ODocument doc, EventSubscriptionEntity entity,
 			OPersistenceSession session) {
@@ -75,7 +81,7 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	public List<EventSubscriptionEntity> selectEventSubscriptionsByNameAndExecution(OPersistenceSession session, final ListQueryParameterObject parameter) {
 		Map<String, String> map=((Map<String, String>)parameter.getParameter());
 		List<EventSubscriptionEntity> result=new ArrayList<EventSubscriptionEntity>();
-		ExecutionEntity entity = HandlersManager.get().getHandler(ExecutionEntity.class).read(map.get("executionId"), session);
+		ExecutionEntity entity = HandlersManager.get().getHandler(ExecutionEntity.class).read(map.get("execution.id"), session);
 	    if(entity==null){
 	      return result;
 	    }
@@ -90,7 +96,7 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	
 	@Statement
 	public List<EventSubscriptionEntity> selectEventSubscriptionsByExecution(OPersistenceSession session, ListQueryParameterObject parameter) {
-		return queryList(session, "select from "+getSchemaClass()+" where executionId=?", parameter.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where execution.id=?", parameter.getParameter());
 	}
 	
 	@Statement
@@ -103,7 +109,7 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	
 	@Statement
 	public List<EventSubscriptionEntity> selectMessageStartEventSubscriptionByName(OPersistenceSession session, ListQueryParameterObject params) {
-		return queryList(session, "select from "+getSchemaClass()+" where eventType = ? and executionId is null and eventName = ?", 
+		return queryList(session, "select from "+getSchemaClass()+" where eventType = ? and execution.id is null and eventName = ?",
 								MessageEventSubscriptionEntity.EVENT_TYPE, 
 								params.getParameter());
 	}

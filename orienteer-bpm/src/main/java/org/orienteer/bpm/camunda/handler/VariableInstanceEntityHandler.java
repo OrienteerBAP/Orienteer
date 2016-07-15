@@ -26,11 +26,11 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 		super.applySchema(helper);
 		helper.oProperty("serializerName", OType.STRING, 30)
 			  .oProperty("name", OType.STRING, 20)
-			  .oProperty("executionId", OType.STRING, 40)
+			  .oProperty("execution", OType.LINK, 40).assignVisualization("listbox")
 			  .oProperty("processInstanceId", OType.STRING, 50)
 			  .oProperty("caseExecutionId", OType.STRING, 60)
 			  .oProperty("caseInstanceId", OType.STRING, 70)
-			  .oProperty("taskId", OType.STRING, 80)
+			  .oProperty("task", OType.STRING, 80)
 			  .oProperty("byteArrayValueId", OType.STRING, 90)
 			  .oProperty("doubleValue", OType.DOUBLE, 100)
 			  .oProperty("longValue", OType.LONG, 110)
@@ -39,15 +39,22 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 			  .oProperty("sequenceCounter", OType.LONG, 140)
 			  .oProperty("concurrentLocal", OType.BOOLEAN, 150);
 	}
-	
+
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(VariableInstanceEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME, "variables");
+		helper.setupRelationship(VariableInstanceEntityHandler.OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "variables");
+	}
+
 	@Statement
 	public List<VariableInstanceEntity> selectVariablesByExecutionId(OPersistenceSession session, ListQueryParameterObject parameter) {
-		return queryList(session, "select from "+getSchemaClass()+" where executionId=?", parameter.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where execution.id=?", parameter.getParameter());
 	}
 	
 	@Statement
 	public List<VariableInstanceEntity> selectVariablesByTaskId(OPersistenceSession session, ListQueryParameterObject parameter) {
-		return queryList(session, "select from "+getSchemaClass()+" where taskId=?", parameter.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where task.id=?", parameter.getParameter());
 	}
 
 	

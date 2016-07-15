@@ -27,7 +27,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("processDefinitions", OType.LINK, 10)
+		helper.oProperty("processDefinition", OType.LINK, 10).assignVisualization("listbox")
 			  .oProperty("processDefinitionKey", OType.STRING, 20)
 			  .oProperty("activityId", OType.STRING, 30)
 			  .oProperty("jobType", OType.STRING, 40)
@@ -39,7 +39,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
-		helper.setupRelationship(JobDefinitionEntityHandler.OCLASS_NAME, "processDefinitions", JobEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(JobDefinitionEntityHandler.OCLASS_NAME, "processDefinition", JobEntityHandler.OCLASS_NAME);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	
 	@Statement
 	public List<JobDefinitionEntity> selectJobDefinitionsByProcessDefinitionId(OPersistenceSession session, ListQueryParameterObject query) {
-		return queryList(session, "select from "+getSchemaClass()+" where processDefinitions.id = ?", query.getParameter());
+		return queryList(session, "select from "+getSchemaClass()+" where processDefinition.id = ?", query.getParameter());
 	}
 	
 	@Statement
@@ -61,7 +61,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	
 	@Statement
 	public void deleteJobDefinitionsByProcessDefinitionId(OPersistenceSession session, String processDefinitionId) {
-		command(session, "delete from "+getSchemaClass()+" where processDefinitions.id = ?", processDefinitionId);
+		command(session, "delete from "+getSchemaClass()+" where processDefinition.id = ?", processDefinitionId);
 	}
 
 	

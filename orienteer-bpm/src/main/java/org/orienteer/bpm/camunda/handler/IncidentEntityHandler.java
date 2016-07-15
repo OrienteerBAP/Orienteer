@@ -30,10 +30,10 @@ public class IncidentEntityHandler extends AbstractEntityHandler<IncidentEntity>
         helper.oProperty("incidentTimestamp", OType.DATETIME, 20)
                 .oProperty("incidentMessage", OType.STRING, 30)
                 .oProperty("incidentType", OType.STRING, 40)
-                .oProperty("executionId", OType.STRING, 50)
+                .oProperty("execution", OType.LINK, 50).assignVisualization("listbox")
                 .oProperty("activityId", OType.STRING, 60)
                 .oProperty("processInstanceId", OType.STRING, 70)
-                .oProperty("processDefinitions", OType.LINK, 80)
+                .oProperty("processDefinition", OType.LINK, 80).assignVisualization("listbox")
                 .oProperty("causeIncidentId", OType.STRING, 90)
                 .oProperty("rootCauseIncidentId", OType.STRING, 100)
                 .oProperty("configuration", OType.STRING, 110)
@@ -44,12 +44,13 @@ public class IncidentEntityHandler extends AbstractEntityHandler<IncidentEntity>
     @Override
     public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
-        helper.setupRelationship(IncidentEntityHandler.OCLASS_NAME, "processDefinitions", ProcessDefinitionEntityHandler.OCLASS_NAME);
+        helper.setupRelationship(IncidentEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME);
+        helper.setupRelationship(IncidentEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
     }
 
     @Statement
     public List<IncidentEntity> selectIncidentsByExecutionId(OPersistenceSession session, final ListQueryParameterObject parameter) {
-        return queryList(session, "select from " + getSchemaClass() + " where executionId=?", parameter.getParameter());
+        return queryList(session, "select from " + getSchemaClass() + " where execution.id=?", parameter.getParameter());
     }
 
     @Statement
