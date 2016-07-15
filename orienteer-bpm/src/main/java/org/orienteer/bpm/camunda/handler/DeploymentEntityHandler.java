@@ -27,7 +27,8 @@ public class DeploymentEntityHandler extends AbstractEntityHandler<DeploymentEnt
 		helper.oProperty("name", OType.STRING, 0).markAsDocumentName().markDisplayable()
 			  .oProperty("deploymentTime", OType.DATETIME, 30).defaultValue("sysdate()").markDisplayable()
 			  .oProperty("processDefinitions", OType.LINKLIST, 40).assignVisualization("table")
-			  .oProperty("resources", OType.LINKLIST, 50).assignVisualization("table");
+			  .oProperty("resources", OType.LINKLIST, 50).assignVisualization("table")
+			  .oProperty("byteArrays", OType.LINKLIST, 60).assignVisualization("table");
 	}
 	
 	@Override

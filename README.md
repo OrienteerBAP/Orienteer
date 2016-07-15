@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/OrienteerDW/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerDW/Orienteer) [![Coverage Status](https://img.shields.io/coveralls/OrienteerDW/Orienteer.svg)](https://coveralls.io/r/OrienteerDW/Orienteer)  [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/OrienteerDW/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d/badge.svg?style=flat)](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d)
+[![Build Status](https://travis-ci.org/OrienteerBAP/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerBAP/Orienteer) [![Coverage Status](https://coveralls.io/repos/github/OrienteerBAP/Orienteer/badge.svg?branch=master)](https://coveralls.io/github/OrienteerBAP/Orienteer?branch=master) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/OrienteerBAP/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d/badge.svg?style=flat)](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d)
 
 ## Orienteer
 
@@ -6,11 +6,12 @@
 
 **Orienteer** is Business Application Platform: 
 
-* Easy creation of prototype applications
-* Very extendable to fit your needs
-* Dynamic datamodel on top of OrientDB: multi paradygm NoSQL database
+* Easy creation of business applications
+* Extendable to fit your needs
+* Dynamic datamodel
+* Rest/JSON enabled
 * Developers friendly
-* Scalling and cloud ready
+* Scalling and cloud ready (support of Docker)
 
 [Orienteer Guidebook](https://orienteer.gitbooks.io/orienteer/content/)
 

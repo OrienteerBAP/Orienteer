@@ -54,9 +54,9 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 		super.applySchema(helper);
 		helper.oProperty("processInstanceId", OType.STRING, 10)
 			  .oProperty("parentId", OType.STRING, 20)
-			  .oProperty("processDefinitionId", OType.STRING, 30)
+			  .oProperty("processDefinition", OType.LINK, 30).assignVisualization("listbox")
 			  .oProperty("businessKey", OType.STRING, 30)
-			  .oProperty("superExecutionId", OType.STRING, 40)
+			  .oProperty("superExecution", OType.LINK, 40).assignVisualization("listbox")
 			  .oProperty("superCaseExecutionId", OType.STRING, 50)
 			  .oProperty("caseInstanceId", OType.STRING, 60)
 			  .oProperty("activityInstanceId", OType.STRING, 70)
@@ -67,16 +67,22 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 			  .oProperty("eventScope", OType.BOOLEAN, 120)
 			  .oProperty("suspensionState", OType.INTEGER, 140)
 			  .oProperty("cachedEntityState", OType.INTEGER, 150)
-			  .oProperty("sequenceCounter", OType.LONG, 160);
+			  .oProperty("sequenceCounter", OType.LONG, 160)
+			  .oProperty("childExecutions", OType.LINKLIST, 170).assignVisualization("table")
+		      .oProperty("tasks", OType.LINKLIST, 180).assignVisualization("table")
+		      .oProperty("eventSubscriptions", OType.LINKLIST, 190).assignVisualization("table")
+			  .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table");
 	}
-	
-	/*@Override
-	public void delete(ExecutionEntity entity, OPersistenceSession session) {
-		super.delete(entity, session);
-		if(entity.isProcessInstanceExecution()) {
-			logger.info("PROCESS DELITION: "+entity.getId(), new Exception());
-		}
-	}*/
+
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(ExecutionEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "executions");
+		helper.setupRelationship(ExecutionEntityHandler.OCLASS_NAME, "superExecution", ExecutionEntityHandler.OCLASS_NAME, "childExecutions");
+		helper.setupRelationship(ExecutionEntityHandler.OCLASS_NAME, "childExecutions", ExecutionEntityHandler.OCLASS_NAME, "superExecution");
+		helper.setupRelationship(ExecutionEntityHandler.OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "execution");
+		helper.setupRelationship(ExecutionEntityHandler.OCLASS_NAME, "eventSubscriptions", EventSubscriptionEntityHandler.OCLASS_NAME, "execution");
+		helper.setupRelationship(ExecutionEntityHandler.OCLASS_NAME, "variables", VariableInstanceEntityHandler.OCLASS_NAME, "execution");
+	}
 	
 	@Statement
 	public List<ExecutionEntity> selectProcessInstanceByQueryCriteria(OPersistenceSession session, ProcessInstanceQueryImpl query) {
@@ -197,7 +203,7 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 	@Statement
 	public List<String> selectProcessInstanceIdsByProcessDefinitionId(OPersistenceSession session, ListQueryParameterObject parameter) {
 		ODatabaseDocument db = session.getDatabase();
-		List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where processDefinitionId = ?"), parameter.getParameter());
+		List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where processDefinition.id = ?"), parameter.getParameter());
 		return Lists.transform(resultSet, GET_ID_FUNCTION);
 	}
 	

@@ -25,9 +25,15 @@ public class ByteArrayEntityHandler extends AbstractEntityHandler<ByteArrayEntit
 		super.applySchema(helper);
 		helper.oProperty("name", OType.STRING, 10)
 			  .oProperty("bytes", OType.BINARY, 20)
-			  .oProperty("deploymentId", OType.STRING, 30);
+			  .oProperty("deployment", OType.LINK, 30);
 	}
-	
+
+	@Override
+	public void applyRelationships(OSchemaHelper helper) {
+		super.applyRelationships(helper);
+		helper.setupRelationship(ByteArrayEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
+	}
+
 	@Statement
 	public void deleteExceptionByteArraysByIds(OPersistenceSession session, Map<String, ?> param) {
 		delete(session, param);
