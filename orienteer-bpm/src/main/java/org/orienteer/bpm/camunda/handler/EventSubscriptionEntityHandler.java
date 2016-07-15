@@ -81,7 +81,7 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	public List<EventSubscriptionEntity> selectEventSubscriptionsByNameAndExecution(OPersistenceSession session, final ListQueryParameterObject parameter) {
 		Map<String, String> map=((Map<String, String>)parameter.getParameter());
 		List<EventSubscriptionEntity> result=new ArrayList<EventSubscriptionEntity>();
-		ExecutionEntity entity = HandlersManager.get().getHandler(ExecutionEntity.class).read(map.get("execution.id"), session);
+		ExecutionEntity entity = HandlersManager.get().getHandler(ExecutionEntity.class).read(map.get("executionId"), session);
 	    if(entity==null){
 	      return result;
 	    }
