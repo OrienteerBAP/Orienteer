@@ -207,6 +207,6 @@ li.fullscreen div.panel.panel-default{
 
 li.fullscreen div.panel.panel-default div.panel-body{
 	height: 100%;
-	display: table-row;
+	/* display: table-row; */
 	overflow: auto;
 }

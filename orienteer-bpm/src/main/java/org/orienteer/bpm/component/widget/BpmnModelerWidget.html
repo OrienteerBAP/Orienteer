@@ -1,5 +1,7 @@
 <wicket:head>
 <style>
+
+
 .modeler {
 	height: 600px;
 }
@@ -8,10 +10,18 @@
 	height: 100%;
 }
 
+.fullscreen .modeler-form {
+	position: inherit;
+	height: 100%
+}
+
+.fullscreen .modeler {
+	height: 100%;
+}
 
 .buttons {
   position: relative;
-  bottom: 2em;
+  bottom: 4em;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -40,7 +50,7 @@
 </style>
 </wicket:head>
 <wicket:extend>
-<form wicket:id="form">
+<form wicket:id="form" class="modeler-form">
 <input wicket:id="xml" type="hidden"/>
 <div class="content modeler">
 	<div class="canvas"></div>
