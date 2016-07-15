@@ -30,7 +30,7 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 			  .oProperty("processInstanceId", OType.STRING, 50)
 			  .oProperty("caseExecutionId", OType.STRING, 60)
 			  .oProperty("caseInstanceId", OType.STRING, 70)
-			  .oProperty("task", OType.STRING, 80)
+			  .oProperty("task", OType.LINK, 80).assignVisualization("listbox")
 			  .oProperty("byteArrayValueId", OType.STRING, 90)
 			  .oProperty("doubleValue", OType.DOUBLE, 100)
 			  .oProperty("longValue", OType.LONG, 110)
