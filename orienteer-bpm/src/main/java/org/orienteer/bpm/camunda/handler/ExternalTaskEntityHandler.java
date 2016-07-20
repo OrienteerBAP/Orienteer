@@ -27,20 +27,20 @@ public class ExternalTaskEntityHandler extends AbstractEntityHandler<ExternalTas
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("topicName", OType.STRING, 10)
-			  .oProperty("workerId", OType.STRING, 20)
-			  .oProperty("retries", OType.INTEGER, 30)
+		helper.oProperty("topicName", OType.STRING, 10).markAsDocumentName().markDisplayable()
+			  .oProperty("workerId", OType.STRING, 20).markDisplayable()
+			  .oProperty("retries", OType.INTEGER, 30).markDisplayable()
 			  .oProperty("errorMessage", OType.STRING, 40)
 			  .oProperty("lockExpirationTime", OType.DATETIME, 50)
 			  .oProperty("suspensionState", OType.INTEGER, 60)
 			  .oProperty("execution", OType.LINK, 70).assignVisualization("listbox")
-			  .oProperty("processInstanceId", OType.STRING, 80)
-			  .oProperty("processDefinition", OType.LINK, 90).assignVisualization("listbox")
+			  .oProperty("processInstanceId", OType.STRING, 80).markDisplayable()
+			  .oProperty("processDefinition", OType.LINK, 90).assignVisualization("listbox").markDisplayable()
 			  .oProperty("processDefinitionKey", OType.STRING, 100)
 			  .oProperty("activityId", OType.STRING, 110)
 			  .oProperty("activityInstanceId", OType.STRING, 120)
 //			  .oProperty("tenantId", OType.STRING, 130) // Tenants are not supported
-			  .oProperty("priority", OType.LONG, 140);
+			  .oProperty("priority", OType.LONG, 140).markDisplayable();
 	}
 
 	@Override

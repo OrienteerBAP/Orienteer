@@ -34,6 +34,7 @@ import org.camunda.bpm.engine.impl.util.ClockUtil;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.Job;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
 import org.camunda.bpm.model.bpmn.Bpmn;
@@ -308,6 +309,13 @@ public class TestBPMModule {
 		for(ODocument doc : db.browseClass(TaskEntityHandler.OCLASS_NAME)){
 			System.out.println("Task: "+doc);
 		}
+		List<Task> tasks = processEngineRule.getTaskService().createTaskQuery().taskAssignee("admin").processInstanceId(processInstance.getId()).list();
+		assertNotNull(tasks);
+		assertFalse(tasks.isEmpty());
+		assertEquals(1, tasks.size());
+		Task task = tasks.get(0);
+		processEngineRule.getTaskService().complete(task.getId());
+		assertProcessEnded(processInstance.getId());
 	}
 	
 

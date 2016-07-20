@@ -28,24 +28,24 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
-        helper.oProperty("name", OType.STRING, 20)
+        helper.oProperty("name", OType.STRING, 20).markAsDocumentName().markDisplayable()
                 .oProperty("parentTask", OType.LINK, 30).assignVisualization("listbox")
                 .oProperty("childTasks", OType.LINKLIST, 31).assignVisualization("table")
-                .oProperty("description", OType.STRING, 40)
-                .oProperty("priority", OType.INTEGER, 50)
-                .oProperty("createTime", OType.DATETIME, 60)
-                .oProperty("owner", OType.STRING, 70)
-                .oProperty("assignee", OType.LINK, 80)
+                .oProperty("description", OType.STRING, 40).markDisplayable()
+                .oProperty("priority", OType.INTEGER, 50).markDisplayable()
+                .oProperty("createTime", OType.DATETIME, 60).markDisplayable()
+                .oProperty("owner", OType.STRING, 70).markDisplayable()
+                .oProperty("assignee", OType.LINK, 80).markDisplayable()
                 .oProperty("delegationStateString", OType.STRING, 90)
                 .oProperty("execution", OType.LINK, 100).assignVisualization("listbox")
-                .oProperty("processInstanceId", OType.STRING, 110)
+                .oProperty("processInstanceId", OType.STRING, 110).markAsLinkToParent().markDisplayable()
                 .oProperty("processDefinition", OType.LINK, 120)
                 .oProperty("caseExecutionId", OType.STRING, 130)
                 .oProperty("caseInstanceId", OType.STRING, 140)
                 .oProperty("caseDefinitionId", OType.STRING, 150)
                 .oProperty("taskDefinitionKey", OType.STRING, 160)
-                .oProperty("dueDate", OType.DATETIME, 170)
-                .oProperty("followUpDate", OType.DATETIME, 180)
+                .oProperty("dueDate", OType.DATETIME, 170).markDisplayable()
+                .oProperty("followUpDate", OType.DATETIME, 180).markDisplayable()
                 .oProperty("suspensionState", OType.INTEGER, 190)
                 .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table");
 //                .oProperty("tenantId", OType.STRING, 200); // Tenants are not supported
