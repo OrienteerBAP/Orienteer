@@ -71,6 +71,11 @@
         </dependency>-->
         <!-- <dependency>
             <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-bpm</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
             <artifactId>orienteer-devutils</artifactId>
             <version>${dollar}{orienteer.version}</version>
         </dependency>-->
