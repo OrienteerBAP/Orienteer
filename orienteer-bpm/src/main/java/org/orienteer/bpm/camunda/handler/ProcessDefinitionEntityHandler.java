@@ -29,11 +29,11 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
-		helper.oProperty("name", OType.STRING, 10).markAsDocumentName().notNull(true)
-			  .oProperty("key", OType.STRING, 30).notNull(true)
+		helper.oProperty("name", OType.STRING, 10).markDisplayable().markAsDocumentName().notNull(true)
+			  .oProperty("key", OType.STRING, 30).notNull(true).markDisplayable()
 		      .oProperty("resourceName", OType.STRING, 35)
-			  .oProperty("category", OType.STRING, 40)
-			  .oProperty("deployment", OType.LINK, 60).assignVisualization("listbox")
+			  .oProperty("category", OType.STRING, 40).markDisplayable()
+			  .oProperty("deployment", OType.LINK, 60).assignVisualization("listbox").markDisplayable().markAsLinkToParent()
 			  .oProperty("executions", OType.LINKLIST, 70).assignVisualization("table")
 			  .oProperty("suspensionState", OType.INTEGER, 80).defaultValue("1").notNull()
 		      .oProperty("tasks", OType.LINKLIST, 90).assignVisualization("table");

@@ -10,6 +10,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -29,6 +30,8 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> implements ISecuredComponent
 {
 	private static final long serialVersionUID = 1L;
+	
+	private boolean forceCommit = false;
 
 	public SaveODocumentCommand(
 			OrienteerStructureTable<ODocument, ?> structureTable,
@@ -49,6 +52,12 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 		ODocument doc = getModelObject();
 		if(doc.getIdentity().isNew()) realizeMandatory(doc);
 		doc.save();
+		if(forceCommit) {
+			ODatabaseDocument db = getDatabase();
+			boolean active = db.getTransaction().isActive();
+			db.commit();
+			if(active) db.begin();
+		}
         super.onClick(target);
 	}
 	
@@ -63,6 +72,15 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 				}
 			}
 		}
+	}
+	
+	public boolean isForceCommit() {
+		return forceCommit;
+	}
+
+	public SaveODocumentCommand setForceCommit(boolean forceCommit) {
+		this.forceCommit = forceCommit;
+		return this;
 	}
 
 	@Override

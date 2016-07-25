@@ -8,6 +8,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.OrienteerDataTable.MetaContextItem;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -16,6 +17,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class SaveODocumentsCommand extends AbstractSaveCommand<ODocument>
 {
 	private OrienteerDataTable<ODocument, ?> table;
+	
+	private boolean forceCommit = false;
 	
 	public SaveODocumentsCommand(OrienteerDataTable<ODocument, ?> table,
 			IModel<DisplayMode> displayModeModel)
@@ -38,7 +41,22 @@ public class SaveODocumentsCommand extends AbstractSaveCommand<ODocument>
 				visit.dontGoDeeper();
 			}
 		});
+		if(forceCommit) {
+			ODatabaseDocument db = getDatabase();
+			boolean active = db.getTransaction().isActive();
+			db.commit();
+			if(active) db.begin();
+		}
 		super.onClick(target);
+	}
+	
+	public boolean isForceCommit() {
+		return forceCommit;
+	}
+
+	public SaveODocumentsCommand setForceCommit(boolean forceCommit) {
+		this.forceCommit = forceCommit;
+		return this;
 	}
 	
 	

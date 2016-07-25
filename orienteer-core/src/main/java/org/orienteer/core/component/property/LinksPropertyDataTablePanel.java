@@ -42,14 +42,18 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 	
-	public LinksPropertyDataTablePanel(String id, IModel<ODocument> documentModel, IModel<OProperty> property)
-	{
-		this(id, documentModel, property.getObject());
-	}
+	private IModel<OProperty> propertyModel;
 	
 	public LinksPropertyDataTablePanel(String id, IModel<ODocument> documentModel, OProperty property)
 	{
+		this(id, documentModel, new OPropertyModel(property));
+	}
+	
+	public LinksPropertyDataTablePanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
+	{
 		super(id, documentModel);
+		this.propertyModel = propertyModel;
+		OProperty property = propertyModel.getObject();
 		OClass linkedClass = property.getLinkedClass();
 		boolean isCalculable = CustomAttributes.CALCULABLE.getValue(property, false);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
@@ -57,12 +61,11 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true, modeModel), provider, 20);
-		final OPropertyNamingModel propertyNamingModel = new OPropertyNamingModel(property);
+		final OPropertyNamingModel propertyNamingModel = new OPropertyNamingModel(propertyModel);
 		table.setCaptionModel(propertyNamingModel);
 		SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
 		if(!isCalculable)
 		{
-			OPropertyModel propertyModel = new OPropertyModel(property);
 			table.addCommand(new CreateODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
 			table.addCommand(new EditODocumentsCommand(table, modeModel, linkedClass).add(securityBehaviour));
 			table.addCommand(new SaveODocumentsCommand(table, modeModel).add(securityBehaviour));
@@ -84,6 +87,12 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 			}
 		}));
 		add(table);
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		setVisible(propertyModel.getObject()!=null && propertyModel.getObject().getLinkedClass()!=null);
 	}
 
 }

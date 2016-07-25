@@ -1,8 +1,13 @@
 package org.orienteer.bpm.camunda.handler;
 
+import com.github.raymanrt.orientqb.query.Operator;
+import com.github.raymanrt.orientqb.query.Parameter;
+import com.github.raymanrt.orientqb.query.core.AbstractQuery;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import org.camunda.bpm.engine.impl.TaskQueryImpl;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
@@ -10,6 +15,9 @@ import org.camunda.bpm.engine.task.TaskQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
+import static com.github.raymanrt.orientqb.query.Clause.clause;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -38,7 +46,7 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
                 .oProperty("assignee", OType.LINK, 80).markDisplayable()
                 .oProperty("delegationStateString", OType.STRING, 90)
                 .oProperty("execution", OType.LINK, 100).assignVisualization("listbox")
-                .oProperty("processInstanceId", OType.STRING, 110).markAsLinkToParent().markDisplayable()
+                .oProperty("processInstance", OType.LINK, 110).markAsLinkToParent().markDisplayable()
                 .oProperty("processDefinition", OType.LINK, 120)
                 .oProperty("caseExecutionId", OType.STRING, 130)
                 .oProperty("caseInstanceId", OType.STRING, 140)
@@ -58,8 +66,9 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "parentTask", TaskEntityHandler.OCLASS_NAME, "childTasks");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "childTasks", TaskEntityHandler.OCLASS_NAME, "parentTask");
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME, "tasks");
+        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "processInstance", ExecutionEntityHandler.OCLASS_NAME, "tasks");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "variables", VariableInstanceEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
     }
     
     @Override
@@ -70,6 +79,8 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
     															"caseInstanceId", "taskDefinitionKey", 
     															"dueDate", "followUpDate"));
     	mappingFromEntityToDoc.put("assignee", "assignee.name");
+    	//For TaskQuery
+    	mappingFromQueryToDoc.put("taskId", "id");
     }
     
     @Override
@@ -112,4 +123,18 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
     public List<TaskEntity> selectTaskByQueryCriteria(OPersistenceSession session, TaskQuery query) {
         return query(session, query);
     }
+    
+    /*@Override
+    protected void enrichWhereByBean(OPersistenceSession session, AbstractQuery q, OClass schemaClass, Object query,
+    		List<Object> args, List<String> ignore)
+    		throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    	super.enrichWhereByBean(session, q, schemaClass, query, args, ignore);
+    	if(query instanceof TaskQueryImpl) {
+    		TaskQueryImpl taskQuery = (TaskQueryImpl)query;
+    		if(taskQuery.getTaskId()!=null) {
+    			where(q, clause("id", Operator.EQ, Parameter.PARAMETER));
+    			args.add(taskQuery.getTaskId());
+    		}
+    	}
+    }*/
 }
