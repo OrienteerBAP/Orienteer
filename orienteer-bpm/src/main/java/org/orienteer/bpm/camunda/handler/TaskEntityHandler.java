@@ -55,7 +55,8 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
                 .oProperty("dueDate", OType.DATETIME, 170).markDisplayable()
                 .oProperty("followUpDate", OType.DATETIME, 180).markDisplayable()
                 .oProperty("suspensionState", OType.INTEGER, 190)
-                .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table");
+                .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table")
+        	.defaultTab("form");
 //                .oProperty("tenantId", OType.STRING, 200); // Tenants are not supported
     }
     

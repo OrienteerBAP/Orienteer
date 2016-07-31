@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.basic.Label;
@@ -21,6 +22,7 @@ import org.camunda.bpm.engine.task.Task;
 import org.camunda.bpm.engine.variable.impl.VariableMapImpl;
 import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
+import org.orienteer.bpm.component.command.CompleteTaskCommand;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentCommand;
@@ -97,6 +99,13 @@ public class FormWidget extends AbstractModeAwareWidget<ODocument> {
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, getModeModel()));
 		propertiesStructureTable.addCommand(saveODocumentCommand 
 												= new SaveODocumentCommand(propertiesStructureTable, getModeModel()).setForceCommit(true));
+		propertiesStructureTable.addCommand(new CompleteTaskCommand(propertiesStructureTable, getModel()) {
+			@Override
+			public void onClick(AjaxRequestTarget target) {
+				if(saveODocumentCommand.determineVisibility()) saveODocumentCommand.onClick(target);
+				super.onClick(target);
+			}
+		});
 	}
 	
 
@@ -109,23 +118,6 @@ public class FormWidget extends AbstractModeAwareWidget<ODocument> {
 	protected IModel<String> getDefaultTitleModel() {
 		return new NvlModel<>(new ODocumentPropertyModel<String>(getModel(), "name"), 
 							  new ResourceModel("widget.form"));
-	}
-	
-	@Override
-	public void onActionPerformed(ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
-		if(saveODocumentCommand.equals(event.getCommand()) && wicketEvent.getType().equals(Broadcast.BUBBLE)) {
-			ProcessEngine processEngine = BpmPlatform.getDefaultProcessEngine();
-			TaskService taskService = processEngine.getTaskService();
-			String taskId = getModelObject().field("id");
-			String var = formKey.getVariableName();
-			Map<String, Object> variables = null;
-			if(!Strings.isEmpty(var)) {
-				variables = new VariableMapImpl();
-				variables.put(var, formDocumentModel.getIdentity().toString());
-			}
-			taskService.complete(taskId, variables);
-			setResponsePage(new ODocumentPage(formDocumentModel));
-		}
 	}
 	
 	@Override

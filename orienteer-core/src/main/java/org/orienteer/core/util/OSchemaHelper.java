@@ -230,6 +230,13 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		return this;
 	}
 	
+	public OSchemaHelper defaultTab(String tab)
+	{
+		checkOClass();
+		CustomAttributes.TAB.setValue(lastClass, tab);
+		return this;
+	}
+	
 	public OSchemaHelper assignNameAndParent(String nameField, String parentField)
 	{
 		checkOClass();
