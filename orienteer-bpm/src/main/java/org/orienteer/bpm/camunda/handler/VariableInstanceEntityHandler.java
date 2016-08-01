@@ -31,7 +31,7 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 			  .oProperty("caseExecutionId", OType.STRING, 60)
 			  .oProperty("caseInstanceId", OType.STRING, 70)
 			  .oProperty("task", OType.LINK, 80).assignVisualization("listbox")
-			  .oProperty("byteArrayValueId", OType.STRING, 90)
+			  .oProperty("byteArrayValue", OType.LINK, 90)
 			  .oProperty("doubleValue", OType.DOUBLE, 100)
 			  .oProperty("longValue", OType.LONG, 110)
 			  .oProperty("textValue", OType.STRING, 120)
@@ -45,6 +45,7 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 		super.applyRelationships(helper);
 		helper.setupRelationship(VariableInstanceEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME, "variables");
 		helper.setupRelationship(VariableInstanceEntityHandler.OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "variables");
+		helper.setupRelationship(VariableInstanceEntityHandler.OCLASS_NAME, "byteArrayValue", ByteArrayEntityHandler.OCLASS_NAME);
 	}
 
 	@Statement

@@ -313,10 +313,31 @@ public class TestBPMModule {
 		assertNotNull(tasks);
 		assertFalse(tasks.isEmpty());
 		assertEquals(1, tasks.size());
+		tasks = processEngineRule.getTaskService().createTaskQuery().taskCandidateGroup("writer").processInstanceId(processInstance.getId()).list();
+		assertNotNull(tasks);
+		assertFalse(tasks.isEmpty());
+		assertEquals(1, tasks.size());
 		Task task = tasks.get(0);
 		processEngineRule.getTaskService().complete(task.getId());
 		assertProcessEnded(processInstance.getId());
 	}
+	
+	private static boolean touchedFromScript = false; 
+	public static void touchFromScript() {
+		touchedFromScript = true;
+	}
+	
+	@Test
+	@Deployment(resources = {"execute-script.bpmn"})
+	public void testExecuteScriptSimple() {
+		touchedFromScript=false;
+		Map<String, Object> variables = new HashMap<>();
+		variables.put("script", "org.orienteer.bpm.TestBPMModule.touchFromScript();");
+		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("execute-script", variables);
+		assertProcessEnded(processInstance.getId());
+		assertTrue(touchedFromScript);
+	}
+	
 	
 
 	private static class InterruptTask extends TimerTask {

@@ -42,7 +42,7 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
                 .oProperty("description", OType.STRING, 40).markDisplayable()
                 .oProperty("priority", OType.INTEGER, 50).markDisplayable()
                 .oProperty("createTime", OType.DATETIME, 60).markDisplayable()
-                .oProperty("owner", OType.STRING, 70).markDisplayable()
+                .oProperty("owner", OType.LINK, 70).markDisplayable()
                 .oProperty("assignee", OType.LINK, 80).markDisplayable()
                 .oProperty("delegationStateString", OType.STRING, 90)
                 .oProperty("execution", OType.LINK, 100).assignVisualization("listbox")
@@ -56,6 +56,7 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
                 .oProperty("followUpDate", OType.DATETIME, 180).markDisplayable()
                 .oProperty("suspensionState", OType.INTEGER, 190)
                 .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table")
+                .oProperty("candidatesIdentityLinks", OType.LINKLIST, 200).assignVisualization("table")
         	.defaultTab("form");
 //                .oProperty("tenantId", OType.STRING, 200); // Tenants are not supported
     }
@@ -64,12 +65,14 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
     public void applyRelationships(OSchemaHelper helper) {
     	super.applyRelationships(helper);
     	helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "assignee", UserEntityHandler.OCLASS_NAME, "assignedTasks");
+    	helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "owner", UserEntityHandler.OCLASS_NAME, "ownedTasks");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "parentTask", TaskEntityHandler.OCLASS_NAME, "childTasks");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "childTasks", TaskEntityHandler.OCLASS_NAME, "parentTask");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "processInstance", ExecutionEntityHandler.OCLASS_NAME, "tasks");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "variables", VariableInstanceEntityHandler.OCLASS_NAME, "task");
         helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
+        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "candidatesIdentityLinks", IdentityLinkEntityHandler.OCLASS_NAME, "task");
     }
     
     @Override

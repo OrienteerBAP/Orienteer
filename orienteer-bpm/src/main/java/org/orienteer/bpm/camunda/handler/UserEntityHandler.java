@@ -6,6 +6,7 @@ import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.metadata.security.OIdentity;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -38,12 +39,16 @@ public class UserEntityHandler extends AbstractEntityHandler<UserEntity> {
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		helper.oClass(OCLASS_NAME)
-				.oProperty("assignedTasks", OType.LINKLIST, 10).assignVisualization("table");
+				.oProperty("assignedTasks", OType.LINKLIST, 10).assignVisualization("table")
+				.oProperty("ownedTasks", OType.LINKLIST, 20).assignVisualization("table")
+				.oProperty("availableTasks", OType.LINKLIST, 20).assignVisualization("table");
 	}
 
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "assignee", UserEntityHandler.OCLASS_NAME, "assignedTasks");
+		helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "owner", UserEntityHandler.OCLASS_NAME, "ownedTasks");
+		helper.setupRelationship(IdentityLinkEntityHandler.OCLASS_NAME, "user", UserEntityHandler.OCLASS_NAME, "availableTasks");
 	}
 	
 	

@@ -10,7 +10,7 @@
       <bpmn:incoming>SequenceFlow_1qtgci2</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_1qtgci2" sourceRef="UserTask_1v549kj" targetRef="EndEvent_1fitnix" />
-    <bpmn:userTask id="UserTask_00ylkjs" name="Create Function" camunda:formKey="orienteer:OFunction:function" camunda:assignee="admin">
+    <bpmn:userTask id="UserTask_00ylkjs" name="Create Function" camunda:formKey="orienteer:OFunction:function" camunda:assignee="admin" camunda:candidateGroups="writer">
       <bpmn:incoming>SequenceFlow_1xxfahj</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0gntkfi</bpmn:outgoing>
     </bpmn:userTask>

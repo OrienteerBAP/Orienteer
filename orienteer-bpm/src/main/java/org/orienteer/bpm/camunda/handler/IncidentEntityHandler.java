@@ -40,6 +40,12 @@ public class IncidentEntityHandler extends AbstractEntityHandler<IncidentEntity>
 //                .oProperty("tenantId", OType.STRING, 120) // Tenants are not supported
                 .oProperty("jobDefinitionId", OType.STRING, 130);
     }
+    
+    @Override
+    public void create(IncidentEntity entity, OPersistenceSession session) {
+    	super.create(entity, session);
+    	logger.warn("Incident happened: "+entity);
+    }
 
     @Override
     public void applyRelationships(OSchemaHelper helper) {

@@ -9,7 +9,7 @@
       <bpmn:incoming>SequenceFlow_0wyuui5</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="SequenceFlow_0wyuui5" sourceRef="UserTask_1jigcla" targetRef="EndEvent_12k28tp" />
-    <bpmn:userTask id="UserTask_1jigcla" name="User Task" camunda:assignee="admin">
+    <bpmn:userTask id="UserTask_1jigcla" name="User Task" camunda:assignee="admin" camunda:candidateGroups="writer">
       <bpmn:incoming>SequenceFlow_0nintn1</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0wyuui5</bpmn:outgoing>
     </bpmn:userTask>

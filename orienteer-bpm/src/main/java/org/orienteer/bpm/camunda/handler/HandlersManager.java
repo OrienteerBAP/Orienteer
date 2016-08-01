@@ -48,7 +48,9 @@ public final class HandlersManager {
 				 new ExternalTaskEntityHandler(),
 				 new TenantEntityHandler(),
 				 new MeterLogEntityHandler(), 
-				 new UserEntityHandler());
+				 new UserEntityHandler(),
+				 new GroupEntityHandler(),
+				 new IdentityLinkEntityHandler());
 	}
 	
 	public static HandlersManager get() {
