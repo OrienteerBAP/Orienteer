@@ -338,6 +338,17 @@ public class TestBPMModule {
 		assertTrue(touchedFromScript);
 	}
 	
+	@Test
+	@Deployment(resources = {"execute-script.bpmn"})
+	public void testExecuteOrientDBScript() {
+		touchedFromScript=false;
+		Map<String, Object> variables = new HashMap<>();
+		variables.put("script", "org.orienteer.bpm.TestBPMModule.touchFromScript();");
+		ProcessInstance processInstance = processEngineRule.getRuntimeService().startProcessInstanceByKey("execute-script", variables);
+		assertProcessEnded(processInstance.getId());
+		assertTrue(touchedFromScript);
+	}
+	
 	
 
 	private static class InterruptTask extends TimerTask {
