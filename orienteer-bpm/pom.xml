@@ -77,49 +77,9 @@
 			<version>0.2.0</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.webjars.bower</groupId>
-		    <artifactId>bpmn-js</artifactId>
-		    <version>0.16.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.webjars.npm</groupId>
-		    <artifactId>bpmn-js-properties-panel</artifactId>
-		    <version>0.8.2</version>
-		    <exclusions>
-		    	<exclusion>
-				    <groupId>org.webjars.npm</groupId>
-				    <artifactId>component-event</artifactId>
-		    	</exclusion>
-		    	<exclusion>
-		            <groupId>org.webjars.npm</groupId>
-		            <artifactId>selection-update</artifactId>
-		        </exclusion>
-		
-		        <exclusion>
-		            <groupId>org.webjars.npm</groupId>
-		            <artifactId>scroll-tabs</artifactId>
-		        </exclusion>
-		
-		        <exclusion>
-		            <groupId>org.webjars.npm</groupId>
-		            <artifactId>ids</artifactId>
-		        </exclusion>
-		
-		        <exclusion>
-		            <groupId>org.webjars.npm</groupId>
-		            <artifactId>inherits</artifactId>
-		        </exclusion>
-		
-		        <exclusion>
-		            <groupId>org.webjars.npm</groupId>
-		            <artifactId>min-dom</artifactId>
-		        </exclusion>
-		
-		        <exclusion>
-		            <groupId>org.webjars.npm</groupId>
-		            <artifactId>lodash</artifactId>
-		        </exclusion>
-		    </exclusions>
+			<groupId>org.orienteer.wicket-bpmn-io</groupId>
+			<artifactId>wicket-bpmn-io</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<!--<dependency>
 		    <groupId>org.webjars.npm</groupId>
