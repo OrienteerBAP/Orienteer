@@ -2,17 +2,13 @@ package org.orienteer.bpm.camunda.handler;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.DbEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.PropertyEntity;
-import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
@@ -50,7 +46,10 @@ public final class HandlersManager {
 				 new MeterLogEntityHandler(), 
 				 new UserEntityHandler(),
 				 new GroupEntityHandler(),
-				 new IdentityLinkEntityHandler());
+				 new IdentityLinkEntityHandler(),
+				 new HistoricVariableInstanceEntityHandler(),
+				 new HistoricProcessInstanceEventEntityHandler(),
+				 new HistoricActivityInstanceEventEntityHandler());
 	}
 	
 	public static HandlersManager get() {

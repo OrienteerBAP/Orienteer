@@ -7,7 +7,7 @@
     <!-- <configuration>org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration</configuration> -->
     <configuration>org.orienteer.bpm.camunda.OProcessEngineConfiguration</configuration>
     <properties>
-	    <property name="history">none</property>
+	    <property name="history">audit</property>
 	    <!-- To be supported -->
 	    <property name="dbMetricsReporterActivate">false</property>
 	    <property name="executionTreePrefetchEnabled">false</property>

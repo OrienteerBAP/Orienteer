@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.history.event.HistoricProcessInstanceEventEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
@@ -36,7 +37,8 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 			  .oProperty("deployment", OType.LINK, 60).assignVisualization("listbox").markDisplayable().markAsLinkToParent()
 			  .oProperty("executions", OType.LINKLIST, 70).assignVisualization("table")
 			  .oProperty("suspensionState", OType.INTEGER, 80).defaultValue("1").notNull()
-		      .oProperty("tasks", OType.LINKLIST, 90).assignVisualization("table");
+		      .oProperty("tasks", OType.LINKLIST, 90).assignVisualization("table")
+			  .oProperty("historicProcessInstances", OType.LINKLIST, 100).assignVisualization("table");
 	}
 	
 	@Override
@@ -45,6 +47,7 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "executions", ExecutionEntityHandler.OCLASS_NAME, "processDefinition");
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "processDefinition");
+		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "historicProcessInstances", HistoricProcessInstanceEventEntityHandler.OCLASS_NAME, "processDefinition");
 	}
 	
 	@Statement
