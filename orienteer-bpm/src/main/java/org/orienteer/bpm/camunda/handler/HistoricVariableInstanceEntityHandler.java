@@ -44,6 +44,12 @@ public class HistoricVariableInstanceEntityHandler extends AbstractEntityHandler
                 .oProperty("textValue", OType.STRING, 180)
                 .oProperty("textValue2", OType.STRING, 190);
     }
+    
+    @Override
+    protected void initMapping(OPersistenceSession session) {
+    	super.initMapping(session);
+    	mappingConvertors.put("id", new NonUniqIdConverter("var:"));
+    }
 
     @Statement
     public List<HistoricVariableInstanceEntity> selectHistoricVariablesByProcessInstanceId(OPersistenceSession session, ListQueryParameterObject parameter) {

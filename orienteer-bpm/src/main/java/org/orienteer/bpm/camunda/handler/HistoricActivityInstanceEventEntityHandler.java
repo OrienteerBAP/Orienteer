@@ -2,6 +2,7 @@ package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricActivityInstanceEventEntity;
+import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 
@@ -38,5 +39,11 @@ public class HistoricActivityInstanceEventEntityHandler extends AbstractEntityHa
                 .oProperty("activityInstanceState", OType.INTEGER, 160)
                 .oProperty("sequenceCounter", OType.LONG, 170)
                 .oProperty("tenantId", OType.STRING, 180);
+    }
+    
+    @Override
+    protected void initMapping(OPersistenceSession session) {
+    	super.initMapping(session);
+    	mappingConvertors.put("id", new NonUniqIdConverter("a:"));
     }
 }

@@ -1,5 +1,6 @@
 package org.orienteer.bpm.camunda.handler;
 
+import com.google.common.base.Converter;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -53,6 +54,12 @@ public class HistoricProcessInstanceEventEntityHandler extends AbstractEntityHan
                 .oProperty("sequenceCounter", OType.INTEGER, 170)
                 .oProperty("tenantId", OType.STRING, 180);
 
+    }
+    
+    @Override
+    protected void initMapping(OPersistenceSession session) {
+    	super.initMapping(session);
+    	mappingConvertors.put("id", new NonUniqIdConverter("pi:"));
     }
 
     public void applyRelationships(OSchemaHelper helper) {

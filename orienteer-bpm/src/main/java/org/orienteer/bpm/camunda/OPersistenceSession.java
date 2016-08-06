@@ -61,22 +61,32 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 		super.fireEntityLoaded(object);
 		if(object instanceof DbEntity) {
 			DbEntity entity = (DbEntity) object;
-			cacheODocument(sourceDoc, entity.getId());
-			if(hasNeedInCache) entitiesCache.put(entity.getId(), entity);
+			cacheODocument(sourceDoc);
+			if(hasNeedInCache) entitiesCache.put((String) sourceDoc.field("id"), entity);
 		}
 	}
 	
-	public void cacheODocument(ODocument doc, String id) {
+	public void cacheODocument(ODocument doc) {
 		ORID orid = doc.getIdentity();
-		idToOIdentifiableCache.put(id, orid.isPersistent()?orid:doc);
+		idToOIdentifiableCache.put((String) doc.field("id"), orid.isPersistent()?orid:doc);
 	}
 	
-	public OIdentifiable lookupOIdentifiableForIdInCache(String id) {
-		return idToOIdentifiableCache.get(id);
+	/**
+	 * Lookup cached {@link OIdentifiable}
+	 * @param oid id of an entity stored in DB. Sometimes it's not the same as id of an entity.
+	 * @return cached {@link OIdentifiable}
+	 */
+	public OIdentifiable lookupOIdentifiableForIdInCache(String oid) {
+		return idToOIdentifiableCache.get(oid);
 	}
 	
-	public DbEntity lookupEntityInCache(String id) {
-		return entitiesCache.get(id);
+	/**
+	 * Lookup cached {@link DbEntity}
+	 * @param oid id of an entity stored in DB. Sometimes it's not the same as id of an entity.
+	 * @return cached {@link DbEntity}
+	 */
+	public DbEntity lookupEntityInCache(String oid) {
+		return entitiesCache.get(oid);
 	}
 	
 	@Override

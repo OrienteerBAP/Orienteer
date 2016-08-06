@@ -38,6 +38,7 @@ import com.github.raymanrt.orientqb.query.Parameter;
 import com.github.raymanrt.orientqb.query.Query;
 import com.github.raymanrt.orientqb.query.core.AbstractQuery;
 import com.gitub.raymanrt.orientqb.delete.Delete;
+import com.google.common.base.Converter;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.BiMap;
@@ -80,6 +81,10 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	 * Additional map to customize mapping especially from Query to doc queries
 	 */
 	protected Map<String, String> mappingFromQueryToDoc = new HashMap<>();
+	/**
+	 * Converters for changing value. Applied in both ways
+	 */
+	protected Map<String, Converter<Object, Object>> mappingConvertors = new HashMap<>();
 	
 	
 	private Map<String, Method> statementMethodsMapping = new HashMap<>();
@@ -120,7 +125,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	public void create(T entity, OPersistenceSession session) {
 		ODocument doc = mapToODocument(entity, null, session);
 		session.getDatabase().save(doc);
-		session.cacheODocument(doc, entity.getId());
+		session.cacheODocument(doc);
 	}
 	
 	@Override
@@ -131,11 +136,12 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	
 	@Override
 	public ODocument readAsDocument(String id, OPersistenceSession session) {
-		OIdentifiable oIdentifiable = session.lookupOIdentifiableForIdInCache(id);
+		String oid = (String) convertValueFromEntity("id", id);
+		OIdentifiable oIdentifiable = session.lookupOIdentifiableForIdInCache(oid);
 		if(oIdentifiable!=null) return oIdentifiable.getRecord();
 		else {
 			ODatabaseDocument db = session.getDatabase();
-			List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+getSchemaClass()+" where "+getPkField()+" = ?", 1), id);
+			List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+getSchemaClass()+" where "+getPkField()+" = ?", 1), oid);
 			return ret==null || ret.isEmpty()? null : ret.get(0);
 		}
 	}
@@ -151,11 +157,12 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	public void delete(T entity, OPersistenceSession session) {
 		ODatabaseDocument db = session.getDatabase();
 		String id = entity.getId();
-		OIdentifiable oIdentifiable = session.lookupOIdentifiableForIdInCache(id);
+		String oid = (String) convertValueFromEntity("id", id);
+		OIdentifiable oIdentifiable = session.lookupOIdentifiableForIdInCache(oid);
 		if(oIdentifiable!=null) {
 			db.delete(oIdentifiable.getIdentity());
 		} else {
-			db.command(new OCommandSQL("delete from "+getSchemaClass()+" where "+getPkField()+" = ?")).execute(id);
+			db.command(new OCommandSQL("delete from "+getSchemaClass()+" where "+getPkField()+" = ?")).execute(oid);
 		}
 	}
 	
@@ -211,6 +218,15 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		}
  	}
 	
+	protected Object convertValueToEntity(String entityFieldName, Object value) {
+		Converter<Object, Object> converter = mappingConvertors.get(entityFieldName);
+		return converter==null?value:converter.reverse().convert(value);
+	}
+	
+	protected Object convertValueFromEntity(String entityFieldName, Object value) {
+		Converter<Object, Object> converter = mappingConvertors.get(entityFieldName);
+		return converter==null?value:converter.convert(value);
+	}
 	
 	
 	@Override
@@ -225,7 +241,9 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 				entity = getEntityClass().newInstance();
 			}
 			for(Map.Entry<String, String> mapToEntity : mappingFromDocToEntity.entrySet()) {
-				PropertyResolver.setValue(mapToEntity.getValue(), entity, doc.field(mapToEntity.getKey()), PROPERTY_RESOLVER_CONVERTEER);
+				Object valueToSet = doc.field(mapToEntity.getKey());
+				valueToSet = convertValueToEntity(mapToEntity.getValue(), valueToSet);
+				PropertyResolver.setValue(mapToEntity.getValue(), entity, valueToSet, PROPERTY_RESOLVER_CONVERTEER);
 			}
 			if(entity instanceof HasDbRevision) {
 				((HasDbRevision)entity).setRevision(doc.getVersion());
@@ -280,7 +298,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 						doc.field(docField, (Object) null);
 					}
 				} else {
-					doc.field(docField, value);
+					doc.field(docField, convertValueFromEntity(mapToDoc.getKey(), value));
 				}
 			}
 		}
@@ -436,7 +454,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 				Object value = pd.getReadMethod().invoke(query);
 				if(value!=null) {
 					where(q, clause(docMapping, Operator.EQ, Parameter.PARAMETER));
-					args.add(value);
+					args.add(convertValueFromEntity(pd.getName(), value));
 				}
 			}
 		}
@@ -452,7 +470,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 				Object value = entry.getValue();
 				if(value!=null) {
 					where(q, clause(docMapping, Operator.EQ, Parameter.PARAMETER));
-					args.add(value);
+					args.add(convertValueFromEntity(entry.getKey(), value));
 				}
 			}
 		}

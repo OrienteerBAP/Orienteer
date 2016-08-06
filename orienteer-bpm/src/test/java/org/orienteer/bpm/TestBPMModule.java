@@ -28,6 +28,7 @@ import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
+import org.camunda.bpm.engine.impl.cfg.IdGenerator;
 import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.util.ClockUtil;
@@ -74,7 +75,7 @@ public class TestBPMModule {
 		assertNotNull(module);
 		assertTrue(module instanceof BPMModule);
 	}
-
+	
 	@Test
 	public void testDeployProcess() {
 
