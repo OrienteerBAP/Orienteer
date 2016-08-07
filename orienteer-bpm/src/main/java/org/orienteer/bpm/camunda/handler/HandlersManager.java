@@ -49,7 +49,8 @@ public final class HandlersManager {
 				 new IdentityLinkEntityHandler(),
 				 new HistoricVariableInstanceEntityHandler(),
 				 new HistoricProcessInstanceEventEntityHandler(),
-				 new HistoricActivityInstanceEventEntityHandler());
+				 new HistoricActivityInstanceEventEntityHandler(),
+				 new HistoricTaskInstanceEventEntityHandler());
 	}
 	
 	public static HandlersManager get() {

@@ -1,6 +1,5 @@
 package org.orienteer.bpm.camunda.handler;
 
-import com.google.common.base.Converter;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
