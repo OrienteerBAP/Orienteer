@@ -50,6 +50,7 @@ public final class HandlersManager {
 				 new HistoricVariableInstanceEntityHandler(),
 				 new HistoricProcessInstanceEventEntityHandler(),
 				 new HistoricActivityInstanceEventEntityHandler(),
+				 new HistoricActivityInstanceEntityHandler(),
 				 new HistoricTaskInstanceEventEntityHandler(),
 				 new HistoricBatchEntityHandler(),
 				 new HistoricCaseActivityInstanceEventEntityHandler(),
