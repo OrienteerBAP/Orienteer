@@ -50,7 +50,17 @@ public final class HandlersManager {
 				 new HistoricVariableInstanceEntityHandler(),
 				 new HistoricProcessInstanceEventEntityHandler(),
 				 new HistoricActivityInstanceEventEntityHandler(),
-				 new HistoricTaskInstanceEventEntityHandler());
+				 new HistoricTaskInstanceEventEntityHandler(),
+				 new HistoricBatchEntityHandler(),
+				 new HistoricCaseActivityInstanceEventEntityHandler(),
+				 new HistoricCaseInstanceEventEntityHandler(),
+				 new HistoricDecisionInputInstanceEntityHandler(),
+				 new HistoricDecisionInstanceEntityHandler(),
+				 new HistoricDecisionOutputInstanceEntityHandler(),
+		         new HistoricDetailEventEntityHandler(),
+				 new HistoricIdentityLinkLogEventEntityHandler(),
+				 new HistoricIncidentEventEntityHandler(),
+				 new HistoricJobLogEventEntityHandler());
 	}
 	
 	public static HandlersManager get() {
