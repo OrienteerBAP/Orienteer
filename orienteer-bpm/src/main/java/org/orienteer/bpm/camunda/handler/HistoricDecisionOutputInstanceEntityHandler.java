@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDecisionOutputInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.historic.HistoricEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  * Created by KMukhov on 07.08.16.
  */
-public class HistoricDecisionOutputInstanceEntityHandler extends AbstractEntityHandler<HistoricDecisionOutputInstanceEntity> {
+public class HistoricDecisionOutputInstanceEntityHandler extends HistoricEventHandler<HistoricDecisionOutputInstanceEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricDecisionOutputInstance";
 
@@ -22,9 +23,8 @@ public class HistoricDecisionOutputInstanceEntityHandler extends AbstractEntityH
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
-
-        helper.oProperty("decisionInstanceId", OType.STRING, 10)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+                .oProperty("decisionInstanceId", OType.STRING, 10)
                 .oProperty("clauseId", OType.STRING, 20)
                 .oProperty("clauseName", OType.STRING, 30)
                 .oProperty("ruleId", OType.STRING, 40)

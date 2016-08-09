@@ -2,12 +2,13 @@ package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricIncidentEventEntity;
+import org.orienteer.bpm.camunda.handler.historic.HistoricEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
  * Created by KMukhov on 07.08.16.
  */
-public class HistoricIncidentEventEntityHandler extends AbstractEntityHandler<HistoricIncidentEventEntity> {
+public class HistoricIncidentEventEntityHandler extends HistoricEventHandler<HistoricIncidentEventEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricIncidentEvent";
 
@@ -17,11 +18,7 @@ public class HistoricIncidentEventEntityHandler extends AbstractEntityHandler<Hi
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
-
-        helper.oProperty("processDefinitionId", OType.STRING, 10)
-                .oProperty("processInstanceId", OType.STRING, 20)
-                .oProperty("executionId", OType.STRING, 30)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("createTime", OType.DATETIME, 40)
                 .oProperty("endTime", OType.DATETIME, 50)
                 .oProperty("incidentMessage", OType.STRING, 60)

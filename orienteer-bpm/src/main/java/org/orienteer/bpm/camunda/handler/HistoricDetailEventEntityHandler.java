@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.history.HistoricDetailQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDetailEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.historic.HistoricEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Created by KMukhov on 07.08.16.
  */
-public class HistoricDetailEventEntityHandler extends AbstractEntityHandler<HistoricDetailEventEntity> {
+public class HistoricDetailEventEntityHandler extends HistoricEventHandler<HistoricDetailEventEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricDetailEvent";
 
@@ -23,20 +24,10 @@ public class HistoricDetailEventEntityHandler extends AbstractEntityHandler<Hist
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
-
-        helper.oProperty("processDefintionKey", OType.STRING, 10)
-                .oProperty("processDefinitionId", OType.STRING, 20)
-                .oProperty("processInstanceId", OType.STRING, 30)
-                .oProperty("executionId", OType.STRING, 40)
-                .oProperty("caseDefinitionKey", OType.STRING, 50)
-                .oProperty("caseDefintionId", OType.STRING, 60)
-                .oProperty("caseInstanceId", OType.STRING, 70)
-                .oProperty("caseExecutionId", OType.STRING, 80)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("timestamp", OType.DATETIME, 90)
                 .oProperty("activityInstanceId", OType.STRING, 100)
                 .oProperty("taskId", OType.STRING, 110)
-                .oProperty("sequenceCounter", OType.LONG, 120)
                 .oProperty("tenantId", OType.STRING, 130);
     }
 

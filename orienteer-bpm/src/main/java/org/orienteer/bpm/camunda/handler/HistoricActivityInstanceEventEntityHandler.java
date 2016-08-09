@@ -3,13 +3,13 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricActivityInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.historic.HistoricScopeInstanceEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
-
 
 /**
  * Created by kir on 06.08.16.
  */
-public class HistoricActivityInstanceEventEntityHandler extends AbstractEntityHandler<HistoricActivityInstanceEventEntity> {
+public class HistoricActivityInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricActivityInstanceEventEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricActivityInstanceEvent";
 
@@ -19,28 +19,20 @@ public class HistoricActivityInstanceEventEntityHandler extends AbstractEntityHa
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
-
-        helper.oProperty("parentActivityInstanceId", OType.STRING, 10)
-                .oProperty("processDefinitionKey", OType.STRING, 20)
-                .oProperty("processDefinitionId", OType.STRING, 30)
-                .oProperty("processInstanceId", OType.STRING, 40)
-                .oProperty("executionId", OType.STRING, 50)
-                .oProperty("activityId", OType.STRING, 60)
-                .oProperty("taskId", OType.STRING, 70)
-                .oProperty("calledProcessInstanceId", OType.STRING, 80)
-                .oProperty("calledCaseInstanceId", OType.STRING, 90)
-                .oProperty("activityName", OType.STRING, 100)
-                .oProperty("activityType", OType.STRING, 110)
-                .oProperty("taskAssignee", OType.STRING, 120)
-                .oProperty("startTime", OType.DATETIME, 130)
-                .oProperty("endTime", OType.DATETIME, 140)
-                .oProperty("durationInMillis", OType.LONG, 150)
-                .oProperty("activityInstanceState", OType.INTEGER, 160)
-                .oProperty("sequenceCounter", OType.LONG, 170)
-                .oProperty("tenantId", OType.STRING, 180);
+        helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
+                .oProperty("activityId", OType.STRING, 10)
+                .oProperty("activityName", OType.STRING, 20)
+                .oProperty("activityType", OType.STRING, 30)
+                .oProperty("activityInstanceId", OType.STRING, 40)
+                .oProperty("activityInstanceState", OType.INTEGER, 50)
+                .oProperty("parentActivityInstanceId", OType.STRING, 60)
+                .oProperty("calledProcessInstanceId", OType.STRING, 70)
+                .oProperty("calledCaseInstanceId", OType.STRING, 80)
+                .oProperty("taskId", OType.STRING, 90)
+                .oProperty("taskAssignee", OType.STRING, 100)
+                .oProperty("tenantId", OType.STRING, 110);
     }
-    
+
     @Override
     protected void initMapping(OPersistenceSession session) {
     	super.initMapping(session);

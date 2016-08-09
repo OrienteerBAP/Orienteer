@@ -9,6 +9,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricProcessInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.historic.HistoricScopeInstanceEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * Created by kir on 06.08.16.
  */
-public class HistoricProcessInstanceEventEntityHandler extends AbstractEntityHandler<HistoricProcessInstanceEventEntity> {
+public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricProcessInstanceEventEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricProcessInstanceEvent";
 
@@ -29,16 +30,12 @@ public class HistoricProcessInstanceEventEntityHandler extends AbstractEntityHan
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
-
-        helper.oProperty("parentActivityInstanceId", OType.STRING, 10)
-                .oProperty("processDefinitionKey", OType.STRING, 20)
+        helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
+                .oProperty("parentActivityInstanceId", OType.STRING, 10)
                 .oProperty("processDefinition", OType.LINK, 30).assignVisualization("listbox")
                                                                     .markAsLinkToParent()
                                                                     .markDisplayable()
                                                                     .markAsDocumentName()
-                .oProperty("processInstanceId", OType.STRING, 40)
-                .oProperty("executionId", OType.STRING, 50)
                 .oProperty("activityId", OType.STRING, 60)
                 .oProperty("taskId", OType.STRING, 70)
                 .oProperty("calledProcessInstanceId", OType.STRING, 80)
@@ -46,11 +43,7 @@ public class HistoricProcessInstanceEventEntityHandler extends AbstractEntityHan
                 .oProperty("activityName", OType.STRING, 100)
                 .oProperty("activityType", OType.STRING, 110)
                 .oProperty("taskAssignee", OType.STRING, 120)
-                .oProperty("startTime", OType.DATETIME, 130)
-                .oProperty("endTime", OType.DATETIME, 140)
-                .oProperty("durationInMillis", OType.INTEGER, 150)
                 .oProperty("activityInstanceState", OType.INTEGER, 160)
-                .oProperty("sequenceCounter", OType.INTEGER, 170)
                 .oProperty("tenantId", OType.STRING, 180);
 
     }

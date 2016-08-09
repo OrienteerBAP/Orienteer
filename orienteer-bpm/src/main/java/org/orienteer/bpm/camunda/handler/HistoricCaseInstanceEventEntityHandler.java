@@ -9,6 +9,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricCaseInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.historic.HistoricScopeInstanceEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * Created by KMukhov on 07.08.16.
  */
-public class HistoricCaseInstanceEventEntityHandler extends AbstractEntityHandler<HistoricCaseInstanceEventEntity> {
+public class HistoricCaseInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricCaseInstanceEventEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricCaseInstanceEvent";
 
@@ -29,14 +30,8 @@ public class HistoricCaseInstanceEventEntityHandler extends AbstractEntityHandle
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
-
-        helper.oProperty("caseInstanceId", OType.STRING, 10)
+        helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("businessKey", OType.STRING, 20)
-                .oProperty("caseDefinitionId", OType.STRING, 30)
-                .oProperty("startTime", OType.DATETIME, 40)
-                .oProperty("endTime", OType.DATETIME, 50)
-                .oProperty("durationInMillis", OType.LONG, 60)
                 .oProperty("state", OType.INTEGER, 70)
                 .oProperty("createUserId", OType.STRING, 80)
                 .oProperty("superCaseInstanceId", OType.STRING, 90)

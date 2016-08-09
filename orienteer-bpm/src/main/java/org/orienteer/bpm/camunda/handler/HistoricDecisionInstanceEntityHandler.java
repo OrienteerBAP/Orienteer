@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.history.HistoricDecisionInstanceQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDecisionInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.historic.HistoricEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 /**
  * Created by KMukhov on 07.08.16.
  */
-public class HistoricDecisionInstanceEntityHandler extends AbstractEntityHandler<HistoricDecisionInstanceEntity> {
+public class HistoricDecisionInstanceEntityHandler extends HistoricEventHandler<HistoricDecisionInstanceEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricDecisionInstance";
 
@@ -22,17 +23,10 @@ public class HistoricDecisionInstanceEntityHandler extends AbstractEntityHandler
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
-
-        helper.oProperty("decisionDefinitionId", OType.STRING, 10)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+                .oProperty("decisionDefinitionId", OType.STRING, 10)
                 .oProperty("decisionDefinitionKey", OType.STRING, 20)
                 .oProperty("decisionDefinitionName", OType.STRING, 30)
-                .oProperty("processDefinitionKey", OType.STRING, 40)
-                .oProperty("processDefinitionId", OType.STRING, 50)
-                .oProperty("processInstanceId", OType.STRING, 60)
-                .oProperty("caseDefinitionKey", OType.STRING, 70)
-                .oProperty("caseDefinitionId", OType.STRING, 80)
-                .oProperty("caseInstanceId", OType.STRING, 90)
                 .oProperty("activityInstanceId", OType.STRING, 100)
                 .oProperty("activityId", OType.STRING, 110)
                 .oProperty("evaluationTime", OType.DATETIME, 120)
