@@ -18,41 +18,29 @@ import org.orienteer.core.widget.Widget;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.AbstractConverterModel;
+import ru.ydn.wicket.wicketorientdb.model.NvlModel;
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 /**
  * Widget for BPMN modeling
  */
-@Widget(id="bpmn-modeler", domain="document", selector=ProcessDefinitionEntityHandler.OCLASS_NAME, autoEnable=true)
+@Widget(id="bpmn-modeler", domain="document", tab="modeler", selector=ProcessDefinitionEntityHandler.OCLASS_NAME, autoEnable=true)
 public class BpmnModelerWidget extends AbstractModeAwareWidget<ODocument> {
 	
 	public BpmnModelerWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		OQueryModel<ODocument> resourcesModel = new OQueryModel<>("select from "+ResourceEntityHandler.OCLASS_NAME+" where name = :resourceName");
 		resourcesModel.setParameter("resourceName", new ODocumentPropertyModel<String>(model, "resourceName"));
-		IModel<ODocument> resourceModel = new AbstractConverterModel<List<ODocument>, ODocument>(resourcesModel) {
+		IModel<ODocument> resourceModel = new NvlModel<ODocument>(new AbstractConverterModel<List<ODocument>, ODocument>(resourcesModel) {
 
 			@Override
 			protected ODocument doForward(List<ODocument> a) {
-				if(a==null || a.isEmpty()){
-					ODocument pd = getModelObject();
-					String resourceName = pd.field("resourceName");
-					if(Strings.isEmpty(resourceName)) {
-						resourceName = pd.field("name")+".bpmn";
-						pd.field("resourceName", resourceName);
-						pd.save();
-					}
-					ODocument resource = new ODocument(ResourceEntityHandler.OCLASS_NAME);
-					resource.field("name", resourceName);
-					resource.field("deployment", pd.field("deployment"));
-					return resource;
-				} else {
-					return a.get(0);
-				}
+				return (a!=null && !a.isEmpty())?a.get(0):null;
 			}
-		};
-		add(new BpmnPanel("bpmnPanel", resourceModel, getModeModel()));
+		}, new ODocumentModel(new ODocument(ResourceEntityHandler.OCLASS_NAME)));
+		add(new BpmnPanel("bpmnPanel", resourceModel, model, getModeModel()));
 	}
 	
 	@Override
