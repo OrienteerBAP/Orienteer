@@ -66,7 +66,8 @@ public final class HandlersManager {
 				 new AttachmentEntityHandler(),
 				 new AuthorizationEntityHandler(),
 				 new BatchEntityHandler(),
-				 new CommentEntityHandler());
+				 new CommentEntityHandler(),
+				 new DecisionDefinitionEntityHandler());
 	}
 	
 	public static HandlersManager get() {
