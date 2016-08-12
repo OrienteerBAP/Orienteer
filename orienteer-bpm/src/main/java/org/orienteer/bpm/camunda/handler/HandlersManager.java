@@ -65,7 +65,8 @@ public final class HandlersManager {
 				 new HistoricJobLogEventEntityHandler(),
 				 new AttachmentEntityHandler(),
 				 new AuthorizationEntityHandler(),
-				 new BatchEntityHandler());
+				 new BatchEntityHandler(),
+				 new CommentEntityHandler());
 	}
 	
 	public static HandlersManager get() {
