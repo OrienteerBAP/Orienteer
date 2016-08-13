@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.dmn.entity.repository.DecisionDefinitionEntity;
+import org.camunda.bpm.engine.repository.DecisionDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
@@ -56,12 +57,61 @@ public class DecisionDefinitionEntityHandler extends AbstractEntityHandler<Decis
 
     @Statement
     public List<DecisionDefinitionEntity> selectLatestDecisionDefinitionByKeyWithoutTenantId(OPersistenceSession session, ListQueryParameterObject parameter) {
+        return queryList(session, "select from " + getSchemaClass() + " where key = ? and tenantId is null and version = (" +
+                "select max(version) from " + getSchemaClass() + " where key = ? and tenantId is null)",
+                parameter.getParameter(), parameter.getParameter());
+    }
+
+    @Statement
+    public List<DecisionDefinitionEntity> selectLatestDecisionDefinitionByKeyAndTenantId(OPersistenceSession session, ListQueryParameterObject parameter) {
         Map<String, String> params = (Map<String, String>) parameter.getParameter();
         String key = params.get("key");
         String tenantId = params.get("tenantId");
 
         return queryList(session, "select from " + getSchemaClass() + " where key = ? and tenantId = ? and version = (" +
-                "select max(version) from " + getSchemaClass() + " where key = ? and tenantId = ?)",
+                        "select max(version) from " + getSchemaClass() + " where key = ? and tenantId = ?)",
                 key, tenantId, key, tenantId);
+    }
+
+    @Statement
+    public List<DecisionDefinitionEntity> selectDecisionDefinitionByKeyAndVersion(OPersistenceSession session, ListQueryParameterObject parameter) {
+        Map<String, String> params = (Map<String, String>) parameter.getParameter();
+        return queryList(session, "select from " + getSchemaClass() + " where key = ? and version = ?",
+                params.get("key"), params.get("version"));
+    }
+
+    @Statement
+    public List<DecisionDefinitionEntity> selectDecisionDefinitionByKeyVersionWithoutTenantId(OPersistenceSession session, ListQueryParameterObject parameter) {
+        Map<String, String> params = (Map<String, String>) parameter.getParameter();
+        return queryList(session, "select from " + getSchemaClass() + " where key = ? and version = ? and tenantId is null",
+                params.get("key"), params.get("version"));
+    }
+
+    @Statement
+    public List<DecisionDefinitionEntity> selectDecisionDefinitionByKeyVersionAndTenantId(OPersistenceSession session, ListQueryParameterObject parameter) {
+        Map<String, String> params = (Map<String, String>) parameter.getParameter();
+        return queryList(session, "select from " + getSchemaClass() + " where key = ? and version = ? and tenantId = ?",
+                params.get("key"), params.get("version"), params.get("tenantId"));
+    }
+
+    @Statement
+    public String selectPreviousDecisionDefinitionId(OPersistenceSession session, ListQueryParameterObject parameter) {
+        Map<String, String> params = (Map<String, String>) parameter.getParameter();
+        String key = params.get("key");
+        String tenantId = params.get("tenantId");
+        String version = params.get("version");
+
+        String query = "select distinct RES.* from " + getSchemaClass() + " where RES.key = " + key;
+        query += tenantId != null ? " and tenantId = " + tenantId : " and tenantId is null";
+        query += " and RES.version = (select max(version) from " + getSchemaClass() + " where key = " + key;
+        query += tenantId != null ? " and tenantId = " + tenantId : " and tenantId is null";
+        query += " and version < " + version + ")";
+
+        return querySingle(session, query).getPreviousDecisionDefinitionId();
+    }
+
+    @Statement
+    public List<DecisionDefinitionEntity> selectDecisionDefinitionsByQueryCriteria(OPersistenceSession session, DecisionDefinitionQuery query) {
+        return query(session, query);
     }
 }
