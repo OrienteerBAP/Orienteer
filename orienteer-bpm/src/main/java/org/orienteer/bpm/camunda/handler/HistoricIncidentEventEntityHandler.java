@@ -2,7 +2,7 @@ package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricIncidentEventEntity;
-import org.orienteer.bpm.camunda.handler.historic.HistoricEventHandler;
+import org.orienteer.bpm.camunda.handler.subentity.HistoricEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**

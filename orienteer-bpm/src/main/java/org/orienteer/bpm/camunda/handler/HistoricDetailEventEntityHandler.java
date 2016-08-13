@@ -1,12 +1,10 @@
 package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import org.camunda.bpm.engine.history.HistoricDetail;
-import org.camunda.bpm.engine.history.HistoricDetailQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDetailEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.historic.HistoricEventHandler;
+import org.orienteer.bpm.camunda.handler.subentity.HistoricEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;

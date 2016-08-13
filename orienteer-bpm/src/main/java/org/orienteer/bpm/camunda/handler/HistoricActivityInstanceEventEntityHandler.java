@@ -3,7 +3,7 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricActivityInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.historic.HistoricScopeInstanceEventHandler;
+import org.orienteer.bpm.camunda.handler.subentity.HistoricScopeInstanceEventHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**

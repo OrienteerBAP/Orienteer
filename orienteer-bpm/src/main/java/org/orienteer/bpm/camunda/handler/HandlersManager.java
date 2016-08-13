@@ -67,7 +67,12 @@ public final class HandlersManager {
 				 new AuthorizationEntityHandler(),
 				 new BatchEntityHandler(),
 				 new CommentEntityHandler(),
-				 new DecisionDefinitionEntityHandler());
+				 new DecisionDefinitionEntityHandler(),
+				 new FilterEntityHandler(),
+				 new IdentityInfoEntityHandler(),
+				 new MembershipEntityHandler(),
+				 new TenantMembershipEntityHandler(),
+				 new UserOperationLogEntryEventEntityHandler());
 	}
 	
 	public static HandlersManager get() {
