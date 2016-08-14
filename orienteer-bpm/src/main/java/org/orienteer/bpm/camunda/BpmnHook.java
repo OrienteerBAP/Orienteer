@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.apache.wicket.util.string.Strings;
 import org.camunda.bpm.BpmPlatform;
+import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.persistence.deploy.DeploymentCache;
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.model.bpmn.Bpmn;
 import org.orienteer.bpm.BPMModule;
 import org.orienteer.bpm.camunda.handler.DeploymentEntityHandler;
+import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
 
@@ -46,6 +50,26 @@ public class BpmnHook extends ODocumentHookAbstract {
 		}
 		return res;
 	}
+	
+	/*@Override
+	public void onRecordAfterCreate(ODocument iDocument) {
+		if(iDocument.getSchemaClass().isSubClassOf(ProcessDefinitionEntityHandler.OCLASS_NAME)) {
+			ProcessDefinitionEntityHandler handler = HandlersManager.get().getHandlerByClass(ProcessDefinitionEntityHandler.class);
+			ProcessDefinitionEntity pd = handler.mapToEntity(iDocument, null, null);
+			Context.getProcessEngineConfiguration().getDeploymentCache().addProcessDefinition(pd);
+		}
+	}*/
+	
+	/*@Override
+	public void onRecordAfterUpdate(ODocument iDocument) {
+		if(iDocument.getSchemaClass().isSubClassOf(ProcessDefinitionEntityHandler.OCLASS_NAME)) {
+			DeploymentCache cache = Context.getProcessEngineConfiguration().getDeploymentCache();
+			ProcessDefinitionEntityHandler handler = HandlersManager.get().getHandlerByClass(ProcessDefinitionEntityHandler.class);
+			ProcessDefinitionEntity pd = handler.mapToEntity(iDocument, null, null);
+			cache.removeProcessDefinition((String) iDocument.field("id"));
+			cache.addProcessDefinition(pd);
+		}
+	}*/
 	
 	protected ODocument getOrCreateDeployment() {
 		ODocument deployment = getDeployment();

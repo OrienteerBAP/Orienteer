@@ -74,5 +74,10 @@ public class FormKey implements IClusterable{
 	public boolean isValid() {
 		return variableName!=null || rid!=null;
 	}
+	
+	@Override
+	public String toString() {
+		return "orienteer:"+(schemaClassName!=null?schemaClassName+":":"")+(variableName!=null?variableName:(rid!=null?rid.toString():""));
+	}
 
 }

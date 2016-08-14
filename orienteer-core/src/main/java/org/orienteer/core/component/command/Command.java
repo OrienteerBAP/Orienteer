@@ -143,6 +143,15 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
     	return link;
     }
 	
+	public IModel<?> getLabelModel() {
+		return link.get("label").getDefaultModel();
+	}
+	
+	public Command<T> setLabelModel(IModel<?> labelModel) {
+		link.get("label").setDefaultModel(labelModel);
+		return this;
+	}
+	
     public String getBtnCssClass() {
     	if(btnCssClass!=null) return btnCssClass;
     	else {

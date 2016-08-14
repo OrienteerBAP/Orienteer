@@ -217,7 +217,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	public T mapToEntity(ODocument doc, T entity, OPersistenceSession session) {
 		checkMapping(session);
 		try {
-			if(hasNeedInCache()) {
+			if(hasNeedInCache() && session!=null) {
 				entity = (T)session.lookupEntityInCache((String)doc.field(getPkField()));
 				if(entity!=null) return entity;
 			}
@@ -230,7 +230,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			if(entity instanceof HasDbRevision) {
 				((HasDbRevision)entity).setRevision(doc.getVersion());
 			}
-			session.fireEntityLoaded(doc, entity, hasNeedInCache());
+			if(session!=null) session.fireEntityLoaded(doc, entity, hasNeedInCache());
 			return entity;
 		} catch (Exception e) {
 			logger.error("There shouldn't be this exception in case of predefined mapping", e);
