@@ -1,5 +1,8 @@
 package org.orienteer.bpm.camunda.handler;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -107,6 +110,11 @@ public class TenantEntityHandler implements IEntityHandler<TenantEntity> {
 
 	@Override
 	public void updateBulk(DbBulkOperation operation, OPersistenceSession session) {
+	}
+	
+	@Override
+	public RESULT onTrigger(ODatabaseDocument db, ODocument doc, TYPE iType) {
+		return RESULT.RECORD_NOT_CHANGED;
 	}
 
 }

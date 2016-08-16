@@ -4,17 +4,26 @@ package org.orienteer.bpm.camunda.handler;
 import java.util.List;
 import java.util.Map;
 
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.deploy.DeploymentCache;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
+import org.orienteer.bpm.camunda.BpmnHook;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  */
@@ -45,6 +54,30 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "executions", ExecutionEntityHandler.OCLASS_NAME, "processDefinition");
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "processDefinition");
+	}
+	
+	@Override
+	public RESULT onTrigger(ODatabaseDocument db, ODocument doc, TYPE iType) {
+		if(iType.equals(TYPE.BEFORE_CREATE)) {
+			ODocument deployment = doc.field("deployment");
+			if(deployment==null) {
+				List<ODocument> deployments = db.query(new OSQLSynchQuery<>("select from "+DeploymentEntityHandler.OCLASS_NAME, 1));
+				deployment = deployments!=null && !deployments.isEmpty()?deployments.get(0):null;
+				if(deployment==null) {
+					deployment = new ODocument(DeploymentEntityHandler.OCLASS_NAME);
+					deployment.field("id", BpmnHook.getNextId());
+					deployment.field("name", "Orienteer");
+					deployment.save();
+				}
+				doc.field("deployment", deployment);
+				return RESULT.RECORD_CHANGED;
+			}
+		} else if(iType.equals(TYPE.AFTER_UPDATE) || iType.equals(TYPE.AFTER_DELETE)) {
+			DeploymentCache dc = OProcessEngineConfiguration.get().getDeploymentCache();
+			dc.removeProcessDefinition((String) doc.field("id"));
+		}
+		
+		return RESULT.RECORD_NOT_CHANGED; 
 	}
 	
 	@Statement

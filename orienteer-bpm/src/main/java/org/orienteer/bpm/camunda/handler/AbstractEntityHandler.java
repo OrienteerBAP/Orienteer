@@ -47,6 +47,8 @@ import com.google.common.reflect.Reflection;
 import com.google.common.reflect.TypeToken;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -462,6 +464,11 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		if(q instanceof Query)((Query)q).where(clause);
 		else if(q instanceof Delete)((Delete)q).where(clause);
 		return q;
+	}
+	
+	@Override
+	public RESULT onTrigger(ODatabaseDocument db, ODocument doc, TYPE iType) {
+		return RESULT.RECORD_NOT_CHANGED;
 	}
 	
 }

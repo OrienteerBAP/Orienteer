@@ -8,6 +8,8 @@ import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OImmutableClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -45,4 +47,6 @@ public interface IEntityHandler<T extends DbEntity> {
 	public void lock(String statement, Object parameter, OPersistenceSession session);
 	public void deleteBulk(DbBulkOperation operation, OPersistenceSession session);
 	public void updateBulk(DbBulkOperation operation, OPersistenceSession session);
+	
+	public RESULT onTrigger(ODatabaseDocument db, ODocument doc, TYPE iType);
 }

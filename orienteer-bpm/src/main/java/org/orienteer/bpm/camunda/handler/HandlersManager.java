@@ -13,7 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.ORecord;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Manager of all registgered in the system 
@@ -138,6 +142,15 @@ public final class HandlersManager {
 			handler.applyRelationships(helper);
 		}
 		
+	}
+	
+	public RESULT onTrigger(ODatabaseDocument db, ODocument doc, TYPE iType) {
+		IEntityHandler<?> handler = getHandlerBySchemaClass(doc.getSchemaClass());
+		if(handler!=null) {
+			return handler.onTrigger(db, doc, iType);
+		} else {
+			return RESULT.RECORD_NOT_CHANGED;
+		}
 	}
 
 }

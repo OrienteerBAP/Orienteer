@@ -4,15 +4,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.deploy.DeploymentCache;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ResourceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
 import org.orienteer.core.util.OSchemaHelper;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * {@link IEntityHandler} for {@link ResourceEntity} 
@@ -38,6 +46,21 @@ public class ResourceEntityHandler extends AbstractEntityHandler<ResourceEntity>
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
 		helper.setupRelationship(ResourceEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "resources");
+	}
+	
+	@Override
+	public RESULT onTrigger(ODatabaseDocument db, ODocument doc, TYPE iType) {
+		if(iType.equals(TYPE.AFTER_CREATE) || iType.equals(TYPE.AFTER_UPDATE) || iType.equals(TYPE.AFTER_DELETE)) {
+			String name = doc.field("name");
+			List<ODocument> pds = db.query(new OSQLSynchQuery<ODocument>("select from "+ProcessDefinitionEntityHandler.OCLASS_NAME+" where resourceName = ?"), name);
+			if(pds!=null) {
+				DeploymentCache dc = OProcessEngineConfiguration.get().getDeploymentCache();
+				for(ODocument pd : pds) {
+					dc.removeProcessDefinition((String) pd.field("id"));
+				}
+			}
+		}
+		return RESULT.RECORD_NOT_CHANGED;
 	}
 	
 	@Statement

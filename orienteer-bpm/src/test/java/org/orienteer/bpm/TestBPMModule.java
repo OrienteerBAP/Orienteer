@@ -461,20 +461,9 @@ public class TestBPMModule {
 				.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 
 		if (processInstance != null && (!soft || !processInstance.isEnded())) {
-			describeProcess(processInstance);
 
 			throw new AssertionFailedError(
 					"expected finished process instance '" + processInstanceId + "' but it was still in the db");
-		}
-	}
-
-	protected void describeProcess(ProcessInstance processInstance) {
-		LOG.info("Process Isntance Description: " + processInstance.getId());
-		List<Execution> ret = processEngineRule.getProcessEngine().getRuntimeService().createExecutionQuery()
-				.processInstanceId(processInstance.getId()).list();
-		ExecutionEntityHandler handler = HandlersManager.get().getHandlerByClass(ExecutionEntityHandler.class);
-		for (Execution exec : ret) {
-			LOG.info("Exec: " + exec + " doc: " + handler.mapToODocument((ExecutionEntity) exec, null, null));
 		}
 	}
 }

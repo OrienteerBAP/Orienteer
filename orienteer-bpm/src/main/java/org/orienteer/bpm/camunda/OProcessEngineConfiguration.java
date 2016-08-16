@@ -1,10 +1,12 @@
 package org.orienteer.bpm.camunda;
 
+import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.jobexecutor.FoxFailedJobCommandFactory;
 import org.camunda.bpm.engine.impl.persistence.GenericManagerFactory;
+import org.camunda.bpm.model.bpmn.Bpmn;
 import org.orienteer.bpm.camunda.scripting.OResolverFactory;
 
 /**
@@ -60,5 +62,9 @@ public class OProcessEngineConfiguration extends StandaloneProcessEngineConfigur
 	protected void initScripting() {
 		super.initScripting();
 		resolverFactories.add(new OResolverFactory());
+	}
+	
+	public static OProcessEngineConfiguration get() {
+		return (OProcessEngineConfiguration) BpmPlatform.getDefaultProcessEngine().getProcessEngineConfiguration();
 	}
 }
