@@ -12,6 +12,7 @@ import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
 import org.orienteer.bpm.component.command.CompleteTaskCommand;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.web.ODocumentPage;
@@ -50,7 +51,7 @@ public class ProcessDefinitionFormWidget extends AbstractFormWidget {
 					.startProcessInstanceById((String)ProcessDefinitionFormWidget.this.getModelObject().field("id"), variables);
 				setResponsePage(new ODocumentPage(doc));
 			};
-		}.setForceCommit(true));
+		}.setForceCommit(true).setBootstrapType(BootstrapType.SUCCESS));
 	}
 
 	@Override

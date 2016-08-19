@@ -34,10 +34,10 @@ public class CompleteTaskCommand extends AjaxFormCommand<ODocument>{
 	}
 	
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.bolt);
-		setBootstrapType(BootstrapType.PRIMARY);
+		setBootstrapType(BootstrapType.SUCCESS);
 		setChandingModel(true);
 	}
 	

@@ -49,8 +49,8 @@ public abstract class AjaxCommand<T> extends Command<T>
 	}
 
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setOutputMarkupPlaceholderTag(true);
 	}
 

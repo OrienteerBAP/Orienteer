@@ -43,8 +43,8 @@ public class EditCommand<T> extends AjaxCommand<T>
 	
 
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.edit);
 		setBootstrapType(BootstrapType.PRIMARY);
 		setChangingDisplayMode(true);

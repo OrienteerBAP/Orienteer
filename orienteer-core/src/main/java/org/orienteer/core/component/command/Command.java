@@ -86,8 +86,16 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
     {
         super(commandId, model);
         this.labelModel = labelModel;
+        onInstantiation();
     }
     
+    protected void onInstantiation() {
+    	
+    }
+    
+    /**
+     * We are initializing link in onInitialize() because of some links we need to know a structure
+     */
     @Override
     protected void onInitialize() {
     	super.onInitialize();

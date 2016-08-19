@@ -18,8 +18,8 @@ public abstract class AbstractCopyCommand<T> extends AbstractCheckBoxEnabledComm
     }
 
     @Override
-    protected void onInitialize() {
-        super.onInitialize();
+    protected void onInstantiation() {
+        super.onInstantiation();
         setIcon(FAIconType.copy);
         setBootstrapType(BootstrapType.WARNING);
     }

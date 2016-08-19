@@ -31,8 +31,8 @@ public abstract class AbstractDeleteCommand<T> extends AbstractCheckBoxEnabledCo
     }
 	
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.times_circle);
 		setBootstrapType(BootstrapType.DANGER);
 		setChandingModel(true);

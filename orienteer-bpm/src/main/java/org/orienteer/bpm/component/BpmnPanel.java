@@ -9,6 +9,7 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.bpm.camunda.handler.ResourceEntityHandler;
 import org.orienteer.core.component.AbstractCommandsEnabledPanel;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.EditCommand;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;

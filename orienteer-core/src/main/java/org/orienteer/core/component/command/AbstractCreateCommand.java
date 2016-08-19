@@ -33,8 +33,8 @@ public abstract class AbstractCreateCommand<T> extends Command<T>
 	}
 
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.plus);
 		setBootstrapType(BootstrapType.PRIMARY);
 		setAutoNotify(false);
