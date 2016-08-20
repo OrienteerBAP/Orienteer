@@ -35,9 +35,16 @@ public class EditCommand<T> extends AjaxCommand<T>
 		this.displayModeModel = displayModeModel;
 	}
 
+	public EditCommand(String commandId, IModel<T> model, IModel<DisplayMode> displayModeModel) {
+		super(commandId, new ResourceModel("command.edit"), model);
+		this.displayModeModel = displayModeModel;
+	}
+	
+	
+
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.edit);
 		setBootstrapType(BootstrapType.PRIMARY);
 		setChangingDisplayMode(true);

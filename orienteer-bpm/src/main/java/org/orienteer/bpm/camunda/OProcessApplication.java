@@ -1,9 +1,11 @@
 package org.orienteer.bpm.camunda;
 
 import org.apache.wicket.MetaDataKey;
+import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.application.AbstractProcessApplication;
 import org.camunda.bpm.application.ProcessApplicationInterface;
 import org.camunda.bpm.application.ProcessApplicationReference;
+import org.camunda.bpm.application.ProcessApplicationUnavailableException;
 import org.orienteer.core.OrienteerWebApplication;
 
 /**
@@ -40,6 +42,14 @@ public class OProcessApplication extends AbstractProcessApplication {
 	
 	protected OrienteerWebApplication getOrienteerWebApplication() {
 		return OrienteerWebApplication.lookupApplication();
+	}
+	
+	public static OProcessApplication get() {
+		try {
+			return (OProcessApplication) OProcessApplicationReference.INSTANCE.getProcessApplication();
+		} catch (ProcessApplicationUnavailableException e) {
+			return null;
+		}
 	}
 	
 }

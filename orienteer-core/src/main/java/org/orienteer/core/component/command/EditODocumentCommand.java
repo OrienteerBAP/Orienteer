@@ -1,6 +1,7 @@
 package org.orienteer.core.component.command;
 
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
@@ -22,8 +23,12 @@ public class EditODocumentCommand extends EditCommand<ODocument> implements ISec
 	public EditODocumentCommand(
 			OrienteerStructureTable<ODocument, ?> structureTable,
 			IModel<DisplayMode> displayModeModel) {
-		super(structureTable, displayModeModel);
-		documentmodel = structureTable.getModel();
+		this(structureTable.newCommandId(), structureTable.getModel(), displayModeModel);
+	}
+
+	public EditODocumentCommand(String commandId, IModel<ODocument> documentmodel, IModel<DisplayMode> displayModeModel) {
+		super(commandId, documentmodel, displayModeModel);
+		this.documentmodel = documentmodel;
 	}
 
 	@Override

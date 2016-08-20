@@ -39,7 +39,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
-		helper.setupRelationship(JobDefinitionEntityHandler.OCLASS_NAME, "processDefinition", JobEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(JobDefinitionEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME);
 	}
 
 	@Override

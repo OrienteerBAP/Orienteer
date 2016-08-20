@@ -34,10 +34,10 @@ public class CompleteTaskCommand extends AjaxFormCommand<ODocument>{
 	}
 	
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.bolt);
-		setBootstrapType(BootstrapType.PRIMARY);
+		setBootstrapType(BootstrapType.SUCCESS);
 		setChandingModel(true);
 	}
 	
@@ -47,18 +47,7 @@ public class CompleteTaskCommand extends AjaxFormCommand<ODocument>{
 		ProcessEngine processEngine = BpmPlatform.getDefaultProcessEngine();
 		TaskService taskService = processEngine.getTaskService();
 		String taskId = taskModel.getObject().field("id");
-		Task task = taskService.createTaskQuery()
-				.taskId(taskId)
-				.initializeFormKeys()
-				.singleResult();
-		FormKey formKey = FormKey.parse(task.getFormKey());
-		String var = formKey.getVariableName();
-		Map<String, Object> variables = null;
-		if(!Strings.isEmpty(var)) {
-			variables = new VariableMapImpl();
-			variables.put(var, doc.getIdentity().toString());
-		}
-		taskService.complete(taskId, variables);
+		taskService.complete(taskId);
 		setResponsePage(new ODocumentPage(doc));
 	}
 	

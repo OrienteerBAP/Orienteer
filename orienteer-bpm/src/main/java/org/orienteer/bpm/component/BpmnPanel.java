@@ -1,12 +1,17 @@
 package org.orienteer.bpm.component;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.util.string.Strings;
+import org.orienteer.bpm.camunda.handler.ResourceEntityHandler;
 import org.orienteer.core.component.AbstractCommandsEnabledPanel;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.EditCommand;
+import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.event.ActionPerformedEvent;
@@ -20,6 +25,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 
+	private IModel<ODocument> pdModel;
 	private IModel<DisplayMode> modeModel;
 	private IModel<String> xmlModel = new LoadableDetachableModel<String>() {
 
@@ -34,19 +40,36 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 		public void setObject(String object) {
 			super.setObject(object);
 			ODocument resource = BpmnPanel.this.getModelObject();
-			resource.field("bytes", object.getBytes());
-			resource.save();
+			if(resource!=null) resource.field("bytes", object.getBytes());
 		};
 	};
 	
 	private Component panel;
 	
-	public BpmnPanel(String id, IModel<ODocument> model, IModel<DisplayMode> modeModel) {
-		super(id, model);
+	public BpmnPanel(String id, IModel<ODocument> resourceModel, IModel<ODocument> pdModel, IModel<DisplayMode> modeModel) {
+		super(id, resourceModel);
 		setOutputMarkupId(true);
+		this.pdModel = pdModel;
 		this.modeModel = modeModel;
-		addCommand(new EditCommand<ODocument>(newCommandId(), modeModel));
-		addCommand(new SaveODocumentCommand(this, modeModel, model));
+		addCommand(new EditODocumentCommand(newCommandId(), resourceModel, modeModel));
+		addCommand(new SaveODocumentCommand(this, modeModel, resourceModel) {
+			@Override
+			public void onClick(AjaxRequestTarget target) {
+				ODocument resource = getModelObject();
+				if(resource.getIdentity().isNew()) {
+					ODocument pd = BpmnPanel.this.pdModel.getObject();
+					String resourceName = pd.field("resourceName");
+					if(Strings.isEmpty(resourceName)) {
+						resourceName = pd.field("name")+".bpmn";
+						pd.field("resourceName", resourceName);
+						pd.save();
+					}
+					resource.field("name", resourceName);
+					resource.field("deployment", pd.field("deployment"));
+				}
+				super.onClick(target);
+			}
+		});
 	}
 	
 	@Override

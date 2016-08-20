@@ -30,8 +30,8 @@ public class ViewUMLCommand extends AbstractCheckBoxEnabledModalWindowCommand<OC
 	}
 	
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setBootstrapType(BootstrapType.INFO);
 		setIcon(FAIconType.cubes);
 	}

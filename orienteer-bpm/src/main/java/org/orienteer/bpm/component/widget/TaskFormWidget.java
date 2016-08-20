@@ -46,51 +46,15 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 /**
- * Widget showing a form to a user
+ * Widget showing a form for a user task
  */
 @Widget(id="user-task-form", domain="document", selector=TaskEntityHandler.OCLASS_NAME, autoEnable=true, tab="form")
-public class FormWidget extends AbstractModeAwareWidget<ODocument> {
+public class TaskFormWidget extends AbstractFormWidget {
 	
-	@Inject
-	private IOClassIntrospector oClassIntrospector;
-	
-	private FormKey formKey;
-	private ODocumentModel formDocumentModel;
-	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
 	private SaveODocumentCommand saveODocumentCommand;
 	
-	public FormWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
+	public TaskFormWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		ProcessEngine processEngine = BpmPlatform.getDefaultProcessEngine();
-		TaskService taskService = processEngine.getTaskService();
-		Task task = taskService.createTaskQuery()
-							.taskId((String)getModelObject().field("id"))
-							.initializeFormKeys()
-							.singleResult();
-		String formKeyStr = task.getFormKey();
-		add(new Label("formKey", formKeyStr));
-		formKey = FormKey.parse(formKeyStr);
-		setVisible(formKey.isValid());
-		formDocumentModel = new ODocumentModel(formKey.calculateODocument(processEngine, task.getId()));
-		
-		Form<ODocument> form = new Form<ODocument>("form", getModel());
-		IModel<List<OProperty>> propertiesModel = new LoadableDetachableModel<List<OProperty>>() {
-			@Override
-			protected List<OProperty> load() {
-				return oClassIntrospector.listProperties(formDocumentModel.getObject().getSchemaClass(), IOClassIntrospector.DEFAULT_TAB, false);
-			}
-		};
-		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", formDocumentModel, propertiesModel){
-
-					@Override
-					protected Component getValueComponent(String id,
-							IModel<OProperty> rowModel) {
-						//TODO: remove static displaymode
-						return new ODocumentMetaPanel<Object>(id, getModeModel(), formDocumentModel, rowModel);
-					}
-		};
-		form.add(propertiesStructureTable);
-		add(form);
 	}
 	
 	@Override
@@ -98,37 +62,56 @@ public class FormWidget extends AbstractModeAwareWidget<ODocument> {
 		super.onInitialize();
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, getModeModel()));
 		propertiesStructureTable.addCommand(saveODocumentCommand 
-												= new SaveODocumentCommand(propertiesStructureTable, getModeModel()).setForceCommit(true));
+												= new SaveODocumentCommand(propertiesStructureTable, getModeModel()){
+			public void onClick(AjaxRequestTarget target) {
+				super.onClick(target);
+				associateTaskWithDocument();
+			};
+		}.setForceCommit(true));
 		propertiesStructureTable.addCommand(new CompleteTaskCommand(propertiesStructureTable, getModel()) {
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-				if(saveODocumentCommand.determineVisibility()) saveODocumentCommand.onClick(target);
+				if(saveODocumentCommand.determineVisibility()) {
+					saveODocumentCommand.onClick(target);
+				} else {
+					associateTaskWithDocument();
+				}
 				super.onClick(target);
 			}
 		});
 	}
 	
-
 	@Override
-	protected FAIcon newIcon(String id) {
-		return new FAIcon(id, FAIconType.tasks);
+	protected FormKey obtainFormKey() {
+		               ProcessEngine processEngine = BpmPlatform.getDefaultProcessEngine();
+		               TaskService taskService = processEngine.getTaskService();
+		               Task task = taskService.createTaskQuery()
+                                           .taskId((String)getModelObject().field("id"))
+                                           .initializeFormKeys()
+                                           .singleResult();
+		               return FormKey.parse(task.getFormKey());
+	}
+	
+	@Override
+	protected ODocument resolveODocument(FormKey formKey) {
+		return formKey.calculateODocument(BpmPlatform.getDefaultProcessEngine(), (String)getModelObject().field("id"));
+	}
+	
+	protected void associateTaskWithDocument() {
+		associateTaskWithDocument((String)getModelObject().field("id"), formDocumentModel.getObject());
+	}
+	
+	protected void associateTaskWithDocument(String taskId, ODocument doc) {
+		ProcessEngine processEngine = BpmPlatform.getDefaultProcessEngine();
+		TaskService taskService = processEngine.getTaskService();
+		String var = formKey.getVariableName();
+		taskService.setVariable(taskId, var, doc.getIdentity().toString());
 	}
 	
 	@Override
 	protected IModel<String> getDefaultTitleModel() {
 		return new NvlModel<>(new ODocumentPropertyModel<String>(getModel(), "name"), 
 							  new ResourceModel("widget.form"));
-	}
-	
-	@Override
-	public void detachModels() {
-		super.detachModels();
-		formDocumentModel.detach();
-	}
-	
-	@Override
-	protected String getWidgetStyleClass() {
-		return "strict";
 	}
 
 }
