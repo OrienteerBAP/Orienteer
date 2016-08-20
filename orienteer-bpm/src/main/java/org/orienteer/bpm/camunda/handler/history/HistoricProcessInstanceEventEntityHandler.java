@@ -36,10 +36,6 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
     	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("parentActivityInstanceId", OType.STRING, 10)
-                .oProperty("processDefinition", OType.LINK, 30).assignVisualization("listbox")
-                                                                    .markAsLinkToParent()
-                                                                    .markDisplayable()
-                                                                    .markAsDocumentName()
                 .oProperty("activityId", OType.STRING, 60)
                 .oProperty("taskId", OType.STRING, 70)
                 .oProperty("calledProcessInstanceId", OType.STRING, 80)
@@ -47,8 +43,7 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
                 .oProperty("activityName", OType.STRING, 100)
                 .oProperty("activityType", OType.STRING, 110)
                 .oProperty("taskAssignee", OType.STRING, 120)
-                .oProperty("activityInstanceState", OType.INTEGER, 160)
-                .oProperty("tenantId", OType.STRING, 180);
+                .oProperty("activityInstanceState", OType.INTEGER, 160);
 
     }
     

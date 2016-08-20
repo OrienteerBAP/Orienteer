@@ -32,7 +32,6 @@ public class HistoricBatchEntityHandler extends HistoricEventHandler<HistoricBat
                 .oProperty("seedJobDefinitionId", OType.STRING, 50)
                 .oProperty("monitorJobDefinitionId", OType.STRING, 60)
                 .oProperty("batchJobDefinitionId", OType.STRING, 70)
-                .oProperty("tenantId", OType.STRING, 80)
                 .oProperty("startTime", OType.DATETIME, 90)
                 .oProperty("endTime", OType.DATETIME, 100);
     }

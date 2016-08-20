@@ -75,7 +75,8 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 			  .oProperty("childExecutions", OType.LINKLIST, 170).assignVisualization("table")
 		      .oProperty("tasks", OType.LINKLIST, 180).assignVisualization("table")
 		      .oProperty("eventSubscriptions", OType.LINKLIST, 190).assignVisualization("table")
-			  .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table");
+			  .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table")
+			  .oProperty("historyEvents", OType.LINKLIST, 210).assignTab("history").assignVisualization("table");
 	}
 
 	public void applyRelationships(OSchemaHelper helper) {
