@@ -1,4 +1,4 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -9,14 +9,17 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricProcessInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.subentity.HistoricScopeInstanceEventHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
+import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
 import java.util.List;
 
 /**
- * Created by kir on 06.08.16.
+ * {@link IEntityHandler} for {@link HistoricProcessInstanceEventEntity}
  */
 public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricProcessInstanceEventEntity> {
 
@@ -30,6 +33,7 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
 
     @Override
     public void applySchema(OSchemaHelper helper) {
+    	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("parentActivityInstanceId", OType.STRING, 10)
                 .oProperty("processDefinition", OType.LINK, 30).assignVisualization("listbox")

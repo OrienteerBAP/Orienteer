@@ -11,6 +11,7 @@ import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.orienteer.bpm.camunda.BpmnHook;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
+import org.orienteer.bpm.camunda.handler.history.HistoricProcessInstanceEventEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;

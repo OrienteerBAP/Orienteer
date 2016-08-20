@@ -5,6 +5,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.DbEntity;
+import org.orienteer.bpm.camunda.handler.history.HistoricActivityInstanceEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricBatchEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricCaseActivityInstanceEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricCaseInstanceEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricDecisionInputInstanceEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricDecisionInstanceEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricDecisionOutputInstanceEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricDetailEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricIdentityLinkLogEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricIncidentEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricJobLogEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricProcessInstanceEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricTaskInstanceEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +70,6 @@ public final class HandlersManager {
 				 new HistoricVariableInstanceEntityHandler(),
 				 new HistoricProcessInstanceEventEntityHandler(),
 				 new HistoricActivityInstanceEventEntityHandler(),
-				 new HistoricActivityInstanceEntityHandler(),
 				 new HistoricTaskInstanceEventEntityHandler(),
 				 new HistoricBatchEntityHandler(),
 				 new HistoricCaseActivityInstanceEventEntityHandler(),

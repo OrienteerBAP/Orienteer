@@ -1,17 +1,18 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.google.common.base.Function;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.camunda.bpm.engine.impl.history.event.HistoricTaskInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.subentity.HistoricScopeInstanceEventHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
 
 /**
- * Created by KMukhov on 07.08.16.
+ * {@link IEntityHandler} for {@link HistoricTaskInstanceEventEntity}
  */
 public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricTaskInstanceEventEntity> {
 
@@ -25,6 +26,7 @@ public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanc
 
     @Override
     public void applySchema(OSchemaHelper helper) {
+    	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("processExecutionId", OType.STRING, 40)
                 .oProperty("activityInstanceId", OType.STRING, 90)

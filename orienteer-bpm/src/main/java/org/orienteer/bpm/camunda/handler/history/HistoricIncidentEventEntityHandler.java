@@ -1,12 +1,12 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricIncidentEventEntity;
-import org.orienteer.bpm.camunda.handler.subentity.HistoricEventHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
- * Created by KMukhov on 07.08.16.
+ * {@link IEntityHandler} for {@link HistoricIncidentEventEntity}
  */
 public class HistoricIncidentEventEntityHandler extends HistoricEventHandler<HistoricIncidentEventEntity> {
 
@@ -18,6 +18,7 @@ public class HistoricIncidentEventEntityHandler extends HistoricEventHandler<His
 
     @Override
     public void applySchema(OSchemaHelper helper) {
+    	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("createTime", OType.DATETIME, 40)
                 .oProperty("endTime", OType.DATETIME, 50)

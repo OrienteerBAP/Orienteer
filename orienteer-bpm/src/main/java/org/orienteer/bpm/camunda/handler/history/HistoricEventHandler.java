@@ -1,12 +1,13 @@
-package org.orienteer.bpm.camunda.handler.subentity;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoryEvent;
 import org.orienteer.bpm.camunda.handler.AbstractEntityHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
- * Created by KMukhov on 09.08.16.
+ * {@link IEntityHandler} for {@link HistoryEvent}
  */
 public class HistoricEventHandler<T extends HistoryEvent> extends AbstractEntityHandler<T> {
 
@@ -18,9 +19,9 @@ public class HistoricEventHandler<T extends HistoryEvent> extends AbstractEntity
 
     @Override
     public void applySchema(OSchemaHelper helper) {
-        super.applySchema(helper);
 
-        helper.oProperty("processInstanceId", OType.STRING, 10)
+        helper.oClass(OCLASS_NAME, BPM_ENTITY_CLASS)
+        		.oProperty("processInstanceId", OType.STRING, 10)
                 .oProperty("executionId", OType.STRING, 20)
                 .oProperty("processDefinitionId", OType.STRING, 30)
                 .oProperty("processDefinitionKey", OType.STRING, 40)

@@ -1,4 +1,4 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -9,14 +9,15 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricCaseInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.subentity.HistoricScopeInstanceEventHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
 import java.util.List;
 
 /**
- * Created by KMukhov on 07.08.16.
+ * {@link IEntityHandler} for {@link HistoricCaseInstanceEventEntity}
  */
 public class HistoricCaseInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricCaseInstanceEventEntity> {
 
@@ -30,6 +31,7 @@ public class HistoricCaseInstanceEventEntityHandler extends HistoricScopeInstanc
 
     @Override
     public void applySchema(OSchemaHelper helper) {
+    	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("businessKey", OType.STRING, 20)
                 .oProperty("state", OType.INTEGER, 70)
@@ -39,6 +41,7 @@ public class HistoricCaseInstanceEventEntityHandler extends HistoricScopeInstanc
                 .oProperty("tenantId", OType.STRING, 110);
     }
 
+    @Statement
     public List<String> selectHistoricCaseInstanceIdsByCaseDefinitionId(OPersistenceSession session, ListQueryParameterObject parameter) {
         ODatabaseDocument db = session.getDatabase();
         List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where caseDefinitionId = ?"), parameter.getParameter());

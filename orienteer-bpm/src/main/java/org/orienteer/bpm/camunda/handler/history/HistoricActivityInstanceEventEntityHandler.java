@@ -1,13 +1,14 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricActivityInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.subentity.HistoricScopeInstanceEventHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
- * Created by kir on 06.08.16.
+ * {@link IEntityHandler} for {@link HistoricActivityInstanceEventEntity}
  */
 public class HistoricActivityInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricActivityInstanceEventEntity> {
 
@@ -19,6 +20,7 @@ public class HistoricActivityInstanceEventEntityHandler extends HistoricScopeIns
 
     @Override
     public void applySchema(OSchemaHelper helper) {
+    	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("activityId", OType.STRING, 10)
                 .oProperty("activityName", OType.STRING, 20)
@@ -32,6 +34,7 @@ public class HistoricActivityInstanceEventEntityHandler extends HistoricScopeIns
                 .oProperty("taskAssignee", OType.STRING, 100)
                 .oProperty("tenantId", OType.STRING, 110);
     }
+    
 
     @Override
     protected void initMapping(OPersistenceSession session) {

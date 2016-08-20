@@ -1,16 +1,17 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDetailEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.subentity.HistoricEventHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
 
 /**
- * Created by KMukhov on 07.08.16.
+ * {@link IEntityHandler} for {@link HistoricDetailEventEntity}
  */
 public class HistoricDetailEventEntityHandler extends HistoricEventHandler<HistoricDetailEventEntity> {
 
@@ -22,6 +23,7 @@ public class HistoricDetailEventEntityHandler extends HistoricEventHandler<Histo
 
     @Override
     public void applySchema(OSchemaHelper helper) {
+    	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("timestamp", OType.DATETIME, 90)
                 .oProperty("activityInstanceId", OType.STRING, 100)

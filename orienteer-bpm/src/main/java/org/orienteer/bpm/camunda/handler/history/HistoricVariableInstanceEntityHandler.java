@@ -1,16 +1,20 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.history.HistoricVariableInstanceQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.AbstractEntityHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
 
 /**
- * Created by kir on 06.08.16.
+ * {@link IEntityHandler} for {@link HistoricVariableInstanceEntity}
  */
 public class HistoricVariableInstanceEntityHandler extends AbstractEntityHandler<HistoricVariableInstanceEntity> {
 

@@ -1,16 +1,17 @@
-package org.orienteer.bpm.camunda.handler;
+package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.history.UserOperationLogQuery;
 import org.camunda.bpm.engine.impl.history.event.UserOperationLogEntryEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.subentity.HistoricEventHandler;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
 
 /**
- * @author Kirill Mukhov
+ * {@link IEntityHandler} for {@link UserOperationLogEntryEventEntity}
  */
 public class UserOperationLogEntryEventEntityHandler extends HistoricEventHandler<UserOperationLogEntryEventEntity> {
 
@@ -22,6 +23,7 @@ public class UserOperationLogEntryEventEntityHandler extends HistoricEventHandle
 
     @Override
     public void applySchema(OSchemaHelper helper) {
+    	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("deploymentId", OType.STRING, 10)
                 .oProperty("taskId", OType.STRING, 20)
