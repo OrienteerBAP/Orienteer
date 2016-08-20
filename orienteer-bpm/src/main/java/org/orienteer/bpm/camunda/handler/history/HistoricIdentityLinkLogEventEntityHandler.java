@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler.history;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricIdentityLinkLogEventEntity;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.UserEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
@@ -22,11 +23,18 @@ public class HistoricIdentityLinkLogEventEntityHandler extends HistoricEventHand
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("time", OType.DATETIME, 10)
                 .oProperty("type", OType.STRING, 20)
-                .oProperty("userId", OType.STRING, 30)
+                .oProperty("user", OType.LINK, 30)
                 .oProperty("groupId", OType.STRING, 40)
                 .oProperty("taskId", OType.STRING, 50)
                 .oProperty("operationType", OType.STRING, 70)
                 .oProperty("assignerId", OType.STRING, 80)
                 .oProperty("tenantId", OType.STRING, 100);
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+
+        helper.setupRelationship(OCLASS_NAME, "user", UserEntityHandler.OCLASS_NAME, "historyIdentityLinkLogEvents");
     }
 }

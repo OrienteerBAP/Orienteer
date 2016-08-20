@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.dmn.entity.repository.DecisionDefinitionEntity;
 import org.camunda.bpm.engine.repository.DecisionDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.HistoricDecisionInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -33,7 +34,15 @@ public class DecisionDefinitionEntityHandler extends AbstractEntityHandler<Decis
                 .oProperty("resourceName", OType.STRING, 60)
                 .oProperty("diagramResourceName", OType.STRING, 70)
                 .oProperty("decisionRequirementsDefinitionId", OType.STRING, 80)
-                .oProperty("tenantId", OType.STRING, 90);
+                .oProperty("tenantId", OType.STRING, 90)
+                .oProperty("historyDecisionInstances", OType.LINKLIST, 100).assignVisualization("table");
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+
+        helper.setupRelationship(OCLASS_NAME, "historyDecisionInstances", HistoricDecisionInstanceEntityHandler.OCLASS_NAME, "decisionDefinition");
     }
 
     @Statement

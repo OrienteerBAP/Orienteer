@@ -10,9 +10,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.camunda.bpm.engine.impl.TaskQueryImpl;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.HistoricCaseActivityInstanceEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.task.TaskQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.*;
 import org.orienteer.core.util.OSchemaHelper;
 
 import static com.github.raymanrt.orientqb.query.Clause.clause;
@@ -57,22 +59,34 @@ public class TaskEntityHandler extends AbstractEntityHandler<TaskEntity> {
                 .oProperty("suspensionState", OType.INTEGER, 190)
                 .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table")
                 .oProperty("candidatesIdentityLinks", OType.LINKLIST, 200).assignVisualization("table")
-        	.defaultTab("form");
+        	                    .defaultTab("form")
+                .oProperty("historyActivityInstances", OType.LINKLIST, 210).assignVisualization("table")
+                .oProperty("historyCaseActivityEventInstances", OType.LINKLIST, 220).assignVisualization("table")
+                .oProperty("historyDetailEvents", OType.LINKLIST, 230).assignVisualization("table")
+                .oProperty("historicProcessInstances", OType.LINKLIST, 240).assignVisualization("table")
+                .oProperty("historyVariableInstances", OType.LINKLIST, 250).assignVisualization("table")
+                .oProperty("userOperationLogEntryEvents", OType.LINKLIST, 260).assignVisualization("table");
 //                .oProperty("tenantId", OType.STRING, 200); // Tenants are not supported
     }
     
     @Override
     public void applyRelationships(OSchemaHelper helper) {
     	super.applyRelationships(helper);
-    	helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "assignee", UserEntityHandler.OCLASS_NAME, "assignedTasks");
-    	helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "owner", UserEntityHandler.OCLASS_NAME, "ownedTasks");
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks");
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "parentTask", TaskEntityHandler.OCLASS_NAME, "childTasks");
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "childTasks", TaskEntityHandler.OCLASS_NAME, "parentTask");
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "processInstance", ExecutionEntityHandler.OCLASS_NAME, "tasks");
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "variables", VariableInstanceEntityHandler.OCLASS_NAME, "task");
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
-        helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "candidatesIdentityLinks", IdentityLinkEntityHandler.OCLASS_NAME, "task");
+    	helper.setupRelationship(OCLASS_NAME, "assignee", UserEntityHandler.OCLASS_NAME, "assignedTasks");
+    	helper.setupRelationship(OCLASS_NAME, "owner", UserEntityHandler.OCLASS_NAME, "ownedTasks");
+        helper.setupRelationship(OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks");
+        helper.setupRelationship(OCLASS_NAME, "parentTask", TaskEntityHandler.OCLASS_NAME, "childTasks");
+        helper.setupRelationship(OCLASS_NAME, "childTasks", TaskEntityHandler.OCLASS_NAME, "parentTask");
+        helper.setupRelationship(OCLASS_NAME, "processInstance", ExecutionEntityHandler.OCLASS_NAME, "tasks");
+        helper.setupRelationship(OCLASS_NAME, "variables", VariableInstanceEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
+        helper.setupRelationship(OCLASS_NAME, "candidatesIdentityLinks", IdentityLinkEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(OCLASS_NAME, "historyActivityInstances", HistoricActivityInstanceEventEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(OCLASS_NAME, "historyCaseActivityEventInstances", HistoricCaseActivityInstanceEventEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(OCLASS_NAME, "historyDetailEvents", HistoricDetailEventEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(OCLASS_NAME, "historicProcessInstances", HistoricProcessInstanceEventEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(OCLASS_NAME, "historyVariableInstances", HistoricVariableInstanceEntityHandler.OCLASS_NAME, "task");
+        helper.setupRelationship(OCLASS_NAME, "userOperationLogEntryEvents", UserOperationLogEntryEventEntityHandler.OCLASS_NAME, "task");
     }
     
     @Override

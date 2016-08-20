@@ -1,17 +1,16 @@
 package org.orienteer.bpm.camunda.handler;
 
-import java.util.List;
-
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
-import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
 import org.camunda.bpm.engine.management.JobDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.HistoricDetailEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricJobLogEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OType;
+import java.util.List;
 
 /**
  * {@link IEntityHandler} for {@link JobDefinitionEntity} 
@@ -33,13 +32,19 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 			  .oProperty("jobType", OType.STRING, 40)
 			  .oProperty("jobConfiguration", OType.STRING, 50)
 			  .oProperty("jobPriority", OType.LONG, 60)
-			  .oProperty("suspensionState", OType.INTEGER, 70);
+			  .oProperty("suspensionState", OType.INTEGER, 70)
+			  .oProperty("historyIncidentEvents", OType.LINKLIST, 80).assignVisualization("table")
+			  .oProperty("historyJobLogEvents", OType.LINKLIST, 90).assignVisualization("table")
+			  .oProperty("userOperationLogEntryEvents", OType.LINKLIST, 100).assignVisualization("table");
 	}
 
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
 		helper.setupRelationship(JobDefinitionEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(OCLASS_NAME, "historyIncidentEvents", HistoricDetailEventEntityHandler.OCLASS_NAME, "jobDefinition");
+		helper.setupRelationship(OCLASS_NAME, "historyJobLogEvents", HistoricJobLogEventEntityHandler.OCLASS_NAME, "jobDefinition");
+		helper.setupRelationship(OCLASS_NAME, "userOperationLogEntryEvents", UserOperationLogEntryEventEntityHandler.OCLASS_NAME, "jobDefinition");
 	}
 
 	@Override

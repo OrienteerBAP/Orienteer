@@ -11,7 +11,9 @@ import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.orienteer.bpm.camunda.BpmnHook;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
+import org.orienteer.bpm.camunda.handler.history.HistoricEventHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricProcessInstanceEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -44,7 +46,8 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 			  .oProperty("executions", OType.LINKLIST, 70).assignVisualization("table")
 			  .oProperty("suspensionState", OType.INTEGER, 80).defaultValue("1").notNull()
 		      .oProperty("tasks", OType.LINKLIST, 90).assignVisualization("table")
-			  .oProperty("historyEvents", OType.LINKLIST, 100).assignTab("history").assignVisualization("table");
+			  .oProperty("historyEvents", OType.LINKLIST, 100).assignTab("history").assignVisualization("table")
+			  .oProperty("historyVariableInstances", OType.LINKLIST, 110).assignVisualization("table");
 	}
 	
 	@Override
@@ -53,7 +56,8 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "executions", ExecutionEntityHandler.OCLASS_NAME, "processDefinition");
 		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "processDefinition");
-		helper.setupRelationship(OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "historyEvents");
+		helper.setupRelationship(OCLASS_NAME, "historyEvents", HistoricEventHandler.OCLASS_NAME, "processDefinition");
+		helper.setupRelationship(OCLASS_NAME, "historyVariableInstances", HistoricVariableInstanceEntityHandler.OCLASS_NAME, "processDefinition");
 	}
 	
 	@Override

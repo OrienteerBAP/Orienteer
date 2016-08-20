@@ -3,6 +3,8 @@ package org.orienteer.bpm.camunda.handler;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.UserEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.HistoricIdentityLinkLogEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -41,7 +43,9 @@ public class UserEntityHandler extends AbstractEntityHandler<UserEntity> {
 		helper.oClass(OCLASS_NAME)
 				.oProperty("assignedTasks", OType.LINKLIST, 10).assignVisualization("table")
 				.oProperty("ownedTasks", OType.LINKLIST, 20).assignVisualization("table")
-				.oProperty("availableTasks", OType.LINKLIST, 20).assignVisualization("table");
+				.oProperty("availableTasks", OType.LINKLIST, 20).assignVisualization("table")
+				.oProperty("historyIdentityLinkLogEvents", OType.LINKLIST, 30).assignVisualization("table")
+				.oProperty("userOperationLogEntryEvents", OType.LINKLIST, 40).assignVisualization("table");
 	}
 
 	@Override
@@ -49,6 +53,8 @@ public class UserEntityHandler extends AbstractEntityHandler<UserEntity> {
 		helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "assignee", UserEntityHandler.OCLASS_NAME, "assignedTasks");
 		helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "owner", UserEntityHandler.OCLASS_NAME, "ownedTasks");
 		helper.setupRelationship(IdentityLinkEntityHandler.OCLASS_NAME, "user", UserEntityHandler.OCLASS_NAME, "availableTasks");
+		helper.setupRelationship(OCLASS_NAME, "historyIdentityLinkLogEvents", HistoricIdentityLinkLogEventEntityHandler.OCLASS_NAME, "user");
+		helper.setupRelationship(OCLASS_NAME, "userOperationLogEntryEvents", UserOperationLogEntryEventEntityHandler.OCLASS_NAME, "user");
 	}
 	
 	

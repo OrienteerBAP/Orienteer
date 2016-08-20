@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler.history;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricCaseActivityInstanceEventEntity;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
@@ -22,7 +23,7 @@ public class HistoricCaseActivityInstanceEventEntityHandler extends HistoricScop
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("parentCaseActivityInstanceId", OType.STRING, 10)
                 .oProperty("caseActivityId", OType.STRING, 40)
-                .oProperty("taskId", OType.STRING, 50)
+                .oProperty("task", OType.LINK, 50)
                 .oProperty("calledProcessInstanceId", OType.STRING, 60)
                 .oProperty("calledCaseInstanceId", OType.STRING, 70)
                 .oProperty("caseActivityName", OType.STRING, 80)
@@ -30,5 +31,11 @@ public class HistoricCaseActivityInstanceEventEntityHandler extends HistoricScop
                 .oProperty("caseActivityInstanceState", OType.INTEGER, 130)
                 .oProperty("required", OType.BOOLEAN, 140)
                 .oProperty("tenantId", OType.STRING, 150);
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+        helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historyCaseActivityEventInstances");
     }
 }

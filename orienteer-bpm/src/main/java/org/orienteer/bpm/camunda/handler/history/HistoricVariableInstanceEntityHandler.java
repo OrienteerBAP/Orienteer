@@ -5,10 +5,7 @@ import org.camunda.bpm.engine.history.HistoricVariableInstanceQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.AbstractEntityHandler;
-import org.orienteer.bpm.camunda.handler.IEntityHandler;
-import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
-import org.orienteer.bpm.camunda.handler.Statement;
+import org.orienteer.bpm.camunda.handler.*;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -29,26 +26,39 @@ public class HistoricVariableInstanceEntityHandler extends AbstractEntityHandler
         super.applySchema(helper);
 
         helper.oProperty("processDefinitionKey", OType.STRING, 10)
-                .oProperty("processDefinitionId", OType.STRING, 20)
-                .oProperty("processInstanceId", OType.STRING, 30)
-                .oProperty("executionId", OType.STRING, 40)
+                .oProperty("processDefinition", OType.LINK, 20)
+                .oProperty("processInstance", OType.LINK, 30)
+                .oProperty("execution", OType.LINK, 40)
                 .oProperty("activityInstanceId", OType.STRING, 50)
                 .oProperty("tenantId", OType.STRING, 60)
                 .oProperty("caseDefinitionKey", OType.STRING, 70)
-                .oProperty("caseDefinitionId", OType.STRING, 80)
+                .oProperty("caseDefinition", OType.LINK, 80)
                 .oProperty("caseInstanceId", OType.STRING, 90)
-                .oProperty("caseExecutionId", OType.STRING, 100)
-                .oProperty("taskId", OType.STRING, 110)
+                .oProperty("caseExecution", OType.LINK, 100)
+                .oProperty("task", OType.LINK, 110)
                 .oProperty("variableName", OType.STRING, 120)
                 .oProperty("revision", OType.STRING, 130)
                 .oProperty("serializerName", OType.STRING, 140)
-                .oProperty("byteArrayId", OType.STRING, 150)
+                .oProperty("byteArray", OType.LINK, 150)
                 .oProperty("doubleValue", OType.DOUBLE, 160)
                 .oProperty("longValue", OType.LONG, 170)
                 .oProperty("textValue", OType.STRING, 180)
                 .oProperty("textValue2", OType.STRING, 190);
     }
-    
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+
+        helper.setupRelationship(OCLASS_NAME, "processInstance", ExecutionEntityHandler.OCLASS_NAME, "historyVariableInstances");
+        helper.setupRelationship(OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
+        helper.setupRelationship(OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "historyVariableInstances");
+        helper.setupRelationship(OCLASS_NAME, "caseDefinition", CaseDefinitionEntityHandler.OCLASS_NAME, "historyVariableInstances");
+        helper.setupRelationship(OCLASS_NAME, "caseExecution", CaseExecutionEntityHandler.OCLASS_NAME, "historyVariableInstances");
+        helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historyVariableInstances");
+        helper.setupRelationship(OCLASS_NAME, "byteArray", ByteArrayEntityHandler.OCLASS_NAME, "historyVariableInstances");
+    }
+
     @Override
     protected void initMapping(OPersistenceSession session) {
     	super.initMapping(session);

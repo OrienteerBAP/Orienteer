@@ -6,6 +6,8 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.repository.CaseDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.HistoricEventHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -32,14 +34,18 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
                 .oProperty("version", OType.INTEGER, 30)
                 .oProperty("deployment", OType.LINK, 40)
                 .oProperty("resourceName", OType.STRING, 50)
-                .oProperty("diagramResourceName", OType.STRING, 60);
+                .oProperty("diagramResourceName", OType.STRING, 60)
+                .oProperty("historyEvents", OType.LINKLIST, 70).assignTab("history").assignVisualization("table")
+                .oProperty("historyVariableInstances", OType.LINKLIST, 80).assignVisualization("table");
 //                .oProperty("tenantId", OType.STRING); // Tenants are not supported
     }
 
     @Override
     public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
-        helper.setupRelationship(CaseDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
+        helper.setupRelationship(OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
+        helper.setupRelationship(OCLASS_NAME, "historyEvents", HistoricEventHandler.OCLASS_NAME, "caseDefinition");
+        helper.setupRelationship(OCLASS_NAME, "historyVariableInstances", HistoricVariableInstanceEntityHandler.OCLASS_NAME, "caseDefinition");
     }
 
     @Statement

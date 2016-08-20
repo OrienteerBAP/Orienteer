@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.impl.history.event.HistoricDetailEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.Statement;
+import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -27,8 +28,15 @@ public class HistoricDetailEventEntityHandler extends HistoricEventHandler<Histo
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("timestamp", OType.DATETIME, 90)
                 .oProperty("activityInstanceId", OType.STRING, 100)
-                .oProperty("taskId", OType.STRING, 110)
+                .oProperty("task", OType.LINK, 110)
                 .oProperty("tenantId", OType.STRING, 130);
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+
+        helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historyDetailEvents");
     }
 
     @Statement

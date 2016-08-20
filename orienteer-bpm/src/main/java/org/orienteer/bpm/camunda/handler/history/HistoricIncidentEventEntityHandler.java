@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler.history;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricIncidentEventEntity;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.JobDefinitionEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
@@ -30,6 +31,13 @@ public class HistoricIncidentEventEntityHandler extends HistoricEventHandler<His
                 .oProperty("configuration", OType.STRING, 110)
                 .oProperty("incidentState", OType.INTEGER, 120)
                 .oProperty("tenantId", OType.STRING, 130)
-                .oProperty("jobDefinitionId", OType.STRING, 140);
+                .oProperty("jobDefinition", OType.LINK, 140);
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+
+        helper.setupRelationship(OCLASS_NAME, "jobDefinition", JobDefinitionEntityHandler.OCLASS_NAME, "historyIncidentEvents");
     }
 }

@@ -3,10 +3,7 @@ package org.orienteer.bpm.camunda.handler.history;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoryEvent;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.orienteer.bpm.camunda.handler.AbstractEntityHandler;
-import org.orienteer.bpm.camunda.handler.ExecutionEntityHandler;
-import org.orienteer.bpm.camunda.handler.IEntityHandler;
-import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
+import org.orienteer.bpm.camunda.handler.*;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
@@ -29,8 +26,8 @@ public class HistoricEventHandler<T extends HistoryEvent> extends AbstractEntity
                 .oProperty("processDefinition", OType.LINK, 30)
                 .oProperty("processDefinitionKey", OType.STRING, 40)
                 .oProperty("caseInstanceId", OType.STRING, 50)
-                .oProperty("caseExecutionId", OType.STRING, 60)
-                .oProperty("caseDefinitionId", OType.STRING, 70)
+                .oProperty("caseExecution", OType.LINK, 60)
+                .oProperty("caseDefinition", OType.LINK, 70)
                 .oProperty("caseDefinitionKey", OType.STRING, 80)
                 .oProperty("eventType", OType.STRING, 90)
                 .oProperty("sequenceCounter", OType.LONG, 100);
@@ -41,5 +38,7 @@ public class HistoricEventHandler<T extends HistoryEvent> extends AbstractEntity
     	helper.setupRelationship(OCLASS_NAME, "processInstance", ExecutionEntityHandler.OCLASS_NAME, "historyEvents");
     	helper.setupRelationship(OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
     	helper.setupRelationship(OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "historyEvents");
+        helper.setupRelationship(OCLASS_NAME, "caseDefinition", CaseDefinitionEntityHandler.OCLASS_NAME, "historyEvents");
+        helper.setupRelationship(OCLASS_NAME, "caseExecution", CaseExecutionEntityHandler.OCLASS_NAME, "historyEvents");
     }
 }

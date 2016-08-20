@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.batch.BatchQuery;
 import org.camunda.bpm.engine.impl.batch.BatchEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -33,7 +34,15 @@ public class BatchEntityHandler extends AbstractEntityHandler<BatchEntity> {
                 .oProperty("batchJobDefinitionId", OType.STRING, 80)
                 .oProperty("configuration", OType.STRING, 90)
                 .oProperty("tenantId", OType.STRING, 100)
-                .oProperty("suspensionState", OType.INTEGER, 110);
+                .oProperty("suspensionState", OType.INTEGER, 110)
+                .oProperty("userOperationLogEntryEvents", OType.LINKLIST, 120).assignVisualization("table");
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+
+        helper.setupRelationship(OCLASS_NAME, "userOperationLogEntryEvents", UserOperationLogEntryEventEntityHandler.OCLASS_NAME, "batch");
     }
 
     @Statement

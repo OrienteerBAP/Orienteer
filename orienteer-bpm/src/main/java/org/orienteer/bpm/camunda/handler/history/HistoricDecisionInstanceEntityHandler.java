@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.history.HistoricDecisionInstanceQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDecisionInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.DecisionDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
@@ -26,7 +27,7 @@ public class HistoricDecisionInstanceEntityHandler extends HistoricEventHandler<
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
-                .oProperty("decisionDefinitionId", OType.STRING, 10)
+                .oProperty("decisionDefinition", OType.LINK, 10)
                 .oProperty("decisionDefinitionKey", OType.STRING, 20)
                 .oProperty("decisionDefinitionName", OType.STRING, 30)
                 .oProperty("activityInstanceId", OType.STRING, 100)
@@ -37,10 +38,16 @@ public class HistoricDecisionInstanceEntityHandler extends HistoricEventHandler<
                 .oProperty("tenantId", OType.STRING, 150);
     }
 
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+        helper.setupRelationship(OCLASS_NAME, "decisionDefinition", DecisionDefinitionEntityHandler.OCLASS_NAME, "historyDecisionInstances");
+    }
+
     @Statement
     public List<HistoricDecisionInstanceEntity> selectHistoricDecisionInstancesByDecisionDefinitionId(
             OPersistenceSession session, ListQueryParameterObject parameter) {
-        return queryList(session, "select from " + getSchemaClass() + " where decisionDefinitionId=?", parameter.getParameter());
+        return queryList(session, "select from " + getSchemaClass() + " where decisionDefinition.id=?", parameter.getParameter());
     }
 
     @Statement

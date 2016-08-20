@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.impl.history.event.HistoricActivityInstanceEventEn
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
+import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
@@ -30,11 +31,16 @@ public class HistoricActivityInstanceEventEntityHandler extends HistoricScopeIns
                 .oProperty("parentActivityInstanceId", OType.STRING, 60)
                 .oProperty("calledProcessInstanceId", OType.STRING, 70)
                 .oProperty("calledCaseInstanceId", OType.STRING, 80)
-                .oProperty("taskId", OType.STRING, 90)
+                .oProperty("task", OType.LINK, 90)
                 .oProperty("taskAssignee", OType.STRING, 100)
                 .oProperty("tenantId", OType.STRING, 110);
     }
-    
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+        helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historyActivityInstances");
+    }
 
     @Override
     protected void initMapping(OPersistenceSession session) {

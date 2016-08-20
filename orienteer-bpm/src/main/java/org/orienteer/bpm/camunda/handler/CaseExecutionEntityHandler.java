@@ -5,6 +5,8 @@ import org.camunda.bpm.engine.impl.cmmn.entity.runtime.CaseExecutionEntity;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.runtime.CaseExecutionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.HistoricEventHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -33,7 +35,16 @@ public class CaseExecutionEntityHandler extends AbstractEntityHandler<CaseExecut
                 .oProperty("superExecutionId", OType.STRING, 70)
                 .oProperty("state", OType.INTEGER, 80)
                 .oProperty("previous", OType.INTEGER, 90)
-                .oProperty("required", OType.BOOLEAN, 100);
+                .oProperty("required", OType.BOOLEAN, 100)
+                .oProperty("historyEvents", OType.LINKLIST, 110).assignTab("history").assignVisualization("table")
+                .oProperty("historyVariableInstances", OType.LINKLIST, 120).assignVisualization("table");
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+        helper.setupRelationship(OCLASS_NAME, "historyEvents", HistoricEventHandler.OCLASS_NAME, "caseExecution");
+        helper.setupRelationship(OCLASS_NAME, "historyVariableInstances", HistoricVariableInstanceEntityHandler.OCLASS_NAME, "caseExecution");
     }
 
     @Statement

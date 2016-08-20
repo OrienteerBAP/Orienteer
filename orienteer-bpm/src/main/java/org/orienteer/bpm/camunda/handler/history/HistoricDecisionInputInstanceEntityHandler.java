@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDecisionInputInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.ByteArrayEntityHandler;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
@@ -30,12 +31,18 @@ public class HistoricDecisionInputInstanceEntityHandler extends HistoricEventHan
                 .oProperty("clauseId", OType.STRING, 20)
                 .oProperty("clauseName", OType.STRING, 30)
                 .oProperty("serializerName", OType.STRING, 40)
-                .oProperty("byteArrayValueId", OType.STRING, 50)
+                .oProperty("byteArray", OType.LINK, 50)
                 .oProperty("doubleValue", OType.DOUBLE, 60)
                 .oProperty("longValue", OType.LONG, 70)
                 .oProperty("textValue", OType.STRING, 80)
                 .oProperty("textValue2", OType.STRING, 90)
                 .oProperty("tenantId", OType.STRING, 100);
+    }
+
+    @Override
+    public void applyRelationships(OSchemaHelper helper) {
+        super.applyRelationships(helper);
+        helper.setupRelationship(OCLASS_NAME, "byteArray", ByteArrayEntityHandler.OCLASS_NAME, "historyDecisionInputInstances");
     }
 
     @Statement

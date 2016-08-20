@@ -9,10 +9,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricProcessInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.IEntityHandler;
-import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
-import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
-import org.orienteer.bpm.camunda.handler.Statement;
+import org.orienteer.bpm.camunda.handler.*;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
@@ -37,12 +34,13 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
                 .oProperty("parentActivityInstanceId", OType.STRING, 10)
                 .oProperty("activityId", OType.STRING, 60)
-                .oProperty("taskId", OType.STRING, 70)
+                .oProperty("task", OType.LINK, 70)
                 .oProperty("calledProcessInstanceId", OType.STRING, 80)
                 .oProperty("calledCaseInstanceId", OType.STRING, 90)
                 .oProperty("activityName", OType.STRING, 100)
                 .oProperty("activityType", OType.STRING, 110)
                 .oProperty("taskAssignee", OType.STRING, 120)
+                .oProperty("processDefinition", OType.LINK, 130)
                 .oProperty("activityInstanceState", OType.INTEGER, 160);
 
     }
@@ -56,6 +54,7 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
     public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
         helper.setupRelationship(HistoricProcessInstanceEventEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "historicProcessInstances");
+        helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historicProcessInstances");
     }
 
     @Statement

@@ -14,6 +14,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.MessageEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TimerEntity;
 import org.camunda.bpm.engine.runtime.JobQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.github.raymanrt.orientqb.query.Clause;
@@ -56,7 +57,8 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 			  .oProperty("suspensionState", OType.INTEGER, 180)
 			  .oProperty("jobDefinitionId", OType.STRING, 190)
 			  .oProperty("sequenceCounter", OType.LONG, 200)
-			  .oProperty("priority", OType.LONG, 210);
+			  .oProperty("priority", OType.LONG, 210)
+			  .oProperty("userOperationLogEntryEvents", OType.LINKLIST, 220).assignVisualization("table");
 	}
 
 	@Override
@@ -65,6 +67,7 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
 		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME);
 		helper.setupRelationship(JobEntityHandler.OCLASS_NAME, "execution", ExecutionEntityHandler.OCLASS_NAME);
+		helper.setupRelationship(OCLASS_NAME, "userOperationLogEntryEvents", UserOperationLogEntryEventEntityHandler.OCLASS_NAME, "job");
 	}
 
 	@Override

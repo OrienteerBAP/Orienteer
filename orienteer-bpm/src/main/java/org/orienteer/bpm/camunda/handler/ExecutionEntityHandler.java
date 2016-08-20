@@ -24,6 +24,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.github.raymanrt.orientqb.query.Clause;
@@ -76,7 +77,8 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 		      .oProperty("tasks", OType.LINKLIST, 180).assignVisualization("table")
 		      .oProperty("eventSubscriptions", OType.LINKLIST, 190).assignVisualization("table")
 			  .oProperty("variables", OType.LINKLIST, 200).assignVisualization("table")
-			  .oProperty("historyEvents", OType.LINKLIST, 210).assignTab("history").assignVisualization("table");
+			  .oProperty("historyEvents", OType.LINKLIST, 210).assignTab("history").assignVisualization("table")
+		      .oProperty("historyVariableInstances", OType.LINKLIST, 220).assignVisualization("table");
 	}
 
 	public void applyRelationships(OSchemaHelper helper) {
