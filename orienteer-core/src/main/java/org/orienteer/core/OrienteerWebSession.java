@@ -10,6 +10,7 @@ import org.orienteer.core.module.PerspectivesModule;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import org.orienteer.core.module.UserOnlineModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import java.util.Locale;
@@ -31,14 +32,17 @@ public class OrienteerWebSession extends OrientDbWebSession
 	{
 		return (OrienteerWebSession)Session.get();
 	}
-	
+
 	@Override
 	public boolean authenticate(String username, String password) {
 		boolean ret = super.authenticate(username, password);
 		if(ret)
 		{
 			perspective=null;
+
 			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
+			updateOnline(true);
+
 			if (!Strings.isNullOrEmpty(locale)) {
 				Locale localeForLanguage = Locale.forLanguageTag(locale);
 				if (localeForLanguage != null) {
@@ -52,6 +56,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 	@Override
 	public void signOut() {
 		perspective=null;
+		updateOnline(false);
 		super.signOut();
 	}
 
@@ -79,6 +84,14 @@ public class OrienteerWebSession extends OrientDbWebSession
 			return (ODocument)perspective;
 			
 		}
+	}
+
+	public OrienteerWebSession updateOnline(boolean online) {
+		OrienteerWebApplication app = OrienteerWebApplication.get();
+		UserOnlineModule module = app.getServiceInstance(UserOnlineModule.class);
+		module.updateOnlineUser(getDatabase(), online);
+
+		return this;
 	}
 
 	@Override
