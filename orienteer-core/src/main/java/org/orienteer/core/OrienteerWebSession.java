@@ -1,6 +1,8 @@
 package org.orienteer.core;
 
 import com.google.common.base.Strings;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
@@ -22,6 +24,7 @@ import java.util.Locale;
 public class OrienteerWebSession extends OrientDbWebSession
 {
 	private OIdentifiable perspective;
+	private UserOnlineModule onlineModule;
 
 	public OrienteerWebSession(Request request)
 	{
@@ -41,7 +44,8 @@ public class OrienteerWebSession extends OrientDbWebSession
 			perspective=null;
 
 			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
-			updateOnline(true);
+			setOnlineModule();
+			onlineModule.updateOnlineUser(getUser(), true);
 
 			if (!Strings.isNullOrEmpty(locale)) {
 				Locale localeForLanguage = Locale.forLanguageTag(locale);
@@ -50,13 +54,13 @@ public class OrienteerWebSession extends OrientDbWebSession
 				}
 			}
 		}
+		onlineModule.updateSessionUser(getUser(), getId());
 		return ret;
 	}
 
 	@Override
 	public void signOut() {
 		perspective=null;
-		updateOnline(false);
 		super.signOut();
 	}
 
@@ -86,11 +90,9 @@ public class OrienteerWebSession extends OrientDbWebSession
 		}
 	}
 
-	public OrienteerWebSession updateOnline(boolean online) {
+	public OrienteerWebSession setOnlineModule() {
 		OrienteerWebApplication app = OrienteerWebApplication.get();
-		UserOnlineModule module = app.getServiceInstance(UserOnlineModule.class);
-		module.updateOnlineUser(getDatabase(), online);
-
+		onlineModule = app.getServiceInstance(UserOnlineModule.class);
 		return this;
 	}
 
