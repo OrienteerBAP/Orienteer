@@ -42,13 +42,6 @@ public class HistoricDecisionOutputInstanceEntityHandler extends HistoricEventHa
                 .oProperty("tenantId", OType.STRING, 130);
     }
 
-    @Override
-    public void applyRelationships(OSchemaHelper helper) {
-        super.applyRelationships(helper);
-
-        helper.setupRelationship(OCLASS_NAME, "byteArray", ByteArrayEntityHandler.OCLASS_NAME, "historyDecisionOutputInstances");
-    }
-
     @Statement
     public List<HistoricDecisionOutputInstanceEntity> selectHistoricDecisionOutputInstancesByDecisionInstanceId(
             OPersistenceSession session, ListQueryParameterObject parameter) {

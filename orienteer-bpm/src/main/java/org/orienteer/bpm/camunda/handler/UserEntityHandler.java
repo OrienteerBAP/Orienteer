@@ -44,7 +44,6 @@ public class UserEntityHandler extends AbstractEntityHandler<UserEntity> {
 				.oProperty("assignedTasks", OType.LINKLIST, 10).assignVisualization("table")
 				.oProperty("ownedTasks", OType.LINKLIST, 20).assignVisualization("table")
 				.oProperty("availableTasks", OType.LINKLIST, 20).assignVisualization("table")
-				.oProperty("historyIdentityLinkLogEvents", OType.LINKLIST, 30).assignVisualization("table")
 				.oProperty("userOperationLogEntryEvents", OType.LINKLIST, 40).assignVisualization("table");
 	}
 
@@ -53,7 +52,6 @@ public class UserEntityHandler extends AbstractEntityHandler<UserEntity> {
 		helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "assignee", UserEntityHandler.OCLASS_NAME, "assignedTasks");
 		helper.setupRelationship(TaskEntityHandler.OCLASS_NAME, "owner", UserEntityHandler.OCLASS_NAME, "ownedTasks");
 		helper.setupRelationship(IdentityLinkEntityHandler.OCLASS_NAME, "user", UserEntityHandler.OCLASS_NAME, "availableTasks");
-		helper.setupRelationship(OCLASS_NAME, "historyIdentityLinkLogEvents", HistoricIdentityLinkLogEventEntityHandler.OCLASS_NAME, "user");
 		helper.setupRelationship(OCLASS_NAME, "userOperationLogEntryEvents", UserOperationLogEntryEventEntityHandler.OCLASS_NAME, "user");
 	}
 	

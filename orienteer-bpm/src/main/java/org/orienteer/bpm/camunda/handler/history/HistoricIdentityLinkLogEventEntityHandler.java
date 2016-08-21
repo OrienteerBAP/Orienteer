@@ -35,6 +35,6 @@ public class HistoricIdentityLinkLogEventEntityHandler extends HistoricEventHand
     public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
 
-        helper.setupRelationship(OCLASS_NAME, "user", UserEntityHandler.OCLASS_NAME, "historyIdentityLinkLogEvents");
+        helper.setupRelationship(OCLASS_NAME, "user", UserEntityHandler.OCLASS_NAME);
     }
 }

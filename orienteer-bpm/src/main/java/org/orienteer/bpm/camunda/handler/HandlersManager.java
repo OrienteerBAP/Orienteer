@@ -61,6 +61,7 @@ public final class HandlersManager {
 				 new IncidentEntityHandler(),
 				 new CaseDefinitionEntityHandler(),
 				 new CaseSentryPartEntityHandler(),
+				 new CaseExecutionEntityHandler(),
 				 new ExternalTaskEntityHandler(),
 				 new TenantEntityHandler(),
 				 new MeterLogEntityHandler(), 
