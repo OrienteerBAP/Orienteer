@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OUser;
+import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.ISessionListener;
@@ -52,10 +53,9 @@ public class UserOnlineModule extends AbstractOrienteerModule {
             public void onUnbound(final String sessionId) {
                 new DBClosure<Void>() {
                     @Override
-                    protected Void execute(ODatabaseDocument oDatabaseDocument) {
-                        oDatabaseDocument.command(new OSQLSynchQuery<Void>("UPDATE " + OCLASS_USER + " set " +
-                                ONLINE_FIELD + "=? where " + LAST_SESSION_FIELD + "=?"))
-                                .execute(false, sessionId);
+                    protected Void execute(ODatabaseDocument db) {
+                        db.command(new OSQLSynchQuery<Void>("UPDATE " + OCLASS_USER + " set " +
+                                ONLINE_FIELD + "=false where " + LAST_SESSION_FIELD + "=\""+sessionId + "\""));
                         return null;
                     }
                 }.execute();
