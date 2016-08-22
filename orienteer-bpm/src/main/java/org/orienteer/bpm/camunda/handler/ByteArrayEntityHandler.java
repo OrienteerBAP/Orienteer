@@ -25,15 +25,13 @@ public class ByteArrayEntityHandler extends AbstractEntityHandler<ByteArrayEntit
 		super.applySchema(helper);
 		helper.oProperty("name", OType.STRING, 10)
 			  .oProperty("bytes", OType.BINARY, 20)
-			  .oProperty("deployment", OType.LINK, 30)
-			  .oProperty("historyVariableInstances", OType.LINKLIST, 40).assignVisualization("table");
+			  .oProperty("deployment", OType.LINK, 30);
 	}
 
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
 		helper.setupRelationship(OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
-		helper.setupRelationship(OCLASS_NAME, "historyVariableInstances", HistoricVariableInstanceEntityHandler.OCLASS_NAME, "byteArray");
 	}
 
 	@Statement

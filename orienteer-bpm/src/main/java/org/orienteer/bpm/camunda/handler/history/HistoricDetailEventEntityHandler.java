@@ -52,6 +52,6 @@ public class HistoricDetailEventEntityHandler extends HistoricEventHandler<Histo
 
     @Statement
     public List<HistoricDetailEventEntity> selectHistoricDetailsByTaskId(OPersistenceSession session, ListQueryParameterObject parameter) {
-        return queryList(session, "select from " + getSchemaClass() + " where taskId = ?", parameter.getParameter());
+        return queryList(session, "select from " + getSchemaClass() + " where task.id = ?", parameter.getParameter());
     }
 }

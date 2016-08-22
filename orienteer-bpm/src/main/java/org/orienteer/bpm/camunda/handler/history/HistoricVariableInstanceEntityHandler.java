@@ -56,7 +56,7 @@ public class HistoricVariableInstanceEntityHandler extends AbstractEntityHandler
         helper.setupRelationship(OCLASS_NAME, "caseDefinition", CaseDefinitionEntityHandler.OCLASS_NAME, "historyVariableInstances");
         helper.setupRelationship(OCLASS_NAME, "caseExecution", CaseExecutionEntityHandler.OCLASS_NAME, "historyVariableInstances");
         helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historyVariableInstances");
-        helper.setupRelationship(OCLASS_NAME, "byteArray", ByteArrayEntityHandler.OCLASS_NAME, "historyVariableInstances");
+        helper.setupRelationship(OCLASS_NAME, "byteArray", ByteArrayEntityHandler.OCLASS_NAME);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class HistoricVariableInstanceEntityHandler extends AbstractEntityHandler
 
     @Statement
     public List<HistoricVariableInstanceEntity> selectHistoricVariablesByProcessInstanceId(OPersistenceSession session, ListQueryParameterObject parameter) {
-        return queryList(session, "select from " + getSchemaClass() + " where processInstanceId = ?", parameter.getParameter());
+        return queryList(session, "select from " + getSchemaClass() + " where processInstance.id = ?", parameter.getParameter());
     }
 
     @Statement
