@@ -29,7 +29,7 @@ public class HistoricJobLogEventEntityHandler extends HistoricEventHandler<Histo
                 .oProperty("jobExceptionMessage", OType.STRING, 60)
                 .oProperty("exceptionByteArrayId", OType.STRING, 70)
                 .oProperty("state", OType.INTEGER, 80)
-                .oProperty("jobDefinition", OType.STRING, 90)
+                .oProperty("jobDefinition", OType.LINK, 90)
                 .oProperty("jobDefinitionType", OType.STRING, 100)
                 .oProperty("jobDefinitionConfiguration", OType.STRING, 110)
                 .oProperty("activityId", OType.STRING, 120)

@@ -47,17 +47,19 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 			  .oProperty("suspensionState", OType.INTEGER, 80).defaultValue("1").notNull()
 		      .oProperty("tasks", OType.LINKLIST, 90).assignVisualization("table")
 			  .oProperty("historyEvents", OType.LINKLIST, 100).assignTab("history").assignVisualization("table")
-			  .oProperty("historyVariableInstances", OType.LINKLIST, 110).assignVisualization("table");
+			  .oProperty("historyVariableInstances", OType.LINKLIST, 110).assignVisualization("table")
+			  .oProperty("historicProcessInstances", OType.LINKLIST, 120).assignVisualization("table");
 	}
 	
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
-		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
-		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "executions", ExecutionEntityHandler.OCLASS_NAME, "processDefinition");
-		helper.setupRelationship(ProcessDefinitionEntityHandler.OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "processDefinition");
+		helper.setupRelationship(OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME, "processDefinitions");
+		helper.setupRelationship(OCLASS_NAME, "executions", ExecutionEntityHandler.OCLASS_NAME, "processDefinition");
+		helper.setupRelationship(OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "processDefinition");
 		helper.setupRelationship(OCLASS_NAME, "historyEvents", HistoricEventHandler.OCLASS_NAME, "processDefinition");
 		helper.setupRelationship(OCLASS_NAME, "historyVariableInstances", HistoricVariableInstanceEntityHandler.OCLASS_NAME, "processDefinition");
+		helper.setupRelationship(OCLASS_NAME, "historicProcessInstances", HistoricProcessInstanceEventEntityHandler.OCLASS_NAME, "processDefinition");
 	}
 	
 	@Override

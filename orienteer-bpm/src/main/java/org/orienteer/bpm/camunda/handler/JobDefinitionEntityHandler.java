@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
 import org.camunda.bpm.engine.management.JobDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.history.HistoricDetailEventEntityHandler;
+import org.orienteer.bpm.camunda.handler.history.HistoricIncidentEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricJobLogEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
@@ -42,7 +43,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	public void applyRelationships(OSchemaHelper helper) {
 		super.applyRelationships(helper);
 		helper.setupRelationship(JobDefinitionEntityHandler.OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME);
-		helper.setupRelationship(OCLASS_NAME, "historyIncidentEvents", HistoricDetailEventEntityHandler.OCLASS_NAME, "jobDefinition");
+		helper.setupRelationship(OCLASS_NAME, "historyIncidentEvents", HistoricIncidentEventEntityHandler.OCLASS_NAME, "jobDefinition");
 		helper.setupRelationship(OCLASS_NAME, "historyJobLogEvents", HistoricJobLogEventEntityHandler.OCLASS_NAME, "jobDefinition");
 		helper.setupRelationship(OCLASS_NAME, "userOperationLogEntryEvents", UserOperationLogEntryEventEntityHandler.OCLASS_NAME, "jobDefinition");
 	}
