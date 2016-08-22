@@ -36,7 +36,7 @@ public class UserOnlineModule extends AbstractOrienteerModule {
         helper.oClass(OCLASS_USER)
                 .oProperty(ONLINE_FIELD, OType.BOOLEAN)
                 .oProperty(LAST_SESSION_FIELD, OType.STRING)
-                .switchDisplayable(true);
+                .switchDisplayable(true, ONLINE_FIELD, LAST_SESSION_FIELD);
 
         return null;
     }
@@ -54,8 +54,8 @@ public class UserOnlineModule extends AbstractOrienteerModule {
                     @Override
                     protected Void execute(ODatabaseDocument oDatabaseDocument) {
                         oDatabaseDocument.command(new OSQLSynchQuery<Void>("UPDATE " + OCLASS_USER + " set " +
-                                ONLINE_FIELD + "=false where " + LAST_SESSION_FIELD + "=?"))
-                                .execute(sessionId);
+                                ONLINE_FIELD + "=? where " + LAST_SESSION_FIELD + "=?"))
+                                .execute(false, sessionId);
                         return null;
                     }
                 }.execute();
