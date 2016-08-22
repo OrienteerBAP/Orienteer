@@ -56,6 +56,7 @@ public class HistoricVariableInstanceEntityHandler extends AbstractEntityHandler
         helper.setupRelationship(OCLASS_NAME, "caseDefinition", CaseDefinitionEntityHandler.OCLASS_NAME, "historyVariableInstances");
         helper.setupRelationship(OCLASS_NAME, "caseExecution", CaseExecutionEntityHandler.OCLASS_NAME, "historyVariableInstances");
         helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historyVariableInstances");
+        helper.setupRelationship(OCLASS_NAME, "byteArray", ByteArrayEntityHandler.OCLASS_NAME, "historyVariableInstances");
     }
 
     @Override
