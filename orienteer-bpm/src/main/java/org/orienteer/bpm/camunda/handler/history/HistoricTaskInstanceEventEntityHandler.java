@@ -3,12 +3,17 @@ package org.orienteer.bpm.camunda.handler.history;
 import com.google.common.base.Function;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricTaskInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
+
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -48,4 +53,10 @@ public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanc
         super.initMapping(session);
         mappingConvertors.put("id", new NonUniqIdConverter("ti:"));
     }
+
+    // TODO
+//    @Statement
+//    public String selectHistoricTaskInstanceIdsByParameters(OPersistenceSession session, ListQueryParameterObject parameters) {
+//        Map<String, String> params = (Map<String, String>) parameters.getParameter();
+//    }
 }
