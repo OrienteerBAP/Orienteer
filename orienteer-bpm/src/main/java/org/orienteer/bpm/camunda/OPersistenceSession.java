@@ -68,7 +68,8 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	public void cacheODocument(ODocument doc) {
 		ORID orid = doc.getIdentity();
-		idToOIdentifiableCache.put((String) doc.field("id"), orid.isPersistent()?orid:doc);
+//		idToOIdentifiableCache.put((String) doc.field("id"), orid.isPersistent()?orid:doc);
+		idToOIdentifiableCache.put((String) doc.field("id"), orid);
 	}
 	
 	/**
