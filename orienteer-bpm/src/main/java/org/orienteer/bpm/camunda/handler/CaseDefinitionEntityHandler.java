@@ -10,6 +10,7 @@ import org.orienteer.bpm.camunda.handler.history.HistoricEventHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -118,5 +119,13 @@ public class CaseDefinitionEntityHandler extends AbstractEntityHandler<CaseDefin
     @Statement
     public List<CaseDefinitionEntity> selectCaseDefinitionByQueryCriteria(OPersistenceSession session, final CaseDefinitionQuery query) {
         return query(session, query);
+    }
+
+    @Statement
+    public void deleteCaseDefinitionsByDeploymentId(OPersistenceSession session, String deploymentId) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("deploymentId", deploymentId);
+
+        delete(session, params);
     }
 }
