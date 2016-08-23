@@ -30,7 +30,6 @@ public class HistoricIncidentEventEntityHandler extends HistoricEventHandler<His
                 .oProperty("rootCauseIncidentId", OType.STRING, 100)
                 .oProperty("configuration", OType.STRING, 110)
                 .oProperty("incidentState", OType.INTEGER, 120)
-                .oProperty("tenantId", OType.STRING, 130)
                 .oProperty("jobDefinition", OType.LINK, 140);
     }
 

@@ -40,7 +40,6 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
                 .oProperty("activityName", OType.STRING, 100)
                 .oProperty("activityType", OType.STRING, 110)
                 .oProperty("taskAssignee", OType.STRING, 120)
-                .oProperty("processDefinition", OType.LINK, 130)
                 .oProperty("activityInstanceState", OType.INTEGER, 160);
 
     }
@@ -53,7 +52,6 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
 
     public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
-        helper.setupRelationship(OCLASS_NAME, "processDefinition", ProcessDefinitionEntityHandler.OCLASS_NAME, "historicProcessInstances");
         helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historicProcessInstances");
     }
 

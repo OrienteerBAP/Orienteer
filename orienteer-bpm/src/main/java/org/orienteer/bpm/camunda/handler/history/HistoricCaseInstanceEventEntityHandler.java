@@ -37,8 +37,7 @@ public class HistoricCaseInstanceEventEntityHandler extends HistoricScopeInstanc
                 .oProperty("state", OType.INTEGER, 70)
                 .oProperty("createUserId", OType.STRING, 80)
                 .oProperty("superCaseInstanceId", OType.STRING, 90)
-                .oProperty("superProcessInstanceId", OType.STRING, 100)
-                .oProperty("tenantId", OType.STRING, 110);
+                .oProperty("superProcessInstanceId", OType.STRING, 100);
     }
 
     @Statement

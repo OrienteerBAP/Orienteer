@@ -9,11 +9,8 @@ import org.orienteer.core.util.OSchemaHelper;
 import java.util.List;
 import java.util.Map;
 
-import static java.sql.JDBCType.VARCHAR;
-import static org.orienteer.core.component.FAIconType.key;
-
 /**
- * @author Kirill Mukhov
+ * {@link IEntityHandler} for {@link IdentityInfoEntity}
  */
 public class IdentityInfoEntityHandler extends AbstractEntityHandler<IdentityInfoEntity> {
 

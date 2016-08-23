@@ -27,8 +27,7 @@ public class HistoricIdentityLinkLogEventEntityHandler extends HistoricEventHand
                 .oProperty("groupId", OType.STRING, 40)
                 .oProperty("taskId", OType.STRING, 50)
                 .oProperty("operationType", OType.STRING, 70)
-                .oProperty("assignerId", OType.STRING, 80)
-                .oProperty("tenantId", OType.STRING, 100);
+                .oProperty("assignerId", OType.STRING, 80);
     }
 
     @Override

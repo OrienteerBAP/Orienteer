@@ -2,6 +2,7 @@ package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.persistence.entity.HistoricJobLogEventEntity;
+import org.orienteer.bpm.camunda.handler.DeploymentEntityHandler;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.JobDefinitionEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
@@ -33,8 +34,7 @@ public class HistoricJobLogEventEntityHandler extends HistoricEventHandler<Histo
                 .oProperty("jobDefinitionType", OType.STRING, 100)
                 .oProperty("jobDefinitionConfiguration", OType.STRING, 110)
                 .oProperty("activityId", OType.STRING, 120)
-                .oProperty("deploymentId", OType.STRING, 170)
-                .oProperty("tenantId", OType.STRING, 180);
+                .oProperty("deployment", OType.LINK, 170);
     }
 
     @Override
@@ -42,5 +42,6 @@ public class HistoricJobLogEventEntityHandler extends HistoricEventHandler<Histo
         super.applyRelationships(helper);
 
         helper.setupRelationship(OCLASS_NAME, "jobDefinition", JobDefinitionEntityHandler.OCLASS_NAME, "historyJobLogEvents");
+        helper.setupRelationship(OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
     }
 }

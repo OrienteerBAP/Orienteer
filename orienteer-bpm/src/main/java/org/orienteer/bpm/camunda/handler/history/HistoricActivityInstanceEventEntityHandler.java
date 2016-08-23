@@ -32,8 +32,7 @@ public class HistoricActivityInstanceEventEntityHandler extends HistoricScopeIns
                 .oProperty("calledProcessInstanceId", OType.STRING, 70)
                 .oProperty("calledCaseInstanceId", OType.STRING, 80)
                 .oProperty("task", OType.LINK, 90)
-                .oProperty("taskAssignee", OType.STRING, 100)
-                .oProperty("tenantId", OType.STRING, 110);
+                .oProperty("taskAssignee", OType.STRING, 100);
     }
 
     @Override

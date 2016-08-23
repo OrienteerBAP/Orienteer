@@ -29,8 +29,7 @@ public class HistoricDetailEventEntityHandler extends HistoricEventHandler<Histo
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
                 .oProperty("timestamp", OType.DATETIME, 90)
                 .oProperty("activityInstanceId", OType.STRING, 100)
-                .oProperty("task", OType.LINK, 110)
-                .oProperty("tenantId", OType.STRING, 130);
+                .oProperty("task", OType.LINK, 110);
     }
 
     @Override

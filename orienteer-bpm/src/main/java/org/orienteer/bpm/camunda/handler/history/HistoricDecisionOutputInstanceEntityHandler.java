@@ -38,8 +38,7 @@ public class HistoricDecisionOutputInstanceEntityHandler extends HistoricEventHa
                 .oProperty("doubleValue", OType.DOUBLE, 90)
                 .oProperty("longValue", OType.LONG, 100)
                 .oProperty("textValue", OType.STRING, 110)
-                .oProperty("textValue2", OType.STRING, 120)
-                .oProperty("tenantId", OType.STRING, 130);
+                .oProperty("textValue2", OType.STRING, 120);
     }
 
     @Statement

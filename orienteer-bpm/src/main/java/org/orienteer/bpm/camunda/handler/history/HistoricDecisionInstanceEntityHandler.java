@@ -34,8 +34,7 @@ public class HistoricDecisionInstanceEntityHandler extends HistoricEventHandler<
                 .oProperty("activityId", OType.STRING, 110)
                 .oProperty("evaluationTime", OType.DATETIME, 120)
                 .oProperty("collectResultValue", OType.DOUBLE, 130)
-                .oProperty("userId", OType.STRING, 140)
-                .oProperty("tenantId", OType.STRING, 150);
+                .oProperty("userId", OType.STRING, 140);
     }
 
     @Override

@@ -47,8 +47,7 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 			  .oProperty("suspensionState", OType.INTEGER, 80).defaultValue("1").notNull()
 		      .oProperty("tasks", OType.LINKLIST, 90).assignVisualization("table")
 			  .oProperty("historyEvents", OType.LINKLIST, 100).assignTab("history").assignVisualization("table")
-			  .oProperty("historyVariableInstances", OType.LINKLIST, 110).assignVisualization("table")
-			  .oProperty("historicProcessInstances", OType.LINKLIST, 120).assignVisualization("table");
+			  .oProperty("historyVariableInstances", OType.LINKLIST, 110).assignTab("history").assignVisualization("table");
 	}
 	
 	@Override
@@ -59,7 +58,6 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 		helper.setupRelationship(OCLASS_NAME, "tasks", TaskEntityHandler.OCLASS_NAME, "processDefinition");
 		helper.setupRelationship(OCLASS_NAME, "historyEvents", HistoricEventHandler.OCLASS_NAME, "processDefinition");
 		helper.setupRelationship(OCLASS_NAME, "historyVariableInstances", HistoricVariableInstanceEntityHandler.OCLASS_NAME, "processDefinition");
-		helper.setupRelationship(OCLASS_NAME, "historicProcessInstances", HistoricProcessInstanceEventEntityHandler.OCLASS_NAME, "processDefinition");
 	}
 	
 	@Override

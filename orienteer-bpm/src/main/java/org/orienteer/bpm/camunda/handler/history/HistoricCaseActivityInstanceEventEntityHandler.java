@@ -29,8 +29,7 @@ public class HistoricCaseActivityInstanceEventEntityHandler extends HistoricScop
                 .oProperty("caseActivityName", OType.STRING, 80)
                 .oProperty("caseActivityType", OType.STRING, 90)
                 .oProperty("caseActivityInstanceState", OType.INTEGER, 130)
-                .oProperty("required", OType.BOOLEAN, 140)
-                .oProperty("tenantId", OType.STRING, 150);
+                .oProperty("required", OType.BOOLEAN, 140);
     }
 
     @Override

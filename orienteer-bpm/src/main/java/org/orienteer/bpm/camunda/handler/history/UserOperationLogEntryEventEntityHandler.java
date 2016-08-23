@@ -36,8 +36,7 @@ public class UserOperationLogEntryEventEntityHandler extends HistoricEventHandle
                 .oProperty("entityType", OType.STRING, 100)
                 .oProperty("property", OType.STRING, 110)
                 .oProperty("orgValue", OType.STRING, 120)
-                .oProperty("newValue", OType.STRING, 130)
-                .oProperty("tenantId", OType.STRING, 140);
+                .oProperty("newValue", OType.STRING, 130);
     }
 
     @Override
