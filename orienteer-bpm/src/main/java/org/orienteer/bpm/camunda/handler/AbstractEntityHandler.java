@@ -274,8 +274,8 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			String docField = mapToDoc.getValue();
 			
 			
-			if(!Objects.equal(value, doc.field(docField))) {
-				int refIndex = docField.indexOf('.');
+			int refIndex = docField.indexOf('.');
+			if(refIndex>=0 || !Objects.equal(value, doc.field(docField))) {
 				if(refIndex>=0) {
 					String refPkField = docField.substring(refIndex+1); 
 					docField = docField.substring(0, refIndex);
@@ -294,7 +294,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 						if(referTo==null) {
 							referTo = refHandler.readAsDocument(referToId, session);
 						}
-						doc.field(docField, referTo);
+						if(!Objects.equal(doc.field(docField), referTo)) doc.field(docField, referTo);
 					} else
 					{
 						doc.field(docField, (Object) null);

@@ -7,6 +7,7 @@ import org.orienteer.core.util.OSchemaHelper;
 
 /**
  * {@link IEntityHandler} for child of {@link HistoricScopeInstanceEvent}
+ * @param <T> the type of {@link HistoricScopeInstanceEvent}
  */
 public class HistoricScopeInstanceEventHandler<T extends HistoricScopeInstanceEvent> extends HistoricEventHandler<T> {
 

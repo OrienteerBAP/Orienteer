@@ -83,7 +83,7 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 		//TODO: Fix this behavior
 		if(exceptionByteArrayId!=null) {
 			try {
-				Field field = entity.getClass().getDeclaredField("exceptionByteArrayId");
+				Field field = JobEntity.class.getDeclaredField("exceptionByteArrayId");
 				field.setAccessible(true);
 				field.set(entity, exceptionByteArrayId);
 			} catch (Exception e) {

@@ -8,6 +8,7 @@ import org.orienteer.core.util.OSchemaHelper;
 
 /**
  * {@link IEntityHandler} for {@link HistoryEvent}
+ * @param <T> - type of {@link HistoryEvent}
  */
 public class HistoricEventHandler<T extends HistoryEvent> extends AbstractEntityHandler<T> {
 
