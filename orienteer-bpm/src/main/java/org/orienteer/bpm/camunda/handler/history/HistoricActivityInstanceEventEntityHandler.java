@@ -5,8 +5,12 @@ import org.camunda.bpm.engine.impl.history.event.HistoricActivityInstanceEventEn
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link IEntityHandler} for {@link HistoricActivityInstanceEventEntity}
@@ -45,5 +49,13 @@ public class HistoricActivityInstanceEventEntityHandler extends HistoricScopeIns
     protected void initMapping(OPersistenceSession session) {
     	super.initMapping(session);
     	mappingConvertors.put("id", new NonUniqIdConverter("a:"));
+    }
+
+    @Statement
+    public void deleteHistoricActivityInstancesByProcessInstanceId(OPersistenceSession session, String processInstanceId) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("processInstanceId", processInstanceId);
+
+        delete(session, params);
     }
 }

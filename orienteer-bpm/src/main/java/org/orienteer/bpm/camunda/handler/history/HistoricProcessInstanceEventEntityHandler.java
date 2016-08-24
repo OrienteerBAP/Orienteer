@@ -13,7 +13,9 @@ import org.orienteer.bpm.camunda.handler.*;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * {@link IEntityHandler} for {@link HistoricProcessInstanceEventEntity}
@@ -60,5 +62,13 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
         ODatabaseDocument db = session.getDatabase();
         List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where processDefinition.id = ?"), parameter.getParameter());
         return Lists.transform(resultSet, GET_ID_FUNCTION);
+    }
+
+    @Statement
+    public void deleteHistoricProcessInstance(OPersistenceSession session, String processInstanceId) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("processInstanceId", processInstanceId);
+
+        delete(session, params);
     }
 }

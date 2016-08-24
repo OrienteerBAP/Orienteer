@@ -2,10 +2,15 @@ package org.orienteer.bpm.camunda.handler.history;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.persistence.entity.HistoricJobLogEventEntity;
+import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.DeploymentEntityHandler;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.JobDefinitionEntityHandler;
+import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link IEntityHandler} for {@link HistoricJobLogEventEntity}
@@ -43,5 +48,29 @@ public class HistoricJobLogEventEntityHandler extends HistoricEventHandler<Histo
 
         helper.setupRelationship(OCLASS_NAME, "jobDefinition", JobDefinitionEntityHandler.OCLASS_NAME, "historyJobLogEvents");
         helper.setupRelationship(OCLASS_NAME, "deployment", DeploymentEntityHandler.OCLASS_NAME);
+    }
+
+    @Statement
+    public void deleteHistoricJobLogByDeploymentId(OPersistenceSession session, String deploymentId) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("deploymentId", deploymentId);
+
+        delete(session, params);
+    }
+
+    @Statement
+    public void deleteHistoricJobLogByProcessDefinitionId(OPersistenceSession session, String processDefinitionId) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("processDefinitionId", processDefinitionId);
+
+        delete(session, params);
+    }
+
+    @Statement
+    public void deleteHistoricJobLogByProcessInstanceId(OPersistenceSession session, String processInstanceId) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("processInstanceId", processInstanceId);
+
+        delete(session, params);
     }
 }

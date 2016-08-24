@@ -8,6 +8,7 @@ import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.history.HistoricDecisionInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -122,5 +123,13 @@ public class DecisionDefinitionEntityHandler extends AbstractEntityHandler<Decis
     @Statement
     public List<DecisionDefinitionEntity> selectDecisionDefinitionsByQueryCriteria(OPersistenceSession session, DecisionDefinitionQuery query) {
         return query(session, query);
+    }
+
+    @Statement
+    public void deleteDecisionDefinitionsByDeploymentId(OPersistenceSession session, String deploymentId) {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("deploymentId", deploymentId);
+
+        delete(session, params);
     }
 }
