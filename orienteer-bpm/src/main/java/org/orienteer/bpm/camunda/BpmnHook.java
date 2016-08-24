@@ -57,7 +57,7 @@ public class BpmnHook implements ORecordHook {
 	      final ODocument doc = (ODocument) iRecord;
 	      OClass oClass = doc.getSchemaClass();
 	      RESULT res = RESULT.RECORD_NOT_CHANGED;
-	      if(oClass.isSubClassOf(IEntityHandler.BPM_ENTITY_CLASS)) {
+	      if(oClass!=null && oClass.isSubClassOf(IEntityHandler.BPM_ENTITY_CLASS)) {
 	    	  if(iType.equals(TYPE.BEFORE_CREATE)) {
 	    		  if(doc.field("id")==null) {
 	    			  doc.field("id", getNextId());

@@ -33,9 +33,9 @@ public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanc
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricScopeInstanceEventHandler.OCLASS_NAME)
+        		.oProperty("name", OType.STRING, 10).markAsDocumentName()
                 .oProperty("processExecutionId", OType.STRING, 40)
                 .oProperty("activityInstanceId", OType.STRING, 90)
-                .oProperty("name", OType.STRING, 100)
                 .oProperty("parentTaskId", OType.STRING, 110)
                 .oProperty("description", OType.STRING, 120)
                 .oProperty("owner", OType.STRING, 130)
@@ -44,8 +44,7 @@ public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanc
                 .oProperty("taskDefinitionKey", OType.STRING, 190)
                 .oProperty("priority", OType.INTEGER, 200)
                 .oProperty("dueDate", OType.DATETIME, 210)
-                .oProperty("followUpDate", OType.DATETIME, 220)
-                .oProperty("tenantId", OType.STRING, 230);
+                .oProperty("followUpDate", OType.DATETIME, 220);
     }
 
     @Override

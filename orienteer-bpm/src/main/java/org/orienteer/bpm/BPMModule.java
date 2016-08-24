@@ -46,9 +46,14 @@ public class BPMModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
+	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+		super.onUpdate(app, db, oldVersion, newVersion);
+		onInstall(app, db);
+	}
+	
+	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		onInstall(app, db);
 		app.mountPages("org.orienteer.bpm.web");
 		OProcessApplication processApplication = new OProcessApplication();
 		processApplication.deploy();
