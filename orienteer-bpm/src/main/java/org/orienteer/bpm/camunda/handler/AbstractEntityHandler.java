@@ -245,7 +245,11 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			for(Map.Entry<String, String> mapToEntity : mappingFromDocToEntity.entrySet()) {
 				Object valueToSet = doc.field(mapToEntity.getKey());
 				valueToSet = convertValueToEntity(mapToEntity.getValue(), valueToSet);
-				PropertyResolver.setValue(mapToEntity.getValue(), entity, valueToSet, PROPERTY_RESOLVER_CONVERTEER);
+				if(valueToSet!=null) PropertyResolver.setValue(mapToEntity.getValue(), entity, valueToSet, PROPERTY_RESOLVER_CONVERTEER);
+				else {
+					IGetAndSet getAndSet = getGetAndSetter(entity.getClass(), mapToEntity.getValue());
+					if(!getAndSet.getTargetClass().isPrimitive()) getAndSet.setValue(entity, null, PROPERTY_RESOLVER_CONVERTEER);
+				}
 			}
 			if(entity instanceof HasDbRevision) {
 				((HasDbRevision)entity).setRevision(doc.getVersion());
@@ -450,7 +454,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 			if(pd.getReadMethod()!=null 
 					&& ( mappingFromEntityToDoc.containsKey(pd.getName())
 							|| mappingFromQueryToDoc.containsKey(pd.getName()))
-					&& !ignore.contains(pd.getName())) {
+					&& (ignore==null || !ignore.contains(pd.getName()))) {
 				String docMapping = mappingFromEntityToDoc.get(pd.getName());
 				if(docMapping==null) docMapping = mappingFromQueryToDoc.get(pd.getName());
 				Object value = pd.getReadMethod().invoke(query);
@@ -466,7 +470,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		checkMapping(session);
 		for(Map.Entry<String, ?> entry : query.entrySet()) {
 			if((mappingFromEntityToDoc.containsKey(entry.getKey()) || mappingFromEntityToDoc.containsKey(entry.getKey()))
-					&& !ignore.contains(entry.getKey())) {
+					&& (ignore==null || !ignore.contains(entry.getKey()))) {
 				String docMapping = mappingFromEntityToDoc.get(entry.getKey());
 				if(docMapping==null) docMapping = mappingFromQueryToDoc.get(entry.getKey());
 				Object value = entry.getValue();

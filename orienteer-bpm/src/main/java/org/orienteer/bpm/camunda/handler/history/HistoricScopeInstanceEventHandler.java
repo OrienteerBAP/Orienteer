@@ -21,8 +21,8 @@ public class HistoricScopeInstanceEventHandler<T extends HistoricScopeInstanceEv
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
-                .oProperty("durationInMillis", OType.LONG, 10)
-                .oProperty("startTime", OType.DATETIME, 20)
-                .oProperty("endTime", OType.DATETIME, 30);
+                .oProperty("durationInMillis", OType.LONG, 110)
+                .oProperty("startTime", OType.DATETIME, 120)
+                .oProperty("endTime", OType.DATETIME, 130);
     }
 }

@@ -22,7 +22,7 @@ public class HistoricEventHandler<T extends HistoryEvent> extends AbstractEntity
     public void applySchema(OSchemaHelper helper) {
 
         helper.oClass(OCLASS_NAME, BPM_ENTITY_CLASS)
-        		.oProperty("processInstance", OType.LINK, 10)
+        		.oProperty("processInstance", OType.LINK, 10).markAsLinkToParent()
                 .oProperty("execution", OType.LINK, 20)
                 .oProperty("processDefinition", OType.LINK, 30)
                 .oProperty("processDefinitionKey", OType.STRING, 40)
@@ -30,7 +30,7 @@ public class HistoricEventHandler<T extends HistoryEvent> extends AbstractEntity
                 .oProperty("caseExecution", OType.LINK, 60)
                 .oProperty("caseDefinition", OType.LINK, 70)
                 .oProperty("caseDefinitionKey", OType.STRING, 80)
-                .oProperty("eventType", OType.STRING, 90)
+                .oProperty("eventType", OType.STRING, 90).markAsDocumentName()
                 .oProperty("sequenceCounter", OType.LONG, 100);
     }
     
