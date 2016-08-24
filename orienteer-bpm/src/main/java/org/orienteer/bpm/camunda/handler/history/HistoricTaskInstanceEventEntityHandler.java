@@ -1,8 +1,14 @@
 package org.orienteer.bpm.camunda.handler.history;
 
+import com.github.raymanrt.orientqb.query.Query;
+import com.google.common.base.Converter;
 import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricTaskInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
@@ -12,6 +18,7 @@ import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +29,16 @@ import java.util.Map;
 public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricTaskInstanceEventEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricTaskInstanceEvent";
+    
+    private static final NonUniqIdConverter ID_CONVERTER = new NonUniqIdConverter("ti:");
+    private static final Converter<Object, Object> ID_CONVERTER_REVERSE = ID_CONVERTER.reverse();
 
-    private static final Function<ODocument, String> GET_ID_FUNCTION = new GetODocumentFieldValueFunction<String>("id");
+    private static final Function<ODocument, String> GET_ID_FUNCTION = new GetODocumentFieldValueFunction<String>("id"){
+    	public String apply(ODocument input) {
+    		String id = super.apply(input);
+    		return id==null?null:ID_CONVERTER_REVERSE.convert(id).toString();
+    	}
+    };
 
     public HistoricTaskInstanceEventEntityHandler() {
         super(OCLASS_NAME);
@@ -54,9 +69,12 @@ public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanc
     }
 
     @Statement
-    public String selectHistoricTaskInstanceIdsByParameters(OPersistenceSession session, ListQueryParameterObject parameters) {
+    public List<String> selectHistoricTaskInstanceIdsByParameters(OPersistenceSession session, ListQueryParameterObject parameters) {
         Map<String, String> params = (Map<String, String>) parameters.getParameter();
-        List<HistoricTaskInstanceEventEntity> list = query(session, params);
-        return list == null || list.size() < 1 ? null : list.get(0).getId();
+        Query q = new Query().from(getSchemaClass());
+        List<Object> args = new ArrayList<>();
+        enrichWhereByMap(session, q, session.getClass(getSchemaClass()), params, args, null);
+        List<ODocument> docs = session.getDatabase().query(new OSQLSynchQuery<>(q.toString()), args);
+        return docs==null?new ArrayList<String>():(List<String>)Lists.transform(docs, GET_ID_FUNCTION);
     }
 }
