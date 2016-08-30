@@ -29,7 +29,7 @@ import java.util.Map;
 public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanceEventHandler<HistoricTaskInstanceEventEntity> {
 
     public static final String OCLASS_NAME = "BPMHistoricTaskInstanceEvent";
-    
+
     private static final NonUniqIdConverter ID_CONVERTER = new NonUniqIdConverter("ti:");
     private static final Converter<Object, Object> ID_CONVERTER_REVERSE = ID_CONVERTER.reverse();
 

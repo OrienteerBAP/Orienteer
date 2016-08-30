@@ -1,6 +1,8 @@
 package org.orienteer.bpm.camunda.handler;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
@@ -58,5 +60,11 @@ public class VariableInstanceEntityHandler extends AbstractEntityHandler<Variabl
 		return queryList(session, "select from "+getSchemaClass()+" where task.id=?", parameter.getParameter());
 	}
 
-	
+	@Statement
+	public void deleteByteArrayNoRevisionCheck(OPersistenceSession session, String id) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("id", id);
+
+		delete(session, params);
+	}
 }
