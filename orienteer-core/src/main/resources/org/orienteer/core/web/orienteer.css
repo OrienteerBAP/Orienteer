@@ -210,3 +210,9 @@ li.fullscreen div.panel.panel-default div.panel-body{
 	/* display: table-row; */
 	overflow: auto;
 }
+
+.actions > * {
+	display: inline-block;
+	padding: 0 5px;
+	
+}

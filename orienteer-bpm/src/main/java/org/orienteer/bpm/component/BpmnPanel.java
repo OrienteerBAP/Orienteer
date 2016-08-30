@@ -1,15 +1,29 @@
 package org.orienteer.bpm.component;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
+import org.apache.wicket.event.IEventSink;
+import org.apache.wicket.markup.html.link.AbstractLink;
+import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.resource.AbstractResource;
+import org.apache.wicket.request.resource.AbstractResource.ResourceResponse;
+import org.apache.wicket.request.resource.IResource.Attributes;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.bpm.camunda.handler.ResourceEntityHandler;
 import org.orienteer.core.component.AbstractCommandsEnabledPanel;
 import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.command.EditCommand;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
@@ -70,6 +84,39 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 				super.onClick(target);
 			}
 		});
+		addCommand(new Command<ODocument>(newCommandId(), new ResourceModel("command.download")) {
+			@Override
+			protected AbstractLink newLink(String id) {
+				return new ResourceLink<>(id, new AbstractResource() {
+					
+					@Override
+					protected ResourceResponse newResourceResponse(Attributes attributes) {
+						ResourceResponse resourceResponse = new ResourceResponse();
+						resourceResponse.setContentType("application/xml");
+						resourceResponse.setFileName((String)BpmnPanel.this.getModelObject().field("name"));
+						resourceResponse.setWriteCallback(new WriteCallback() {
+							
+							@Override
+							public void writeData(Attributes attributes) throws IOException {
+								OutputStream out = attributes.getResponse().getOutputStream();
+								out.write((byte[])BpmnPanel.this.getModelObject().field("bytes"));
+							}
+						});
+						return resourceResponse;
+					}
+				});
+			}
+			
+			@Override
+			public void onClick() {
+				//NOP
+			}
+			
+			protected void onConfigure() {
+				setVisible(!BpmnPanel.this.modeModel.getObject().canModify());
+				setEnabled(BpmnPanel.this.getModelObject()!=null);
+			};
+		}.setBootstrapType(BootstrapType.PRIMARY).setIcon(FAIconType.download));
 	}
 	
 	@Override
