@@ -1,6 +1,8 @@
 package org.orienteer.core;
 
 import com.google.common.base.Strings;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
@@ -10,6 +12,7 @@ import org.orienteer.core.module.PerspectivesModule;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import org.orienteer.core.module.UserOnlineModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import java.util.Locale;
@@ -21,6 +24,7 @@ import java.util.Locale;
 public class OrienteerWebSession extends OrientDbWebSession
 {
 	private OIdentifiable perspective;
+	private UserOnlineModule onlineModule;
 
 	public OrienteerWebSession(Request request)
 	{
@@ -31,14 +35,18 @@ public class OrienteerWebSession extends OrientDbWebSession
 	{
 		return (OrienteerWebSession)Session.get();
 	}
-	
+
 	@Override
 	public boolean authenticate(String username, String password) {
 		boolean ret = super.authenticate(username, password);
 		if(ret)
 		{
 			perspective=null;
+
 			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
+			setOnlineModule();
+			onlineModule.updateOnlineUser(getUser(), true);
+
 			if (!Strings.isNullOrEmpty(locale)) {
 				Locale localeForLanguage = Locale.forLanguageTag(locale);
 				if (localeForLanguage != null) {
@@ -46,6 +54,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 				}
 			}
 		}
+		onlineModule.updateSessionUser(getUser(), getId());
 		return ret;
 	}
 
@@ -79,6 +88,12 @@ public class OrienteerWebSession extends OrientDbWebSession
 			return (ODocument)perspective;
 			
 		}
+	}
+
+	public OrienteerWebSession setOnlineModule() {
+		OrienteerWebApplication app = OrienteerWebApplication.get();
+		onlineModule = app.getServiceInstance(UserOnlineModule.class);
+		return this;
 	}
 
 	@Override
