@@ -47,13 +47,17 @@ public class PasswordsPanel extends FormComponentPanel<String>
 	@Override
 	public void convertInput()
  	{
- 		setConvertedInput(password.getConvertedInput());
+		if(Strings.isEmpty(password.getConvertedInput())){
+	 		setConvertedInput(""); //strange,but validator think - "wow, this is not empty value"
+		}else{
+	 		setConvertedInput(password.getConvertedInput());
+		}
  	}
 
 
 	@Override
 	public void updateModel() {
-		if(!Strings.isEmpty(password.getModelObject())) super.updateModel();
+		if(!Strings.isEmpty(getConvertedInput())) super.updateModel();
 	}
 
 }
