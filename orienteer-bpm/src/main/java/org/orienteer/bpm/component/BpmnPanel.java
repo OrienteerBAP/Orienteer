@@ -92,7 +92,7 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 					@Override
 					protected ResourceResponse newResourceResponse(Attributes attributes) {
 						ResourceResponse resourceResponse = new ResourceResponse();
-						resourceResponse.setContentType("application/xml");
+						resourceResponse.setContentType("text/xml");
 						resourceResponse.setFileName((String)BpmnPanel.this.getModelObject().field("name"));
 						resourceResponse.setWriteCallback(new WriteCallback() {
 							

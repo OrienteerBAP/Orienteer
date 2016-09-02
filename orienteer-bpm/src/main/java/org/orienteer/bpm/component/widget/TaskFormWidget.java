@@ -68,17 +68,7 @@ public class TaskFormWidget extends AbstractFormWidget {
 				associateTaskWithDocument();
 			};
 		}.setForceCommit(true));
-		propertiesStructureTable.addCommand(new CompleteTaskCommand(propertiesStructureTable, getModel()) {
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				if(saveODocumentCommand.determineVisibility()) {
-					saveODocumentCommand.onClick(target);
-				} else {
-					associateTaskWithDocument();
-				}
-				super.onClick(target);
-			}
-		});
+		propertiesStructureTable.addCommand(new CompleteTaskCommand(propertiesStructureTable, getModel(), getModeModel(), formKey));
 	}
 	
 	@Override
