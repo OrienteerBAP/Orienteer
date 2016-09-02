@@ -58,6 +58,12 @@ public class CompleteTaskCommand extends SaveODocumentCommand{
 	}
 	
 	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		setVisible(getModelObject().getIdentity().isPersistent() || getModeObject().canModify());
+	}
+	
+	@Override
 	public void detachModels() {
 		super.detachModels();
 		taskModel.detach();
