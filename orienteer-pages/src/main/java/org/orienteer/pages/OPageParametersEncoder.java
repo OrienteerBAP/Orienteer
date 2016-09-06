@@ -43,8 +43,9 @@ public class OPageParametersEncoder extends PageParametersEncoder {
 	}
 	
 	public static boolean matchHandler(ORID pageIdentity, IPageClassRequestHandler requestHandler) {
-		StringValue sv = requestHandler.getPageParameters().get(PAGE_IDENTITY);
-		return pageIdentity!=null?pageIdentity.toString().equals(sv.toOptionalString()):false;
+		PageParameters params = requestHandler.getPageParameters();
+		StringValue sv = params!=null?params.get(PAGE_IDENTITY):null;
+		return sv!=null && pageIdentity!=null?pageIdentity.toString().equals(sv.toOptionalString()):false;
 	}
 	
 }
