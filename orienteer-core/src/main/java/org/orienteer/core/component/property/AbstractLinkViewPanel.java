@@ -20,12 +20,16 @@ public abstract class AbstractLinkViewPanel<T> extends GenericPanel<T> {
 			String id,
 			IModel<T> valueModel) {
 		super(id, valueModel);
-		add(link = newLink("link"));
 	}
 	
 	public AbstractLinkViewPanel(String id)
 	{
 		super(id);
+	}
+	
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
 		add(link = newLink("link"));
 	}
 
