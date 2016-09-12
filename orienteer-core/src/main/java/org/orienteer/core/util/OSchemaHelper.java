@@ -3,6 +3,7 @@ package org.orienteer.core.util;
 import java.util.Objects;
 
 import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.OClassDomain;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
@@ -72,6 +73,12 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public OSchemaHelper oIndex(String name,
 			INDEX_TYPE type, String... fields) {
 		return (OSchemaHelper) super.oIndex(name, type, fields);
+	}
+	
+	public OSchemaHelper domain(OClassDomain domain) {
+		checkOClass();
+		CustomAttributes.DOMAIN.setValue(lastClass, domain, false);
+		return this;
 	}
 	
 	

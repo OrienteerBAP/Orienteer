@@ -50,11 +50,11 @@ public enum CustomAttributes
 	/**
 	 * Name of the property which is storing name of this entity
 	 */
-	PROP_NAME("orienteer.prop.name", OType.LINK, OProperty.class, null, false),
+	PROP_NAME("orienteer.prop.name", OType.LINK, OProperty.class, null, false, true),
 	/**
 	 * Name of property which is storing link to a parent entity
 	 */
-	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class, null, false),
+	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class, null, false, true),
 	/**
 	 * Name of a visualization that should be used for property visualization
 	 */
@@ -80,36 +80,51 @@ public enum CustomAttributes
     /**
      * Property name by which to sort data by default
      */
-    SORT_BY("orienteer.sortby", OType.LINK, OProperty.class, null, false),
+    SORT_BY("orienteer.sortby", OType.LINK, OProperty.class, null, false, true),
     /**
      * Order in which to sort data
      */
-    SORT_ORDER("orienteer.sortorder", OType.BOOLEAN, null, false),
+    SORT_ORDER("orienteer.sortorder", OType.BOOLEAN, null, false, true),
 	/**
 	 * Default search query for class
 	 */
-	SEARCH_QUERY("orienteer.searchquery", OType.STRING, null, true);
+	SEARCH_QUERY("orienteer.searchquery", OType.STRING, null, true, true),
+	
+	/**
+	 * Domain of a class
+	 */
+	DOMAIN("orienteer.domain", OType.STRING, OClassDomain.class, OClassDomain.BUSINESS, false, true);
 
 	private final String name;
 	private final OType type;
 	private final Object defaultValue;
 	private final Class<?> javaClass;
 	private final boolean encode;
+	private final boolean hiearchical;
 	
 	private static final Map<String, CustomAttributes> QUICK_CACHE = new HashMap<String, CustomAttributes>();
 	
-	private CustomAttributes(String name, OType type, Object defaultValue, boolean encode)
-	{
-		this(name, type, type.getDefaultJavaType(), defaultValue, encode);
+	private CustomAttributes(String name, OType type, Object defaultValue, boolean encode){
+		this(name, type, defaultValue, encode, false);
 	}
 	
-	private CustomAttributes(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode)
+	private CustomAttributes(String name, OType type, Object defaultValue, boolean encode, boolean hiearchical)
+	{
+		this(name, type, type.getDefaultJavaType(), defaultValue, encode, hiearchical);
+	}
+	
+	private CustomAttributes(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode) {
+		this(name, type, javaClass, defaultValue, encode, false);
+	}
+	
+	private CustomAttributes(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode, boolean hiearchical)
 	{
 		this.name = name;
 		this.type = type;
 		this.javaClass = javaClass;
 		this.defaultValue = defaultValue;
 		this.encode = encode;
+		this.hiearchical = hiearchical;
 	}
 
 	public String getName() {
@@ -195,25 +210,22 @@ public enum CustomAttributes
 		}
 	}
 	
-	public <V> V getHierarchicalValue(OClass oClass)
-	{
-		V ret = getValue(oClass);
-		if(ret==null) {
-			for(OClass superClass : oClass.getSuperClasses()) {
-				if((ret=getHierarchicalValue(superClass))!=null) break;
-			}
-		}
-		return ret;
+	public <V> V getValue(OClass oClass) {
+		return getValue(oClass, hiearchical);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <V> V getValue(OClass oClass)
+	public <V> V getValue(OClass oClass, boolean hiearchical)
 	{
-		return getValue(oClass, (V) defaultValue);
+		return getValue(oClass, (V) defaultValue, hiearchical);
+	}
+	
+	public <V> V getValue(OClass oClass, V defaultValue) {
+		return getValue(oClass, defaultValue, hiearchical);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <V> V getValue(OClass oClass, V defaultValue)
+	public <V> V getValue(OClass oClass, V defaultValue, boolean hiearchical)
 	{
 		String stringValue = oClass.getCustom(name);
 		if(encode) stringValue = decodeCustomValue(stringValue);
@@ -226,11 +238,21 @@ public enum CustomAttributes
 		{
 			ret = (V) OType.convert(stringValue, javaClass);
 		}
+		if(ret==null && hiearchical) {
+			for(OClass superClass : oClass.getSuperClasses()) {
+				if((ret=getValue(superClass, null, true))!=null) break;
+			}
+		}
 		return ret!=null?ret:defaultValue;
 	}
 	
-	public <V> void setValue(OClass oClass, V value)
+	public <V> void setValue(OClass oClass, V value) {
+		setValue(oClass, value, hiearchical);
+	}
+	
+	public <V> void setValue(OClass oClass, V value, boolean hiearchical)
 	{
+		if(hiearchical && Objects.equals(value, getValue(oClass, true))) return;
 		if(OProperty.class.isAssignableFrom(javaClass) && value instanceof OProperty)
 		{
 			OProperty valueProperty = (OProperty)value;
@@ -239,7 +261,7 @@ public enum CustomAttributes
 		}
 		else
 		{
-			if(defaultValue!=null && defaultValue.equals(value)) value = null;
+			if(!hiearchical && defaultValue!=null && defaultValue.equals(value)) value = null;
 			String stringValue = value!=null?value.toString():null;
 			if(stringValue!=null && stringValue.length()==0) stringValue=null;
 			if(encode) stringValue = encodeCustomValue(stringValue);
