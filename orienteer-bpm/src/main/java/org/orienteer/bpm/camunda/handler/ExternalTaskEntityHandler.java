@@ -8,6 +8,7 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.ByteArrayEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ExternalTaskEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.github.raymanrt.orientqb.query.Query;
@@ -27,6 +28,7 @@ public class ExternalTaskEntityHandler extends AbstractEntityHandler<ExternalTas
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
+		helper.domain(OClassDomain.SYSTEM);
 		helper.oProperty("topicName", OType.STRING, 10).markAsDocumentName().markDisplayable()
 			  .oProperty("workerId", OType.STRING, 20).markDisplayable()
 			  .oProperty("retries", OType.INTEGER, 30).markDisplayable()

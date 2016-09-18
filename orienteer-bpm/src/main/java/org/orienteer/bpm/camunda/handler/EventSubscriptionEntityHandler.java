@@ -14,6 +14,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.MessageEventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.SignalEventSubscriptionEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.github.raymanrt.orientqb.query.Clause;
@@ -37,6 +38,7 @@ public class EventSubscriptionEntityHandler extends AbstractEntityHandler<EventS
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
+		helper.domain(OClassDomain.SYSTEM);
 		helper.oProperty("eventType", OType.STRING, 10)
 			  .oProperty("eventName", OType.STRING, 20)
 			  .oProperty("execution", OType.LINK, 30).assignVisualization("listbox")

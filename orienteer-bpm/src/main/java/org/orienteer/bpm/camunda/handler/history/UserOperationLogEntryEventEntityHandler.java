@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.history.UserOperationLogQuery;
 import org.camunda.bpm.engine.impl.history.event.UserOperationLogEntryEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.*;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class UserOperationLogEntryEventEntityHandler extends HistoricEventHandle
     @Override
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
-        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME).domain(OClassDomain.SYSTEM)
                 .oProperty("deploymentId", OType.STRING, 10)
                 .oProperty("task", OType.LINK, 20)
                 .oProperty("job", OType.LINK, 30)

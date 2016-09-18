@@ -8,6 +8,7 @@ import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.JobDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class HistoricDetailEventEntityHandler extends HistoricEventHandler<Histo
     @Override
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
-        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME).domain(OClassDomain.SYSTEM)
                 .oProperty("timestamp", OType.DATETIME, 90)
                 .oProperty("activityInstanceId", OType.STRING, 100)
                 .oProperty("task", OType.LINK, 110);

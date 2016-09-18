@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricIncidentEventEntity;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.JobDefinitionEntityHandler;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
@@ -20,7 +21,7 @@ public class HistoricIncidentEventEntityHandler extends HistoricEventHandler<His
     @Override
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
-        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME).domain(OClassDomain.SYSTEM)
                 .oProperty("createTime", OType.DATETIME, 40)
                 .oProperty("endTime", OType.DATETIME, 50)
                 .oProperty("incidentMessage", OType.STRING, 60)

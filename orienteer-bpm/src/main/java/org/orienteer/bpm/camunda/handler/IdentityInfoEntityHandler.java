@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.IdentityInfoEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class IdentityInfoEntityHandler extends AbstractEntityHandler<IdentityInf
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
-
+        helper.domain(OClassDomain.SYSTEM);
         helper.oProperty("userId", OType.STRING, 10)
                 .oProperty("type", OType.STRING, 20)
                 .oProperty("key", OType.STRING, 30)

@@ -8,6 +8,7 @@ import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.DecisionDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.Statement;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class HistoricDecisionInstanceEntityHandler extends HistoricEventHandler<
     @Override
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
-        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME).domain(OClassDomain.SYSTEM)
                 .oProperty("decisionDefinition", OType.LINK, 10)
                 .oProperty("decisionDefinitionKey", OType.STRING, 20)
                 .oProperty("decisionDefinitionName", OType.STRING, 30)

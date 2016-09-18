@@ -15,6 +15,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.TimerEntity;
 import org.camunda.bpm.engine.runtime.JobQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.github.raymanrt.orientqb.query.Clause;
@@ -38,6 +39,7 @@ public class JobEntityHandler extends AbstractEntityHandler<JobEntity> {
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
+		helper.domain(OClassDomain.SYSTEM);
 		helper.oProperty("type", OType.STRING, 10)
 			  .oProperty("duedate", OType.DATETIME, 20)
 			  .oProperty("lockExpirationTime", OType.DATETIME, 30)

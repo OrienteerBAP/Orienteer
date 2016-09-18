@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.impl.batch.history.HistoricBatchEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.bpm.camunda.handler.Statement;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class HistoricBatchEntityHandler extends HistoricEventHandler<HistoricBat
     @Override
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
-        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME).domain(OClassDomain.SYSTEM)
                 .oProperty("type", OType.STRING, 10)
                 .oProperty("totalJobs", OType.INTEGER, 20)
                 .oProperty("batchJobsPerSeed", OType.INTEGER, 30)

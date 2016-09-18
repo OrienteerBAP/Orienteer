@@ -30,7 +30,7 @@ public class BPMModule extends AbstractOrienteerModule{
 	private ProcessApplicationReference processApplicationReference;
 	
 	protected BPMModule() {
-		super("bpm", 1, "devutils");
+		super("bpm", 2, "devutils");
 	}
 	
 	@Override

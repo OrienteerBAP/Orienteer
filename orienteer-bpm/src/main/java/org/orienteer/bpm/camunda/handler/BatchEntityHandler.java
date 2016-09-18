@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.batch.BatchQuery;
 import org.camunda.bpm.engine.impl.batch.BatchEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class BatchEntityHandler extends AbstractEntityHandler<BatchEntity> {
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
-
+        helper.domain(OClassDomain.SYSTEM);
         helper.oProperty("type", OType.STRING, 10)
                 .oProperty("totalJobs", OType.INTEGER, 20)
                 .oProperty("jobsCreated", OType.INTEGER, 30)

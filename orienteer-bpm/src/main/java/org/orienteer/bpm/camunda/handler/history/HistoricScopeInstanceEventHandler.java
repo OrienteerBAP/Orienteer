@@ -3,6 +3,7 @@ package org.orienteer.bpm.camunda.handler.history;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.history.event.HistoricScopeInstanceEvent;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**
@@ -20,7 +21,7 @@ public class HistoricScopeInstanceEventHandler<T extends HistoricScopeInstanceEv
     @Override
     public void applySchema(OSchemaHelper helper) {
     	super.applySchema(helper);
-        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME)
+        helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME).domain(OClassDomain.SYSTEM)
                 .oProperty("durationInMillis", OType.LONG, 110)
                 .oProperty("startTime", OType.DATETIME, 120)
                 .oProperty("endTime", OType.DATETIME, 130);

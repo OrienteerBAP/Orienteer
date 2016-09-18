@@ -6,6 +6,7 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.HistoricVariableInstanceEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.*;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class HistoricVariableInstanceEntityHandler extends AbstractEntityHandler
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
-
+        helper.domain(OClassDomain.SYSTEM);
         helper.oProperty("processDefinitionKey", OType.STRING, 10)
                 .oProperty("processDefinition", OType.LINK, 20)
                 .oProperty("processInstance", OType.LINK, 30)

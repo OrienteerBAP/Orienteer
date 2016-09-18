@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.impl.cmmn.entity.runtime.CaseSentryPartEntity;
 import org.camunda.bpm.engine.impl.cmmn.entity.runtime.CaseSentryPartQueryImpl;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class CaseSentryPartEntityHandler extends AbstractEntityHandler<CaseSentr
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
-
+        helper.domain(OClassDomain.SYSTEM);
         helper.oProperty("caseInstanceId", OType.STRING, 10)
                 .oProperty("caseExecutionId", OType.STRING, 20)
                 .oProperty("sentryId", OType.STRING, 30)

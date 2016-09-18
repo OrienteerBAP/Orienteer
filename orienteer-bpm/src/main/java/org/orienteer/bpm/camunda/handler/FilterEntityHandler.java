@@ -2,10 +2,12 @@ package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.persistence.entity.FilterEntity;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
+
 /**
- * @author Kirill Mukhov
+ * {@link IEntityHandler} for {@link FilterEntity}
  */
 public class FilterEntityHandler extends AbstractEntityHandler<FilterEntity> {
 
@@ -18,7 +20,7 @@ public class FilterEntityHandler extends AbstractEntityHandler<FilterEntity> {
     @Override
     public void applySchema(OSchemaHelper helper) {
         super.applySchema(helper);
-
+        helper.domain(OClassDomain.SYSTEM);
         helper.oProperty("resourceType", OType.STRING, 10)
                 .oProperty("name", OType.STRING, 20)
                 .oProperty("owner", OType.STRING, 30)

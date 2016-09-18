@@ -5,6 +5,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.ByteArrayEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.history.HistoricDecisionInputInstanceEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.Map;
@@ -23,6 +24,7 @@ public class ByteArrayEntityHandler extends AbstractEntityHandler<ByteArrayEntit
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
+		helper.domain(OClassDomain.SYSTEM);
 		helper.oProperty("name", OType.STRING, 10)
 			  .oProperty("bytes", OType.BINARY, 20)
 			  .oProperty("deployment", OType.LINK, 30);

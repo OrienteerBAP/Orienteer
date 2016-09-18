@@ -7,6 +7,7 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.IdentityLinkEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.UserEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -25,6 +26,7 @@ public class IdentityLinkEntityHandler extends AbstractEntityHandler<IdentityLin
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
+		helper.domain(OClassDomain.SYSTEM);
 		helper.oProperty("type", OType.STRING, 10).markDisplayable()
 			  .oProperty("user", OType.LINK, 20).markDisplayable()
 			  .oProperty("group", OType.LINK, 20).markDisplayable()

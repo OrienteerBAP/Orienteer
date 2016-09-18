@@ -9,6 +9,7 @@ import org.orienteer.bpm.camunda.handler.history.HistoricDetailEventEntityHandle
 import org.orienteer.bpm.camunda.handler.history.HistoricIncidentEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricJobLogEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class JobDefinitionEntityHandler extends AbstractEntityHandler<JobDefinit
 	@Override
 	public void applySchema(OSchemaHelper helper) {
 		super.applySchema(helper);
+		helper.domain(OClassDomain.SYSTEM);
 		helper.oProperty("processDefinition", OType.LINK, 10).assignVisualization("listbox")
 			  .oProperty("processDefinitionKey", OType.STRING, 20)
 			  .oProperty("activityId", OType.STRING, 30)
