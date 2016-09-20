@@ -1,9 +1,13 @@
 <wicket:extend>
 	
     <form wicket:id="form">
-	   	<table wicket:id="properties"></table>
+	   	<table wicket:id="events">
+	   	<tr>
+	   		<td width="150px"><div wicket:id="description"></div></td>
+	   		<td><select wicket:id="input"></select></td>
+	   	</tr>	
+	   	</table>
+   		<input type="submit" value="submit"/>
     </form>
     
-   	<div wicket:id="text"></div>
-   	
 </wicket:extend>
