@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -61,7 +62,9 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
+import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
@@ -86,11 +89,69 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 		EVENTS_LIST.add("onAfterUpdate");
 		EVENTS_LIST.add("onBeforeDelete");
 		EVENTS_LIST.add("onAfterDelete");
-	}		
+	}
+
+	private OrienteerStructureTable<OClass, String> structureTable;		
 
 	public OClassHooksWidget(String id, final IModel<OClass> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
+		
+		final List<String> functions = new ArrayList<String>(getDatabase().getMetadata().getFunctionLibrary().getFunctionNames());
+		
+		Form form = new TransactionlessForm<>("form");
+		add(form);
 
+		structureTable = new OrienteerStructureTable<OClass, String>("events", model, EVENTS_LIST) {
+
+			@Override
+			protected Component getValueComponent(String id, IModel<String> rowModel) {
+				return new AbstractModeMetaPanel<OClass, DisplayMode, String, String>(id, getModeModel(), OClassHooksWidget.this.getModel(), rowModel) {
+
+					//здесь задается ,какой компонент мы будем показывать в виде поля "значение"
+					@Override
+					protected Component resolveComponent(String id,
+							DisplayMode mode, String critery) {
+						if(DisplayMode.EDIT.equals(mode)) {
+							return new DropDownChoice<String>(
+									id,
+									getValueModel(),
+									functions
+							).setNullValid(true);
+						} else {
+							return new Label(id, getValueModel());
+						}
+					}
+					//видимо это модель,которую мы показываем в поле "имя".//getPropertyModel - проперти - это ИД поля в обьекте
+					@Override
+					protected IModel<String> newLabelModel() {
+						return getPropertyModel();//simplenamingmodel
+					}
+					//здесь мы задаем модель, обрабатывающую получаемое значение
+					@Override
+					protected IModel<String> resolveValueModel() {
+						return new OClassCustomModel(getEntityModel(),getPropertyModel());//createCustomModel(getEntityModel(), getPropertyModel());
+					}
+				};
+				
+			}
+		};
+		
+		form.add(structureTable);
+		structureTable.addCommand(new EditSchemaCommand<OClass>(structureTable, getModeModel()));
+		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, getModeModel()));/*{
+			@Override
+			public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+				boolean isTransactionActive = getDatabase().getTransaction().isActive();
+				if(isTransactionActive) getDatabase().commit();
+				try {
+					super.onSubmit(target, form);
+				} finally {
+					if(isTransactionActive) getDatabase().begin();
+				}
+			}
+		});
+		*/
+/*
 		final ListView<String> eventsView = new ListView<String>("events", EVENTS_LIST) {
 			@Override
 			protected void populateItem(ListItem<String> item) {
@@ -103,6 +164,7 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 			}
 		};
 		Form form = new Form("form"){
+
 			@Override
 			protected void onSubmit() {
 				for (Component val : eventsView) {
@@ -118,6 +180,7 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 		
 		form.add(eventsView);
 		add(form);
+*/
 	}
 	
 	@Override
@@ -128,10 +191,12 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
+		/*
 			if(((Form)get("form")).isSubmitted()) 
 			{
 				setModeObject(DisplayMode.VIEW);
 			}
+			*/
 	}
 	
 
