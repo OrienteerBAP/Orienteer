@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -67,6 +68,7 @@ import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 
 /**
@@ -97,7 +99,7 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 		super(id, model, widgetDocumentModel);
 		
 		final List<String> functions = new ArrayList<String>(getDatabase().getMetadata().getFunctionLibrary().getFunctionNames());
-		
+
 		Form form = new TransactionlessForm<>("form");
 		add(form);
 
@@ -107,10 +109,9 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 			protected Component getValueComponent(String id, IModel<String> rowModel) {
 				return new AbstractModeMetaPanel<OClass, DisplayMode, String, String>(id, getModeModel(), OClassHooksWidget.this.getModel(), rowModel) {
 
-					//здесь задается ,какой компонент мы будем показывать в виде поля "значение"
+					//
 					@Override
-					protected Component resolveComponent(String id,
-							DisplayMode mode, String critery) {
+					protected Component resolveComponent(String id,	DisplayMode mode, String critery) {
 						if(DisplayMode.EDIT.equals(mode)) {
 							return new DropDownChoice<String>(
 									id,
@@ -121,15 +122,37 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 							return new Label(id, getValueModel());
 						}
 					}
-					//видимо это модель,которую мы показываем в поле "имя".//getPropertyModel - проперти - это ИД поля в обьекте
+					//
 					@Override
 					protected IModel<String> newLabelModel() {
-						return getPropertyModel();//simplenamingmodel
+						return new SimpleNamingModel<String>("class.hooks."+ getPropertyObject());
 					}
-					//здесь мы задаем модель, обрабатывающую получаемое значение
+					//
 					@Override
 					protected IModel<String> resolveValueModel() {
-						return new OClassCustomModel(getEntityModel(),getPropertyModel());//createCustomModel(getEntityModel(), getPropertyModel());
+						return new OClassCustomModel(getEntityModel(),getPropertyModel());
+						/*{
+							@Override
+							protected String getValue(OClass object, String param) {
+								String value = super.getValue(object, param);
+								if(isRID(value)){
+									value = new OQueryModel<OFunction>("SELECT FROM OFunction WHERE @rid="+value).getObject().get(0).getName();
+								}
+								return value;
+							}
+							@Override
+							protected void setValue(OClass object, String param, String value) {
+								if(value!=null){
+									List<OFunction> objs = new OQueryModel<OFunction>("SELECT FROM OFunction WHERE name=\""+value+"\"").getObject();
+									value = new OQueryModel<OFunction>("SELECT FROM OFunction WHERE name=\""+value+"\"").getObject().get(0).getId().toString();
+								}
+								super.setValue(object, param, value);
+							}
+							protected boolean isRID(String value){
+								return value==null?false:value.matches("^#[0-9]+:[0-9]+$");
+							}
+							
+						};*/
 					}
 				};
 				
@@ -138,68 +161,10 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 		
 		form.add(structureTable);
 		structureTable.addCommand(new EditSchemaCommand<OClass>(structureTable, getModeModel()));
-		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, getModeModel()));/*{
-			@Override
-			public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				boolean isTransactionActive = getDatabase().getTransaction().isActive();
-				if(isTransactionActive) getDatabase().commit();
-				try {
-					super.onSubmit(target, form);
-				} finally {
-					if(isTransactionActive) getDatabase().begin();
-				}
-			}
-		});
-		*/
-/*
-		final ListView<String> eventsView = new ListView<String>("events", EVENTS_LIST) {
-			@Override
-			protected void populateItem(ListItem<String> item) {
-				item.add(new Label("description", item.getModel()));
-				item.add(new DropDownChoice<String>(
-						"input",
-						Model.of(model.getObject().getCustom(item.getModelObject())),
-						 new ArrayList<String>(getDatabase().getMetadata().getFunctionLibrary().getFunctionNames())
-				).setNullValid(true));
-			}
-		};
-		Form form = new Form("form"){
+		structureTable.addCommand(new SaveSchemaCommand<OClass>(structureTable, getModeModel()));
 
-			@Override
-			protected void onSubmit() {
-				for (Component val : eventsView) {
-					String eventVal = ((ListItem<String>)val).get("input").getDefaultModelObjectAsString();
-					String eventName = ((ListItem<String>)val).get("description").getDefaultModelObjectAsString();
-			    	ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
-			    	db.commit();
-			    	model.getObject().setCustom(eventName, eventVal.isEmpty()?null:eventVal);
-				}
-				super.onSubmit();
-			}
-		};
-		
-		form.add(eventsView);
-		add(form);
-*/
 	}
 	
-	@Override
-	protected void onInitialize() {
-		super.onInitialize();
-	}
-	
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		/*
-			if(((Form)get("form")).isSubmitted()) 
-			{
-				setModeObject(DisplayMode.VIEW);
-			}
-			*/
-	}
-	
-
 	@Override
 	protected FAIcon newIcon(String id) {
         return new FAIcon(id, FAIconType.list);
