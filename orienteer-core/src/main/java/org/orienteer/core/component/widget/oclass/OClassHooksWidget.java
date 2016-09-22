@@ -111,12 +111,9 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 		add(form);
 
 		structureTable = new OrienteerStructureTable<OClass, String>("events", model, EVENTS_LIST) {
-
 			@Override
 			protected Component getValueComponent(String id, IModel<String> rowModel) {
 				return new AbstractModeMetaPanel<OClass, DisplayMode, String, ODocument>(id, getModeModel(), OClassHooksWidget.this.getModel(), rowModel) {
-
-					//
 					@Override
 					protected Component resolveComponent(String id,	DisplayMode mode, String critery) {
 						if(DisplayMode.EDIT.equals(mode)) {
@@ -127,15 +124,13 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 									new ODocumentChoiceRenderer()
 							).setNullValid(true);
 						} else {
-							return new ODocumentPageLink(id, getValueModel()).setDocumentNameAsBody(true);  //ODocumentLabel(id, getValueModel());
+							return new ODocumentPageLink(id, getValueModel()).setDocumentNameAsBody(true);  
 						}
 					}
-					//
 					@Override
 					protected IModel<String> newLabelModel() {
 						return new SimpleNamingModel<String>("class.hooks."+ getPropertyObject());
 					}
-					//
 					@Override
 					protected IModel<ODocument> resolveValueModel() {
 						return new AbstractCustomValueModel<OClass, String, ODocument>(getEntityModel(), getPropertyModel()){
@@ -153,8 +148,7 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 							    	ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 							    	OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("SELECT FROM OFunction WHERE name=?");
 							    	List<ODocument> ret = db.query(query, idStr);
-							    	if (ret.size()==0){
-							    		//if function being deleted on never created
+							    	if (ret.size()==0){ //if function being deleted on never created
 										return null;
 							    	}else{
 								    	return ret.get(0);
@@ -165,11 +159,9 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 							protected void setValue(OClass object, String param, ODocument value) {
 								object.setCustom(param, (value!=null?value.getIdentity().toString():null));
 							}
-							
 						};
 					}
 				};
-				
 			}
 		};
 		
