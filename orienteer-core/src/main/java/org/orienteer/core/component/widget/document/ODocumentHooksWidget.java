@@ -19,7 +19,10 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.ODocumentPageLink;
+import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.EditSchemaCommand;
+import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.AbstractModeMetaPanel;
@@ -27,10 +30,12 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.widget.oclass.OClassHooksWidget;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.util.ODocumentChoiceRenderer;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -38,11 +43,14 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
+import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 /**
  * @author Asm
+ * Widget for document-linked hooks
  *
  */
 
@@ -69,7 +77,7 @@ public class ODocumentHooksWidget extends AbstractModeAwareWidget<ODocument> {
 	public ODocumentHooksWidget(String id, final IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		
-		final List<String> functions = new ArrayList<String>(getDatabase().getMetadata().getFunctionLibrary().getFunctionNames());
+		final OQueryModel<ODocument> functions = new OQueryModel<ODocument>("SELECT FROM OFunction");
 
 		Form form = new TransactionlessForm<>("form");
 		add(form);
@@ -92,79 +100,38 @@ public class ODocumentHooksWidget extends AbstractModeAwareWidget<ODocument> {
 		structureTable = new OrienteerStructureTable<ODocument, OProperty>("events", model, propertiesModel){
 			@Override
 			protected Component getValueComponent(String id, IModel<OProperty> rowModel) {
-				return new AbstractModeMetaPanel<ODocument, DisplayMode, OProperty,String >(id, getModeModel(), ODocumentHooksWidget.this.getModel(), rowModel) {
+				return new AbstractModeMetaPanel<ODocument, DisplayMode, OProperty,ODocument >(id, getModeModel(), ODocumentHooksWidget.this.getModel(), rowModel) {
 
 					@Override
 					protected Component resolveComponent(String id, DisplayMode mode, OProperty critery) {
 						if(DisplayMode.EDIT.equals(mode)) {
-							return new DropDownChoice<String>(
+							return new DropDownChoice<ODocument>(
 									id,
 									getValueModel(),
-									functions
+									functions,
+									new ODocumentChoiceRenderer()
 							).setNullValid(true);
 						} else {
-							return new Label(id, getValueModel());
+							return new ODocumentPageLink(id, getValueModel()).setDocumentNameAsBody(true);  
 						}
 					}
 
 					@Override
 					protected IModel<String> newLabelModel() {
-						return new SimpleNamingModel<String>("class.hooks."+ getPropertyObject().getName());
+						return new SimpleNamingModel<String>("widget.document.hooks."+ getPropertyObject().getName());
 					}
 
 					@Override
-					protected IModel<String> resolveValueModel() {
+					protected IModel<ODocument> resolveValueModel() {
 						return new ODocumentPropertyModel<>(getEntityModel(), getPropertyObject().getName());
-						//return new DynamicPropertyValueModel<String>(getEntityModel(), getPropertyModel()); 
 					}
-
-
 				};
 			}
 		}; 
-		/*{
 
-			@Override
-			protected Component getValueComponent(String id, IModel<String> rowModel) {
-				//return new AbstractModeMetaPanel<ODocument, DisplayMode, String, String>(id, getModeModel(), ODocumentHooksWidget.this.getModel(), rowModel) {
-/*
-					//
-					@Override
-					protected Component resolveComponent(String id,	DisplayMode mode, String critery) {
-						if(DisplayMode.EDIT.equals(mode)) {
-							return new DropDownChoice<String>(
-									id,
-									getValueModel(),
-									functions
-							).setNullValid(true);
-						} else {
-							return new Label(id, getValueModel());
-						}
-					}
-*/
-					//
-					/*
-					@Override
-					protected IModel<String> newLabelModel() {
-						return new SimpleNamingModel<String>("class.hooks."+ getPropertyObject().toLowerCase());
-					}
-					*/
-/*
-					//
-					@Override
-					protected IModel<String> resolveValueModel() {
-						return new ODocumentPropertyModel<String>(getEntityModel(),getPropertyModel().getObject()); 
-
-					}
-					*/ /*
-				};
-				
-			}
-		};
-		*/
 		form.add(structureTable);
-		structureTable.addCommand(new EditSchemaCommand<ODocument>(structureTable, getModeModel()));
-		structureTable.addCommand(new SaveSchemaCommand<ODocument>(structureTable, getModeModel()));		
+		structureTable.addCommand(new EditODocumentCommand(structureTable, getModeModel()));
+		structureTable.addCommand(new SaveODocumentCommand(structureTable, getModeModel()));		
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -31,10 +32,12 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.EditSchemaCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
@@ -50,9 +53,11 @@ import org.orienteer.core.component.widget.document.ODocumentNonRegisteredProper
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
+import org.orienteer.core.util.ODocumentChoiceRenderer;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.function.OFunction;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
@@ -64,6 +69,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
+import ru.ydn.wicket.wicketorientdb.model.AbstractCustomValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
@@ -74,6 +80,7 @@ import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 /**
  * @author Asm
  * Widget for class-linked hooks
+ * Instead storing function names, we store their rid-s in trigger fields
  */
 @Widget(domain="class", tab="configuration",selector="OTriggered", id = OClassHooksWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
@@ -97,9 +104,9 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 
 	public OClassHooksWidget(String id, final IModel<OClass> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
+		final OQueryModel<ODocument> functions = new OQueryModel<ODocument>("SELECT FROM OFunction");
 		
-		final List<String> functions = new ArrayList<String>(getDatabase().getMetadata().getFunctionLibrary().getFunctionNames());
-
+		
 		Form form = new TransactionlessForm<>("form");
 		add(form);
 
@@ -107,19 +114,20 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 
 			@Override
 			protected Component getValueComponent(String id, IModel<String> rowModel) {
-				return new AbstractModeMetaPanel<OClass, DisplayMode, String, String>(id, getModeModel(), OClassHooksWidget.this.getModel(), rowModel) {
+				return new AbstractModeMetaPanel<OClass, DisplayMode, String, ODocument>(id, getModeModel(), OClassHooksWidget.this.getModel(), rowModel) {
 
 					//
 					@Override
 					protected Component resolveComponent(String id,	DisplayMode mode, String critery) {
 						if(DisplayMode.EDIT.equals(mode)) {
-							return new DropDownChoice<String>(
+							return new DropDownChoice<ODocument>(
 									id,
 									getValueModel(),
-									functions
+									functions,
+									new ODocumentChoiceRenderer()
 							).setNullValid(true);
 						} else {
-							return new Label(id, getValueModel());
+							return new ODocumentPageLink(id, getValueModel()).setDocumentNameAsBody(true);  //ODocumentLabel(id, getValueModel());
 						}
 					}
 					//
@@ -129,30 +137,36 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 					}
 					//
 					@Override
-					protected IModel<String> resolveValueModel() {
-						return new OClassCustomModel(getEntityModel(),getPropertyModel());
-						/*{
+					protected IModel<ODocument> resolveValueModel() {
+						return new AbstractCustomValueModel<OClass, String, ODocument>(getEntityModel(), getPropertyModel()){
 							@Override
-							protected String getValue(OClass object, String param) {
-								String value = super.getValue(object, param);
-								if(isRID(value)){
-									value = new OQueryModel<OFunction>("SELECT FROM OFunction WHERE @rid="+value).getObject().get(0).getName();
-								}
-								return value;
+							public Class<ODocument> getObjectClass() {
+								return ODocument.class;
 							}
 							@Override
-							protected void setValue(OClass object, String param, String value) {
-								if(value!=null){
-									List<OFunction> objs = new OQueryModel<OFunction>("SELECT FROM OFunction WHERE name=\""+value+"\"").getObject();
-									value = new OQueryModel<OFunction>("SELECT FROM OFunction WHERE name=\""+value+"\"").getObject().get(0).getId().toString();
+							protected ODocument getValue(OClass object, String param) {
+								String idStr = object.getCustom(param);
+								if (Strings.isEmpty(idStr)) return null;
+								if (ORecordId.isA(idStr)){
+									return new ORecordId(idStr).getRecord();
+								}else{
+							    	ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+							    	OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("SELECT FROM OFunction WHERE name=?");
+							    	List<ODocument> ret = db.query(query, idStr);
+							    	if (ret.size()==0){
+							    		//if function being deleted on never created
+										return null;
+							    	}else{
+								    	return ret.get(0);
+							    	}
 								}
-								super.setValue(object, param, value);
 							}
-							protected boolean isRID(String value){
-								return value==null?false:value.matches("^#[0-9]+:[0-9]+$");
+							@Override
+							protected void setValue(OClass object, String param, ODocument value) {
+								object.setCustom(param, (value!=null?value.getIdentity().toString():null));
 							}
 							
-						};*/
+						};
 					}
 				};
 				
