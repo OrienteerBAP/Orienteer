@@ -11,6 +11,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColu
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -32,6 +33,7 @@ import org.orienteer.graph.component.command.CreateEdgeCommand;
 import org.orienteer.graph.component.command.DeleteEdgeCommand;
 import org.orienteer.graph.model.VertexEdgesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import java.util.List;
@@ -51,7 +53,8 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         Form<ODocument> form = new Form<ODocument>("form");
 
-        VertexEdgesDataProvider vertexEdgesDataProvider = new VertexEdgesDataProvider(getModel());
+        String rid = model.getObject().getIdentity().toString();
+        OQueryDataProvider<ODocument> vertexEdgesDataProvider = new OQueryDataProvider<ODocument>("SELECT FROM E WHERE in=\""+rid+"\" OR out=\""+rid+"\"");
         OClass commonParent = vertexEdgesDataProvider.probeOClass(20);
         if(commonParent==null) commonParent = getSchema().getClass("E");
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
