@@ -3,6 +3,8 @@ package org.orienteer.graph.component.command;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.tx.OTransaction.TXTYPE;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.impls.orient.OrientEdge;
@@ -45,14 +47,11 @@ public class DeleteEdgeCommand extends AbstractDeleteCommand<ODocument> implemen
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 		super.performMultiAction(target, objects);
-        OrientGraph tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
-        tx.commit();
+		
+        getDatabase().commit();
         for (ODocument doc : objects) {
-            ORID id = doc.getIdentity();
-            OrientEdge edge = tx.getEdge(id);
-            tx.removeEdge(edge);
+    		getDatabase().command(new OCommandSQL("delete edge "+doc.getIdentity())).execute();
         }
-        tx.begin();
         setResponsePage(new ODocumentPage(documentModel.getObject()).setModeObject(DisplayMode.VIEW));
 	}
 
