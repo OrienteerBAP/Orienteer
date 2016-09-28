@@ -16,6 +16,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentsCommand;
@@ -31,7 +32,6 @@ import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.graph.component.command.CreateEdgeCommand;
 import org.orienteer.graph.component.command.DeleteEdgeCommand;
-import org.orienteer.graph.model.VertexEdgesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
@@ -78,6 +78,7 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 
         OrienteerDataTable<ODocument, String> table =
                 new OrienteerDataTable<ODocument, String>("edges", columns, vertexEdgesDataProvider, 20);
+        table.addCommand(new CreateEdgeCommand(new ResourceModel("command.create"),table, getModel()).setBootstrapType(BootstrapType.PRIMARY));
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
         table.addCommand(new DeleteEdgeCommand(table, getModel()));

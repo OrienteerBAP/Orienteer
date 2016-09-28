@@ -23,14 +23,12 @@ import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import org.orienteer.graph.model.EdgeVerticesDataProvider;
-import org.orienteer.graph.model.EdgeVerticesModel;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 
 /**
  * Widget for displaying vertices of graph edge.
  */
-@Widget(id="vertices", domain="document", order=10, autoEnable=false, selector="E")
+@Widget(id="vertices", domain="document", order=10, autoEnable=true, selector="E")
 public class GraphVerticesWidget extends AbstractWidget<ODocument> {
 
     @Inject
@@ -49,7 +47,7 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
             public String apply(ODocument vertex) {
             	Object fieldIn =  model.getObject().field("in");
                 String direction = ((OIdentifiable)fieldIn).getIdentity().equals(vertex.getIdentity()) ? "in":"out";
-                return getLocalizer().getString(model.getObject().getClassName() + "." + direction, GraphVerticesWidget.this);
+                return getLocalizer().getString("widget.document.vertices.title." + direction, GraphVerticesWidget.this);
             }
         };
 
