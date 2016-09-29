@@ -53,8 +53,8 @@ public class OrienteerWebSession extends OrientDbWebSession
 					OrienteerWebSession.get().setLocale(localeForLanguage);
 				}
 			}
+			onlineModule.updateSessionUser(getUser(), getId());
 		}
-		onlineModule.updateSessionUser(getUser(), getId());
 		return ret;
 	}
 
