@@ -133,31 +133,26 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 					}
 					@Override
 					protected IModel<ODocument> resolveValueModel() {
-						return new AbstractCustomValueModel<OClass, String, ODocument>(getEntityModel(), getPropertyModel()){
+						
+						return new LoadableDetachableModel<ODocument>() {
 							@Override
-							public Class<ODocument> getObjectClass() {
-								return ODocument.class;
-							}
-							@Override
-							protected ODocument getValue(OClass object, String param) {
-								String idStr = object.getCustom(param);
+							protected ODocument load() {
+								String idStr = getEntityObject().getCustom(getPropertyObject());
 								if (Strings.isEmpty(idStr)) return null;
-								if (ORecordId.isA(idStr)){
+								else if (ORecordId.isA(idStr)){
 									return new ORecordId(idStr).getRecord();
 								}else{
 							    	ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 							    	OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("SELECT FROM OFunction WHERE name=?");
 							    	List<ODocument> ret = db.query(query, idStr);
-							    	if (ret.size()==0){ //if function being deleted on never created
-										return null;
-							    	}else{
-								    	return ret.get(0);
-							    	}
+							    	return ret!=null && !ret.isEmpty() ? ret.get(0):null;
 								}
 							}
+							
 							@Override
-							protected void setValue(OClass object, String param, ODocument value) {
-								object.setCustom(param, (value!=null?value.getIdentity().toString():null));
+							public void setObject(ODocument value) {
+								getEntityObject().setCustom(getPropertyObject(), (value!=null?value.getIdentity().toString():null));
+								super.setObject(value);
 							}
 						};
 					}

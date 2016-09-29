@@ -79,7 +79,7 @@ public class ODocumentHooksWidget extends AbstractModeAwareWidget<ODocument> {
 		
 		final OQueryModel<ODocument> functions = new OQueryModel<ODocument>("SELECT FROM OFunction");
 
-		Form form = new TransactionlessForm<>("form");
+		Form<?> form = new TransactionlessForm<>("form");
 		add(form);
 
         IModel<List<OProperty>> propertiesModel = new LoadableDetachableModel<List<OProperty>>() {
