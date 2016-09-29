@@ -304,8 +304,8 @@ public class OClassIntrospector implements IOClassIntrospector
 		property.setType(oType);
 		switch (oType) {
 			case LINK:
-				ODocument link = doc.field(field);
-				if(link!=null) property.setLinkedClass(link.getSchemaClass());
+				OIdentifiable link = doc.field(field);
+				if(link!=null && link instanceof ODocument) property.setLinkedClass(((ODocument)link).getSchemaClass());
 				break;
 			case LINKBAG:
 				OCollection<OIdentifiable> bag = doc.field(field);
@@ -320,14 +320,14 @@ public class OClassIntrospector implements IOClassIntrospector
 				Collection<ODocument> collection = doc.field(field);
 				if(collection!=null && !collection.isEmpty()) {
 					link = collection.iterator().next();
-					if(link!=null) property.setLinkedClass(link.getSchemaClass());
+					if(link!=null && link instanceof ODocument) property.setLinkedClass(((ODocument)link).getSchemaClass());
 				}
 				break;
 			case LINKMAP:
 				Map<String, ODocument> map = doc.field(field);
 				if(map!=null && !map.isEmpty()) {
 					link = map.values().iterator().next();
-					if(link!=null) property.setLinkedClass(link.getSchemaClass());
+					if(link!=null && link instanceof ODocument) property.setLinkedClass(((ODocument)link).getSchemaClass());
 				}
 				break;
 			case EMBEDDED:

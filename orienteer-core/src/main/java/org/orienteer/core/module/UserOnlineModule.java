@@ -65,27 +65,27 @@ public class UserOnlineModule extends AbstractOrienteerModule {
 
     public ODocument updateOnlineUser(OUser user, final boolean online) {
         final ODocument document = user.getDocument();
-        DBClosure<ODocument> closure = new DBClosure<ODocument>() {
+        return new DBClosure<ODocument>() {
             @Override
             protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
                 document.field(ONLINE_FIELD, online);
                 document.save();
                 return document;
             }
-        };
-        return closure.execute();
+        }.execute();
     }
 
     public void updateSessionUser(OUser user, final String sessionId) {
-        final ODocument document = user.getDocument();
-        DBClosure<ODocument> closure = new DBClosure<ODocument>() {
-            @Override
-            protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
-                document.field(LAST_SESSION_FIELD, sessionId);
-                document.save();
-                return document;
-            }
-        };
-        closure.execute();
+    	if(user!=null) { 
+	        final ODocument document = user.getDocument();
+	        new DBClosure<ODocument>() {
+	            @Override
+	            protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
+	                document.field(LAST_SESSION_FIELD, sessionId);
+	                document.save();
+	                return document;
+	            }
+	        }.execute();
+    	}
     }
 }
