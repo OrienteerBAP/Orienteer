@@ -84,7 +84,7 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 		super.onConfigure();
 		IModel<? extends List<? extends OProperty>> propertiesModel = propertiesStructureTable.getCriteriesModel();
 		List<? extends OProperty> properties = propertiesModel.getObject();
-		setVisible(properties!=null && !properties.isEmpty());
+		setVisible((properties!=null && !properties.isEmpty()) ||getModel().getObject().getIdentity().isNew());
 		if(DisplayMode.EDIT.equals(getModeObject()))
 		{
 			saveODocumentCommand.configure();
