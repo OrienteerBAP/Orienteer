@@ -16,6 +16,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -32,6 +33,8 @@ import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.graph.component.command.CreateEdgeCommand;
 import org.orienteer.graph.component.command.DeleteEdgeCommand;
+
+import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
@@ -85,6 +88,7 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 
         form.add(table);
         add(form);
+        add(DisableIfDocumentNotSavedBehavior.INSTANCE,UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 
     @Override
