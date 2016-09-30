@@ -37,7 +37,11 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
     private IModel<ODocument> documentModel;
 
     public CreateEdgeCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentIModel) {
-        super(new ResourceModel("command.link"), table);
+    	this(new ResourceModel("command.link"),table,documentIModel);
+    }
+
+    public CreateEdgeCommand(IModel<?> labelModel,OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentIModel) {
+        super(labelModel, table);
         setBootstrapType(BootstrapType.SUCCESS);
         setIcon(FAIconType.plus);
         setAutoNotify(false);
