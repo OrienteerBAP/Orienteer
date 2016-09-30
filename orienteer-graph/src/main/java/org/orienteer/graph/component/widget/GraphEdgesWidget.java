@@ -56,8 +56,7 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         Form<ODocument> form = new Form<ODocument>("form");
 
-        OQueryDataProvider<ODocument> vertexEdgesDataProvider = new OQueryDataProvider<ODocument>("SELECT expand(bothE()) FROM "+model.getObject().getClassName()+" WHERE @rid=:rid");
-        vertexEdgesDataProvider.setParameter("rid", Model.of(model.getObject().getIdentity()));
+        OQueryDataProvider<ODocument> vertexEdgesDataProvider = new OQueryDataProvider<ODocument>("SELECT expand(bothE()) FROM "+model.getObject().getIdentity());
 
         OClass commonParent = vertexEdgesDataProvider.probeOClass(20);
         if(commonParent==null) commonParent = getSchema().getClass("E");
