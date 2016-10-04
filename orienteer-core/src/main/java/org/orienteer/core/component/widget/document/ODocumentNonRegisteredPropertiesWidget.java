@@ -93,9 +93,8 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
 					@Override
 					protected Component resolveComponent(String id, DisplayMode mode, OProperty property) {
 						if (DisplayMode.EDIT.equals(getModeObject())){
-							UnregistredPropertyEditPanel<?> result = new UnregistredPropertyEditPanel<OProperty>(id,getPropertyModel());
+							UnregistredPropertyEditPanel result = new UnregistredPropertyEditPanel(id,getPropertyModel());
 							result.setPropertyComponent(super.resolveComponent(result.getPropertyComponentId(), mode, property));
-							result.setReloadableModel(propertiesModel);
 							return result;
 						}else{
 							return super.resolveComponent(id, mode, property);
@@ -105,10 +104,7 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
 			}
 		};
 		form.add(propertiesStructureTable);
-		//form.setOutputMarkupId(true);
 		add(form);
-		//add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
-		//propertiesStructureTable.add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS);
     }
     
     @Override
