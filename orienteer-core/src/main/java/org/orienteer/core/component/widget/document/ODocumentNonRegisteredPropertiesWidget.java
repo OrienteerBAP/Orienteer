@@ -1,48 +1,29 @@
 package org.orienteer.core.component.widget.document;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.AbstractCreateCommand;
-import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.UnregistredPropertyEditPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.visualizer.DefaultVisualizer;
-import org.orienteer.core.component.visualizer.IVisualizer;
-import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -51,7 +32,7 @@ import java.util.Set;
 /**
  * Widget to show unregistered parameters for a document on particular tab
  */
-@Widget(domain="document", tab="parameters", id = ODocumentNonRegisteredPropertiesWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+@Widget(domain="document", tab="parameters", id = ODocumentNonRegisteredPropertiesWidget.WIDGET_TYPE_ID, order=20, autoEnable=false)
 public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWidget<ODocument> {
 
     public static final String WIDGET_TYPE_ID = "nonregistered";
@@ -66,8 +47,8 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
     public ODocumentNonRegisteredPropertiesWidget(String id, final IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
 
-        final Form<ODocument> form = new TransactionlessForm("form", getModel());
-        final IModel<List<OProperty>> propertiesModel = new LoadableDetachableModel<List<OProperty>>() {
+        Form<ODocument> form = new Form<ODocument>("form", getModel());
+        IModel<List<OProperty>> propertiesModel = new LoadableDetachableModel<List<OProperty>>() {
 			@Override
 			protected List<OProperty> load() {
 				ODocument doc = model.getObject();
