@@ -1,38 +1,29 @@
 package org.orienteer.core.component.widget.document;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.property.UnregistredPropertyEditPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.visualizer.DefaultVisualizer;
-import org.orienteer.core.component.visualizer.IVisualizer;
-import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +70,18 @@ public class ODocumentNonRegisteredPropertiesWidget extends AbstractModeAwareWid
 			@Override
 			protected Component getValueComponent(String id,
 					IModel<OProperty> rowModel) {
-				return new ODocumentMetaPanel<Object>(id, getModeModel(), ODocumentNonRegisteredPropertiesWidget.this.getModel(), rowModel);
+				return new ODocumentMetaPanel<Object>(id, getModeModel(), ODocumentNonRegisteredPropertiesWidget.this.getModel(), rowModel){
+					@Override
+					protected Component resolveComponent(String id, DisplayMode mode, OProperty property) {
+						if (DisplayMode.EDIT.equals(getModeObject())){
+							UnregistredPropertyEditPanel result = new UnregistredPropertyEditPanel(id,getPropertyModel());
+							result.setPropertyComponent(super.resolveComponent(result.getPropertyComponentId(), mode, property));
+							return result;
+						}else{
+							return super.resolveComponent(id, mode, property);
+						}
+					}
+				};
 			}
 		};
 		form.add(propertiesStructureTable);
