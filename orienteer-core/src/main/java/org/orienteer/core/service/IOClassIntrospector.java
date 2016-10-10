@@ -33,6 +33,7 @@ public interface IOClassIntrospector
 	public void defineDefaultSorting(SortableDataProvider<ODocument, String> provider, OClass oClass);
 	public OProperty getNameProperty(OClass oClass);
 	public String getDocumentName(ODocument doc);
+	public String getDocumentName(ODocument doc, OProperty nameProperty);
 	public OProperty virtualizeField(ODocument doc, String field);
 	public OQueryDataProvider<ODocument> getDataProviderForGenericSearch(OClass oClass, IModel<String> queryModel);
 }

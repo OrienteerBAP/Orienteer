@@ -258,14 +258,18 @@ public class OClassIntrospector implements IOClassIntrospector
 		}
 		return ret;
 	}
-
+	
 	@Override
 	public String getDocumentName(ODocument doc) {
+		return getDocumentName(doc, null);
+	}
+
+	@Override
+	public String getDocumentName(ODocument doc, OProperty nameProp) {
 		if(doc==null) return Application.get().getResourceSettings().getLocalizer().getString("nodoc", null);
 		else
 		{
-			//TODO: Enhance to cover complex naming cases
-			OProperty nameProp = getNameProperty(doc.getSchemaClass());
+			if(nameProp==null) nameProp = getNameProperty(doc.getSchemaClass());
 			if(nameProp!=null)
 			{
 				Object value = doc.field(nameProp.getName());
