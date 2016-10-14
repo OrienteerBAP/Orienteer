@@ -1,6 +1,5 @@
 package org.orienteer.incident.logger.driver.component;
 
-import ru.asm.utils.incident.logger.core.DefaultData;
 import ru.asm.utils.incident.logger.core.ICoder;
 import ru.asm.utils.incident.logger.core.IConfigurator;
 import ru.asm.utils.incident.logger.core.IData;
@@ -45,12 +44,12 @@ public class OrienteerIncidentConfigurator implements IConfigurator {
 	}
 
 	@Override
-	public IData<?> getServerData() {
+	public IData getServerData() {
 		return data;
 	}
 
 	@Override
-	public IData<?> getClientData() {
+	public IData getClientData() {
 		return data;
 	}
 

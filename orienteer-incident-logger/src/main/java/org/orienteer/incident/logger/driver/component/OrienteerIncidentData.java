@@ -10,7 +10,7 @@ import ru.asm.utils.incident.logger.core.ILoggerData;
 /**
  * 
  */
-public class OrienteerIncidentData implements IData<String>{
+public class OrienteerIncidentData implements IData{
 
 	private Map<Integer,String> data;
 	private Integer counter = 0;
@@ -19,8 +19,8 @@ public class OrienteerIncidentData implements IData<String>{
 		data = new HashMap<Integer,String>();
 	}
 	
-	public void applyLoggerData(ILoggerData<String> loggerData) {
-		this.data.put(counter++, loggerData.get());
+	public void applyLoggerData(ILoggerData<?> loggerData) {
+		this.data.put(counter++, (String) loggerData.get());
 	}
 
 	public String get() {
