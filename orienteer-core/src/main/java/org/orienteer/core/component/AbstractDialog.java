@@ -40,7 +40,7 @@ public class AbstractDialog<T> extends AbstractCommandsEnabledPanel<T>{
 		super(id, model);
 		this.modal = modal;
 		if(modal!=null) {
-			modal.setMinimalWidth(300);
+			modal.setMinimalWidth(400);
 		}
 	}
 	

@@ -9,6 +9,7 @@ import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.LinkViewPanel;
+import org.orienteer.core.model.ODocumentNameModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -74,7 +75,10 @@ public class OEntityColumn extends OPropertyValueColumn
 			@Override
 			protected Component resolveComponent(String id, DisplayMode mode,
 					OProperty property) {
-				return DisplayMode.VIEW.equals(mode) || property == null ? new LinkViewPanel(id, getEntityModel(), getValueModel()) : super.resolveComponent(id, mode, property);
+				if (DisplayMode.VIEW.equals(mode) || property == null)
+					return new LinkViewPanel(id, getEntityModel(), new ODocumentNameModel(getEntityModel(), getCriteryModel()));
+				else 
+					return super.resolveComponent(id, mode, property);
 			}
 		};
 	}

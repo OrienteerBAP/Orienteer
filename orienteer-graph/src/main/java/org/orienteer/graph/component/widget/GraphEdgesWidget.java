@@ -11,10 +11,13 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColu
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentsCommand;
@@ -30,8 +33,10 @@ import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.graph.component.command.CreateEdgeCommand;
 import org.orienteer.graph.component.command.DeleteEdgeCommand;
-import org.orienteer.graph.model.VertexEdgesDataProvider;
+
+import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import java.util.List;
@@ -51,7 +56,8 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         Form<ODocument> form = new Form<ODocument>("form");
 
-        VertexEdgesDataProvider vertexEdgesDataProvider = new VertexEdgesDataProvider(getModel());
+        OQueryDataProvider<ODocument> vertexEdgesDataProvider = new OQueryDataProvider<ODocument>("SELECT expand(bothE()) FROM "+model.getObject().getIdentity());
+
         OClass commonParent = vertexEdgesDataProvider.probeOClass(20);
         if(commonParent==null) commonParent = getSchema().getClass("E");
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
@@ -74,12 +80,14 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 
         OrienteerDataTable<ODocument, String> table =
                 new OrienteerDataTable<ODocument, String>("edges", columns, vertexEdgesDataProvider, 20);
+        table.addCommand(new CreateEdgeCommand(new ResourceModel("command.create"),table, getModel()).setBootstrapType(BootstrapType.PRIMARY));
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
         table.addCommand(new DeleteEdgeCommand(table, getModel()));
 
         form.add(table);
         add(form);
+        add(DisableIfDocumentNotSavedBehavior.INSTANCE,UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 
     @Override
