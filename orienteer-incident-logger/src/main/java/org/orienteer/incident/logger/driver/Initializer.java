@@ -3,6 +3,11 @@ package org.orienteer.incident.logger.driver;
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.incident.logger.driver.component.OrienteerIncidentConfigurator;
+
+import ru.asm.utils.incident.logger.IncidentLogger;
+import ru.asm.utils.incident.logger.core.DefaultConfigurator;
+import ru.asm.utils.incident.logger.core.ILogger;
 
 /**
  * {@link IInitializer} for 'incident.logger.driver' module

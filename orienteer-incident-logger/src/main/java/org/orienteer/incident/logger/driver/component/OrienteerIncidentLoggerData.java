@@ -1,31 +1,41 @@
 package org.orienteer.incident.logger.driver.component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ru.asm.utils.incident.logger.core.ILoggerData;
 
 /**
  * 
  */
-public class OrienteerIncidentLoggerData implements ILoggerData<String>{
+public class OrienteerIncidentLoggerData implements ILoggerData<List<OrienteerIncident>>{
 
-	String data;
+	List<OrienteerIncident> data;
+	boolean makeNew = false;
 
 	public OrienteerIncidentLoggerData() {
-		data = "";
+		data = new ArrayList<OrienteerIncident>();
+		makeNew=true;
 	}
 
-	public String get(){
+	public List<OrienteerIncident> get(){
 		return data;
 	}
 
 	public void clear() {
-		data = "";
+		data.clear();
+		makeNew=true;
 	}
 
 	public void set(String name, String value) {
-		this.data = this.data.concat(name+":"+value+"\n");
+		if (makeNew){
+			data.add(new OrienteerIncident());
+			makeNew=false;
+		}
+		data.get(data.size()-1).put(name, value);
 	}
 
 	public void end() {
-		this.data = this.data.concat("\n\n");
+		makeNew=true;
 	}
 }

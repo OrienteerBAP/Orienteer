@@ -1,5 +1,7 @@
 package org.orienteer.incident.logger.driver.component;
 
+import ru.asm.utils.incident.logger.core.DefaultReciever;
+import ru.asm.utils.incident.logger.core.DefaultSender;
 import ru.asm.utils.incident.logger.core.ICoder;
 import ru.asm.utils.incident.logger.core.IConfigurator;
 import ru.asm.utils.incident.logger.core.IData;
@@ -13,10 +15,14 @@ import ru.asm.utils.incident.logger.core.ISender;
 public class OrienteerIncidentConfigurator implements IConfigurator {
 
 	IData data;
+	DefaultSender sender;
+	IReciever reciever;
 	
 	public OrienteerIncidentConfigurator() {
 		data = new OrienteerIncidentData();
-		
+		sender = new DefaultSender();
+		reciever = new DefaultReciever();
+		sender.setReciever(reciever);
 	}
 
 	@Override
@@ -33,14 +39,12 @@ public class OrienteerIncidentConfigurator implements IConfigurator {
 
 	@Override
 	public ISender getSender() {
-		// TODO Auto-generated method stub
-		return null;
+		return sender;
 	}
 
 	@Override
 	public IReciever getReciever() {
-		// TODO Auto-generated method stub
-		return null;
+		return reciever;
 	}
 
 	@Override

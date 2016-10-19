@@ -1,5 +1,7 @@
 package org.orienteer.incident.logger.driver.component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -20,6 +22,15 @@ public class OrienteerIncidentLogger extends AbstractLogger{
 		super(data);
 	}
 	
+	protected void writeData(Throwable e){
+	    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	    PrintStream printStream = new PrintStream(stream);
+	    e.printStackTrace(printStream);
+	    printStream.flush();
+	    //data.set("StackTrace", stream.toString());
+	    writeData(e.getMessage());
+	}
+	
 	protected void writeData(String message){
 	    Package objPackage = this.getClass().getPackage(); 
 	    
@@ -28,8 +39,8 @@ public class OrienteerIncidentLogger extends AbstractLogger{
 	      
 	    data.set("Application", appname+ " v"+appver);
 	    data.set("DateTime", ft.format(new Date()));
-	    data.set("UserName", OrienteerWebSession.get().getUsername());
-	    data.set("Exception", message);
+	    data.set("UserName", System.getProperty("user.name"));
+	    data.set("Message", message);
 	    data.end();
 	}
 }
