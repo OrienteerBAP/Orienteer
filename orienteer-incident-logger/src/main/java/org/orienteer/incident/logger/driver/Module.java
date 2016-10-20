@@ -6,6 +6,9 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.incident.logger.driver.component.OrienteerIncidentConfigurator;
+import org.orienteer.incident.logger.driver.component.OrienteerIncidentReciever;
+import org.orienteer.incident.logger.driver.component.OrienteerIncidentRecieverResource;
+import org.orienteer.incident.logger.driver.component.testresource;
 
 import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -52,10 +55,14 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
+
+		OrienteerIncidentRecieverResource.mount(app);
+		testresource.mount(app);
 		
 		Module.db = db;
 		app.mountPages("org.orienteer.incident.logger.driver.web");
-		db.commit();
+		
+		//db.commit();
 		/*
 		ODocument doc = new ODocument("counter");
 		doc.field( "name", "mycounter" );
@@ -86,6 +93,7 @@ public class Module extends AbstractOrienteerModule{
 
         //IncidentLogger.get().getServerData().applyData(IncidentLogger.get().getServerData().getData());
         System.out.println(IncidentLogger.get().getServerData().getData());
+
         
         /*
 		db.command(new OCommandSQL(" "

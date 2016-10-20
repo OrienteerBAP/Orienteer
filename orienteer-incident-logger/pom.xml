@@ -97,11 +97,6 @@
             <artifactId>jetty-all</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-        	<groupId>ru.asm.utils</groupId>
-        	<artifactId>incident.logger</artifactId>
-        	<version>0.0.8-SNAPSHOT</version>
-        </dependency>
 	    <!--  Gson: Java to Json conversion -->
 	    <dependency>
 	      <groupId>com.google.code.gson</groupId>
@@ -109,6 +104,16 @@
 	      <version>2.7</version>
 	      <scope>compile</scope>
 	    </dependency>        
+        <dependency>
+        	<groupId>ru.asm.utils</groupId>
+        	<artifactId>incident.logger</artifactId>
+        	<version>0.0.8-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.eclipse.jetty</groupId>
+        	<artifactId>jetty-client</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<resources>

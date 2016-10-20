@@ -80,9 +80,10 @@ public class OrienteerIncidentData implements IData{
 	@Override
 	public String getData(IDataFlag flag) {
 		//List<OrienteerIncident> data = new ArrayList<OrienteerIncident>();
-		ODatabaseDocument db = Module.db;//new ODatabaseDocumentTx(settings.getDBUrl());
+//		ODatabaseDocument db = Module.db;//new ODatabaseDocumentTx(settings.getDBUrl());
+		ODatabaseDocument db = OrienteerWebApplication.get().getDatabase();//Module.db;//new ODatabaseDocumentTx(settings.getDBUrl());
 		List<OrienteerIncident> data = new ArrayList<OrienteerIncident>();
-		if (db!=null){
+		if (db.isActiveOnCurrentThread()){
 			OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("select from OIncident where sended < ?");
 			List<ODocument> queryData = db.command(query).execute(2);
 			for (ODocument incidentDoc : queryData){
@@ -100,8 +101,8 @@ public class OrienteerIncidentData implements IData{
 	public void mark(IDataFlag before, IDataFlag now) {
 		if (before ==IDataFlag.SENDED && now == IDataFlag.SENDED_SUCCESSFULLY){
 	        System.out.println( " MARK DOWN!!!! " );
-			ODatabaseDocument db = Module.db;//new ODatabaseDocumentTx(settings.getDBUrl());
-			if (db!=null){
+			ODatabaseDocument db = OrienteerWebApplication.get().getDatabase();//Module.db;//new ODatabaseDocumentTx(settings.getDBUrl());
+			if (db.isActiveOnCurrentThread()){
 				//db.commit();
 				db.command(new OCommandSQL("update OIncident set sended=2 where sended=1")).execute();
 //				db.command(new OSQLSynchQuery<Object>("update OIncident set sended=2 where sended=1"));
@@ -114,6 +115,8 @@ public class OrienteerIncidentData implements IData{
 
 	@Override
 	public void applyData(String newData) {
+        System.out.println( " applyData!!!! "+ newData);
+
 		List<Map<String,String>> anotherData = gson.fromJson(newData, ArrayList.class);
 		for (Map<String,String> incident : anotherData){
 			ODocument doc = new ODocument("OIncident");

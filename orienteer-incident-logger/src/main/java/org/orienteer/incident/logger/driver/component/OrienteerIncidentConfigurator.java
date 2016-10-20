@@ -15,14 +15,14 @@ import ru.asm.utils.incident.logger.core.ISender;
 public class OrienteerIncidentConfigurator implements IConfigurator {
 
 	IData data;
-	DefaultSender sender;
+	ISender sender;
 	IReciever reciever;
 	
 	public OrienteerIncidentConfigurator() {
 		data = new OrienteerIncidentData();
-		sender = new DefaultSender();
-		reciever = new DefaultReciever();
-		sender.setReciever(reciever);
+		sender = new OrienteerIncidentSender();//new DefaultSender();
+		reciever = OrienteerIncidentReciever.INSTANCE;//new OrienteerIncidentReciever();//new DefaultReciever();
+		//sender.setReciever(reciever);
 	}
 
 	@Override
