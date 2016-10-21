@@ -1,13 +1,11 @@
 package org.orienteer.incident.logger.driver.component;
 
-import ru.asm.utils.incident.logger.core.DefaultReciever;
-import ru.asm.utils.incident.logger.core.DefaultSender;
 import ru.asm.utils.incident.logger.core.ICoder;
 import ru.asm.utils.incident.logger.core.IConfigurator;
 import ru.asm.utils.incident.logger.core.IData;
 import ru.asm.utils.incident.logger.core.IDecoder;
 import ru.asm.utils.incident.logger.core.ILogger;
-import ru.asm.utils.incident.logger.core.IReciever;
+import ru.asm.utils.incident.logger.core.IReceiver;
 import ru.asm.utils.incident.logger.core.ISender;
 /**
  * 
@@ -16,24 +14,21 @@ public class OrienteerIncidentConfigurator implements IConfigurator {
 
 	IData data;
 	ISender sender;
-	IReciever reciever;
+	IReceiver receiver;
 	
 	public OrienteerIncidentConfigurator() {
 		data = new OrienteerIncidentData();
-		sender = new OrienteerIncidentSender();//new DefaultSender();
-		reciever = OrienteerIncidentReciever.INSTANCE;//new OrienteerIncidentReciever();//new DefaultReciever();
-		//sender.setReciever(reciever);
+		sender = new OrienteerIncidentSender("admin","admin","http://localhost:8080/rest/incident");
+		receiver = OrienteerIncidentReceiver.INSTANCE;
 	}
 
 	@Override
 	public ICoder getCoder() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public IDecoder getDecoder() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -43,8 +38,8 @@ public class OrienteerIncidentConfigurator implements IConfigurator {
 	}
 
 	@Override
-	public IReciever getReciever() {
-		return reciever;
+	public IReceiver getReceiver() {
+		return receiver;
 	}
 
 	@Override
@@ -59,7 +54,6 @@ public class OrienteerIncidentConfigurator implements IConfigurator {
 
 	@Override
 	public ILogger makeLogger() {
-		// TODO Auto-generated method stub
 		return new OrienteerIncidentLogger(new OrienteerIncidentLoggerData()) ;
 	}
 

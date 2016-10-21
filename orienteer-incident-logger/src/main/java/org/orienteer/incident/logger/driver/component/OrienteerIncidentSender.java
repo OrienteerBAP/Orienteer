@@ -1,57 +1,48 @@
 package org.orienteer.incident.logger.driver.component;
 
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.util.B64Code;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.asm.utils.incident.logger.core.ISender;
 
 public class OrienteerIncidentSender implements ISender {
 
-	public OrienteerIncidentSender() {
-		// TODO Auto-generated constructor stub
+	private static final Logger LOG = LoggerFactory.getLogger(OrienteerIncidentSender.class);
+
+	String login;
+	String password;
+	String receiverUrl;
+	
+	public OrienteerIncidentSender(String login, String password,String receiverUrl) {
+		this.login=login;
+		this.password=password;
+		this.receiverUrl=receiverUrl;
 	}
 
 	@Override
 	public boolean send(String input) {
-		// Instantiate HttpClient
-		HttpClient httpClient = new HttpClient();
-
-		// Configure HttpClient, for example:
-		//httpClient.setFollowRedirects(false);
-
-		// Start HttpClient
 		try {
+			HttpClient httpClient = new HttpClient();
 			httpClient.start();
-			ContentResponse response = httpClient.POST("http://localhost:8080/rest/incident")
+			ContentResponse response = httpClient.POST(receiverUrl).
+					method("POST").
+					header("Authorization", "Basic " + B64Code.encode(login + ":" + password, StandardCharsets.ISO_8859_1))
 		        .param("value", input)
 		        .send();
 			httpClient.stop();
-			return true;
+			if (response.getContentAsString().equals("OK")){
+				return true;
+			}  
+			return false;
 		} catch (Exception e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 			return false;
 		}
-		/*
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPost httpPost = new HttpPost("http://targethost/login");
-		List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-		nvps.add(new BasicNameValuePair("username", "vip"));
-		nvps.add(new BasicNameValuePair("password", "secret"));
-		httpPost.setEntity(new UrlEncodedFormEntity(nvps));
-		CloseableHttpResponse response2 = httpclient.execute(httpPost);
-
-		try {
-		    System.out.println(response2.getStatusLine());
-		    HttpEntity entity2 = response2.getEntity();
-		    // do something useful with the response body
-		    // and ensure it is fully consumed
-		    EntityUtils.consume(entity2);
-		} finally {
-		    response2.close();
-		}
-		*/
-		// TODO Auto-generated method stub
-	//	return false;
 	}
 
 }

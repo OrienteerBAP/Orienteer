@@ -1,6 +1,5 @@
 package org.orienteer.incident.logger.driver.component;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;

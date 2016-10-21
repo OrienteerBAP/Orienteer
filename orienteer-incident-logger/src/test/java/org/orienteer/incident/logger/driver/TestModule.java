@@ -28,6 +28,6 @@ public class TestModule
 	    assertNotNull(app);
 	    IOrienteerModule module = app.getModuleByName("incident.logger.driver");
 	    assertNotNull(module);
-	    assertTrue(module instanceof Module);
+	    assertTrue(module instanceof IncidentLoggerModule);
 	}
 }

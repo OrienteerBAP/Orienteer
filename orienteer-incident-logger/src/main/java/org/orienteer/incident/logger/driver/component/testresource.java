@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import ru.asm.utils.incident.logger.IncidentLogger;
 import ru.asm.utils.incident.logger.core.ILogger;
-import ru.asm.utils.incident.logger.core.IReciever;
+import ru.asm.utils.incident.logger.core.IReceiver;
 
 public class testresource extends AbstractResource {
 	/**
@@ -27,29 +27,34 @@ public class testresource extends AbstractResource {
 	public static final String MOUNT_PATH = "/rest/incident/test";
 	public static final String REGISTRATION_RES_KEY=testresource.class.getSimpleName();
 	
-	
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes) {
-		final WebRequest request = (WebRequest) attributes.getRequest();
-		//final boolean checking = attributes.getParameters().get("check").toBoolean(false);
-		final HttpServletRequest httpRequest = (HttpServletRequest) request.getContainerRequest();
 		final ResourceResponse response = new ResourceResponse();
 		response.setContentType("text/plain");
-		//response.setContentType("application/json");
-		if(response.dataNeedsToBeWritten(attributes))
-		{
-			String out="lalala";
-			final String finalOut = out;
-	        ILogger logger = IncidentLogger.get().makeLogger();
-	        logger.incident("testresource incident!!!!11111");
-	        
-			response.setWriteCallback(new WriteCallback() {
-				@Override
-				public void writeData(Attributes attributes) throws IOException {
-					attributes.getResponse().write(finalOut);
-				}
-			});
+        String out="some out";
+
+		//program init
+		ILogger logger = IncidentLogger.get().makeLogger();
+        try{
+        	//body of program
+        	logger.message("Initial data, or other stuff, send only if we call incident after this");
+            if (true){
+                throw new Exception("Unexpectedly exception");
+            }
+            IncidentLogger.close();
+        	//body of program end
+	    }catch (Exception e) {
+	        logger.incident(e);
 		}
+
+		final String finalOut = out;
+	        
+		response.setWriteCallback(new WriteCallback() {
+			@Override
+			public void writeData(Attributes attributes) throws IOException {
+				attributes.getResponse().write(finalOut);
+			}
+		});
 		return response;
 	}
 	

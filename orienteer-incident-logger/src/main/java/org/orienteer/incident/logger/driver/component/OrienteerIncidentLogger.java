@@ -27,7 +27,7 @@ public class OrienteerIncidentLogger extends AbstractLogger{
 	    PrintStream printStream = new PrintStream(stream);
 	    e.printStackTrace(printStream);
 	    printStream.flush();
-	    //data.set("StackTrace", stream.toString());
+	    data.set("StackTrace", stream.toString());
 	    writeData(e.getMessage());
 	}
 	
