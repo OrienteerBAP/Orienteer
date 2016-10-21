@@ -4,6 +4,10 @@ import java.util.HashMap;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Inner representation of incident for Orienteer
+ *
+ */
 public class OrienteerIncident extends HashMap<String,String> {
 
 	/**
@@ -18,10 +22,11 @@ public class OrienteerIncident extends HashMap<String,String> {
 
 	public OrienteerIncident(ODocument doc) {
 		
-	    put("Application", (String) doc.field("Application"));
-	    put("DateTime", (String) doc.field("DateTime"));
-	    put("UserName", (String) doc.field("UserName"));
-	    put("Message", (String) doc.field("Message"));
+	    put("application", (String) doc.field("application"));
+	    put("dateTime", (String) doc.field("dateTime"));
+	    put("userName", (String) doc.field("userName"));
+	    put("message", (String) doc.field("message"));
+	    put("stackTrace", (String) doc.field("stackTrace"));
 	}
 
 }

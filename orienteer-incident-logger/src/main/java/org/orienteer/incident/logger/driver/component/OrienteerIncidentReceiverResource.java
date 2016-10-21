@@ -1,6 +1,7 @@
 package org.orienteer.incident.logger.driver.component;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,17 +9,18 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
-import org.apache.wicket.request.resource.AbstractResource.ResourceResponse;
-import org.apache.wicket.request.resource.AbstractResource.WriteCallback;
-import org.apache.wicket.request.resource.IResource.Attributes;
+import org.apache.wicket.util.io.IOUtils;
 import org.orienteer.core.OrienteerWebApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.asm.utils.incident.logger.core.IReceiver;
-import ru.asm.utils.incident.logger.core.IServer;
-import ru.asm.utils.incident.logger.core.Server;
 
+/**
+ * 
+ * Data provider for {@link OrienteerIncidentReceiver}. 
+ * 
+ */
 public class OrienteerIncidentReceiverResource extends AbstractResource {
 	/**
 	 * 
@@ -43,9 +45,11 @@ public class OrienteerIncidentReceiverResource extends AbstractResource {
 				if(httpRequest.getMethod().equalsIgnoreCase("GET") //for debug 
 						|| httpRequest.getMethod().equalsIgnoreCase("POST") )
 				{
-					String received = attributes.getParameters().get("value").toOptionalString();
-					LOG.info("value="+received);
-					getReceiver().receive(received);
+					StringWriter received = new StringWriter();
+					IOUtils.copy(httpRequest.getInputStream(), received);
+
+					LOG.info("received="+received);
+					getReceiver().receive(received.toString());
 				}
 			} catch (Throwable e)
 			{

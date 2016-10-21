@@ -9,8 +9,10 @@ import ru.asm.utils.incident.logger.core.IServer;
  *	ATTENTION! This module - only for thread-safe IData!!!
  */
 public class OrienteerIncidentReceiver implements IReceiver{
+	
+	public static final OrienteerIncidentReceiver INSTANCE = new OrienteerIncidentReceiver();
+
 	IServer server;
-	public static OrienteerIncidentReceiver INSTANCE = new OrienteerIncidentReceiver();
 	
 	private OrienteerIncidentReceiver() {
 	}

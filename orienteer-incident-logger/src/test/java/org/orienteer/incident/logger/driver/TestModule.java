@@ -29,5 +29,6 @@ public class TestModule
 	    IOrienteerModule module = app.getModuleByName("incident.logger.driver");
 	    assertNotNull(module);
 	    assertTrue(module instanceof IncidentLoggerModule);
+	    //TODO : to add tests for incident logger
 	}
 }

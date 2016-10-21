@@ -6,7 +6,7 @@ import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.incident.logger.driver.component.OrienteerIncidentConfigurator;
 import org.orienteer.incident.logger.driver.component.OrienteerIncidentReceiverResource;
-import org.orienteer.incident.logger.driver.component.testresource;
+import org.orienteer.incident.logger.driver.component.Testresource;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -33,11 +33,13 @@ public class IncidentLoggerModule extends AbstractOrienteerModule{
 		//Install data model
 		//Return null of default OModule is enough
 		helper.oClass("OIncident").
-			oProperty("Application", OType.STRING).
-			oProperty("DateTime", OType.STRING).
-			oProperty("UserName", OType.STRING).
-			oProperty("Message", OType.STRING).
-			oProperty("StackTrace", OType.STRING);		
+			oProperty("application", OType.STRING).
+			oProperty("dateTime", OType.STRING).
+			oProperty("userName", OType.STRING).
+			oProperty("message", OType.STRING).
+			oProperty("sended", OType.STRING). // for debug
+			oProperty("recieved", OType.STRING). // for debug
+			oProperty("stackTrace", OType.STRING);		
 		return null;
 	}
 
@@ -46,20 +48,23 @@ public class IncidentLoggerModule extends AbstractOrienteerModule{
 		super.onUpdate(app, db, oldVersion, newVersion);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass("OIncident").
-			oProperty("Application", OType.STRING).
-			oProperty("DateTime", OType.STRING).
-			oProperty("UserName", OType.STRING).
-			oProperty("Message", OType.STRING).
-			oProperty("StackTrace", OType.STRING);		
+			oProperty("application", OType.STRING).
+			oProperty("dateTime", OType.STRING).
+			oProperty("userName", OType.STRING).
+			oProperty("message", OType.STRING).
+			oProperty("sended", OType.STRING). // for debug
+			oProperty("recieved", OType.STRING). // for debug
+			oProperty("stackTrace", OType.STRING);		
 	}
 	
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
+		OSchemaHelper helper = OSchemaHelper.bind(db);
 
 		app.mountPages("org.orienteer.incident.logger.driver.web");
 		OrienteerIncidentReceiverResource.mount(app);
-		testresource.mount(app);
+		Testresource.mount(app);
 
        //IncidentLogger.init(new OrienteerIncidentConfigurator());
 	}
@@ -70,7 +75,7 @@ public class IncidentLoggerModule extends AbstractOrienteerModule{
 		//IncidentLogger.close();
 
 		app.unmountPages("org.orienteer.incident.logger.driver.web");
-		app.unmount(testresource.MOUNT_PATH);
+		app.unmount(Testresource.MOUNT_PATH);
 		app.unmount(OrienteerIncidentReceiverResource.MOUNT_PATH);
 		
 	}

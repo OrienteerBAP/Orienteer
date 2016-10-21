@@ -19,13 +19,17 @@ import ru.asm.utils.incident.logger.IncidentLogger;
 import ru.asm.utils.incident.logger.core.ILogger;
 import ru.asm.utils.incident.logger.core.IReceiver;
 
-public class testresource extends AbstractResource {
+/**
+ * Page for testing {@link IncidentLoggerModule} 
+ *
+ */
+public class Testresource extends AbstractResource {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final String MOUNT_PATH = "/rest/incident/test";
-	public static final String REGISTRATION_RES_KEY=testresource.class.getSimpleName();
+	public static final String REGISTRATION_RES_KEY=Testresource.class.getSimpleName();
 	
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes) {
@@ -34,6 +38,7 @@ public class testresource extends AbstractResource {
         String out="some out";
 
 		//program init
+        IncidentLogger.init(new OrienteerIncidentConfigurator());
 		ILogger logger = IncidentLogger.get().makeLogger();
         try{
         	//body of program
@@ -60,7 +65,7 @@ public class testresource extends AbstractResource {
 	
 	public static void mount(WebApplication app)
 	{
-		testresource resource = ((OrienteerWebApplication) app).getServiceInstance(testresource.class);
+		Testresource resource = ((OrienteerWebApplication) app).getServiceInstance(Testresource.class);
 		app.getSharedResources().add(REGISTRATION_RES_KEY, resource);
 		app.mountResource(MOUNT_PATH, new SharedResourceReference(REGISTRATION_RES_KEY));
 	}

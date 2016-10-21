@@ -27,7 +27,7 @@ public class OrienteerIncidentLogger extends AbstractLogger{
 	    PrintStream printStream = new PrintStream(stream);
 	    e.printStackTrace(printStream);
 	    printStream.flush();
-	    data.set("StackTrace", stream.toString());
+	    data.set("stackTrace", stream.toString());
 	    writeData(e.getMessage());
 	}
 	
@@ -37,10 +37,10 @@ public class OrienteerIncidentLogger extends AbstractLogger{
 	    String appname = objPackage.getSpecificationTitle();
 	    String appver = objPackage.getSpecificationVersion();
 	      
-	    data.set("Application", appname+ " v"+appver);
-	    data.set("DateTime", ft.format(new Date()));
-	    data.set("UserName", System.getProperty("user.name"));
-	    data.set("Message", message);
+	    data.set("application", appname+ " v"+appver);
+	    data.set("dateTime", ft.format(new Date()));
+	    data.set("userName", System.getProperty("user.name"));
+	    data.set("message", message);
 	    data.end();
 	}
 }
