@@ -1,4 +1,4 @@
-package org.orienteer.incident.logger.driver.component;
+package org.orienteer.inclogger.server;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -11,25 +11,24 @@ import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.inclogger.core.interfaces.IReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.asm.utils.incident.logger.core.IReceiver;
-
 /**
  * 
- * Data provider for {@link OrienteerIncidentReceiver}. 
+ * Data provider for {@link OIncidentReceiver}. 
  * 
  */
-public class OrienteerIncidentReceiverResource extends AbstractResource {
+public class OIncidentReceiverResource extends AbstractResource {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final String MOUNT_PATH = "/rest/incident";
-	public static final String REGISTRATION_RES_KEY=OrienteerIncidentReceiverResource.class.getSimpleName();
+	public static final String REGISTRATION_RES_KEY=OIncidentReceiverResource.class.getSimpleName();
 	
-	private static final Logger LOG = LoggerFactory.getLogger(OrienteerIncidentReceiverResource.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OIncidentReceiverResource.class);
 	
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes) {
@@ -71,12 +70,12 @@ public class OrienteerIncidentReceiverResource extends AbstractResource {
 	}
 	
 	private IReceiver getReceiver(){
-		return OrienteerIncidentReceiver.INSTANCE;
+		return OIncidentReceiver.INSTANCE;
 	}
 	
 	public static void mount(WebApplication app)
 	{
-		OrienteerIncidentReceiverResource resource = ((OrienteerWebApplication) app).getServiceInstance(OrienteerIncidentReceiverResource.class);
+		OIncidentReceiverResource resource = ((OrienteerWebApplication) app).getServiceInstance(OIncidentReceiverResource.class);
 		app.getSharedResources().add(REGISTRATION_RES_KEY, resource);
 		app.mountResource(MOUNT_PATH, new SharedResourceReference(REGISTRATION_RES_KEY));
 	}

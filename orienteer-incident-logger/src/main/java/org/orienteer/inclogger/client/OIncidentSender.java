@@ -1,4 +1,4 @@
-package org.orienteer.incident.logger.driver.component;
+package org.orienteer.inclogger.client;
 
 import java.nio.charset.StandardCharsets;
 
@@ -8,24 +8,23 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.B64Code;
+import org.orienteer.inclogger.core.interfaces.ISender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ru.asm.utils.incident.logger.core.ISender;
 
 /**
  * Http sender. Used Basic HTTP auth. 
  *
  */
-public class OrienteerIncidentSender implements ISender {
+public class OIncidentSender implements ISender {
 
-	private static final Logger LOG = LoggerFactory.getLogger(OrienteerIncidentSender.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OIncidentSender.class);
 
 	String login;
 	String password;
 	String receiverUrl;
 	
-	public OrienteerIncidentSender(String login, String password,String receiverUrl) {
+	public OIncidentSender(String login, String password,String receiverUrl) {
 		this.login=login;
 		this.password=password;
 		this.receiverUrl=receiverUrl;

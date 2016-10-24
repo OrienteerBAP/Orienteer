@@ -1,4 +1,4 @@
-package org.orienteer.incident.logger.driver.component;
+package org.orienteer.inclogger.client;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -7,18 +7,17 @@ import java.util.Date;
 
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
-
-import ru.asm.utils.incident.logger.core.AbstractLogger;
-import ru.asm.utils.incident.logger.core.ILoggerData;
+import org.orienteer.inclogger.client.AbstractLogger;
+import org.orienteer.inclogger.core.interfaces.ILoggerData;
 
 /**
  * 
  */
-public class OrienteerIncidentLogger extends AbstractLogger{
+public class OIncidentLogger extends AbstractLogger{
 
 	static SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd'T'HH:mm:ssXXX");//w3c datetime format
 	
-	public OrienteerIncidentLogger(ILoggerData<?> data) {
+	public OIncidentLogger(ILoggerData<?> data) {
 		super(data);
 	}
 	

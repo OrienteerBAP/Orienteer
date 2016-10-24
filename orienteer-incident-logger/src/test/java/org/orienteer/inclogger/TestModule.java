@@ -1,8 +1,8 @@
-package org.orienteer.incident.logger.driver;
+package org.orienteer.inclogger;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
-
+import org.orienteer.inclogger.IncidentLoggerModule;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 

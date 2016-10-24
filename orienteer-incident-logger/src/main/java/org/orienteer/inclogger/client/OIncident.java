@@ -1,4 +1,4 @@
-package org.orienteer.incident.logger.driver.component;
+package org.orienteer.inclogger.client;
 
 import java.util.HashMap;
 
@@ -8,19 +8,19 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * Inner representation of incident for Orienteer
  *
  */
-public class OrienteerIncident extends HashMap<String,String> {
+public class OIncident extends HashMap<String,String> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public OrienteerIncident() {
+	public OIncident() {
 		super();
 		
 	}
 
-	public OrienteerIncident(ODocument doc) {
+	public OIncident(ODocument doc) {
 		
 	    put("application", (String) doc.field("application"));
 	    put("dateTime", (String) doc.field("dateTime"));

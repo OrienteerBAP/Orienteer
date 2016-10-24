@@ -2,4 +2,4 @@
  * Main package for 'incident.logger.driver' module
  * 'incident.logger.driver' is orienteer support for incedent logger
  */
-package org.orienteer.incident.logger.driver;
+package org.orienteer.inclogger;

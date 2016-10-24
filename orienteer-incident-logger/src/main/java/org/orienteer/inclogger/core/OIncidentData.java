@@ -1,4 +1,4 @@
-package org.orienteer.incident.logger.driver.component;
+package org.orienteer.inclogger.core;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.inclogger.client.OIncident;
+import org.orienteer.inclogger.core.interfaces.IData;
+import org.orienteer.inclogger.core.interfaces.ILoggerData;
 
 import com.google.gson.Gson;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -13,23 +16,20 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
-import ru.asm.utils.incident.logger.core.IData;
-import ru.asm.utils.incident.logger.core.ILoggerData;
-
 /**
  * 
  */
-public class OrienteerIncidentData implements IData{
+public class OIncidentData implements IData{
 
 	private Gson gson = new Gson();
 
-	public OrienteerIncidentData() {
+	public OIncidentData() {
 	}
 	
 	public void applyLoggerData(final ILoggerData<?> loggerData) {
-		List<OrienteerIncident> incidents = (List<OrienteerIncident>) loggerData.get(); 
+		List<OIncident> incidents = (List<OIncident>) loggerData.get(); 
 		
-		for (OrienteerIncident incident : incidents){
+		for (OIncident incident : incidents){
 			ODocument doc = new ODocument("OIncident");
 			for(Entry<String, String> entry : incident.entrySet()) {
 				doc.field(entry.getKey(),entry.getValue());
@@ -47,12 +47,12 @@ public class OrienteerIncidentData implements IData{
 	@Override
 	public String getData(IDataFlag flag) {
 		ODatabaseDocument db = OrienteerWebApplication.get().getDatabase();//IncidentLoggerModule.db;//new ODatabaseDocumentTx(settings.getDBUrl());
-		List<OrienteerIncident> data = new ArrayList<OrienteerIncident>();
+		List<OIncident> data = new ArrayList<OIncident>();
 		if (db.isActiveOnCurrentThread()){
 			OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("select from OIncident where sended < ?");
 			List<ODocument> queryData = db.command(query).execute(2);
 			for (ODocument incidentDoc : queryData){
-				data.add(new OrienteerIncident(incidentDoc));
+				data.add(new OIncident(incidentDoc));
 				if (flag == IDataFlag.SENDED){
 					incidentDoc.field("sended",1);
 					incidentDoc.save();
