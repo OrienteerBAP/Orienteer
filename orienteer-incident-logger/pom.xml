@@ -20,62 +20,25 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>orienteer-incident-logger-driver</artifactId>
-	<!-- TODO project name  -->
-	<name>orienteer-incident-logger-driver</name>
-	<description></description>
-	<!--
-		<organization>
-			<name>company name</name>
-			<url>company url</url>
-		</organization>
-	-->
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<properties>
-		<orienteer.version>1.2-SNAPSHOT</orienteer.version>
-		<wicket.orientdb.version>1.2-SNAPSHOT</wicket.orientdb.version>
-		<jetty.version>9.2.11.v20150529</jetty.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
-		<wtp.version>none</wtp.version>
-	</properties>
+	<parent>
+		<groupId>org.orienteer</groupId>
+		<artifactId>orienteer-parent</artifactId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+	<artifactId>orienteer-incident-logger</artifactId>
+	<name>orienteer-incident-logger</name>
+	<description>Serverside of Incedent Logger</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
-			<version>${orienteer.version}</version>
+			<version>${project.version}</version>
 		</dependency>
-		<!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-graph</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pages</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pivottable</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-devutils</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
-			<version>${orienteer.version}</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -106,8 +69,8 @@
 	    </dependency>        
         <dependency>
         	<groupId>org.orienteer</groupId>
-        	<artifactId>inclogger-core</artifactId>
-        	<version>0.0.11-SNAPSHOT</version>
+        	<artifactId>incident-logger</artifactId>
+        	<version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
         	<groupId>org.eclipse.jetty</groupId>
@@ -204,23 +167,4 @@
             </plugin>
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>Apache Nexus</id>
-			<url>https://repository.apache.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<parent>
-		<groupId>org.orienteer</groupId>
-		<artifactId>orienteer-parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
-	</parent>
-	<url>http://maven.apache.org</url>
 </project>
