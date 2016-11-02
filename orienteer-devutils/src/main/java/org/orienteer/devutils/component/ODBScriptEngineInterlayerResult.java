@@ -1,5 +1,7 @@
 package org.orienteer.devutils.component;
 
+import org.apache.wicket.model.Model;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 
 import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResult;
@@ -9,11 +11,11 @@ public class ODBScriptEngineInterlayerResult implements IScriptEngineInterlayerR
 
 	private String error; 
 	private String out;
-	private Object returnedObject;
+	private transient Object returnedObject;
 	private transient IScriptEngineInterlayerResultRenderer renderer;
 	
 	public ODBScriptEngineInterlayerResult() {
-		renderer = new ODBScriptEngineInterlayerResultRenderer(this);
+		renderer = new ODBScriptEngineInterlayerResultRenderer(Model.of(this));
 	}
 
 	protected void setOut(String out) {
