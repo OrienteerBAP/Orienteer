@@ -26,6 +26,7 @@ import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.widget.ByOClassWidgetFilter;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetFilter;
 import org.orienteer.core.widget.IWidgetType;
@@ -93,20 +94,12 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	@Override
 	public void initialize() {
 		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
-		setWidgetsFilter(new IWidgetFilter<ODocument>() {
-			
+		setWidgetsFilter(new ByOClassWidgetFilter<ODocument>() {
+
 			@Override
-			public boolean apply(IWidgetType<ODocument> input) {
-				if(Strings.isEmpty(input.getSelector())) return true;
-				else {
-					ODocument doc = ODocumentPage.this.getModelObject();
-					if(doc!=null) {
-						OClass oClass = doc.getSchemaClass();
-						return oClass!=null?oClass.isSubClassOf(input.getSelector()):false;
-					} else {
-						return false;
-					}
-				}
+			public OClass getOClass() {
+				ODocument doc = ODocumentPage.this.getModelObject();
+				return doc!=null?doc.getSchemaClass() : null;
 			}
 		});
 		super.initialize();
