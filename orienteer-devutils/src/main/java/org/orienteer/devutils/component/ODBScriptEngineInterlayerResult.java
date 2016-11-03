@@ -7,15 +7,17 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResult;
 import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResultRenderer;
 
+/**
+ * Result object for {@link ODBScriptEngineInterlayer}
+ *
+ */
 public class ODBScriptEngineInterlayerResult implements IScriptEngineInterlayerResult {
 
 	private String error; 
 	private String out;
 	private transient Object returnedObject;
-	private transient IScriptEngineInterlayerResultRenderer renderer;
 	
 	public ODBScriptEngineInterlayerResult() {
-		renderer = new ODBScriptEngineInterlayerResultRenderer(Model.of(this));
 	}
 
 	protected void setOut(String out) {
@@ -47,16 +49,8 @@ public class ODBScriptEngineInterlayerResult implements IScriptEngineInterlayerR
 
 	@Override
 	public void onUpdate() {
-		
-	}
-
-	@Override
-	public IScriptEngineInterlayerResultRenderer getRenderer() {
-		return renderer;
-	}
-
-	@Override
-	public void setRenderer(IScriptEngineInterlayerResultRenderer renderer) {
-		this.renderer = renderer;
+		if (returnedObject!=null){
+			out = returnedObject.toString();
+		}
 	}
 }

@@ -8,6 +8,11 @@ import org.apache.wicket.model.IModel;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Model for one item from {@link ODBScriptEngineInterlayerResult}. Used if {@link ODBScriptEngineInterlayerResult.getReturnedObject} is instance of {@link List}    
+ *
+ */
+
 public class ODBScriptEngineInterlayerResultItemModel extends AbstractReadOnlyModel<List<Object>>{
 
 	IModel<ODocument> itemModel;

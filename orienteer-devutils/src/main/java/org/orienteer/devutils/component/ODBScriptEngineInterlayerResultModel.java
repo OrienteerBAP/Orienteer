@@ -9,24 +9,31 @@ import org.apache.wicket.model.IModel;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OResultSet;
 
+import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResult;
+
+/**
+ * Wicket model for {@link ODBScriptEngineInterlayerResult} 
+ *
+ */
+
 public class ODBScriptEngineInterlayerResultModel extends AbstractReadOnlyModel<List<?>>{
 
 	public enum ODBScriptResultModelType{
 		TITLE_LIST,VALUE_LIST
 	}
 
-	IModel<ODBScriptEngineInterlayerResult> resultModel;
+	IModel<IScriptEngineInterlayerResult> resultModel;
 	ODBScriptResultModelType type;
 			
-	public ODBScriptEngineInterlayerResultModel(IModel<ODBScriptEngineInterlayerResult> resultModel,ODBScriptResultModelType type) {
-		this.resultModel = resultModel;
+	public ODBScriptEngineInterlayerResultModel(IModel<IScriptEngineInterlayerResult> data,ODBScriptResultModelType type) {
+		this.resultModel = data;
 		this.type = type;
 	}
 
 	@Override
 	public List<?> getObject() {
 		
-		ODBScriptEngineInterlayerResult resultObj = resultModel.getObject();
+		ODBScriptEngineInterlayerResult resultObj = (ODBScriptEngineInterlayerResult)resultModel.getObject();
 	    
 	    switch (type)
 	    {

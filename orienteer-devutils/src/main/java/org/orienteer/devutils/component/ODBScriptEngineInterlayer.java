@@ -7,6 +7,11 @@ import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayer;
 import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResult;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+/**
+ * Orient DB script interlayer for  {@link ScriptEngineInterlayerManager}  
+ *
+ */
+
 public class ODBScriptEngineInterlayer implements IScriptEngineInterlayer{
 
 	String name;

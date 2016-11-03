@@ -10,15 +10,21 @@ import org.orienteer.devutils.component.ODBScriptEngineInterlayerResultModel.ODB
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResult;
+
+/**
+ * 
+ * List view for {@link ODBScriptEngineInterlayerResult} as table with headers
+ */
 public class RendererListViewComponent extends Panel{
 
 	private static final long serialVersionUID = 1L;
 
-	public RendererListViewComponent(String id, IModel<ODBScriptEngineInterlayerResult> model) {
-		super(id, model);
+	public RendererListViewComponent(String id, IModel<IScriptEngineInterlayerResult> data) {
+		super(id, data);
 		
 		add(
-			new ListView<String>("headerList", (IModel) new ODBScriptEngineInterlayerResultModel(model,ODBScriptResultModelType.TITLE_LIST)){
+			new ListView<String>("headerList", (IModel) new ODBScriptEngineInterlayerResultModel(data,ODBScriptResultModelType.TITLE_LIST)){
 				@Override
 				protected void populateItem(ListItem<String> item) {
 					item.add(new Label("fieldName",item.getDefaultModelObjectAsString()));
@@ -26,7 +32,7 @@ public class RendererListViewComponent extends Panel{
 			}
 		);
 
-		add(new ListView<ODocument>("documentList",(IModel) new ODBScriptEngineInterlayerResultModel(model,ODBScriptResultModelType.VALUE_LIST)){
+		add(new ListView<ODocument>("documentList",(IModel) new ODBScriptEngineInterlayerResultModel(data,ODBScriptResultModelType.VALUE_LIST)){
 			@Override
 			protected void populateItem(ListItem<ODocument> item) {
 				item.add(

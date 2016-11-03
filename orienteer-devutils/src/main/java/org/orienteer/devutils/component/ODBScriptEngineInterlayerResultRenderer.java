@@ -11,33 +11,35 @@ import org.apache.wicket.model.ResourceModel;
 import com.orientechnologies.orient.core.sql.query.OResultSet;
 
 import ru.ydn.wicket.wicketconsole.HideIfObjectIsEmptyBehavior;
+import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResult;
 import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResultRenderer;
 
+/**
+ * Renderer for {@link ODBScriptEngineInterlayerResult}  
+ */
 public class ODBScriptEngineInterlayerResultRenderer implements IScriptEngineInterlayerResultRenderer{
 
-	private IModel<ODBScriptEngineInterlayerResult> data;
 	
-	public ODBScriptEngineInterlayerResultRenderer(IModel<ODBScriptEngineInterlayerResult> data) {
-		this.data = data;
+	public ODBScriptEngineInterlayerResultRenderer() {
 	}
 
 	@Override
-	public Component getErrorView(String name) {
-		return new MultiLineLabel(name,new PropertyModel<>(data, "error")).add(HideIfObjectIsEmptyBehavior.INSTANCE);
+	public Component getErrorView(String id, IModel<IScriptEngineInterlayerResult> data) {
+		return new MultiLineLabel(id,new PropertyModel<>(data, "error")).add(HideIfObjectIsEmptyBehavior.INSTANCE);
 	}
 
 	@Override
-	public Component getOutView(String name) {
+	public Component getOutView(String id,IModel<IScriptEngineInterlayerResult> data) {
 		Object dataObj = data.getObject().getReturnedObject();
 		if (dataObj instanceof OResultSet){
 			int size = ((OResultSet)dataObj).size(); 
 			if (size == 0){
-				return getEmptyView(name);
+				return getEmptyView(id);
 			}else{
-				return getListView(name);
+				return getListView(id,data);
 			}
 		}else{
-			return new Label(name,"").setVisibilityAllowed(false);
+			return new Label(id,"").setVisibilityAllowed(false);
 		} 
 	}
 	
@@ -45,8 +47,10 @@ public class ODBScriptEngineInterlayerResultRenderer implements IScriptEngineInt
 		return new Label(name,new ResourceModel("devutils.console.listIsEmpty", "List is empty"));
 	}
 
-	private Component getListView(String name){
-		return new RendererListViewComponent(name,data);
-	} 
+	private Component getListView(String id, IModel<IScriptEngineInterlayerResult> data){
+		return new RendererListViewComponent(id,data);
+	}
+
+
 	
 }
