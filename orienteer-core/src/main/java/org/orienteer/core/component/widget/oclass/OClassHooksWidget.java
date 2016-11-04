@@ -57,6 +57,7 @@ import org.orienteer.core.util.ODocumentChoiceRenderer;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.OClassTrigger;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.function.OFunction;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -82,7 +83,7 @@ import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
  * Widget for class-linked hooks
  * Instead storing function names, we store their rid-s in trigger fields
  */
-@Widget(domain="class", tab="configuration",selector="OTriggered", id = OClassHooksWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+@Widget(domain="class", tab="configuration",selector=OClassTrigger.CLASSNAME, id = OClassHooksWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 
 	public static final String WIDGET_TYPE_ID = "classHooks";
@@ -174,6 +175,11 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 	@Override
 	protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("class.hooks");
+	}
+	
+	@Override
+	protected String getWidgetStyleClass() {
+		return "strict";
 	}
 
 }

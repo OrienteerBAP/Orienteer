@@ -13,6 +13,8 @@ import org.orienteer.core.MountPath;
 import org.orienteer.core.component.SchemaPageHeader;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
+import org.orienteer.core.web.BrowseOClassPage;
+import org.orienteer.core.widget.ByOClassWidgetFilter;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
@@ -40,6 +42,14 @@ public class OClassPage extends AbstractWidgetDisplayModeAwarePage<OClass> {
 	
 	@Override
 	public void initialize() {
+		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+		setWidgetsFilter(new ByOClassWidgetFilter<OClass>() {
+
+			@Override
+			public OClass getOClass() {
+				return OClassPage.this.getModelObject();
+			}
+		});
 		super.initialize();
 		selectTab("configuration");
 	}

@@ -45,7 +45,7 @@ public class AbstractDialog<T> extends GenericPanel<T> implements ICommandsSuppo
 		add(form = new RootForm<T>("form", model));
 		form.add(commands = new RepeatingView("commands"));
 		if(modal!=null) {
-			modal.setMinimalWidth(300);
+			modal.setMinimalWidth(400);
 		}
 	}
 
