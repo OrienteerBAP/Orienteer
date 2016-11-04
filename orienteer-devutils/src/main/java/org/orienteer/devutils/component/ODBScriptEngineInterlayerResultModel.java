@@ -18,6 +18,10 @@ import ru.ydn.wicket.wicketconsole.IScriptEngineInterlayerResult;
 
 public class ODBScriptEngineInterlayerResultModel extends AbstractReadOnlyModel<List<?>>{
 
+	/**
+	 * Type of inner object of {@link ODBScriptEngineInterlayerResultModel}
+	 *
+	 */
 	public enum ODBScriptResultModelType{
 		TITLE_LIST,VALUE_LIST
 	}
