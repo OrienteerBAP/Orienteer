@@ -36,7 +36,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.validator.PatternValidator;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.model.OClassTextChoiceProvider;
@@ -93,15 +93,15 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	static
 	{
 		//Index:OCLASS_ATTRS.indexOf(OClassPrototyper.NAME)+1
-		OCLASS_ATTRS.add(2, CustomAttributes.DESCRIPTION.getName());
-		OCLASS_ATTRS.add(CustomAttributes.PROP_NAME.getName());
-		OCLASS_ATTRS.add(CustomAttributes.PROP_PARENT.getName());
-		OCLASS_ATTRS.add(CustomAttributes.TAB.getName());
-        OCLASS_ATTRS.add(CustomAttributes.SORT_BY.getName());
-        OCLASS_ATTRS.add(CustomAttributes.SORT_ORDER.getName());
-        OCLASS_ATTRS.add(CustomAttributes.SEARCH_QUERY.getName());
-		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_FIELDS.getName());
-		OCLASS_ATTRS.add(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
+		OCLASS_ATTRS.add(2, CustomAttribute.DESCRIPTION.getName());
+		OCLASS_ATTRS.add(CustomAttribute.PROP_NAME.getName());
+		OCLASS_ATTRS.add(CustomAttribute.PROP_PARENT.getName());
+		OCLASS_ATTRS.add(CustomAttribute.TAB.getName());
+        OCLASS_ATTRS.add(CustomAttribute.SORT_BY.getName());
+        OCLASS_ATTRS.add(CustomAttribute.SORT_ORDER.getName());
+        OCLASS_ATTRS.add(CustomAttribute.SEARCH_QUERY.getName());
+		OCLASS_ATTRS.add(CustomAttribute.ON_CREATE_FIELDS.getName());
+		OCLASS_ATTRS.add(CustomAttribute.ON_CREATE_IDENTITY_TYPE.getName());
 	}
 	
 	private static final Predicate<OProperty> IS_LINK_PROPERTY = new Predicate<OProperty>() {
@@ -127,7 +127,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	@SuppressWarnings("unchecked")
 	@Override
 	protected V getValue(OClass entity, String critery) {
-		CustomAttributes custom;
+		CustomAttribute custom;
 		if("clusterSelection".equals(critery))
 		{
 			OClusterSelectionStrategy strategy = entity.getClusterSelection();
@@ -139,14 +139,14 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			// Additional wrapping to ArrayList is required , because getSuperClasses return unmodifiable list
 			return (V)(superClasses != null ? new ArrayList<OClass>(superClasses) : new ArrayList<OClass>());
 		}
-		else if((CustomAttributes.ON_CREATE_FIELDS.getName().equals(critery)) && (custom = CustomAttributes.fromString(critery)) != null)
+		else if((CustomAttribute.ON_CREATE_FIELDS.getName().equals(critery)) && (custom = CustomAttribute.getIfExists(critery)) != null)
 		{
 			String onCreateFields = custom.getValue(entity);
 			return (V)(!Strings.isNullOrEmpty(onCreateFields)
 					? Lists.newArrayList(onCreateFields.split(","))
 					: new ArrayList<String>());
 		}
-		else if((custom = CustomAttributes.fromString(critery))!=null)
+		else if((custom = CustomAttribute.getIfExists(critery))!=null)
 		{
 			return custom.getValue(entity);
 		}
@@ -162,16 +162,16 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		db.commit();
 		try
 		{
-			CustomAttributes custom;
+			CustomAttribute custom;
 			if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
 			{
 				if(value!=null) entity.setClusterSelection(value.toString());
 			}
-			else if((CustomAttributes.ON_CREATE_FIELDS.getName().equals(critery)) && (custom = CustomAttributes.fromString(critery)) != null)
+			else if((CustomAttribute.ON_CREATE_FIELDS.getName().equals(critery)) && (custom = CustomAttribute.getIfExists(critery)) != null)
 			{
 				custom.setValue(entity, value!=null?Joiner.on(",").join((List<String>) value):null);
 			}
-			else if((custom = CustomAttributes.fromString(critery))!=null)
+			else if((custom = CustomAttribute.getIfExists(critery))!=null)
 			{
 				custom.setValue(entity, value);
 			}
@@ -204,7 +204,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		}
 		if(DisplayMode.VIEW.equals(mode))
 		{
-			if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME, CustomAttributes.PROP_PARENT, CustomAttributes.SORT_BY))
+			if(CustomAttribute.match(critery, CustomAttribute.PROP_NAME, CustomAttribute.PROP_PARENT, CustomAttribute.SORT_BY))
 			{
 				return new OPropertyViewPanel(id, (IModel<OProperty>)getModel());
 			}
@@ -215,7 +215,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setHideIfFalse(true);
 			}
-			else if(CustomAttributes.match(critery, CustomAttributes.SORT_ORDER))
+			else if(CustomAttribute.match(critery, CustomAttribute.SORT_ORDER))
 			{
 				return new Label(id, new StringResourceModel("sortorder.${}", getModel()));
 			}
@@ -252,11 +252,11 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), CLUSTER_SELECTIONS);
 				}
-				else if(CustomAttributes.match(critery, CustomAttributes.PROP_NAME))
+				else if(CustomAttribute.match(critery, CustomAttribute.PROP_NAME))
 				{
 					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null)).setNullValid(true);
 				}
-				else if(CustomAttributes.match(critery, CustomAttributes.PROP_PARENT))
+				else if(CustomAttribute.match(critery, CustomAttribute.PROP_PARENT))
 				{
 					return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null) {
 						
@@ -267,34 +267,34 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 					}).setNullValid(true);
 				}
-                else if(CustomAttributes.match(critery, CustomAttributes.SORT_BY))
+                else if(CustomAttribute.match(critery, CustomAttribute.SORT_BY))
                 {
                     return new DropDownChoice<OProperty>(id, (IModel<OProperty>)getModel(), new ListOPropertiesModel(getEntityModel(), null)).setNullValid(true);
                 }
-                else if(CustomAttributes.match(critery, CustomAttributes.SORT_ORDER))
+                else if(CustomAttribute.match(critery, CustomAttribute.SORT_ORDER))
                 {
                 	return new DropDownChoice<Boolean>(id, (IModel<Boolean>)getModel(), Arrays.asList(true, false), new ResourceChoiceRenderer<>("sortorder")).setNullValid(true);
                 }
-                else if(CustomAttributes.match(critery,CustomAttributes.DESCRIPTION))
+                else if(CustomAttribute.match(critery,CustomAttribute.DESCRIPTION))
                 {
                     return new TextArea<V>(id, getModel());
                 }
-                else if(CustomAttributes.match(critery, CustomAttributes.SEARCH_QUERY))
+                else if(CustomAttribute.match(critery, CustomAttribute.SEARCH_QUERY))
                 {
                     return new TextArea<String>(id, (IModel<String>)getModel())
                     		.add(new PatternValidator("^(select|where)\\s.*", Pattern.CASE_INSENSITIVE));
                 }
-                else if (CustomAttributes.match(critery,CustomAttributes.TAB))
+                else if (CustomAttribute.match(critery,CustomAttribute.TAB))
                 {
                     return new TextField<V>(id,getModel());
                 }
-				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_FIELDS))
+				else if(CustomAttribute.match(critery, CustomAttribute.ON_CREATE_FIELDS))
 				{
 					Select2MultiChoice<String> choice = new Select2MultiChoice<String>(id, (IModel<Collection<String>>)getModel(), OnCreateFieldsTextChoiceProvider.INSTANCE);
 					choice.getSettings().setCloseOnSelect(true).setTheme(BOOTSTRAP_SELECT2_THEME);
 					return choice;
 				}
-				else if(CustomAttributes.match(critery, CustomAttributes.ON_CREATE_IDENTITY_TYPE))
+				else if(CustomAttribute.match(critery, CustomAttribute.ON_CREATE_IDENTITY_TYPE))
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), ON_CREATE_IDENTITY_SELECTIONS).setNullValid(true);
 				}
@@ -313,8 +313,8 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 		if(OClassPrototyper.SUPER_CLASSES.equals(critery))
 		{
 			Collection<OClass> superClasses = (Collection<OClass>)getEnteredValue();
-			AbstractMetaPanel<OClass, String, ?> onCreateFieldsPanel = getMetaComponent(CustomAttributes.ON_CREATE_FIELDS.getName());
-			AbstractMetaPanel<OClass, String, ?> onCreateIdentityTypePanel = getMetaComponent(CustomAttributes.ON_CREATE_IDENTITY_TYPE.getName());
+			AbstractMetaPanel<OClass, String, ?> onCreateFieldsPanel = getMetaComponent(CustomAttribute.ON_CREATE_FIELDS.getName());
+			AbstractMetaPanel<OClass, String, ?> onCreateIdentityTypePanel = getMetaComponent(CustomAttribute.ON_CREATE_IDENTITY_TYPE.getName());
 			if(onCreateFieldsPanel!=null || onCreateIdentityTypePanel!=null) {
 				boolean visibility = false;
 				for(OClass superClass : superClasses) {

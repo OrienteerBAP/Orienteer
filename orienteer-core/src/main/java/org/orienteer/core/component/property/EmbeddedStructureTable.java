@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
@@ -60,7 +60,7 @@ public class EmbeddedStructureTable extends OrienteerStructureTable<ODocument, O
 									return oClassIntrospector.listProperties(linkedClass, new Predicate<OProperty>() {
 										@Override
 										public boolean apply(OProperty input) {
-											return !((Boolean)CustomAttributes.HIDDEN.getValue(input));
+											return !((Boolean)CustomAttribute.HIDDEN.getValue(input));
 										}
 									});
 								}

@@ -2,7 +2,7 @@ package org.orienteer.core.component.command;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.web.schema.OPropertyPage;
@@ -34,7 +34,7 @@ public class CreateOPropertyCommand extends AbstractCreateCommand<OProperty> {
 	public void onClick() {
 		OClass oClass = classModel.getObject();
 		OProperty newProperty = OPropertyPrototyper.newPrototype(oClass.getName());
-		CustomAttributes.ORDER.setValue(newProperty, findMaxOrder(oClass)+10);
+		CustomAttribute.ORDER.setValue(newProperty, findMaxOrder(oClass)+10);
 		setResponsePage(new OPropertyPage(new OPropertyModel(newProperty)).setModeObject(DisplayMode.EDIT));
 	}
 	
@@ -43,7 +43,7 @@ public class CreateOPropertyCommand extends AbstractCreateCommand<OProperty> {
 		int ret = 0;
 		for(OProperty property: oClass.properties())
 		{
-			Integer order = CustomAttributes.ORDER.getValue(property);
+			Integer order = CustomAttribute.ORDER.getValue(property);
 			if(order!=null && order > ret) ret = order;
 		}
 		return ret;

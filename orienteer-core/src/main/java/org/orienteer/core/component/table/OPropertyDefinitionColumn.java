@@ -6,7 +6,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OPropertyViewPanel;
 
@@ -20,7 +20,7 @@ public class OPropertyDefinitionColumn extends OPropertyMetaColumn
 {
 	private static final long serialVersionUID = 1L;
 
-	public OPropertyDefinitionColumn(CustomAttributes custom,
+	public OPropertyDefinitionColumn(CustomAttribute custom,
 			IModel<DisplayMode> modeModel)
 	{
 		super(custom, modeModel);

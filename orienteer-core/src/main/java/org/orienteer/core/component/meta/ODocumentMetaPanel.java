@@ -21,7 +21,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
@@ -81,7 +81,7 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 	@Override
 	protected DisplayMode getEffectiveMode(DisplayMode mode, OProperty property) {
 		if(mode.canModify() && property!= null
-                && (property.isReadonly() || (Boolean)CustomAttributes.UI_READONLY.getValue(property))
+                && (property.isReadonly() || (Boolean)CustomAttribute.UI_READONLY.getValue(property))
                 && !(property.isMandatory() && !getEntityObject().containsField(property.getName())))
 		{
 			return DisplayMode.VIEW;
@@ -95,7 +95,7 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 			OProperty property) {
 		OType oType = property.getType();
 		UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
-		String visualizationComponent = CustomAttributes.VISUALIZATION_TYPE.getValue(property);
+		String visualizationComponent = CustomAttribute.VISUALIZATION_TYPE.getValue(property);
 		if(visualizationComponent!=null)
 		{
 			IVisualizer visualizer = registry.getComponentFactory(oType, visualizationComponent);

@@ -9,7 +9,7 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.component.command.CreateODocumentCommand;
 import org.orienteer.core.component.command.DeleteODocumentCommand;
 import org.orienteer.core.component.command.EditODocumentsCommand;
@@ -51,7 +51,7 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 	{
 		super(id, documentModel);
 		OClass linkedClass = property.getLinkedClass();
-		boolean isCalculable = CustomAttributes.CALCULABLE.getValue(property, false);
+		boolean isCalculable = CustomAttribute.CALCULABLE.getValue(property, false);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
 		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);

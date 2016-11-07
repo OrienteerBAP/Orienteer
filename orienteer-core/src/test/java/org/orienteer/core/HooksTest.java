@@ -8,7 +8,7 @@ import javax.inject.Provider;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.junit.OrienteerTestRunner;
 
@@ -51,10 +51,10 @@ public class HooksTest
 			oClass.createProperty("b", OType.INTEGER);
 			OProperty cProperty = oClass.createProperty("c", OType.INTEGER);
 			OProperty dProperty = oClass.createProperty("d", OType.INTEGER);
-			CustomAttributes.CALCULABLE.setValue(cProperty, true);
-			CustomAttributes.CALCULABLE.setValue(dProperty, true);
-			CustomAttributes.CALC_SCRIPT.setValue(cProperty, "select sum(a, b) as value from TestClassA where @rid = ?");
-			CustomAttributes.CALC_SCRIPT.setValue(dProperty, "sum(a, b)");
+			CustomAttribute.CALCULABLE.setValue(cProperty, true);
+			CustomAttribute.CALCULABLE.setValue(dProperty, true);
+			CustomAttribute.CALC_SCRIPT.setValue(cProperty, "select sum(a, b) as value from TestClassA where @rid = ?");
+			CustomAttribute.CALC_SCRIPT.setValue(dProperty, "sum(a, b)");
 			
 			ODocument doc = new ODocument(oClass);
 			doc.field("a", 2);
@@ -108,8 +108,8 @@ public class HooksTest
 		{
 			OProperty parent = classB.createProperty("parent", OType.LINK);
 			OProperty child = classB.createProperty("child", OType.LINKLIST);
-			CustomAttributes.PROP_INVERSE.setValue(parent, child);
-			CustomAttributes.PROP_INVERSE.setValue(child, parent);
+			CustomAttribute.PROP_INVERSE.setValue(parent, child);
+			CustomAttribute.PROP_INVERSE.setValue(child, parent);
 			//Create root object
 			ODocument rootDoc = new ODocument(classB);
 			rootDoc.save();
@@ -214,8 +214,8 @@ public class HooksTest
 		{
 			OProperty parent = classC.createProperty("parent", OType.LINK);
 			OProperty child = classC.createProperty("child", OType.LINKLIST);
-			CustomAttributes.PROP_INVERSE.setValue(parent, child);
-			CustomAttributes.PROP_INVERSE.setValue(child, parent);
+			CustomAttribute.PROP_INVERSE.setValue(parent, child);
+			CustomAttribute.PROP_INVERSE.setValue(child, parent);
 			
 			ODocument doc1 = new ODocument(classC).save();
 			ODocument doc2 = new ODocument(classC).save();
@@ -257,8 +257,8 @@ public class HooksTest
 		{
 			OProperty parent = classC.createProperty("parent", OType.LINK);
 			OProperty child = classC.createProperty("child", OType.LINKLIST);
-			CustomAttributes.PROP_INVERSE.setValue(parent, child);
-			CustomAttributes.PROP_INVERSE.setValue(child, parent);
+			CustomAttribute.PROP_INVERSE.setValue(parent, child);
+			CustomAttribute.PROP_INVERSE.setValue(child, parent);
 			
 			ODocument doc1 = new ODocument(classC).save();
 			ODocument doc2 = new ODocument(classC).save();

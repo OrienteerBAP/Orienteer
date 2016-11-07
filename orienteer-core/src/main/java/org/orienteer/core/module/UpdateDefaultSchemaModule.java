@@ -2,7 +2,7 @@ package org.orienteer.core.module;
 
 import javax.inject.Singleton;
 
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.PasswordVisualizer;
 import org.orienteer.core.util.OSchemaHelper;
