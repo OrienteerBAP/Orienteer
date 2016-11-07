@@ -15,7 +15,7 @@ import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
@@ -117,7 +117,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		OClass oClass = db.getMetadata().getSchema().getClass(className);
 		oClass.dropProperty("name");
 		OProperty nameProperty = oClass.createProperty("name", OType.EMBEDDEDMAP);
-		CustomAttributes.VISUALIZATION_TYPE.setValue(nameProperty, "localization");
+		CustomAttribute.VISUALIZATION_TYPE.setValue(nameProperty, "localization");
 		for(ODocument doc : db.browseClass(className)) {
 			if(doc.containsField("temp")) {
 				doc.field("name", CommonUtils.toMap("en", doc.field("temp")));

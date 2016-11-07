@@ -1,6 +1,6 @@
 package org.orienteer.pivottable;
 
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;

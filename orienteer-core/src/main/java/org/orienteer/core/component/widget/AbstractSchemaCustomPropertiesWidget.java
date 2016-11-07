@@ -19,7 +19,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
@@ -55,7 +55,7 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 
 		@Override
 		public boolean apply(String input) {
-			return CustomAttributes.fromString(input)==null;
+			return CustomAttribute.getIfExists(input)==null;
 		}
 	};
 

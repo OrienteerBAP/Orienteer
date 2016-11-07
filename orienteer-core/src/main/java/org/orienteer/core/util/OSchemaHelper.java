@@ -2,8 +2,8 @@ package org.orienteer.core.util;
 
 import java.util.Objects;
 
-import org.orienteer.core.CustomAttributes;
 import org.orienteer.core.OClassDomain;
+import org.orienteer.core.CustomAttribute;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
@@ -77,7 +77,7 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	
 	public OSchemaHelper domain(OClassDomain domain) {
 		checkOClass();
-		CustomAttributes.DOMAIN.setValue(lastClass, domain, false);
+		CustomAttribute.DOMAIN.setValue(lastClass, domain, false);
 		return this;
 	}
 	
@@ -138,7 +138,7 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public OSchemaHelper order(int order)
 	{
 		checkOProperty();
-		CustomAttributes.ORDER.setValue(lastProperty, order);
+		CustomAttribute.ORDER.setValue(lastProperty, order);
 		return this;
 	}
 
@@ -151,7 +151,7 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 			OProperty oProperty = lastClass.getProperty(field);
 			if(oProperty!=null)
 			{
-				CustomAttributes.ORDER.setValue(oProperty, i*10);
+				CustomAttribute.ORDER.setValue(oProperty, i*10);
 			}
 		}
 		return this;
@@ -159,42 +159,42 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	
 	public OSchemaHelper assignTab(String tab)
 	{
-		return updateCustomAttribute(CustomAttributes.TAB, tab);
+		return updateCustomAttribute(CustomAttribute.TAB, tab);
 	}
 	
 	public OSchemaHelper assignVisualization(String visualization)
 	{
-		return updateCustomAttribute(CustomAttributes.VISUALIZATION_TYPE, visualization);
+		return updateCustomAttribute(CustomAttribute.VISUALIZATION_TYPE, visualization);
 	}
 	
 	public OSchemaHelper switchDisplayable(boolean displayable)
 	{
-		return updateCustomAttribute(CustomAttributes.DISPLAYABLE, displayable);
+		return updateCustomAttribute(CustomAttribute.DISPLAYABLE, displayable);
 	}
 	
 	public OSchemaHelper assignTab(String tab, String... fields)
 	{
-		return updateCustomAttribute(CustomAttributes.TAB, tab, fields);
+		return updateCustomAttribute(CustomAttribute.TAB, tab, fields);
 	}
 	
 	public OSchemaHelper assignVisualization(String visualization, String... fields)
 	{
-		return updateCustomAttribute(CustomAttributes.VISUALIZATION_TYPE, visualization, fields);
+		return updateCustomAttribute(CustomAttribute.VISUALIZATION_TYPE, visualization, fields);
 	}
 	
 	public OSchemaHelper switchDisplayable(boolean displayable, String... fields)
 	{
-		return updateCustomAttribute(CustomAttributes.DISPLAYABLE, displayable, fields);
+		return updateCustomAttribute(CustomAttribute.DISPLAYABLE, displayable, fields);
 	}
 	
-	public <V> OSchemaHelper updateCustomAttribute(CustomAttributes attr, V value)
+	public <V> OSchemaHelper updateCustomAttribute(CustomAttribute attr, V value)
 	{
 		checkOProperty();
 		attr.setValue(lastProperty, value);
 		return this;
 	}
 	
-	public <V> OSchemaHelper updateCustomAttribute(CustomAttributes attr, V value, String... fields)
+	public <V> OSchemaHelper updateCustomAttribute(CustomAttribute attr, V value, String... fields)
 	{
 		checkOClass();
 		for(String field: fields)
@@ -211,36 +211,36 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public OSchemaHelper markDisplayable()
 	{
 		checkOProperty();
-		CustomAttributes.DISPLAYABLE.setValue(lastProperty, true);
+		CustomAttribute.DISPLAYABLE.setValue(lastProperty, true);
 		return this;
 	}
 	
 	public OSchemaHelper markAsDocumentName()
 	{
 		checkOProperty();
-		CustomAttributes.PROP_NAME.setValue(lastClass, lastProperty);
+		CustomAttribute.PROP_NAME.setValue(lastClass, lastProperty);
 		return this;
 	}
 	
 	public OSchemaHelper markAsLinkToParent()
 	{
 		checkOProperty();
-		CustomAttributes.PROP_PARENT.setValue(lastClass, lastProperty);
+		CustomAttribute.PROP_PARENT.setValue(lastClass, lastProperty);
 		return this;
 	}
 	
 	public OSchemaHelper calculateBy(String script)
 	{
 		checkOProperty();
-		CustomAttributes.CALCULABLE.setValue(lastProperty, true);
-		CustomAttributes.CALC_SCRIPT.setValue(lastProperty, script);
+		CustomAttribute.CALCULABLE.setValue(lastProperty, true);
+		CustomAttribute.CALC_SCRIPT.setValue(lastProperty, script);
 		return this;
 	}
 	
 	public OSchemaHelper defaultTab(String tab)
 	{
 		checkOClass();
-		CustomAttributes.TAB.setValue(lastClass, tab);
+		CustomAttribute.TAB.setValue(lastClass, tab);
 		return this;
 	}
 	
@@ -251,11 +251,11 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		OProperty parent = parentField!=null?lastClass.getProperty(parentField):null;
 		if(name!=null)
 		{
-			CustomAttributes.PROP_NAME.setValue(lastClass, name);
+			CustomAttribute.PROP_NAME.setValue(lastClass, name);
 		}
 		if(parent!=null)
 		{
-			CustomAttributes.PROP_PARENT.setValue(lastClass, parent);
+			CustomAttribute.PROP_PARENT.setValue(lastClass, parent);
 		}
 		return this;
 	}
@@ -268,8 +268,8 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		OProperty property2 = class2.getProperty(property2Name);
 		if(!Objects.equals(property1.getLinkedClass(), class2)) property1.setLinkedClass(class2);
 		if(!Objects.equals(property2.getLinkedClass(), class1)) property2.setLinkedClass(class1);
-		CustomAttributes.PROP_INVERSE.setValue(property1, property2);
-		CustomAttributes.PROP_INVERSE.setValue(property2, property1);
+		CustomAttribute.PROP_INVERSE.setValue(property1, property2);
+		CustomAttribute.PROP_INVERSE.setValue(property2, property1);
 		return this;
 	}
 

@@ -3,7 +3,7 @@ package org.orienteer.core.component.widget.document;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
@@ -44,7 +44,7 @@ public class ExtendedVisualizerWidget extends AbstractWidget<ODocument> {
 		super.onInitialize();
 		Form<ODocument> form = new Form<ODocument>("form");
 		OProperty oProperty = propertyModel.getObject();
-		String component = CustomAttributes.VISUALIZATION_TYPE.getValue(oProperty);
+		String component = CustomAttribute.VISUALIZATION_TYPE.getValue(oProperty);
 		form.add(OrienteerWebApplication.get()
 					.getUIVisualizersRegistry()
 					.getComponentFactory(oProperty.getType(), component)

@@ -7,7 +7,7 @@ import org.orienteer.bpm.camunda.OProcessApplication;
 import org.orienteer.bpm.camunda.handler.AbstractEntityHandler;
 import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
@@ -39,7 +39,7 @@ public class BPMModule extends AbstractOrienteerModule{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oAbstractClass(IEntityHandler.BPM_ENTITY_CLASS)
 			  	.oProperty("id", OType.STRING, 0)
-			  		.updateCustomAttribute(CustomAttributes.UI_READONLY, true)
+			  		.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
 			  		.oIndex(INDEX_TYPE.UNIQUE);
 		HandlersManager.get().applySchema(helper);
 		return null;

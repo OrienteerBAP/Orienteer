@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 												@Override
 												public boolean apply(OProperty property) {
 													return property.getType().isLink() 
-															&& CustomAttributes.PROP_INVERSE.getValue(property)!=null;
+															&& CustomAttribute.PROP_INVERSE.getValue(property)!=null;
 												}
 											});
 									}
@@ -130,7 +130,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				Collection<OProperty> refProperties = getCache().get(doc.getSchemaClass());
 				for (OProperty oProperty : refProperties)
 				{
-					OProperty inverseProperty = CustomAttributes.PROP_INVERSE.getValue(oProperty);
+					OProperty inverseProperty = CustomAttribute.PROP_INVERSE.getValue(oProperty);
 					Object value = doc.field(oProperty.getName());
 					if(value instanceof OIdentifiable) value = Arrays.asList(value);
 					if(inverseProperty!=null && value!=null && value instanceof Collection)
@@ -175,7 +175,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 						OProperty changedProperty = thisOClass.getProperty(field);
 						if(refProperties.contains(changedProperty))
 						{
-							OProperty inverseProperty = CustomAttributes.PROP_INVERSE.getValue(changedProperty);
+							OProperty inverseProperty = CustomAttribute.PROP_INVERSE.getValue(changedProperty);
 							if(changedProperty.getType().isMultiValue())
 							{
 								OMultiValueChangeTimeLine<Object, Object> timeline = doc.getCollectionTimeLine(field);
@@ -264,7 +264,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 				Collection<OProperty> refProperties = getCache().get(thisOClass);
 				for (OProperty oProperty : refProperties)
 				{
-					OProperty inverseProperty = CustomAttributes.PROP_INVERSE.getValue(oProperty);
+					OProperty inverseProperty = CustomAttribute.PROP_INVERSE.getValue(oProperty);
 					Object value = doc.field(oProperty.getName());
 					if(value instanceof OIdentifiable) value = Arrays.asList(value);
 					if(inverseProperty!=null && value!=null && value instanceof Collection)

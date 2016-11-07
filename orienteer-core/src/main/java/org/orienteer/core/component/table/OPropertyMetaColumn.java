@@ -2,7 +2,7 @@ package org.orienteer.core.component.table;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.OIndexMetaPanel;
 import org.orienteer.core.component.meta.OPropertyMetaPanel;
@@ -19,7 +19,7 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
  */
 public class OPropertyMetaColumn  extends AbstractModeMetaColumn<OProperty, DisplayMode, String, String>
 {
-	public OPropertyMetaColumn(CustomAttributes custom, IModel<DisplayMode> modeModel)
+	public OPropertyMetaColumn(CustomAttribute custom, IModel<DisplayMode> modeModel)
 	{
 		this(custom.getName(), modeModel);
 	}

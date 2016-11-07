@@ -7,7 +7,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.io.IClusterable;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -40,7 +40,7 @@ public class OClassesWidget extends AbstractOClassesListWidget<Void> {
 			Boolean showAll = showAllClassesModel.getObject();
 			return showAll==null || showAll 
 					? true 
-					: OClassDomain.BUSINESS.equals(CustomAttributes.DOMAIN.getValue(input));
+					: OClassDomain.BUSINESS.equals(CustomAttribute.DOMAIN.getValue(input));
 		}
 		
 	}

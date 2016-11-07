@@ -1,5 +1,8 @@
 package org.orienteer.core;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,84 +19,85 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * Orienteer needs in additional attributes specified for {@link OClass} and {@link OProperty}
  * This class allow flexibly access to that custom parameters.
  */
-public enum CustomAttributes
+public final class CustomAttribute
 {
+	private static final Map<String, CustomAttribute> CACHE = new HashMap<String, CustomAttribute>();
+	
 	/**
 	 * Is this property calculable or not
 	 */
-	CALCULABLE("orienteer.calculable", OType.BOOLEAN, false, false),
+	public static final CustomAttribute CALCULABLE = create("orienteer.calculable", OType.BOOLEAN, false, false, true);
 	/**
 	 * Script to calculate value of the property
 	 */
-	CALC_SCRIPT("orienteer.script", OType.STRING, null, true),
+	public static final CustomAttribute CALC_SCRIPT = create("orienteer.script", OType.STRING, null, true, true);
 	/**
 	 * Is this property displayable or not
 	 */
-	DISPLAYABLE("orienteer.displayable", OType.BOOLEAN, false, false),
+	public static final CustomAttribute DISPLAYABLE = create("orienteer.displayable", OType.BOOLEAN, false, false, true);
 	/**
 	 * Is this property should be readonly in UI
 	 */
-	UI_READONLY("orienteer.uireadonly", OType.BOOLEAN, false, false),
+	public static final CustomAttribute UI_READONLY = create("orienteer.uireadonly", OType.BOOLEAN, false, false, true);
 	
 	/**
 	 * Is this property value should not be visible
 	 */
-	HIDDEN("orienteer.hidden", OType.BOOLEAN, false, false),
+	public static final CustomAttribute HIDDEN = create("orienteer.hidden", OType.BOOLEAN, false, false, true);
 	/**
 	 * Order of this property in a table/tab
 	 */
-	ORDER("orienteer.order", OType.INTEGER, 0, false),
+	public static final CustomAttribute ORDER = create("orienteer.order", OType.INTEGER, 0, false, true);
 	/**
 	 * Name of the tab where this parameter should be shown
 	 */
-	TAB("orienteer.tab", OType.STRING, null, false),
+	public static final CustomAttribute TAB = create("orienteer.tab", OType.STRING, null, false, true);
 	/**
 	 * Name of the property which is storing name of this entity
 	 */
-	PROP_NAME("orienteer.prop.name", OType.LINK, OProperty.class, null, false, true),
+	public static final CustomAttribute PROP_NAME = create("orienteer.prop.name", OType.LINK, OProperty.class, null, false, true);
 	/**
 	 * Name of property which is storing link to a parent entity
 	 */
-	PROP_PARENT("orienteer.prop.parent", OType.LINK, OProperty.class, null, false, true),
+	public static final CustomAttribute PROP_PARENT = create("orienteer.prop.parent", OType.LINK, OProperty.class, null, false, true);
 	/**
 	 * Name of a visualization that should be used for property visualization
 	 */
-	VISUALIZATION_TYPE("orienteer.visualization", OType.STRING, "default", false),
+	public static final CustomAttribute VISUALIZATION_TYPE = create("orienteer.visualization", OType.STRING, "default", false, true);
 	/**
 	 * Link to an inverse property in respect to this one
 	 */
-	PROP_INVERSE("orienteer.inverse", OType.LINK, OProperty.class, null, false),
+	public static final CustomAttribute PROP_INVERSE = create("orienteer.inverse", OType.LINK, OProperty.class, null, false, true);
 	/**
 	 * Description of {@link OProperty} or {@link OClass}
 	 */
-    DESCRIPTION("orienteer.description",OType.STRING,null,true),
+	public static final CustomAttribute DESCRIPTION = create("orienteer.description",OType.STRING,null,true, false);
 
 	/**
 	 *	Access levels ("_allow", "_allowRead", "_allowUpdate", or "_allowDelete") granted on document creation.
 	 */
-	ON_CREATE_FIELDS("onCreate.fields",OType.STRING,null,true),
+	public static final CustomAttribute ON_CREATE_FIELDS = create("onCreate.fields",OType.STRING,null,true, true);
 
 	/**
 	 * Identity type ("user" or "role") who will get access rights on document creation.
 	 */
-	ON_CREATE_IDENTITY_TYPE("onCreate.identityType",OType.STRING,null,true),
+	public static final CustomAttribute ON_CREATE_IDENTITY_TYPE = create("onCreate.identityType",OType.STRING,null,true, true);
     /**
      * Property name by which to sort data by default
      */
-    SORT_BY("orienteer.sortby", OType.LINK, OProperty.class, null, false, true),
+	public static final CustomAttribute SORT_BY = create("orienteer.sortby", OType.LINK, OProperty.class, null, false, true);
     /**
      * Order in which to sort data
      */
-    SORT_ORDER("orienteer.sortorder", OType.BOOLEAN, null, false, true),
+	public static final CustomAttribute SORT_ORDER = create("orienteer.sortorder", OType.BOOLEAN, null, null, false, true);
 	/**
 	 * Default search query for class
 	 */
-	SEARCH_QUERY("orienteer.searchquery", OType.STRING, null, true, true),
-	
+	public static final CustomAttribute SEARCH_QUERY = create("orienteer.searchquery", OType.STRING, null, null, true, true);
 	/**
 	 * Domain of a class
 	 */
-	DOMAIN("orienteer.domain", OType.STRING, OClassDomain.class, OClassDomain.BUSINESS, false, true);
+	public static final CustomAttribute DOMAIN = create("orienteer.domain", OType.STRING, OClassDomain.class, OClassDomain.BUSINESS, false, true);
 
 	private final String name;
 	private final OType type;
@@ -102,29 +106,48 @@ public enum CustomAttributes
 	private final boolean encode;
 	private final boolean hiearchical;
 	
-	private static final Map<String, CustomAttributes> QUICK_CACHE = new HashMap<String, CustomAttributes>();
-	
-	private CustomAttributes(String name, OType type, Object defaultValue, boolean encode){
-		this(name, type, defaultValue, encode, false);
-	}
-	
-	private CustomAttributes(String name, OType type, Object defaultValue, boolean encode, boolean hiearchical)
-	{
-		this(name, type, type.getDefaultJavaType(), defaultValue, encode, hiearchical);
-	}
-	
-	private CustomAttributes(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode) {
-		this(name, type, javaClass, defaultValue, encode, false);
-	}
-	
-	private CustomAttributes(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode, boolean hiearchical)
+	private CustomAttribute(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode, boolean hiearchical)
 	{
 		this.name = name;
 		this.type = type;
-		this.javaClass = javaClass;
+		this.javaClass = javaClass!=null?javaClass:type.getDefaultJavaType();
 		this.defaultValue = defaultValue;
 		this.encode = encode;
 		this.hiearchical = hiearchical;
+		CACHE.put(name, this);
+	}
+	
+	/*public static CustomAttribute create(String name, OType type, Object defaultValue, boolean encode) {
+		return create(name, type, null, defaultValue, encode, false);
+	}*/
+	
+	/*public static CustomAttribute create(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode) {
+		return create(name, type, javaClass, defaultValue, encode, false);
+	}*/
+	
+	public static CustomAttribute create(String name, OType type, Object defaultValue, boolean encode, boolean hiearchical) {
+		return create(name, type, null, defaultValue, encode, hiearchical);
+	}
+	
+	public static CustomAttribute create(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode, boolean hiearchical) {
+		CustomAttribute ret = getIfExists(name);
+		if(ret!=null) throw new IllegalArgumentException("Custom attribute with name '"+name+"' is already exist");
+		ret = new CustomAttribute(name, type, javaClass, defaultValue, encode, hiearchical);
+		return ret;
+	}
+	
+	public static CustomAttribute get(String name) {
+		CustomAttribute ret = getIfExists(name);
+		if(ret==null) throw new IllegalArgumentException("Custom attribute with name '"+name+"' was not found");
+		return ret;
+	}
+	
+	public static CustomAttribute getIfExists(String name) {
+		return CACHE.get(name);
+	}
+	
+	public static Collection<CustomAttribute> values() {
+		return Collections.unmodifiableCollection(CACHE.values());
 	}
 
 	public String getName() {
@@ -134,6 +157,24 @@ public enum CustomAttributes
 	public boolean match(String critery)
 	{
 		return name.equals(critery);
+	}
+	
+	public boolean matchAny(String... criteries)
+	{
+		if(criteries==null || criteries.length==0) return false;
+		for(String critery : criteries) {
+			if(name.equals(critery)) return true;
+		}
+		return false;
+	}
+	
+	public boolean matchAny(CustomAttribute... criteries)
+	{
+		if(criteries==null || criteries.length==0) return false;
+		for(CustomAttribute critery : criteries) {
+			if(equals(critery)) return true;
+		}
+		return false;
 	}
 	
 	public OType getType() {
@@ -152,23 +193,6 @@ public enum CustomAttributes
 		return encode;
 	}
 
-	public static CustomAttributes fromString(String name)
-	{
-		if(name==null) return null;
-		if(QUICK_CACHE.containsKey(name)) return QUICK_CACHE.get(name);
-		else
-		{
-			for (CustomAttributes customAttribute : values()) {
-				if(customAttribute.getName().equals(name))
-				{
-					QUICK_CACHE.put(name, customAttribute);
-					return customAttribute;
-				}
-			}
-			return null;
-		}
-	}
-	
 	@SuppressWarnings("unchecked")
 	public <V> V getValue(OProperty property)
 	{
@@ -283,9 +307,9 @@ public enum CustomAttributes
 		return oClass.getProperty(propertyName);
 	}
 	
-	public static boolean match(String critery, CustomAttributes... attrs)
+	public static boolean match(String critery, CustomAttribute... attrs)
 	{
-		for (CustomAttributes customAttributes : attrs)
+		for (CustomAttribute customAttributes : attrs)
 		{
 			if(customAttributes.match(critery)) return true;
 		}
@@ -365,5 +389,32 @@ public enum CustomAttributes
 		}
 		return sb.toString();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CustomAttribute other = (CustomAttribute) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+	
+	
 	
 }

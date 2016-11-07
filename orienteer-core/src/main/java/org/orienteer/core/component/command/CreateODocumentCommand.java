@@ -7,7 +7,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.modal.SelectSubOClassDialogPage;
@@ -88,7 +88,7 @@ public class CreateODocumentCommand extends AbstractModalWindowCommand<ODocument
 			OProperty property = propertyModel.getObject();
 			if(property!=null)
 			{
-				OProperty inverseProperty = CustomAttributes.PROP_INVERSE.getValue(property);
+				OProperty inverseProperty = CustomAttribute.PROP_INVERSE.getValue(property);
 				if(inverseProperty!=null)
 				{
 					doc.field(inverseProperty.getName(), documentModel.getObject());

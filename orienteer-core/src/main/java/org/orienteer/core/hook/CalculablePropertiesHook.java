@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 
 import com.google.common.base.Function;
 import com.google.common.collect.HashBasedTable;
@@ -25,8 +25,8 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * {@link ODocumentHookAbstract} for automatic calculation of some properties.
- * Properties to be automatically calculated should be marked by {@link CustomAttributes}.CALCULABLE
- * Logic for calculation should be stored in {@link CustomAttributes}.CALC_SCRIPT
+ * Properties to be automatically calculated should be marked by {@link CustomAttribute}.CALCULABLE
+ * Logic for calculation should be stored in {@link CustomAttribute}.CALC_SCRIPT
  */
 public class CalculablePropertiesHook extends ODocumentHookAbstract
 {
@@ -62,7 +62,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 				List<String> calcProperties=null;
 				for(OProperty property: clazz.properties())
 				{
-					if(CustomAttributes.CALCULABLE.getValue(property, false))
+					if(CustomAttribute.CALCULABLE.getValue(property, false))
 					{
 						if(calcProperties==null) calcProperties = new ArrayList<String>();
 						calcProperties.add(property.getName());
@@ -130,7 +130,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 					//Force calculation. Required for work around issue in OrientDB
 					//if(iDocument.field(calcProperty)!=null) continue;
 					final OProperty property = oClass.getProperty(calcProperty);
-					String script = CustomAttributes.CALC_SCRIPT.getValue(property);
+					String script = CustomAttribute.CALC_SCRIPT.getValue(property);
 					if(!Strings.isEmpty(script))
 					{
 						List<ODocument> calculated;

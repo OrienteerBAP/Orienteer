@@ -15,7 +15,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.meta.IDisplayModeAware;
@@ -26,6 +26,7 @@ import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.widget.ByOClassWidgetFilter;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetFilter;
 import org.orienteer.core.widget.IWidgetType;
@@ -93,20 +94,12 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	@Override
 	public void initialize() {
 		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
-		setWidgetsFilter(new IWidgetFilter<ODocument>() {
-			
+		setWidgetsFilter(new ByOClassWidgetFilter<ODocument>() {
+
 			@Override
-			public boolean apply(IWidgetType<ODocument> input) {
-				if(Strings.isEmpty(input.getSelector())) return true;
-				else {
-					ODocument doc = ODocumentPage.this.getModelObject();
-					if(doc!=null) {
-						OClass oClass = doc.getSchemaClass();
-						return oClass!=null?oClass.isSubClassOf(input.getSelector()):false;
-					} else {
-						return false;
-					}
-				}
+			public OClass getOClass() {
+				ODocument doc = ODocumentPage.this.getModelObject();
+				return doc!=null?doc.getSchemaClass() : null;
 			}
 		});
 		super.initialize();
@@ -118,7 +111,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		else {
 			ODocument doc = getModelObject();
 			if(doc!=null) {
-				String defaultTab = CustomAttributes.TAB.<String>getValue(doc.getSchemaClass(),IOClassIntrospector.DEFAULT_TAB);
+				String defaultTab = CustomAttribute.TAB.<String>getValue(doc.getSchemaClass(),IOClassIntrospector.DEFAULT_TAB);
 				return selectTab(defaultTab);
 			}
 			else return false;

@@ -3,7 +3,7 @@ package org.orienteer.core.model;
 import java.util.Collection;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.CustomAttributes;
+import org.orienteer.core.CustomAttribute;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -12,7 +12,7 @@ import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 
 /**
- * {@link OPropertiesDataProvider} which allow to sort {@link OProperty}'es on {@link CustomAttributes} values
+ * {@link OPropertiesDataProvider} which allow to sort {@link OProperty}'es on {@link CustomAttribute} values
  */
 public class ExtendedOPropertiesDataProvider extends OPropertiesDataProvider
 {
@@ -36,7 +36,7 @@ public class ExtendedOPropertiesDataProvider extends OPropertiesDataProvider
 
 	@Override
 	protected Comparable<?> comparableValue(OProperty input, String sortParam) {
-		CustomAttributes custom = CustomAttributes.fromString(sortParam);
+		CustomAttribute custom = CustomAttribute.getIfExists(sortParam);
 		if(custom!=null)
 		{
 			Object value = custom.getValue(input);
