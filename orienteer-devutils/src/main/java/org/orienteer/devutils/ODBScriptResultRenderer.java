@@ -10,6 +10,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketconsole.IScriptResultRenderer;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
+/**
+ * {@link IScriptResultRenderer} for rendering table for ODocuments results 
+ */
 public class ODBScriptResultRenderer implements IScriptResultRenderer{
 
 	@Override

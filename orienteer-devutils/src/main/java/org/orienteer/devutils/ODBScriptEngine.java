@@ -17,6 +17,9 @@ import ru.ydn.wicket.wicketconsole.ScriptResult;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
+/**
+ * {@link IScriptEngine} for execution of SQL in OrientDB
+ */
 public class ODBScriptEngine implements IScriptEngine {
 	
 	private static final Pattern SELECT_FROM_PATTERN = Pattern.compile("^select\\s+from", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);

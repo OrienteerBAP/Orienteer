@@ -22,6 +22,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
+/**
+ * Panel to incapsulate table with query results 
+ */
 public class OQueryModelResultsPanel extends GenericPanel<List<ODocument>> {
 	
 	@Inject

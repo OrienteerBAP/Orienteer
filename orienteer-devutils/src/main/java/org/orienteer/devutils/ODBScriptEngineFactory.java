@@ -7,6 +7,9 @@ import java.util.List;
 import ru.ydn.wicket.wicketconsole.IScriptEngine;
 import ru.ydn.wicket.wicketconsole.IScriptEngineFactory;
 
+/**
+ * {@link IScriptEngineFactory} for creating {@link ODBScriptEngine} for SQL execution in OrientDB 
+ */
 public class ODBScriptEngineFactory implements IScriptEngineFactory {
 	
 	public static final String ENGINE_NAME = "SQL";
