@@ -19,11 +19,17 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.query.OResultSet;
 
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 /**
@@ -33,6 +39,7 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 
     public static final String WIDGET_OCLASS_NAME = "CalculatedDocumentsWidget";
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractCalculatedDocumentsWidget.class);
 
     @Inject
     protected OClassIntrospector oClassIntrospector;
@@ -45,10 +52,19 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
         Form<ODocument> form = new Form<ODocument>("form");
         final String sql = getSql();
         
-        if(!Strings.isEmpty(sql)) {
+        if(Strings.isEmpty(sql)) {
+        	form.add(new EmptyPanel("table").setVisible(false));
+        	form.setVisible(false);
+        	add(new Label("error", new ResourceModel("query.not.defined")));
+        }else if(!isDocumentQuery(sql)){
+        	form.add(new EmptyPanel("table").setVisible(false));
+        	form.setVisible(false);
+        	add(new Label("error", new ResourceModel("query.result.is.not.document")));
+        }else{
         	OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
         	OClass commonParent = provider.probeOClass(20);
         	oClassIntrospector.defineDefaultSorting(provider, commonParent);
+        	
         	List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
         	OrienteerDataTable<ODocument, String> table =
         			new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
@@ -59,13 +75,22 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
         	table.addCommand(new ExportCommand<>(table, getTitleModel()));
         	form.add(table);
         	add(new EmptyPanel("error").setVisible(false));
-        } else {
-        	form.add(new EmptyPanel("table").setVisible(false));
-        	form.setVisible(false);
-        	add(new Label("error", new ResourceModel("query.not.defined")));
         }
         
         add(form);
+	}
+	
+	private boolean isDocumentQuery(String sql){
+		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		try{
+			Object resultObject = db.command(new OCommandSQL(sql)).execute();
+			if (resultObject instanceof OResultSet){
+				return true;
+			}
+		}catch (Exception e) {
+			LOG.error("isDocumentQuery exception:",e);
+		}
+		return false;
 	}
 	
 	protected String getSql() {
