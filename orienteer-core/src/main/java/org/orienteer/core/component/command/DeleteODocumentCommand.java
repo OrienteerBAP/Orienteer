@@ -62,7 +62,11 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 
 	@Override
 	public RequiredOrientResource[] getRequiredResources() {
-		return OSecurityHelper.requireOClass(classModel.getObject(), OrientPermission.DELETE);
+		OClass obj = classModel.getObject();
+		if (obj!=null){
+			return OSecurityHelper.requireOClass(obj, OrientPermission.DELETE);
+		}
+		return null;
 	}
 
 }
