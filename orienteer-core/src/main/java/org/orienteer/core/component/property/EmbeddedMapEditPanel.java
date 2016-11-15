@@ -228,6 +228,6 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 	
 	@Override
 	protected void onModelChanged() {
-		data = null;
+		//data = null; // cause "exception if modify 2 maps objects in diffirent documents in list"
 	}
 }
