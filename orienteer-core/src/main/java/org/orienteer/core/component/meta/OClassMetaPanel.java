@@ -26,6 +26,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
@@ -36,6 +37,7 @@ import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.validator.PatternValidator;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.property.*;
@@ -46,7 +48,9 @@ import org.wicketstuff.select2.Select2BootstrapTheme;
 import org.wicketstuff.select2.Select2MultiChoice;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.model.EnumNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
+import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
@@ -94,6 +98,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 	{
 		//Index:OCLASS_ATTRS.indexOf(OClassPrototyper.NAME)+1
 		OCLASS_ATTRS.add(2, CustomAttribute.DESCRIPTION.getName());
+		OCLASS_ATTRS.add(CustomAttribute.DOMAIN.getName());
 		OCLASS_ATTRS.add(CustomAttribute.PROP_NAME.getName());
 		OCLASS_ATTRS.add(CustomAttribute.PROP_PARENT.getName());
 		OCLASS_ATTRS.add(CustomAttribute.TAB.getName());
@@ -219,6 +224,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				return new Label(id, new StringResourceModel("sortorder.${}", getModel()));
 			}
+			else if(CustomAttribute.match(critery, CustomAttribute.DOMAIN))
+			{
+				return new Label(id, new EnumNamingModel<OClassDomain>((IModel<OClassDomain>)getModel()));
+			}
 			else
 			{
 				return new Label(id, getModel());
@@ -297,6 +306,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 				else if(CustomAttribute.match(critery, CustomAttribute.ON_CREATE_IDENTITY_TYPE))
 				{
 					return new DropDownChoice<String>(id, (IModel<String>)getModel(), ON_CREATE_IDENTITY_SELECTIONS).setNullValid(true);
+				}
+				else if(CustomAttribute.match(critery, CustomAttribute.DOMAIN))
+				{
+					return new DropDownChoice<OClassDomain>(id, (IModel<OClassDomain>)getModel(), Arrays.asList(OClassDomain.values()), new EnumChoiceRenderer<OClassDomain>());
 				}
 				else
 				{

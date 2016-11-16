@@ -12,6 +12,7 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
 import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.widget.AbstractModeAwareWidget;
 
 /**
  * Abstract {@link AjaxFormCommand} for any commands which save something
@@ -34,8 +35,8 @@ public class AbstractSaveCommand<T> extends AjaxFormCommand<T> {
 	}
 
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.save);
 		setBootstrapType(BootstrapType.PRIMARY);
 		setChandingModel(true);
@@ -61,5 +62,18 @@ public class AbstractSaveCommand<T> extends AjaxFormCommand<T> {
 		if(displayModeModel!=null) displayModeModel.detach();
 	}
 	
+	public IModel<DisplayMode> getModeModel() {
+		return displayModeModel;
+	}
+	
+	public DisplayMode getModeObject() {
+		return displayModeModel.getObject();
+	}
+
+	public AbstractSaveCommand<T> setModeObject(DisplayMode mode)
+	{
+		displayModeModel.setObject(mode);
+		return this;
+	}
 	
 }

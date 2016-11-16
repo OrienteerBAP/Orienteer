@@ -49,6 +49,11 @@
         </dependency>
         <dependency>
             <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-bpm</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orienteer</groupId>
             <artifactId>orienteer-devutils</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

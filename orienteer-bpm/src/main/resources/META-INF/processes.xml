@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process-application
+  xmlns="http://www.camunda.org/schema/1.0/ProcessApplication"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  
+  <process-engine name="default">
+    <!-- <configuration>org.camunda.bpm.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration</configuration> -->
+    <configuration>org.orienteer.bpm.camunda.OProcessEngineConfiguration</configuration>
+    <properties>
+	    <property name="history">audit</property>
+	    <!-- To be supported -->
+	    <property name="dbMetricsReporterActivate">false</property>
+	    <property name="executionTreePrefetchEnabled">false</property>
+	    <!-- <property name="jobExecutorActivate">false</property> -->
+    </properties>
+  </process-engine>
+
+  <process-archive>
+    <process-engine>default</process-engine>
+    <properties>
+      <property name="isDeleteUponUndeploy">false</property>
+      <property name="isScanForProcessDefinitions">false</property>
+    </properties>
+  </process-archive>
+
+</process-application>

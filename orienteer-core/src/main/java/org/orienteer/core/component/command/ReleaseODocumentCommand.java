@@ -32,8 +32,8 @@ public class ReleaseODocumentCommand extends
 	}
 	
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.times);
 		setBootstrapType(BootstrapType.WARNING);
 	}

@@ -190,11 +190,29 @@ div.ajax-indicator {
 	overflow: hidden;
 }
 
-.fullscreen {
+li.fullscreen {
 	position: fixed;
 	top: 0; right:0; left:0; bottom:0;
 	margin: 0;
 	z-index: 99999;
-	overflow: auto;
 	background: white;
+	margin: 0 !important;
+}
+
+li.fullscreen div.panel.panel-default{
+	height: 100%;
+	width: 100%;
+	display: table;
+}
+
+li.fullscreen div.panel.panel-default div.panel-body{
+	height: 100%;
+	/* display: table-row; */
+	overflow: auto;
+}
+
+.actions > * {
+	display: inline-block;
+	padding: 0 5px;
+	
 }

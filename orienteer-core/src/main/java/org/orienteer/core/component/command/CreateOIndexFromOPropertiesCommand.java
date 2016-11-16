@@ -46,8 +46,8 @@ public class CreateOIndexFromOPropertiesCommand extends
 	
 
 	@Override
-	protected void onInitialize() {
-		super.onInitialize();
+	protected void onInstantiation() {
+		super.onInstantiation();
 		setIcon(FAIconType.plus);
 		setBootstrapType(BootstrapType.SUCCESS);
 	}

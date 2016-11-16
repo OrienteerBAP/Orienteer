@@ -24,7 +24,6 @@ import java.util.Locale;
 public class OrienteerWebSession extends OrientDbWebSession
 {
 	private OIdentifiable perspective;
-	private UserOnlineModule onlineModule;
 
 	public OrienteerWebSession(Request request)
 	{
@@ -39,12 +38,14 @@ public class OrienteerWebSession extends OrientDbWebSession
 	@Override
 	public boolean authenticate(String username, String password) {
 		boolean ret = super.authenticate(username, password);
+
+		OrienteerWebApplication app = OrienteerWebApplication.get();
+		UserOnlineModule onlineModule = app.getServiceInstance(UserOnlineModule.class);
 		if(ret)
 		{
 			perspective=null;
 
 			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
-			setOnlineModule();
 			onlineModule.updateOnlineUser(getUser(), true);
 
 			if (!Strings.isNullOrEmpty(locale)) {
@@ -90,11 +91,6 @@ public class OrienteerWebSession extends OrientDbWebSession
 		}
 	}
 
-	public OrienteerWebSession setOnlineModule() {
-		OrienteerWebApplication app = OrienteerWebApplication.get();
-		onlineModule = app.getServiceInstance(UserOnlineModule.class);
-		return this;
-	}
 
 	@Override
 	public void detach() {

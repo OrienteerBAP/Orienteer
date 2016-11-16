@@ -2,6 +2,7 @@ package org.orienteer.core.util;
 
 import java.util.Objects;
 
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.CustomAttribute;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -72,6 +73,55 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public OSchemaHelper oIndex(String name,
 			INDEX_TYPE type, String... fields) {
 		return (OSchemaHelper) super.oIndex(name, type, fields);
+	}
+	
+	public OSchemaHelper domain(OClassDomain domain) {
+		checkOClass();
+		CustomAttribute.DOMAIN.setValue(lastClass, domain, false);
+		return this;
+	}
+	
+	
+	public OSchemaHelper set(OClass.ATTRIBUTES attr, Object value) 
+	{
+		super.set(attr, value);
+		return this;
+	}
+	
+	public OSchemaHelper set(OProperty.ATTRIBUTES attr, Object value) 
+	{
+		super.set(attr, value);
+		return this;
+	}
+	
+	public OSchemaHelper defaultValue(String defaultValue)
+	{
+		super.defaultValue(defaultValue);
+		return this;
+	}
+	
+	public OSchemaHelper min(String min)
+	{
+		super.min(min);
+		return this;
+	}
+	
+	public OSchemaHelper max(String max)
+	{
+		super.max(max);
+		return this;
+	}
+	
+	public OSchemaHelper notNull()
+	{
+		super.notNull();
+		return this;
+	}
+	
+	public OSchemaHelper notNull(boolean value)
+	{
+		super.notNull(value);
+		return this;
 	}
 	
 	@Override
@@ -187,6 +237,13 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		return this;
 	}
 	
+	public OSchemaHelper defaultTab(String tab)
+	{
+		checkOClass();
+		CustomAttribute.TAB.setValue(lastClass, tab);
+		return this;
+	}
+	
 	public OSchemaHelper assignNameAndParent(String nameField, String parentField)
 	{
 		checkOClass();
@@ -215,6 +272,15 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		CustomAttribute.PROP_INVERSE.setValue(property2, property1);
 		return this;
 	}
-	
+
+	public OSchemaHelper setupRelationship(String class1Name, String propertyName, String class2Name) {
+		OClass class1 = schema.getClass(class1Name);
+		OProperty property = class1.getProperty(propertyName);
+		OClass class2 = schema.getClass(class2Name);
+
+		if (!Objects.equals(property.getLinkedClass(), class2)) property.setLinkedClass(class2);
+
+		return this;
+	}
 	
 }

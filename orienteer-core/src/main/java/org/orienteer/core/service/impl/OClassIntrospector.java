@@ -147,7 +147,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	public ODocument getParent(ODocument doc) {
 		if(doc==null || doc.getSchemaClass()==null) return null;
 		OClass oClass = doc.getSchemaClass();
-		OProperty parent = CustomAttribute.PROP_PARENT.getHierarchicalValue(oClass);
+		OProperty parent = CustomAttribute.PROP_PARENT.getValue(oClass);
 		if(parent!=null) {
 			OType type = parent.getType();
 			Object value = doc.field(parent.getName());
@@ -244,7 +244,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	@Override
 	public OProperty getNameProperty(OClass oClass) {
 		if(oClass==null) return null;
-		OProperty ret = CustomAttribute.PROP_NAME.getHierarchicalValue(oClass);
+		OProperty ret = CustomAttribute.PROP_NAME.getValue(oClass);
 		if(ret!=null) return ret;
 		ret = oClass.getProperty("name");
 		if(ret!=null) return ret;
@@ -364,8 +364,8 @@ public class OClassIntrospector implements IOClassIntrospector
 	@Override
 	public void defineDefaultSorting(SortableDataProvider<ODocument, String> provider, OClass oClass) {
 		if(oClass==null) return;
-		OProperty property = CustomAttribute.SORT_BY.getHierarchicalValue(oClass);
-		Boolean order = CustomAttribute.SORT_ORDER.getHierarchicalValue(oClass);
+		OProperty property = CustomAttribute.SORT_BY.getValue(oClass);
+		Boolean order = CustomAttribute.SORT_ORDER.getValue(oClass);
 		SortOrder sortOrder = order==null?SortOrder.ASCENDING:(order?SortOrder.ASCENDING:SortOrder.DESCENDING);
     	if(property==null) {
     		if(order==null) provider.setSort(null);
@@ -377,7 +377,7 @@ public class OClassIntrospector implements IOClassIntrospector
 
 	@Override
 	public OQueryDataProvider<ODocument> getDataProviderForGenericSearch(OClass oClass, IModel<String> queryModel) {
-		String searchSql = CustomAttribute.SEARCH_QUERY.getHierarchicalValue(oClass);
+		String searchSql = CustomAttribute.SEARCH_QUERY.getValue(oClass);
 		String sql=null;
 		if(!Strings.isEmpty(searchSql)) {
 			String upper = searchSql.toUpperCase().trim();

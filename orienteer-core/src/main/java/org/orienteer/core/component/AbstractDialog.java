@@ -16,12 +16,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of model object
  */
-public class AbstractDialog<T> extends GenericPanel<T> implements ICommandsSupportComponent<T>{
+public class AbstractDialog<T> extends AbstractCommandsEnabledPanel<T>{
 	
 	protected final ModalWindow modal;
-	protected final Form<T> form;
-	private RepeatingView commands;
-	
 	
 	public AbstractDialog(String id) {
 		this(id, null);
@@ -42,28 +39,14 @@ public class AbstractDialog<T> extends GenericPanel<T> implements ICommandsSuppo
 	public AbstractDialog(String id, IModel<T> model, final ModalWindow modal) {
 		super(id, model);
 		this.modal = modal;
-		add(form = new RootForm<T>("form", model));
-		form.add(commands = new RepeatingView("commands"));
 		if(modal!=null) {
 			modal.setMinimalWidth(400);
 		}
 	}
-
+	
 	@Override
-	public AbstractDialog<T> addCommand(Command<T> command) {
-		commands.add(command);
-        return this;
-	}
-
-	@Override
-	public AbstractDialog<T> removeCommand(Command<T> command) {
-		commands.remove(command);
-        return this;
-	}
-
-	@Override
-	public String newCommandId() {
-		return commands.newChildId();
+	protected Form<T> newForm(String id, IModel<T> model) {
+		return new RootForm<T>("form", model);
 	}
 
 }

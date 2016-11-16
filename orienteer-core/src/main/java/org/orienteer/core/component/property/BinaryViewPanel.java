@@ -75,8 +75,11 @@ public class BinaryViewPanel<V> extends GenericPanel<V> {
 			        @Override
 			        public void writeData(Attributes attributes) throws IOException
 			        {
-			             OutputStream outputStream = attributes.getResponse().getOutputStream();
-			             outputStream.write((byte[])BinaryViewPanel.this.getModelObject());
+			        	 byte[] data = (byte[])BinaryViewPanel.this.getModelObject();
+			        	 if(data!=null) {
+			        		 OutputStream outputStream = attributes.getResponse().getOutputStream();
+			        		 outputStream.write((byte[])BinaryViewPanel.this.getModelObject());
+			        	 }
 			        }
 			     });
 			     return resourceResponse;

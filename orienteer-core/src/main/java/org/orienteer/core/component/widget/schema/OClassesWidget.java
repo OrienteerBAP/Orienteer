@@ -7,6 +7,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.io.IClusterable;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
@@ -36,7 +38,9 @@ public class OClassesWidget extends AbstractOClassesListWidget<Void> {
 		@Override
 		public boolean apply(OClass input) {
 			Boolean showAll = showAllClassesModel.getObject();
-			return showAll==null || showAll ? true : !input.hasSuperClasses();
+			return showAll==null || showAll 
+					? true 
+					: OClassDomain.BUSINESS.equals(CustomAttribute.DOMAIN.getValue(input));
 		}
 		
 	}
@@ -61,7 +65,7 @@ public class OClassesWidget extends AbstractOClassesListWidget<Void> {
 
 	@Override
 	protected AbstractJavaSortableDataProvider getOClassesDataProvider() {
-		return new OClassesDataProvider(new FilterClassesPredicate(showAllClassesModel = Model.of(true)));
+		return new OClassesDataProvider(new FilterClassesPredicate(showAllClassesModel = Model.of(false)));
 	}
 
 	@Override

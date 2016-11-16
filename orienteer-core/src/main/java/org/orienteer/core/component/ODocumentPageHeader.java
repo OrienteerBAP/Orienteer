@@ -3,16 +3,21 @@ package org.orienteer.core.component;
 import java.util.List;
 
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.web.BrowseOClassPage;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -37,6 +42,16 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 	public ODocumentPageHeader(String id, IModel<ODocument> model)
 	{
 		super(id, model);
+		final IModel<List<ODocument>> navigationPathModel = new GetNavigationPathModel();
+		final IModel<OClass> firstDocClassModel = new LoadableDetachableModel<OClass>() {
+
+			@Override
+			protected OClass load() {
+				List<ODocument> path = navigationPathModel.getObject();
+				return path!=null && !path.isEmpty() ? path.get(0).getSchemaClass():null;
+			}
+		};
+		add(new OClassPageLink("browseLink", firstDocClassModel).setClassNameAsBody(true));
 		add(new ListView<ODocument>("child", new GetNavigationPathModel()) {
 
 			@Override
