@@ -5,7 +5,7 @@ MAINTAINER Ilia Naryzhny (phantom@ydn.ru)
 RUN mkdir -p /usr/src/orienteer/
 WORKDIR /usr/src/orienteer/
 ADD . /usr/src/orienteer/
-RUN mvn -P dockerbuild -pl !orienteer-archetype-war,!orienteer-archetype-jar,!orienteer-standalone clean install
+RUN mvn -P dockerbuild -pl !orienteer-archetype-war,!orienteer-archetype-jar,!orienteer-standalone,!orienteer-bpm clean install
 
 RUN mkdir -p /orienteer/
 RUN mv orienteer-war/target/orienteer.war /orienteer/
