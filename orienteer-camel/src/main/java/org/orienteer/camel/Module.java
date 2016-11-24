@@ -1,8 +1,12 @@
 package org.orienteer.camel;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import org.apache.camel.CamelContext;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.model.RoutesDefinition;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
@@ -33,9 +37,22 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-        CamelContext context = new DefaultCamelContext();
-        
+
+		//InputStream is = getClass().getResourceAsStream("F://work//camel-context.xml");
+		InputStream is;
+	
+		CamelContext context = new DefaultCamelContext();
+
+        		
+        		
         try {
+			is = new FileInputStream("F://work//camel-context.xml");
+
+			RoutesDefinition routes = context.loadRoutesDefinition(is);
+    		context.addRouteDefinitions(routes.getRoutes());
+
+    		//context.start();
+    		/*
 			context.addRoutes(new RouteBuilder() {
 			    public void configure() {
 			        from("file://test/?fileName=111.txt&noop=true").
@@ -45,25 +62,15 @@ public class Module extends AbstractOrienteerModule{
 			        end();
 			    }
 			});
+			*/
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}        
         
+			//Thread.sleep(3000);
         try {
-			context.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        try {
-			context.stop();
+			//context.stop();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,12 +78,15 @@ public class Module extends AbstractOrienteerModule{
 
 		
 		app.mountPages("org.orienteer.camel.web");
+		app.registerWidgets("org.orienteer.camel.widget");
+
 	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.camel.web");
+		app.unregisterWidgets("org.orienteer.camel.widget");
 	}
 	
 }
