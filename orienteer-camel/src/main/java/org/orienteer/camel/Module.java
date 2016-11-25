@@ -39,6 +39,7 @@ public class Module extends AbstractOrienteerModule{
 		super.onInitialize(app, db);
 
 		//InputStream is = getClass().getResourceAsStream("F://work//camel-context.xml");
+		/*
 		InputStream is;
 	
 		CamelContext context = new DefaultCamelContext();
@@ -52,7 +53,7 @@ public class Module extends AbstractOrienteerModule{
     		context.addRouteDefinitions(routes.getRoutes());
 
     		//context.start();
-    		/*
+    		//
 			context.addRoutes(new RouteBuilder() {
 			    public void configure() {
 			        from("file://test/?fileName=111.txt&noop=true").
@@ -62,7 +63,7 @@ public class Module extends AbstractOrienteerModule{
 			        end();
 			    }
 			});
-			*/
+			//
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -75,11 +76,19 @@ public class Module extends AbstractOrienteerModule{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
+*/
+		makeSchema(app,db);
 		app.mountPages("org.orienteer.camel.web");
 		app.registerWidgets("org.orienteer.camel.widget");
 
+	}
+	
+	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		helper.oClass("OIntegrationSession").
+			oProperty("name", OType.STRING).
+			oProperty("description", OType.STRING).
+			oProperty("script", OType.STRING);
 	}
 	
 	@Override
