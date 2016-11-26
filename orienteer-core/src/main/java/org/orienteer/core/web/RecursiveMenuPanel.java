@@ -123,6 +123,7 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
 
     private boolean isActiveItem(ODocumentPropertyModel<String> urlModel) {
         String currentUrl = RequestCycle.get().getRequest().getUrl().getPath();
-        return currentUrl.equals(urlModel.getObject().replaceFirst("^/", ""));
+        String url = urlModel.getObject();
+        return url!=null && currentUrl.equals(url.replaceFirst("^/", ""));
     }
 }
