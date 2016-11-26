@@ -11,7 +11,7 @@ import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.inclogger.core.interfaces.IReceiver;
+import org.orienteer.logger.core.interfaces.IReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

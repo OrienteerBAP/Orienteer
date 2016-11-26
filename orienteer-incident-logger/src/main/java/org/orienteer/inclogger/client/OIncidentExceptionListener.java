@@ -7,14 +7,14 @@ import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.lang.Exceptions;
-import org.orienteer.inclogger.IncidentLogger;
+import org.orienteer.logger.OLogger;
 
 import com.orientechnologies.orient.core.exception.OSchemaException;
 import com.orientechnologies.orient.core.exception.OSecurityException;
 import com.orientechnologies.orient.core.exception.OValidationException;
 
 /**
- * Wicket {@link IRequestCycleListener} for handle exceptions to {@link IncidentLogger}}
+ * Wicket {@link IRequestCycleListener} for handle exceptions to {@link OLogger}}
  *
  */
 public class OIncidentExceptionListener extends AbstractRequestCycleListener{
@@ -32,7 +32,7 @@ public class OIncidentExceptionListener extends AbstractRequestCycleListener{
 		}
 		else
 		{
-			IncidentLogger.get().makeLogger().incident(ex);
+			OLogger.get().makeLogger().incident(ex);
 			return null;
 		}
 	}

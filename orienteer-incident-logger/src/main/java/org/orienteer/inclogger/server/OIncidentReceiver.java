@@ -1,7 +1,7 @@
 package org.orienteer.inclogger.server;
 
-import org.orienteer.inclogger.core.interfaces.IReceiver;
-import org.orienteer.inclogger.core.interfaces.IServer;
+import org.orienteer.logger.core.interfaces.IReceiver;
+import org.orienteer.logger.core.interfaces.IServer;
 
 /**
  *  Receiver module for

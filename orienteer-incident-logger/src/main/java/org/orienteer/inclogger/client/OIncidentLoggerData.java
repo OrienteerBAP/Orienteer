@@ -3,7 +3,7 @@ package org.orienteer.inclogger.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.orienteer.inclogger.core.interfaces.ILoggerData;
+import org.orienteer.logger.core.interfaces.ILoggerData;
 
 /**
  * 

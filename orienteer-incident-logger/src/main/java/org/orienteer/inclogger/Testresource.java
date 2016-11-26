@@ -7,9 +7,9 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.inclogger.IncidentLogger;
 import org.orienteer.inclogger.core.OIncidentConfigurator;
-import org.orienteer.inclogger.core.interfaces.ILogger;
+import org.orienteer.logger.OLogger;
+import org.orienteer.logger.core.interfaces.ILogger;
 
 /**
  * Page for testing {@link IncidentLoggerModule} 

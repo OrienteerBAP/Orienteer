@@ -4,10 +4,10 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.inclogger.IncidentLogger;
 import org.orienteer.inclogger.client.OIncidentExceptionListener;
 import org.orienteer.inclogger.core.OIncidentConfigurator;
 import org.orienteer.inclogger.server.OIncidentReceiverResource;
+import org.orienteer.logger.OLogger;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -65,14 +65,14 @@ public class IncidentLoggerModule extends AbstractOrienteerModule{
 		OIncidentReceiverResource.mount(app);
 		Testresource.mount(app);
 		
-       IncidentLogger.init(new OIncidentConfigurator());
+       OLogger.init(new OIncidentConfigurator());
 		app.getRequestCycleListeners().add(new OIncidentExceptionListener());
 	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
-		IncidentLogger.close();
+		OLogger.close();
 
 		app.unmountPages("org.orienteer.inclogger.web");
 		app.unmount(Testresource.MOUNT_PATH);

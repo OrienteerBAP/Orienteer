@@ -7,8 +7,8 @@ import java.util.Date;
 
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
-import org.orienteer.inclogger.client.AbstractLogger;
-import org.orienteer.inclogger.core.interfaces.ILoggerData;
+import org.orienteer.logger.client.AbstractLogger;
+import org.orienteer.logger.core.interfaces.ILoggerData;
 
 /**
  * 
