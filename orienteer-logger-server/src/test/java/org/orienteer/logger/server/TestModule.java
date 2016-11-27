@@ -1,10 +1,10 @@
-package org.orienteer.inclogger;
+package org.orienteer.logger.server;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
-import org.orienteer.inclogger.IncidentLoggerModule;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
+import org.orienteer.logger.server.OLoggerModule;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -26,9 +26,9 @@ public class TestModule
 	{
 	    OrienteerWebApplication app = tester.getApplication();
 	    assertNotNull(app);
-	    IOrienteerModule module = app.getModuleByName("incident.logger.driver");
+	    IOrienteerModule module = app.getModuleByName(OLoggerModule.MODULE_OLOGGER_NAME);
 	    assertNotNull(module);
-	    assertTrue(module instanceof IncidentLoggerModule);
+	    assertTrue(module instanceof OLoggerModule);
 	    //TODO : to add tests for incident logger
 	}
 }

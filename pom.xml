@@ -88,9 +88,10 @@
 		<module>orienteer-graph</module>
 		<module>orienteer-pages</module>
 		<module>orienteer-pivottable</module>
-    <module>orienteer-devutils</module>
-    <module>orienteer-bpm</module>
-  </modules>
+		<module>orienteer-devutils</module>
+		<module>orienteer-logger-server</module>
+		<module>orienteer-bpm</module>
+	</modules>
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->

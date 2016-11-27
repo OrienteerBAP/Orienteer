@@ -57,6 +57,11 @@
             <artifactId>orienteer-devutils</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-logger-server</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 	</dependencies>
 	<build>
 		<finalName>orienteer</finalName>
