@@ -28,7 +28,7 @@ public class EmbeddedOLoggerEventDispatcher extends DefaultOLoggerEventDispatche
 		if(!Strings.isEmpty(collectorUrl)) {
 			Url url = Url.parse(collectorUrl);
 			if(Strings.isEmpty(url.getPath())) {
-				collectorUrl = (collectorUrl.endsWith("/")?"":"/")+"rest/ologger";
+				collectorUrl = collectorUrl+(collectorUrl.endsWith("/")?"":"/")+"rest/ologger";
 			}
 		}
 	}
