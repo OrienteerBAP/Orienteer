@@ -23,7 +23,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
- * {@link IOrienteerModule} for 'orienteer-incident-logger' module
+ * {@link IOrienteerModule} for 'orienteer-logger-server' module
  */
 @Singleton
 public class OLoggerModule extends AbstractOrienteerModule{

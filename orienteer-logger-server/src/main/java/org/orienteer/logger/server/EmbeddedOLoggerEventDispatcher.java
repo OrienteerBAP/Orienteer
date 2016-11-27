@@ -3,11 +3,15 @@ package org.orienteer.logger.server;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.logger.IOLoggerConfiguration;
+import org.orienteer.logger.IOLoggerEventDispatcher;
 import org.orienteer.logger.OLoggerEvent;
 import org.orienteer.logger.impl.DefaultOLoggerEventDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * {@link IOLoggerEventDispatcher} for handle {@link OLoggerEvent}s within Orienteer: log localy and send to other host 
+ */
 public class EmbeddedOLoggerEventDispatcher extends DefaultOLoggerEventDispatcher {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EmbeddedOLoggerEventDispatcher.class);

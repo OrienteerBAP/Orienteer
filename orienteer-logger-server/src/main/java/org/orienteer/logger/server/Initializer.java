@@ -5,7 +5,7 @@ import org.apache.wicket.IInitializer;
 import org.orienteer.core.OrienteerWebApplication;
 
 /**
- * {@link IInitializer} for 'orienteer-incident-logger' module
+ * {@link IInitializer} for 'orienteer-logger-server' module
  */
 public class Initializer implements IInitializer
 {
