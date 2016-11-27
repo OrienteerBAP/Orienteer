@@ -1,7 +1,8 @@
-package org.orienteer.inclogger.server;
+package org.orienteer.logger.server.rest;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,24 +12,29 @@ import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.logger.core.interfaces.IReceiver;
+import org.orienteer.logger.server.OLoggerModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * 
  * Data provider for {@link OIncidentReceiver}. 
  * 
  */
-public class OIncidentReceiverResource extends AbstractResource {
+public class OLoggerReceiverResource extends AbstractResource {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static final String MOUNT_PATH = "/rest/incident";
-	public static final String REGISTRATION_RES_KEY=OIncidentReceiverResource.class.getSimpleName();
+	public static final String MOUNT_PATH = "/rest/ologger";
+	public static final String REGISTRATION_RES_KEY=OLoggerReceiverResource.class.getSimpleName();
 	
-	private static final Logger LOG = LoggerFactory.getLogger(OIncidentReceiverResource.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OLoggerReceiverResource.class);
 	
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes) {
@@ -44,11 +50,10 @@ public class OIncidentReceiverResource extends AbstractResource {
 				if(httpRequest.getMethod().equalsIgnoreCase("GET") //for debug 
 						|| httpRequest.getMethod().equalsIgnoreCase("POST") )
 				{
-					StringWriter received = new StringWriter();
-					IOUtils.copy(httpRequest.getInputStream(), received);
 
-					LOG.info("received="+received);
-					getReceiver().receive(received.toString());
+					String content = IOUtils.toString(httpRequest.getInputStream());
+					ODocument log = OLoggerModule.storeOLoggerEvent(content);
+					out = log.toJSON();
 				}
 			} catch (Throwable e)
 			{
@@ -69,15 +74,16 @@ public class OIncidentReceiverResource extends AbstractResource {
 		return response;
 	}
 	
-	private IReceiver getReceiver(){
-		return OIncidentReceiver.INSTANCE;
-	}
-	
 	public static void mount(WebApplication app)
 	{
-		OIncidentReceiverResource resource = ((OrienteerWebApplication) app).getServiceInstance(OIncidentReceiverResource.class);
+		OLoggerReceiverResource resource = ((OrienteerWebApplication) app).getServiceInstance(OLoggerReceiverResource.class);
 		app.getSharedResources().add(REGISTRATION_RES_KEY, resource);
 		app.mountResource(MOUNT_PATH, new SharedResourceReference(REGISTRATION_RES_KEY));
+	}
+	
+	public static void unmount(WebApplication app)
+	{
+		app.unmount(MOUNT_PATH);
 	}
 }
 

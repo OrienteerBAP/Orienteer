@@ -1,4 +1,4 @@
-package org.orienteer.inclogger;
+package org.orienteer.logger.server;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
@@ -12,7 +12,7 @@ public class Initializer implements IInitializer
 	@Override
 	public void init(Application application) {
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
-		app.registerModule(IncidentLoggerModule.class);
+		app.registerModule(OLoggerModule.class);
 	}
 
 	@Override
