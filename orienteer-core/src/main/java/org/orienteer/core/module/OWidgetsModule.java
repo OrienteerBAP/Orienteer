@@ -3,6 +3,8 @@ package org.orienteer.core.module;
 import java.util.List;
 
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.widget.AbstractHtmlJsPaneWidget;
 import org.orienteer.core.component.widget.document.CalculatedDocumentsWidget;
@@ -58,7 +60,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	private IWidgetTypesRegistry registry;
 	
 	public OWidgetsModule() {
-		super(NAME, 3);
+		super(NAME, 4);
 	}
 	
 	@Override
@@ -83,6 +85,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		helper.setupRelationship(OCLASS_DASHBOARD, OPROPERTY_WIDGETS, OCLASS_WIDGET, OPROPERTY_DASHBOARD);
 		installWidgetsSchemaV2(db); 
 		installWidgetsSchemaV3(db);
+		installWidgetsSchemaV4(db);
 		return null;
 	}
 	
@@ -93,8 +96,13 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		switch(updateTo) {
 			case 2:
 				installWidgetsSchemaV2(db);
+				break;
 			case 3:
 				installWidgetsSchemaV3(db);
+				break;
+			case 4:
+				installWidgetsSchemaV4(db);
+				break;
 		}
 		if(updateTo<newVersion) onUpdate(app, db, updateTo, newVersion);
 	}
@@ -158,5 +166,11 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		
 		helper.oClass(OCLASS_WIDGET)
 			.oProperty(OPROPERTY_TITLE, OType.EMBEDDEDMAP, 0).assignVisualization("localization");
+	}
+	
+	protected void installWidgetsSchemaV4(ODatabaseDocument db) {
+		for(OClass subClass : db.getMetadata().getSchema().getClass(OCLASS_WIDGET).getSubclasses()) {
+			CustomAttribute.DOMAIN.setValue(subClass, OClassDomain.SPECIFICATION);
+		}
 	}
 }
