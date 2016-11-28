@@ -6,6 +6,7 @@ import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.widget.AbstractCalculatedDocumentsWidget;
 import org.orienteer.core.component.widget.AbstractHtmlJsPaneWidget;
 import org.orienteer.core.component.widget.document.CalculatedDocumentsWidget;
 import org.orienteer.core.component.widget.document.ExternalPageWidget;
@@ -60,7 +61,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	private IWidgetTypesRegistry registry;
 	
 	public OWidgetsModule() {
-		super(NAME, 4);
+		super(NAME, 5);
 	}
 	
 	@Override
@@ -86,25 +87,23 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		installWidgetsSchemaV2(db); 
 		installWidgetsSchemaV3(db);
 		installWidgetsSchemaV4(db);
+		installWidgetsSchemaV5(db);
 		return null;
 	}
 	
 	@Override
 	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
 			int oldVersion, int newVersion) {
-		int updateTo = oldVersion+1;
-		switch(updateTo) {
+		switch(oldVersion) {
 			case 2:
 				installWidgetsSchemaV2(db);
-				break;
 			case 3:
 				installWidgetsSchemaV3(db);
-				break;
 			case 4:
 				installWidgetsSchemaV4(db);
-				break;
+			case 5:
+				installWidgetsSchemaV5(db);
 		}
-		if(updateTo<newVersion) onUpdate(app, db, updateTo, newVersion);
 	}
 	
 	@Override
@@ -172,5 +171,11 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		for(OClass subClass : db.getMetadata().getSchema().getClass(OCLASS_WIDGET).getSubclasses()) {
 			CustomAttribute.DOMAIN.setValue(subClass, OClassDomain.SPECIFICATION);
 		}
+	}
+	
+	protected void installWidgetsSchemaV5(ODatabaseDocument db) {
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+        helper.oClass(AbstractCalculatedDocumentsWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
+                .oProperty("class", OType.STRING, 10).notNull(true);
 	}
 }

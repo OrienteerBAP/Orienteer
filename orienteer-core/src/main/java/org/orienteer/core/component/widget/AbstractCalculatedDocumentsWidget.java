@@ -47,22 +47,28 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
         
         if(!Strings.isEmpty(sql)) {
         	OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
-        	OClass commonParent = provider.probeOClass(20);
-        	oClassIntrospector.defineDefaultSorting(provider, commonParent);
-        	List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
-        	OrienteerDataTable<ODocument, String> table =
-        			new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
-        	
-        	table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
-        	table.addCommand(new SaveODocumentsCommand(table, modeModel));
-        	table.addCommand(new DeleteODocumentCommand(table, commonParent));
-        	table.addCommand(new ExportCommand<>(table, getTitleModel()));
-        	form.add(table);
-        	add(new EmptyPanel("error").setVisible(false));
+        	OClass expectedClass = getExpectedClass(provider);
+        	if(expectedClass!=null) {
+	        	oClassIntrospector.defineDefaultSorting(provider, expectedClass);
+	        	List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(expectedClass, true, modeModel);
+	        	OrienteerDataTable<ODocument, String> table =
+	        			new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
+	        	
+	        	table.addCommand(new EditODocumentsCommand(table, modeModel, expectedClass));
+	        	table.addCommand(new SaveODocumentsCommand(table, modeModel));
+	        	table.addCommand(new DeleteODocumentCommand(table, expectedClass));
+	        	table.addCommand(new ExportCommand<>(table, getTitleModel()));
+	        	form.add(table);
+	        	add(new EmptyPanel("error").setVisible(false));
+        	} else {
+        		form.add(new EmptyPanel("table").setVisible(false));
+            	form.setVisible(false);
+            	add(new Label("error", new ResourceModel("error.class.not.defined")));
+        	}
         } else {
         	form.add(new EmptyPanel("table").setVisible(false));
         	form.setVisible(false);
-        	add(new Label("error", new ResourceModel("query.not.defined")));
+        	add(new Label("error", new ResourceModel("error.query.not.defined")));
         }
         
         add(form);
@@ -70,6 +76,15 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 	
 	protected String getSql() {
 		return getWidgetDocument().field("query");
+	}
+	
+	protected OClass getExpectedClass(OQueryDataProvider<ODocument> provider) {
+		String expectedClass =  getWidgetDocument().field("class");
+		OClass ret = expectedClass!=null?getSchema().getClass(expectedClass):null;
+		if(ret==null) {
+			ret = provider.probeOClass(20);
+		}
+		return ret;
 	}
 	
 	protected OQueryDataProvider<ODocument> newDataProvider(String sql) {
