@@ -3,10 +3,12 @@ package org.orienteer.camel;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
+import org.orienteer.camel.widget.CamelWidget;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
@@ -77,6 +79,7 @@ public class Module extends AbstractOrienteerModule{
 			e.printStackTrace();
 		}
 */
+		app.setMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
 		makeSchema(app,db);
 		app.mountPages("org.orienteer.camel.web");
 		app.registerWidgets("org.orienteer.camel.widget");
