@@ -88,7 +88,7 @@ public class Module extends AbstractOrienteerModule{
 	
 	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass("OIntegrationSession").
+		helper.oClass("OIntegrationConfig").
 			oProperty("name", OType.STRING).
 			oProperty("description", OType.STRING).
 			oProperty("script", OType.STRING);

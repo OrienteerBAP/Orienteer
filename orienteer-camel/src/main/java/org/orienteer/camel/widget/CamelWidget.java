@@ -4,7 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,15 +26,22 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.lang.Bytes;
 import org.orienteer.camel.component.CamelEventHandler;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.UnregistredPropertyEditPanel;
+import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
@@ -41,8 +50,10 @@ import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-@Widget(domain="document",selector="OIntegrationSession", id=CamelWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
-public class CamelWidget extends AbstractWidget<Void>{
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+
+@Widget(domain="document",selector="OIntegrationConfig", id=CamelWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+public class CamelWidget extends AbstractWidget<ODocument>{
 
 	public static final String WIDGET_TYPE_ID = "camelIntegration";
 	private static final long serialVersionUID = 1L;
@@ -53,103 +64,65 @@ public class CamelWidget extends AbstractWidget<Void>{
 		private static final long serialVersionUID = 1L;
 	};
 	
-//    private FileUploadField fileUpload;
-	//private CamelContext context;
 	private Form form;
-	private ClassAttributeModifier disabled;
-
-	public CamelWidget(String id, IModel<Void> model, final IModel<ODocument> widgetDocumentModel) {
-		super(id, model, widgetDocumentModel);
-		disabled = new ClassAttributeModifier() {
-			private static final long serialVersionUID = 1L;
-			@Override
-			protected Set<String> update(Set<String> oldClasses) {
-				oldClasses.add("disabled");
-				return oldClasses;
-			}
-			@Override
-			public boolean isTemporary(Component component) {
-				return true;
-			}
-		};
-		/*
-		CamelContext context = new DefaultCamelContext();
-		try {
-			ODocument doc = (ODocument) CamelWidget.this.getDefaultModelObject();
-			String script = doc.field("script");
-			RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
-			context.addRouteDefinitions(routes.getRoutes());
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	
+	public static final List<String> CONTEXT_DATA_LIST = new ArrayList<String>();
+	static
+	{
+		CONTEXT_DATA_LIST.add("name");
+		CONTEXT_DATA_LIST.add("status");
+		CONTEXT_DATA_LIST.add("uptime");
+		CONTEXT_DATA_LIST.add("version");
+	}	
+	
+	private class CamelContextModel extends LoadableDetachableModel<CamelContext>{
+		
+		@Override
+		protected CamelContext load() {
+			return getOrMakeContext();
 		}
-*/
-        form = new Form<Void>("form");/*{
-        	@Override
-        	protected void onSubmit() {
-   				CamelContext context = new DefaultCamelContext();
-   				try {
-   					ODocument doc = (ODocument) CamelWidget.this.getDefaultModelObject();
-   					String script = doc.field("script");
-   					LOG.info(script);
-   					LOG.info((String) doc.field("name"));
-   				//context.getManagementStrategy().addEventNotifier(new CamelEventHandler(olog.getIdentity().toString()));
-   				
-   					RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
-   					context.addRouteDefinitions(routes.getRoutes());
-					context.start();
-					Thread.sleep(3000);
-					context.stop();
-	    		
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	    		super.onSubmit();
-        	}
-        };*/
-        //form.setMultiPart(true);
-        //form.setMaxSize(Bytes.kilobytes(100));
-    	//form.add(fileUpload = new FileUploadField("fileUpload"));
-        
-        
-        form.add(makeStatusComponent());
-        form.add(makeStartButton());
-        form.add(makeStopButton());
-        form.add(makePauseButton());
-        form.setOutputMarkupId(true);
-
-        add(form);
 	}
 	
-	private Component makeStatusComponent(){
-		Component result = new Label("status"){
+	
+	public CamelWidget(String id, IModel<ODocument> model, final IModel<ODocument> widgetDocumentModel) {
+		super(id, model, widgetDocumentModel);
+
+		form = new Form<Void>("form");
+        
+        OrienteerStructureTable<CamelContext, String> structuredTable = new OrienteerStructureTable<CamelContext, String>("table", new CamelContextModel(), CONTEXT_DATA_LIST) {
+
 			@Override
-			protected void onBeforeRender() {
-				CamelContext context = getOrMakeContext();
-				ServiceStatus status = context.getStatus();
-				if (status.isStopped()){
-					setDefaultModelObject("Session has stopped");
-				}else if(status.isStarted()){
-					setDefaultModelObject("Session is running");
-				}else if(status.isSuspended()){
-					setDefaultModelObject("Session is suspended");
-				}else{
-					setDefaultModelObject("Status changing...");
-				}
-				super.onBeforeRender();
+			protected Component getValueComponent(String id, IModel<String> rowModel) {
+				return new Label(id,new PropertyModel<>(getModel(), rowModel.getObject()));
+			}
+			@Override
+			protected IModel<?> getLabelModel(Component resolvedComponent, IModel<String> rowModel) {
+				return new SimpleNamingModel<String>("integration."+rowModel.getObject());
 			}
 		};
-	
-		return result;
+		form.add(structuredTable);
+		structuredTable.addCommand(makeStartButton());
+		structuredTable.addCommand(makeStopButton());
+		structuredTable.addCommand(makeSuspendButton());
+		form.setOutputMarkupId(true);
+
+		add(form);
 	}
 	
-	private Component makeStartButton() {
-		return new AjaxLink("start") {
+	private Command makeStartButton() {
+		return new AjaxCommand("start","integration.start") {
+			@Override
+			protected void onInitialize() {
+				super.onInitialize();
+				setIcon(FAIconType.play);
+				setBootstrapType(BootstrapType.SUCCESS);
+				setChangingDisplayMode(true);
+			}
+			
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				try {
+					
 					ODocument doc = (ODocument) CamelWidget.this.getDefaultModelObject();
 					CamelContext context = getOrMakeContextByRid(doc.getIdentity().toString());
 					if (context.getRoutes().isEmpty()){
@@ -157,7 +130,10 @@ public class CamelWidget extends AbstractWidget<Void>{
 						RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
 						context.addRouteDefinitions(routes.getRoutes());
 					}
-					if (!context.getStatus().isStarted()){
+					if (context.getStatus().isSuspended()){
+						context.resume();
+						target.add(CamelWidget.this.form);
+					}else if (!context.getStatus().isStarted()){
 						context.start();
 						target.add(CamelWidget.this.form);
 					}
@@ -167,20 +143,28 @@ public class CamelWidget extends AbstractWidget<Void>{
 				}
 			}
 			@Override
-			protected void onBeforeRender() {
-				
+			public boolean isEnabled() {
 				CamelContext context = getOrMakeContext();
 				ServiceStatus status = context.getStatus();
 				if (status.isStarted()){
-					this.add(disabled);
+					return false;
 				}
-				super.onBeforeRender();
+				return super.isEnabled();
 			}
 		};
+
 	}
+
 	
-	private Component makePauseButton() {
-		return new AjaxLink("pause") {
+	private Command makeSuspendButton() {
+		return new AjaxCommand("suspend","integration.suspend") {
+			@Override
+			protected void onInitialize() {
+				super.onInitialize();
+				setIcon(FAIconType.pause);
+				setBootstrapType(BootstrapType.WARNING);
+				setChangingDisplayMode(true);
+			}
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				try {
@@ -198,20 +182,27 @@ public class CamelWidget extends AbstractWidget<Void>{
 				}
 			}
 			@Override
-			protected void onBeforeRender() {
+			public boolean isEnabled() {
 				CamelContext context = getOrMakeContext();
 				ServiceStatus status = context.getStatus();
 				if (!status.isStarted()){
-					this.add(disabled);
+					return false;
 				}
-				super.onBeforeRender();
+				return super.isEnabled();
 			}
 		};
 	}
 	
 
-	private Component makeStopButton() {
-		return new AjaxLink("stop") {
+	private Command makeStopButton() {
+		return new AjaxCommand("stop","integration.stop") {
+			@Override
+			protected void onInitialize() {
+				super.onInitialize();
+				setIcon(FAIconType.stop);
+				setBootstrapType(BootstrapType.DANGER);
+				setChangingDisplayMode(true);
+			}
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				CamelContext context = getOrMakeContext();
@@ -224,13 +215,13 @@ public class CamelWidget extends AbstractWidget<Void>{
 				}
 			}
 			@Override
-			protected void onBeforeRender() {
+			public boolean isEnabled() {
 				CamelContext context = getOrMakeContext();
 				ServiceStatus status = context.getStatus();
 				if (status.isStopped()){
-					this.add(disabled);
+					return false;
 				}
-				super.onBeforeRender();
+				return super.isEnabled();
 			}
 		};
 	}
@@ -247,6 +238,8 @@ public class CamelWidget extends AbstractWidget<Void>{
 			context = contextMap.get(rid);
 		}else{
 			context = new DefaultCamelContext();
+			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(""));
+
 			contextMap.put(rid, context);
 		}
 		return context;
@@ -260,6 +253,11 @@ public class CamelWidget extends AbstractWidget<Void>{
 	@Override
 	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("integration.camel");
+	}
+	
+	@Override
+	protected String getWidgetStyleClass() {
+		return "strict";
 	}
 
 }
