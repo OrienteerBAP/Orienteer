@@ -1,48 +1,32 @@
 package org.orienteer.camel.widget;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import org.apache.camel.CamelContext;
-import org.apache.camel.Route;
+import org.apache.camel.Endpoint;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.impl.DefaultComponent;
 import org.apache.camel.model.RoutesDefinition;
-import org.apache.wicket.ClassAttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
-import org.apache.wicket.StyleAttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.apache.wicket.markup.html.form.upload.FileUploadField;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.util.lang.Bytes;
 import org.orienteer.camel.component.CamelEventHandler;
+import org.orienteer.camel.component.OrientDBComponent;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.property.UnregistredPropertyEditPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -76,7 +60,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 	}	
 	
 	private class CamelContextModel extends LoadableDetachableModel<CamelContext>{
-		
+		private static final long serialVersionUID = 1L;
 		@Override
 		protected CamelContext load() {
 			return getOrMakeContext();
@@ -90,7 +74,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 		form = new Form<Void>("form");
         
         OrienteerStructureTable<CamelContext, String> structuredTable = new OrienteerStructureTable<CamelContext, String>("table", new CamelContextModel(), CONTEXT_DATA_LIST) {
-
+			private static final long serialVersionUID = 1L;
 			@Override
 			protected Component getValueComponent(String id, IModel<String> rowModel) {
 				return new Label(id,new PropertyModel<>(getModel(), rowModel.getObject()));
@@ -100,6 +84,8 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 				return new SimpleNamingModel<String>("integration."+rowModel.getObject());
 			}
 		};
+			
+		
 		form.add(structuredTable);
 		structuredTable.addCommand(makeStartButton());
 		structuredTable.addCommand(makeStopButton());
@@ -238,6 +224,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 			context = contextMap.get(rid);
 		}else{
 			context = new DefaultCamelContext();
+			context.addComponent("orientdb", new OrientDBComponent(context));
 			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(""));
 
 			contextMap.put(rid, context);
