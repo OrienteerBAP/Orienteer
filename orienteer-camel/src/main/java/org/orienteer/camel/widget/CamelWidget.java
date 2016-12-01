@@ -9,6 +9,8 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.model.ContextScanDefinition;
+import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
@@ -111,15 +113,17 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 					
 					ODocument doc = (ODocument) CamelWidget.this.getDefaultModelObject();
 					CamelContext context = getOrMakeContextByRid(doc.getIdentity().toString());
-					if (context.getRoutes().isEmpty()){
-						String script = doc.field("script");
-						RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
-						context.addRouteDefinitions(routes.getRoutes());
-					}
+
 					if (context.getStatus().isSuspended()){
 						context.resume();
 						target.add(CamelWidget.this.form);
 					}else if (!context.getStatus().isStarted()){
+						clearContext(context);
+						String script = doc.field("script");
+						
+						RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
+						context.addRouteDefinitions(routes.getRoutes());
+
 						context.start();
 						target.add(CamelWidget.this.form);
 					}
@@ -224,13 +228,20 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 			context = contextMap.get(rid);
 		}else{
 			context = new DefaultCamelContext();
-			context.addComponent("orientdb", new OrientDBComponent(context));
 			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(""));
 
 			contextMap.put(rid, context);
 		}
 		return context;
 	}
+	
+	private void clearContext(CamelContext context) throws Exception{
+		List<RouteDefinition> definitions = context.getRouteDefinitions();
+		if (!definitions.isEmpty()){
+			context.removeRouteDefinitions(new ArrayList<RouteDefinition>(definitions));
+		}
+	}
+	
 	
 	@Override
 	protected FAIcon newIcon(String id) {
