@@ -15,6 +15,7 @@ import org.apache.camel.model.RoutesDefinition;
 import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -36,6 +37,9 @@ import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 @Widget(domain="document",selector="OIntegrationConfig", id=CamelWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
@@ -227,7 +231,18 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 		if (contextMap.containsKey(rid)){
 			context = contextMap.get(rid);
 		}else{
+			IOrientDbSettings dbSettings = OrientDbWebApplication.get().getOrientDbSettings();
+			OrientDbWebSession session = OrientDbWebSession.get();
+			if (session.getUsername()==null){
+				throw new UnauthorizedActionException(this, Component.RENDER);
+			}
 			context = new DefaultCamelContext();
+			Map<String, String> properties = context.getProperties();
+			properties.put(OrientDBComponent.DB_URL, dbSettings.getDBUrl());
+			properties.put(OrientDBComponent.DB_USERNAME, session.getUsername());
+			properties.put(OrientDBComponent.DB_PASSWORD, session.getPassword());
+			context.setProperties(properties);
+			
 			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(""));
 
 			contextMap.put(rid, context);

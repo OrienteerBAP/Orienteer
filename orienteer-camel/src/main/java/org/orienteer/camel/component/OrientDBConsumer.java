@@ -27,31 +27,15 @@ public class OrientDBConsumer extends DefaultConsumer{
 
 	@Override
 	protected void doStart() throws Exception {
-		ODatabaseDocument db = OrienteerWebApplication.get().getDatabase();
-		Object dbResult = db.command(new OCommandSQL("select from ouser")).execute();
-		if (dbResult instanceof OResultSet){
-			OResultSet resultset = (OResultSet) dbResult;
-			for (Object object : resultset) {
-				Object result;
-				if (object instanceof ODocument){
-					//Map<String, Object> resultMap = ((ODocument)object).toMap();
-					result = ((ODocument)object).toJSON();
-				}else if(object instanceof OIdentifiable){
-					result = ((OIdentifiable)object).getIdentity().toString();
-				}else{
-					throw new Exception("Unknown type of OrientDB object:"+object.getClass());
-				}
-				Exchange exchange = getEndpoint().createExchange();
-				Message in = exchange.getIn();
-				in.setBody(result);
-				getProcessor().process(exchange);
-			}
-			
-		}else{
-			Exchange exchange = getEndpoint().createExchange();
-			exchange.getIn().setBody(dbResult);
-			getProcessor().process(exchange);
-		}
+		OrientDBEndpoint endpoint = (OrientDBEndpoint)getEndpoint();
+		ODatabaseDocument db = endpoint.getDatabase();
+		log.info(endpoint.getSQLQuery());
+		Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute();
+		
+		Exchange exchange = getEndpoint().createExchange();
+		exchange.getIn().setBody(endpoint.makeOutObject(dbResult));
+		getProcessor().process(exchange);
+		
 		super.doStart();
 	}
 }
