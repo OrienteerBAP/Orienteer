@@ -33,14 +33,15 @@ public class OrientDBProducer extends DefaultProducer{
 		out.getHeaders().putAll(exchange.getIn().getHeaders());
 
 		if(input instanceof Map || input == null){
-			Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(input);
+			Object inp = endpoint.unmarshalling(input);
+			Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(inp);
 			out.setBody(endpoint.makeOutObject(dbResult));
 		}else if (input instanceof List){
 			List<Object> inputList = (List)input;
 			List<Object> outputList = new ArrayList<Object>();
 			for (Object inputElement : inputList) {
 				if (inputElement instanceof Map){
-					Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(inputElement);
+					Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(endpoint.unmarshalling(inputElement));
 					if (dbResult instanceof List){
 						outputList.addAll((List)dbResult);
 					}else{

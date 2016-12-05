@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.camel.Component;
@@ -24,7 +25,10 @@ import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
 import com.orientechnologies.orient.core.sql.query.OResultSet;
 
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
@@ -106,18 +110,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 					if (isAsJson()){
 						resultArray.add(doc.toJSON());
 					}else{
-						Map<String,String> fieldsMap = new HashMap<String,String>();
-						for (String fieldName : doc.fieldNames()) {
-							Object field = doc.field(fieldName);
-							if (field instanceof OIdentifiable){
-								fieldsMap.put(fieldName, ((OIdentifiable)field).getIdentity().toString());
-							}else if(field != null) {
-								fieldsMap.put(fieldName, field.toString());
-							}else{
-								fieldsMap.put(fieldName, null);
-							}
-						}
-						resultArray.add(fieldsMap);
+						//Map<String,Object> fieldsMap = ODocumentToMap(doc,true);
+						resultArray.add(marshalling(doc,true));
 					}
 				}else if(object instanceof OIdentifiable){
 					resultArray.add(((OIdentifiable)object).getIdentity().toString());
@@ -132,4 +126,185 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		}
 		return result;
 	}
+	
+	private Object marshalling(Object obj,boolean withFields){
+		if (obj instanceof ODocument){
+			ODocument objDoc =(ODocument)obj; 
+			Map<String,Object> result = new HashMap<String,Object>();
+			if(withFields || objDoc.isEmbedded()){
+			    for (String fieldName : objDoc.fieldNames()){
+			    	result.put(fieldName, marshalling(objDoc.field(fieldName),false));
+			    }
+			}
+			
+		    final ORID id = objDoc.getIdentity();
+		    if (id.isValid())
+		    	result.put(ODocumentHelper.ATTRIBUTE_RID, id.toString());
+
+			final String className = objDoc.getClassName();
+			if (className != null)
+				result.put(ODocumentHelper.ATTRIBUTE_CLASS, className);
+			
+			result.put(ODocumentHelper.ATTRIBUTE_TYPE, (char)objDoc.RECORD_TYPE);
+			result.put(ODocumentHelper.ATTRIBUTE_VERSION, objDoc.getVersion());
+			return result;
+		}else if(obj instanceof Map){
+    		Map<String,Object> result = new HashMap<String,Object>();
+    		for (Entry<String, Object> entry : ((Map<String,Object>)obj).entrySet()) {
+   				result.put(entry.getKey(),marshalling(entry.getValue(),false));	
+			}
+    		return result;
+		}else if(obj instanceof Iterable){
+    		List<Object> result = new ArrayList<Object>();
+    		for (Object subfield : (Iterable)obj) {
+    			result.add(marshalling(subfield,false));	
+			}
+    		return result;
+		}else{
+			return obj;
+		}
+	}
+	protected Object unmarshalling(Object obj){
+		if (obj instanceof Map){//something like ODocument
+			Map<String,Object> objMap = (Map)obj;
+			String rid = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_RID));
+			String clazz = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_CLASS));
+			String type = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_TYPE));
+			double version = (double)(objMap.remove(ODocumentHelper.ATTRIBUTE_VERSION));
+			if (rid!=null && clazz!=null && objMap.isEmpty()){//it is link
+				return new ODocument(clazz, new ORecordId(rid));
+			}else if(clazz!=null && rid==null ){//it is embedded
+				ODocument result = new ODocument(clazz);
+				for (Entry<String, Object> entry : objMap.entrySet()) {
+					result.field(entry.getKey(),unmarshalling(entry.getValue()));
+				}
+				return result;
+			}else{//wow,it is just Map
+				Map<String,Object> result = new HashMap<String,Object>();
+				for (Entry<String, Object> entry : objMap.entrySet()) {
+					result.put(entry.getKey(),unmarshalling(entry.getValue()));
+				}
+				return result;
+			}
+		}else if (obj instanceof Iterable){//something like list
+			ArrayList<Object> result = new ArrayList<Object>(); 
+			for (Object item : ((Iterable)obj)) {
+				result.add(unmarshalling(item));
+			}
+			return result;
+		}
+		return obj;
+	}
+	/*
+	protected Object unmarshalling(Object obj){
+		if (obj instanceof Map){//something like ODocument
+			Map<String,Object> objMap = (Map)obj;
+			String rid = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_RID));
+			String clazz = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_CLASS));
+			if (rid!=null || clazz!=null){
+				ODocument result=null;
+				if (rid!=null && clazz!=null){ //it is document link or document
+					result = new ODocument(clazz,new ORecordId(rid));
+				}else if (clazz!=null){//it is embedded document  
+					result = new ODocument(clazz);
+				}else if (rid!=null){//it is something like broken link  
+					result = new ODocument(new ORecordId(rid));
+				}
+				for (Entry<String, Object> entry : objMap.entrySet()) {
+					result.field(entry.getKey(),unmarshalling(entry.getValue()));
+				}
+				return result;
+			}else{//wow,it is just Map
+				Map<String,Object> result = new HashMap<String,Object>();
+				for (Entry<String, Object> entry : objMap.entrySet()) {
+					result.put(entry.getKey(),unmarshalling(entry.getValue()));
+				}
+				return result;
+			}
+		}else if (obj instanceof Iterable){//something like list
+			ArrayList<Object> result = new ArrayList<Object>(); 
+			for (Object item : ((Iterable)obj)) {
+				result.add(unmarshalling(item));
+			}
+			return result;
+		}
+		return obj;
+	}
+	*/
+	/*
+	private Object marshalling(Object obj,boolean withFields){
+		if (obj instanceof ODocument){
+			ODocument objDoc =(ODocument)obj; 
+			Map<String,Object> result = new HashMap<String,Object>();
+			if(withFields || objDoc.isEmbedded()){
+			    for (String fieldName : objDoc.fieldNames()){
+			    	result.put(fieldName, marshalling(objDoc.field(fieldName),false));
+			    }
+			}
+			
+		    final ORID id = objDoc.getIdentity();
+		    if (id.isValid())
+		    	result.put(ODocumentHelper.ATTRIBUTE_RID, id);
+
+			final String className = objDoc.getClassName();
+			if (className != null)
+				result.put(ODocumentHelper.ATTRIBUTE_CLASS, className);
+			
+			result.put(ODocumentHelper.ATTRIBUTE_TYPE, "d");
+			return result;
+		}else if(obj instanceof Map){
+    		Map<String,Object> result = new HashMap<String,Object>();
+    		for (Entry<String, Object> entry : ((Map<String,Object>)obj).entrySet()) {
+   				result.put(entry.getKey(),marshalling(entry.getValue(),false));	
+			}
+    		return result;
+		}else if(obj instanceof Iterable){
+    		List<Object> result = new ArrayList<Object>();
+    		for (Object subfield : (Iterable)obj) {
+    			result.add(marshalling(subfield,false));	
+			}
+    		return result;
+		}else{
+			return obj;
+		}
+	}
+	*/
+	/*	//three marshall only embedded objects, without external links
+	private Object marshalling(Object obj,boolean withFields){
+		if (obj instanceof ODocument && (withFields || ((ODocument)obj).isEmbedded())){
+			ODocument objDoc =(ODocument)obj; 
+			Map<String,Object> result = new HashMap<String,Object>();
+//			if(withFields || objDoc.isEmbedded()){
+			    for (String fieldName : objDoc.fieldNames()){
+			    	result.put(fieldName, marshalling(objDoc.field(fieldName),false));
+			    }
+//			}
+		    final ORID id = objDoc.getIdentity();
+		    if (id.isValid())
+		    	result.put(ODocumentHelper.ATTRIBUTE_RID, id.toString());
+
+			final String className = objDoc.getClassName();
+			if (className != null)
+				result.put(ODocumentHelper.ATTRIBUTE_CLASS, className);
+			
+			return result;
+		}else if(obj instanceof OIdentifiable){
+			return ((OIdentifiable)obj).getIdentity().toString();
+		}else if(obj instanceof Map){
+    		Map<String,Object> result = new HashMap<String,Object>();
+    		for (Entry<String, Object> entry : ((Map<String,Object>)obj).entrySet()) {
+   				result.put(entry.getKey(),marshalling(entry.getValue(),false));	
+			}
+    		return result;
+		}else if(obj instanceof Iterable){
+    		List<Object> result = new ArrayList<Object>();
+    		for (Object subfield : (Iterable)obj) {
+    			result.add(marshalling(subfield,false));	
+			}
+    		return result;
+		}else{
+			return obj;
+		}
+	}
+*/
 }
