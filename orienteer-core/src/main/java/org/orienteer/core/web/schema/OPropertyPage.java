@@ -11,6 +11,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.SchemaPageHeader;
+import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OClassViewPanel;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
 import org.orienteer.core.web.AbstractWidgetPage;
@@ -73,6 +74,14 @@ public class OPropertyPage extends AbstractWidgetDisplayModeAwarePage<OProperty>
 	@Override
 	public String getDomain() {
 		return "property";
+	}
+	
+	public static PageParameters preparePageParameters(OProperty oProperty, DisplayMode mode) {
+		PageParameters ret = new PageParameters();
+		ret.add("className", oProperty.getOwnerClass().getName());
+		ret.add("propertyName", oProperty.getName());
+		if(!DisplayMode.VIEW.equals(mode)) ret.add("mode", mode.getName());
+		return ret;
 	}
 
 }
