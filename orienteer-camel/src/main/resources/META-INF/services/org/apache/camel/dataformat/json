@@ -1,1 +1,1 @@
-class=org.apache.camel.dataformat.xstream.JsonDataFormat
+class=org.apache.camel.component.gson.GsonDataFormat

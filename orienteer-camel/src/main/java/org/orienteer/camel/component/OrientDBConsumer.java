@@ -29,7 +29,6 @@ public class OrientDBConsumer extends DefaultConsumer{
 	protected void doStart() throws Exception {
 		OrientDBEndpoint endpoint = (OrientDBEndpoint)getEndpoint();
 		ODatabaseDocument db = endpoint.getDatabase();
-		log.info(endpoint.getSQLQuery());
 		Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute();
 		
 		Exchange exchange = getEndpoint().createExchange();

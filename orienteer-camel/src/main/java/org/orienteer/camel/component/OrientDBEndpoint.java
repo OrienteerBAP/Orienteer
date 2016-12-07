@@ -1,6 +1,7 @@
 package org.orienteer.camel.component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.apache.commons.lang.StringUtils;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 
 import com.orientechnologies.orient.core.Orient;
@@ -25,6 +27,7 @@ import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.db.record.ORecordElement;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -42,8 +45,26 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	private String remaining;
 	private Map<String, Object> parameters;
 
+	@UriParam(defaultValue = "map")
+	private OrientDBCamelDataType outputType = OrientDBCamelDataType.map;
+
 	@UriParam
-	boolean asJson;
+	private String fetchPlan;
+	
+	@UriParam(defaultValue = "0")
+	private int maxDepth = 0;
+
+	@UriParam(defaultValue = "true")
+	private boolean fetchAllEmbedded = true;
+	
+	@UriParam
+	private String inputAsOClass;
+
+	@UriParam
+	private boolean preload;
+
+	@UriParam
+	private boolean makeNew;
 
 	protected OrientDBEndpoint(String endpointUri,Component component,String remaining, Map<String, Object> parameters ) {
 		super(endpointUri,component);
@@ -81,15 +102,6 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		return parameters;
 	}
 
-	public boolean isAsJson() {
-		return asJson;
-	}
-
-	/* every object saved to json, but List contains all that objects */
-	public void setAsJson(boolean asJson) {
-		this.asJson = asJson;
-	} 
-	
 	public ODatabaseDocument getDatabase(){
 		
 		String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
@@ -100,211 +112,165 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 	
 	public Object makeOutObject(Object rawOut) throws Exception{
-		Object result;
-		if (rawOut instanceof OResultSet){
+		if (rawOut instanceof Iterable){
 			List<Object> resultArray = new ArrayList<Object>();
-			OResultSet tmpset = (OResultSet) rawOut;
+			Iterable tmpset = (Iterable) rawOut;
 			for (Object object : tmpset) {
 				if (object instanceof ODocument){
 					ODocument doc = ((ODocument)object);
-					if (isAsJson()){
-						resultArray.add(doc.toJSON());
+					if (outputType.equals(OrientDBCamelDataType.map)){
+						resultArray.add(toMap(doc));
+					}else if (outputType.equals(OrientDBCamelDataType.json)){
+						resultArray.add(toJSON(doc));//doc.toJSON("fetchPlan:"+getFetchPlan()));
+					}else if (outputType.equals(OrientDBCamelDataType.object)){
+						resultArray.add(toObject(doc));
 					}else{
-						//Map<String,Object> fieldsMap = ODocumentToMap(doc,true);
-						resultArray.add(marshalling(doc,true));
+						throw new Exception("Unknown outputType :"+outputType.toString());
 					}
-				}else if(object instanceof OIdentifiable){
-					resultArray.add(((OIdentifiable)object).getIdentity().toString());
+				//}else if(object instanceof OIdentifiable){
+				//	resultArray.add(((OIdentifiable)object).getIdentity().toString());
 				}else{
 					throw new Exception("Unknown type of OrientDB object:"+object.getClass());
 				}
 			}
-
-			result = resultArray;
+			//if (outputType.equals(OrientDBCamelDataType.json)){
+			//	return "["+Strings.join(",\"&!#\",", (List)resultArray)+"]";
+			//}else{
+				return resultArray;
+			//}
 		}else{
-			result = rawOut;
+			return rawOut;
 		}
-		return result;
 	}
 	
-	private Object marshalling(Object obj,boolean withFields){
+	private Object toJSON(ODocument obj){
+		if (Strings.isEmpty(getFetchPlan())){
+			return obj.toJSON();
+		}else{
+			return obj.toJSON("fetchPlan:"+getFetchPlan());
+		}
+	}
+	
+	private Object toMap(Object obj){
+		return toMap(obj,0);
+	}
+	
+	private Object toObject(Object obj){
+		return obj;
+	}
+
+	
+	private Object toMap(Object obj,int depth){
 		if (obj instanceof ODocument){
 			ODocument objDoc =(ODocument)obj; 
 			Map<String,Object> result = new HashMap<String,Object>();
-			if(withFields || objDoc.isEmbedded()){
+			if((objDoc.isEmbedded()&& isFetchAllEmbedded()) || (depth<=getMaxDepth())){
 			    for (String fieldName : objDoc.fieldNames()){
-			    	result.put(fieldName, marshalling(objDoc.field(fieldName),false));
+			    	result.put(fieldName, toMap(objDoc.field(fieldName),depth+1));
 			    }
 			}
-			
 		    final ORID id = objDoc.getIdentity();
-		    if (id.isValid())
+		    if (id.isValid() && id.isPersistent() )
 		    	result.put(ODocumentHelper.ATTRIBUTE_RID, id.toString());
 
 			final String className = objDoc.getClassName();
 			if (className != null)
 				result.put(ODocumentHelper.ATTRIBUTE_CLASS, className);
-			
-			result.put(ODocumentHelper.ATTRIBUTE_TYPE, (char)objDoc.RECORD_TYPE);
-			result.put(ODocumentHelper.ATTRIBUTE_VERSION, objDoc.getVersion());
 			return result;
 		}else if(obj instanceof Map){
     		Map<String,Object> result = new HashMap<String,Object>();
     		for (Entry<String, Object> entry : ((Map<String,Object>)obj).entrySet()) {
-   				result.put(entry.getKey(),marshalling(entry.getValue(),false));	
+   				result.put(entry.getKey(),toMap(entry.getValue(),depth+1));	
 			}
     		return result;
 		}else if(obj instanceof Iterable){
     		List<Object> result = new ArrayList<Object>();
     		for (Object subfield : (Iterable)obj) {
-    			result.add(marshalling(subfield,false));	
+    			result.add(toMap(subfield,depth+1));	
 			}
     		return result;
 		}else{
 			return obj;
 		}
 	}
-	protected Object unmarshalling(Object obj){
-		if (obj instanceof Map){//something like ODocument
-			Map<String,Object> objMap = (Map)obj;
-			String rid = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_RID));
-			String clazz = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_CLASS));
-			String type = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_TYPE));
-			double version = (double)(objMap.remove(ODocumentHelper.ATTRIBUTE_VERSION));
-			if (rid!=null && clazz!=null && objMap.isEmpty()){//it is link
-				return new ODocument(clazz, new ORecordId(rid));
-			}else if(clazz!=null && rid==null ){//it is embedded
-				ODocument result = new ODocument(clazz);
-				for (Entry<String, Object> entry : objMap.entrySet()) {
-					result.field(entry.getKey(),unmarshalling(entry.getValue()));
-				}
-				return result;
-			}else{//wow,it is just Map
-				Map<String,Object> result = new HashMap<String,Object>();
-				for (Entry<String, Object> entry : objMap.entrySet()) {
-					result.put(entry.getKey(),unmarshalling(entry.getValue()));
-				}
-				return result;
-			}
-		}else if (obj instanceof Iterable){//something like list
-			ArrayList<Object> result = new ArrayList<Object>(); 
-			for (Object item : ((Iterable)obj)) {
-				result.add(unmarshalling(item));
-			}
-			return result;
-		}
-		return obj;
-	}
-	/*
-	protected Object unmarshalling(Object obj){
-		if (obj instanceof Map){//something like ODocument
-			Map<String,Object> objMap = (Map)obj;
-			String rid = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_RID));
-			String clazz = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_CLASS));
-			if (rid!=null || clazz!=null){
-				ODocument result=null;
-				if (rid!=null && clazz!=null){ //it is document link or document
-					result = new ODocument(clazz,new ORecordId(rid));
-				}else if (clazz!=null){//it is embedded document  
-					result = new ODocument(clazz);
-				}else if (rid!=null){//it is something like broken link  
-					result = new ODocument(new ORecordId(rid));
-				}
-				for (Entry<String, Object> entry : objMap.entrySet()) {
-					result.field(entry.getKey(),unmarshalling(entry.getValue()));
-				}
-				return result;
-			}else{//wow,it is just Map
-				Map<String,Object> result = new HashMap<String,Object>();
-				for (Entry<String, Object> entry : objMap.entrySet()) {
-					result.put(entry.getKey(),unmarshalling(entry.getValue()));
-				}
-				return result;
-			}
-		}else if (obj instanceof Iterable){//something like list
-			ArrayList<Object> result = new ArrayList<Object>(); 
-			for (Object item : ((Iterable)obj)) {
-				result.add(unmarshalling(item));
-			}
-			return result;
-		}
-		return obj;
-	}
-	*/
-	/*
-	private Object marshalling(Object obj,boolean withFields){
-		if (obj instanceof ODocument){
-			ODocument objDoc =(ODocument)obj; 
-			Map<String,Object> result = new HashMap<String,Object>();
-			if(withFields || objDoc.isEmbedded()){
-			    for (String fieldName : objDoc.fieldNames()){
-			    	result.put(fieldName, marshalling(objDoc.field(fieldName),false));
-			    }
-			}
-			
-		    final ORID id = objDoc.getIdentity();
-		    if (id.isValid())
-		    	result.put(ODocumentHelper.ATTRIBUTE_RID, id);
+	
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			final String className = objDoc.getClassName();
-			if (className != null)
-				result.put(ODocumentHelper.ATTRIBUTE_CLASS, className);
-			
-			result.put(ODocumentHelper.ATTRIBUTE_TYPE, "d");
-			return result;
-		}else if(obj instanceof Map){
-    		Map<String,Object> result = new HashMap<String,Object>();
-    		for (Entry<String, Object> entry : ((Map<String,Object>)obj).entrySet()) {
-   				result.put(entry.getKey(),marshalling(entry.getValue(),false));	
-			}
-    		return result;
-		}else if(obj instanceof Iterable){
-    		List<Object> result = new ArrayList<Object>();
-    		for (Object subfield : (Iterable)obj) {
-    			result.add(marshalling(subfield,false));	
-			}
-    		return result;
-		}else{
-			return obj;
-		}
-	}
-	*/
-	/*	//three marshall only embedded objects, without external links
-	private Object marshalling(Object obj,boolean withFields){
-		if (obj instanceof ODocument && (withFields || ((ODocument)obj).isEmbedded())){
-			ODocument objDoc =(ODocument)obj; 
-			Map<String,Object> result = new HashMap<String,Object>();
-//			if(withFields || objDoc.isEmbedded()){
-			    for (String fieldName : objDoc.fieldNames()){
-			    	result.put(fieldName, marshalling(objDoc.field(fieldName),false));
-			    }
-//			}
-		    final ORID id = objDoc.getIdentity();
-		    if (id.isValid())
-		    	result.put(ODocumentHelper.ATTRIBUTE_RID, id.toString());
 
-			final String className = objDoc.getClassName();
-			if (className != null)
-				result.put(ODocumentHelper.ATTRIBUTE_CLASS, className);
-			
-			return result;
-		}else if(obj instanceof OIdentifiable){
-			return ((OIdentifiable)obj).getIdentity().toString();
-		}else if(obj instanceof Map){
-    		Map<String,Object> result = new HashMap<String,Object>();
-    		for (Entry<String, Object> entry : ((Map<String,Object>)obj).entrySet()) {
-   				result.put(entry.getKey(),marshalling(entry.getValue(),false));	
-			}
-    		return result;
-		}else if(obj instanceof Iterable){
-    		List<Object> result = new ArrayList<Object>();
-    		for (Object subfield : (Iterable)obj) {
-    			result.add(marshalling(subfield,false));	
-			}
-    		return result;
-		}else{
-			return obj;
-		}
+	public String getFetchPlan() {
+		return fetchPlan;
 	}
-*/
+
+	/**
+	 * Set fetch plan (wiew orientdb documentation, like http://orientdb.com/docs/2.0/orientdb.wiki/Fetching-Strategies.html) 
+	 */
+	public void setFetchPlan(String fetchPlan) {
+		this.fetchPlan = fetchPlan;
+	}
+
+	public String getInputAsOClass() {
+		return inputAsOClass;
+	}
+
+	/**
+	 * Rewrite "@class" field in root document(s) 
+	 */
+	public void setInputAsOClass(String inputAsOClass) {
+		this.inputAsOClass = inputAsOClass;
+	}
+
+	public boolean isPreload() {
+		return preload;
+	}
+
+	/**
+	 * Save ODocument from input data BEFORE query   
+	 */
+	public void setPreload(boolean preload) {
+		this.preload = preload;
+	}
+
+	public boolean isMakeNew() {
+		return makeNew;
+	}
+
+	/**
+	 * Clear ODocuments RID`s in PRELOAD phase BEFORE save
+	 */
+	public void setMakeNew(boolean makeNew) {
+		this.makeNew = makeNew;
+	}
+
+	public OrientDBCamelDataType getOutputType() {
+		return outputType;
+	}
+
+	/**
+	 * Output data type of single row. Can be "map", "object" or "json" 
+	 * Default value - "map"
+	 * 
+	 */
+	public void setOutputType(OrientDBCamelDataType outputType) {
+		this.outputType = outputType;
+	}
+
+	public int getMaxDepth() {
+		return maxDepth;
+	}
+
+	public void setMaxDepth(int maxDepth) {
+		this.maxDepth = maxDepth;
+	}
+
+	public boolean isFetchAllEmbedded() {
+		return fetchAllEmbedded;
+	}
+
+	public void setFetchAllEmbedded(boolean fetchAllEmbedded) {
+		this.fetchAllEmbedded = fetchAllEmbedded;
+	}
+
+
+
 }
