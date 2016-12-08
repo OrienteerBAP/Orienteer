@@ -1,43 +1,23 @@
 package org.orienteer.camel.component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.camel.Component;
 import org.apache.camel.Consumer;
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
-import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.OrienteerWebApplication;
-
-import com.orientechnologies.orient.core.Orient;
-import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.db.record.ORecordElement;
 import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
-import com.orientechnologies.orient.core.sql.query.OResultSet;
-
-import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 @UriEndpoint(scheme = "orientdb", syntax = "orientdb:sqlQuery", title = "OrientDB") 
 public class OrientDBEndpoint extends DefaultEndpoint {
@@ -102,7 +82,9 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		return parameters;
 	}
 
-	public ODatabaseDocument getDatabase(){
+	//should be called to open new connection
+	@SuppressWarnings("resource")
+	public ODatabaseDocument databaseOpen(){
 		
 		String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
 		String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
@@ -111,10 +93,15 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		return db;
 	}
 	
+	//should be called to close existing connection
+	public void databaseClose(ODatabaseDocument db){
+		db.close();
+	}
+	
 	public Object makeOutObject(Object rawOut) throws Exception{
 		if (rawOut instanceof Iterable){
 			List<Object> resultArray = new ArrayList<Object>();
-			Iterable tmpset = (Iterable) rawOut;
+			Iterable<?> tmpset = (Iterable<?>) rawOut;
 			for (Object object : tmpset) {
 				if (object instanceof ODocument){
 					ODocument doc = ((ODocument)object);
@@ -179,13 +166,14 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 			return result;
 		}else if(obj instanceof Map){
     		Map<String,Object> result = new HashMap<String,Object>();
-    		for (Entry<String, Object> entry : ((Map<String,Object>)obj).entrySet()) {
-   				result.put(entry.getKey(),toMap(entry.getValue(),depth+1));	
+    		Map<?, ?> source = (Map<?,?>)obj;
+    		for (Entry<?, ?> entry : (source).entrySet()) {
+   				result.put((String) entry.getKey(),toMap(entry.getValue(),depth+1));	
 			}
     		return result;
 		}else if(obj instanceof Iterable){
     		List<Object> result = new ArrayList<Object>();
-    		for (Object subfield : (Iterable)obj) {
+    		for (Object subfield : (Iterable<?>)obj) {
     			result.add(toMap(subfield,depth+1));	
 			}
     		return result;

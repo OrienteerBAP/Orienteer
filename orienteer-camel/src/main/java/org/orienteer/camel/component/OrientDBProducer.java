@@ -6,28 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.camel.api.management.mbean.CamelOpenMBeanTypes;
 import org.apache.camel.impl.DefaultProducer;
-import org.apache.commons.digester.RegexMatcher;
-import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.OrienteerWebApplication;
-
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OResultSet;
-import com.sun.xml.bind.v2.TODO;
-
-import net.sf.json.regexp.Perl5RegexpMatcher;
 
 public class OrientDBProducer extends DefaultProducer{
 
@@ -38,22 +26,21 @@ public class OrientDBProducer extends DefaultProducer{
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		OrientDBEndpoint endpoint = (OrientDBEndpoint)getEndpoint();
-		ODatabaseDocument db = endpoint.getDatabase();
+		ODatabaseDocument db = endpoint.databaseOpen();
 		Object input = exchange.getIn().getBody();
-		Object sqlInput = null;
 		Message out = exchange.getOut(); 
 		out.getHeaders().putAll(exchange.getIn().getHeaders());
 
 		
 		if (input instanceof List){
-			out.setBody(endpoint.makeOutObject(processList((List)input, endpoint, db)));
+			out.setBody(endpoint.makeOutObject(processList((List<?>)input, endpoint, db)));
 		}else if (input instanceof String && isJSONList((String)input)){
 			List<String> inputList =  strToJSONsList((String)input);
-			out.setBody(endpoint.makeOutObject(processList((List)input, endpoint, db)));
+			out.setBody(endpoint.makeOutObject(processList(inputList, endpoint, db)));
 		}else{
 			out.setBody(endpoint.makeOutObject(processSingleObject(input, endpoint, db)));
 		}
-
+		endpoint.databaseClose(db);
 	}
 	
 	private boolean isJSONList(String input){
@@ -71,12 +58,12 @@ public class OrientDBProducer extends DefaultProducer{
 		return Arrays.asList(str.split(","));		
 	}
 	
-	private List<Object> processList(List inputList,OrientDBEndpoint endpoint,ODatabaseDocument db) throws Exception{
+	private List<Object> processList(List<?> inputList,OrientDBEndpoint endpoint,ODatabaseDocument db) throws Exception{
 		List<Object> outputList = new ArrayList<Object>();
 		for (Object inputElement : inputList) {
 			Object dbResult = processSingleObject(inputElement,endpoint,db);
 			if (dbResult instanceof List){
-				outputList.addAll((List)dbResult);
+				outputList.addAll((List<?>)dbResult);
 			}else{
 				outputList.add(dbResult);
 			}
@@ -116,7 +103,7 @@ public class OrientDBProducer extends DefaultProducer{
 	
 	private Object fromMap(Object input){
 		if (input instanceof Map){//something like ODocument
-			Map<String,Object> objMap = (Map)input;
+			Map<?, ?> objMap = (Map<?,?>)input;
 			String rid = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_RID));
 			String clazz = (String)(objMap.remove(ODocumentHelper.ATTRIBUTE_CLASS));
 			if (rid!=null || clazz!=null){
@@ -130,20 +117,20 @@ public class OrientDBProducer extends DefaultProducer{
 				}else if (rid!=null){//it is something like broken link  
 					result = new ODocument(new ORecordId(rid));
 				}
-				for (Entry<String, Object> entry : objMap.entrySet()) {
-					result.field(entry.getKey(),fromMap(entry.getValue()));
+				for (Entry<?, ?> entry : objMap.entrySet()) {
+					result.field((String) entry.getKey(),fromMap(entry.getValue()));
 				}
 				return result;
 			}else{//wow,it is just Map
 				Map<String,Object> result = new HashMap<String,Object>();
-				for (Entry<String, Object> entry : objMap.entrySet()) {
-					result.put(entry.getKey(),fromMap(entry.getValue()));
+				for (Entry<?, ?> entry : objMap.entrySet()) {
+					result.put((String) entry.getKey(),fromMap(entry.getValue()));
 				}
 				return result;
 			}
 		}else if (input instanceof Iterable){//something like list
 			ArrayList<Object> result = new ArrayList<Object>(); 
-			for (Object item : ((Iterable)input)) {
+			for (Object item : ((Iterable<?>)input)) {
 				result.add(fromMap(item));
 			}
 			return result;

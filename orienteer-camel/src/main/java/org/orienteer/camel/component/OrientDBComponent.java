@@ -3,11 +3,8 @@ package org.orienteer.camel.component;
 import java.util.Map;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.UriEndpointComponent;
-
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 public class OrientDBComponent extends UriEndpointComponent{
 
