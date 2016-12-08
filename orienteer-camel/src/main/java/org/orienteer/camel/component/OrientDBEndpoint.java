@@ -111,6 +111,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 						resultArray.add(toJSON(doc));//doc.toJSON("fetchPlan:"+getFetchPlan()));
 					}else if (outputType.equals(OrientDBCamelDataType.object)){
 						resultArray.add(toObject(doc));
+					}else if (outputType.equals(OrientDBCamelDataType.list)){
+						resultArray.add(toList(doc));
 					}else{
 						throw new Exception("Unknown outputType :"+outputType.toString());
 					}
@@ -138,14 +140,32 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		}
 	}
 	
-	private Object toMap(Object obj){
-		return toMap(obj,0);
-	}
-	
 	private Object toObject(Object obj){
 		return obj;
 	}
+	
+	//this method save only fields,selected by user as flat list
+	private Object toList(Object obj){
+		if (obj instanceof ODocument){
+			ODocument objDoc =(ODocument)obj;
+			List<Object> result = new ArrayList<Object>();
 
+			for (Object value : objDoc.fieldValues()){
+		    	if (value instanceof ODocument){
+			    	result.add(((ODocument) value).toJSON());
+		    	}else{
+			    	result.add(value.toString());
+		    	}
+		    }
+    		return result;
+		}else{
+			return obj;
+		}	
+	}
+
+	private Object toMap(Object obj){
+		return toMap(obj,0);
+	}
 	
 	private Object toMap(Object obj,int depth){
 		if (obj instanceof ODocument){

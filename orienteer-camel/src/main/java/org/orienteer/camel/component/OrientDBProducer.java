@@ -3,6 +3,7 @@ package org.orienteer.camel.component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,11 +95,25 @@ public class OrientDBProducer extends DefaultProducer{
 			return inputDocument;
 		}else{
 			if (!Strings.isEmpty(endpoint.getSQLQuery())){
-				Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(input);
-				return dbResult;
+				if (input instanceof List){
+					convertLinks((List<Object>)input);
+					Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(((List<?>)input).toArray());
+					return dbResult;
+				}else{
+					Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(input);
+					return dbResult;
+				}
 			}
 		}
 		return input;
+	}
+	
+	private void convertLinks(List<Object> input){
+		for (int i = 0; i < input.size(); i++) {
+			if (input.get(i).toString().matches("^.+:.+$")){
+				input.set(i, new ORecordId(input.get(i).toString()));
+			}
+		}
 	}
 	
 	private Object fromMap(Object input){

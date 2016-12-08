@@ -23,8 +23,13 @@ public class OrientDBComponent extends UriEndpointComponent{
 	@Override
 	protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
 
-		OrientDBEndpoint ep = new OrientDBEndpoint(uri,this,remaining,parameters);
+		OrientDBEndpoint ep = new OrientDBEndpoint(uri,this,prepareQuery(remaining),parameters);
 		return ep;
 	}
+	
+	private String prepareQuery(String uri){
+		return uri.replaceAll(":#", "?");
+	}
+
 
 }
