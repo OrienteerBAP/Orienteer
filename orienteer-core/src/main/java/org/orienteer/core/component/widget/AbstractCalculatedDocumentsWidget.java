@@ -46,7 +46,7 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
         final String sql = getSql();
         
         if(!Strings.isEmpty(sql)) {
-        	OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(sql);
+        	OQueryDataProvider<ODocument> provider = newDataProvider(sql);
         	OClass expectedClass = getExpectedClass(provider);
         	if(expectedClass!=null) {
 	        	oClassIntrospector.defineDefaultSorting(provider, expectedClass);

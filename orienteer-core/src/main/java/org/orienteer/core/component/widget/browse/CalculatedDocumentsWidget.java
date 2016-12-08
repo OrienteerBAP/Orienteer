@@ -20,6 +20,10 @@ public class CalculatedDocumentsWidget extends AbstractCalculatedDocumentsWidget
 	
 	protected String getSql() {
 		String sql = super.getSql();
-		return Strings.isEmpty(sql)?"select from "+getModelObject().getName():sql;
+		if(!Strings.isEmpty(sql)) return sql;
+		else {
+			String requiredClass = getWidgetDocument().field("class");
+			return "select from "+(Strings.isEmpty(requiredClass)?getModelObject().getName():requiredClass);
+		}
 	}
 }
