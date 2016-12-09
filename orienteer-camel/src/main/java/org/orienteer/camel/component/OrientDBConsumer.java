@@ -7,6 +7,9 @@ import org.apache.camel.impl.DefaultConsumer;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 
+/**
+ * Consumer(from) for {@link OrientDBEndpoint}  
+ */
 public class OrientDBConsumer extends DefaultConsumer{
 
 	public OrientDBConsumer(Endpoint endpoint, Processor processor) {

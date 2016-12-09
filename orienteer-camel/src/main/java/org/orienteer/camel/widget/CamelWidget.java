@@ -41,6 +41,10 @@ import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+/**
+ * Widget for Orienteer Camel integration, linked to OIntegrationConfig
+ *
+ */
 
 @Widget(domain="document",selector="OIntegrationConfig", id=CamelWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class CamelWidget extends AbstractWidget<ODocument>{

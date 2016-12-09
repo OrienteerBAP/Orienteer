@@ -6,6 +6,10 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.UriEndpointComponent;
 
+/**
+ * Camel component for OrientDB
+ *
+ */
 public class OrientDBComponent extends UriEndpointComponent{
 
 	public static String DB_URL="orientdb.url"; 

@@ -13,6 +13,10 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+/**
+ * To handle camel events
+ *
+ */
 public class CamelEventHandler extends EventNotifierSupport{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CamelEventHandler.class);

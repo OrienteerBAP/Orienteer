@@ -13,18 +13,25 @@ import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.apache.wicket.util.string.Strings;
+
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
 
+/**
+ * Endpoint for {@link OrientDBComponent}
+ *
+ */
 @UriEndpoint(scheme = "orientdb", syntax = "orientdb:sqlQuery", title = "OrientDB") 
 public class OrientDBEndpoint extends DefaultEndpoint {
 
 	private String remaining;
 	private Map<String, Object> parameters;
-
+	
 	@UriParam(defaultValue = "map")
 	private OrientDBCamelDataType outputType = OrientDBCamelDataType.map;
 
@@ -40,11 +47,11 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	@UriParam
 	private String inputAsOClass;
 
-	@UriParam
-	private boolean preload;
+	@UriParam(defaultValue = "false")
+	private boolean preload = false;
 
-	@UriParam
-	private boolean makeNew;
+	@UriParam(defaultValue = "true")
+	private boolean makeNew = true;
 
 	protected OrientDBEndpoint(String endpointUri,Component component,String remaining, Map<String, Object> parameters ) {
 		super(endpointUri,component);
@@ -85,12 +92,16 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	//should be called to open new connection
 	@SuppressWarnings("resource")
 	public ODatabaseDocument databaseOpen(){
-		
-		String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
-		String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
-		String password = getCamelContext().getProperty(OrientDBComponent.DB_PASSWORD);
-		ODatabaseDocumentTx db = new ODatabaseDocumentTx(url).open(username, password);
-		return db;
+	    final ODatabaseDocumentInternal currentDatabase = ODatabaseRecordThreadLocal.INSTANCE.get();
+	    if (currentDatabase!=null){
+	    	return currentDatabase;
+	    }else{
+			String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
+			String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
+			String password = getCamelContext().getProperty(OrientDBComponent.DB_PASSWORD);
+			ODatabaseDocumentTx db = new ODatabaseDocumentTx(url).open(username, password);
+			return db;
+	    }
 	}
 	
 	//should be called to close existing connection
@@ -122,11 +133,11 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 					throw new Exception("Unknown type of OrientDB object:"+object.getClass());
 				}
 			}
-			//if (outputType.equals(OrientDBCamelDataType.json)){
-			//	return "["+Strings.join(",\"&!#\",", (List)resultArray)+"]";
-			//}else{
+			if (outputType.equals(OrientDBCamelDataType.json)){
+				return "["+Strings.join(",", (List)resultArray)+"]";
+			}else{
 				return resultArray;
-			//}
+			}
 		}else{
 			return rawOut;
 		}
@@ -255,7 +266,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 
 	/**
-	 * Output data type of single row. Can be "map", "object" or "json" 
+	 * Output data type of single row. Can be "map", "object", "list" or "json" 
 	 * Default value - "map"
 	 * 
 	 */
@@ -267,6 +278,9 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		return maxDepth;
 	}
 
+	/**
+	 *	Max fetch depth. Only for "map" type 
+	 */
 	public void setMaxDepth(int maxDepth) {
 		this.maxDepth = maxDepth;
 	}
@@ -275,6 +289,9 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		return fetchAllEmbedded;
 	}
 
+	/**
+	 *	Fetch all embedded(not linked) objects, ignore "maxDepth". Only for "map" type. 
+	 */
 	public void setFetchAllEmbedded(boolean fetchAllEmbedded) {
 		this.fetchAllEmbedded = fetchAllEmbedded;
 	}

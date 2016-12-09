@@ -1,9 +1,7 @@
 package org.orienteer.camel.component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,6 +15,11 @@ import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
+
+/**
+ *	Producer for {@link OrientDBEndpoint} 
+ *
+ */
 
 public class OrientDBProducer extends DefaultProducer{
 
@@ -45,8 +48,7 @@ public class OrientDBProducer extends DefaultProducer{
 	}
 	
 	private boolean isJSONList(String input){
-		return false;
-		//return input.matches("^[{.*");
+		return input.matches("^\\[\\{.+\\}\\]$");
 	}
 	
 	private boolean isJsonObject(String input){
@@ -54,9 +56,26 @@ public class OrientDBProducer extends DefaultProducer{
 	}
 	
 	private List<String> strToJSONsList(String str){
-		str = str.substring(1, str.length() - 1);
-		// TODO: replace this ugly method  
-		return Arrays.asList(str.split(","));		
+		ArrayList<String> result = new ArrayList<String>();
+		double bracketCounter = 0;
+		double startBracket = -1;
+		char openb = '{';
+		char closeb = '}';
+		for (int i = 0; i < str.length(); i++) {
+			if (str.charAt(i)==openb){
+				bracketCounter++;
+				if (startBracket==-1){
+					startBracket=i;
+				}
+			}else if(str.charAt(i)==closeb){
+				bracketCounter--;
+				if (startBracket!=-1 && bracketCounter==0){
+					result.add(str.substring((int)startBracket, i+1));
+					startBracket=-1;
+				}
+			};
+		}
+		return result;		
 	}
 	
 	private List<Object> processList(List<?> inputList,OrientDBEndpoint endpoint,ODatabaseDocument db) throws Exception{
@@ -72,6 +91,7 @@ public class OrientDBProducer extends DefaultProducer{
 		return outputList;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Object processSingleObject(Object input,OrientDBEndpoint endpoint,ODatabaseDocument db) throws Exception{
 		ODocument inputDocument = null;
 		if (input instanceof Map){
@@ -82,6 +102,9 @@ public class OrientDBProducer extends DefaultProducer{
 			inputDocument = fromJSON((String)input, endpoint, db);
 		}
 		if (inputDocument!=null){
+			if (!Strings.isEmpty(endpoint.getInputAsOClass())){
+				inputDocument.setClassName(endpoint.getInputAsOClass());
+			}
 			if (endpoint.isMakeNew()){
 				inputDocument.getIdentity().reset();
 			}
@@ -96,7 +119,7 @@ public class OrientDBProducer extends DefaultProducer{
 		}else{
 			if (!Strings.isEmpty(endpoint.getSQLQuery())){
 				if (input instanceof List){
-					convertLinks((List<Object>)input);
+					convertLinks((List<Object>)input);//without this method links assigment does not work
 					Object dbResult = db.command(new OCommandSQL(endpoint.getSQLQuery())).execute(((List<?>)input).toArray());
 					return dbResult;
 				}else{
@@ -110,7 +133,7 @@ public class OrientDBProducer extends DefaultProducer{
 	
 	private void convertLinks(List<Object> input){
 		for (int i = 0; i < input.size(); i++) {
-			if (input.get(i).toString().matches("^.+:.+$")){
+			if (input.get(i).toString().matches("^#[\\d]+:[\\d]+$")){
 				input.set(i, new ORecordId(input.get(i).toString()));
 			}
 		}
