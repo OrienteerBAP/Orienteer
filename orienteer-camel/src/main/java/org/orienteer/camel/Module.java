@@ -49,10 +49,10 @@ public class Module extends AbstractOrienteerModule{
 	
 	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass("OIntegrationConfig").
-			oProperty("name", OType.STRING).
-			oProperty("description", OType.STRING).
-			oProperty("script", OType.STRING);
+		helper.oClass("OIntegrationConfig")
+			.oProperty("name", OType.STRING, 10).markAsDocumentName()
+			.oProperty("description", OType.STRING, 20)
+			.oProperty("script", OType.STRING, 30).assignVisualization("textarea");
 	}
 	
 	@Override
