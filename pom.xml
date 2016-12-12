@@ -91,6 +91,7 @@
 		<module>orienteer-devutils</module>
 		<module>orienteer-logger-server</module>
 		<module>orienteer-bpm</module>
+		<module>orienteer-camel</module>
 	</modules>
 	<dependencyManagement>
 	    <dependencies>

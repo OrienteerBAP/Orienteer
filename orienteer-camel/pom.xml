@@ -1,127 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-   Licensed to the Apache Software Foundation (ASF) under one or more
-   contributor license agreements.  See the NOTICE file distributed with
-   this work for additional information regarding copyright ownership.
-   The ASF licenses this file to You under the Apache License, Version 2.0
-   (the "License"); you may not use this file except in compliance with
-   the License.  You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	You under the Apache License, Version 2.0 (the "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.orienteer</groupId>
-	<artifactId>camel</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<!-- TODO project name  -->
-	<name>camel</name>
-	<description></description>
-	<!--
-		<organization>
-			<name>company name</name>
-			<url>company url</url>
-		</organization>
-	-->
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<properties>
-		<orienteer.version>1.2-SNAPSHOT</orienteer.version>
-		<wicket.orientdb.version>1.2-SNAPSHOT</wicket.orientdb.version>
-		<jetty.version>9.2.11.v20150529</jetty.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
-		<wtp.version>none</wtp.version>
-	</properties>
+	<parent>
+		<artifactId>orienteer-parent</artifactId>
+		<groupId>org.orienteer</groupId>
+		<version>1.2-SNAPSHOT</version>
+	</parent>
+	<artifactId>orienteer-camel</artifactId>
+	<name>orienteer-camel</name>
 	<dependencies>
-<dependency>
-  <groupId>org.apache.camel</groupId>
-  <artifactId>camel-core</artifactId>
-  <version>2.17.3</version>
-</dependency>
-<dependency>
-    <groupId>org.apache.camel</groupId>
-    <artifactId>camel-jdbc</artifactId>
-    <version>2.17.3</version>
-</dependency>
-<dependency>
-  <groupId>org.apache.camel</groupId>
-  <artifactId>camel-gson</artifactId>
-  <version>2.17.3</version>
-</dependency>
-<dependency>
-  <groupId>org.apache.camel</groupId>
-  <artifactId>camel-xstream</artifactId>
-  <version>2.17.3</version>
-</dependency>
-<dependency>
-  <groupId>org.apache.camel</groupId>
-  <artifactId>camel-xmljson</artifactId>
-  <version>2.17.3</version>
-  <!-- Use the same version as camel-core, but remember that this component is only available from 2.10 onwards -->
-</dependency>
-<dependency>
-  <groupId>org.apache.camel</groupId>
-  <artifactId>camel-csv</artifactId>
-  <version>2.17.3</version>
-</dependency>
- 
-<!-- And also XOM must be included. XOM cannot be included by default due to an incompatible
-license with ASF; so add this manually -->
-<dependency>
-  <groupId>xom</groupId>
-  <artifactId>xom</artifactId>
-  <version>1.2.5</version>
-</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+			<version>2.17.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jdbc</artifactId>
+			<version>2.17.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-gson</artifactId>
+			<version>2.17.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-xstream</artifactId>
+			<version>2.17.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-xmljson</artifactId>
+			<version>2.17.3</version>
+			<!-- Use the same version as camel-core, but remember that this component 
+				is only available from 2.10 onwards -->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-csv</artifactId>
+			<version>2.17.3</version>
+		</dependency>
+
+		<!-- And also XOM must be included. XOM cannot be included by default due 
+			to an incompatible license with ASF; so add this manually -->
+		<dependency>
+			<groupId>xom</groupId>
+			<artifactId>xom</artifactId>
+			<version>1.2.5</version>
+		</dependency>
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
-			<version>${orienteer.version}</version>
+			<version>${project.version}</version>
 		</dependency>
-		<!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-graph</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pages</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pivottable</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-bpm</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-devutils</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
-			<version>${orienteer.version}</version>
+			<version>${project.version}</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -132,26 +81,20 @@ license with ASF; so add this manually -->
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-<dependency>
-  <groupId>com.orientechnologies</groupId>
-  <artifactId>orientdb-jdbc</artifactId>
-  <version>2.1.19</version>
-</dependency>
-		
-		<!--  JUNIT DEPENDENCY FOR TESTING -->
+		<!-- JUNIT DEPENDENCY FOR TESTING -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		<!--  JETTY DEPENDENCIES FOR TESTING  -->
-        <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all</artifactId>
-            <version>${jetty.version}</version>
-            <scope>test</scope>
-        </dependency>
+		<!-- JETTY DEPENDENCIES FOR TESTING -->
+		<dependency>
+			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<artifactId>jetty-all</artifactId>
+			<version>${jetty.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>
@@ -188,10 +131,10 @@ license with ASF; so add this manually -->
 		</testResources>
 		<plugins>
 			<plugin>
-			      <groupId>org.apache.felix</groupId>
-			      <artifactId>maven-bundle-plugin</artifactId>
-			      <version>2.3.6</version>
-			      <extensions>true</extensions>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.6</version>
+				<extensions>true</extensions>
 			</plugin>
 			<plugin>
 				<inherited>true</inherited>
@@ -216,30 +159,30 @@ license with ASF; so add this manually -->
 				</configuration>
 			</plugin>
 			<plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                <webApp>
-                    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-                    <resourceBase>src/main/resources</resourceBase>
-                    <contextPath>/</contextPath>
-                </webApp>
-                <connectors>
-                    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                        <port>8080</port>
-                        <maxIdleTime>3600000</maxIdleTime>
-                    </connector>
-                </connectors>
-                </configuration>
-                <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.jetty.aggregate</groupId>
-                    <artifactId>jetty-all</artifactId>
-                    <version>${jetty.version}</version>
-                </dependency>
-                </dependencies>
-            </plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<webApp>
+						<descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+						<resourceBase>src/main/resources</resourceBase>
+						<contextPath>/</contextPath>
+					</webApp>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>8080</port>
+							<maxIdleTime>3600000</maxIdleTime>
+						</connector>
+					</connectors>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.jetty.aggregate</groupId>
+						<artifactId>jetty-all</artifactId>
+						<version>${jetty.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -255,4 +198,4 @@ license with ASF; so add this manually -->
 			</snapshots>
 		</repository>
 	</repositories>
-	</project>
+</project>

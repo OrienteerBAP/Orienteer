@@ -12,9 +12,9 @@ import org.apache.camel.impl.UriEndpointComponent;
  */
 public class OrientDBComponent extends UriEndpointComponent{
 
-	public static String DB_URL="orientdb.url"; 
-	public static String DB_USERNAME="orientdb.username"; 
-	public static String DB_PASSWORD="orientdb.password"; 
+	public static final String DB_URL="orientdb.url"; 
+	public static final String DB_USERNAME="orientdb.username"; 
+	public static final String DB_PASSWORD="orientdb.password"; 
 	
 	public OrientDBComponent() {
 		super(OrientDBEndpoint.class);

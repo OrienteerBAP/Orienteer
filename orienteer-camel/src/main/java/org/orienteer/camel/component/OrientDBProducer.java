@@ -73,7 +73,7 @@ public class OrientDBProducer extends DefaultProducer{
 					result.add(str.substring((int)startBracket, i+1));
 					startBracket=-1;
 				}
-			};
+			}
 		}
 		return result;		
 	}
