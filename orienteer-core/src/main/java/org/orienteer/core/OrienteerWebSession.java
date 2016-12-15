@@ -46,7 +46,11 @@ public class OrienteerWebSession extends OrientDbWebSession
 			perspective=null;
 
 			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
+			if (getId()==null){
+				bind();
+			}
 			onlineModule.updateOnlineUser(getUser(), true);
+			onlineModule.updateSessionUser(getUser(), getId());
 
 			if (!Strings.isNullOrEmpty(locale)) {
 				Locale localeForLanguage = Locale.forLanguageTag(locale);
@@ -54,7 +58,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 					OrienteerWebSession.get().setLocale(localeForLanguage);
 				}
 			}
-			onlineModule.updateSessionUser(getUser(), getId());
+			
 		}
 		return ret;
 	}
@@ -90,7 +94,6 @@ public class OrienteerWebSession extends OrientDbWebSession
 			
 		}
 	}
-
 
 	@Override
 	public void detach() {

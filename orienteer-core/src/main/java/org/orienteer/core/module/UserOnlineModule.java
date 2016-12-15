@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
@@ -51,17 +52,24 @@ public class UserOnlineModule extends AbstractOrienteerModule {
 
             @Override
             public void onUnbound(final String sessionId) {
-                new DBClosure<Void>() {
-                    @Override
-                    protected Void execute(ODatabaseDocument db) {
-                        db.command(new OSQLSynchQuery<Void>("UPDATE " + OCLASS_USER + " set " +
-                                ONLINE_FIELD + "=false where " + LAST_SESSION_FIELD + "=\""+sessionId + "\""));
-                        return null;
-                    }
-                }.execute();
+            	UserOnlineModule.this.onUnbound(sessionId);
             }
         });
     }
+    
+    public void onUnbound(final String sessionId){
+        new DBClosure<Void>() {
+            @Override
+            protected Void execute(ODatabaseDocument db) {
+            	db.commit();
+            	db.command(  new OCommandSQL ("UPDATE " + OCLASS_USER + " set " +
+                        ONLINE_FIELD + "=false where " + LAST_SESSION_FIELD + "=?")).execute(sessionId);
+                return null;
+            }
+        }.execute();
+    	
+    }
+
 
     public ODocument updateOnlineUser(OUser user, final boolean online) {
         final ODocument document = user.getDocument();
