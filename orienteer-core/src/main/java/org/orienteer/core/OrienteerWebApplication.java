@@ -167,6 +167,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(PerspectivesModule.class);
 		registerModule(OWidgetsModule.class);
 		registerModule(UserOnlineModule.class);
+		registerModule(TaskManagerModule.class);
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);

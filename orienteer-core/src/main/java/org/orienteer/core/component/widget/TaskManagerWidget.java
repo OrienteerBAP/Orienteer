@@ -17,6 +17,7 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -26,10 +27,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
-@Widget(domain="document",selector="OTask", id=TaskManagerWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+@Widget(domain="document",selector=OTask.TASK_CLASS, id=TaskManagerWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class TaskManagerWidget extends AbstractWidget<ODocument>{
 
-	public static final String WIDGET_TYPE_ID = "camelIntegration";
+	public static final String WIDGET_TYPE_ID = "taskManager";
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(TaskManagerWidget.class);
 	private Form form;
@@ -37,7 +38,7 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 	public static final List<String> TASK_DATA_LIST = new ArrayList<String>();
 	static
 	{
-		TASK_DATA_LIST.add("name");
+		//TASK_DATA_LIST.add("name");
 	}	
 
 
