@@ -12,5 +12,14 @@ public class OTaskData {
 	public OTaskData(Object innerData) {
 		this.innerData = innerData;
 	}
+	
+	public Object getInnerData() {
+		return innerData;
+	}
+	
+	@Override
+	public String toString() {
+		return innerData.toString();
+	}
 
 }

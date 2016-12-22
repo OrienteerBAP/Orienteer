@@ -3,8 +3,10 @@ package org.orienteer.core.component.widget;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -17,6 +19,7 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+import org.orienteer.core.tasks.IRealTask;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
@@ -81,7 +84,8 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 			
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-
+				OTask newtask = new OTask(TaskManagerWidget.this.getModelObject());
+				newtask.start();
 			}
 		};
 	}
@@ -97,6 +101,8 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 			}
 			@Override
 			public void onClick(AjaxRequestTarget target) {
+				OTask newtask = new OTask(TaskManagerWidget.this.getModelObject());
+				newtask.stop();
 			}
 		};
 	}	
