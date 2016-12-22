@@ -1,5 +1,8 @@
 package org.orienteer.logger.server;
 
+import org.apache.wicket.authorization.AuthorizationException;
+import org.apache.wicket.authorization.UnauthorizedActionException;
+import org.apache.wicket.core.request.mapper.StalePageException;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.logger.IOLoggerConfiguration;
@@ -18,8 +21,23 @@ public class EmbeddedOLoggerEventDispatcher extends DefaultOLoggerEventDispatche
 	
 	@Override
 	public void dispatch(OLoggerEvent event) {
-		OLoggerModule.storeOLoggerEvent(event.toJson());
-		super.dispatch(event);
+		if(needsToBeLogged(event)) {
+			OLoggerModule.storeOLoggerEvent(event.toJson());
+			super.dispatch(event);
+		}
+	}
+	
+	protected boolean needsToBeLogged(OLoggerEvent event) {
+		Object seed = event.getSeed();
+		if(seed instanceof Throwable) return needsToBeLogged((Throwable)seed);
+		else return true;
+	}
+	
+	protected boolean needsToBeLogged(Throwable event) {
+		if(event instanceof StalePageException
+				|| event instanceof AuthorizationException
+				|| event instanceof UnauthorizedActionException) return false;
+		else return true;
 	}
 	
 	@Override
