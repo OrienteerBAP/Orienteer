@@ -50,11 +50,14 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			.oProperty("nodeId", OType.STRING, 30).markDisplayable()
 			.oProperty("correlationId", OType.STRING, 40).markDisplayable()
 			.oProperty("dateTime", OType.DATETIME, 50).markDisplayable()
-			.oProperty("summary", OType.STRING, 60)
+			.oProperty("remoteAddress", OType.STRING, 60)
+			.oProperty("hostName", OType.STRING, 70).markDisplayable()
+			.oProperty("username", OType.STRING, 80)
+			.oProperty("summary", OType.STRING, 90)
 				.calculateBy("message.left(message.indexOf('\\n'))")
 				.markDisplayable()
 				.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
-			.oProperty("message", OType.STRING, 70).assignVisualization("textarea");	
+			.oProperty("message", OType.STRING, 100).assignVisualization("textarea");	
 		ODocument moduleDoc = new ODocument(MODULE_OLOGGER_OCLASS);
 		moduleDoc.field(OMODULE_ACTIVATE, false);
 		return moduleDoc;
@@ -89,6 +92,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		config.setCollectorUrl(collectorUrl);
 		OLogger oLogger = new OLoggerBuilder()
 								.setLoggerEventDispatcher(new EmbeddedOLoggerEventDispatcher())
+								.addEnhancer(new OWebEnhancer())
 								.addDefaultEnhancers().create(config);
 		OLogger.set(oLogger);
 	}
