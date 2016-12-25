@@ -21,14 +21,15 @@ public class LanguagesChoiceProvider extends StringTextChoiceProvider {
 
     @Override
     public void query(final String term, int page, Response<String> response) {
-    	if(!Strings.isEmpty(term)) {
-	        response.addAll(Collections2.filter(ISO_LANGUAGES, new Predicate<String>() {
-	            @Override
-	            public boolean apply(String s) {
-	                return s.contains(term);
-	            }
-	        }));
-    	}
+        response.addAll(Strings.isEmpty(term)
+        		
+        			?ISO_LANGUAGES
+        			:Collections2.filter(ISO_LANGUAGES, new Predicate<String>() {
+				            @Override
+				            public boolean apply(String s) {
+				                return s.startsWith(term);
+				            }
+				        }));
     }
 
 }

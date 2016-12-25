@@ -54,7 +54,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
  *
  */
 
-@Widget(domain="document",selector="OTriggered", id = ODocumentHooksWidget.WIDGET_TYPE_ID, order=30,autoEnable=true)
+@Widget(domain="document",selector="OTriggered", id=ODocumentHooksWidget.WIDGET_TYPE_ID, order=30, autoEnable=false)
 public class ODocumentHooksWidget extends AbstractModeAwareWidget<ODocument> {
 	public static final String WIDGET_TYPE_ID = "documentHooks";
 	
@@ -143,4 +143,9 @@ public class ODocumentHooksWidget extends AbstractModeAwareWidget<ODocument> {
 	protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("widget.document.hooks");
 	}
+	
+	@Override
+	protected String getWidgetStyleClass() {
+		return "strict";
+	}	
 }

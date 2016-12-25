@@ -11,6 +11,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReferenc
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxClientInfoBehavior;
 import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.WebPage;
@@ -26,6 +27,7 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.settings.JavaScriptLibrarySettings;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.behavior.OneTimeAjaxClientInfoBehavior;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.AjaxIndicator;
 import org.orienteer.core.module.PerspectivesModule;
@@ -103,6 +105,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		getDatabase();
 		uiPlugins = new RepeatingView("uiPlugins");
 		add(uiPlugins);
+		add(new OneTimeAjaxClientInfoBehavior());
 	}
 	
 	@Override

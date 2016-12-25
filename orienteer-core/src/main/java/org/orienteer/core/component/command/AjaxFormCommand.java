@@ -19,6 +19,7 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 public class AjaxFormCommand<T> extends AjaxCommand<T>
 {
 	private static final long serialVersionUID = 1L;
+	private Boolean defaultFormProcessing;
 
 	public AjaxFormCommand(IModel<?> labelModel,
 			ICommandsSupportComponent<T> component, IModel<T> model) {
@@ -49,7 +50,7 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 
 	@Override
 	protected AbstractLink newLink(String id) {
-		return new AjaxSubmitLink(id)
+		AjaxSubmitLink link =  new AjaxSubmitLink(id)
 		{
 
 			/**
@@ -64,6 +65,8 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 			}
 			
 		};
+		if(defaultFormProcessing!=null) link.setDefaultFormProcessing(defaultFormProcessing);
+		return link;
 		/*return new AjaxFallbackLink<Object>(id)
 		        {
 					@Override
@@ -71,6 +74,14 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 						AjaxCommand.this.onClick(target);
 					}
 		        };*/
+	}
+	
+	public AjaxFormCommand<T> setDefaultFormProcessing(boolean defaultFormProcessing) {
+		if(getLink()!=null) {
+			((AjaxSubmitLink)getLink()).setDefaultFormProcessing(defaultFormProcessing);
+		} 
+		this.defaultFormProcessing = defaultFormProcessing;
+		return this;
 	}
 	
 	public void onSubmit(AjaxRequestTarget target, Form<?> form) {

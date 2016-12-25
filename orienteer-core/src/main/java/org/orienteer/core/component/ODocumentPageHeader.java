@@ -11,6 +11,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.service.IOClassIntrospector;
@@ -48,10 +50,27 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 			@Override
 			protected OClass load() {
 				List<ODocument> path = navigationPathModel.getObject();
-				return path!=null && !path.isEmpty() ? path.get(0).getSchemaClass():null;
+				OClass ret = path!=null && !path.isEmpty() ? path.get(0).getSchemaClass():null;
+				OClass firstBusinessOClass = getFirstBusinessDomainOClass(ret);
+				return firstBusinessOClass!=null?firstBusinessOClass:ret;
+			}
+			
+			private OClass getFirstBusinessDomainOClass(OClass oClass) {
+				if(oClass==null && OClassDomain.BUSINESS.equals(CustomAttribute.DOMAIN.getValue(oClass))) return oClass;
+				List<OClass> superClasses = oClass.getSuperClasses();
+				for (OClass supClass : superClasses) {
+					if(OClassDomain.BUSINESS.equals(CustomAttribute.DOMAIN.getValue(supClass))) return supClass;
+				}
+				
+				for (OClass supClass : superClasses) {
+					OClass firstOClass = getFirstBusinessDomainOClass(supClass);
+					if(firstOClass!=null) return firstOClass;
+				}
+				return null;
 			}
 		};
-		add(new OClassPageLink("browseLink", firstDocClassModel).setClassNameAsBody(true));
+		add(new OClassPageLink("browseLink", firstDocClassModel, BrowseOClassPage.class, DisplayMode.VIEW.asModel())
+										.setClassNameAsBody(true));
 		add(new ListView<ODocument>("child", new GetNavigationPathModel()) {
 
 			@Override

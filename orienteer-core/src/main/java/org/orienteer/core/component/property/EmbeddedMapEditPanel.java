@@ -133,11 +133,13 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 						{
 							@Override
 							public void onClick(AjaxRequestTarget target) {
+								convertToData();
 								getData().remove(item.getIndex());
 								target.add(EmbeddedMapEditPanel.this);
 								listView.removeAll();
 							}
-						}.setAutoNotify(false)
+						}.setDefaultFormProcessing(true)
+						 .setAutoNotify(false)
 						 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 						 .setBootstrapType(BootstrapType.DANGER)
 						 .setIcon((String)null));
@@ -163,12 +165,14 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target) {
+				convertToData();
 				getData().add(new Pair<V>());
 				target.add(EmbeddedMapEditPanel.this);
 				listView.removeAll();
 			}
 			
-		}.setAutoNotify(false)
+		}.setDefaultFormProcessing(false)
+		 .setAutoNotify(false)
 		 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 		 .setBootstrapType(BootstrapType.PRIMARY)
 		 .setIcon((String)null));
@@ -203,8 +207,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		super.onConfigure();
 	}
 	
-	@Override
-	public void convertInput() {
+	protected void convertToData() {
 		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
 
 			@Override
@@ -212,11 +215,17 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 					IVisit<Void> visit) {
 				if(!(EmbeddedMapEditPanel.this.equals(object)))
 				{
+					object.convertInput();
 					object.updateModel();
 					visit.dontGoDeeper();
 				}
 			}
 		});
+	}
+	
+	@Override
+	public void convertInput() {
+		convertToData();
 
 		Map<String, V> converted = new HashMap<String, V>();
 		for(Pair<V> pair: getData())

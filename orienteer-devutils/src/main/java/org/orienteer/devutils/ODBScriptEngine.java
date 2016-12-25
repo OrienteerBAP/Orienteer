@@ -10,6 +10,7 @@ import com.google.common.base.Throwables;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
 import com.orientechnologies.orient.core.sql.query.OResultSet;
 
 import ru.ydn.wicket.wicketconsole.IScriptEngine;
@@ -57,10 +58,18 @@ public class ODBScriptEngine implements IScriptEngine {
 					result.setResult(resultObject);
 				}
 			} catch (Exception e) {
-				result.setError(Throwables.getStackTraceAsString(e));
+				if(shouldBeShorted(e)) {
+					result.setError(e.getMessage());
+				} else {
+					result.setError(Throwables.getStackTraceAsString(e));
+				}
 			}
 		}
 		return result;
+	}
+	
+	protected boolean shouldBeShorted(Exception e) {
+		return e instanceof OCommandSQLParsingException;
 	}
 
 }

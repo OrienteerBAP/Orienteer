@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.IExportable;
 import org.orienteer.core.component.ODocumentPageLink;
+import org.orienteer.core.model.ODocumentNameModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -12,7 +13,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * {@link Panel} to view a link to a document
  */
-public class LinkViewPanel extends AbstractLinkViewPanel<ODocument> implements IExportable<String> {
+public class LinkViewPanel extends AbstractLinkViewPanel<ODocument> implements IExportable<Object> {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -47,8 +48,10 @@ public class LinkViewPanel extends AbstractLinkViewPanel<ODocument> implements I
 	}
 
 	@Override
-	public IModel<String> getExportableDataModel() {
-		return (IModel<String>) link.getBody();
+	public IModel<?> getExportableDataModel() {
+		if(link!=null) return (IModel<String>) link.getBody();
+		else if(titleModel!=null) return titleModel;
+		else return new ODocumentNameModel(getModel());
 	}
 
 }
