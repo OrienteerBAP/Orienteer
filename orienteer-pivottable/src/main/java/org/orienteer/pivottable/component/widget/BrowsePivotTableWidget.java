@@ -38,26 +38,31 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 
 	private String config;
-	
+	private double noCacheRnd;
+
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
-	
+
 	public BrowsePivotTableWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
+
+		noCacheRnd = Math.random();
+
 		add(new PivotPanel("pivot", new PropertyModel<String>(this, "url"),
 									new PropertyModel<DisplayMode>(this, "displayMode"),
 									new PropertyModel<String>(this, "config")));
 		add(UpdateOnDashboardDisplayModeChangeBehavior.INSTANCE);
 	}
-	
+
 	public String getUrl() {
 		String sql = getSql();
 		return "/orientdb/query/db/sql/"+
 					UrlEncoder.PATH_INSTANCE.encode(sql, "UTF-8")+
-				"/99999";
+				"/99999?rnd="+
+				noCacheRnd;
 	}
-	
+
 	public String getSql() {
 		String thisLang = getLocale().getLanguage();
 		String systemLang = Locale.getDefault().getLanguage();
@@ -101,7 +106,7 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 	protected IModel<String> getDefaultTitleModel() {
 		return new ResourceModel("widget.pivottable");
 	}
-	
+
 	@Override
 	public void loadSettings() {
 		super.loadSettings();
@@ -109,7 +114,7 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		if(doc==null) return;
 		config = doc.field(PivotTableModule.OPROPERTY_PIVOT_TABLE_CONFIG);
 	}
-	
+
 	@Override
 	public void saveSettings() {
 		super.saveSettings();
@@ -117,15 +122,15 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		if(doc==null) return;
 		doc.field(PivotTableModule.OPROPERTY_PIVOT_TABLE_CONFIG, config);
 	}
-	
+
 	public DisplayMode getDisplayMode() {
 		return getDashboardPanel().getModeObject();
 	}
-	
+
 	public String getConfig() {
 		return config;
 	}
-	
+
 	public void setConfig(String config) {
 		this.config = config;
 	}
