@@ -19,8 +19,8 @@ public class OWebEnhancer implements IOLoggerEventEnhancer {
 		if(cycle!=null) {
 			OrienteerWebSession session = OrienteerWebSession.get();
 			if(session!=null) {
-				WebClientInfo clientInfo = session.getClientInfo();
-				if(clientInfo!=null) {
+				if(session.isClientInfoAvailable()){
+					WebClientInfo clientInfo = session.getClientInfo();
 					event.setMetaData("remoteAddress", clientInfo.getProperties().getRemoteAddress());
 					event.setMetaData("hostName", clientInfo.getProperties().getHostname());
 				}

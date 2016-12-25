@@ -35,7 +35,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	public static ODatabaseDocument db; 
 	
 	protected OLoggerModule() {
-		super(MODULE_OLOGGER_NAME, 1);
+		super(MODULE_OLOGGER_NAME, 2);
 	}
 	
 	@Override
