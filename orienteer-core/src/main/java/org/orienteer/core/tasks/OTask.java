@@ -46,7 +46,7 @@ public class OTask {
 		this.taskDoc = taskDoc;
 	}
 	//////////////////////////////////////////////////////////////////////
-	
+	/*
 	private void linkRealTask(){
 		assert(taskDoc!=null);
 		
@@ -75,6 +75,7 @@ public class OTask {
 		metadata.remove(id);
 		realTask = null;
 	}
+	*/
 	//////////////////////////////////////////////////////////////////////
 	//call from outher interface
 	public void start(){
@@ -97,7 +98,7 @@ public class OTask {
 		assert(taskDoc!=null);
 		taskDoc.field(STATUS_FIELD,Status.STOPPED);
 		taskDoc.save();
-		unlinkRealTask();
+		//unlinkRealTask();
 	}
 	
 	protected void onProgress(double progress){
@@ -120,7 +121,7 @@ public class OTask {
 	
 	
 	private IRealTask getRealTask() {
-		if(realTask==null) linkRealTask();
+		//if(realTask==null) linkRealTask();
 
 		return realTask;
 	}

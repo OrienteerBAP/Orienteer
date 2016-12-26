@@ -21,6 +21,7 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.tasks.IRealTask;
 import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
-@Widget(domain="document",selector=OTask.TASK_CLASS, id=TaskManagerWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+@Widget(domain="document",selector=OTaskSession.TASK_SESSION_CLASS, id=TaskManagerWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class TaskManagerWidget extends AbstractWidget<ODocument>{
 
 	public static final String WIDGET_TYPE_ID = "taskManager";
@@ -64,31 +65,12 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 			
 		
 		form.add(structuredTable);
-		structuredTable.addCommand(makeStartButton());
 		structuredTable.addCommand(makeStopButton());
 		form.setOutputMarkupId(true);
 
 		add(form);
 	}
 	
-	
-	private Command makeStartButton() {
-		return new AjaxCommand("start","tasks.start") {
-			@Override
-			protected void onInitialize() {
-				super.onInitialize();
-				setIcon(FAIconType.play);
-				setBootstrapType(BootstrapType.SUCCESS);
-				setChangingDisplayMode(true);
-			}
-			
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				OTask newtask = new OTask(TaskManagerWidget.this.getModelObject());
-				newtask.start();
-			}
-		};
-	}
 	
 	private Command makeStopButton() {
 		return new AjaxCommand("stop","tasks.stop") {
@@ -101,7 +83,7 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 			}
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-				OTask newtask = new OTask(TaskManagerWidget.this.getModelObject());
+				OTaskSession newtask = new OTaskSession(TaskManagerWidget.this.getModelObject());
 				newtask.stop();
 			}
 		};

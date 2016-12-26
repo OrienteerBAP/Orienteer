@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.wicket.MetaDataKey;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.tasks.IRealTask;
+import org.orienteer.core.tasks.ITaskSessionCallback;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -14,7 +15,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class TaskManagerModule extends AbstractOrienteerModule {
 	
-	public static final MetaDataKey<Map<String,IRealTask>> TASK_MANAGER_SESSIONS_KEY = new MetaDataKey<Map<String,IRealTask>>()
+	public static final MetaDataKey<Map<String,ITaskSessionCallback>> TASK_MANAGER_CALLBACK_KEY = new MetaDataKey<Map<String,ITaskSessionCallback>>()
+	{
+		private static final long serialVersionUID = 1L;
+	};
+
+	public static final MetaDataKey<Map<String,Integer>> TASK_MANAGER_SESSION_KEY = new MetaDataKey<Map<String,Integer>>()
 	{
 		private static final long serialVersionUID = 1L;
 	};
@@ -47,7 +53,8 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 	
     @Override
     public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-		app.setMetaData(TASK_MANAGER_SESSIONS_KEY, new ConcurrentHashMap<String,IRealTask>());
+		app.setMetaData(TASK_MANAGER_CALLBACK_KEY, new ConcurrentHashMap<String,ITaskSessionCallback>());
+		app.setMetaData(TASK_MANAGER_SESSION_KEY, new ConcurrentHashMap<String,Integer>());
     }
 
 }
