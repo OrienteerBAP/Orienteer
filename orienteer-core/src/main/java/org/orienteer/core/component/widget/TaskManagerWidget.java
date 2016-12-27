@@ -19,8 +19,6 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.tasks.IRealTask;
-import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
@@ -31,6 +29,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
+/**
+ * Widget for {@link TaskManagerModule}
+ *
+ */
 @Widget(domain="document",selector=OTaskSession.TASK_SESSION_CLASS, id=TaskManagerWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class TaskManagerWidget extends AbstractWidget<ODocument>{
 

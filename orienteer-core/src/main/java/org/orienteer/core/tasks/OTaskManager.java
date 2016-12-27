@@ -13,12 +13,16 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+/**
+ * 
+ *
+ */
 public class OTaskManager {
 
 	public OTaskManager() {
 		// TODO Auto-generated constructor stub
 	}
-	
+	/*
 	public List<OTask> getActiveTaskSessions(){
 		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		List<ODocument> dbResult = db.query(new OSQLSynchQuery<>("select from "+OTaskSession.TASK_SESSION_CLASS+" where "+OTaskSession.STATUS_FIELD+"=?"),OTaskSession.Status.RUNNING);
@@ -28,4 +32,5 @@ public class OTaskManager {
 		}
 		return result;
 	}
+	*/
 }

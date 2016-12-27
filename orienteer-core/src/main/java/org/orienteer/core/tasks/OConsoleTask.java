@@ -10,26 +10,31 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ThreadContext;
 import org.orienteer.core.OrienteerWebApplication;
 
-public class OConsoleTask implements IRealTask {
+/**
+ * 
+ * @author Asm
+ *
+ */
+public class OConsoleTask {
 
-	private volatile OTask otask;
+	private class TaskSessionImpl extends OConsoleTaskSession<TaskSessionImpl>{}
+
+	private volatile TaskSessionImpl otask;
 	private volatile Process innerProcess;
 	private volatile Thread innerThread;
 	
 	public OConsoleTask() {
 	}
-	
-	@Override
-	public void setOTask(OTask otask) {
-		this.otask = otask;
-	}
-	
 
-	@Override
-	public void start(final OTaskData data) {
-		otask.onStart();
+	public void start() {
+		otask = new TaskSessionImpl();
+		final String input = "ping 127.0.0.1"; 
 		final Application app = Application.get();
 		final Session session = ThreadContext.getSession();
+		otask.onStart().
+			setInput(input).
+			setFinalProgress(50).
+			setTemporary(false);
 		innerThread = new Thread(new Runnable(){
 			@Override
 			public void run() {
@@ -45,15 +50,18 @@ public class OConsoleTask implements IRealTask {
 				}
 				try {
 					
-					innerProcess = Runtime.getRuntime().exec(data.toString());
+					innerProcess = Runtime.getRuntime().exec(input);
 					BufferedReader reader =  new BufferedReader(new InputStreamReader(innerProcess.getInputStream(),charset));
 					String curOutString = "";
 						while ((curOutString = reader.readLine())!= null) {
-							otask.onUpdateOut(curOutString);
+							otask.onProcess().
+								incrementCurrentProgress().
+								appendOut(curOutString);
 						}
 					innerProcess = null;
 				} catch (IOException e) {
-					otask.onUpdateOut(e.getMessage());
+					otask.onProcess().
+					appendOut(e.getMessage());
 				}	
 			    otask.onStop();
 			}
@@ -62,7 +70,6 @@ public class OConsoleTask implements IRealTask {
 		innerThread.start();
 	}
 
-	@Override
 	public void stop() {
 		if (innerProcess!= null){
 			innerProcess.destroy();

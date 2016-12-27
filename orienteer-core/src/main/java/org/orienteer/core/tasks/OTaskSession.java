@@ -5,31 +5,66 @@ import java.util.Map;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.TaskManagerModule;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.util.OSchemaHelper;
 
-@SuppressWarnings("rawtypes")
-public class OTaskSession <T extends OTaskSession>{
-	
-	public static final String TASK_SESSION_CLASS = "OTaskSession";
-	public static final String STATUS_FIELD = "status";
-	public static final String START_TIMESTAMP_FIELD = "startTs";
-	public static final String FINISH_TIMESTAMP_FIELD = "finishTs";
-	public static final String PROGRESS_FIELD = "progress";
-	public static final String PROGRESS_CURRENT_FIELD = "progressCur";
-	public static final String PROGRESS_FINAL_FIELD = "progressFin";
-	public static final String BREAKABLE_FIELD = "breakable";
-	public static final String TEMPORARY_FIELD = "temporary";
-	public static final String THREAD_NAME_FIELD = "threadName";
-	
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+/**
+ *
+ * @param <T> just for chaining.For make object should be created non-anonymous 
+ * class without template definition, like "private class TaskSessionImpl extends OTaskSession\<OTaskSession\>{}"
+ */
+public class OTaskSession <T extends OTaskSession<T>>{
+	/**
+	 * 
+	 * Statuses of task session
+	 *
+	 */
 	public enum Status{
 		STOPPED,RUNNING,DETACHED
 	}
 	
-	String sessionId;
-	ODocument sessionDoc;
-	String sessionClass;
-	ITaskSessionCallback callback;
+	private String sessionId;
+	private ODocument sessionDoc;
+	private String sessionClass;
+	private ITaskSessionCallback callback;
+
+	public static final String TASK_SESSION_CLASS = "OTaskSession";
+
+	/**
+	 * fields of task session ODocument 
+	 */
+	public enum Field{
+		STATUS("status",OType.STRING),
+		START_TIMESTAMP("startTs",OType.STRING),
+		FINISH_TIMESTAMP("finishTs",OType.STRING),
+		PROGRESS("progress",OType.STRING),
+		PROGRESS_CURRENT("progressCur",OType.STRING),
+		PROGRESS_FINAL("progressFin",OType.STRING),
+		BREAKABLE("breakable",OType.STRING),
+		IS_TEMPORARY("isTemporary",OType.STRING),
+		THREAD_NAME("threadName",OType.STRING);
+		
+		private String fieldName;
+		private OType type;
+		public String fieldName(){ return fieldName;}
+		public OType type(){ return type;}
+		private Field(String fieldName,OType type){	this.fieldName = fieldName;	this.type = type;}
+	}
 	
+	/**
+	 * Register fields in db 
+	 */
+	public static void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		helper.oClass(TASK_SESSION_CLASS);
+		for (Field f : Field.values()) {
+			helper.oProperty(f.fieldName(),f.type);
+		}
+	}
+	
+
 	//new session
 	public OTaskSession() {
 		this(TASK_SESSION_CLASS);
@@ -52,53 +87,43 @@ public class OTaskSession <T extends OTaskSession>{
 	}
 	
 	private void registerCallback(ITaskSessionCallback callback){
-		Map<String, ITaskSessionCallback> metadata = OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
-		metadata.put(sessionId, callback);
+		getCallbacks().put(sessionId, callback);
 	}
 
 	private void unregisterCallback(){
-		Map<String, ITaskSessionCallback> metadata = OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
-		metadata.remove(sessionId);
+		getCallbacks().remove(sessionId);
 	}
 	//////////////////////////////////////////////////////////////////////
 	
 	private void linkCallback(){
 		assert(sessionDoc!=null);
 		
-		Map<String, ITaskSessionCallback> metadata = OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
-		callback = metadata.get(sessionId);
+		callback = getCallbacks().get(sessionId);
 	}
 
 	private void unlinkCallback(){
 		assert(sessionDoc!=null);
-		Map<String, ITaskSessionCallback> metadata = OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
 		callback = null;
 	}
 	
 	//////////////////////////////////////////////////////////////////////
 	private void registerSelf(){
-
-		Map<String, Integer> metadata = OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
-		metadata.put(sessionId, 1);
+		getSessions().put(sessionId, 1);
 	}
 	
 	private void unregisterSelf() {
-		Map<String, Integer> metadata = OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
-		metadata.remove(sessionId);
+		getSessions().remove(sessionId);
 	}
 	//////////////////////////////////////////////////////////////////////
 	public boolean isDetached() {
-		assert(sessionDoc!=null);
-		if(!Status.STOPPED.equals(sessionDoc.field(STATUS_FIELD))){
-			Map<String, Integer> metadata = OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
-			return (!metadata.containsKey(sessionId)); 
+		if(!Status.STOPPED.equals(getField(Field.STATUS))){
+			return (!getSessions().containsKey(sessionId)); 
 		}
 		return false;
 	}
 	
 	public boolean isTemporary() {
-		assert(sessionDoc!=null);
-		return sessionDoc.field(TEMPORARY_FIELD);
+		return (boolean) getField(Field.IS_TEMPORARY);
 	}
 	
 	//////////////////////////////////////////////////////////////////////
@@ -111,12 +136,12 @@ public class OTaskSession <T extends OTaskSession>{
 	//call from listener
 	public T onStart() {
 		makeSessionDoc();
-		setField(START_TIMESTAMP_FIELD,new Date().toString());
-		setField(THREAD_NAME_FIELD,Thread.currentThread().getName());
-		setField(BREAKABLE_FIELD,false);
-		setField(TEMPORARY_FIELD,false);
-		setField(STATUS_FIELD,Status.RUNNING);
-		setField(STATUS_FIELD,Status.RUNNING);
+		setField(Field.START_TIMESTAMP,new Date().toString());
+		setField(Field.THREAD_NAME,Thread.currentThread().getName());
+		setField(Field.BREAKABLE,false);
+		setField(Field.IS_TEMPORARY,false);
+		setField(Field.STATUS,Status.RUNNING);
+		setField(Field.STATUS,Status.RUNNING);
 		registerSelf();
 		return this.asT();
 	}
@@ -127,34 +152,34 @@ public class OTaskSession <T extends OTaskSession>{
 		unregisterSelf();
 		
 		if (!isTemporary()){
-			setField(STATUS_FIELD,Status.STOPPED);
+			setField(Field.STATUS,Status.STOPPED);
 			end();
 		}else{
 			sessionDoc.delete();
 		}
 	}
 	
-	private T onProgress() {
+	public T onProcess() {
 		return this.asT();
 	}
 	
 	public T setProgress(int progress) {
-		setField(PROGRESS_FIELD,progress);
+		setField(Field.PROGRESS,progress);
 		return this.asT();
 	}
 
 	public T setCurrentProgress(long progress) {
-		setField(PROGRESS_CURRENT_FIELD,progress);
+		setField(Field.PROGRESS_CURRENT,progress);
 		return this.asT();
 	}
 	
 	public T incrementCurrentProgress() {
-		setField(PROGRESS_CURRENT_FIELD,(long)getField(PROGRESS_CURRENT_FIELD)+1);
+		setField(Field.PROGRESS_CURRENT,(long)getField(Field.PROGRESS_CURRENT)+1);
 		return this.asT();
 	}
 	
 	public T setFinalProgress(long progress) {
-		setField(PROGRESS_FINAL_FIELD,progress);
+		setField(Field.PROGRESS_FINAL,progress);
 		return this.asT();
 	}
 	
@@ -163,15 +188,15 @@ public class OTaskSession <T extends OTaskSession>{
 			unregisterCallback();
 		}
 		if(callback!=null){
-			setField(BREAKABLE_FIELD,true);
+			setField(Field.BREAKABLE,true);
 			registerCallback(callback);
 		}
 		this.callback = callback;
 		return this.asT();
 	}
 	
-	private T setTemporary(boolean isTemporary) {
-		setField(BREAKABLE_FIELD,isTemporary);
+	public T setTemporary(boolean isTemporary) {
+		setField(Field.BREAKABLE,isTemporary);
 		return this.asT();
 	}
 	
@@ -185,6 +210,14 @@ public class OTaskSession <T extends OTaskSession>{
 		return (T) this;
 	}
 	//////////////////////////////////////////////////////////////////////
+	public Map<String, ITaskSessionCallback> getCallbacks() {
+		return OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
+	}
+
+	public Map<String, Integer> getSessions() {
+		return OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
+	}
+	//////////////////////////////////////////////////////////////////////
 	protected ITaskSessionCallback getCallback() {
 		if (callback==null){
 			linkCallback();
@@ -192,11 +225,28 @@ public class OTaskSession <T extends OTaskSession>{
 		return callback;
 	}
 	
+	protected ODocument getSessionDoc(){
+		assert(sessionDoc!=null);
+		return sessionDoc;
+	}
+
+	protected Object getField(Field field) {
+		assert(sessionDoc!=null);
+		return sessionDoc.field(field.fieldName());
+	}
+
+	protected void setField(Field field,Object value) {
+		assert(sessionDoc!=null);
+		sessionDoc.field(field.fieldName(),value);
+	}
+	
+	@Deprecated
 	protected Object getField(String fieldname) {
 		assert(sessionDoc!=null);
 		return sessionDoc.field(fieldname);
 	}
 
+	@Deprecated
 	protected void setField(String fieldname,Object value) {
 		assert(sessionDoc!=null);
 		sessionDoc.field(fieldname,value);

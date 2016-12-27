@@ -5,14 +5,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.wicket.MetaDataKey;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.tasks.IRealTask;
 import org.orienteer.core.tasks.ITaskSessionCallback;
+import org.orienteer.core.tasks.OConsoleTaskSession;
+import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Module for task management
+ *
+ */
 public class TaskManagerModule extends AbstractOrienteerModule {
 	
 	public static final MetaDataKey<Map<String,ITaskSessionCallback>> TASK_MANAGER_CALLBACK_KEY = new MetaDataKey<Map<String,ITaskSessionCallback>>()
@@ -43,11 +48,9 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 		
 	}
 	
-	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass("OTask")
-			.oProperty("name", OType.STRING, 10).markAsDocumentName()
-			.oProperty("data", OType.STRING, 30).assignVisualization("textarea");
+	private void componentsOnInstall(OrienteerWebApplication app, ODatabaseDocument db){
+		OTaskSession.onInstallModule(app, db);
+		OConsoleTaskSession.onInstallModule(app, db);		
 	}
 
 	
@@ -55,6 +58,8 @@ public class TaskManagerModule extends AbstractOrienteerModule {
     public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		app.setMetaData(TASK_MANAGER_CALLBACK_KEY, new ConcurrentHashMap<String,ITaskSessionCallback>());
 		app.setMetaData(TASK_MANAGER_SESSION_KEY, new ConcurrentHashMap<String,Integer>());
+		componentsOnInstall(app,db);
     }
+    
 
 }
