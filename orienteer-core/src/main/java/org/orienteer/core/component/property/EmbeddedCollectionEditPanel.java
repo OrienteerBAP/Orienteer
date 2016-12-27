@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.tika.metadata.Property.PropertyType;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -23,6 +24,8 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.ydn.wicket.wicketorientdb.model.CollectionAdapterModel;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
@@ -42,6 +45,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 {
 	protected final Class<?> finalType;
 	private List<T> data;
+	private ListView<T> listView;
 	
 	@Inject
 	private IMarkupProvider markupProvider;
@@ -52,8 +56,9 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 		setOutputMarkupId(true);
 		this.finalType = finalType;
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
-		final OType oType = propertyModel.getObject().getLinkedType();
-		ListView<T> listView = new ListView<T>("items", new PropertyModel<List<T>>(this, "data")) {
+		OProperty property = propertyModel.getObject();
+		final OType oType = property.getLinkedType()!=null?property.getLinkedType():OType.EMBEDDED;
+		listView = new ListView<T>("items", new PropertyModel<List<T>>(this, "data")) {
 
 			@Override
 			protected void populateItem(final ListItem<T> item) {
@@ -62,10 +67,14 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 						{
 							@Override
 							public void onClick(AjaxRequestTarget target) {
+								convertToData();
 								getData().remove(item.getIndex());
 								target.add(EmbeddedCollectionEditPanel.this);
+								listView.removeAll();
 							}
-						}.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+						}.setDefaultFormProcessing(false)
+						 .setAutoNotify(false)
+						 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 						 .setBootstrapType(BootstrapType.DANGER)
 						 .setIcon((String)null));
 			}
@@ -90,11 +99,15 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 		{
 			@Override
 			public void onClick(AjaxRequestTarget target) {
+				convertToData();
 				getData().add(null);
 				target.add(EmbeddedCollectionEditPanel.this);
+				listView.removeAll();
 			}
 			
-		}.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+		}.setDefaultFormProcessing(false)
+		 .setAutoNotify(false)
+		 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 		 .setBootstrapType(BootstrapType.PRIMARY)
 		 .setIcon((String)null));
 	}
@@ -116,10 +129,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 		super.onConfigure();
 	}
 	
-	@Override
-	public void convertInput() {
-		M converted;
-		List<T> storedData = getData();
+	protected void convertToData() {
 		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
 
 			@Override
@@ -127,11 +137,19 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 					IVisit<Void> visit) {
 				if(!(EmbeddedCollectionEditPanel.this.equals(object)))
 				{
+					object.convertInput();
 					object.updateModel();
 					visit.dontGoDeeper();
 				}
 			}
 		});
+	}
+	
+	@Override
+	public void convertInput() {
+		convertToData();
+		M converted;
+		List<T> storedData = getData();
 
 		if(finalType.isInstance(storedData)) converted = (M) storedData;
 		else
@@ -151,8 +169,4 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 		setConvertedInput(converted);
 	}
 	
-	@Override
-	protected void onModelChanged() {
-		data = null;
-	}
 }

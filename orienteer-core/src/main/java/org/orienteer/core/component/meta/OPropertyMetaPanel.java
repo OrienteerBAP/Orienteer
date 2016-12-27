@@ -183,7 +183,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			OType oType = (OType)getEnteredValue();
 			// Show Linked Class if type is a some kind of link
 			AbstractMetaPanel<OProperty, String, ?> metaPanel = getMetaComponent(OPropertyPrototyper.LINKED_CLASS);
-			if(metaPanel!=null) metaPanel.setVisibilityAllowed(oType!=null && (oType.isLink() || OType.EMBEDDED.equals(oType)));
+			if(metaPanel!=null) metaPanel.setVisibilityAllowed(oType!=null && (oType.isLink() || oType.isEmbedded()));
 			
 			// Show Linked Type if type is a some kind of embedded
 			metaPanel = getMetaComponent(OPropertyPrototyper.LINKED_TYPE);
