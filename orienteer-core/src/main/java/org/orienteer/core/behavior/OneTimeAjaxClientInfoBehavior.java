@@ -13,9 +13,4 @@ public class OneTimeAjaxClientInfoBehavior extends AjaxClientInfoBehavior {
 	public boolean isEnabled(Component component) {
 		return !OrienteerWebSession.get().isClientInfoAvailable();
 	}
-	
-	@Override
-	public boolean isTemporary(Component component) {
-		return !isEnabled(component);
-	}
 }
