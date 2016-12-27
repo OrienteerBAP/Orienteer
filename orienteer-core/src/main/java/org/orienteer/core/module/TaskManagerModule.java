@@ -27,7 +27,7 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 
 	public static final MetaDataKey<Map<String,Integer>> TASK_MANAGER_SESSION_KEY = new MetaDataKey<Map<String,Integer>>()
 	{
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 2L;
 	};
 	
 	

@@ -1,5 +1,6 @@
 package org.orienteer.core.tasks;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * class without template definition, like "private class TaskSessionImpl extends OTaskSession\<OTaskSession\>{}"
  */
 public class OTaskSession <T extends OTaskSession<T>>{
+	
 	/**
 	 * 
 	 * Statuses of task session
@@ -37,13 +39,13 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	 */
 	public enum Field{
 		STATUS("status",OType.STRING),
-		START_TIMESTAMP("startTs",OType.STRING),
-		FINISH_TIMESTAMP("finishTs",OType.STRING),
-		PROGRESS("progress",OType.STRING),
-		PROGRESS_CURRENT("progressCur",OType.STRING),
-		PROGRESS_FINAL("progressFin",OType.STRING),
-		BREAKABLE("breakable",OType.STRING),
-		IS_TEMPORARY("isTemporary",OType.STRING),
+		START_TIMESTAMP("startTs",OType.DATETIME),
+		FINISH_TIMESTAMP("finishTs",OType.DATETIME),
+		PROGRESS("progress",OType.INTEGER),
+		PROGRESS_CURRENT("progressCur",OType.LONG),
+		PROGRESS_FINAL("progressFin",OType.LONG),
+		IS_BREAKABLE("isBreakable",OType.BOOLEAN),
+		IS_TEMPORARY("isTemporary",OType.BOOLEAN),
 		THREAD_NAME("threadName",OType.STRING);
 		
 		private String fieldName;
@@ -83,22 +85,35 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	private void makeSessionDoc(){
 		if (sessionDoc == null){
 			sessionDoc = new ODocument(sessionClass);
+			sessionDoc.save(true);
+			sessionDoc.getDatabase().commit();
 		}
 	}
 	
+	public String getId(){
+		if (sessionId == null && sessionDoc != null){
+			if (sessionDoc.getIdentity().isValid()){
+				sessionId = sessionDoc.getIdentity().toString();
+			}else{
+				sessionId.length();
+			}
+		}
+		return sessionId;
+	}
+	
 	private void registerCallback(ITaskSessionCallback callback){
-		getCallbacks().put(sessionId, callback);
+		getCallbacks().put(getId(), callback);
 	}
 
 	private void unregisterCallback(){
-		getCallbacks().remove(sessionId);
+		getCallbacks().remove(getId());
 	}
 	//////////////////////////////////////////////////////////////////////
 	
 	private void linkCallback(){
 		assert(sessionDoc!=null);
 		
-		callback = getCallbacks().get(sessionId);
+		callback = getCallbacks().get(getId());
 	}
 
 	private void unlinkCallback(){
@@ -108,11 +123,11 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	
 	//////////////////////////////////////////////////////////////////////
 	private void registerSelf(){
-		getSessions().put(sessionId, 1);
+		getSessions().put(getId(), 1);
 	}
 	
 	private void unregisterSelf() {
-		getSessions().remove(sessionId);
+		getSessions().remove(getId());
 	}
 	//////////////////////////////////////////////////////////////////////
 	public boolean isDetached() {
@@ -136,12 +151,11 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	//call from listener
 	public T onStart() {
 		makeSessionDoc();
-		setField(Field.START_TIMESTAMP,new Date().toString());
 		setField(Field.THREAD_NAME,Thread.currentThread().getName());
-		setField(Field.BREAKABLE,false);
+		setField(Field.IS_BREAKABLE,false);
 		setField(Field.IS_TEMPORARY,false);
 		setField(Field.STATUS,Status.RUNNING);
-		setField(Field.STATUS,Status.RUNNING);
+		setField(Field.START_TIMESTAMP,getDateFormat().format(new Date()));
 		registerSelf();
 		return this.asT();
 	}
@@ -150,8 +164,8 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		unlinkCallback();
 		unregisterCallback();
 		unregisterSelf();
-		
 		if (!isTemporary()){
+			setField(Field.FINISH_TIMESTAMP,getDateFormat().format(new Date()));
 			setField(Field.STATUS,Status.STOPPED);
 			end();
 		}else{
@@ -163,6 +177,10 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		return this.asT();
 	}
 	
+	public T onError() {
+		return this.asT();
+	}
+
 	public T setProgress(int progress) {
 		setField(Field.PROGRESS,progress);
 		return this.asT();
@@ -174,7 +192,12 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	}
 	
 	public T incrementCurrentProgress() {
-		setField(Field.PROGRESS_CURRENT,(long)getField(Field.PROGRESS_CURRENT)+1);
+		Object oldProgress = getField(Field.PROGRESS_CURRENT);
+		if (oldProgress==null){
+			setField(Field.PROGRESS_CURRENT,1);
+		}else{
+			setField(Field.PROGRESS_CURRENT,(Long)oldProgress+1);
+		}
 		return this.asT();
 	}
 	
@@ -188,7 +211,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 			unregisterCallback();
 		}
 		if(callback!=null){
-			setField(Field.BREAKABLE,true);
+			setField(Field.IS_BREAKABLE,true);
 			registerCallback(callback);
 		}
 		this.callback = callback;
@@ -196,13 +219,22 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	}
 	
 	public T setTemporary(boolean isTemporary) {
-		setField(Field.BREAKABLE,isTemporary);
+		setField(Field.IS_BREAKABLE,isTemporary);
 		return this.asT();
 	}
 	
 	public void end(){
 		assert(sessionDoc!=null);
 		sessionDoc.save();
+	}
+
+	private void save(){
+		assert(sessionDoc!=null);
+		sessionDoc.save();
+	}
+	
+	private SimpleDateFormat getDateFormat(){
+		return sessionDoc.getDatabase().getStorage().getConfiguration().getDateFormatInstance();
 	}
 	//////////////////////////////////////////////////////////////////////
 	@SuppressWarnings("unchecked")

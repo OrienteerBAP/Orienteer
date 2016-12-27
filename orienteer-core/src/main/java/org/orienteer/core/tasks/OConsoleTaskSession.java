@@ -54,6 +54,7 @@ public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTask
 
 	public T appendOut(String out){
 		String field = (String)getField(Field.OUTPUT);
+		if (field==null) field = "";
 		setField(Field.OUTPUT, field.concat(out).concat("\n"));
 		return this.asT();
 	}
