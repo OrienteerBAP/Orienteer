@@ -35,7 +35,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	public static ODatabaseDocument db; 
 	
 	protected OLoggerModule() {
-		super(MODULE_OLOGGER_NAME, 2);
+		super(MODULE_OLOGGER_NAME, 3);
 	}
 	
 	@Override
@@ -53,11 +53,12 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			.oProperty("remoteAddress", OType.STRING, 60)
 			.oProperty("hostName", OType.STRING, 70).markDisplayable()
 			.oProperty("username", OType.STRING, 80)
-			.oProperty("summary", OType.STRING, 90)
+			.oProperty("clientUrl", OType.STRING, 90)
+			.oProperty("summary", OType.STRING, 100)
 				.calculateBy("message.left(message.indexOf('\\n'))")
 				.markDisplayable()
 				.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
-			.oProperty("message", OType.STRING, 100).assignVisualization("textarea");	
+			.oProperty("message", OType.STRING, 110).assignVisualization("textarea");	
 		ODocument moduleDoc = new ODocument(MODULE_OLOGGER_OCLASS);
 		moduleDoc.field(OMODULE_ACTIVATE, false);
 		return moduleDoc;
