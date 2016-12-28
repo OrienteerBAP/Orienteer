@@ -1,13 +1,8 @@
 package org.orienteer.core.component.widget;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.wicket.Component;
-import org.apache.wicket.MetaDataKey;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -16,7 +11,6 @@ import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.tasks.OTaskSession;
@@ -68,6 +62,7 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 		
 		form.add(structuredTable);
 		structuredTable.addCommand(makeStopButton());
+		
 		form.setOutputMarkupId(true);
 
 		add(form);
@@ -75,18 +70,21 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 	
 	
 	private Command makeStopButton() {
-		return new AjaxCommand("stop","tasks.stop") {
+		return new Command("stop","tasks.stop") {
 			@Override
 			protected void onInitialize() {
 				super.onInitialize();
 				setIcon(FAIconType.stop);
 				setBootstrapType(BootstrapType.DANGER);
 				setChangingDisplayMode(true);
+				OTaskSession taskSession = new OTaskSession(TaskManagerWidget.this.getModelObject());
+				setEnabled(taskSession.isBreakable());
 			}
 			@Override
-			public void onClick(AjaxRequestTarget target) {
-				OTaskSession newtask = new OTaskSession(TaskManagerWidget.this.getModelObject());
-				newtask.stop();
+			public void onClick() {
+				OTaskSession taskSession = new OTaskSession(TaskManagerWidget.this.getModelObject());
+				taskSession.getCallback().stop();
+				setEnabled(false);
 			}
 		};
 	}	

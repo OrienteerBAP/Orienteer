@@ -1,14 +1,13 @@
 package org.orienteer.core.tasks;
 
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.tasks.OTaskSession.Field;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
- * 
+ * Task session with input and output
  *
  * @param <T> just for chaining. See also {@link OConsoleTask}
  */
@@ -38,9 +37,8 @@ public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTask
 	public static final void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(TASK_SESSION_CLASS,OTaskSession.TASK_SESSION_CLASS);
-		for (Field f : Field.values()) {
-			helper.oProperty(f.fieldName(),f.type());
-		}
+			helper.oProperty("in",OType.STRING);
+			helper.oProperty("out",OType.STRING).assignVisualization("textarea");
 	}	
 	
 	public OConsoleTaskSession() {

@@ -11,7 +11,9 @@ import org.orienteer.core.util.OSchemaHelper;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 /**
+ * Base task session.
  *
  * @param <T> just for chaining.For make object should be created non-anonymous 
  * class without template definition, like "private class TaskSessionImpl extends OTaskSession\<OTaskSession\>{}"
@@ -24,7 +26,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	 *
 	 */
 	public enum Status{
-		STOPPED,RUNNING,DETACHED
+		STOPPED,STOPPING,RUNNING,DETACHED
 	}
 	
 	private String sessionId;
@@ -45,7 +47,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		PROGRESS_CURRENT("progressCur",OType.LONG),
 		PROGRESS_FINAL("progressFin",OType.LONG),
 		IS_BREAKABLE("isBreakable",OType.BOOLEAN),
-		IS_TEMPORARY("isTemporary",OType.BOOLEAN),
+		DELETE_ON_FINISH("deleteOnFinish",OType.BOOLEAN),
 		THREAD_NAME("threadName",OType.STRING);
 		
 		private String fieldName;
@@ -79,7 +81,11 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	
 	//old session
 	public OTaskSession(ODocument sessionDoc) {
+		assert(sessionDoc!=null);
 		this.sessionDoc = sessionDoc;
+		if (isDetached()){
+			setField(Field.STATUS, Status.DETACHED);
+		}
 	}
 	
 	private void makeSessionDoc(){
@@ -92,11 +98,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	
 	public String getId(){
 		if (sessionId == null && sessionDoc != null){
-			if (sessionDoc.getIdentity().isValid()){
-				sessionId = sessionDoc.getIdentity().toString();
-			}else{
-				sessionId.length();
-			}
+			sessionId = sessionDoc.getIdentity().toString();
 		}
 		return sessionId;
 	}
@@ -131,32 +133,44 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	}
 	//////////////////////////////////////////////////////////////////////
 	public boolean isDetached() {
-		if(!Status.STOPPED.equals(getField(Field.STATUS))){
-			return (!getSessions().containsKey(sessionId)); 
+		if(!Status.STOPPED.name().equals(getField(Field.STATUS))){
+			return (!getSessions().containsKey(getId())); 
 		}
 		return false;
 	}
 	
-	public boolean isTemporary() {
-		return (boolean) getField(Field.IS_TEMPORARY);
+	public boolean isDeleteOnFinish() {
+		Object result  = getField(Field.DELETE_ON_FINISH);
+		if (result != null)
+			return (Boolean)result;
+		return false;
 	}
 	
-	//////////////////////////////////////////////////////////////////////
-	public void stop(){
-		if(callback!=null){
-			callback.stop();
+	public boolean isBreakable(){
+		Object isBreakable  = getField(Field.IS_BREAKABLE);
+		Object status  = getField(Field.STATUS);
+		if (isBreakable != null && status!=null){
+			if(Status.RUNNING.name().equals(status)){
+				return (Boolean)isBreakable;
+			}
 		}
-	}
+		return false;
+	}	
 	//////////////////////////////////////////////////////////////////////
 	//call from listener
 	public T onStart() {
 		makeSessionDoc();
 		setField(Field.THREAD_NAME,Thread.currentThread().getName());
 		setField(Field.IS_BREAKABLE,false);
-		setField(Field.IS_TEMPORARY,false);
+		setField(Field.DELETE_ON_FINISH,false);
 		setField(Field.STATUS,Status.RUNNING);
-		setField(Field.START_TIMESTAMP,getDateFormat().format(new Date()));
+		setField(Field.START_TIMESTAMP,getDateTimeFormat().format(new Date()));
 		registerSelf();
+		return this.asT();
+	}
+	
+	public T onBeforeStop() {
+		setField(Field.STATUS,Status.STOPPING);
 		return this.asT();
 	}
 	
@@ -164,8 +178,8 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		unlinkCallback();
 		unregisterCallback();
 		unregisterSelf();
-		if (!isTemporary()){
-			setField(Field.FINISH_TIMESTAMP,getDateFormat().format(new Date()));
+		if (!isDeleteOnFinish()){
+			setField(Field.FINISH_TIMESTAMP,getDateTimeFormat().format(new Date()));
 			setField(Field.STATUS,Status.STOPPED);
 			end();
 		}else{
@@ -218,8 +232,8 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		return this.asT();
 	}
 	
-	public T setTemporary(boolean isTemporary) {
-		setField(Field.IS_BREAKABLE,isTemporary);
+	public T setDeleteOnFinish(boolean deleteOnFinish) {
+		setField(Field.DELETE_ON_FINISH,deleteOnFinish);
 		return this.asT();
 	}
 	
@@ -227,30 +241,32 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		assert(sessionDoc!=null);
 		sessionDoc.save();
 	}
-
+	
 	private void save(){
 		assert(sessionDoc!=null);
 		sessionDoc.save();
 	}
 	
-	private SimpleDateFormat getDateFormat(){
-		return sessionDoc.getDatabase().getStorage().getConfiguration().getDateFormatInstance();
-	}
 	//////////////////////////////////////////////////////////////////////
+
+	private SimpleDateFormat getDateTimeFormat(){
+		return sessionDoc.getDatabase().getStorage().getConfiguration().getDateTimeFormatInstance();
+	}
+
 	@SuppressWarnings("unchecked")
 	protected T asT(){
 		return (T) this;
 	}
 	//////////////////////////////////////////////////////////////////////
-	public Map<String, ITaskSessionCallback> getCallbacks() {
+	protected Map<String, ITaskSessionCallback> getCallbacks() {
 		return OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
 	}
 
-	public Map<String, Integer> getSessions() {
+	protected Map<String, Integer> getSessions() {
 		return OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
 	}
 	//////////////////////////////////////////////////////////////////////
-	protected ITaskSessionCallback getCallback() {
+	public ITaskSessionCallback getCallback() {
 		if (callback==null){
 			linkCallback();
 		}
