@@ -28,7 +28,10 @@ public class OTaskManager {
 	}
 	
 	public List<OTaskSession<?>> getActiveTaskSessions(ODatabaseDocument db){
-		List<ODocument> dbResult = db.query(new OSQLSynchQuery<>("select from "+OTaskSession.TASK_SESSION_CLASS+" where "+OTaskSession.Field.STATUS.fieldName()+"=?"),OTaskSession.Status.RUNNING);
+		List<ODocument> dbResult = db.query(
+				new OSQLSynchQuery<>(
+						"select from "+OTaskSession.TASK_SESSION_CLASS+" where "+OTaskSession.Field.STATUS.fieldName()+"=?"
+				),OTaskSession.Status.RUNNING);
 		List<OTaskSession<?>> result = new ArrayList<OTaskSession<?>>();
 		for (ODocument doc : dbResult) {
 			result.add(new OTaskSessionImpl(doc));
