@@ -14,11 +14,9 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.tasks.OTaskSession;
+import org.orienteer.core.tasks.OTaskSessionImpl;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
@@ -27,13 +25,13 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
  * Widget for {@link TaskManagerModule}
  *
  */
-@Widget(domain="document",selector=OTaskSession.TASK_SESSION_CLASS, id=TaskManagerWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
-public class TaskManagerWidget extends AbstractWidget<ODocument>{
+@Widget(domain="document",selector=OTaskSession.TASK_SESSION_CLASS, id=OTaskSessionWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+public class OTaskSessionWidget extends AbstractWidget<ODocument>{
 
-	public static final String WIDGET_TYPE_ID = "taskManager";
+	public static final String WIDGET_TYPE_ID = "taskSession";
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(TaskManagerWidget.class);
-	private Form form;
+	//private static final Logger LOG = LoggerFactory.getLogger(OTaskSessionWidget.class);
+	private Form<?> form;
 	
 	public static final List<String> TASK_DATA_LIST = new ArrayList<String>();
 	static
@@ -42,7 +40,7 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 	}	
 
 
-	public TaskManagerWidget(String id, IModel<ODocument> model, final IModel<ODocument> widgetDocumentModel) {
+	public OTaskSessionWidget(String id, IModel<ODocument> model, final IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 
 		form = new Form<Void>("form");
@@ -69,20 +67,26 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 	}
 	
 	
-	private Command makeStopButton() {
-		return new Command("stop","tasks.stop") {
+	private Command<ODocument> makeStopButton() {
+		
+		return new Command<ODocument>("stop","task.session.command.stop") {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			@Override
 			protected void onInitialize() {
 				super.onInitialize();
 				setIcon(FAIconType.stop);
 				setBootstrapType(BootstrapType.DANGER);
 				setChangingDisplayMode(true);
-				OTaskSession taskSession = new OTaskSession(TaskManagerWidget.this.getModelObject());
-				setEnabled(taskSession.isBreakable());
+				OTaskSessionImpl taskSession = new OTaskSessionImpl(OTaskSessionWidget.this.getModelObject());
+				taskSession.detachUpdate();
+				setEnabled(taskSession.isStoppable());
 			}
 			@Override
 			public void onClick() {
-				OTaskSession taskSession = new OTaskSession(TaskManagerWidget.this.getModelObject());
+				OTaskSessionImpl taskSession = new OTaskSessionImpl(OTaskSessionWidget.this.getModelObject());
 				taskSession.getCallback().stop();
 				setEnabled(false);
 			}
@@ -96,7 +100,7 @@ public class TaskManagerWidget extends AbstractWidget<ODocument>{
 
 	@Override
 	protected IModel<String> getDefaultTitleModel() {
-		return new ResourceModel("tasks.title");
+		return new ResourceModel("task.session.title");
 	}
 	
 	@Override

@@ -22,15 +22,24 @@ public class OTaskManager {
 	public OTaskManager() {
 		// TODO Auto-generated constructor stub
 	}
-	/*
-	public List<OTask> getActiveTaskSessions(){
-		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
-		List<ODocument> dbResult = db.query(new OSQLSynchQuery<>("select from "+OTaskSession.TASK_SESSION_CLASS+" where "+OTaskSession.STATUS_FIELD+"=?"),OTaskSession.Status.RUNNING);
-		List<OTask> result = new ArrayList<OTask>();
+
+	public List<OTaskSession<?>> getActiveTaskSessions(){
+		return getActiveTaskSessions(OrientDbWebSession.get().getDatabase());
+	}
+	
+	public List<OTaskSession<?>> getActiveTaskSessions(ODatabaseDocument db){
+		List<ODocument> dbResult = db.query(new OSQLSynchQuery<>("select from "+OTaskSession.TASK_SESSION_CLASS+" where "+OTaskSession.Field.STATUS.fieldName()+"=?"),OTaskSession.Status.RUNNING);
+		List<OTaskSession<?>> result = new ArrayList<OTaskSession<?>>();
 		for (ODocument doc : dbResult) {
-			result.add(new OTask(doc));
+			result.add(new OTaskSessionImpl(doc));
 		}
 		return result;
 	}
-	*/
+	
+	public void init(ODatabaseDocument db){
+		List<OTaskSession<?>> sessions = getActiveTaskSessions(db);
+		for (OTaskSession<?> oTaskSession : sessions) {
+			oTaskSession.detachUpdate();
+		}
+	}
 }

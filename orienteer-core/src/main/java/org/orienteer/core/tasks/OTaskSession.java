@@ -12,6 +12,8 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketorientdb.OUserCatchPasswordHook;
+
 /**
  * Base task session.
  *
@@ -40,21 +42,20 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	 * fields of task session ODocument 
 	 */
 	public enum Field{
-		STATUS("status",OType.STRING),
-		START_TIMESTAMP("startTs",OType.DATETIME),
-		FINISH_TIMESTAMP("finishTs",OType.DATETIME),
-		PROGRESS("progress",OType.INTEGER),
-		PROGRESS_CURRENT("progressCur",OType.LONG),
-		PROGRESS_FINAL("progressFin",OType.LONG),
-		IS_BREAKABLE("isBreakable",OType.BOOLEAN),
-		DELETE_ON_FINISH("deleteOnFinish",OType.BOOLEAN),
-		THREAD_NAME("threadName",OType.STRING);
+		THREAD_NAME("threadName"),
+		STATUS("status"),
+		TASK_LINK("task"),
+		START_TIMESTAMP("startTimestamp"),
+		FINISH_TIMESTAMP("finishTimestamp"),
+		PROGRESS("progress"),
+		PROGRESS_CURRENT("progressCurrent"),
+		PROGRESS_FINAL("progressFinal"),
+		IS_STOPPABLE("isStoppable"),
+		DELETE_ON_FINISH("deleteOnFinish");
 		
 		private String fieldName;
-		private OType type;
 		public String fieldName(){ return fieldName;}
-		public OType type(){ return type;}
-		private Field(String fieldName,OType type){	this.fieldName = fieldName;	this.type = type;}
+		private Field(String fieldName){	this.fieldName = fieldName;}
 	}
 	
 	/**
@@ -63,9 +64,21 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	public static void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(TASK_SESSION_CLASS);
-		for (Field f : Field.values()) {
-			helper.oProperty(f.fieldName(),f.type);
-		}
+		helper.oProperty(Field.THREAD_NAME.fieldName(),OType.STRING,10);
+		helper.oProperty(Field.STATUS.fieldName(),OType.STRING,20);
+		helper.oProperty(Field.TASK_LINK.fieldName(),OType.LINK,30).linkedClass(OTask.TASK_CLASS);
+		helper.oProperty(Field.START_TIMESTAMP.fieldName(),OType.DATETIME,40);
+		helper.oProperty(Field.FINISH_TIMESTAMP.fieldName(),OType.DATETIME,50);
+		helper.oProperty(Field.PROGRESS.fieldName(),OType.INTEGER,60);
+		helper.oProperty(Field.PROGRESS_CURRENT.fieldName(),OType.LONG,70);
+		helper.oProperty(Field.PROGRESS_FINAL.fieldName(),OType.LONG,80);
+		helper.oProperty(Field.IS_STOPPABLE.fieldName(),OType.BOOLEAN,90);
+		helper.oProperty(Field.DELETE_ON_FINISH.fieldName(),OType.BOOLEAN,100);
+
+	}
+
+	public static void onInitModule(OrienteerWebApplication app, ODatabaseDocument db){
+		app.getOrientDbSettings().getORecordHooks().add(OTaskSessionOnDeleteHook.class);
 	}
 	
 
@@ -83,10 +96,15 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	public OTaskSession(ODocument sessionDoc) {
 		assert(sessionDoc!=null);
 		this.sessionDoc = sessionDoc;
+	}
+	
+	public void detachUpdate(){
 		if (isDetached()){
 			setField(Field.STATUS, Status.DETACHED);
+			save();
 		}
 	}
+	
 	
 	private void makeSessionDoc(){
 		if (sessionDoc == null){
@@ -133,7 +151,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	}
 	//////////////////////////////////////////////////////////////////////
 	public boolean isDetached() {
-		if(!Status.STOPPED.name().equals(getField(Field.STATUS))){
+		if(Status.RUNNING.name().equals(getField(Field.STATUS))){
 			return (!getSessions().containsKey(getId())); 
 		}
 		return false;
@@ -146,12 +164,12 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		return false;
 	}
 	
-	public boolean isBreakable(){
-		Object isBreakable  = getField(Field.IS_BREAKABLE);
+	public boolean isStoppable(){
+		Object isStoppable  = getField(Field.IS_STOPPABLE);
 		Object status  = getField(Field.STATUS);
-		if (isBreakable != null && status!=null){
+		if (isStoppable != null && status!=null){
 			if(Status.RUNNING.name().equals(status)){
-				return (Boolean)isBreakable;
+				return (Boolean)isStoppable;
 			}
 		}
 		return false;
@@ -161,7 +179,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	public T onStart() {
 		makeSessionDoc();
 		setField(Field.THREAD_NAME,Thread.currentThread().getName());
-		setField(Field.IS_BREAKABLE,false);
+		setField(Field.IS_STOPPABLE,false);
 		setField(Field.DELETE_ON_FINISH,false);
 		setField(Field.STATUS,Status.RUNNING);
 		setField(Field.START_TIMESTAMP,getDateTimeFormat().format(new Date()));
@@ -225,7 +243,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 			unregisterCallback();
 		}
 		if(callback!=null){
-			setField(Field.IS_BREAKABLE,true);
+			setField(Field.IS_STOPPABLE,true);
 			registerCallback(callback);
 		}
 		this.callback = callback;

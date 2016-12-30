@@ -37,8 +37,8 @@ public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTask
 	public static final void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(TASK_SESSION_CLASS,OTaskSession.TASK_SESSION_CLASS);
-			helper.oProperty("in",OType.STRING);
-			helper.oProperty("out",OType.STRING).assignVisualization("textarea");
+			helper.oProperty("in",OType.STRING,35);
+			helper.oProperty("out",OType.STRING,37).assignVisualization("textarea");
 	}	
 	
 	public OConsoleTaskSession() {
@@ -61,6 +61,7 @@ public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTask
 	protected Object getField(Field field) {
 		return getSessionDoc().field(field.fieldName());
 	}
+	//////////////////////////////////////////////////////////////////////
 
 	protected void setField(Field field,Object value) {
 		getSessionDoc().field(field.fieldName(),value);
