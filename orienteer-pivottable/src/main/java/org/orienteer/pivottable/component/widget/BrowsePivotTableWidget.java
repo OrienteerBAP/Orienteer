@@ -38,6 +38,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 
 	private String config;
+	private String customSQL;
 	private double noCacheRnd;
 
 	@Inject
@@ -48,6 +49,7 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		super(id, model, widgetDocumentModel);
 
 		noCacheRnd = Math.random();
+		customSQL = "";
 
 		add(new PivotPanel("pivot", new PropertyModel<String>(this, "url"),
 									new PropertyModel<DisplayMode>(this, "displayMode"),
@@ -56,7 +58,7 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 	}
 
 	public String getUrl() {
-		String sql = getSql();
+		String sql = ((customSQL != null) && (!customSQL.isEmpty())) ? getCustomSQL() : getSql();
 		return "/orientdb/query/db/sql/"+
 					UrlEncoder.PATH_INSTANCE.encode(sql, "UTF-8")+
 				"/99999?rnd="+
@@ -113,6 +115,7 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		ODocument doc = getWidgetDocument();
 		if(doc==null) return;
 		config = doc.field(PivotTableModule.OPROPERTY_PIVOT_TABLE_CONFIG);
+		customSQL = doc.field(PivotTableModule.OPROPERTY_PIVOT_CUSTOM_SQL);
 	}
 
 	@Override
@@ -121,6 +124,7 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		ODocument doc = getWidgetDocument();
 		if(doc==null) return;
 		doc.field(PivotTableModule.OPROPERTY_PIVOT_TABLE_CONFIG, config);
+		doc.field(PivotTableModule.OPROPERTY_PIVOT_CUSTOM_SQL, customSQL);
 	}
 
 	public DisplayMode getDisplayMode() {
@@ -135,4 +139,11 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		this.config = config;
 	}
 
+	public String getCustomSQL() {
+		return customSQL;
+	}
+
+	public void setCustomSQL(String customSQL) {
+		this.customSQL = customSQL;
+	}
 }
