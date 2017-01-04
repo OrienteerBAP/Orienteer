@@ -138,7 +138,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 								target.add(EmbeddedMapEditPanel.this);
 								listView.removeAll();
 							}
-						}.setDefaultFormProcessing(true)
+						}.setDefaultFormProcessing(false)
 						 .setAutoNotify(false)
 						 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
 						 .setBootstrapType(BootstrapType.DANGER)
@@ -235,8 +235,4 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		setConvertedInput(converted);
 	}
 	
-	@Override
-	protected void onModelChanged() {
-		data = null;
-	}
 }
