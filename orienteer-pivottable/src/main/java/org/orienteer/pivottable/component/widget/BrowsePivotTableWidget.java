@@ -13,6 +13,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.encoding.UrlEncoder;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.behavior.UpdateOnDashboardDisplayModeChangeBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -58,7 +59,7 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 	}
 
 	public String getUrl() {
-		String sql = ((customSQL != null) && (!customSQL.isEmpty())) ? getCustomSQL() : getSql();
+		String sql =  !Strings.isEmpty(customSQL) ? customSQL : getSql();
 		return "/orientdb/query/db/sql/"+
 					UrlEncoder.PATH_INSTANCE.encode(sql, "UTF-8")+
 				"/99999?rnd="+
@@ -139,11 +140,4 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 		this.config = config;
 	}
 
-	public String getCustomSQL() {
-		return customSQL;
-	}
-
-	public void setCustomSQL(String customSQL) {
-		this.customSQL = customSQL;
-	}
 }
