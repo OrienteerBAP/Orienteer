@@ -202,6 +202,17 @@ public class OrienteerInitModule extends ServletModule {
 	}
 
 	private static Properties retrieveSystemProperties(Properties loadedProperties) {
+		//Try to load from OS env 
+		Map<String, String> osProperties = System.getenv();
+		for(Map.Entry<String, String> entry : osProperties.entrySet()) {
+			String env = entry.getKey().replace('_', '.');
+			if(loadedProperties.containsKey(env)) loadedProperties.setProperty(env, entry.getValue());
+			else {
+				env = env.toLowerCase();
+				if(loadedProperties.containsKey(env)) loadedProperties.setProperty(env, entry.getValue());
+			}
+		}
+		//Load from Java system properties
 		loadedProperties.putAll(System.getProperties());
 		return loadedProperties;
 	}
