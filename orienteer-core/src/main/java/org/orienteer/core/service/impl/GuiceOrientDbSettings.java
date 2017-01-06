@@ -19,29 +19,54 @@ public class GuiceOrientDbSettings extends OrientDbSettings
 	}
 
 
-	@Inject
+	@Inject(optional=true)
 	@Override
-	public void setDBUserName(@Named("orientdb.db.username") String userName) {
-		super.setDBUserName(userName);
+	public void setGuestUserName(@Named("orientdb.guest.username") String userName) {
+		super.setGuestUserName(userName);
 	}
 
-	@Inject
+	@Inject(optional=true)
 	@Override
-	public void setDBUserPassword(@Named("orientdb.db.password")String password) {
-		super.setDBUserPassword(password);
+	public void setGuestPassword(@Named("orientdb.guest.password")String password) {
+		super.setGuestPassword(password);
 	}
 
-	@Inject
+	@Inject(optional=true)
 	@Override
-	public void setDBInstallatorUserName(@Named("orientdb.db.installator.username") String userName) {
-		super.setDBInstallatorUserName(userName);
+	public void setAdminUserName(@Named("orientdb.admin.username") String userName) {
+		super.setAdminUserName(userName);
 	}
 
-	@Inject
+	@Inject(optional=true)
 	@Override
-	public void setDBInstallatorUserPassword(@Named("orientdb.db.installator.password")String password) {
-		super.setDBInstallatorUserPassword(password);
+	public void setAdminPassword(@Named("orientdb.admin.password")String password) {
+		super.setAdminPassword(password);
 	}
+	
+	@Inject(optional=true)
+	@Deprecated
+    public void setDBUserName(@Named("orientdb.db.username") String userName) {
+		setGuestUserName(userName);
+	}
+
+    @Inject(optional=true)
+    @Deprecated
+    public void setDBUserPassword(@Named("orientdb.db.password")String password) {
+    	setGuestPassword(password);
+    }
+
+    @Inject(optional=true)
+    @Deprecated
+    public void setDBInstallatorUserName(@Named("orientdb.db.installator.username") String userName) {
+    	setAdminUserName(userName);
+    }
+
+    @Inject(optional=true)
+    @Deprecated
+    public void setDBInstallatorUserPassword(@Named("orientdb.db.installator.password")String password) {
+    	setAdminPassword(password);
+    }
+
 
 	@Inject(optional=true)
 	@Override

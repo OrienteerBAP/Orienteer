@@ -64,10 +64,10 @@ Orienteer in standalone mode use embedded jetty server to run yourself. To insta
 orienteer.production=false  //Run Orienteer in production mode or not
 orientdb.embedded=false     //Run embedded OrientDB server?
 orientdb.url=remote:localhost/Orienteer   //OrientDB server URL
-orientdb.db.username=reader               //Default OrientDB user (will be used for guests as well)
-orientdb.db.password=reader               //Password for default OrientDB user
-orientdb.db.installator.username=admin    //OrientDB user to user for administrative stuff
-orientdb.db.installator.password=admin    //Password for OrientDB user used for administrative stuff
+orientdb.guest.username=reader               //Default OrientDB user (will be used for guests as well)
+orientdb.guest.password=reader               //Password for default OrientDB user
+orientdb.admin.username=admin    //OrientDB user to user for administrative stuff
+orientdb.admin.password=admin    //Password for OrientDB user used for administrative stuff
 
 # Optional properties
 
