@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ThreadContext;
@@ -35,6 +36,7 @@ import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
+import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -325,5 +327,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(RequestCycle.get().getRequest().getQueryParameters().getParameterValue(HomePage.FROM_HOME_PARAM).toBoolean(false)) {
 			throw new RestartResponseException(getSignInPageClass());
 		} else super.restartResponseAtSignInPage();
+	}
+	
+	@Override
+	protected void onUnauthorizedPage(Component page) {
+		throw new RestartResponseException(UnauthorizedPage.class);
 	}
 }
