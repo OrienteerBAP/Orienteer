@@ -85,7 +85,10 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 
 	@Override
 	public RequiredOrientResource[] getRequiredResources() {
-		ODocument doc = getModelObject();
+		return getRequiredResources(getModelObject());
+	}
+	
+	public static RequiredOrientResource[] getRequiredResources(ODocument doc) {
 		ORID orid = doc.getIdentity();
 		OrientPermission permission = orid.isNew()?OrientPermission.CREATE:OrientPermission.UPDATE;
 		return OSecurityHelper.requireOClass(doc.getSchemaClass(), permission);

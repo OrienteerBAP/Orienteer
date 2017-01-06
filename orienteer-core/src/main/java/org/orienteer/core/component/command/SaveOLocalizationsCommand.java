@@ -2,6 +2,12 @@ package org.orienteer.core.component.command;
 
 import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.visit.IVisit;
@@ -13,6 +19,7 @@ import org.orienteer.core.module.OrienteerLocalizationModule;
 /**
  * Command to save all OLocalizations and make active those which have both language and value.
  */
+@RequiredOrientResource(value=OSecurityHelper.CLASS, specific=OrienteerLocalizationModule.OCLASS_LOCALIZATION, permissions=OrientPermission.UPDATE)
 public class SaveOLocalizationsCommand extends AbstractSaveCommand<ODocument> {
 
     private OrienteerDataTable<ODocument, ?> table;

@@ -54,7 +54,10 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 		if(object!=null)
 		{
 			OrientPermission permission = (object instanceof IPrototype<?>)?OrientPermission.CREATE:OrientPermission.UPDATE;
-			return OSecurityHelper.requireResource(ORule.ResourceGeneric.SCHEMA, null, permission);
+			return new RequiredOrientResource[] {
+					OSecurityHelper.requireResource(ORule.ResourceGeneric.SCHEMA, null, permission)[0],
+					OSecurityHelper.requireResource(ORule.ResourceGeneric.CLUSTER, "internal", permission)[0]
+				};
 		}
 		else
 		{
