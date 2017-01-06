@@ -29,9 +29,6 @@ public class PivotTableModule extends AbstractOrienteerModule{
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		onUpdate(app, db, 0, getVersion());
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET)
-				.oProperty(OPROPERTY_PIVOT_CUSTOM_SQL, OType.STRING, 200).assignVisualization("textarea");
 		return null;
 	}
 
@@ -48,6 +45,9 @@ public class PivotTableModule extends AbstractOrienteerModule{
 				break;
 		}
 		if(oldVersion+1<newVersion) onUpdate(app, db, oldVersion + 1, newVersion);
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		helper.oClass(WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET)
+				.oProperty(OPROPERTY_PIVOT_CUSTOM_SQL, OType.STRING, 200).assignVisualization("textarea");
 	}
 
 	public void onUpdateToFirstVersion(OrienteerWebApplication app, ODatabaseDocument db)
