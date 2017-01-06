@@ -28,35 +28,20 @@ public class PivotTableModule extends AbstractOrienteerModule{
 	
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
-		onUpdate(app, db, 0, getVersion());
+		
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		helper.oClass(WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET)
+				.oProperty(OPROPERTY_PIVOT_TABLE_CONFIG, OType.STRING, 100).assignVisualization("textarea")
+				.oProperty(OPROPERTY_PIVOT_CUSTOM_SQL, OType.STRING, 110).assignVisualization("textarea");
 		return null;
 	}
 
 	@Override
 	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
 			int oldVersion, int newVersion) {
-		if(oldVersion>=newVersion) return;
-		switch (oldVersion+1)
-		{
-			case 1:
-				onUpdateToFirstVersion(app, db);
-				break;
-			default:
-				break;
-		}
-		if(oldVersion+1<newVersion) onUpdate(app, db, oldVersion + 1, newVersion);
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET)
-				.oProperty(OPROPERTY_PIVOT_CUSTOM_SQL, OType.STRING, 200).assignVisualization("textarea");
+		onInstall(app, db);
 	}
 
-	public void onUpdateToFirstVersion(OrienteerWebApplication app, ODatabaseDocument db)
-	{
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET)
-				.oProperty(OPROPERTY_PIVOT_TABLE_CONFIG, OType.STRING, 100).assignVisualization("textarea");
-	}
-	
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
