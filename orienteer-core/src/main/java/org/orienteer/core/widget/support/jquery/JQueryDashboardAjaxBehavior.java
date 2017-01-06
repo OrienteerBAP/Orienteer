@@ -65,8 +65,8 @@ class JQueryDashboardAjaxBehavior extends AbstractDefaultAjaxBehavior {
 	public void renderHead(Component component, IHeaderResponse response) {
 		super.renderHead(component, response);
 		DashboardPanel<?> dashboard = (DashboardPanel<?>)component;
-		response.render(JavaScriptHeaderItem.forReference(JQueryDashboardSupport.JQUERY_UI_JS));
 		response.render(CssHeaderItem.forReference(JQueryDashboardSupport.WIDGET_CSS));
+		response.render(JavaScriptHeaderItem.forReference(JQueryDashboardSupport.JQUERY_UI_JS));
 		Map<String, Object> variables = new HashMap<String, Object>();
 		variables.put("componentId", dashboard.getMarkupId());
 		variables.put("callBackScript", getCallbackScript());
