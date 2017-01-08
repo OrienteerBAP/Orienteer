@@ -22,7 +22,7 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 /**
  * {@link Command} to save a schema specific entities: {@link OClass}, {@link OProperty}, {@link OIndex} 
  *
- * @param <T>
+ * @param <T> the type of an entity to which this command can be applied
  */
 public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISecuredComponent {
 

@@ -52,7 +52,7 @@ public interface IOrienteerModule
 	 * @param moduleDoc module {@link ODocument}
 	 * @param oldVersion previous version
 	 * @param newVersion new version
-	 * @return
+	 * @return {@link ODocument} of a module or null if document was not exchanged
 	 */
 	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc, int oldVersion, int newVersion);
 	

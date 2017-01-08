@@ -222,7 +222,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 
 	/**
-	 * Set fetch plan (wiew orientdb documentation, like http://orientdb.com/docs/2.0/orientdb.wiki/Fetching-Strategies.html) 
+	 * Set fetch plan (view orientdb documentation, like http://orientdb.com/docs/2.0/orientdb.wiki/Fetching-Strategies.html)
+	 * @param fetchPlan fetch plan to be used 
 	 */
 	public void setFetchPlan(String fetchPlan) {
 		this.fetchPlan = fetchPlan;
@@ -234,6 +235,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 
 	/**
 	 * Rewrite "@class" field in root document(s) 
+	 * @param inputAsOClass value to be used for rewriting
 	 */
 	public void setInputAsOClass(String inputAsOClass) {
 		this.inputAsOClass = inputAsOClass;
@@ -245,6 +247,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 
 	/**
 	 * Save ODocument from input data BEFORE query   
+	 * @param preload preloading flag
 	 */
 	public void setPreload(boolean preload) {
 		this.preload = preload;
@@ -256,6 +259,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 
 	/**
 	 * Clear ODocuments RID`s in PRELOAD phase BEFORE save
+	 * @param makeNew should document be created as new
 	 */
 	public void setMakeNew(boolean makeNew) {
 		this.makeNew = makeNew;
@@ -268,7 +272,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	/**
 	 * Output data type of single row. Can be "map", "object", "list" or "json" 
 	 * Default value - "map"
-	 * 
+	 * @param outputType output type
 	 */
 	public void setOutputType(OrientDBCamelDataType outputType) {
 		this.outputType = outputType;
@@ -279,7 +283,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 
 	/**
-	 *	Max fetch depth. Only for "map" type 
+	 * Max fetch depth. Only for "map" type 
+	 * @param maxDepth max depth to be loaded
 	 */
 	public void setMaxDepth(int maxDepth) {
 		this.maxDepth = maxDepth;
@@ -290,7 +295,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 
 	/**
-	 *	Fetch all embedded(not linked) objects, ignore "maxDepth". Only for "map" type. 
+	 * Fetch all embedded(not linked) objects, ignore "maxDepth". Only for "map" type. 
+	 * @param fetchAllEmbedded should all embedded be fetched?
 	 */
 	public void setFetchAllEmbedded(boolean fetchAllEmbedded) {
 		this.fetchAllEmbedded = fetchAllEmbedded;

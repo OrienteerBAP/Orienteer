@@ -30,6 +30,7 @@ public class ODBScriptEngine implements IScriptEngine {
 		return ODBScriptEngineFactory.ENGINE_NAME;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public ScriptResult eval(String command) {
 		ScriptResult result = new ScriptResult(ODBScriptEngineFactory.ENGINE_NAME, command);

@@ -49,8 +49,6 @@ import java.util.ServiceLoader;
  * <h1>Properties</h1>
  * Properties can be retrieved from both files from the local filesystem and
  * files on the Java classpath. 
- * System property {@link #ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME} defines
- * qualifier which should be used in properties lookup.
  * Highlevel lookup:
  * <ol>
  * <li>If there is a qualifier - lookup by this qualifier</li>

@@ -32,7 +32,7 @@ public class ShowHideParentsCommand<T> extends TriggerCommand<T>
 		if(classModel!=null)
 		{
 			OClass oClass = classModel.getObject();
-			setVisible(oClass!=null && oClass.getSuperClass()!=null);
+			setVisible(oClass!=null && oClass.hasSuperClasses());
 		}
 	}
 

@@ -1,5 +1,6 @@
 package org.orienteer.core.component.widget.document;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -72,8 +73,8 @@ public class ExternalPageWidget extends AbstractWidget<ODocument> {
         ODocument doc = getWidgetDocument();
         if(doc==null) return;
 
-        externalPageUrl = (String)Objects.firstNonNull(doc.field(OPROPERTY_PAGE_URL), "");
-        style = (String)Objects.firstNonNull(doc.field(OPROPERTY_STYLE), "");
+        externalPageUrl = (String)MoreObjects.firstNonNull(doc.field(OPROPERTY_PAGE_URL), "");
+        style = (String)MoreObjects.firstNonNull(doc.field(OPROPERTY_STYLE), "");
     }
 
     @Override

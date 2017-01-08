@@ -36,6 +36,7 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     @Inject
     private OClassIntrospector oClassIntrospector;
 
+    @SuppressWarnings("unchecked")
     public GraphVerticesWidget(String id, final IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
 

@@ -7,6 +7,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -219,7 +220,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	}
 
 	/**
-	 * A caption for the table. It renders itself only if {@link DataTable#getCaptionModel()} has
+	 * A caption for the table. It renders itself only if {@link DataTable} caption has
 	 * non-empty value.
 	 */
 	private static class Caption extends Label
