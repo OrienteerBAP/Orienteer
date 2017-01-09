@@ -22,14 +22,18 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.camel.component.CamelEventHandler;
 import org.orienteer.camel.component.OrientDBComponent;
+import org.orienteer.camel.tasks.CamelEventHandler;
+import org.orienteer.camel.tasks.OCamelTaskSession;
+import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -40,6 +44,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 /**
  * Widget for Orienteer Camel integration, linked to OIntegrationConfig
@@ -67,6 +72,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 		CONTEXT_DATA_LIST.add("status");
 		CONTEXT_DATA_LIST.add("uptime");
 		CONTEXT_DATA_LIST.add("version");
+		CONTEXT_DATA_LIST.add("session");
 	}	
 	
 	private class CamelContextModel extends LoadableDetachableModel<CamelContext>{
@@ -83,11 +89,20 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 
 		form = new Form<Void>("form");
         
-        OrienteerStructureTable<CamelContext, String> structuredTable = new OrienteerStructureTable<CamelContext, String>("table", new CamelContextModel(), CONTEXT_DATA_LIST) {
+        OrienteerStructureTable<CamelContext, String> structuredTable = new OrienteerStructureTable<CamelContext, String>(
+        		"table", new CamelContextModel(), CONTEXT_DATA_LIST) {
 			private static final long serialVersionUID = 1L;
 			@Override
 			protected Component getValueComponent(String id, IModel<String> rowModel) {
-				return new Label(id,new PropertyModel<>(getModel(), rowModel.getObject()));
+				if(rowModel.getObject().equals("session")){
+					return new ODocumentPageLink(id, new PropertyModel<ODocument>(new OQueryModel<ODocument>(
+							"select from "+OCamelTaskSession.TASK_SESSION_CLASS+" where "+
+									OCamelTaskSession.Field.CONFIG.fieldName()+"="+CamelWidget.this.getModelObject().getIdentity()+" and "+
+									OTaskSession.Field.STATUS.fieldName()+"=\""+OTaskSession.Status.RUNNING+"\""
+							),"0")).setDocumentNameAsBody(true);
+				}else{
+					return new Label(id,new PropertyModel<>(getModel(), rowModel.getObject()));
+				}
 			}
 			@Override
 			protected IModel<?> getLabelModel(Component resolvedComponent, IModel<String> rowModel) {
@@ -247,7 +262,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 			properties.put(OrientDBComponent.DB_PASSWORD, session.getPassword());
 			context.setProperties(properties);
 			
-			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(""));
+			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(new OCamelTaskSessionCallback(context),rid));
 
 			contextMap.put(rid, context);
 		}

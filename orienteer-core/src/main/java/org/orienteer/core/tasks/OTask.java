@@ -43,7 +43,7 @@ public abstract class OTask {
 	public static void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oAbstractClass(TASK_CLASS);
-		helper.oProperty(Field.NAME.fieldName(),OType.STRING,10);
+		helper.oProperty(Field.NAME.fieldName(),OType.STRING,10).markAsDocumentName();
 		helper.oProperty(Field.DESCRIPTION.fieldName(),OType.STRING,20);
 		helper.oProperty(Field.AUTODELETE_SESSIONS.fieldName(),OType.BOOLEAN,30);
 		helper.oProperty(Field.SESSIONS.fieldName(),OType.LINKSET,40);//avoid crosslinking //.linkedClass(OTask.TASK_CLASS);

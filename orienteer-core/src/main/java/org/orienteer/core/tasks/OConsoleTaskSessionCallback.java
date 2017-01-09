@@ -13,7 +13,7 @@ public class OConsoleTaskSessionCallback implements ITaskSessionCallback{
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws Exception {
 		if (innerProcess!= null){
 			innerProcess.destroy();
 		}		

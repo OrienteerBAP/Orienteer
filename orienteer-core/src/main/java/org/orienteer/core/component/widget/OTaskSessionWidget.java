@@ -87,7 +87,12 @@ public class OTaskSessionWidget extends AbstractWidget<ODocument>{
 			@Override
 			public void onClick() {
 				OTaskSessionImpl taskSession = new OTaskSessionImpl(OTaskSessionWidget.this.getModelObject());
-				taskSession.getCallback().stop();
+				try {
+					taskSession.getCallback().stop();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				setEnabled(false);
 			}
 		};

@@ -64,7 +64,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	public static void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(TASK_SESSION_CLASS);
-		helper.oProperty(Field.THREAD_NAME.fieldName(),OType.STRING,10);
+		helper.oProperty(Field.THREAD_NAME.fieldName(),OType.STRING,10).markAsDocumentName();
 		helper.oProperty(Field.STATUS.fieldName(),OType.STRING,20);
 		helper.oProperty(Field.TASK_LINK.fieldName(),OType.LINK,30).linkedClass(OTask.TASK_CLASS);
 		helper.oProperty(Field.START_TIMESTAMP.fieldName(),OType.DATETIME,40);

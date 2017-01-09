@@ -5,5 +5,5 @@ package org.orienteer.core.tasks;
  *
  */
 public interface ITaskSessionCallback {
-	public void stop();
+	public void stop() throws Exception;
 }

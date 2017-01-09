@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RoutesDefinition;
+import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.camel.widget.CamelWidget;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
@@ -44,7 +45,8 @@ public class Module extends AbstractOrienteerModule{
 		app.setMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
 		app.mountPages("org.orienteer.camel.web");
 		app.registerWidgets("org.orienteer.camel.widget");
-
+		
+		OCamelTaskSession.onInstallModule(app, db);
 	}
 	
 	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
