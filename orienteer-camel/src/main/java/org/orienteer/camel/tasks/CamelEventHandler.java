@@ -67,11 +67,9 @@ public class CamelEventHandler extends EventNotifierSupport{
 			taskSession = new OCamelTaskSessionImpl();
 			taskSession.onStart().
 				setCallback(callback).
-				setDeleteOnFinish(false).
+				setDeleteOnFinish(true).
 				setConfig(configId).
 			end();
-			LOG.info("============================================================");
-			LOG.info(configId);
 		}
 		super.doStart();
 	}
