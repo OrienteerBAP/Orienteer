@@ -9,6 +9,11 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * Task session for Orienteer Camel integration
+ *
+ * @param <T> just for chaining, see {@link OTaskSession}
+ */
 public class OCamelTaskSession<T extends OCamelTaskSession<T>> extends OTaskSession<T>{
 
 	public static final String TASK_SESSION_CLASS = "OCamelTaskSession";
