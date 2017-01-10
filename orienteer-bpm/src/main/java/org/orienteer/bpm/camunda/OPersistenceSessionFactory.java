@@ -26,8 +26,8 @@ public class OPersistenceSessionFactory implements SessionFactory{
 		OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
 		IOrientDbSettings settings = app.getOrientDbSettings();
 		ODatabaseDocumentTx db = settings.getDatabasePoolFactory().get(settings.getDBUrl(), 
-										settings.getDBInstallatorUserName(), 
-										settings.getDBInstallatorUserPassword()).acquire();
+										settings.getAdminUserName(), 
+										settings.getAdminPassword()).acquire();
 //		return new OPersistenceSession((ODatabaseDocumentTx) ODatabaseRecordThreadLocal.INSTANCE.get());
 		return new OPersistenceSession(db);
 	}

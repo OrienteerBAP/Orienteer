@@ -22,9 +22,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
- * 
- * Data provider for {@link OIncidentReceiver}. 
- * 
+ * REST entry point of OLogger events 
  */
 public class OLoggerReceiverResource extends AbstractResource {
 	/**

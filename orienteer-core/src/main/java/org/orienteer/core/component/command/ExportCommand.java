@@ -18,7 +18,7 @@ import com.google.inject.Inject;
 
 /**
  * Command to export data into default format 
- * @param <T>
+ * @param <T> the type of an entity to which this command can be applied
  */
 public class ExportCommand <T> extends Command<T> {
 	

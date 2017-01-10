@@ -12,27 +12,34 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.BinaryEditPanel;
 import org.orienteer.core.component.property.BinaryViewPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.EmbeddedCollectionEditPanel;
 import org.orienteer.core.component.property.EmbeddedCollectionViewPanel;
+import org.orienteer.core.component.property.EmbeddedDocumentPanel;
 import org.orienteer.core.component.property.EmbeddedMapEditPanel;
 import org.orienteer.core.component.property.EmbeddedMapViewPanel;
-import org.orienteer.core.component.property.EmbeddedStructureTable;
 import org.orienteer.core.component.property.LinkEditPanel;
 import org.orienteer.core.component.property.LinkViewPanel;
 import org.orienteer.core.component.property.LinksCollectionEditPanel;
 import org.orienteer.core.component.property.LinksCollectionViewPanel;
+import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.service.IOClassIntrospector;
 
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 
+import com.google.common.base.Predicate;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -57,7 +64,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 	}
 
 	public <V> Component createComponent(String id, DisplayMode mode,
-			IModel<ODocument> documentModel, IModel<OProperty> propertyModel, OType oType, IModel<V> valueModel) {
+			final IModel<ODocument> documentModel,final  IModel<OProperty> propertyModel, OType oType, IModel<V> valueModel) {
 		OProperty property = propertyModel.getObject();
 		if(DisplayMode.VIEW.equals(mode))
 		{
@@ -75,7 +82,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
                 case EMBEDDED:
-                	return new EmbeddedStructureTable(id, documentModel, propertyModel, mode.asModel());
+                	return new EmbeddedDocumentPanel(id, (IModel<ODocument>)valueModel, new PropertyModel<OClass>(propertyModel, "linkedClass"), mode.asModel());
                 case EMBEDDEDLIST:
                 case EMBEDDEDSET:
                 	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
@@ -104,7 +111,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) valueModel);
                 case EMBEDDED:
-                	return new EmbeddedStructureTable(id, documentModel, propertyModel, mode.asModel());
+                	return new EmbeddedDocumentPanel(id, (IModel<ODocument>)valueModel, new PropertyModel<OClass>(propertyModel, "linkedClass"), mode.asModel());
                 case EMBEDDEDLIST:
                 	return new EmbeddedCollectionEditPanel<Object, List<Object>>(id, documentModel, propertyModel, ArrayList.class);
                 case EMBEDDEDSET:

@@ -8,7 +8,7 @@ import org.orienteer.core.widget.AbstractWidget;
 
 /**
  * Command to make widget fullscreen and back 
- * @param <T>
+ * @param <T> the type of an entity to which this command can be applied
  */
 public class FullScreenCommand<T> extends AjaxCommand<T> {
 	

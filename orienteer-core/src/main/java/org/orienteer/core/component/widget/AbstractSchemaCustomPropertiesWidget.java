@@ -38,10 +38,13 @@ import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
 import ru.ydn.wicket.wicketorientdb.components.RootForm;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
 import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -102,6 +105,8 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 			{
 				setIcon(FAIconType.plus_circle);
 				setBootstrapType(BootstrapType.SUCCESS);
+				OSecurityHelper.secureComponent(this, OSecurityHelper.requireResource(ResourceGeneric.SCHEMA, null, OrientPermission.UPDATE));
+				OSecurityHelper.secureComponent(this, OSecurityHelper.requireResource(ResourceGeneric.CLUSTER, "internal", OrientPermission.UPDATE));
 			}
 			@Override
 			protected void initializeContent(final ModalWindow modal) {

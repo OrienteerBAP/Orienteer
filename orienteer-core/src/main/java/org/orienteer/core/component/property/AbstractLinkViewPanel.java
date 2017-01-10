@@ -8,7 +8,7 @@ import org.apache.wicket.model.IModel;
 /**
  * {@link GenericPanel} for displaying of {@link Link}s
  *
- * @param <T>
+ * @param <T> the type of the panel's model object
  */
 public abstract class AbstractLinkViewPanel<T> extends GenericPanel<T> {
 

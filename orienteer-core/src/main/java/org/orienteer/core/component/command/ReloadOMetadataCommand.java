@@ -16,11 +16,15 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
 
 /**
  * {@link Command} to reload {@link OMetadata}/{@link OSchema}
  */
-@RequiredOrientResource(value = OSecurityHelper.DATABASE, permissions=OrientPermission.READ)
+@RequiredOrientResources({
+	@RequiredOrientResource(value = OSecurityHelper.DATABASE, permissions=OrientPermission.READ),
+	@RequiredOrientResource(value = OSecurityHelper.SYSTEM_CLUSTERS, permissions=OrientPermission.READ),
+})
 public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 {
 

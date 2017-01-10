@@ -10,7 +10,7 @@ import org.apache.wicket.request.resource.ByteArrayResource;
 /**
  * {@link GenericPanel} to view binary images
  *
- * @param <V>
+ * @param <V> the type of the panel's model object
  */
 public class ImageViewPanel<V> extends GenericPanel<V> {
 

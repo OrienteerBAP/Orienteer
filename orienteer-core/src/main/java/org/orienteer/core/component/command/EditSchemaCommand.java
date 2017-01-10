@@ -13,13 +13,17 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
 
 /**
  * {@link Command} to edit schema related entities
  *
  * @param <T> the type of an entity to which this command can be applied
  */
-@RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.UPDATE)
+@RequiredOrientResources({
+	@RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.UPDATE),
+	@RequiredOrientResource(value=OSecurityHelper.CLUSTER, specific="internal", permissions=OrientPermission.UPDATE)
+})
 public class EditSchemaCommand<T> extends EditCommand<T>
 {
 

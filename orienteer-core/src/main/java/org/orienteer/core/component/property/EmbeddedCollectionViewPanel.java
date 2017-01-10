@@ -38,7 +38,8 @@ public class EmbeddedCollectionViewPanel<T, M extends Collection<T>> extends Gen
 	public EmbeddedCollectionViewPanel(String id, final IModel<ODocument> documentModel, final IModel<OProperty> propertyModel) {
 		super(id, new DynamicPropertyValueModel<M>(documentModel, propertyModel));
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
-		final OType oType = propertyModel.getObject().getLinkedType();
+		OProperty property = propertyModel.getObject();
+		final OType oType = property.getLinkedType()!=null?property.getLinkedType():OType.EMBEDDED;
 		ListView<T> listView = new ListView<T>("items", new CollectionAdapterModel<T, M>(getModel())) {
 
 			@Override

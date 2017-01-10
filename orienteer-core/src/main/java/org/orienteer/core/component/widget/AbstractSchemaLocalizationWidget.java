@@ -15,6 +15,8 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.EditODocumentCommand;
+import org.orienteer.core.component.command.EditODocumentsCommand;
 import org.orienteer.core.component.command.EditSchemaCommand;
 import org.orienteer.core.component.command.SaveOLocalizationsCommand;
 import org.orienteer.core.component.property.DisplayMode;
@@ -26,7 +28,11 @@ import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.model.LanguagesChoiceProvider;
 import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
+
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,15 +64,17 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
         columns.add(new DeleteRowCommandColumn(langProperty, form, getModeModel()));
 
         table = new OrienteerDataTable<ODocument, String>("localizations", columns, provider, 20);
-        table.addCommand(new EditSchemaCommand<ODocument>(table, getModeModel()));
-        final SaveOLocalizationsCommand saveCommand = new SaveOLocalizationsCommand(table, getModeModel());
-        table.addCommand(saveCommand);
+        table.addCommand(new EditODocumentsCommand(table, getModeModel(), new OClassModel(OrienteerLocalizationModule.OCLASS_LOCALIZATION)));
+        table.addCommand(new SaveOLocalizationsCommand(table, getModeModel()));
         table.setCaptionModel(new ResourceModel("class.localization"));
 
         form.add(table);
         add(form);
 
         ajaxFormCommand = new AjaxCommand<ODocument>("add", "command.add") {
+        	{
+        		OSecurityHelper.secureComponent(this, OSecurityHelper.requireOClass(OrienteerLocalizationModule.OCLASS_LOCALIZATION, OrientPermission.CREATE));
+        	}
             @Override
             public void onClick(AjaxRequestTarget target) {
                 ODocument newLocalization = new ODocument(OrienteerLocalizationModule.OCLASS_LOCALIZATION);

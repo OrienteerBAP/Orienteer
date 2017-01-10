@@ -22,7 +22,7 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 /**
  * {@link Command} to save a schema specific entities: {@link OClass}, {@link OProperty}, {@link OIndex} 
  *
- * @param <T>
+ * @param <T> the type of an entity to which this command can be applied
  */
 public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISecuredComponent {
 
@@ -54,7 +54,10 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 		if(object!=null)
 		{
 			OrientPermission permission = (object instanceof IPrototype<?>)?OrientPermission.CREATE:OrientPermission.UPDATE;
-			return OSecurityHelper.requireResource(ORule.ResourceGeneric.SCHEMA, null, permission);
+			return new RequiredOrientResource[] {
+					OSecurityHelper.requireResource(ORule.ResourceGeneric.SCHEMA, null, permission)[0],
+					OSecurityHelper.requireResource(ORule.ResourceGeneric.CLUSTER, "internal", permission)[0]
+				};
 		}
 		else
 		{

@@ -20,7 +20,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * {@link GenericPanel} to view binary parameters (download)
  *
- * @param <V>
+ * @param <V> the type of the panel's model object
  */
 public class BinaryViewPanel<V> extends GenericPanel<V> {
 	
