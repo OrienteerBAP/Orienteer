@@ -51,20 +51,17 @@ public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTask
 	}
 
 	public T appendOut(String out){
-		String field = (String)getField(Field.OUTPUT);
-		if (field==null) field = "";
-		setField(Field.OUTPUT, field.concat(out).concat("\n"));
+		appendField(Field.OUTPUT, out.concat("\n"));
 		return this.asT();
 	}
 	
 	//////////////////////////////////////////////////////////////////////
-	protected Object getField(Field field) {
-		return getSessionDoc().field(field.fieldName());
-	}
-	//////////////////////////////////////////////////////////////////////
-
 	protected void setField(Field field,Object value) {
-		getSessionDoc().field(field.fieldName(),value);
+		getSessionUpdater().set(field.fieldName(), value);
+	}
+
+	protected void appendField(Field field,String value) {
+		getSessionUpdater().append(field.fieldName(), value);
 	}
 
 }

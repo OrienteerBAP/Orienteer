@@ -2,6 +2,7 @@ package org.orienteer.camel.tasks;
 
 import java.util.EventObject;
 
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.management.event.ExchangeSentEvent;
 import org.apache.camel.support.EventNotifierSupport;
@@ -22,26 +23,28 @@ public class CamelEventHandler extends EventNotifierSupport{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CamelEventHandler.class);
 	private ITaskSessionCallback callback;
-	private OCamelTaskSessionImpl taskSession;
+	private volatile OCamelTaskSessionImpl taskSession;
 	private String configId;
+	private CamelContext context;
 	
-	public CamelEventHandler(ITaskSessionCallback callback,String configId) {
+	public CamelEventHandler(ITaskSessionCallback callback,String configId,CamelContext context) {
 		this.callback = callback;
 		this.configId = configId;
-		
+		this.context = context;
 	}
 
 	@Override
 	public void notify(EventObject event) throws Exception {
+    	taskSession.onProcess();
+        LOG.info(Thread.currentThread().getName());		
         if (event instanceof ExchangeSentEvent) {
         	ExchangeSentEvent sent = (ExchangeSentEvent) event;
         	String logRecord ="Took " + sent.getTimeTaken() + " millis to send to: " + sent.getEndpoint(); 
         	LOG.info(logRecord);
+        	taskSession.incrementCurrentProgress();
         }
         LOG.info("Event = "+ event);		
-    	taskSession.onProcess().
-    		incrementCurrentProgress().
-    		appendOut(event.toString()).
+    	taskSession.appendOut(event.toString()).
     	end();
 	}
 
@@ -63,12 +66,15 @@ public class CamelEventHandler extends EventNotifierSupport{
 	
 	@Override
 	protected void doStart() throws Exception {
+        LOG.info(Thread.currentThread().getName());		
+
 		if (taskSession == null){
 			taskSession = new OCamelTaskSessionImpl();
 			taskSession.onStart().
 				setCallback(callback).
-				setDeleteOnFinish(true).
+				setDeleteOnFinish(false).
 				setConfig(configId).
+				setFinalProgress(context.getRoutes().size()).
 			end();
 		}
 		super.doStart();

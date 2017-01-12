@@ -3,7 +3,10 @@ package org.orienteer.core.tasks;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 
+import org.apache.wicket.Application;
+import org.apache.wicket.Session;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.TaskManagerModule;
 import org.orienteer.core.util.OSchemaHelper;
@@ -23,21 +26,36 @@ import ru.ydn.wicket.wicketorientdb.OUserCatchPasswordHook;
 public class OTaskSession <T extends OTaskSession<T>>{
 	
 	/**
-	 * 
 	 * Statuses of task session
-	 *
 	 */
 	public enum Status{
 		STOPPED,STOPPING,RUNNING,DETACHED
 	}
+
+	/**
+	 *
+	 */
+	public enum ErrorTypes{
+		NONE,UNKNOWN_ERROR
+	}
+	
+	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	
 	
 	private String sessionId;
 	private ODocument sessionDoc;
+	private OTaskSessionUpdater sessionUpdater;
 	private String sessionClass;
 	private ITaskSessionCallback callback;
+	private boolean deleteOnFinish;
+	private boolean stoppable;
+	
+	private OrienteerWebApplication app;
+	private Session sess;
+
 
 	public static final String TASK_SESSION_CLASS = "OTaskSession";
-
+	
 	/**
 	 * fields of task session ODocument 
 	 */
@@ -51,7 +69,9 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		PROGRESS_CURRENT("progressCurrent"),
 		PROGRESS_FINAL("progressFinal"),
 		IS_STOPPABLE("isStoppable"),
-		DELETE_ON_FINISH("deleteOnFinish");
+		DELETE_ON_FINISH("deleteOnFinish"),
+		ERROR_TYPE("errorType"),
+		ERROR("error");
 		
 		private String fieldName;
 		public String fieldName(){ return fieldName;}
@@ -74,6 +94,8 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		helper.oProperty(Field.PROGRESS_FINAL.fieldName(),OType.LONG,80);
 		helper.oProperty(Field.IS_STOPPABLE.fieldName(),OType.BOOLEAN,90);
 		helper.oProperty(Field.DELETE_ON_FINISH.fieldName(),OType.BOOLEAN,100);
+		helper.oProperty(Field.ERROR_TYPE.fieldName(),OType.INTEGER,110);
+		helper.oProperty(Field.ERROR.fieldName(),OType.STRING,120);
 
 	}
 
@@ -81,31 +103,16 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		app.getOrientDbSettings().getORecordHooks().add(OTaskSessionOnDeleteHook.class);
 	}
 	
-
-	//new session
 	public OTaskSession() {
 		this(TASK_SESSION_CLASS);
 	}
 	
-	//new session
 	public OTaskSession(String sessionClass) {
 		this.sessionClass = sessionClass;
+		app = OrienteerWebApplication.get();
+		sess = Session.get();
 	}
-	
-	//old session
-	public OTaskSession(ODocument sessionDoc) {
-		assert(sessionDoc!=null);
-		this.sessionDoc = sessionDoc;
-	}
-	
-	public void detachUpdate(){
-		if (isDetached()){
-			setField(Field.STATUS, Status.DETACHED);
-			save();
-		}
-	}
-	
-	
+
 	private void makeSessionDoc(){
 		if (sessionDoc == null){
 			sessionDoc = new ODocument(sessionClass);
@@ -122,18 +129,26 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	}
 	
 	private void registerCallback(ITaskSessionCallback callback){
-		getCallbacks().put(getId(), callback);
+		getCallbacks(app).put(getId(), callback);
 	}
 
 	private void unregisterCallback(){
-		getCallbacks().remove(getId());
+		getCallbacks(app).remove(getId());
 	}
+	//////////////////////////////////////////////////////////////////////
+	protected OTaskSessionUpdater getSessionUpdater(){
+		if (sessionUpdater==null){
+			sessionUpdater = new OTaskSessionUpdater(app,sess,getSessionDoc());
+		}
+		return sessionUpdater;
+	}
+	
 	//////////////////////////////////////////////////////////////////////
 	
 	private void linkCallback(){
 		assert(sessionDoc!=null);
 		
-		callback = getCallbacks().get(getId());
+		callback = getCallbacks(app).get(getId());
 	}
 
 	private void unlinkCallback(){
@@ -143,47 +158,36 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	
 	//////////////////////////////////////////////////////////////////////
 	private void registerSelf(){
-		getSessions().put(getId(), 1);
+		getSessions(app).put(getId(), 1);
 	}
 	
 	private void unregisterSelf() {
-		getSessions().remove(getId());
+		getSessions(app).remove(getId());
 	}
 	//////////////////////////////////////////////////////////////////////
-	public boolean isDetached() {
-		if(Status.RUNNING.name().equals(getField(Field.STATUS))){
-			return (!getSessions().containsKey(getId())); 
-		}
-		return false;
-	}
-	
+
 	public boolean isDeleteOnFinish() {
-		Object result  = getField(Field.DELETE_ON_FINISH);
-		if (result != null)
-			return (Boolean)result;
-		return false;
+		return deleteOnFinish;
 	}
-	
-	public boolean isStoppable(){
-		Object isStoppable  = getField(Field.IS_STOPPABLE);
-		Object status  = getField(Field.STATUS);
-		if (isStoppable != null && status!=null){
-			if(Status.RUNNING.name().equals(status)){
-				return (Boolean)isStoppable;
-			}
-		}
-		return false;
-	}	
+
 	//////////////////////////////////////////////////////////////////////
 	//call from listener
+	public T onStart(OTask task) {
+		onStart();
+		setField(Field.TASK_LINK,task.getOTask().getIdentity());
+		task.linkSession(getId());
+		return this.asT();
+	}
+	
 	public T onStart() {
 		makeSessionDoc();
 		setField(Field.THREAD_NAME,Thread.currentThread().getName());
-		setField(Field.IS_STOPPABLE,false);
-		setField(Field.DELETE_ON_FINISH,false);
+		setStoppable(false);
+		setDeleteOnFinish(false);
 		setField(Field.STATUS,Status.RUNNING);
 		setField(Field.START_TIMESTAMP,getDateTimeFormat().format(new Date()));
 		registerSelf();
+		getSessionUpdater().start();
 		return this.asT();
 	}
 	
@@ -200,8 +204,9 @@ public class OTaskSession <T extends OTaskSession<T>>{
 			setField(Field.FINISH_TIMESTAMP,getDateTimeFormat().format(new Date()));
 			setField(Field.STATUS,Status.STOPPED);
 			end();
+			getSessionUpdater().stop();
 		}else{
-			sessionDoc.delete();
+			getSessionUpdater().deleteSession();
 		}
 	}
 	
@@ -209,7 +214,9 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		return this.asT();
 	}
 	
-	public T onError() {
+	public T onError(ErrorTypes type,String error) {
+		setField(Field.ERROR_TYPE,type);
+		setField(Field.ERROR,error);
 		return this.asT();
 	}
 
@@ -224,12 +231,12 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	}
 	
 	public T incrementCurrentProgress() {
-		Object oldProgress = getField(Field.PROGRESS_CURRENT);
-		if (oldProgress==null){
-			setField(Field.PROGRESS_CURRENT,1);
-		}else{
-			setField(Field.PROGRESS_CURRENT,(Long)oldProgress+1);
-		}
+		incrementField(Field.PROGRESS_CURRENT, 1);
+		return this.asT();
+	}
+
+	public T incrementCurrentProgress(long value) {
+		incrementField(Field.PROGRESS_CURRENT, value);
 		return this.asT();
 	}
 	
@@ -243,7 +250,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 			unregisterCallback();
 		}
 		if(callback!=null){
-			setField(Field.IS_STOPPABLE,true);
+			setStoppable(true);
 			registerCallback(callback);
 		}
 		this.callback = callback;
@@ -251,24 +258,29 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	}
 	
 	public T setDeleteOnFinish(boolean deleteOnFinish) {
+		this.deleteOnFinish = deleteOnFinish;
 		setField(Field.DELETE_ON_FINISH,deleteOnFinish);
+		return this.asT();
+	}
+
+	private T setStoppable(boolean stoppable) {
+		this.stoppable = stoppable;
+		setField(Field.IS_STOPPABLE,stoppable);
 		return this.asT();
 	}
 	
 	public void end(){
 		assert(sessionDoc!=null);
-		sessionDoc.save();
-	}
-	
-	private void save(){
-		assert(sessionDoc!=null);
-		sessionDoc.save();
+		getSessionUpdater().doSave();
 	}
 	
 	//////////////////////////////////////////////////////////////////////
 
 	private SimpleDateFormat getDateTimeFormat(){
-		return sessionDoc.getDatabase().getStorage().getConfiguration().getDateTimeFormatInstance();
+	    final SimpleDateFormat dateTimeFormatInstance = new SimpleDateFormat(DATE_TIME_FORMAT);
+	    dateTimeFormatInstance.setLenient(false);
+	    dateTimeFormatInstance.setTimeZone(TimeZone.getDefault());
+	    return dateTimeFormatInstance;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -276,12 +288,20 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		return (T) this;
 	}
 	//////////////////////////////////////////////////////////////////////
-	protected Map<String, ITaskSessionCallback> getCallbacks() {
+	protected static final Map<String, ITaskSessionCallback> getCallbacks() {
 		return OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
 	}
 
-	protected Map<String, Integer> getSessions() {
+	private Map<String, ITaskSessionCallback> getCallbacks(Application app) {
+		return app.getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
+	}
+
+	protected static final Map<String, Integer> getSessions() {
 		return OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
+	}
+
+	private Map<String, Integer> getSessions(Application app) {
+		return app.getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
 	}
 	//////////////////////////////////////////////////////////////////////
 	public ITaskSessionCallback getCallback() {
@@ -291,31 +311,18 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		return callback;
 	}
 	
-	protected ODocument getSessionDoc(){
+	private ODocument getSessionDoc(){
 		assert(sessionDoc!=null);
 		return sessionDoc;
 	}
-
-	protected Object getField(Field field) {
-		assert(sessionDoc!=null);
-		return sessionDoc.field(field.fieldName());
-	}
+	//////////////////////////////////////////////////////////////////////
 
 	protected void setField(Field field,Object value) {
-		assert(sessionDoc!=null);
-		sessionDoc.field(field.fieldName(),value);
-	}
-	
-	@Deprecated
-	protected Object getField(String fieldname) {
-		assert(sessionDoc!=null);
-		return sessionDoc.field(fieldname);
+		getSessionUpdater().set(field.fieldName(), value);
 	}
 
-	@Deprecated
-	protected void setField(String fieldname,Object value) {
-		assert(sessionDoc!=null);
-		sessionDoc.field(fieldname,value);
+	protected void incrementField(Field field,long value) {
+		getSessionUpdater().increment(field.fieldName(), value);
 	}
-	
 }
+

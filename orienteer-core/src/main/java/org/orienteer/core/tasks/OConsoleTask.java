@@ -9,6 +9,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Session;
 import org.apache.wicket.ThreadContext;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.tasks.OTaskSession.ErrorTypes;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.google.common.base.Throwables;
@@ -54,21 +55,14 @@ public class OConsoleTask extends OTask {
 	public OTaskSession<?> startNewSession() {
 		final ConsoleTaskSessionImpl otaskSession = new ConsoleTaskSessionImpl();
 		final String input = (String) getField(Field.INPUT); 
-		final Application app = Application.get();
-		final Session session = ThreadContext.getSession();
-		otaskSession.onStart().
+		otaskSession.onStart(this).
 			setInput(input).
 			setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS)).
 		end();
-		linkSession(otaskSession.getSessionDoc());
 		try{
 			Thread innerThread = new Thread(new Runnable(){
 				@Override
 				public void run() {
-					if (!Application.exists()) {
-						ThreadContext.setApplication(app);
-						ThreadContext.setSession(session);
-					}
 					String charset =  Charset.defaultCharset().displayName();
 					if(System.getProperty("os.name").startsWith("Windows")){
 						if (Charset.isSupported("cp866")){
@@ -102,7 +96,7 @@ public class OConsoleTask extends OTask {
 			innerThread.start();
 
 		} catch (Exception e) {
-			otaskSession.onError().
+			otaskSession.onError(ErrorTypes.UNKNOWN_ERROR,e.getMessage()).
 				appendOut(Throwables.getStackTraceAsString(e)).
 			end();
 			otaskSession.onStop();

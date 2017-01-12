@@ -92,16 +92,11 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	//should be called to open new connection
 	@SuppressWarnings("resource")
 	public ODatabaseDocument databaseOpen(){
-	    final ODatabaseDocumentInternal currentDatabase = ODatabaseRecordThreadLocal.INSTANCE.get();
-	    if (currentDatabase!=null){
-	    	return currentDatabase;
-	    }else{
-			String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
-			String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
-			String password = getCamelContext().getProperty(OrientDBComponent.DB_PASSWORD);
-			ODatabaseDocumentTx db = new ODatabaseDocumentTx(url).open(username, password);
-			return db;
-	    }
+		String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
+		String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
+		String password = getCamelContext().getProperty(OrientDBComponent.DB_PASSWORD);
+		ODatabaseDocumentTx db = new ODatabaseDocumentTx(url).open(username, password);
+		return db;
 	}
 	
 	//should be called to close existing connection

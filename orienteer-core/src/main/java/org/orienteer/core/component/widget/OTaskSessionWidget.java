@@ -15,6 +15,7 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.tasks.OTaskSessionImpl;
+import org.orienteer.core.tasks.OTaskSessionViewer;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -80,15 +81,15 @@ public class OTaskSessionWidget extends AbstractWidget<ODocument>{
 				setIcon(FAIconType.stop);
 				setBootstrapType(BootstrapType.DANGER);
 				setChangingDisplayMode(true);
-				OTaskSessionImpl taskSession = new OTaskSessionImpl(OTaskSessionWidget.this.getModelObject());
+				OTaskSessionViewer taskSession = new OTaskSessionViewer(OTaskSessionWidget.this.getModelObject());
 				taskSession.detachUpdate();
 				setEnabled(taskSession.isStoppable());
 			}
 			@Override
 			public void onClick() {
-				OTaskSessionImpl taskSession = new OTaskSessionImpl(OTaskSessionWidget.this.getModelObject());
+				OTaskSessionViewer taskSession = new OTaskSessionViewer(OTaskSessionWidget.this.getModelObject());
 				try {
-					taskSession.getCallback().stop();
+					taskSession.stopSession();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

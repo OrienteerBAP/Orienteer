@@ -40,7 +40,7 @@ public class OCamelTaskSession<T extends OCamelTaskSession<T>> extends OTaskSess
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(TASK_SESSION_CLASS,OTaskSession.TASK_SESSION_CLASS);
 			helper.oProperty(OTaskSession.Field.THREAD_NAME.fieldName(),OType.STRING,10).markAsDocumentName();
-			helper.oProperty(Field.CONFIG.fieldName(),Field.CONFIG.type(),35);
+			helper.oProperty(Field.CONFIG.fieldName(),Field.CONFIG.type(),35).markAsLinkToParent();
 			helper.oProperty(Field.OUTPUT.fieldName(),Field.OUTPUT.type(),37).assignVisualization("textarea");
 	}	
 	
@@ -49,9 +49,7 @@ public class OCamelTaskSession<T extends OCamelTaskSession<T>> extends OTaskSess
 	}
 	
 	public T appendOut(String out){
-		String field = (String)getField(Field.OUTPUT);
-		if (field==null) field = "";
-		setField(Field.OUTPUT, field.concat(out).concat("\n"));
+		appendField(Field.OUTPUT, out.concat("\n"));
 		return this.asT();
 	}
 	
@@ -61,13 +59,13 @@ public class OCamelTaskSession<T extends OCamelTaskSession<T>> extends OTaskSess
 	}
 	
 	//////////////////////////////////////////////////////////////////////
-	protected Object getField(Field field) {
-		return getSessionDoc().field(field.fieldName());
-	}
-	//////////////////////////////////////////////////////////////////////
 
 	protected void setField(Field field,Object value) {
-		getSessionDoc().field(field.fieldName(),value);
+		getSessionUpdater().set(field.fieldName(), value);
+	}
+
+	protected void appendField(Field field,String value) {
+		getSessionUpdater().append(field.fieldName(), value);
 	}
 
 }

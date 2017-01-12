@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
 
@@ -46,7 +47,7 @@ public abstract class OTask {
 		helper.oProperty(Field.NAME.fieldName(),OType.STRING,10).markAsDocumentName();
 		helper.oProperty(Field.DESCRIPTION.fieldName(),OType.STRING,20);
 		helper.oProperty(Field.AUTODELETE_SESSIONS.fieldName(),OType.BOOLEAN,30);
-		helper.oProperty(Field.SESSIONS.fieldName(),OType.LINKSET,40);//avoid crosslinking //.linkedClass(OTask.TASK_CLASS);
+		helper.oProperty(Field.SESSIONS.fieldName(),OType.LINKSET,40).updateCustomAttribute(CustomAttribute.HIDDEN, true);//avoid crosslinking //.linkedClass(OTask.TASK_CLASS);
 
 		setOTaskJavaClassName(db,TASK_CLASS,"org.orienteer.core.tasks.OTask");
 		
@@ -64,28 +65,13 @@ public abstract class OTask {
 	 * 
 	 * @param oTaskSession session document
 	 */
-	protected void linkSession(ODocument oTaskSession){
+	protected void linkSession(String oTaskSessionId){
 		ODatabaseDocument db = oTask.getDatabase();
 		db.commit();
-		db.command(new OCommandSQL("update "+oTask.getIdentity()+" add "+Field.SESSIONS.fieldName()+"="+oTaskSession.getIdentity())).execute();
-		oTaskSession.field(OTaskSession.Field.TASK_LINK.fieldName(),oTask);
-		oTaskSession.save();
-		
-		/*
-		Object sessionsObj = getField(Field.SESSIONS);
-		List<ODocument> sessionList;
-		if (sessionsObj instanceof List){
-			sessionList = (List)sessionsObj;
-		}else{
-			sessionList= new ArrayList<ODocument>();
-		}
-		sessionList.add(oTaskSession); 
-		oTask.field(Field.SESSIONS.fieldName(),sessionList);
-		oTask.save();
-		oTaskSession.field(OTaskSession.Field.TASK_LINK.fieldName(),oTask);
-		oTaskSession.save();*/
+		db.command(new OCommandSQL("update "+oTask.getIdentity()+" add "+Field.SESSIONS.fieldName()+"="+oTaskSessionId)).execute();
+//		db.command(new OCommandSQL("update "+oTaskSessionId+" set "+OTaskSession.Field.TASK_LINK.fieldName()+"="+oTask.getIdentity())).execute();
 	}
-	
+	/*
 	protected void unlinkSession(ODocument oTaskSession){
 		ODatabaseDocument db = oTask.getDatabase();
 		db.commit();
@@ -93,6 +79,7 @@ public abstract class OTask {
 		oTaskSession.field(OTaskSession.Field.TASK_LINK.fieldName(),oTask);
 		oTaskSession.save();
 	}
+	*/
 	
 	public static final OTask makeFromODocument(ODocument oTask){
 		try {
