@@ -48,10 +48,8 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	private String sessionClass;
 	private ITaskSessionCallback callback;
 	private boolean deleteOnFinish;
-	private boolean stoppable;
 	
 	private OrienteerWebApplication app;
-	private Session sess;
 
 
 	public static final String TASK_SESSION_CLASS = "OTaskSession";
@@ -110,7 +108,6 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	public OTaskSession(String sessionClass) {
 		this.sessionClass = sessionClass;
 		app = OrienteerWebApplication.get();
-		sess = Session.get();
 	}
 
 	private void makeSessionDoc(){
@@ -138,7 +135,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	//////////////////////////////////////////////////////////////////////
 	protected OTaskSessionUpdater getSessionUpdater(){
 		if (sessionUpdater==null){
-			sessionUpdater = new OTaskSessionUpdater(app,sess,getSessionDoc());
+			sessionUpdater = new OTaskSessionUpdater(getSessionDoc(),app.getOrientDbSettings());
 		}
 		return sessionUpdater;
 	}
@@ -174,14 +171,14 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	//call from listener
 	public T onStart(OTask task) {
 		onStart();
-		setField(Field.TASK_LINK,task.getOTask().getIdentity());
+		setField(Field.TASK_LINK,task.getDoc().getIdentity());
 		task.linkSession(getId());
 		return this.asT();
 	}
 	
 	public T onStart() {
 		makeSessionDoc();
-		setField(Field.THREAD_NAME,Thread.currentThread().getName());
+		updateThread();
 		setStoppable(false);
 		setDeleteOnFinish(false);
 		setField(Field.STATUS,Status.RUNNING);
@@ -262,16 +259,20 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		setField(Field.DELETE_ON_FINISH,deleteOnFinish);
 		return this.asT();
 	}
-
-	private T setStoppable(boolean stoppable) {
-		this.stoppable = stoppable;
-		setField(Field.IS_STOPPABLE,stoppable);
+	
+	public T updateThread(){
+		setField(Field.THREAD_NAME,Thread.currentThread().getName());
 		return this.asT();
 	}
-	
+
 	public void end(){
 		assert(sessionDoc!=null);
 		getSessionUpdater().doSave();
+	}
+	//////////////////////////////////////////////////////////////////////
+	private T setStoppable(boolean stoppable) {
+		setField(Field.IS_STOPPABLE,stoppable);
+		return this.asT();
 	}
 	
 	//////////////////////////////////////////////////////////////////////

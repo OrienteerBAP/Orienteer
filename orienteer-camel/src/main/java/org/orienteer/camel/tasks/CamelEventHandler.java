@@ -36,14 +36,13 @@ public class CamelEventHandler extends EventNotifierSupport{
 	@Override
 	public void notify(EventObject event) throws Exception {
     	taskSession.onProcess();
-        LOG.info(Thread.currentThread().getName());		
         if (event instanceof ExchangeSentEvent) {
         	ExchangeSentEvent sent = (ExchangeSentEvent) event;
         	String logRecord ="Took " + sent.getTimeTaken() + " millis to send to: " + sent.getEndpoint(); 
-        	LOG.info(logRecord);
+//        	LOG.info(logRecord);
         	taskSession.incrementCurrentProgress();
         }
-        LOG.info("Event = "+ event);		
+//        LOG.info("Event = "+ event);		
     	taskSession.appendOut(event.toString()).
     	end();
 	}

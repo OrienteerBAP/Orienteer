@@ -63,6 +63,9 @@ public class OConsoleTask extends OTask {
 			Thread innerThread = new Thread(new Runnable(){
 				@Override
 				public void run() {
+					otaskSession.onProcess().
+						updateThread().
+					end();
 					String charset =  Charset.defaultCharset().displayName();
 					if(System.getProperty("os.name").startsWith("Windows")){
 						if (Charset.isSupported("cp866")){
@@ -105,7 +108,7 @@ public class OConsoleTask extends OTask {
 	}
 	//////////////////////////////////////////////////////////////////////
 	protected Object getField(Field field) {
-		return getOTask().field(field.fieldName());
+		return getDoc().field(field.fieldName());
 	}
 	//////////////////////////////////////////////////////////////////////
 	

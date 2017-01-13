@@ -22,7 +22,7 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
 public abstract class OTask {
 	public static final String TASK_CLASS = "OTask";
 	public static final String TASK_JAVA_CLASS_ATTRIBUTE = "OTaskJavaClassName";
-	private ODocument oTask;
+	private ODocument doc;
 
 	/**
 	 * data fields
@@ -52,34 +52,27 @@ public abstract class OTask {
 		setOTaskJavaClassName(db,TASK_CLASS,"org.orienteer.core.tasks.OTask");
 		
 	}		
-
+	
 	public OTask(ODocument oTask) {
-		this.oTask = oTask;
+		this.doc = oTask;
 	}
 	
-	public ODocument getOTask() {
-		return oTask;
+	public ODocument getDoc() {
+		return doc;
 	}
 	/**
 	 * Should be called in startNewSession implementation
+	 * Unlink in {@link OTaskSessionOnDeleteHook}
 	 * 
 	 * @param oTaskSession session document
 	 */
 	protected void linkSession(String oTaskSessionId){
-		ODatabaseDocument db = oTask.getDatabase();
+		ODatabaseDocument db = doc.getDatabase();
 		db.commit();
-		db.command(new OCommandSQL("update "+oTask.getIdentity()+" add "+Field.SESSIONS.fieldName()+"="+oTaskSessionId)).execute();
+		db.command(new OCommandSQL("update "+doc.getIdentity()+" add "+Field.SESSIONS.fieldName()+"="+oTaskSessionId)).execute();
 //		db.command(new OCommandSQL("update "+oTaskSessionId+" set "+OTaskSession.Field.TASK_LINK.fieldName()+"="+oTask.getIdentity())).execute();
 	}
-	/*
-	protected void unlinkSession(ODocument oTaskSession){
-		ODatabaseDocument db = oTask.getDatabase();
-		db.commit();
-		db.command(new OCommandSQL("update "+oTask.getIdentity()+" add "+Field.SESSIONS.fieldName()+"="+oTaskSession.getIdentity())).execute();
-		oTaskSession.field(OTaskSession.Field.TASK_LINK.fieldName(),oTask);
-		oTaskSession.save();
-	}
-	*/
+
 	
 	public static final OTask makeFromODocument(ODocument oTask){
 		try {
@@ -107,7 +100,7 @@ public abstract class OTask {
 	
 	//////////////////////////////////////////////////////////////////////
 	protected Object getField(Field field) {
-		return getOTask().field(field.fieldName());
+		return getDoc().field(field.fieldName());
 	}
 	//////////////////////////////////////////////////////////////////////
 
