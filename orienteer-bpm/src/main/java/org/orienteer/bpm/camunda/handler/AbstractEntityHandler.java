@@ -174,25 +174,8 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		}
 	}
 	
-	private Method getGetAndSetter;
-	
 	protected IGetAndSet getGetAndSetter(Class<?> clazz, String property) {
-		try {
-			if(getGetAndSetter==null) {
-				getGetAndSetter = PropertyResolver.class.getDeclaredMethod("getGetAndSetter", String.class, Class.class);
-				getGetAndSetter.setAccessible(true);
-			}
-			return (IGetAndSet) getGetAndSetter.invoke(null, property, clazz);
-		} catch (NoSuchMethodException e) {
-			throw new ProcessEngineException("Can't get required method from "+PropertyResolver.class.getSimpleName(), e);
-		} catch (InvocationTargetException e) {
-			Throwable targetExc = e.getTargetException();
-			if(targetExc instanceof WicketRuntimeException) return null;
-			else throw new ProcessEngineException("Exception during defining getters and setters", targetExc);
-		} catch (Exception e) {
-			throw new ProcessEngineException("Can't invoke required method from "+PropertyResolver.class.getSimpleName(), e);
-		}
-		
+		return PropertyResolver.getLocator().get(clazz, property);
 	}
 	
 	protected void initMapping(OPersistenceSession session) {
