@@ -31,10 +31,10 @@ public class OTaskSessionUpdater {
 	private static final Logger LOG = LoggerFactory.getLogger(OTaskSessionUpdater.class);
 
 	
-	private static final int QUEUE_LIMIT=1000;
-	private static final int WRITE_DELAY_MAX=1000;
-	private static final int RETRIES_LIMIT=10;
-	private static final int RETRIES_SLEEP_MAX=300;
+	public static final int QUEUE_LIMIT=1000;
+	public static final int WRITE_DELAY_MAX=1000;
+	public static final int RETRIES_LIMIT=10;
+	public static final int RETRIES_SLEEP_MAX=300;
 	
 	/**
 	 * Supported commands
