@@ -35,12 +35,13 @@ SDT - Support data types
 |fetchAllEmbedded	|true	|	map		|	выбрать все встроенные(EMBEDDED) обьекты,независимо от глубины выборки.
 
 ***outputType*** может принимать следующие значения
-|Название| Описание
+
+|Название| Описание|
 |---|---| 
-|map 	| Map Java object (List<Map> - точный формат выходных данных)
-|object 	| ODocument(List<ODocument> - точный формат выходных данных)
-|list	| List(List<List> - точный формат выходных данных)
-|json	| JSON(String - точный формат выходных данных)
+|map 	| Map Java object (List\<Map\> \- точный формат выходных данных)|
+|object 	| ODocument(List\<ODocument\> \- точный формат выходных данных)|
+|list	| List(List\<List\> \- точный формат выходных данных)|
+|json	| JSON(String \- точный формат выходных данных)|
 
 
 
