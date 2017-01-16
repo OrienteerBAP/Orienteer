@@ -29,17 +29,20 @@ SDT - Support data types
 #### Выходные
 |Название		|	default		|SDT    	|	Назначение												
 |---|---|---|---|
-|outputType		|	map		|			|	Тип выходных данных для одной записи БД.Может принимать следующие значения:
-											
-											- map 	- Map Java object (List<Map> - точный формат выходных данных)
-											- object 	- ODocument(List<ODocument> - точный формат выходных данных)
-											- list	- List(List<List> - точный формат выходных данных)
-											- json	- JSON(String - точный формат выходных данных)
-											
-
-|fetchPlan		|	null	|	json	|	фетчплан.Подробности в документации по ориентдб
+|outputType		|	map		|			|	Тип выходных данных для одной записи БД.
+|fetchPlan		|	null	|	json	|	фетчплан.Подробности в документации по orientdb
 |maxDepth		|	0		|	map		|	максимальная глубина выборки.
 |fetchAllEmbedded	|true	|	map		|	выбрать все встроенные(EMBEDDED) обьекты,независимо от глубины выборки.
+
+***outputType*** может принимать следующие значения
+|Название| Описание
+|---|---| 
+|map 	| Map Java object (List<Map> - точный формат выходных данных)
+|object 	| ODocument(List<ODocument> - точный формат выходных данных)
+|list	| List(List<List> - точный формат выходных данных)
+|json	| JSON(String - точный формат выходных данных)
+
+
 
 ### Входные данные 
 
