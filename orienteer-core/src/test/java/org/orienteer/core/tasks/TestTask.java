@@ -31,8 +31,8 @@ public class TestTask extends OTask {
 		}
 
 		@Override
-		public OTaskSession<?> startNewSession() {
-			final OTaskSessionImpl otaskSession = new OTaskSessionImpl();
+		public OTaskSession startNewSession() {
+			final OTaskSession otaskSession = new OTaskSession();
 			otaskSession.onStart(this).
 				setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS)).
 				setFinalProgress(PROGRESS_FINAL).

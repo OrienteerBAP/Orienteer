@@ -19,11 +19,8 @@ import ru.ydn.wicket.wicketorientdb.OUserCatchPasswordHook;
 
 /**
  * Runtime object to hold and manage session status
- *
- * @param <T> just for chaining.For make object should be created non-anonymous 
- * class without template definition, like "private class TaskSessionImpl extends OTaskSession\<OTaskSession\>{}"
  */
-public class OTaskSession <T extends OTaskSession<T>>{
+public class OTaskSession{
 	
 	/**
 	 * Statuses of task session
@@ -145,13 +142,13 @@ public class OTaskSession <T extends OTaskSession<T>>{
 
 	//////////////////////////////////////////////////////////////////////
 	//call from listener
-	public T onStart(OTask task) {
+	public OTaskSession onStart(OTask task) {
 		onStart();
 		setField(Field.TASK_LINK,task.getDocument().getIdentity());
-		return this.asT();
+		return this;
 	}
 	
-	public T onStart() {
+	public OTaskSession onStart() {
 		makeSessionDoc();
 		updateThread();
 		setStoppable(false);
@@ -160,12 +157,12 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		setField(Field.START_TIMESTAMP,getDateTimeFormat().format(new Date()));
 		registerSelf();
 		getSessionUpdater().start();
-		return this.asT();
+		return this;
 	}
 	
-	public T onBeforeStop() {
+	public OTaskSession onBeforeStop() {
 		setField(Field.STATUS,Status.STOPPING);
-		return this.asT();
+		return this;
 	}
 	
 	public void onStop() {
@@ -182,42 +179,42 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		}
 	}
 	
-	public T onProcess() {
-		return this.asT();
+	public OTaskSession onProcess() {
+		return this;
 	}
 	
-	public T onError(ErrorTypes type,String error) {
+	public OTaskSession onError(ErrorTypes type,String error) {
 		setField(Field.ERROR_TYPE,type);
 		setField(Field.ERROR,error);
-		return this.asT();
+		return this;
 	}
 
-	public T setProgress(int progress) {
+	public OTaskSession setProgress(int progress) {
 		setField(Field.PROGRESS,progress);
-		return this.asT();
+		return this;
 	}
 
-	public T setCurrentProgress(long progress) {
+	public OTaskSession setCurrentProgress(long progress) {
 		setField(Field.PROGRESS_CURRENT,progress);
-		return this.asT();
+		return this;
 	}
 	
-	public T incrementCurrentProgress() {
+	public OTaskSession incrementCurrentProgress() {
 		incrementField(Field.PROGRESS_CURRENT, 1);
-		return this.asT();
+		return this;
 	}
 
-	public T incrementCurrentProgress(long value) {
+	public OTaskSession incrementCurrentProgress(long value) {
 		incrementField(Field.PROGRESS_CURRENT, value);
-		return this.asT();
+		return this;
 	}
 	
-	public T setFinalProgress(long progress) {
+	public OTaskSession setFinalProgress(long progress) {
 		setField(Field.PROGRESS_FINAL,progress);
-		return this.asT();
+		return this;
 	}
 	
-	public T setCallback(ITaskSessionCallback callback) {
+	public OTaskSession setCallback(ITaskSessionCallback callback) {
 		if (this.callback!=null){
 			unregisterCallback();
 		}
@@ -226,32 +223,30 @@ public class OTaskSession <T extends OTaskSession<T>>{
 			registerCallback(callback);
 		}
 		this.callback = callback;
-		return this.asT();
+		return this;
 	}
 	
-	public T setDeleteOnFinish(boolean deleteOnFinish) {
+	public OTaskSession setDeleteOnFinish(boolean deleteOnFinish) {
 		this.deleteOnFinish = deleteOnFinish;
 		setField(Field.DELETE_ON_FINISH,deleteOnFinish);
-		return this.asT();
+		return this;
 	}
 	
-	public T updateThread(){
+	public OTaskSession updateThread(){
 		setField(Field.THREAD_NAME,Thread.currentThread().getName());
-		return this.asT();
+		return this;
 	}
 
 	public void end(){
 		assert(sessionDoc!=null);
 		getSessionUpdater().doSave();
 	}
-	//////////////////////////////////////////////////////////////////////
-	private T setStoppable(boolean stoppable) {
+	
+	private OTaskSession setStoppable(boolean stoppable) {
 		setField(Field.IS_STOPPABLE,stoppable);
-		return this.asT();
+		return this;
 	}
 	
-	//////////////////////////////////////////////////////////////////////
-
 	private SimpleDateFormat getDateTimeFormat(){
 	    final SimpleDateFormat dateTimeFormatInstance = new SimpleDateFormat(DATE_TIME_FORMAT);
 	    dateTimeFormatInstance.setLenient(false);
@@ -259,11 +254,6 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	    return dateTimeFormatInstance;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T asT(){
-		return (T) this;
-	}
-	//////////////////////////////////////////////////////////////////////
 	protected static final Map<String, ITaskSessionCallback> getCallbacks() {
 		return OrienteerWebApplication.get().getMetaData(TaskManagerModule.TASK_MANAGER_CALLBACK_KEY);
 	}
@@ -279,7 +269,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	private Map<String, Integer> getSessions(Application app) {
 		return app.getMetaData(TaskManagerModule.TASK_MANAGER_SESSION_KEY);
 	}
-	//////////////////////////////////////////////////////////////////////
+
 	public ITaskSessionCallback getCallback() {
 		if (callback==null){
 			linkCallback();
@@ -291,7 +281,6 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		assert(sessionDoc!=null);
 		return sessionDoc;
 	}
-	//////////////////////////////////////////////////////////////////////
 
 	protected void setField(Field field,Object value) {
 		getSessionUpdater().set(field.fieldName(), value);

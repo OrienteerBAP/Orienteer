@@ -14,7 +14,6 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.tasks.OTaskSession;
-import org.orienteer.core.tasks.OTaskSessionImpl;
 import org.orienteer.core.tasks.OTaskSessionODocumentWrapper;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;

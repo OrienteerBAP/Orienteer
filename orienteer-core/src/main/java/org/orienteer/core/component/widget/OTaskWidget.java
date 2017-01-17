@@ -1,31 +1,17 @@
 package org.orienteer.core.component.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.component.command.CopyODocumentCommand;
-import org.orienteer.core.component.command.CreateODocumentCommand;
-import org.orienteer.core.component.command.DeleteODocumentCommand;
-import org.orienteer.core.component.command.EditODocumentsCommand;
-import org.orienteer.core.component.command.ExportCommand;
-import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.IOClassIntrospector;
-import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.tasks.OTask;
-import org.orienteer.core.tasks.OTaskSessionImpl;
+import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 
@@ -34,7 +20,6 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
-import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 /**
  * Widget for {@link OTask}

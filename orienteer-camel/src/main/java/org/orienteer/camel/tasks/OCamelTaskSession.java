@@ -14,7 +14,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  *
  * @param <T> just for chaining, see {@link OTaskSession}
  */
-public class OCamelTaskSession<T extends OCamelTaskSession<T>> extends OTaskSession<T>{
+public class OCamelTaskSession extends OTaskSession {
 
 	public static final String TASK_SESSION_CLASS = "OCamelTaskSession";
 
@@ -48,14 +48,14 @@ public class OCamelTaskSession<T extends OCamelTaskSession<T>> extends OTaskSess
 		super(TASK_SESSION_CLASS);
 	}
 	
-	public T appendOut(String out){
+	public OCamelTaskSession appendOut(String out){
 		appendField(Field.OUTPUT, out.concat("\n"));
-		return this.asT();
+		return this;
 	}
 	
-	public T setConfig(String configId){
+	public OCamelTaskSession setConfig(String configId){
 		setField(Field.CONFIG, new ORecordId(configId));
-		return this.asT();
+		return this;
 	}
 	
 	//////////////////////////////////////////////////////////////////////

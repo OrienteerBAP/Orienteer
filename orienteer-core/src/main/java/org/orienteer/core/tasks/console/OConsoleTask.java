@@ -25,8 +25,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  */
 public class OConsoleTask extends OTask {
-	private class ConsoleTaskSessionImpl extends OConsoleTaskSession<ConsoleTaskSessionImpl> {}
-	
 	public static final String TASK_CLASS = "OConsoleTask";
 	/**
 	 * data fields
@@ -45,12 +43,12 @@ public class OConsoleTask extends OTask {
 	}
 
 	@Override
-	public OTaskSession<?> startNewSession() {
-		final ConsoleTaskSessionImpl otaskSession = new ConsoleTaskSessionImpl();
+	public OTaskSession startNewSession() {
+		final OConsoleTaskSession otaskSession = new OConsoleTaskSession();
 		final String input = (String) getField(Field.INPUT); 
-		otaskSession.onStart(this).
-			setInput(input).
-			setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS)).
+		otaskSession.onStart(this);
+		otaskSession.setInput(input);
+		otaskSession.setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS)).
 		end();
 		try{
 			Thread innerThread = new Thread(new Runnable(){
@@ -82,14 +80,14 @@ public class OConsoleTask extends OTask {
 						String curOutString = "";
 							while ((curOutString = reader.readLine())!= null) {
 								otaskSession.onProcess().
-									incrementCurrentProgress().
-									appendOut(curOutString).
-								end();
+									incrementCurrentProgress();
+								otaskSession.appendOut(curOutString);
+								otaskSession.end();
 							}
 					} catch (IOException e) {
-						otaskSession.onProcess().
-							appendOut(e.getMessage()).
-						end();
+						otaskSession.onProcess();
+						otaskSession.appendOut(e.getMessage());
+						otaskSession.end();
 					}	
 					otaskSession.onStop();
 				}
@@ -98,9 +96,9 @@ public class OConsoleTask extends OTask {
 			innerThread.start();
 
 		} catch (Exception e) {
-			otaskSession.onError(ErrorTypes.UNKNOWN_ERROR,e.getMessage()).
-				appendOut(Throwables.getStackTraceAsString(e)).
-			end();
+			otaskSession.onError(ErrorTypes.UNKNOWN_ERROR,e.getMessage());
+			otaskSession.appendOut(Throwables.getStackTraceAsString(e));
+			otaskSession.end();
 			otaskSession.onStop();
 		}
 		return otaskSession;		

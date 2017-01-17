@@ -13,7 +13,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
  * @param <T> just for chaining. See also {@link OConsoleTask}
  */
 
-public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTaskSession<T>{
+public class OConsoleTaskSession extends OTaskSession{
 
 	public static final String TASK_SESSION_CLASS = "OConsoleTaskSession";
 
@@ -37,14 +37,14 @@ public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTask
 		super(TASK_SESSION_CLASS);
 	}
 	
-	public T setInput(String input){
+	public OConsoleTaskSession setInput(String input){
 		setField(Field.INPUT, input);
-		return this.asT();
+		return this;
 	}
 
-	public T appendOut(String out){
+	public OConsoleTaskSession appendOut(String out){
 		appendField(Field.OUTPUT, out.concat("\n"));
-		return this.asT();
+		return this;
 	}
 	
 	//////////////////////////////////////////////////////////////////////

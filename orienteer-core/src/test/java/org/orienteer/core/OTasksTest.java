@@ -47,7 +47,7 @@ public class OTasksTest {
 			created.add(taskDocument.getIdentity().toString());
 			
 			OTask task = OTask.makeFromODocument(taskDocument);
-			OTaskSession<?> taskSession = task.startNewSession();
+			OTaskSession taskSession = task.startNewSession();
 			created.add(taskSession.getId());
 			
 			Thread.sleep(OTaskSessionUpdater.WRITE_DELAY_MAX*2);
@@ -109,9 +109,9 @@ public class OTasksTest {
 			created.add(taskDocumentAD.getIdentity().toString());
 			OTask taskAD = OTask.makeFromODocument(taskDocumentAD);
 			
-			OTaskSession<?> taskSession = task.startNewSession();
+			OTaskSession taskSession = task.startNewSession();
 			created.add(taskSession.getId());
-			OTaskSession<?> taskSessionAD = taskAD.startNewSession();
+			OTaskSession taskSessionAD = taskAD.startNewSession();
 			Thread.sleep(CONSOLE_TASK_DELAY);
 			db.commit();
 			ODocument taskSessionDocAD = new ODocument(new ORecordId(taskSessionAD.getId()));

@@ -66,6 +66,6 @@ public abstract class OTask extends ODocumentWrapper {
 	//////////////////////////////////////////////////////////////////////
 
 	
-	public abstract OTaskSession<?> startNewSession();
+	public abstract OTaskSession startNewSession();
 	
 }

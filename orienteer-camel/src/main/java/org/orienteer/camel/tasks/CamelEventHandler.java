@@ -23,7 +23,7 @@ public class CamelEventHandler extends EventNotifierSupport{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(CamelEventHandler.class);
 	private ITaskSessionCallback callback;
-	private volatile OCamelTaskSessionImpl taskSession;
+	private volatile OCamelTaskSession taskSession;
 	private String configId;
 	private CamelContext context;
 	
@@ -68,12 +68,12 @@ public class CamelEventHandler extends EventNotifierSupport{
         LOG.info(Thread.currentThread().getName());		
 
 		if (taskSession == null){
-			taskSession = new OCamelTaskSessionImpl();
+			taskSession = new OCamelTaskSession();
 			taskSession.onStart().
 				setCallback(callback).
-				setDeleteOnFinish(false).
-				setConfig(configId).
-				setFinalProgress(context.getRoutes().size()).
+				setDeleteOnFinish(false);
+			taskSession.setConfig(configId);
+			taskSession.setFinalProgress(context.getRoutes().size()).
 			end();
 		}
 		super.doStart();
