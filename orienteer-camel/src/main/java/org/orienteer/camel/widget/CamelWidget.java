@@ -5,42 +5,47 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.camel.CamelContext;
-import org.apache.camel.Endpoint;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.impl.DefaultComponent;
-import org.apache.camel.model.ContextScanDefinition;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedActionException;
-import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.camel.component.CamelEventHandler;
 import org.orienteer.camel.component.OrientDBComponent;
+import org.orienteer.camel.tasks.CamelEventHandler;
+import org.orienteer.camel.tasks.OCamelTaskSession;
+import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.table.OEntityColumn;
+import org.orienteer.core.component.table.OPropertyValueColumn;
+import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 /**
  * Widget for Orienteer Camel integration, linked to OIntegrationConfig
  *
@@ -60,14 +65,18 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 	
 	private Form form;
 	
-	public static final List<String> CONTEXT_DATA_LIST = new ArrayList<String>();
-	static
-	{
-		CONTEXT_DATA_LIST.add("name");
-		CONTEXT_DATA_LIST.add("status");
-		CONTEXT_DATA_LIST.add("uptime");
-		CONTEXT_DATA_LIST.add("version");
-	}	
+	private static final List<String> COLUMNS_NAMES = new ArrayList<String>();
+	static{
+		COLUMNS_NAMES.add(OTaskSession.Field.THREAD_NAME.fieldName());
+		COLUMNS_NAMES.add(OTaskSession.Field.STATUS.fieldName());
+		COLUMNS_NAMES.add(OTaskSession.Field.START_TIMESTAMP.fieldName());
+		COLUMNS_NAMES.add(OTaskSession.Field.FINISH_TIMESTAMP.fieldName());
+		COLUMNS_NAMES.add(OTaskSession.Field.PROGRESS_CURRENT.fieldName());
+		COLUMNS_NAMES.add(OTaskSession.Field.PROGRESS_FINAL.fieldName());
+	}
+	
+	@Inject
+	private IOClassIntrospector oClassIntrospector;
 	
 	private class CamelContextModel extends LoadableDetachableModel<CamelContext>{
 		private static final long serialVersionUID = 1L;
@@ -83,26 +92,40 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 
 		form = new Form<Void>("form");
         
-        OrienteerStructureTable<CamelContext, String> structuredTable = new OrienteerStructureTable<CamelContext, String>("table", new CamelContextModel(), CONTEXT_DATA_LIST) {
-			private static final long serialVersionUID = 1L;
-			@Override
-			protected Component getValueComponent(String id, IModel<String> rowModel) {
-				return new Label(id,new PropertyModel<>(getModel(), rowModel.getObject()));
-			}
-			@Override
-			protected IModel<?> getLabelModel(Component resolvedComponent, IModel<String> rowModel) {
-				return new SimpleNamingModel<String>("integration."+rowModel.getObject());
-			}
-		};
-			
+		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
-		form.add(structuredTable);
-		structuredTable.addCommand(makeStartButton());
-		structuredTable.addCommand(makeStopButton());
-		structuredTable.addCommand(makeSuspendButton());
+		OClass taskSessionClass = getModelObject().getDatabase().getMetadata().getSchema().getClass(OCamelTaskSession.TASK_SESSION_CLASS);
+		
+		List<IColumn<ODocument, String>> columns = makeColumns(taskSessionClass);
+		
+		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>(
+				"select from "+OCamelTaskSession.TASK_SESSION_CLASS+" where "+
+				OCamelTaskSession.Field.CONFIG.fieldName()+"="+CamelWidget.this.getModelObject().getIdentity());
+		oClassIntrospector.defineDefaultSorting(provider, taskSessionClass);
+		OrienteerDataTable<ODocument, String> table = 
+				new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
+		
+		form.add(table);
+		table.addCommand(makeStartButton());
+		table.addCommand(makeStopButton());
+		table.addCommand(makeSuspendButton());
 		form.setOutputMarkupId(true);
 
 		add(form);
+	}
+	
+	private List<IColumn<ODocument, String>> makeColumns(OClass taskSessionClass) {
+		ArrayList<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
+		boolean makeLink = true;
+		for (String string : COLUMNS_NAMES) {
+			if (makeLink){
+				columns.add(new OEntityColumn(taskSessionClass.getProperty(string),true, DisplayMode.VIEW.asModel()));
+				makeLink = false;
+			}else{
+				columns.add(new OPropertyValueColumn(string,taskSessionClass.getProperty(string), DisplayMode.VIEW.asModel()));		
+			}
+		}
+		return columns;
 	}
 	
 	private Command makeStartButton() {
@@ -247,7 +270,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 			properties.put(OrientDBComponent.DB_PASSWORD, session.getPassword());
 			context.setProperties(properties);
 			
-			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(""));
+			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(new OCamelTaskSessionCallback(context),rid,context));
 
 			contextMap.put(rid, context);
 		}
