@@ -39,7 +39,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
 public class GridsterDashboardSupport implements IDashboardSupport {
 	
 	final static WebjarsJavaScriptResourceReference GRIDSTER_JS = new WebjarsJavaScriptResourceReference("/gridster.js/current/jquery.gridster.min.js");
-	final static WebjarsCssResourceReference GRIDSTER_CSS = new WebjarsCssResourceReference("/gridster.js/current/jquery.gridster.css");
+	final static WebjarsCssResourceReference GRIDSTER_CSS = new WebjarsCssResourceReference("/gridster.js/current/jquery.gridster.min.css");
 	final static CssResourceReference WIDGET_CSS = new CssResourceReference(GridsterDashboardSupport.class, "widget.css");
 
 	public void initDashboardPanel(DashboardPanel<?> dashboard) {

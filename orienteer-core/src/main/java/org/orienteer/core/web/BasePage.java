@@ -11,6 +11,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReferenc
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxClientInfoBehavior;
 import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.WebPage;
@@ -103,6 +104,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		getDatabase();
 		uiPlugins = new RepeatingView("uiPlugins");
 		add(uiPlugins);
+		if(!OrienteerWebSession.get().isClientInfoAvailable()) add(new AjaxClientInfoBehavior());
 	}
 	
 	@Override

@@ -12,7 +12,7 @@ import org.wicketstuff.select2.Response;
 import org.wicketstuff.select2.StringTextChoiceProvider;
 
 /**
- * {@link TextChoiceProvider} for "onCreate.fields" multiSelect.
+ * {@link StringTextChoiceProvider} for "onCreate.fields" multiSelect.
  */
 public class OnCreateFieldsTextChoiceProvider extends StringTextChoiceProvider {
 

@@ -13,6 +13,7 @@ import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebApplication;
 
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
@@ -21,6 +22,8 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
+
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 
 /**
  * Endpoint for {@link OrientDBComponent}
@@ -95,8 +98,18 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 		String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
 		String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
 		String password = getCamelContext().getProperty(OrientDBComponent.DB_PASSWORD);
-		ODatabaseDocumentTx db = new ODatabaseDocumentTx(url).open(username, password);
-		return db;
+		
+		if(url!=null || username!=null) {
+			IOrientDbSettings settings = OrienteerWebApplication.lookupApplication().getOrientDbSettings();
+			if(url==null) url = settings.getDBUrl();
+			if(username==null) {
+				username = settings.getGuestUserName();
+				password = settings.getGuestPassword();
+			}
+			return new ODatabaseDocumentTx(url).open(username, password);
+		} else {
+			return ODatabaseRecordThreadLocal.INSTANCE.get();
+		}
 	}
 	
 	//should be called to close existing connection
@@ -217,7 +230,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 
 	/**
-	 * Set fetch plan (wiew orientdb documentation, like http://orientdb.com/docs/2.0/orientdb.wiki/Fetching-Strategies.html) 
+	 * Set fetch plan (view orientdb documentation, like http://orientdb.com/docs/2.0/orientdb.wiki/Fetching-Strategies.html)
+	 * @param fetchPlan fetch plan to be used 
 	 */
 	public void setFetchPlan(String fetchPlan) {
 		this.fetchPlan = fetchPlan;
@@ -229,6 +243,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 
 	/**
 	 * Rewrite "@class" field in root document(s) 
+	 * @param inputAsOClass value to be used for rewriting
 	 */
 	public void setInputAsOClass(String inputAsOClass) {
 		this.inputAsOClass = inputAsOClass;
@@ -240,6 +255,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 
 	/**
 	 * Save ODocument from input data BEFORE query   
+	 * @param preload preloading flag
 	 */
 	public void setPreload(boolean preload) {
 		this.preload = preload;
@@ -251,6 +267,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 
 	/**
 	 * Clear ODocuments RID`s in PRELOAD phase BEFORE save
+	 * @param makeNew should document be created as new
 	 */
 	public void setMakeNew(boolean makeNew) {
 		this.makeNew = makeNew;
@@ -263,7 +280,7 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	/**
 	 * Output data type of single row. Can be "map", "object", "list" or "json" 
 	 * Default value - "map"
-	 * 
+	 * @param outputType output type
 	 */
 	public void setOutputType(OrientDBCamelDataType outputType) {
 		this.outputType = outputType;
@@ -274,7 +291,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 
 	/**
-	 *	Max fetch depth. Only for "map" type 
+	 * Max fetch depth. Only for "map" type 
+	 * @param maxDepth max depth to be loaded
 	 */
 	public void setMaxDepth(int maxDepth) {
 		this.maxDepth = maxDepth;
@@ -285,7 +303,8 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	}
 
 	/**
-	 *	Fetch all embedded(not linked) objects, ignore "maxDepth". Only for "map" type. 
+	 * Fetch all embedded(not linked) objects, ignore "maxDepth". Only for "map" type. 
+	 * @param fetchAllEmbedded should all embedded be fetched?
 	 */
 	public void setFetchAllEmbedded(boolean fetchAllEmbedded) {
 		this.fetchAllEmbedded = fetchAllEmbedded;

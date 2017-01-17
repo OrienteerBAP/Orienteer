@@ -6,15 +6,19 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
- * @author Kirill Mukhov
+ * Module to support user's online/offline lifecycle
  */
 @Singleton
 public class UserOnlineModule extends AbstractOrienteerModule {
@@ -54,8 +58,8 @@ public class UserOnlineModule extends AbstractOrienteerModule {
                 new DBClosure<Void>() {
                     @Override
                     protected Void execute(ODatabaseDocument db) {
-                        db.command(new OSQLSynchQuery<Void>("UPDATE " + OCLASS_USER + " set " +
-                                ONLINE_FIELD + "=false where " + LAST_SESSION_FIELD + "=\""+sessionId + "\""));
+                        db.command(new OCommandSQL("UPDATE " + OCLASS_USER + " set " +
+                                ONLINE_FIELD + "=false where " + LAST_SESSION_FIELD + "= ?")).execute(sessionId);
                         return null;
                     }
                 }.execute();
@@ -63,11 +67,11 @@ public class UserOnlineModule extends AbstractOrienteerModule {
         });
     }
 
-    public ODocument updateOnlineUser(OUser user, final boolean online) {
-        final ODocument document = user.getDocument();
+    public ODocument updateOnlineUser(final OUser user, final boolean online) {
         return new DBClosure<ODocument>() {
             @Override
             protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
+            	final ODocument document = user.reload().getDocument();
                 document.field(ONLINE_FIELD, online);
                 document.save();
                 return document;
@@ -75,12 +79,12 @@ public class UserOnlineModule extends AbstractOrienteerModule {
         }.execute();
     }
 
-    public void updateSessionUser(OUser user, final String sessionId) {
+    public void updateSessionUser(final OUser user, final String sessionId) {
     	if(user!=null) { 
-	        final ODocument document = user.getDocument();
 	        new DBClosure<ODocument>() {
 	            @Override
 	            protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
+	            	final ODocument document = user.reload().getDocument();
 	                document.field(LAST_SESSION_FIELD, sessionId);
 	                document.save();
 	                return document;

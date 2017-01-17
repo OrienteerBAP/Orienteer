@@ -48,13 +48,15 @@ public class ReleaseODocumentCommand extends
 			if(property!=null)
 			{
 				Collection<ODocument> collection = doc.field(property.getName());
-				for (ODocument oDocument : objects)
-				{
-					collection.remove(oDocument);
+				if(collection!=null) {
+					for (ODocument oDocument : objects)
+					{
+						collection.remove(oDocument);
+					}
+//					collection.removeAll(objects);
+//					doc.field(property.getName(), collection);
+					doc.save();
 				}
-//				collection.removeAll(objects);
-//				doc.field(property.getName(), collection);
-				doc.save();
 			}
 		}
 	}

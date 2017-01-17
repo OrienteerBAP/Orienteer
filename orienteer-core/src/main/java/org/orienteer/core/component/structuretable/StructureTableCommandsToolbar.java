@@ -10,7 +10,7 @@ import org.orienteer.core.component.command.Command;
 /**
  * {@link AbstractStructureTableToolbar} to add {@link Command}s
  *
- * @param <P>
+ * @param <P> the type of main object for a commands
  */
 public class StructureTableCommandsToolbar<P> extends
 		AbstractStructureTableToolbar<P> implements ICommandsSupportComponent<P>

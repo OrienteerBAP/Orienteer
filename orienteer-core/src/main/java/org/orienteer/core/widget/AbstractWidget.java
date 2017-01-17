@@ -26,6 +26,7 @@ import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
 import ru.ydn.wicket.wicketorientdb.model.NvlModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -160,7 +161,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	public void loadSettings() {
 		ODocument doc = widgetDocumentModel.getObject();
 		if(doc==null) return;
-		hidden = Objects.firstNonNull((Boolean)doc.field(OPROPERTY_HIDDEN), false);
+		hidden = MoreObjects.firstNonNull((Boolean)doc.field(OPROPERTY_HIDDEN), false);
 		getDashboardPanel().getDashboardSupport().loadSettings(this, doc);
 	}
 	

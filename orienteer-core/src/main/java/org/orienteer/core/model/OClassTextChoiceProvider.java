@@ -13,7 +13,7 @@ import com.google.common.collect.Collections2;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
- * {@link TextChoiceProvider} for {@link OClass}es
+ * {@link ChoiceProvider} for {@link OClass}es
  */
 public class OClassTextChoiceProvider extends ChoiceProvider<OClass> {
 	

@@ -43,7 +43,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
 public class PivotPanel extends GenericPanel<String> {
 	
 	private static final WebjarsCssResourceReference PIVOT_CSS = new WebjarsCssResourceReference("/webjars/pivottable/current/dist/pivot.min.css");
-	private static final WebjarsJavaScriptResourceReference PIVOT_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/pivot.js");
+	private static final WebjarsJavaScriptResourceReference PIVOT_JS = new WebjarsJavaScriptResourceReference("/webjars/pivottable/current/dist/pivot.min.js");
 	private static final CssResourceReference PIVOT_CSS_FIX = new CssResourceReference(PivotPanel.class, "pivottable.css");
 
 	

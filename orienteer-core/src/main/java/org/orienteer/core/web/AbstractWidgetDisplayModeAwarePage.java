@@ -8,7 +8,7 @@ import org.orienteer.core.component.property.DisplayMode;
 /**
  * {@link AbstractWidgetPage} plus generic stuff for pages which can have a deal with {@link DisplayMode}
  *
- * @param <T>
+ * @param <T> the type of a main object for this page
  */
 public abstract class AbstractWidgetDisplayModeAwarePage<T> extends AbstractWidgetPage<T> implements IDisplayModeAware {
 

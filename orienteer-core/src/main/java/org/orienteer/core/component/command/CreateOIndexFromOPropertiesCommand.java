@@ -19,6 +19,7 @@ import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -31,7 +32,10 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 /**
  * {@link Command} to create an {@link OIndex} for a selected set of properties
  */
-@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.CREATE)
+@RequiredOrientResources({
+	@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.CREATE),
+	@RequiredOrientResource(value=OSecurityHelper.CLUSTER, specific="internal", permissions=OrientPermission.CREATE)
+})
 public class CreateOIndexFromOPropertiesCommand extends
 		AbstractCheckBoxEnabledCommand<OProperty>
 {

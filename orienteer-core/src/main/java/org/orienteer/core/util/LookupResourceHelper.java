@@ -171,8 +171,8 @@ public class LookupResourceHelper {
 	
 	/**
 	 * Utility method to convert file to URL
-	 * @param file
-	 * @return
+	 * @param file local for
+	 * @return URL of a provided file
 	 */
 	public static URL convertFileToURL(File file)
 	{

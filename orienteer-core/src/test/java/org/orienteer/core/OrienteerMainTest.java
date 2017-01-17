@@ -61,8 +61,8 @@ public class OrienteerMainTest
 		{
 			FormTester formTester = tester.newFormTester("signInPanel:signInForm");
 			IOrientDbSettings settings = ((OrienteerWebApplication)tester.getApplication()).getOrientDbSettings();
-            formTester.setValue("username", settings.getDBInstallatorUserName());
-            formTester.setValue("password", settings.getDBInstallatorUserPassword());
+            formTester.setValue("username", settings.getAdminUserName());
+            formTester.setValue("password", settings.getAdminPassword());
             formTester.submit();
 		}
 		tester.assertRenderedPage(SchemaPage.class);

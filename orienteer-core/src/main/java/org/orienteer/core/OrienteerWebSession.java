@@ -90,6 +90,10 @@ public class OrienteerWebSession extends OrientDbWebSession
 			
 		}
 	}
+	
+	public boolean isClientInfoAvailable() {
+		return clientInfo!=null;
+	}
 
 
 	@Override

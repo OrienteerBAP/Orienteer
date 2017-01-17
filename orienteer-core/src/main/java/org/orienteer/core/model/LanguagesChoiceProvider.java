@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.wicket.util.string.Strings;
+import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Response;
 import org.wicketstuff.select2.StringTextChoiceProvider;
 
@@ -12,7 +13,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 /**
- * {@link com.vaynberg.wicket.select2.ChoiceProvider} for combobox of language codes.
+ * {@link ChoiceProvider} for combobox of language codes.
  */
 public class LanguagesChoiceProvider extends StringTextChoiceProvider {
     private static final List<String> ISO_LANGUAGES = ImmutableList.copyOf(Locale.getISOLanguages());

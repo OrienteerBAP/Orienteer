@@ -13,6 +13,7 @@ import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.widget.AbstractWidget;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -110,9 +111,9 @@ class GridsterWidgetBehavior extends Behavior {
 	}
 	
 	public void loadSettings(ODocument doc) {
-		row = Objects.firstNonNull((Integer)doc.field(OPROPERTY_ROW), 1);
-		col = Objects.firstNonNull((Integer)doc.field(OPROPERTY_COL), 1);
-		sizeX = Objects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_X), 2);
-		sizeY = Objects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_Y), 1);
+		row = MoreObjects.firstNonNull((Integer)doc.field(OPROPERTY_ROW), 1);
+		col = MoreObjects.firstNonNull((Integer)doc.field(OPROPERTY_COL), 1);
+		sizeX = MoreObjects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_X), 2);
+		sizeY = MoreObjects.firstNonNull((Integer)doc.field(OPROPERTY_SIZE_Y), 1);
 	}
 }
