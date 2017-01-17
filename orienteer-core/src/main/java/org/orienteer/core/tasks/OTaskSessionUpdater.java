@@ -15,12 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.common.concur.ONeedRetryException;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * Multithread updater for {@link OTaskSession}
@@ -116,16 +118,6 @@ public class OTaskSessionUpdater {
 		return deleting.get();
 	}
 	
-	private ODatabaseDocumentTx dbOpen() {
-		@SuppressWarnings("resource")
-		ODatabaseDocumentTx db = new ODatabaseDocumentTx(dbSettings.getDBUrl()).open(dbSettings.getDBInstallatorUserName(), dbSettings.getDBInstallatorUserPassword());
-		return db;
-	}
-	
-	private void dbClose(ODatabaseDocumentTx db) {
-		db.close();
-	}
-	
 	
 	public void start(){
 		running.getAndSet(true);
@@ -146,38 +138,53 @@ public class OTaskSessionUpdater {
 		while(isRunning()){
 			try {
 				if(isNeedToDelete()){
-					ODatabaseDocumentTx db = dbOpen();
-					taskSessionDoc.delete();
-					dbClose(db);
+					new DBClosure<Boolean>() {
+						@Override
+						protected Boolean execute(ODatabaseDocument db) {
+							db.delete(taskSessionDoc);
+							return true;
+						}
+					}.execute();
 					return;
 				}else
 				if (isNeedToSave()){
-					ODatabaseDocumentTx db = dbOpen();
-					while(!queue.isEmpty()){
-						int nowToSave = queue.size();  
-						ArrayList<UpdaterData<?>> listToSave = new ArrayList<UpdaterData<?>>(nowToSave);
-						for (int i = 0; i < nowToSave; ++i) {
-							UpdaterData<?> curData = queue.take();
-							listToSave.add(curData);
-						}
-						int retry = 0;
-						for (; retry < RETRIES_LIMIT; ++retry) {
-							try{
-								loadUpdatesFromList(listToSave);
-								taskSessionDoc.save();
-								break;
-							}catch (ONeedRetryException e ) {
-								LOG.error(e.getMessage());
-								Thread.sleep(Math.round(Math.random()*RETRIES_SLEEP_MAX));
-								taskSessionDoc.reload();
+					new DBClosure<Boolean>() {
+
+						@Override
+						protected Boolean execute(ODatabaseDocument db) {
+							try {
+								while(!queue.isEmpty()){
+									int nowToSave = queue.size();  
+									ArrayList<UpdaterData<?>> listToSave = new ArrayList<UpdaterData<?>>(nowToSave);
+									for (int i = 0; i < nowToSave; ++i) {
+										UpdaterData<?> curData = queue.take();
+										listToSave.add(curData);
+									}
+									int retry = 0;
+									for (; retry < RETRIES_LIMIT; ++retry) {
+										try{
+											loadUpdatesFromList(listToSave);
+											taskSessionDoc.save();
+											break;
+										}catch (ONeedRetryException e ) {
+											LOG.error(e.getMessage());
+											try {
+												Thread.sleep(Math.round(Math.random()*RETRIES_SLEEP_MAX));
+											} catch (InterruptedException e1) {/*NOP*/}
+											taskSessionDoc.reload();
+										}
+									}
+									if (retry==RETRIES_LIMIT){ 
+										LOG.error("Unable to write DB record "+taskSessionDoc.getIdentity()+" !");
+										return false;
+									}
+								}
+							} catch (InterruptedException e) {
+								throw new IllegalStateException(e);
 							}
+							return true;
 						}
-						if (retry==RETRIES_LIMIT){ 
-							LOG.error("Unable to write DB record "+taskSessionDoc.getIdentity()+" !");
-							return;
-						}
-					}
-					dbClose(db);
+					}.execute();
 					saving.getAndSet(false);
 				}
 				Thread.sleep(WRITE_DELAY_MAX);
