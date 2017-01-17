@@ -3,11 +3,11 @@ package org.orienteer.core;
 import org.junit.Test;
 
 import org.junit.runner.RunWith;
-import org.orienteer.core.tasks.OConsoleTask;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.tasks.OTaskSessionUpdater;
 import org.orienteer.core.tasks.TestTask;
+import org.orienteer.core.tasks.console.OConsoleTask;
 import org.orienteer.junit.OrienteerTestRunner;
 import static org.junit.Assert.*;
 

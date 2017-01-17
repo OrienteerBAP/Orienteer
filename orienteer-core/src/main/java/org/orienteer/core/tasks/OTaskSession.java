@@ -18,7 +18,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.OUserCatchPasswordHook;
 
 /**
- * Base task session.
+ * Runtime object to hold and manage session status
  *
  * @param <T> just for chaining.For make object should be created non-anonymous 
  * class without template definition, like "private class TaskSessionImpl extends OTaskSession\<OTaskSession\>{}"
@@ -76,31 +76,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 		private Field(String fieldName){	this.fieldName = fieldName;}
 	}
 	
-	/**
-	 * Register fields in db 
-	 */
-	public static void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(TASK_SESSION_CLASS);
-		helper.oProperty(Field.THREAD_NAME.fieldName(),OType.STRING,10).markAsDocumentName();
-		helper.oProperty(Field.STATUS.fieldName(),OType.STRING,20);
-		helper.oProperty(Field.TASK_LINK.fieldName(),OType.LINK,30).linkedClass(OTask.TASK_CLASS);
-		helper.oProperty(Field.START_TIMESTAMP.fieldName(),OType.DATETIME,40);
-		helper.oProperty(Field.FINISH_TIMESTAMP.fieldName(),OType.DATETIME,50);
-		helper.oProperty(Field.PROGRESS.fieldName(),OType.INTEGER,60);
-		helper.oProperty(Field.PROGRESS_CURRENT.fieldName(),OType.LONG,70);
-		helper.oProperty(Field.PROGRESS_FINAL.fieldName(),OType.LONG,80);
-		helper.oProperty(Field.IS_STOPPABLE.fieldName(),OType.BOOLEAN,90);
-		helper.oProperty(Field.DELETE_ON_FINISH.fieldName(),OType.BOOLEAN,100);
-		helper.oProperty(Field.ERROR_TYPE.fieldName(),OType.INTEGER,110);
-		helper.oProperty(Field.ERROR.fieldName(),OType.STRING,120);
 
-	}
-
-	public static void onInitModule(OrienteerWebApplication app, ODatabaseDocument db){
-		app.getOrientDbSettings().getORecordHooks().add(OTaskSessionOnDeleteHook.class);
-	}
-	
 	public OTaskSession() {
 		this(TASK_SESSION_CLASS);
 	}
@@ -171,8 +147,7 @@ public class OTaskSession <T extends OTaskSession<T>>{
 	//call from listener
 	public T onStart(OTask task) {
 		onStart();
-		setField(Field.TASK_LINK,task.getDoc().getIdentity());
-		task.linkSession(getId());
+		setField(Field.TASK_LINK,task.getDocument().getIdentity());
 		return this.asT();
 	}
 	

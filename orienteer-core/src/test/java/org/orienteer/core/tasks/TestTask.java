@@ -19,7 +19,7 @@ public class TestTask extends OTask {
 		public static void init(ODatabaseDocument db){
 			OSchemaHelper helper = OSchemaHelper.bind(db);
 			helper.oClass(TASK_CLASS,OTask.TASK_CLASS);
-			setOTaskJavaClassName(db,TASK_CLASS,"org.orienteer.core.tasks.TestTask");
+			OTask.TASK_JAVA_CLASS_ATTRIBUTE.setValue(helper.getOClass(), TestTask.class.getName());
 		}	
 		
 		public static void close(ODatabaseDocument db){

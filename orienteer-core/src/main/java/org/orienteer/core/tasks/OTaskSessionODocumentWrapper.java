@@ -1,25 +1,24 @@
 package org.orienteer.core.tasks;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 /**
- * Viewer class for exiting {@link OTaskSession}
+ * Wrapper class for exiting {@link OTaskSession} document in DB
  */
-public class OTaskSessionViewer {
+public class OTaskSessionODocumentWrapper extends ODocumentWrapper {
 
-	ODocument sessionDoc;
 	String sessionId;
 	
 	//old session
-	public OTaskSessionViewer(ODocument sessionDoc) {
-		assert(sessionDoc!=null);
-		this.sessionDoc = sessionDoc;
+	public OTaskSessionODocumentWrapper(ODocument sessionDoc) {
+		super(sessionDoc);
 	}
 	
 	public void detachUpdate(){
 		if (isDetached()){
-			sessionDoc.field(OTaskSession.Field.STATUS.fieldName(), OTaskSession.Status.DETACHED);
-			sessionDoc.save();
+			document.field(OTaskSession.Field.STATUS.fieldName(), OTaskSession.Status.DETACHED);
+			document.save();
 		}
 	}
 	
@@ -47,13 +46,13 @@ public class OTaskSessionViewer {
 	
 	private String getId() {
 		if(sessionId==null){
-			sessionId=sessionDoc.getIdentity().toString();
+			sessionId=getDocument().getIdentity().toString();
 		}
 		return sessionId;
 	}
 	
 	private Object getField(OTaskSession.Field field) {
-		return sessionDoc.field(field.fieldName());
+		return document.field(field.fieldName());
 	}
 	
 }

@@ -1,6 +1,7 @@
-package org.orienteer.core.tasks;
+package org.orienteer.core.tasks.console;
 
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -31,15 +32,6 @@ public class OConsoleTaskSession<T extends OConsoleTaskSession<T>> extends OTask
 		
 	}
 	
-	/**
-	 * Register fields in db 
-	 */
-	public static final void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(TASK_SESSION_CLASS,OTaskSession.TASK_SESSION_CLASS);
-			helper.oProperty("in",OType.STRING,35).markAsDocumentName();
-			helper.oProperty("out",OType.STRING,37).assignVisualization("textarea");
-	}	
 	
 	public OConsoleTaskSession() {
 		super(TASK_SESSION_CLASS);

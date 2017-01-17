@@ -1,4 +1,4 @@
-package org.orienteer.core.tasks;
+package org.orienteer.core.tasks.console;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,10 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Session;
 import org.apache.wicket.ThreadContext;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.tasks.ITaskSessionCallback;
+import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.OTaskSession;
+import org.orienteer.core.tasks.OTask.Field;
 import org.orienteer.core.tasks.OTaskSession.ErrorTypes;
 import org.orienteer.core.util.OSchemaHelper;
 
@@ -35,17 +39,6 @@ public class OConsoleTask extends OTask {
 		private Field(String fieldName){	this.fieldName = fieldName;}
 	}
 	
-	/**
-	 * Register fields in db 
-	 */
-	public static void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(TASK_CLASS,OTask.TASK_CLASS);
-		helper.oProperty(Field.INPUT.fieldName(),OType.STRING,25);
-
-		setOTaskJavaClassName(db,TASK_CLASS,"org.orienteer.core.tasks.OConsoleTask");
-
-	}	
 	
 	public OConsoleTask(ODocument oTask) {
 		super(oTask);
@@ -74,10 +67,17 @@ public class OConsoleTask extends OTask {
 					}
 					try {
 						
-						Process innerProcess = Runtime.getRuntime().exec(input);
+						final Process innerProcess = Runtime.getRuntime().exec(input);
 						otaskSession.onProcess().
-							setCallback(new OConsoleTaskSessionCallback(innerProcess)).
-						end();
+							setCallback(new ITaskSessionCallback() {
+								
+								@Override
+								public void stop() throws Exception {
+									if (innerProcess.isAlive()){
+										innerProcess.destroy();
+									}
+								}
+							}).end();
 						BufferedReader reader =  new BufferedReader(new InputStreamReader(innerProcess.getInputStream(),charset));
 						String curOutString = "";
 							while ((curOutString = reader.readLine())!= null) {
@@ -86,7 +86,6 @@ public class OConsoleTask extends OTask {
 									appendOut(curOutString).
 								end();
 							}
-						innerProcess = null;
 					} catch (IOException e) {
 						otaskSession.onProcess().
 							appendOut(e.getMessage()).
@@ -108,7 +107,7 @@ public class OConsoleTask extends OTask {
 	}
 	//////////////////////////////////////////////////////////////////////
 	protected Object getField(Field field) {
-		return getDoc().field(field.fieldName());
+		return getDocument().field(field.fieldName());
 	}
 	//////////////////////////////////////////////////////////////////////
 	
