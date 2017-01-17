@@ -13,6 +13,7 @@ import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebApplication;
 
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
@@ -21,6 +22,8 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
+
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 
 /**
  * Endpoint for {@link OrientDBComponent}
@@ -92,16 +95,21 @@ public class OrientDBEndpoint extends DefaultEndpoint {
 	//should be called to open new connection
 	@SuppressWarnings("resource")
 	public ODatabaseDocument databaseOpen(){
-	    final ODatabaseDocumentInternal currentDatabase = ODatabaseRecordThreadLocal.INSTANCE.get();
-	    if (currentDatabase!=null){
-	    	return currentDatabase;
-	    }else{
-			String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
-			String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
-			String password = getCamelContext().getProperty(OrientDBComponent.DB_PASSWORD);
-			ODatabaseDocumentTx db = new ODatabaseDocumentTx(url).open(username, password);
-			return db;
-	    }
+		String url = getCamelContext().getProperty(OrientDBComponent.DB_URL);
+		String username = getCamelContext().getProperty(OrientDBComponent.DB_USERNAME);
+		String password = getCamelContext().getProperty(OrientDBComponent.DB_PASSWORD);
+		
+		if(url!=null || username!=null) {
+			IOrientDbSettings settings = OrienteerWebApplication.lookupApplication().getOrientDbSettings();
+			if(url==null) url = settings.getDBUrl();
+			if(username==null) {
+				username = settings.getGuestUserName();
+				password = settings.getGuestPassword();
+			}
+			return new ODatabaseDocumentTx(url).open(username, password);
+		} else {
+			return ODatabaseRecordThreadLocal.INSTANCE.get();
+		}
 	}
 	
 	//should be called to close existing connection
