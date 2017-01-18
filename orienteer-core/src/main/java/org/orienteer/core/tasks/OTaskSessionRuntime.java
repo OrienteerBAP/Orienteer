@@ -16,6 +16,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.OUserCatchPasswordHook;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * Runtime object to hold and manage session status
@@ -68,9 +69,23 @@ public class OTaskSessionRuntime implements ITaskSession{
 
 	@Override
 	public OTaskSessionRuntime finish() {
-		getOTaskSessionPersisted().getDocument().field(Field.FINISH_TIMESTAMP.fieldName(), new Date());
-		setStatus(Status.FINISHED);
+		if (isDeleteOnFinish()){
+			delSelf();
+		}else{
+			getOTaskSessionPersisted().getDocument().field(Field.FINISH_TIMESTAMP.fieldName(), new Date());
+			setStatus(Status.FINISHED);
+		}
 		return this;
+	}
+	
+	private void delSelf(){
+		new DBClosure<Boolean>() {
+			@Override
+			protected Boolean execute(ODatabaseDocument db) {
+				db.delete(getOTaskSessionPersisted().getDocument());
+				return true;
+			}
+		}.execute();	
 	}
 
 	@Override
@@ -145,6 +160,11 @@ public class OTaskSessionRuntime implements ITaskSession{
 	public ITaskSession incrementCurrentProgress() {
 		setCurrentProgress(getCurrentProgress()+1);
 		return this;
+	}
+
+	public ITaskSession setOTask(OTask oTask) {
+		getOTaskSessionPersisted().persist( Field.TASK_LINK.fieldName(),oTask.getDocument().getIdentity());
+		return null;
 	}
 
 }

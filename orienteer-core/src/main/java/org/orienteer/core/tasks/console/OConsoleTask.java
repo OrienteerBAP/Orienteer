@@ -47,6 +47,7 @@ public class OConsoleTask extends OTask {
 		final String input = (String) getField(Field.INPUT); 
 		otaskSession.setInput(input);
 		otaskSession.setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS));
+		otaskSession.setOTask(this);
 		try{
 			Thread innerThread = new Thread(new Runnable(){
 				@Override

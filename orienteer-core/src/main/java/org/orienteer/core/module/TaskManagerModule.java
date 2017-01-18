@@ -67,5 +67,4 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 			int oldVersion, int newVersion) {
 		onInstall(app, db);
 	}
-	
 }
