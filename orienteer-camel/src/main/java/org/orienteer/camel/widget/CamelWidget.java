@@ -32,7 +32,8 @@ import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.IOClassIntrospector;
-import org.orienteer.core.tasks.OTaskSession;
+import org.orienteer.core.tasks.ITaskSession;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -67,12 +68,12 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 	
 	private static final List<String> COLUMNS_NAMES = new ArrayList<String>();
 	static{
-		COLUMNS_NAMES.add(OTaskSession.Field.THREAD_NAME.fieldName());
-		COLUMNS_NAMES.add(OTaskSession.Field.STATUS.fieldName());
-		COLUMNS_NAMES.add(OTaskSession.Field.START_TIMESTAMP.fieldName());
-		COLUMNS_NAMES.add(OTaskSession.Field.FINISH_TIMESTAMP.fieldName());
-		COLUMNS_NAMES.add(OTaskSession.Field.PROGRESS_CURRENT.fieldName());
-		COLUMNS_NAMES.add(OTaskSession.Field.PROGRESS_FINAL.fieldName());
+		COLUMNS_NAMES.add(ITaskSession.Field.THREAD_NAME.fieldName());
+		COLUMNS_NAMES.add(ITaskSession.Field.STATUS.fieldName());
+		COLUMNS_NAMES.add(ITaskSession.Field.START_TIMESTAMP.fieldName());
+		COLUMNS_NAMES.add(ITaskSession.Field.FINISH_TIMESTAMP.fieldName());
+		COLUMNS_NAMES.add(ITaskSession.Field.PROGRESS_CURRENT.fieldName());
+		COLUMNS_NAMES.add(ITaskSession.Field.PROGRESS_FINAL.fieldName());
 	}
 	
 	@Inject

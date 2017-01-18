@@ -11,7 +11,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.OTask;
-import org.orienteer.core.tasks.OTaskSession;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 
@@ -44,7 +44,7 @@ public class OTaskWidget extends AbstractWidget<ODocument>{
 		form = new Form<Void>("form");
         
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-		OClass taskSessionClass = getModelObject().getDatabase().getMetadata().getSchema().getClass(OTaskSession.TASK_SESSION_CLASS);
+		OClass taskSessionClass = getModelObject().getDatabase().getMetadata().getSchema().getClass(OTaskSessionRuntime.TASK_SESSION_CLASS);
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand("+OTask.Field.SESSIONS.fieldName()+") from "+getModelObject().getIdentity());
 		oClassIntrospector.defineDefaultSorting(provider, taskSessionClass);
 		OrienteerDataTable<ODocument, String> table = 

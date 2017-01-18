@@ -11,9 +11,8 @@ import org.apache.wicket.ThreadContext;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.tasks.ITaskSessionCallback;
 import org.orienteer.core.tasks.OTask;
-import org.orienteer.core.tasks.OTaskSession;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.tasks.OTask.Field;
-import org.orienteer.core.tasks.OTaskSession.ErrorTypes;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.google.common.base.Throwables;
@@ -43,20 +42,16 @@ public class OConsoleTask extends OTask {
 	}
 
 	@Override
-	public OTaskSession startNewSession() {
+	public OTaskSessionRuntime startNewSession() {
 		final OConsoleTaskSession otaskSession = new OConsoleTaskSession();
 		final String input = (String) getField(Field.INPUT); 
-		otaskSession.onStart(this);
 		otaskSession.setInput(input);
-		otaskSession.setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS)).
-		end();
+		otaskSession.setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS));
 		try{
 			Thread innerThread = new Thread(new Runnable(){
 				@Override
 				public void run() {
-					otaskSession.onProcess().
-						updateThread().
-					end();
+					otaskSession.start();
 					String charset =  Charset.defaultCharset().displayName();
 					if(System.getProperty("os.name").startsWith("Windows")){
 						if (Charset.isSupported("cp866")){
@@ -66,40 +61,32 @@ public class OConsoleTask extends OTask {
 					try {
 						
 						final Process innerProcess = Runtime.getRuntime().exec(input);
-						otaskSession.onProcess().
-							setCallback(new ITaskSessionCallback() {
+						otaskSession.setCallback(new ITaskSessionCallback() {
 								
 								@Override
-								public void stop() throws Exception {
+								public void interrupt() throws Exception {
 									if (innerProcess.isAlive()){
 										innerProcess.destroy();
 									}
 								}
-							}).end();
+							});
 						BufferedReader reader =  new BufferedReader(new InputStreamReader(innerProcess.getInputStream(),charset));
 						String curOutString = "";
 							while ((curOutString = reader.readLine())!= null) {
-								otaskSession.onProcess().
-									incrementCurrentProgress();
+								otaskSession.incrementCurrentProgress();
 								otaskSession.appendOut(curOutString);
-								otaskSession.end();
 							}
 					} catch (IOException e) {
-						otaskSession.onProcess();
 						otaskSession.appendOut(e.getMessage());
-						otaskSession.end();
 					}	
-					otaskSession.onStop();
+					otaskSession.finish();
 				}
 				
 			});
 			innerThread.start();
 
 		} catch (Exception e) {
-			otaskSession.onError(ErrorTypes.UNKNOWN_ERROR,e.getMessage());
-			otaskSession.appendOut(Throwables.getStackTraceAsString(e));
-			otaskSession.end();
-			otaskSession.onStop();
+			otaskSession.finish();
 		}
 		return otaskSession;		
 	}

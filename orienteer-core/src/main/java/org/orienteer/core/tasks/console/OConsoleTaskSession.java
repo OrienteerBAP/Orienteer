@@ -1,7 +1,7 @@
 package org.orienteer.core.tasks.console;
 
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.tasks.OTaskSession;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -9,11 +9,9 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * Task session with input and output
- *
- * @param <T> just for chaining. See also {@link OConsoleTask}
  */
 
-public class OConsoleTaskSession extends OTaskSession{
+public class OConsoleTaskSession extends OTaskSessionRuntime{
 
 	public static final String TASK_SESSION_CLASS = "OConsoleTaskSession";
 
@@ -38,22 +36,14 @@ public class OConsoleTaskSession extends OTaskSession{
 	}
 	
 	public OConsoleTaskSession setInput(String input){
-		setField(Field.INPUT, input);
+		getOTaskSessionPersisted().persist("in", input);
 		return this;
 	}
 
 	public OConsoleTaskSession appendOut(String out){
-		appendField(Field.OUTPUT, out.concat("\n"));
+		out = getOTaskSessionPersisted().getDocument().field("out")+out+"\n";
+		getOTaskSessionPersisted().persist("out", out);
 		return this;
-	}
-	
-	//////////////////////////////////////////////////////////////////////
-	protected void setField(Field field,Object value) {
-		getSessionUpdater().set(field.fieldName(), value);
-	}
-
-	protected void appendField(Field field,String value) {
-		getSessionUpdater().append(field.fieldName(), value);
 	}
 
 }

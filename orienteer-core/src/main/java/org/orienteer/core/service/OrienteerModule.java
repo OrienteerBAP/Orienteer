@@ -27,6 +27,7 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.impl.GuiceOrientDbSettings;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
+import org.orienteer.core.tasks.OTaskManager;
 import org.orienteer.core.util.LookupResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +114,12 @@ public class OrienteerModule extends AbstractModule {
 	public Localizer getLocalizer(WebApplication application)
 	{
 		return application.getResourceSettings().getLocalizer();
+	}
+	
+	@Provides
+	public OTaskManager getTaskManager()
+	{
+		return OTaskManager.get();
 	}
 
 	@Provides

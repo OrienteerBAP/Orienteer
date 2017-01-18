@@ -16,7 +16,7 @@ public class OCamelTaskSessionCallback implements ITaskSessionCallback{
 	}
 
 	@Override
-	public void stop() throws Exception{
+	public void interrupt() throws Exception{
 		if(context!=null){
 			context.stop();
 		}

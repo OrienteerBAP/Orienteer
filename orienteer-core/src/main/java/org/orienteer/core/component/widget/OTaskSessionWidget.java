@@ -13,19 +13,21 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.tasks.OTaskSession;
-import org.orienteer.core.tasks.OTaskSessionODocumentWrapper;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
+import org.orienteer.core.tasks.ITaskSession;
+import org.orienteer.core.tasks.OTaskSessionPersisted;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 /**
  * Widget for {@link TaskManagerModule}
  *
  */
-@Widget(domain="document",selector=OTaskSession.TASK_SESSION_CLASS, id=OTaskSessionWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+@Widget(domain="document",selector=OTaskSessionRuntime.TASK_SESSION_CLASS, id=OTaskSessionWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class OTaskSessionWidget extends AbstractWidget<ODocument>{
 
 	public static final String WIDGET_TYPE_ID = "taskSession";
@@ -74,21 +76,27 @@ public class OTaskSessionWidget extends AbstractWidget<ODocument>{
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
+			
+			private IModel<OTaskSessionPersisted> taskSessionModel = 
+						new ODocumentWrapperModel<OTaskSessionPersisted>(new OTaskSessionPersisted(OTaskSessionWidget.this.getModelObject()));
 			@Override
 			protected void onInitialize() {
 				super.onInitialize();
 				setIcon(FAIconType.stop);
 				setBootstrapType(BootstrapType.DANGER);
 				setChangingDisplayMode(true);
-				OTaskSessionODocumentWrapper taskSession = new OTaskSessionODocumentWrapper(OTaskSessionWidget.this.getModelObject());
-				taskSession.detachUpdate();
-				setEnabled(taskSession.isStoppable());
+			}
+			
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+				setEnabled(taskSessionModel.getObject().isInterruptable());
 			}
 			@Override
 			public void onClick() {
-				OTaskSessionODocumentWrapper taskSession = new OTaskSessionODocumentWrapper(OTaskSessionWidget.this.getModelObject());
+				
 				try {
-					taskSession.stopSession();
+					taskSessionModel.getObject().interrupt();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

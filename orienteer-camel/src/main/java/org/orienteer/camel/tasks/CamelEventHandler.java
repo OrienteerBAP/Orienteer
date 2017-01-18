@@ -35,7 +35,6 @@ public class CamelEventHandler extends EventNotifierSupport{
 
 	@Override
 	public void notify(EventObject event) throws Exception {
-    	taskSession.onProcess();
         if (event instanceof ExchangeSentEvent) {
         	ExchangeSentEvent sent = (ExchangeSentEvent) event;
         	String logRecord ="Took " + sent.getTimeTaken() + " millis to send to: " + sent.getEndpoint(); 
@@ -43,24 +42,19 @@ public class CamelEventHandler extends EventNotifierSupport{
         	taskSession.incrementCurrentProgress();
         }
 //        LOG.info("Event = "+ event);		
-    	taskSession.appendOut(event.toString()).
-    	end();
+    	taskSession.appendOut(event.toString());
 	}
 
 	@Override
 	public boolean isEnabled(EventObject event) {
 		return true;
 	}
-
-	private void onStop() {
-		if (taskSession != null){
-			taskSession.onStop();
-			taskSession=null;
-		}
-	}
 	
 	public void onAllRoutesComplete(){
-		onStop();
+		if(taskSession!=null) {
+			taskSession.finish();
+			taskSession = null;
+		}
 	}
 	
 	@Override
@@ -69,19 +63,18 @@ public class CamelEventHandler extends EventNotifierSupport{
 
 		if (taskSession == null){
 			taskSession = new OCamelTaskSession();
-			taskSession.onStart().
-				setCallback(callback).
-				setDeleteOnFinish(false);
+			taskSession.setCallback(callback);
+			taskSession.setDeleteOnFinish(false);
 			taskSession.setConfig(configId);
-			taskSession.setFinalProgress(context.getRoutes().size()).
-			end();
+			taskSession.setFinalProgress(context.getRoutes().size());
+			taskSession.start();
 		}
 		super.doStart();
 	}
 	
 	@Override
 	protected void doStop() throws Exception {
-		onStop();
+		if(taskSession!=null) taskSession.interrupt();
 		super.doStop();
 	}
 

@@ -17,7 +17,7 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 /**
- * Base task for task manager
+ * Base task for tasks
  *
  */
 public abstract class OTask extends ODocumentWrapper {
@@ -66,6 +66,6 @@ public abstract class OTask extends ODocumentWrapper {
 	//////////////////////////////////////////////////////////////////////
 
 	
-	public abstract OTaskSession startNewSession();
+	public abstract OTaskSessionRuntime startNewSession();
 	
 }

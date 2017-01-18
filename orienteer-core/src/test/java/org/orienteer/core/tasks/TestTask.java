@@ -31,19 +31,16 @@ public class TestTask extends OTask {
 		}
 
 		@Override
-		public OTaskSession startNewSession() {
-			final OTaskSession otaskSession = new OTaskSession();
-			otaskSession.onStart(this).
-				setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS)).
-				setFinalProgress(PROGRESS_FINAL).
-			end();
+		public OTaskSessionRuntime startNewSession() {
+			final OTaskSessionRuntime otaskSession = new OTaskSessionRuntime();
+			otaskSession
+				.setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS))
+				.setFinalProgress(PROGRESS_FINAL)
+				.start();
 			for (int i = 0; i < PROGRESS_CURRENT; i++) {
-				otaskSession.onProcess().
-					incrementCurrentProgress().
-					setProgress(PROGRESS).
-				end();
+				otaskSession.incrementCurrentProgress();
 			}
-			otaskSession.onStop();
+			otaskSession.finish();
 			return otaskSession;		
 		}
 		//////////////////////////////////////////////////////////////////////

@@ -1,8 +1,8 @@
 package org.orienteer.camel.tasks;
 
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.tasks.OTaskSession;
-import org.orienteer.core.tasks.OTaskSession.Field;
+import org.orienteer.core.tasks.ITaskSession;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -11,10 +11,8 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * Task session for Orienteer Camel integration
- *
- * @param <T> just for chaining, see {@link OTaskSession}
  */
-public class OCamelTaskSession extends OTaskSession {
+public class OCamelTaskSession extends OTaskSessionRuntime {
 
 	public static final String TASK_SESSION_CLASS = "OCamelTaskSession";
 
@@ -38,8 +36,8 @@ public class OCamelTaskSession extends OTaskSession {
 	 */
 	public static final void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(TASK_SESSION_CLASS,OTaskSession.TASK_SESSION_CLASS);
-			helper.oProperty(OTaskSession.Field.THREAD_NAME.fieldName(),OType.STRING,10).markAsDocumentName();
+		helper.oClass(TASK_SESSION_CLASS,OTaskSessionRuntime.TASK_SESSION_CLASS);
+			helper.oProperty(ITaskSession.Field.THREAD_NAME.fieldName(),OType.STRING,10).markAsDocumentName();
 			helper.oProperty(Field.CONFIG.fieldName(),Field.CONFIG.type(),35).markAsLinkToParent();
 			helper.oProperty(Field.OUTPUT.fieldName(),Field.OUTPUT.type(),37).assignVisualization("textarea");
 	}	
@@ -49,23 +47,14 @@ public class OCamelTaskSession extends OTaskSession {
 	}
 	
 	public OCamelTaskSession appendOut(String out){
-		appendField(Field.OUTPUT, out.concat("\n"));
+		out = getOTaskSessionPersisted().getDocument().field(Field.OUTPUT.fieldName())+out+"\n";
+		getOTaskSessionPersisted().persist(Field.OUTPUT.fieldName(), out);
 		return this;
 	}
 	
 	public OCamelTaskSession setConfig(String configId){
-		setField(Field.CONFIG, new ORecordId(configId));
+		getOTaskSessionPersisted().persist(Field.CONFIG.fieldName(), new ORecordId(configId));
 		return this;
 	}
 	
-	//////////////////////////////////////////////////////////////////////
-
-	protected void setField(Field field,Object value) {
-		getSessionUpdater().set(field.fieldName(), value);
-	}
-
-	protected void appendField(Field field,String value) {
-		getSessionUpdater().append(field.fieldName(), value);
-	}
-
 }
