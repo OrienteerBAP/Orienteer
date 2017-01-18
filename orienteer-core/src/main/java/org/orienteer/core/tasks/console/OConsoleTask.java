@@ -65,7 +65,11 @@ public class OConsoleTask extends OTask {
 								
 								@Override
 								public void interrupt() throws Exception {
-									if (innerProcess.isAlive()){
+									try {
+										innerProcess.exitValue();
+										//There is exit code: process is finished already
+									} catch (IllegalThreadStateException e) {
+										//Process is active - destroying
 										innerProcess.destroy();
 									}
 								}
