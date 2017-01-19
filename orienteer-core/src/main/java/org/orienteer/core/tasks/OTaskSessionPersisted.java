@@ -121,7 +121,7 @@ public class OTaskSessionPersisted extends ODocumentWrapper implements ITaskSess
 
 	@Override
 	public boolean isDeleteOnFinish() {
-		return getField(Field.DELETE_ON_FINISH);
+		return getField(Field.DELETE_ON_FINISH, false);
 	}
 
 	@Override
@@ -162,5 +162,5 @@ public class OTaskSessionPersisted extends ODocumentWrapper implements ITaskSess
 		setCurrentProgress(getCurrentProgress()+1);
 		return this;
 	}
-	
+
 }

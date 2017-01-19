@@ -61,14 +61,14 @@ public class CamelEventHandler extends EventNotifierSupport{
 	protected void doStart() throws Exception {
         LOG.info(Thread.currentThread().getName());		
 
-		if (taskSession == null){
+//		if (taskSession == null){
 			taskSession = new OCamelTaskSession();
 			taskSession.setCallback(callback);
 			taskSession.setDeleteOnFinish(false);
 			taskSession.setConfig(configId);
 			taskSession.setFinalProgress(context.getRoutes().size());
 			taskSession.start();
-		}
+//		}
 		super.doStart();
 	}
 	
