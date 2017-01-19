@@ -95,6 +95,9 @@ public class OrientDBProducer extends DefaultProducer{
 	private Object processSingleObject(Object input,OrientDBEndpoint endpoint,ODatabaseDocument db) throws Exception{
 		ODocument inputDocument = null;
 		if (input instanceof Map){
+			if (!Strings.isEmpty(endpoint.getInputAsOClass())){
+				((Map<Object,Object>)input).put(ODocumentHelper.ATTRIBUTE_CLASS,endpoint.getInputAsOClass());
+			}
 			inputDocument = (ODocument) fromMap(input);
 		}else if(input instanceof ODocument){
 			inputDocument = fromObject((ODocument)input, endpoint, db);
@@ -156,7 +159,11 @@ public class OrientDBProducer extends DefaultProducer{
 					result = new ODocument(new ORecordId(rid));
 				}
 				for (Entry<?, ?> entry : objMap.entrySet()) {
-					result.field((String) entry.getKey(),fromMap(entry.getValue()));
+					Object value = fromMap(entry.getValue());
+					if (value instanceof String && Strings.isEmpty((String)value)){
+						value=null;	
+					}
+					result.field((String) entry.getKey(),value);
 				}
 				return result;
 			}else{//wow,it is just Map
