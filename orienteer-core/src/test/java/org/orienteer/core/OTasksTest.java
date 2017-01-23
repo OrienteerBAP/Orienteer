@@ -60,13 +60,26 @@ public class OTasksTest {
 		assertEquals(Status.DETACHED, session.getOTaskSessionPersisted().getStatus());
 		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
 		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
+		session.setCurrentProgress(0);
+		session.start();
 		new Thread(new Runnable() {
 			
 			@Override
 			public void run() {
-				session.start();
 				try { Thread.sleep(250);} catch (InterruptedException e) {}
-				session.finish();
+				for (int i = 0; i < 100; i++) {
+					session.incrementCurrentProgress();
+				}
+			}
+		}).start();
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try { Thread.sleep(250);} catch (InterruptedException e) {}
+				for (int i = 0; i < 100; i++) {
+					session.incrementCurrentProgress();
+				}
 			}
 		}).start();
 		try { Thread.sleep(100);} catch (InterruptedException e) {}
@@ -75,7 +88,9 @@ public class OTasksTest {
 		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
 		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
 		assertFalse(session.isInterruptable());
-		try { Thread.sleep(250);} catch (InterruptedException e) {}
+		try { Thread.sleep(2500);} catch (InterruptedException e) {}
+		session.finish();
+		assertEquals((double)200, session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
 		assertEquals(Status.FINISHED, session.getStatus());
 		assertEquals(Status.FINISHED, session.getOTaskSessionPersisted().getStatus());
 		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
