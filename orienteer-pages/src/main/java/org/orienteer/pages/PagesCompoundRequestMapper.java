@@ -31,7 +31,7 @@ public class PagesCompoundRequestMapper extends CompoundRequestMapper {
 			protected Boolean execute(ODatabaseDocument db) {
 				List<ODocument> pages = db.query(new OSQLSynchQuery<ODocument>("select from "+PagesModule.OCLASS_PAGE));
 				for (ODocument pageDoc : pages) {
-					add(pageDoc);
+					if(pageDoc.field(PagesModule.OPROPERTY_PATH)!=null) add(pageDoc);
 				}
 				return true;
 			}

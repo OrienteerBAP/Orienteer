@@ -55,7 +55,9 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		this.propertyModel = propertyModel;
 		OProperty property = propertyModel.getObject();
 		OClass linkedClass = property.getLinkedClass();
-		boolean isCalculable = CustomAttribute.CALCULABLE.getValue(property, false);
+		boolean isStructureReadonly = (Boolean)CustomAttribute.CALCULABLE.getValue(property)
+									   || (Boolean)CustomAttribute.UI_READONLY.getValue(property)
+									   || property.isReadonly();
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
 		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
@@ -64,7 +66,7 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		final OPropertyNamingModel propertyNamingModel = new OPropertyNamingModel(propertyModel);
 		table.setCaptionModel(propertyNamingModel);
 		SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
-		if(!isCalculable)
+		if(!isStructureReadonly)
 		{
 			table.addCommand(new CreateODocumentCommand(table, documentModel, propertyModel).add(securityBehaviour));
 			table.addCommand(new EditODocumentsCommand(table, modeModel, linkedClass).add(securityBehaviour));
