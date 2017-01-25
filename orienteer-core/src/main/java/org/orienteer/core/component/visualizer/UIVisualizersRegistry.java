@@ -35,6 +35,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new MarkDownVisualizer());
 		registerUIComponentFactory(new LocalizationVisualizer());
 		registerUIComponentFactory(new ImageVisualizer());
+		registerUIComponentFactory(new TagsVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()
