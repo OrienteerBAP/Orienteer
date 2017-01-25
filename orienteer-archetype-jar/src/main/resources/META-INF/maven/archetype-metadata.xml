@@ -49,5 +49,17 @@
 				<exclude>log4j.properties</exclude>
 			</excludes>
 		</fileSet>
+		<fileSet filtered="true" packaged="false" encoding="UTF-8">
+			<directory>src/main/resources/META-INF/services</directory>
+			<includes>
+				<include>org.apache.wicket.IInitializer</include>
+			</includes>
+		</fileSet>
+		<fileSet filtered="true" packaged="true" encoding="UTF-8">
+			<directory>src/main/resources/META-INF/services</directory>
+			<excludes>
+				<exclude>org.apache.wicket.IInitializer</exclude>
+			</excludes>
+		</fileSet>
 	</fileSets>
 </archetype-descriptor>
