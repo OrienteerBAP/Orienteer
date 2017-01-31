@@ -30,9 +30,9 @@ public class TagsVisualizer extends AbstractSimpleVisualizer {
             OProperty property = propertyModel.getObject();
             OClass oClass = property.getLinkedClass();
             if (property.getType().isMultiValue()) {
-                return new Select2MultiChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, new ODocumentChoiceProvider(oClass.getName(), property.getName()));
+                return new Select2MultiChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, new ODocumentChoiceProvider(oClass));
             } else {
-                return new Select2Choice<ODocument>(id, (IModel<ODocument>) valueModel, new ODocumentChoiceProvider(oClass.getName(), property.getName()));
+                return new Select2Choice<ODocument>(id, (IModel<ODocument>) valueModel, new ODocumentChoiceProvider(oClass));
             }
         } else {
             return null;

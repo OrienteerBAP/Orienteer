@@ -28,9 +28,9 @@ public class ODocumentChoiceProvider extends ChoiceProvider<ODocument> {
 
     private transient IOClassIntrospector oClassIntrospector;
 
-    public ODocumentChoiceProvider(String className, String propertyName) {
-        this.className = className;
-        this.propertyName = propertyName;
+    public ODocumentChoiceProvider(OClass oClass) {
+        this.className =  oClass.getName();
+        this.propertyName = getOClassIntrospector().getNameProperty(oClass).getName();
     }
 
     protected IOClassIntrospector getOClassIntrospector() {
