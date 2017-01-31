@@ -58,7 +58,7 @@ public class ReloadFilter implements Filter {
         filter = null;
     }
 
-    public void reload(FilterConfig filterConfig) throws ServletException {
+    protected void reload(FilterConfig filterConfig) throws ServletException {
         LOG.info("Start reload filter with filter config: " + filterConfig);
         destroy();
         isOn = true;
@@ -66,13 +66,12 @@ public class ReloadFilter implements Filter {
         isOn = false;
     }
 
-    public void reload() throws ServletException {
+    protected void reload() throws ServletException {
         if (filter == null) return ;
         reload(filter.getFilterConfig());
     }
 
-    public static Injector getInjector() {
-        return injector != null ? injector : Guice.createInjector(new DependencyLoaderInitModule(),
-                new ReloadOrienteerInitModule());
+    protected static Injector getInjector() {
+        return injector != null ? injector : Guice.createInjector(new ReloadOrienteerInitModule());
     }
 }

@@ -142,4 +142,22 @@ public abstract class JarReader {
         return fullClassName;
     }
 
+    public static Set<String> getAllClassNamesInModule(Path pathToJar) throws IOException {
+        if (!pathToJar.toString().endsWith(".jar")) return Collections.emptySet();
+        Set<String> classNames = new HashSet<>();
+        JarFile jarFile = new JarFile(pathToJar.toFile());
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry jarEntry = entries.nextElement();
+            String entryName = jarEntry.getName().replace('/', '.');
+            if (!entryName.contains("org."))
+                continue;
+            entryName = entryName.substring(entryName.indexOf("org."));
+            if (entryName.endsWith(".class")) {
+                classNames.add(entryName.substring(0, entryName.indexOf(".class")));
+            }
+        }
+
+        return classNames;
+    }
 }

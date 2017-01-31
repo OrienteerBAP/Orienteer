@@ -8,6 +8,7 @@ import org.apache.wicket.IInitializer;
 import org.orienteer.loader.loader.jar.JarReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xeustechnologies.jcl.JarClassLoader;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -48,11 +49,11 @@ public abstract class JarModules {
         loadJars();
         Set<String> classNames = getModulesClassNames();
 //        classNames.add("org.orienteer.devutils.Initializer");
-//        Thread.currentThread().setContextClassLoader(injector.getInstance(JarClassLoader.class));
+        Thread.currentThread().setContextClassLoader(injector.getInstance(JarClassLoader.class));
         for (String fullClassName : classNames) {
             IInitializer initializer;
             try {
-                initializer = load(fullClassName);
+                initializer = (IInitializer) load(fullClassName);
                 if (initializer != null) initializer.init(app);
                 else throw new NullPointerException();
                 LOG.info(fullClassName + "     load:     " + initializer);
@@ -62,6 +63,18 @@ public abstract class JarModules {
             }
         }
         LOG.info("End load jar modules");
+    }
+
+    private static void loadAllClasses(Set<String> classes, String ignoredClass) {
+        for (String clazz : classes) {
+            if (!clazz.equals(ignoredClass)) {
+                try {
+                    load(clazz);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private static Set<String> getModulesClassNames() {
@@ -78,10 +91,9 @@ public abstract class JarModules {
         return names;
     }
 
-    private static IInitializer load(String fullClassName) throws Exception {
+    private static Object load(String fullClassName) throws Exception {
         ODependencyLoader loader = injector.getInstance(ODependencyLoader.class);
-        Object obj = loader.newInstance(fullClassName);
-        return obj != null ? (IInitializer) obj : null;
+        return loader.newInstance(fullClassName);
     }
 
     private static void loadJars() {

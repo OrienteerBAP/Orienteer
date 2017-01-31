@@ -20,10 +20,10 @@ public class Reload implements Runnable {
 
     @Override
     public void run() {
-        LOG.debug("Start reload Wicket application");
-        timeout(3000);
+        LOG.debug("Start reload Orienteer.");
+        timeout(2000);
         reload();
-        LOG.debug("End reload Wicket application");
+        LOG.debug("End reload Orienteer.");
     }
 
     private void reload() {
