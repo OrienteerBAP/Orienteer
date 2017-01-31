@@ -19,7 +19,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class TagsVisualizer extends AbstractSimpleVisualizer {
     public TagsVisualizer() {
-        super("tags", false, OType.LINK, OType.LINKLIST, OType.LINKSET);
+        super("suggest", false, OType.LINK, OType.LINKLIST, OType.LINKSET);
     }
 
     @SuppressWarnings("unchecked")
