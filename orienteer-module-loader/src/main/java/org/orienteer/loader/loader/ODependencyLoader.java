@@ -3,7 +3,6 @@ package org.orienteer.loader.loader;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import org.orienteer.loader.loader.jar.DependencyResolver;
 import org.orienteer.loader.loader.jar.JarReader;
@@ -25,7 +24,6 @@ import java.util.Set;
 /**
  * @author Vitaliy Gonchar
  */
-@Singleton
 public class ODependencyLoader {
     @Inject @Named("pom.xml") private Path pomFile;
     @Inject @Named("jars") private Path jarFolder;

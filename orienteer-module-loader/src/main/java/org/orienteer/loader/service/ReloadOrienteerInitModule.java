@@ -1,6 +1,5 @@
 package org.orienteer.loader.service;
 
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
@@ -68,20 +67,29 @@ public class ReloadOrienteerInitModule extends OrienteerInitModule {
         bind(JarClassLoader.class).toProvider(new Provider<JarClassLoader>() {
             @Override
             public JarClassLoader get() {
-                return new JarClassLoader();
+                return JclProvider.getJcl();
             }
-        }).in(Singleton.class);
+        });
         bind(JclObjectFactory.class).toProvider(new Provider<JclObjectFactory>() {
             @Override
             public JclObjectFactory get() {
                 return JclObjectFactory.getInstance(true);
             }
-        }).in(Singleton.class);
+        });
     }
 
     private void initFilter() {
-        bind(WicketFilterProvider.class).in(Singleton.class);
-        bind(WicketFilter.class).toProvider(WicketFilterProvider.class).in(Singleton.class);
+        bind(WicketFilter.class).toProvider(new Provider<WicketFilter>() {
+            @Override
+            public WicketFilter get() {
+                return new WicketFilter() {
+                    @Override
+                    protected ClassLoader getClassLoader() {
+                        return JclProvider.getJcl();
+                    }
+                };
+            }
+        }).in(Singleton.class);
         bind(ReloadFilter.class).in(Singleton.class);
         filter("/*").through(ReloadFilter.class);
         filter("/*").through(WicketFilter.class);
@@ -162,26 +170,6 @@ public class ReloadOrienteerInitModule extends OrienteerInitModule {
         while (enumeration.hasMoreElements()) {
             String key = (String) enumeration.nextElement();
             paths.put(key, Paths.get(properties.getProperty(key)));
-        }
-    }
-
-    /**
-     * Provide WicketFilter
-     */
-    @Singleton
-    private static class WicketFilterProvider implements Provider<WicketFilter> {
-
-        @Inject
-        private JarClassLoader jcl;
-
-        @Override
-        public WicketFilter get() {
-            return new WicketFilter() {
-                @Override
-                protected ClassLoader getClassLoader() {
-                    return jcl;
-                }
-            };
         }
     }
 

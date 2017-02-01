@@ -3,6 +3,7 @@ package org.orienteer.loader.service;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
+import com.google.inject.servlet.GuiceFilter;
 import org.apache.wicket.protocol.http.WicketFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +24,11 @@ public class ReloadFilter implements Filter {
     private static volatile WeakReference<ServletContext> servletContext = new WeakReference<>(null);
     private static WicketFilter filter;
     private static Injector injector;
-    private static boolean isOn;
+    private static boolean reload;
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
+        JclProvider.createNewJcl();
         LOG.info("Start initialization: " + this.getClass().getName());
         ServletContext context = filterConfig.getServletContext();
         injector = getInjector();
@@ -41,7 +43,7 @@ public class ReloadFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (isOn) {
+        if (reload) {
             HttpServletResponse res = (HttpServletResponse) response;
             res.setStatus(503);
             LOG.info("Reload application. Send 503 code");
@@ -54,24 +56,31 @@ public class ReloadFilter implements Filter {
     public void destroy() {
         LOG.info("Destroy filter - " + this.getClass().getName());
         servletContext.clear();
+        GuiceFilter guiceFilter = injector.getInstance(GuiceFilter.class);
+        if (guiceFilter != null) guiceFilter.destroy();
         filter.destroy();
         filter = null;
     }
 
-    protected void reload(FilterConfig filterConfig) throws ServletException {
+    public void reload(FilterConfig filterConfig) throws ServletException {
         LOG.info("Start reload filter with filter config: " + filterConfig);
+        reload = true;
         destroy();
-        isOn = true;
         init(filterConfig);
-        isOn = false;
+        reload = false;
     }
 
-    protected void reload() throws ServletException {
+    public void reload() throws ServletException {
         if (filter == null) return ;
         reload(filter.getFilterConfig());
     }
 
     protected static Injector getInjector() {
-        return injector != null ? injector : Guice.createInjector(new ReloadOrienteerInitModule());
+//        return  injector != null ? injector : Guice.createInjector(new ReloadOrienteerInitModule());
+        return Guice.createInjector(new ReloadOrienteerInitModule());
+    }
+
+    public static boolean isReload() {
+        return reload;
     }
 }
