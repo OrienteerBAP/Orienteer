@@ -41,20 +41,21 @@ public class ODependencyLoader {
     private boolean init;
 
     public Object newInstance(String fullClassName) throws JclException {
-        Object object;
 
-        if (!init) {
-            createDefaultDeps();
-            init = true;
-            jcl.add(jarFolder.toString());
+        try {
+            return factory.create(jcl, fullClassName);
+        } catch (JclException ex) {
+            if (!init) {
+                createDefaultDeps();
+                init = true;
+                jcl.add(jarFolder.toString());
+            }
+            if (!JarReader.readNewJarsInFolder(jarFolder, jars).isEmpty()) {
+                resolveDependencies();
+                jcl.add(depFolder.toString());
+            }
         }
-        if (!JarReader.readNewJarsInFolder(jarFolder, jars).isEmpty()) {
-            resolveDependencies();
-            jcl.add(depFolder.toString());
-        }
-
-        object = factory.create(jcl, fullClassName);
-        return object;
+        return factory.create(jcl, fullClassName);
     }
 
     public Object newInstanceWithoutDownload(String fullClassName) throws JclException {
