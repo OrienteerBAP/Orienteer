@@ -1,36 +1,23 @@
 package org.orienteer.core.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ServiceLoader;
-
-import org.apache.wicket.guice.GuiceWebApplicationFactory;
+import com.google.common.collect.Iterables;
+import com.google.inject.Module;
+import com.google.inject.Provider;
+import com.google.inject.name.Names;
+import com.google.inject.servlet.ServletModule;
+import com.google.inject.util.Modules;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.WicketFilter;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.LookupResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.rest.InterceptContentFilter;
 
-import com.google.common.collect.Iterables;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.google.inject.name.Names;
-import com.google.inject.servlet.ServletModule;
-import com.google.inject.util.Modules;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 
 /**
@@ -91,17 +78,28 @@ public class OrienteerInitModule extends ServletModule {
 	
 	@Override
 	protected void configureServlets() {
-		bind(InterceptContentFilter.class).asEagerSingleton();
-		filter("/orientdb/*").through(InterceptContentFilter.class);
-		Map<String, String> params = new HashMap<String, String>();    
-        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");  
-        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
-        params.put("injectorContextAttribute", Injector.class.getName());
-        bind(WicketFilter.class).in(Singleton.class);
-        filter("/*").through(WicketFilter.class, params);  
-        
-        
-        Properties properties = retrieveProperties();
+//		bind(InterceptContentFilter.class).asEagerSingleton();
+//		filter("/orientdb/*").through(InterceptContentFilter.class);
+//		Map<String, String> params = new HashMap<String, String>();
+//        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");
+//        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
+//        params.put("injectorContextAttribute", Injector.class.getName());
+//		bind(WicketFilter.class).toProvider(new Provider<WicketFilter>() {
+//			@Override
+//			public WicketFilter get() {
+//				return new WicketFilter() {
+//					@Override
+//					protected ClassLoader getCurrentModuleLoader() {
+//						return OLoaderStorage.getCurrentModuleLoader();
+//					}
+//				};
+//			}
+//		}).in(Singleton.class);
+//        filter("/*").through(WicketFilter.class, params);
+//		bind(ReloadFilter.class).in(Singleton.class);
+//
+//
+		Properties properties = retrieveProperties();
 		Names.bindProperties(binder(), properties);
 		bindOrientDbProperties(properties);
 		String applicationClass = properties.getProperty("orienteer.application");
@@ -128,8 +126,10 @@ public class OrienteerInitModule extends ServletModule {
 		bind(WebApplication.class).toProvider(appProvider);
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
-        
+
+		install(loadFromClasspath(new OrienteerFilterInitModule()));
         install(loadFromClasspath(new OrienteerModule()));
+        install(loadFromClasspath(new OModuleExecutorInitModule(properties)));
 	}
 	
 	protected void bindOrientDbProperties(Properties properties) {
