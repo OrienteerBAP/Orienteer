@@ -12,6 +12,7 @@ public class Initializer implements IInitializer {
 
 	@Override
 	public void init(Application application) {
+
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		app.registerModule(PagesModule.class);
 	}
@@ -19,6 +20,7 @@ public class Initializer implements IInitializer {
 	@Override
 	public void destroy(Application application) {
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
+		app.unregisterModule(PagesModule.class);
 	}
 
 }
