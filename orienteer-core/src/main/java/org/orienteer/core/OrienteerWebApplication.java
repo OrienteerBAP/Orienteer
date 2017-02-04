@@ -1,18 +1,16 @@
 package org.orienteer.core;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.ThreadContext;
-import org.apache.wicket.WicketRuntimeException;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+import org.apache.wicket.*;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
@@ -33,6 +31,7 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.module.*;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.loader.OrienteerOutsideModules;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
@@ -41,24 +40,10 @@ import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.*;
 
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.name.Named;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.metadata.security.OUser;
-
-import de.agilecoders.wicket.webjars.WicketWebjars;
-import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
-import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
-import ru.ydn.wicket.wicketorientdb.OrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -193,6 +178,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
 		registerModule(OConsoleTasksModule.class);
+		registerOutsideModules();
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
@@ -200,6 +186,16 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
+
+	}
+
+	private void registerOutsideModules() {
+		OrienteerOutsideModules.registerModules();
+		if (LOG.isDebugEnabled()) {
+			for (IOrienteerModule module : getRegisteredModules()) {
+				LOG.info("registered module: " + module.getName());
+			}
+		}
 	}
 
 	@Override
@@ -258,6 +254,15 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registeredModules.put(module.getName(), getServiceInstance(moduleClass));
 		registeredModulesSorted = false;
 		return module;
+	}
+
+	public synchronized <M extends IOrienteerModule> M unregisterModule(Class<M> moduleClass) {
+		M module = getServiceInstance(moduleClass);
+		if (registeredModules.containsKey(module.getName())) {
+			registeredModules.remove(module.getName());
+			return module;
+		} else LOG.info("Orienteer application does not already registered module: " + module.getName());
+		return null;
 	}
 	
 	public IOrienteerModule getModuleByName(String name)
