@@ -44,7 +44,7 @@ public class OrienteerFilterInitModule extends ServletModule {
         }).in(Singleton.class);
         bind(OrienteerFilter.class).in(Singleton.class);
         filter("/*").through(OrienteerFilter.class);
-        filter("/*").through(WicketFilter.class);
+//        filter("/*").through(WicketFilter.class);
         bind(FilterConfigProvider.class).in(Singleton.class);
         bind(FilterConfig.class).toProvider(FilterConfigProvider.class);
     }

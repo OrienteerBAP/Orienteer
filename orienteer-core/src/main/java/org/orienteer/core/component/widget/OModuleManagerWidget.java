@@ -15,6 +15,9 @@ import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Vitaliy Gonchar
  */
@@ -32,16 +35,16 @@ public class OModuleManagerWidget extends AbstractWidget<Void> {
             @Override
             public void onClick() {
                 LOG.debug("Click on reload");
-                reload();
                 setResponsePage(new ReloadPage());
+                reload();
             }
 
             private void reload() {
                 OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
-                new Reload(orienteerFilter).start();
-//                OrienteerOutsideModules.unregisterModule("org.orienteer.devutils.Initializer");
-
+                ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+                executor.schedule(new Reload(orienteerFilter), 3, TimeUnit.SECONDS);
             }
+
         });
     }
 
