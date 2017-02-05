@@ -3,6 +3,7 @@ package org.orienteer.core.loader;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
 import org.kevoree.kcl.api.FlexyClassLoader;
@@ -28,6 +29,7 @@ public class OrienteerOutsideModulesManager {
     private static final Map<FlexyClassLoader, Class<? extends IInitializer>> INIT_CLASSES = Maps.newConcurrentMap();
     private static final String INIT_METHOD = "init";
     private static final String DESTROY_METHOD = "destroy";
+    @Inject @Named("outside-modules")
     private Path modulePath;
     @Inject
     private OrienteerWebApplication application;
@@ -116,14 +118,4 @@ public class OrienteerOutsideModulesManager {
         return this;
     }
 
-//
-//    public static void main(String[] args) throws Exception {
-//        OrienteerOutsideModulesManager orienteerLoader = new OrienteerOutsideModulesManager();
-//        orienteerLoader.setModulePath("/home/weaxme/workspace/Orienteer/orienteer-core/tmp/orienteer-devutils-1.3-SNAPSHOT.jar");
-//        orienteerLoader.setOrienteerApplication(new OrienteerWebApplication());
-//        orienteerLoader.registerModule("org.orienteer.devutils.Initializer");
-////        Class clazz = OrienteerFilter.class;
-////        Method method = clazz.getMethod("destroy", null);
-////        method.invoke(null, null);
-//    }
 }
