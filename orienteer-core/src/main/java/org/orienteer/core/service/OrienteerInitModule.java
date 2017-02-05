@@ -48,11 +48,9 @@ public class OrienteerInitModule extends ServletModule {
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerInitModule.class);
 	
 	public static final String ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME = "orienteer.qualifier";
-	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER = "orienteer";
-	
-	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT = "orienteer-default.properties";
-	
-	public static final String ORIENTDB_KEY_PREFIX="orientdb.";
+	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER 		= "orienteer";
+	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT 		= "orienteer-default.properties";
+	public static final String ORIENTDB_KEY_PREFIX							= "orientdb.";
 	
 	
 	public final static Properties PROPERTIES_DEFAULT = new Properties();
@@ -78,27 +76,6 @@ public class OrienteerInitModule extends ServletModule {
 	
 	@Override
 	protected void configureServlets() {
-//		bind(InterceptContentFilter.class).asEagerSingleton();
-//		filter("/orientdb/*").through(InterceptContentFilter.class);
-//		Map<String, String> params = new HashMap<String, String>();
-//        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");
-//        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
-//        params.put("injectorContextAttribute", Injector.class.getName());
-//		bind(WicketFilter.class).toProvider(new Provider<WicketFilter>() {
-//			@Override
-//			public WicketFilter get() {
-//				return new WicketFilter() {
-//					@Override
-//					protected ClassLoader getCurrentModuleLoader() {
-//						return OLoaderStorage.getCurrentModuleLoader();
-//					}
-//				};
-//			}
-//		}).in(Singleton.class);
-//        filter("/*").through(WicketFilter.class, params);
-//		bind(OrienteerFilter.class).in(Singleton.class);
-//
-//
 		Properties properties = retrieveProperties();
 		Names.bindProperties(binder(), properties);
 		bindOrientDbProperties(properties);
@@ -129,7 +106,7 @@ public class OrienteerInitModule extends ServletModule {
 
 		install(loadFromClasspath(new OrienteerFilterInitModule()));
         install(loadFromClasspath(new OrienteerModule()));
-        install(loadFromClasspath(new OModuleExecutorInitModule(properties)));
+        install(loadFromClasspath(new OModuleExecutorInitModule()));
 	}
 	
 	protected void bindOrientDbProperties(Properties properties) {

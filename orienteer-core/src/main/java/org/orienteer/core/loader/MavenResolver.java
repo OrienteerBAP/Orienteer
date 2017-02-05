@@ -44,15 +44,8 @@ public class MavenResolver {
     @Inject @Named("orienteer-versions")
     private Map<String, String> orienteerVersions;
 
-    private Path parentPom;
-
     @Inject @Named("orienteer-default-dependencies")
     private Set<Dependency> coreDependencies;
-
-    @Inject
-    public void setParentPom(@Named("parent-pom") String parentPom) {
-        this.parentPom = Paths.get(parentPom);
-    }
 
     private Optional<Path> getPomXml(Path file) {
         Optional<Path> pomXml = Optional.absent();

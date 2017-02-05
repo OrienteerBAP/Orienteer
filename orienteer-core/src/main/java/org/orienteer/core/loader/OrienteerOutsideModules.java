@@ -20,14 +20,14 @@ public abstract class OrienteerOutsideModules {
     private static final Set<Path> LOADED = Sets.newConcurrentHashSet();
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerOutsideModules.class);
 
-    @Inject @Named("jars")
-    private static Path jarFolder;
+    @Inject @Named("outside-modules")
+    private static Path modulesFolder;
     @Inject
     private static OrienteerOutsideModulesManager manager;
 
     public static synchronized void registerModules() {
         LOG.info("Start load Orienteer outside modules");
-        Set<Path> jarsInFolder = readModulesInFolder(jarFolder);
+        Set<Path> jarsInFolder = readModulesInFolder(modulesFolder);
         showAlreadyLoaded();
         for (Path jarFile : Sets.difference(jarsInFolder, LOADED)) {
             manager.setModulePath(jarFile);

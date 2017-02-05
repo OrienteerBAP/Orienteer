@@ -40,55 +40,56 @@ import java.util.Set;
  */
 public class OModuleExecutorInitModule extends AbstractModule {
 
-
     private final static Logger LOG = LoggerFactory.getLogger(OModuleExecutorInitModule.class);
 
-//    private final String localRepositoryPath = System.getProperty("user.home") + "/.m2/repository/";
-    private final String localRepositoryPath = System.getProperty("user.dir") + "/tmp/dependencies/";
-    private final String parentOrienteerPom = "../pom.xml";
+    private static final String MAVEN_REMOTE_REPOSITORY      = "orienteer.loader.repository.remote.";
+    private static final String MAVEN_REMOTE_REPOSITORY_ID   = "orienteer.loader.repository.remote.%d.id";
+    private static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
+    private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
+    private static final String DEFAULT                      = "default";
 
-    private final Properties properties;
+    private final String defaultModulesFolder             = System.getProperty("user.dir") + "/modules/";
+    private final String defaultMavenLocalRepository      = System.getProperty("user.home") + "/.m2/repository/";
+    private final String parentPom                        = "../pom.xml";
+    private Properties properties;
 
-    public OModuleExecutorInitModule(Properties properties) {
-        this.properties = properties;
-    }
-
-    public OModuleExecutorInitModule() {
-        this.properties = null;
-    }
 
     @Override
     protected void configure() {
+        properties = OrienteerInitModule.retrieveProperties();
         bind(RepositorySystem.class).toProvider(RepositorySystemProvider.class).in(Singleton.class);
-        bindConstant().annotatedWith(Names.named("local-repo")).to(localRepositoryPath);
-        bindConstant().annotatedWith(Names.named("parent-pom")).to(parentOrienteerPom);
+        bind(String.class).annotatedWith(Names.named("local-repo")).toProvider(new Provider<String>() {
+            @Override
+            public String get() {
+                String path = properties.getProperty(MAVEN_LOCAL_REPOSITORY);
+                return path == null ? defaultMavenLocalRepository : path;
+            }
+        }).in(Singleton.class);
+
         bind(DefaultRepositorySystemSessionProvider.class).in(Singleton.class);
         bind(RepositorySystemSession.class).to(DefaultRepositorySystemSession.class);
         bind(DefaultRepositorySystemSession.class)
                 .toProvider(DefaultRepositorySystemSessionProvider.class)
                 .in(Singleton.class);
-        bind(Path.class).annotatedWith(Names.named("jars")).toProvider(new Provider<Path>() {
+
+        bind(Path.class).annotatedWith(Names.named("outside-modules")).toProvider(new Provider<Path>() {
             @Override
             public Path get() {
                 if (properties == null)
-                    return Paths.get(System.getProperty("user.dir") + "/tmp/");
-                String property = properties.getProperty("orienteer.loader.jar.folder");
-                Path path;
-                if (property == null) path = Paths.get(System.getProperty("user.dir" + "/tmp/"));
-                else path = Paths.get(properties.getProperty("orienteer.loader.jar.folder"));
-                return path;
+                    return Paths.get(defaultModulesFolder);
+                String folder = properties.getProperty(MODULES_FOLDER);
+                return folder == null ? Paths.get(defaultModulesFolder) : Paths.get(folder);
             }
         });
         bind(OrienteerOutsideModulesManager.class).in(Singleton.class);
         bind(MavenResolver.class).in(Singleton.class);
         requestStaticInjection(OrienteerOutsideModules.class);
-//        ProxyProviderFactory.setDefaultProxyProvider(new CglibProxyProvider());
     }
 
     @Singleton
     @Provides @Named("orienteer-default-dependencies")
     private Set<Dependency> orienteerCoreDependenciesProvider(
-            @Named("orienteer-versions") Map<String, String> versions, @Named("parent-pom") String parentPom) {
+            @Named("orienteer-versions") Map<String, String> versions) {
         Path corePom = Paths.get( "pom.xml");
         Set<Dependency> coreDependencies = PomXmlParser.readDependencies(corePom, versions);
         Set<Dependency> parentDependencies = PomXmlParser.readDependencies(Paths.get(parentPom));
@@ -99,7 +100,7 @@ public class OModuleExecutorInitModule extends AbstractModule {
 
     @Provides @Named("orienteer-versions")
     private Map<String, String> orienteerDependenciesVersions() {
-        Path parentPom = Paths.get(parentOrienteerPom);
+        Path parentPom = Paths.get(this.parentPom);
         Map<String, String> versions = null;
         try {
             versions = PomXmlParser
@@ -113,16 +114,27 @@ public class OModuleExecutorInitModule extends AbstractModule {
 
     @Provides @Named("default-reps")
     private List<RemoteRepository> defaultRemoteRepositoriesProvider() {
+        if (properties == null)
+            return getDefaultRepositories();
+
         List<RemoteRepository> repositories = Lists.newArrayList();
-        repositories.add(new RemoteRepository.Builder(
-                "central", "default", "http://repo1.maven.org/maven2/" ).build());
-        repositories.add(new RemoteRepository.Builder(
-                "sonatype-release", "default", "https://oss.sonatype.org/content/repositories/releases/").build());
-        repositories.add(new RemoteRepository.Builder(
-                "sonatype-snapshot", "default", "https://oss.sonatype.org/content/repositories/snapshots/").build());
-        repositories.add(new RemoteRepository.Builder(
-                "jitpack", "default", "https://jitpack.io/").build());
-        return repositories;
+        String repository;
+        int i = 1;
+        while ((repository = (String) properties.get(MAVEN_REMOTE_REPOSITORY + i)) != null) {
+            String id  = (String) properties.get(String.format(MAVEN_REMOTE_REPOSITORY_ID, i));
+            if (id == null) id = "" + i;
+            repositories.add(new RemoteRepository.Builder(id, DEFAULT, repository).build());
+            i++;
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.info("Read remote repositories in orienteer.properties. Remote repositories:");
+            for (RemoteRepository r : repositories) {
+                LOG.info("repository: " + r.toString());
+            }
+            if (repositories.isEmpty())
+                LOG.info("In orienteer.properties does not exists any repositories. Use default repositories");
+        }
+        return repositories.isEmpty() ? getDefaultRepositories() : repositories;
     }
 
     @Singleton
@@ -148,6 +160,19 @@ public class OModuleExecutorInitModule extends AbstractModule {
         }
     }
 
+    private List<RemoteRepository> getDefaultRepositories() {
+        List<RemoteRepository> repositories = Lists.newArrayList();
+        repositories.add(new RemoteRepository.Builder(
+                "central", "default", "http://repo1.maven.org/maven2/" ).build());
+        repositories.add(new RemoteRepository.Builder(
+                "sonatype-release", "default", "https://oss.sonatype.org/content/repositories/releases/").build());
+        repositories.add(new RemoteRepository.Builder(
+                "sonatype-snapshot", "default", "https://oss.sonatype.org/content/repositories/snapshots/").build());
+        repositories.add(new RemoteRepository.Builder(
+                "jitpack", "default", "https://jitpack.io/").build());
+        return repositories;
+    }
+
     @Singleton
     private static class DefaultRepositorySystemSessionProvider implements Provider<DefaultRepositorySystemSession> {
 
@@ -162,8 +187,8 @@ public class OModuleExecutorInitModule extends AbstractModule {
         public DefaultRepositorySystemSession get() {
             DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
-            LocalRepository localRepo = new LocalRepository( localRepositoryPath );
-            session.setLocalRepositoryManager( system.newLocalRepositoryManager( session, localRepo ) );
+            LocalRepository localRepo = new LocalRepository(localRepositoryPath);
+            session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
 
             session.setTransferListener(new ConsoleTransferListener());
             session.setRepositoryListener(new ConsoleRepositoryListener());
