@@ -10,8 +10,9 @@ import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.*;
-import org.eclipse.aether.version.Version;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
 import org.orienteer.core.loader.util.JarReader;
 import org.orienteer.core.loader.util.PomXmlParser;
 import org.slf4j.Logger;
@@ -118,63 +119,50 @@ public class MavenResolver {
         return optionalPath;
     }
 
-    private Optional<String> getSnapshotVersion(String group, String artifact) {
 
-        VersionRangeRequest request = new VersionRangeRequest();
-        request.setArtifact(new DefaultArtifact(group, artifact, "jar", "1.3-SNAPSHOT"));
-        request.setRepositories(repositories);
-        Optional<String> version = Optional.absent();
-        try {
-            VersionRangeResult result = system.resolveVersionRange(session, request);
-            Version highestVersion = result.getHighestVersion();
-            LOG.info("highestVersion: " + highestVersion);
-            if (highestVersion != null) version = Optional.of(highestVersion.toString());
-        } catch (VersionRangeResolutionException e) {
-            LOG.error("Cannot get snapshot version for: " + group + ":" + artifact);
-            if (LOG.isDebugEnabled())
-                e.printStackTrace();
-        }
-        return version;
-    }
-//
 //    public static void main(String[] args) throws Exception {
-////        load();
 //        URL url = new URL("https://jitpack.io/");
-//        List<Path> certificate = getCertificate(url);
-//        for (Path path : certificate) {
-//            LOG.info("certificate: " + path);
-//        }
-//    }
-//
-//    private static void load() {
+//        List<Path> certificate = getCertificates(url);
+//        trustCertificates(certificate);
 //        Injector injector = Guice.createInjector(new OModuleExecutorInitModule());
 //        MavenResolver resolver = injector.getInstance(MavenResolver.class);
-//
-////        String gav = "org.orienteer:orienteer-core:1.3-SNAPSHOT";
 //        String gav = "com.github.rubenlagus:TelegramBots:2.4.0";
 //        Optional<Path> file = resolver.resolveArtifact(gav);
 //        LOG.info("file present: " + file.isPresent());
 //        LOG.info("file: " + file.orNull());
+//
 //    }
 //
-//    private static KeyStore trustCertificates(List<Path> certificates) throws CertificateException, NoSuchAlgorithmException, IOException, KeyStoreException {
+//    private void load() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+//        KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
+//        final Path keyStore = Paths.get(System.getProperty("user.dir") + "/orienteer-core/tmp/certificates/keystore");
+//        FileInputStream fin = new FileInputStream(keyStore.toFile());
+//        trustStore.load(fin, "password".toCharArray());
+//    }
+//
+//    private static void trustCertificates(List<Path> certificates) throws CertificateException, NoSuchAlgorithmException, IOException, KeyStoreException {
 //        //Put everything after here in your function.
 //        KeyStore trustStore  = KeyStore.getInstance(KeyStore.getDefaultType());
+//        final Path keyStore = Paths.get(System.getProperty("user.dir") + "/orienteer-core/tmp/certificates/keystore");
 //        trustStore.load(null);//Make an empty store
+//        int i = 0;
 //        for (Path path : certificates) {
 //            InputStream fis = Files.newInputStream(path);
 //            BufferedInputStream bis = new BufferedInputStream(fis);
 //            CertificateFactory cf = CertificateFactory.getInstance("X.509");
 //            while (bis.available() > 0) {
 //                Certificate cert = cf.generateCertificate(bis);
-//                trustStore.setCertificateEntry("fiddler" + bis.available(), cert);
+//                trustStore.setCertificateEntry("cert_" + i, cert);
 //            }
+//            i++;
 //        }
-//
-//        return trustStore;
+//        FileOutputStream fos = new FileOutputStream(keyStore.toFile());
+//        trustStore.store(fos, "password".toCharArray());
+//        fos.close();
+//        System.setProperty("javax.net.ssl.trustStore", keyStore.toAbsolutePath().toString());
 //    }
 //
-//    private static List<Path> getCertificate(URL url) throws IOException, CertificateNotYetValidException, CertificateExpiredException, CertificateEncodingException {
+//    private static List<Path> getCertificates(URL url) throws IOException, CertificateNotYetValidException, CertificateExpiredException, CertificateEncodingException {
 //        List<Path> certificates = Lists.newArrayList();
 //        Path certificate = Paths.get(System.getProperty("user.dir") + "/orienteer-core/tmp/certificates/");
 //        if (!Files.exists(certificate)) Files.createDirectories(certificate);

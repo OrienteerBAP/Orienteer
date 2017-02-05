@@ -8,15 +8,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.service.OrienteerFilter;
 import org.orienteer.core.service.Reload;
-import org.orienteer.core.service.ReloadFilter;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author Vitaliy Gonchar
@@ -40,11 +37,10 @@ public class OModuleManagerWidget extends AbstractWidget<Void> {
             }
 
             private void reload() {
-                ReloadFilter reloadFilter = injector.getInstance(ReloadFilter.class);
-                Reload reload = new Reload(reloadFilter);
-                ExecutorService executorService = Executors.newCachedThreadPool();
+                OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
+                new Reload(orienteerFilter).start();
 //                OrienteerOutsideModules.unregisterModule("org.orienteer.devutils.Initializer");
-                executorService.submit(reload);
+
             }
         });
     }

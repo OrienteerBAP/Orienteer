@@ -8,27 +8,27 @@ import javax.servlet.ServletException;
 /**
  * @author Vitaliy Gonchar
  */
-public class Reload implements Runnable {
+public class Reload extends Thread {
 
-    private final ReloadFilter reloadFilter;
+    private final OrienteerFilter orienteerFilter;
 
     private static final Logger LOG = LoggerFactory.getLogger(Reload.class);
 
-    public Reload(ReloadFilter reloadFilter) {
-        this.reloadFilter = reloadFilter;
+    public Reload(OrienteerFilter orienteerFilter) {
+        this.orienteerFilter = orienteerFilter;
     }
 
     @Override
-    public void run() {
-        LOG.debug("Start reload Orienteer.");
+    public void start() {
+        LOG.info("Start reload Orienteer.");
         timeout(2000);
         reload();
-        LOG.debug("End reload Orienteer.");
+        LOG.info("End reload Orienteer.");
     }
 
     private void reload() {
         try {
-            reloadFilter.reload();
+            orienteerFilter.reload();
         } catch (ServletException e) {
             LOG.error("Cannot reload application");
             if (LOG.isDebugEnabled()) e.printStackTrace();

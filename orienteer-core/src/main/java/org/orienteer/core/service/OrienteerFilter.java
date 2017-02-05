@@ -18,9 +18,9 @@ import java.lang.ref.WeakReference;
  * @author Vitaliy Gonchar
  */
 @Singleton
-public class ReloadFilter implements Filter {
+public class OrienteerFilter implements Filter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReloadFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OrienteerFilter.class);
 
     private static volatile WeakReference<ServletContext> servletContext = new WeakReference<>(null);
     private static WicketFilter filter;

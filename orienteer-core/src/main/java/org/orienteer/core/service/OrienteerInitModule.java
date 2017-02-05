@@ -96,7 +96,7 @@ public class OrienteerInitModule extends ServletModule {
 //			}
 //		}).in(Singleton.class);
 //        filter("/*").through(WicketFilter.class, params);
-//		bind(ReloadFilter.class).in(Singleton.class);
+//		bind(OrienteerFilter.class).in(Singleton.class);
 //
 //
 		Properties properties = retrieveProperties();

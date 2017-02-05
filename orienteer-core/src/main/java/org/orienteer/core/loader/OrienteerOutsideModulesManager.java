@@ -122,7 +122,7 @@ public class OrienteerOutsideModulesManager {
 //        orienteerLoader.setModulePath("/home/weaxme/workspace/Orienteer/orienteer-core/tmp/orienteer-devutils-1.3-SNAPSHOT.jar");
 //        orienteerLoader.setOrienteerApplication(new OrienteerWebApplication());
 //        orienteerLoader.registerModule("org.orienteer.devutils.Initializer");
-////        Class clazz = ReloadFilter.class;
+////        Class clazz = OrienteerFilter.class;
 ////        Method method = clazz.getMethod("destroy", null);
 ////        method.invoke(null, null);
 //    }

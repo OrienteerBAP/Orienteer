@@ -18,15 +18,13 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.orienteer.core.loader.Dependency;
 import org.orienteer.core.loader.MavenResolver;
-import org.orienteer.core.loader.OrienteerOutsideModulesManager;
 import org.orienteer.core.loader.OrienteerOutsideModules;
+import org.orienteer.core.loader.OrienteerOutsideModulesManager;
 import org.orienteer.core.loader.util.ConsoleRepositoryListener;
 import org.orienteer.core.loader.util.ConsoleTransferListener;
 import org.orienteer.core.loader.util.PomXmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xeustechnologies.jcl.proxy.CglibProxyProvider;
-import org.xeustechnologies.jcl.proxy.ProxyProviderFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,8 +43,8 @@ public class OModuleExecutorInitModule extends AbstractModule {
 
     private final static Logger LOG = LoggerFactory.getLogger(OModuleExecutorInitModule.class);
 
-    private final String localRepositoryPath = System.getProperty("user.home") + "/.m2/repository/";
-//    private final String localRepositoryPath = System.getProperty("user.dir") + "/tmp/dependencies/";
+//    private final String localRepositoryPath = System.getProperty("user.home") + "/.m2/repository/";
+    private final String localRepositoryPath = System.getProperty("user.dir") + "/tmp/dependencies/";
     private final String parentOrienteerPom = "../pom.xml";
 
     private final Properties properties;
@@ -84,7 +82,7 @@ public class OModuleExecutorInitModule extends AbstractModule {
         bind(OrienteerOutsideModulesManager.class).in(Singleton.class);
         bind(MavenResolver.class).in(Singleton.class);
         requestStaticInjection(OrienteerOutsideModules.class);
-        ProxyProviderFactory.setDefaultProxyProvider(new CglibProxyProvider());
+//        ProxyProviderFactory.setDefaultProxyProvider(new CglibProxyProvider());
     }
 
     @Singleton

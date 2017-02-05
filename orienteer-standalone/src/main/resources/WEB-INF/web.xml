@@ -12,7 +12,10 @@
         <filter-name>orienteer</filter-name>
         <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
     </filter>
-
+    <!--<filter>-->
+        <!--<filter-name>orienteer</filter-name>-->
+        <!--<filter-class>org.orienteer.loader.service.ReloadFilter</filter-class>-->
+    <!--</filter>-->
     <filter-mapping>
         <filter-name>orienteer</filter-name>
         <url-pattern>/*</url-pattern>

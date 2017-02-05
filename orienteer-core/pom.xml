@@ -10,14 +10,6 @@
 	<artifactId>orienteer-core</artifactId>
 	<packaging>jar</packaging>
 	<name>orienteer-core</name>
-	<properties>
-		<aether.version>1.1.0</aether.version>
-		<mavendep.version>3.3.9</mavendep.version>
-		<plexus.version>1.0-alpha-33</plexus.version>
-		<plexus-utils.version>3.0.24</plexus-utils.version>
-		<tycho.version>0.23.1</tycho.version>
-		<xtext.version>2.8.4</xtext.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
@@ -125,73 +117,52 @@
 			<artifactId>org.kevoree.kcl</artifactId>
 			<version>5</version>
 		</dependency>
-		<!-- AETHER DOWNLOAD MAVEN DEPENDENCIES START-->
+
+		<!-- ECLIPSE AETHER -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-aether-provider</artifactId>
-			<version>${mavendep.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-settings-builder</artifactId>
-			<version>${mavendep.version}</version>
+			<version>3.3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-component-api</artifactId>
-			<version>${plexus.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.0-alpha-33</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-api</artifactId>
-			<version>${aether.version}</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-connector-basic</artifactId>
-			<version>${aether.version}</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-impl</artifactId>
-			<version>${aether.version}</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-spi</artifactId>
-			<version>${aether.version}</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-transport-file</artifactId>
-			<version>${aether.version}</version>
+			<version>1.1.0</version>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.eclipse.aether</groupId>-->
-			<!--<artifactId>aether-transport-http</artifactId>-->
-			<!--<exclusions>-->
-				<!--<exclusion>-->
-					<!--<groupId>org.slf4j</groupId>-->
-					<!--<artifactId>jcl-over-slf4j</artifactId>-->
-				<!--</exclusion>-->
-			<!--</exclusions>-->
-			<!--<version>${aether.version}</version>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-util</artifactId>
-			<version>${aether.version}</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-transport-http</artifactId>
-			<version>${aether.version}</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -203,38 +174,6 @@
 			<artifactId>plexus-utils</artifactId>
 			<version>3.0.24</version>
 		</dependency>
-		<dependency>
-			<groupId>org.sonatype.sisu</groupId>
-			<artifactId>sisu-guice</artifactId>
-			<version>3.1.6</version>
-			<classifier>no_aop</classifier>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>aopalliance</groupId>
-					<artifactId>aopalliance</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.google.code.findbugs</groupId>
-					<artifactId>jsr305</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.sisu</groupId>
-			<artifactId>org.eclipse.sisu.plexus</artifactId>
-			<version>0.1.1</version>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.enterprise</groupId>
-					<artifactId>cdi-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- AETHER DOWNLOAD MAVEN DEPENDENCIES END-->
-
-
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
@@ -256,23 +195,8 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.xeustechnologies</groupId>
-			<artifactId>jcl-core</artifactId>
-			<version>2.9-SNAPSHOT</version>
-		</dependency>
-		<!-- MARKDOWN DEPENDENCY -->
-		<!--<dependency>
-            <groupId>org.pegdown</groupId>
-            <artifactId>pegdown</artifactId>
-            <version>1.4.2</version>
-        </dependency>-->
-		<!--<dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.1</version>
-        </dependency>-->
 	</dependencies>
+
 	<build>
 		<finalName>orienteer</finalName>
 		<resources>
