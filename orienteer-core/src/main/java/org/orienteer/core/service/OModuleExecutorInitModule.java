@@ -45,12 +45,13 @@ public class OModuleExecutorInitModule extends AbstractModule {
     private static final String MAVEN_REMOTE_REPOSITORY      = "orienteer.loader.repository.remote.";
     private static final String MAVEN_REMOTE_REPOSITORY_ID   = "orienteer.loader.repository.remote.%d.id";
     private static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
-    private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
     private static final String DEFAULT                      = "default";
+    private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
 
     private final String defaultModulesFolder             = System.getProperty("user.dir") + "/modules/";
     private final String defaultMavenLocalRepository      = System.getProperty("user.home") + "/.m2/repository/";
     private final String parentPom                        = "../pom.xml";
+//    private final String parentPom = "pom.xml";
     private Properties properties;
 
 
@@ -69,8 +70,7 @@ public class OModuleExecutorInitModule extends AbstractModule {
         bind(DefaultRepositorySystemSessionProvider.class).in(Singleton.class);
         bind(RepositorySystemSession.class).to(DefaultRepositorySystemSession.class);
         bind(DefaultRepositorySystemSession.class)
-                .toProvider(DefaultRepositorySystemSessionProvider.class)
-                .in(Singleton.class);
+                .toProvider(DefaultRepositorySystemSessionProvider.class);
 
         bind(Path.class).annotatedWith(Names.named("outside-modules")).toProvider(new Provider<Path>() {
             @Override
