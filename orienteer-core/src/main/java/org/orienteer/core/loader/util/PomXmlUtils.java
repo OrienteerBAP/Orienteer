@@ -3,7 +3,7 @@ package org.orienteer.core.loader.util;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.orienteer.core.loader.Dependency;
+import org.orienteer.core.loader.ODependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,23 +21,24 @@ import java.util.Set;
 /**
  * @author Vitaliy Gonchar
  */
-public abstract class PomXmlParser {
+public abstract class PomXmlUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PomXmlParser.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PomXmlUtils.class);
 
     private static final String PARENT                      = "parent";
     private static final String GROUP                       = "groupId";
     private static final String ARTIFACT                    = "artifactId";
     private static final String VERSION                     = "version";
-    private static final String DEPENDENCY                  = "dependency";
+    private static final String DEPENDENCIES                = "dependencies";
     private static final String PROPERTIES                  = "properties";
+    private static final String DEPENDENCY                  = "dependency";
     private static final String PROPERTIES_VERSION_END      = ".version";
     private static final String PROPERTIES_PROJECT_VERSION  = "${project.version}";
     private static final String WITHOUT_VERSION             = "without-version";
 
-    public static Optional<Dependency> readDependency(Path pomXml, Map<String, String>...baseVersions) {
+    public static Optional<ODependency> readGroupArtifactVersionInPomXml(Path pomXml) {
         XMLInputFactory factory = XMLInputFactory.newFactory();
-        Optional<Dependency> dependency = Optional.absent();
+        Optional<ODependency> dependency = Optional.absent();
         try {
             XMLStreamReader streamReader = null;
             String group = null;
@@ -47,15 +48,11 @@ public abstract class PomXmlParser {
             try {
                 streamReader = factory.createXMLStreamReader(
                         new InputStreamReader(Files.newInputStream(pomXml)));
-                Map<String, String> versions = getArtifactVersions(Files.newInputStream(pomXml));
-                for (Map<String, String> map : baseVersions) {
-                    versions.putAll(map);
-                }
-                while (streamReader.hasNext()) {
+                boolean isRun = true;
+                while (streamReader.hasNext() && isRun) {
                     streamReader.next();
                     if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
                         String elementName = streamReader.getLocalName();
-                        if (elementName.equals(DEPENDENCY) || elementName.equals(PROPERTIES)) break;
                         switch (elementName) {
                             case GROUP:
                                 if (group == null) group = streamReader.getElementText();
@@ -67,13 +64,17 @@ public abstract class PomXmlParser {
                                 version = streamReader.getElementText();
                                 break;
                             case PARENT:
-                                Optional<Dependency> parentDependency =
-                                        parseDependency(streamReader, versions);
+                                Optional<ODependency> parentDependency =
+                                        parseDependency(streamReader, null);
                                 if (parentDependency.isPresent()) {
                                     group = parentDependency.get().getGroupId();
                                     parentVersion = parentDependency.get().getArtifactVersion();
                                 }
                                 break;
+                            default:
+                                if (elementName.equals(DEPENDENCIES) || elementName.equals(PROPERTIES)) {
+                                    isRun = false;
+                                }
                         }
                         while(streamReader.getEventType() != XMLStreamReader.END_ELEMENT){
                             streamReader.next();
@@ -81,9 +82,9 @@ public abstract class PomXmlParser {
                         streamReader.next();
                     }
                 }
-                if (version == null) version = parentVersion;
+                if (version == null || isLinkToVersion(version)) version = parentVersion;
                 if (version != null && group != null && artifact != null)
-                    dependency = Optional.of(new Dependency(group, artifact, version));
+                    dependency = Optional.of(new ODependency(group, artifact, version));
             } finally {
                 if (streamReader != null) streamReader.close();
             }
@@ -97,11 +98,11 @@ public abstract class PomXmlParser {
         return dependency;
     }
 
-    public static Set<Dependency> readDependencies(Path pomXml, Map<String, String>...baseVersions){
-        Set<Dependency> dependencies = Sets.newConcurrentHashSet();
+    public static Set<ODependency> readDependencies(Path pomXml, Map<String, String>...baseVersions){
+        Set<ODependency> dependencies = Sets.newConcurrentHashSet();
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            Map<String, String> versions = getArtifactVersions(Files.newInputStream(pomXml));
+            Map<String, String> versions = getVersionsInProperties(Files.newInputStream(pomXml));
             for (Map<String, String> map : baseVersions) {
                 versions.putAll(map);
             }
@@ -115,7 +116,7 @@ public abstract class PomXmlParser {
                     if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
                         String elementName = streamReader.getLocalName();
                         if (elementName.equals(DEPENDENCY)) {
-                            Optional<Dependency> depOptional = parseDependency(streamReader, versions);
+                            Optional<ODependency> depOptional = parseDependency(streamReader, versions);
                             if (depOptional.isPresent()) dependencies.add(depOptional.get());
                         }
                     }
@@ -135,8 +136,18 @@ public abstract class PomXmlParser {
         return dependencies;
     }
 
+    public static Map<String, String> getVersionsInProperties(Path pathToPomXml) {
+        InputStream in = null;
+        try {
+            in = Files.newInputStream(pathToPomXml);
+        } catch (IOException e) {
+            LOG.error("Cannot open pom.xml for read: " + pathToPomXml);
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        return in != null ? getVersionsInProperties(in) : Maps.<String, String>newHashMap();
+    }
 
-    public static Map<String, String> getArtifactVersions(InputStream in) {
+    public static Map<String, String> getVersionsInProperties(InputStream in) {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         Map<String, String> versions = Maps.newHashMap();
         boolean isReadProjectVersion = false;
@@ -218,13 +229,13 @@ public abstract class PomXmlParser {
         return versions;
     }
 
-    private static Optional<Dependency> parseDependency(XMLStreamReader streamReader,
+    private static Optional<ODependency> parseDependency(XMLStreamReader streamReader,
                                                        Map<String, String> versions)
             throws XMLStreamException {
         String groupId = null;
         String artifactId = null;
         String artifactVersion = null;
-        Optional<Dependency> dependencyOptional = Optional.absent();
+        Optional<ODependency> dependencyOptional = Optional.absent();
         while(!(streamReader.getEventType() == XMLStreamReader.END_ELEMENT)) {
             streamReader.next();
 
@@ -239,7 +250,7 @@ public abstract class PomXmlParser {
                         break;
                     case VERSION:
                         String version = streamReader.getElementText();
-                        if (isLinkToVersion(version)) {
+                        if (isLinkToVersion(version) && versions != null) {
                             String ver = versions.get(version);
                             version = ver != null ? ver : version;
                         }
@@ -253,7 +264,7 @@ public abstract class PomXmlParser {
             }
         }
         if (artifactVersion != null) {
-            dependencyOptional = Optional.of(new Dependency(groupId, artifactId, artifactVersion));
+            dependencyOptional = Optional.of(new ODependency(groupId, artifactId, artifactVersion));
         }
 
         return dependencyOptional;
@@ -271,11 +282,11 @@ public abstract class PomXmlParser {
 //    public static void main(String[] args) throws Exception {
 //        Path pomXml = Paths.get("pom.xml");
 //        LOG.info("pom path: " + pomXml.toAbsolutePath());
-//        Optional<Dependency> dependencyOptional = readDependency(pomXml);
+//        Optional<Dependency> dependencyOptional = readGroupArtifactVersionInPomXml(pomXml);
 //        LOG.info("depndency present: " + dependencyOptional.isPresent());
 //        LOG.info("dependency: " + dependencyOptional.orNull());
 //
-//        Map<String, String> artifactVersions = getArtifactVersions(Files.newInputStream(pomXml));
+//        Map<String, String> artifactVersions = getVersionsInProperties(Files.newInputStream(pomXml));
 //        for (String key : artifactVersions.keySet()) {
 //            LOG.info(key + " " + artifactVersions.get(key));
 //        }

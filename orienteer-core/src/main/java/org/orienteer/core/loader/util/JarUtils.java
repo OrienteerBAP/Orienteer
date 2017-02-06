@@ -19,8 +19,8 @@ import java.util.jar.JarFile;
 /**
  * @author Vitaliy Gonchar
  */
-public abstract class JarReader {
-    private static final Logger LOG = LoggerFactory.getLogger(JarReader.class);
+public abstract class JarUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(JarUtils.class);
 
     public static Optional<Path> getPomFromJar(String path) {
         return getPomFromJar(Paths.get(path));
