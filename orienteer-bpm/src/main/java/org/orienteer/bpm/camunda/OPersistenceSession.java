@@ -42,7 +42,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	}
 
 	public static void staticInit(OProcessEngineConfiguration config) {
-	    //TODO
+		
 	}
 	
 	public ODatabaseDocumentTx getDatabase() {
@@ -143,7 +143,6 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public void dbSchemaCheckVersion() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -207,13 +206,11 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void dbSchemaCreateIdentity() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaCreateHistory() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -224,67 +221,56 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	protected void dbSchemaCreateCmmn() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaCreateCmmnHistory() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaCreateDmn() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaCreateDmnHistory() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaDropIdentity() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaDropHistory() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaDropEngine() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaDropCmmn() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaDropCmmnHistory() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaDropDmn() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void dbSchemaDropDmnHistory() {
-		// TODO Auto-generated method stub
 
 	}
 

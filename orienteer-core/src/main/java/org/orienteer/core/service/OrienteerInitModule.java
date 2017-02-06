@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.rest.InterceptContentFilter;
 
 import com.google.common.collect.Iterables;
 import com.google.inject.Injector;
@@ -91,8 +90,6 @@ public class OrienteerInitModule extends ServletModule {
 	
 	@Override
 	protected void configureServlets() {
-		bind(InterceptContentFilter.class).asEagerSingleton();
-		filter("/orientdb/*").through(InterceptContentFilter.class);
 		Map<String, String> params = new HashMap<String, String>();    
         params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");  
         params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
