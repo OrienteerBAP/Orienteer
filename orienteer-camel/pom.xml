@@ -65,7 +65,7 @@
 			<artifactId>xom</artifactId>
 			<version>1.2.5</version>
 		</dependency>
-
+		<!-- TODO: Temporal dependencies. Remove when dynamic loading of maven libraries will be available -->
 		<dependency>
 		    <groupId>org.apache.poi</groupId>
 		    <artifactId>poi</artifactId>
@@ -80,7 +80,8 @@
 		    <groupId>org.apache.poi</groupId>
 		    <artifactId>poi-scratchpad</artifactId>
 		    <version>3.15</version>
-		</dependency>		
+		</dependency>
+		<!-- ORIENTEER modules -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
