@@ -11,7 +11,7 @@ import org.orienteer.core.web.ODocumentPage;
  */
 public enum DisplayMode {
 	VIEW(ODocumentPage.class, false),
-	EDIT(ODocumentPage.class, true); //TODO: Change EDIT page
+	EDIT(ODocumentPage.class, true);
 	
 	private final Class<? extends Page> defaultPageClass;
 	private final boolean canModify;

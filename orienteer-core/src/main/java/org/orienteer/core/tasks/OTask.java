@@ -7,6 +7,8 @@ import java.util.List;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -21,6 +23,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
  *
  */
 public abstract class OTask extends ODocumentWrapper {
+	private static final Logger LOG = LoggerFactory.getLogger(OTask.class);
 	public static final String TASK_CLASS = "OTask";
 	public static final CustomAttribute TASK_JAVA_CLASS_ATTRIBUTE = CustomAttribute.create("orienteer.taskclass", OType.STRING, null, true, true);
 
@@ -53,8 +56,7 @@ public abstract class OTask extends ODocumentWrapper {
 			Object result = constructor.newInstance(oTask);
 			return (OTask) result;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Can't create task from ODocument", e);
 		}
 		return null;
 	}

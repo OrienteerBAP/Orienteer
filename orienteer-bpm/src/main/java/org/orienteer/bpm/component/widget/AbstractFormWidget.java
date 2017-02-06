@@ -65,7 +65,6 @@ public abstract class AbstractFormWidget extends AbstractModeAwareWidget<ODocume
 					@Override
 					protected Component getValueComponent(String id,
 							IModel<OProperty> rowModel) {
-						//TODO: remove static displaymode
 						return new ODocumentMetaPanel<Object>(id, getModeModel(), formDocumentModel, rowModel);
 					}
 		};

@@ -18,6 +18,9 @@ import org.orienteer.core.tasks.ITaskSession;
 import org.orienteer.core.tasks.OTaskSessionPersisted;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
@@ -29,6 +32,8 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
  */
 @Widget(domain="document",selector=OTaskSessionRuntime.TASK_SESSION_CLASS, id=OTaskSessionWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class OTaskSessionWidget extends AbstractWidget<ODocument>{
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OTaskSessionWidget.class);
 
 	public static final String WIDGET_TYPE_ID = "taskSession";
 	private static final long serialVersionUID = 1L;
@@ -98,8 +103,7 @@ public class OTaskSessionWidget extends AbstractWidget<ODocument>{
 				try {
 					taskSessionModel.getObject().interrupt();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error("Error during task interuption", e);
 				}
 				setEnabled(false);
 			}
