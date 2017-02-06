@@ -12,7 +12,6 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.tree.provider.OMVRBTreeRIDProvider;
 
 /**
  * {@link IOrienteerModule} to fix existing OrientDB schema to make it more Orienteer friendly
@@ -56,7 +55,6 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
 	{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(OMVRBTreeRIDProvider.PERSISTENT_CLASS_NAME);
 		if(helper.existsClass(OCLASS_FUNCTION))
 		{
 			helper.oClass(OCLASS_FUNCTION)
