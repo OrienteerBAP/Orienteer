@@ -106,7 +106,7 @@ public class OrienteerInitModule extends ServletModule {
 
 		install(loadFromClasspath(new OrienteerFilterInitModule()));
         install(loadFromClasspath(new OrienteerModule()));
-        install(loadFromClasspath(new OModuleExecutorInitModule()));
+        install(loadFromClasspath(new OModuleManagerInitModule()));
 	}
 	
 	protected void bindOrientDbProperties(Properties properties) {

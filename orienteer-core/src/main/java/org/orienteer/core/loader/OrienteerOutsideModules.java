@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.kevoree.kcl.api.FlexyClassLoader;
-import org.orienteer.core.loader.util.JarReader;
+import org.orienteer.core.loader.util.JarUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +70,11 @@ public abstract class OrienteerOutsideModules {
         return split[split.length - 2];
     }
     private static Set<Path> readModulesInFolder(Path folder) {
-        return JarReader.readJarsInFolder(folder);
+        return JarUtils.readJarsInFolder(folder);
     }
 
     private static Optional<String> getInitClass(Path jar) {
-        return JarReader.searchOrienteerInitModule(jar);
+        return JarUtils.searchOrienteerInitModule(jar);
     }
 
     private static FlexyClassLoader executeInitClass(String className) {

@@ -16,13 +16,12 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.orienteer.core.loader.Dependency;
 import org.orienteer.core.loader.MavenResolver;
-import org.orienteer.core.loader.OrienteerOutsideModules;
-import org.orienteer.core.loader.OrienteerOutsideModulesManager;
+import org.orienteer.core.loader.ODependency;
+import org.orienteer.core.loader.util.AetherUtils;
 import org.orienteer.core.loader.util.ConsoleRepositoryListener;
 import org.orienteer.core.loader.util.ConsoleTransferListener;
-import org.orienteer.core.loader.util.PomXmlParser;
+import org.orienteer.core.loader.util.PomXmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +37,9 @@ import java.util.Set;
 /**
  * @author Vitaliy Gonchar
  */
-public class OModuleExecutorInitModule extends AbstractModule {
+public class OLoaderInitModule extends AbstractModule {
 
-    private final static Logger LOG = LoggerFactory.getLogger(OModuleExecutorInitModule.class);
+    private final static Logger LOG = LoggerFactory.getLogger(OLoaderInitModule.class);
 
     private static final String MAVEN_REMOTE_REPOSITORY      = "orienteer.loader.repository.remote.";
     private static final String MAVEN_REMOTE_REPOSITORY_ID   = "orienteer.loader.repository.remote.%d.id";
@@ -51,7 +50,6 @@ public class OModuleExecutorInitModule extends AbstractModule {
     private final String defaultModulesFolder             = System.getProperty("user.dir") + "/modules/";
     private final String defaultMavenLocalRepository      = System.getProperty("user.home") + "/.m2/repository/";
     private final String parentPom                        = "../pom.xml";
-//    private final String parentPom = "pom.xml";
     private Properties properties;
 
 
@@ -81,20 +79,19 @@ public class OModuleExecutorInitModule extends AbstractModule {
                 return folder == null ? Paths.get(defaultModulesFolder) : Paths.get(folder);
             }
         });
-        bind(OrienteerOutsideModulesManager.class).in(Singleton.class);
         bind(MavenResolver.class).in(Singleton.class);
-        requestStaticInjection(OrienteerOutsideModules.class);
+        requestStaticInjection(AetherUtils.class);
     }
 
     @Singleton
     @Provides @Named("orienteer-default-dependencies")
-    private Set<Dependency> orienteerCoreDependenciesProvider(
+    private Set<ODependency> orienteerCoreDependenciesProvider(
             @Named("orienteer-versions") Map<String, String> versions) {
         Path corePom = Paths.get( "pom.xml");
-        Set<Dependency> coreDependencies = PomXmlParser.readDependencies(corePom, versions);
-        Set<Dependency> parentDependencies = PomXmlParser.readDependencies(Paths.get(parentPom));
+        Set<ODependency> coreDependencies = PomXmlUtils.readDependencies(corePom, versions);
+        Set<ODependency> parentDependencies = PomXmlUtils.readDependencies(Paths.get(parentPom));
         parentDependencies.addAll(coreDependencies);
-        parentDependencies.add(new Dependency("org.orienteer", "orienteer-core", versions.get("${project.version}")));
+        parentDependencies.add(new ODependency("org.orienteer", "orienteer-core", versions.get("${project.version}")));
         return parentDependencies;
     }
 
@@ -103,8 +100,8 @@ public class OModuleExecutorInitModule extends AbstractModule {
         Path parentPom = Paths.get(this.parentPom);
         Map<String, String> versions = null;
         try {
-            versions = PomXmlParser
-                    .getArtifactVersions(Files.newInputStream(parentPom));
+            versions = PomXmlUtils
+                    .getVersionsInProperties(Files.newInputStream(parentPom));
         } catch (IOException e) {
             LOG.error("Cannot load artifact versions from orienteer-parent pom.xml!");
             if (LOG.isDebugEnabled()) e.printStackTrace();
@@ -143,20 +140,19 @@ public class OModuleExecutorInitModule extends AbstractModule {
         @Override
         public RepositorySystem get() {
             DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-            locator.addService( RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class );
-            locator.addService( TransporterFactory.class, FileTransporterFactory.class );
-            locator.addService( TransporterFactory.class, HttpTransporterFactory.class );
+            locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
+            locator.addService(TransporterFactory.class, FileTransporterFactory.class);
+            locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
 
-            locator.setErrorHandler( new DefaultServiceLocator.ErrorHandler()
-            {
+            locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
                 @Override
-                public void serviceCreationFailed( Class<?> type, Class<?> impl, Throwable exception )
+                public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception)
                 {
                     exception.printStackTrace();
                 }
             } );
 
-            return locator.getService( RepositorySystem.class );
+            return locator.getService(RepositorySystem.class);
         }
     }
 
@@ -190,12 +186,10 @@ public class OModuleExecutorInitModule extends AbstractModule {
             LocalRepository localRepo = new LocalRepository(localRepositoryPath);
             session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
 
-            session.setTransferListener(new ConsoleTransferListener());
-            session.setRepositoryListener(new ConsoleRepositoryListener());
-
-            // uncomment to generate dirty trees
-            // session.setDependencyGraphTransformer( null );
-
+            if (LOG.isDebugEnabled()) {
+                session.setTransferListener(new ConsoleTransferListener());
+                session.setRepositoryListener(new ConsoleRepositoryListener());
+            }
             return session;
         }
     }
