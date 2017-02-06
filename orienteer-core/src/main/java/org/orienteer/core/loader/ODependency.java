@@ -3,12 +3,12 @@ package org.orienteer.core.loader;
 /**
  * @author Vitaliy Gonchar
  */
-public class Dependency {
+public class ODependency {
     private String groupId;
     private String artifactId;
     private String artifactVersion;
 
-    public Dependency(String groupId, String artifactId, String artifactVersion) {
+    public ODependency(String groupId, String artifactId, String artifactVersion) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.artifactVersion = artifactVersion;
@@ -43,7 +43,7 @@ public class Dependency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Dependency that = (Dependency) o;
+        ODependency that = (ODependency) o;
 
         if (groupId != null ? !groupId.equals(that.groupId) : that.groupId != null) return false;
         if (artifactId != null ? !artifactId.equals(that.artifactId) : that.artifactId != null) return false;
