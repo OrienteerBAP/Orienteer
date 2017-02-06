@@ -33,6 +33,7 @@ public class OTaskSessionRuntime implements ITaskSession{
 	
 	public OTaskSessionRuntime(String sessionClass) {
 		persistedSession = new OTaskSessionPersisted(new ODocument(sessionClass));
+		persistedSession.save().getDocument().getDatabase().commit();
 	}
 	
 	@Override

@@ -26,6 +26,11 @@
 			<version>2.17.3</version>
 		</dependency>
 		<dependency>
+			<groupId>org.orienteer.camel.component</groupId>
+			<artifactId>camel-orientdb</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-jdbc</artifactId>
 			<version>2.17.3</version>
@@ -60,6 +65,22 @@
 			<artifactId>xom</artifactId>
 			<version>1.2.5</version>
 		</dependency>
+
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi</artifactId>
+		    <version>3.15</version>
+		</dependency>		
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>3.15</version>
+		</dependency>		
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-scratchpad</artifactId>
+		    <version>3.15</version>
+		</dependency>		
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
