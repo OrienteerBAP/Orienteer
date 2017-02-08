@@ -32,7 +32,15 @@ public class OTaskSessionRuntime implements ITaskSession{
 	}
 	
 	public OTaskSessionRuntime(String sessionClass) {
+		this(sessionClass,false);
+	}
+
+	public OTaskSessionRuntime(String sessionClass, boolean forceSave) {
 		persistedSession = new OTaskSessionPersisted(new ODocument(sessionClass));
+		setStatus(Status.NOT_STARTED);
+		if (forceSave){
+			persistedSession.save().getDocument().getDatabase().commit();
+		}
 	}
 	
 	@Override

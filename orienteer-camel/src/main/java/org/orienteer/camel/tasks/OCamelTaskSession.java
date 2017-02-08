@@ -43,7 +43,11 @@ public class OCamelTaskSession extends OTaskSessionRuntime {
 	}	
 	
 	public OCamelTaskSession() {
-		super(TASK_SESSION_CLASS);
+		super(TASK_SESSION_CLASS,true);
+	}
+
+	public OCamelTaskSession(String sessionClass) {
+		super(sessionClass,true);
 	}
 	
 	public OCamelTaskSession appendOut(String out){
