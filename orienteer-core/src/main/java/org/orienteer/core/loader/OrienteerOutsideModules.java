@@ -3,15 +3,20 @@ package org.orienteer.core.loader;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import org.kevoree.kcl.api.FlexyClassLoader;
 import org.orienteer.core.loader.util.JarUtils;
+import org.orienteer.core.service.OrienteerFilter;
+import org.orienteer.core.service.Reload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Vitaliy Gonchar
@@ -25,10 +30,14 @@ public abstract class OrienteerOutsideModules {
     @Inject
     private static OrienteerOutsideModulesManager manager;
 
+    @Inject
+    private static Injector injector;
+
     public static synchronized void registerModules() {
         LOG.info("Start load Orienteer outside modules");
         Set<Path> jarsInFolder = readModulesInFolder(modulesFolder);
         showAlreadyLoaded();
+        int i = 0;
         for (Path jarFile : Sets.difference(jarsInFolder, LOADED)) {
             manager.setModulePath(jarFile);
             Optional<String> className = getInitClass(jarFile);
@@ -38,12 +47,22 @@ public abstract class OrienteerOutsideModules {
                     LOG.info("Load module: " + className.get() + " file: " + jarFile);
                     OLoaderStorage.addModuleLoader(className.get(), moduleLoader);
                     LOADED.add(jarFile);
+                    i++;
                 }
 
             } else LOG.warn("Cannot found init class for " + jarFile);
         }
         OLoaderStorage.updateRootLoader();
         LOG.info("End load Orienteer outside modules");
+        if (i > 0) {
+            reload();
+        }
+    }
+
+    private static void reload() {
+        OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+        executor.schedule(new Reload(orienteerFilter), 0, TimeUnit.SECONDS);
     }
 
     public static synchronized void unregisterModule(String moduleName) {
