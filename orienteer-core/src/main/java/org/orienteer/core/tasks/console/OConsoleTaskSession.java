@@ -32,7 +32,7 @@ public class OConsoleTaskSession extends OTaskSessionRuntime{
 	
 	
 	public OConsoleTaskSession() {
-		super(TASK_SESSION_CLASS);
+		super(TASK_SESSION_CLASS,true);
 	}
 	
 	public OConsoleTaskSession setInput(String input){
