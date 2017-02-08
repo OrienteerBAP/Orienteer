@@ -42,7 +42,7 @@ public class OModuleManagerWidget extends AbstractWidget<Void> {
             private void reload() {
                 OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
                 ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-                executor.schedule(new Reload(orienteerFilter), 3, TimeUnit.SECONDS);
+                executor.schedule(new Reload(orienteerFilter), 1, TimeUnit.SECONDS);
             }
 
         });
