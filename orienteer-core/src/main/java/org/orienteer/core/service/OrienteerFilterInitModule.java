@@ -7,7 +7,6 @@ import com.google.inject.servlet.ServletModule;
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WicketFilter;
 import org.orienteer.core.loader.OLoaderStorage;
-import ru.ydn.wicket.wicketorientdb.rest.InterceptContentFilter;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -29,8 +28,6 @@ public class OrienteerFilterInitModule extends ServletModule {
 
     @Override
     protected void configureServlets() {
-        bind(InterceptContentFilter.class).asEagerSingleton();
-        filter("/orientdb/*").through(InterceptContentFilter.class);
         bind(WicketFilter.class).toProvider(new Provider<WicketFilter>() {
             @Override
             public WicketFilter get() {
@@ -44,7 +41,6 @@ public class OrienteerFilterInitModule extends ServletModule {
         }).in(Singleton.class);
         bind(OrienteerFilter.class).in(Singleton.class);
         filter("/*").through(OrienteerFilter.class);
-//        filter("/*").through(WicketFilter.class);
         bind(FilterConfigProvider.class).in(Singleton.class);
         bind(FilterConfig.class).toProvider(FilterConfigProvider.class);
     }
