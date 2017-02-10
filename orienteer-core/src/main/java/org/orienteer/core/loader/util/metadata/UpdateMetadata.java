@@ -61,9 +61,10 @@ abstract class UpdateMetadata {
             List<Element> children = rootElement.getChildren(MODULE);
             ODependency dependency = moduleMetadata.getDependency();
             for (Element element : children) {
-                Element child = element.getChild(INITIALIZER);
+                Element child = element.getChild(ID);
                 String value = child.getValue();
-                if (value != null && value.equals(moduleMetadata.getInitializerName())) {
+                if (value != null && value.equals(Integer.toString(moduleMetadata.getId()))) {
+                    element.removeChild(INITIALIZER);
                     element.removeChild(TRUSTED);
                     element.removeChild(LOAD);
                     element.removeChild(MAVEN);
