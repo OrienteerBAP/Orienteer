@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -22,9 +21,8 @@ import java.util.concurrent.TimeUnit;
  * @author Vitaliy Gonchar
  */
 public abstract class OrienteerOutsideModules {
-    private static final Set<Path> LOADED = Sets.newConcurrentHashSet();
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerOutsideModules.class);
-
+    private static final Set<Path> LOADED = Sets.newConcurrentHashSet();
     @Inject @Named("outside-modules")
     private static Path modulesFolder;
     @Inject
@@ -34,11 +32,8 @@ public abstract class OrienteerOutsideModules {
     private static Injector injector;
 
     public static synchronized void registerModules() {
-        LOG.info("Start load Orienteer outside modules");
-        Set<Path> jarsInFolder = readModulesInFolder(modulesFolder);
-        showAlreadyLoaded();
         int i = 0;
-        for (Path jarFile : Sets.difference(jarsInFolder, LOADED)) {
+        for (Path jarFile : getJarsForLoad()) {
             manager.setModulePath(jarFile);
             Optional<String> className = getInitClass(jarFile);
             if (className.isPresent()) {
@@ -49,11 +44,9 @@ public abstract class OrienteerOutsideModules {
                     LOADED.add(jarFile);
                     i++;
                 }
-
             } else LOG.warn("Cannot found init class for " + jarFile);
         }
-        OLoaderStorage.updateRootLoader();
-        LOG.info("End load Orienteer outside modules");
+
         if (i > 0) {
             reload();
         }
@@ -62,7 +55,23 @@ public abstract class OrienteerOutsideModules {
     private static void reload() {
         OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-        executor.schedule(new Reload(orienteerFilter), 0, TimeUnit.SECONDS);
+        executor.schedule(new Reload(orienteerFilter), 1, TimeUnit.SECONDS);
+    }
+
+    private static Set<Path> getJarsForLoad() {
+
+        Set<Path> jarsInFolder = readModulesInFolder(modulesFolder);
+        if (Sets.difference(LOADED, jarsInFolder).size() != 0 && LOADED.equals(jarsInFolder)) {
+            LOG.debug("Modules was delete: ");
+            for (Path path : Sets.difference(jarsInFolder, LOADED)) {
+                LOG.debug("module: " + path);
+            }
+            LOADED.clear();
+            OLoaderStorage.clear();
+            if (jarsInFolder.size() == 0) reload();
+        }
+
+        return Sets.difference(jarsInFolder, LOADED);
     }
 
     public static synchronized void unregisterModule(String moduleName) {
@@ -74,14 +83,6 @@ public abstract class OrienteerOutsideModules {
                 OLoaderStorage.removeModuleLoader(moduleName);
             }
         } else LOG.warn(String.format("Module with name %s is not loaded", moduleName));
-    }
-
-    private static void showAlreadyLoaded() {
-        Iterator<Path> iterator = LOADED.iterator();
-        for (String module : OLoaderStorage.getNamesOfLoadedModules()) {
-            String file = iterator.hasNext() ? iterator.next().toString() : "";
-            LOG.info("Already loaded: " + module + " file: " + file);
-        }
     }
 
     private static String getModuleName(String initClassName) {

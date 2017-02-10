@@ -7,9 +7,7 @@ import org.orienteer.core.loader.ODependency;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

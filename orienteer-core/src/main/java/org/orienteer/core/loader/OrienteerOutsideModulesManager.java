@@ -91,7 +91,7 @@ public class OrienteerOutsideModulesManager {
     }
 
     private FlexyClassLoader getClassLoader() {
-        FlexyClassLoader classLoader = OLoaderStorage.getCurrentModuleLoader();
+        FlexyClassLoader classLoader = OLoaderStorage.getModuleLoader(true);
         try {
             classLoader.load(modulePath.toUri().toURL());
             List<Path> resources = mavenResolver.resolveDependencies(modulePath);

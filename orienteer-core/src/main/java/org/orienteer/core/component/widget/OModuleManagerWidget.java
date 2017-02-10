@@ -8,20 +8,16 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.service.OrienteerFilter;
-import org.orienteer.core.service.Reload;
+import org.orienteer.core.loader.OrienteerOutsideModules;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 /**
  * @author Vitaliy Gonchar
  */
-@Widget(domain="schema", tab="classes", id="load-module", autoEnable=true)
+@Widget(domain="schema", tab="loader", id="load-module", autoEnable=true)
 public class OModuleManagerWidget extends AbstractWidget<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(OModuleManagerWidget.class);
@@ -36,14 +32,9 @@ public class OModuleManagerWidget extends AbstractWidget<Void> {
             public void onClick() {
                 LOG.debug("Click on reload");
                 setResponsePage(new ReloadPage());
-                reload();
+                OrienteerOutsideModules.registerModules();
             }
 
-            private void reload() {
-                OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
-                ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-                executor.schedule(new Reload(orienteerFilter), 1, TimeUnit.SECONDS);
-            }
 
         });
     }

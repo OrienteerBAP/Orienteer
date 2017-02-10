@@ -18,10 +18,8 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.orienteer.core.loader.MavenResolver;
 import org.orienteer.core.loader.ODependency;
-import org.orienteer.core.loader.util.AetherUtils;
-import org.orienteer.core.loader.util.ConsoleRepositoryListener;
-import org.orienteer.core.loader.util.ConsoleTransferListener;
-import org.orienteer.core.loader.util.PomXmlUtils;
+import org.orienteer.core.loader.util.*;
+import org.orienteer.core.loader.util.metadata.MetadataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +44,8 @@ public class OLoaderInitModule extends AbstractModule {
     private static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
     private static final String DEFAULT                      = "default";
     private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
+    private static final String METADATA_FILE                = "metadata.xml";
+    private static final String METADATA_TEMP_FILE           = "metadata-temp.xml";
 
     private final String defaultModulesFolder             = System.getProperty("user.dir") + "/modules/";
     private final String defaultMavenLocalRepository      = System.getProperty("user.home") + "/.m2/repository/";
@@ -79,7 +79,27 @@ public class OLoaderInitModule extends AbstractModule {
                 return folder == null ? Paths.get(defaultModulesFolder) : Paths.get(folder);
             }
         });
+        bind(Path.class).annotatedWith(Names.named("metadata-path")).toProvider(new Provider<Path>() {
+
+            @Inject @Named("outside-modules")
+            private Path modulesFolder;
+
+            @Override
+            public Path get() {
+                return modulesFolder.resolve(METADATA_FILE);
+            }
+        });
+        bind(Path.class).annotatedWith(Names.named("metadata-temp-path")).toProvider(new Provider<Path>() {
+            @Inject @Named("outside-modules")
+            private Path modulesFolder;
+
+            @Override
+            public Path get() {
+                return modulesFolder.resolve(METADATA_TEMP_FILE);
+            }
+        });
         bind(MavenResolver.class).in(Singleton.class);
+        requestStaticInjection(MetadataUtil.class);
         requestStaticInjection(AetherUtils.class);
     }
 

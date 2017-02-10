@@ -8,6 +8,8 @@ public class ODependency {
     private String artifactId;
     private String artifactVersion;
 
+    public ODependency() {}
+
     public ODependency(String groupId, String artifactId, String artifactVersion) {
         this.groupId = groupId;
         this.artifactId = artifactId;
