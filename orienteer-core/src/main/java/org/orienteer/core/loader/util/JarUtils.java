@@ -1,7 +1,7 @@
 package org.orienteer.core.loader.util;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,10 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -77,11 +74,11 @@ public abstract class JarUtils {
         return resultOptional;
     }
 
-    public static Set<Path> readNewJarsInFolder(String folder, Set<Path> oldJars) {
+    public static List<Path> readNewJarsInFolder(String folder, List<Path> oldJars) {
         return readNewJarsInFolder(Paths.get(folder), oldJars);
     }
 
-    public static Set<Path> readJarsInFolder(Path folder) {
+    public static List<Path> readJarsInFolder(Path folder) {
         return readJarsInFolder(folder, new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -90,7 +87,7 @@ public abstract class JarUtils {
         });
     }
 
-    public static Set<Path> readJarsInFolder(String folder) {
+    public static List<Path> readJarsInFolder(String folder) {
         return readJarsInFolder(Paths.get(folder), new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -99,9 +96,9 @@ public abstract class JarUtils {
         });
     }
 
-    private static Set<Path> readJarsInFolder(Path folder, FilenameFilter filter) {
-        if (!Files.isDirectory(folder)) return Collections.emptySet();
-        Set<Path> jars = Sets.newConcurrentHashSet();
+    private static List<Path> readJarsInFolder(Path folder, FilenameFilter filter) {
+        if (!Files.isDirectory(folder)) return Lists.newArrayList();
+        List<Path> jars = Lists.newArrayList();
         File file = folder.toFile();
         File[] list = file.listFiles(filter);
         for (File f : list) {
@@ -111,15 +108,15 @@ public abstract class JarUtils {
     }
 
 
-    public static Set<Path> readNewJarsInFolder(Path folder, final Set<Path> jars) {
-        Set<Path> jarsInFolder = readJarsInFolder(folder, new FilenameFilter() {
+    public static List<Path> readNewJarsInFolder(Path folder, final List<Path> jars) {
+        List<Path> jarsInFolder = readJarsInFolder(folder, new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(".jar") && !jars.contains(dir.toPath().resolve(name));
             }
         });
         if (jarsInFolder != null) jars.addAll(jarsInFolder);
-        return jarsInFolder != null ? jarsInFolder : Collections.<Path>emptySet();
+        return jarsInFolder != null ? jarsInFolder : Lists.<Path>newArrayList();
     }
 
     public static Optional<String> searchOrienteerInitModule(Path pathToJar) {

@@ -1,51 +1,60 @@
 package org.orienteer.core.loader.util.metadata;
 
-import org.orienteer.core.loader.ODependency;
+import org.eclipse.aether.artifact.Artifact;
+
+import java.util.List;
 
 /**
  * @author Vitaliy Gonchar
  */
 public class OModuleMetadata {
     private String initializerName;
-    private ODependency dependency;
+    private Artifact mainArtifact;
+    private List<Artifact> dependencies;
     private boolean trusted;
     private boolean load;
-
     private int id;
 
-    public OModuleMetadata(String initializerName, ODependency dependency, boolean trusted, boolean load, int id) {
+    public OModuleMetadata setInitializerName(String initializerName) {
         this.initializerName = initializerName;
-        this.dependency = dependency;
+        return this;
+    }
+
+    public OModuleMetadata setMainArtifact(Artifact mainArtifact) {
+        this.mainArtifact = mainArtifact;
+        return this;
+    }
+
+    public OModuleMetadata setDependencies(List<Artifact> dependencies) {
+        this.dependencies = dependencies;
+        return this;
+    }
+
+    public OModuleMetadata setTrusted(boolean trusted) {
         this.trusted = trusted;
+        return this;
+    }
+
+    public OModuleMetadata setLoad(boolean load) {
         this.load = load;
+        return this;
+    }
+
+    public OModuleMetadata setId(int id) {
         this.id = id;
-    }
-
-    public OModuleMetadata() {}
-
-
-    public void setInitializerName(String initializerName) {
-        this.initializerName = initializerName;
-    }
-
-    public void setDependency(ODependency dependency) {
-        this.dependency = dependency;
-    }
-
-    public void setTrusted(boolean trusted) {
-        this.trusted = trusted;
-    }
-
-    public void setLoad(boolean load) {
-        this.load = load;
+        return this;
     }
 
     public String getInitializerName() {
         return initializerName;
     }
 
-    public ODependency getDependency() {
-        return dependency;
+    public Artifact getMainArtifact() {
+        return mainArtifact;
+    }
+
+    public List<Artifact> getDependencies() {
+        return dependencies;
     }
 
     public boolean isTrusted() {
@@ -60,29 +69,27 @@ public class OModuleMetadata {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OModuleMetadata metadata = (OModuleMetadata) o;
+        OModuleMetadata that = (OModuleMetadata) o;
 
-        if (trusted != metadata.trusted) return false;
-        if (load != metadata.load) return false;
-        if (id != metadata.id) return false;
-        if (initializerName != null ? !initializerName.equals(metadata.initializerName) : metadata.initializerName != null)
+        if (trusted != that.trusted) return false;
+        if (load != that.load) return false;
+        if (id != that.id) return false;
+        if (initializerName != null ? !initializerName.equals(that.initializerName) : that.initializerName != null)
             return false;
-        return dependency != null ? dependency.equals(metadata.dependency) : metadata.dependency == null;
+        if (mainArtifact != null ? !mainArtifact.equals(that.mainArtifact) : that.mainArtifact != null) return false;
+        return dependencies != null ? dependencies.equals(that.dependencies) : that.dependencies == null;
     }
 
     @Override
     public int hashCode() {
         int result = initializerName != null ? initializerName.hashCode() : 0;
-        result = 31 * result + (dependency != null ? dependency.hashCode() : 0);
+        result = 31 * result + (mainArtifact != null ? mainArtifact.hashCode() : 0);
+        result = 31 * result + (dependencies != null ? dependencies.hashCode() : 0);
         result = 31 * result + (trusted ? 1 : 0);
         result = 31 * result + (load ? 1 : 0);
         result = 31 * result + id;
@@ -93,7 +100,8 @@ public class OModuleMetadata {
     public String toString() {
         return "OModuleMetadata{" +
                 "initializerName='" + initializerName + '\'' +
-                ", dependency=" + dependency +
+                ", mainArtifact=" + mainArtifact +
+                ", dependencies=" + dependencies +
                 ", trusted=" + trusted +
                 ", load=" + load +
                 ", id=" + id +

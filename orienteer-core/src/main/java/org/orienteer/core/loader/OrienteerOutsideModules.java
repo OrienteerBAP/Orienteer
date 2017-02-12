@@ -1,19 +1,22 @@
 package org.orienteer.core.loader;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import org.kevoree.kcl.api.FlexyClassLoader;
 import org.orienteer.core.loader.util.JarUtils;
+import org.orienteer.core.loader.util.metadata.MetadataUtil;
+import org.orienteer.core.loader.util.metadata.OModuleMetadata;
 import org.orienteer.core.service.OrienteerFilter;
 import org.orienteer.core.service.Reload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class OrienteerOutsideModules {
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerOutsideModules.class);
-    private static final Set<Path> LOADED = Sets.newConcurrentHashSet();
+    private static final Set<Integer> LOADED_MODULES = Sets.newHashSet();
     @Inject @Named("outside-modules")
     private static Path modulesFolder;
     @Inject
@@ -31,47 +34,28 @@ public abstract class OrienteerOutsideModules {
     @Inject
     private static Injector injector;
 
+    private OrienteerOutsideModules() {}
+
     public static synchronized void registerModules() {
         int i = 0;
-        for (Path jarFile : getJarsForLoad()) {
-            manager.setModulePath(jarFile);
-            Optional<String> className = getInitClass(jarFile);
-            if (className.isPresent()) {
-                FlexyClassLoader moduleLoader = executeInitClass(className.get());
+
+        for (OModuleMetadata metadata : getModulesForLoad()) {
+            if (LOADED_MODULES.contains(metadata.getId())) continue;
+            String className = metadata.getInitializerName();
+            if (className != null) {
+                FlexyClassLoader moduleLoader = executeInitClass(className, metadata);
                 if (moduleLoader != null) {
-                    LOG.info("Load module: " + className.get() + " file: " + jarFile);
-                    OLoaderStorage.addModuleLoader(className.get(), moduleLoader);
-                    LOADED.add(jarFile);
+                    LOG.info("Load module: " + className + " file: " + metadata.getMainArtifact().getFile().getAbsolutePath());
+                    OLoaderStorage.addModuleLoader(className, moduleLoader);
+                    LOADED_MODULES.add(metadata.getId());
                     i++;
                 }
-            } else LOG.warn("Cannot found init class for " + jarFile);
+            } else LOG.warn("Cannot found init class for " + metadata.getMainArtifact().getFile().getAbsolutePath());
         }
 
         if (i > 0) {
             reload();
         }
-    }
-
-    private static void reload() {
-        OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
-        executor.schedule(new Reload(orienteerFilter), 1, TimeUnit.SECONDS);
-    }
-
-    private static Set<Path> getJarsForLoad() {
-
-        Set<Path> jarsInFolder = readModulesInFolder(modulesFolder);
-        if (Sets.difference(LOADED, jarsInFolder).size() != 0 && LOADED.equals(jarsInFolder)) {
-            LOG.debug("Modules was delete: ");
-            for (Path path : Sets.difference(jarsInFolder, LOADED)) {
-                LOG.debug("module: " + path);
-            }
-            LOADED.clear();
-            OLoaderStorage.clear();
-            if (jarsInFolder.size() == 0) reload();
-        }
-
-        return Sets.difference(jarsInFolder, LOADED);
     }
 
     public static synchronized void unregisterModule(String moduleName) {
@@ -85,22 +69,55 @@ public abstract class OrienteerOutsideModules {
         } else LOG.warn(String.format("Module with name %s is not loaded", moduleName));
     }
 
-    private static String getModuleName(String initClassName) {
-        String[] split = initClassName.split("\\.");
-        return split[split.length - 2];
+    private static void reload() {
+        OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+        executor.schedule(new Reload(orienteerFilter), 1, TimeUnit.SECONDS);
     }
-    private static Set<Path> readModulesInFolder(Path folder) {
+
+    private static List<OModuleMetadata> getModulesForLoad() {
+        Map<Path, OModuleMetadata> modules = MetadataUtil.readModulesForLoadAsMap();
+        List<Path> jars = readModulesInFolder(modulesFolder);
+
+        if (modules.isEmpty()) {
+            List<OModuleMetadata> newModules = getModulesMetadata(jars);
+            MetadataUtil.createMetadata(newModules);
+            return newModules;
+        } else {
+            List<Path> modulesForWrite = Lists.newArrayList();
+            for (Path pathToModule : jars) {
+                if (!modules.keySet().contains(pathToModule.toAbsolutePath())) {
+                    modulesForWrite.add(pathToModule);
+                }
+            }
+            List<OModuleMetadata> modulesForAdd = getModulesMetadata(modulesForWrite);
+            MetadataUtil.addModulesToMetadata(modulesForAdd);
+            modulesForAdd.addAll(modules.values());
+            return Collections.unmodifiableList(modulesForAdd);
+        }
+    }
+
+    private static List<OModuleMetadata> getModulesMetadata(List<Path> modules) {
+        List<OModuleMetadata> metadata = Lists.newArrayList();
+        MavenResolver resolver = injector.getInstance(MavenResolver.class);
+        for (Path jarFile : modules) {
+            Optional<OModuleMetadata> moduleMetadata = resolver.getModuleMetadata(jarFile);
+            if (moduleMetadata.isPresent()) {
+                metadata.add(moduleMetadata.get());
+            }
+        }
+        return metadata;
+    }
+
+    private static List<Path> readModulesInFolder(Path folder) {
         return JarUtils.readJarsInFolder(folder);
     }
 
-    private static Optional<String> getInitClass(Path jar) {
-        return JarUtils.searchOrienteerInitModule(jar);
-    }
 
-    private static FlexyClassLoader executeInitClass(String className) {
+    private static FlexyClassLoader executeInitClass(String className, OModuleMetadata metadata) {
         FlexyClassLoader moduleLoader = null;
         try {
-            moduleLoader = manager.registerModule(className);
+            moduleLoader = manager.registerModule(className, metadata);
         } catch (ClassNotFoundException e) {
             LOG.error("Cannot load class");
             if (LOG.isDebugEnabled()) e.printStackTrace();

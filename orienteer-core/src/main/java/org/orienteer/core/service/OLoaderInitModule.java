@@ -8,6 +8,8 @@ import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.repository.LocalRepository;
@@ -17,8 +19,10 @@ import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.orienteer.core.loader.MavenResolver;
-import org.orienteer.core.loader.ODependency;
-import org.orienteer.core.loader.util.*;
+import org.orienteer.core.loader.util.PomXmlUtils;
+import org.orienteer.core.loader.util.aether.AetherUtils;
+import org.orienteer.core.loader.util.aether.ConsoleRepositoryListener;
+import org.orienteer.core.loader.util.aether.ConsoleTransferListener;
 import org.orienteer.core.loader.util.metadata.MetadataUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,13 +109,15 @@ public class OLoaderInitModule extends AbstractModule {
 
     @Singleton
     @Provides @Named("orienteer-default-dependencies")
-    private Set<ODependency> orienteerCoreDependenciesProvider(
+    private Set<Artifact> orienteerCoreDependenciesProvider(
             @Named("orienteer-versions") Map<String, String> versions) {
         Path corePom = Paths.get( "pom.xml");
-        Set<ODependency> coreDependencies = PomXmlUtils.readDependencies(corePom, versions);
-        Set<ODependency> parentDependencies = PomXmlUtils.readDependencies(Paths.get(parentPom));
+        Set<Artifact> coreDependencies = PomXmlUtils.readDependencies(corePom, versions);
+        Set<Artifact> parentDependencies = PomXmlUtils.readDependencies(Paths.get(parentPom));
         parentDependencies.addAll(coreDependencies);
-        parentDependencies.add(new ODependency("org.orienteer", "orienteer-core", versions.get("${project.version}")));
+        parentDependencies.add(
+                new DefaultArtifact(String.format("%s:%s:%s",
+                        "org.orienteer", "orienteer-core", versions.get("${project.version}"))));
         return parentDependencies;
     }
 

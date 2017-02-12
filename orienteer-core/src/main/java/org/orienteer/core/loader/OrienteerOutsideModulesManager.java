@@ -3,11 +3,12 @@ package org.orienteer.core.loader;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
+import org.eclipse.aether.artifact.Artifact;
 import org.kevoree.kcl.api.FlexyClassLoader;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.loader.util.metadata.OModuleMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +16,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,24 +27,17 @@ public class OrienteerOutsideModulesManager {
     private static final Map<FlexyClassLoader, Class<? extends IInitializer>> INIT_CLASSES = Maps.newConcurrentMap();
     private static final String INIT_METHOD = "init";
     private static final String DESTROY_METHOD = "destroy";
-    @Inject @Named("outside-modules")
-    private Path modulePath;
+
     @Inject
     private OrienteerWebApplication application;
 
-    @Inject
-    private MavenResolver mavenResolver;
-
-    public synchronized FlexyClassLoader registerModule(String initializerClassName) throws ClassNotFoundException{
-        if (modulePath == null) {
-            LOG.error("Module path cannot be null");
-            return null;
-        }
+    public synchronized FlexyClassLoader registerModule(String initializerClassName, OModuleMetadata metadata)
+            throws ClassNotFoundException{
         if (application == null) {
             LOG.error("Application cannot be null");
             return null;
         }
-        FlexyClassLoader classLoader = getClassLoader();
+        FlexyClassLoader classLoader = getClassLoader(metadata);
         OLoaderStorage.getRootLoader().attachChild(classLoader);
 
         Class<? extends IInitializer> loadClass = (Class<? extends IInitializer>) classLoader.loadClass(initializerClassName);
@@ -90,32 +81,21 @@ public class OrienteerOutsideModulesManager {
         return false;
     }
 
-    private FlexyClassLoader getClassLoader() {
+    private FlexyClassLoader getClassLoader(OModuleMetadata metadata) {
         FlexyClassLoader classLoader = OLoaderStorage.getModuleLoader(true);
         try {
-            classLoader.load(modulePath.toUri().toURL());
-            List<Path> resources = mavenResolver.resolveDependencies(modulePath);
-            LOG.debug("resources size: " + resources.size());
-            for (Path resource : resources) {
-                classLoader.load(resource.toUri().toURL());
+            classLoader.load(metadata.getMainArtifact().getFile().toURI().toURL());
+            for (Artifact dependency : metadata.getDependencies()) {
+                classLoader.load(dependency.getFile().toURI().toURL());
             }
         } catch (MalformedURLException e) {
-            LOG.error("Cannot create URl from " + modulePath);
+            LOG.error("Cannot create URl from " + metadata.getMainArtifact().getFile());
             if (LOG.isDebugEnabled()) e.printStackTrace();
         } catch (IOException e) {
-            LOG.error("Cannot open file " + modulePath);
+            LOG.error("Cannot open file " + metadata.getMainArtifact().getFile());
             if (LOG.isDebugEnabled()) e.printStackTrace();
         }
         return classLoader;
-    }
-
-    public OrienteerOutsideModulesManager setModulePath(String modulePath) {
-        return setModulePath(Paths.get(modulePath));
-    }
-
-    public OrienteerOutsideModulesManager setModulePath(Path modulePath) {
-        this.modulePath = modulePath;
-        return this;
     }
 
 }
