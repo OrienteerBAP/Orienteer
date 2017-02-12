@@ -44,8 +44,8 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
 		}
     }
 
-    public RecursiveMenuPanel(String id, IModel<ODocument> item) {
-        super(id, item);
+    public RecursiveMenuPanel(String id, IModel<ODocument> itemModel) {
+        super(id, itemModel);
         setOutputMarkupId(true);
         add(new ListView<ODocument>("items", new PropertyModel<List<ODocument>>(this, "items")) {
 
@@ -74,13 +74,14 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
     }
     
     public List<ODocument> getItems(ODocument doc) {
+    	List<ODocument> items = null;
     	if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_PERSPECTIVE)) {
-    		return (List<ODocument>)doc.field("menu");
+    		items = (List<ODocument>)doc.field("menu");
     	} else if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_ITEM)) {
-    		return (List<ODocument>)doc.field("subItems");
-    	} else {
-    		return null;
+    		items = (List<ODocument>)doc.field("subItems");
     	}
+    	if(items!=null) items.remove(null); //Remove deleted records
+    	return items;
     }
     
     @Override
