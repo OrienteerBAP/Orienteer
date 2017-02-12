@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.model.IModel;
@@ -14,10 +16,12 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.encoding.UrlEncoder;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.behavior.UpdateOnDashboardDisplayModeChangeBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
@@ -55,6 +59,18 @@ public class BrowsePivotTableWidget extends AbstractWidget<OClass> {
 									new PropertyModel<DisplayMode>(this, "displayMode"),
 									new PropertyModel<String>(this, "config")));
 		add(UpdateOnDashboardDisplayModeChangeBehavior.INSTANCE);
+		add(new UpdateOnActionPerformedEventBehavior(false){
+			@Override
+			protected void update(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
+				noCacheRnd = Math.random();
+				super.update(component, event, wicketEvent);
+			}
+
+			@Override
+			protected boolean match(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
+				return event.getCommand().isChangingModel();
+			}
+		});
 	}
 
 	public String getUrl() {
