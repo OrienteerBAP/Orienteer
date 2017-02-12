@@ -107,7 +107,13 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				case LINKSET:
 					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
                 case DATE:
-                    return new DateField(id, (IModel<Date>) valueModel);
+                    return new DateField(id, (IModel<Date>) valueModel) {
+                    	@Override
+                    	protected TimeZone getClientTimeZone() {
+                    		// We should not convert timezones when working with just dates.
+                    		return null;
+                    	}
+                    };
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) valueModel);
                 case EMBEDDED:
