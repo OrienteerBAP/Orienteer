@@ -3,6 +3,8 @@ package org.orienteer.core.loader;
 import com.google.common.base.Optional;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.resolution.ArtifactResult;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orienteer.core.loader.util.JarUtils;
@@ -33,78 +35,80 @@ public class MavenResolverTest {
 
     @Test
     public void resolveArtifact() throws Exception {
-        Optional<Path> pathToArtifactRelease = getPathToArtifact(gavRelease);
-        Optional<Path> pathToArtifactSnapshot = getPathToArtifact(gavSnapshot);
+        Path pathToArtifactRelease = getPathToArtifact(gavRelease);
+        Path pathToArtifactSnapshot = getPathToArtifact(gavSnapshot);
         LOG.info("**********************************************************************");
         LOG.info(String.format("Path to release %s:" +
                 "\n is present: %s." +
-                "\n path: %s.", gavRelease, pathToArtifactRelease.isPresent(), pathToArtifactRelease.orNull()));
+                "\n path: %s.", gavRelease, pathToArtifactRelease));
         LOG.info(String.format("Path to snapshot %s:" +
                 "\n is present: %s." +
-                "\n path: %s.", gavSnapshot, pathToArtifactSnapshot.isPresent(), pathToArtifactSnapshot.orNull()));
+                "\n path: %s.", gavSnapshot, pathToArtifactSnapshot));
         LOG.info("**********************************************************************");
     }
 
     @Test
     public void resolveDependenciesPomXML() throws Exception {
-        Optional<Path> pathToRelease = getPathToArtifact(gavRelease);
-        Optional<Path> pathToSnapshot = getPathToArtifact(gavSnapshot);
+        Path pathToRelease = getPathToArtifact(gavRelease);
+        Path pathToSnapshot = getPathToArtifact(gavSnapshot);
         LOG.info("**********************************************************************");
-        if (pathToRelease.isPresent()) {
+        if (pathToRelease != null) {
             LOG.info(String.format("Release %s: ", gavRelease));
-            printPaths(getResolvedDependenciesFromPomXml(pathToRelease.get()));
+            List<ArtifactResult> result = getResolvedDependenciesFromPomXml(pathToRelease);
+            printPaths(resolver.getPathsFromArtifactResult(result));
         } else throw new Exception("Cannot get path to release " + gavRelease);
 
-        if (pathToSnapshot.isPresent()) {
+        if (pathToSnapshot != null) {
             LOG.info(String.format("Snapshot %s: ", gavSnapshot));
-            printPaths(getResolvedDependenciesFromPomXml(pathToSnapshot.get()));
+            List<ArtifactResult> result = getResolvedDependenciesFromPomXml(pathToSnapshot);
+            printPaths(resolver.getPathsFromArtifactResult(result));
         } else throw new Exception("Cannot get path to release " + gavSnapshot);
         LOG.info("**********************************************************************");
     }
 
     @Test
     public void resolveDependenciesGAVRelease() throws Exception {
-        List<Path> pathsRelease = resolver.resolveDependencies(gavRelease);
+        List<ArtifactResult> pathsRelease = resolver.resolveDependencies(gavRelease);
 
         LOG.info("**********************************************************************");
         LOG.info(String.format("Release %s: ", gavRelease));
-        printPaths(pathsRelease);
+        printPaths(resolver.getPathsFromArtifactResult(pathsRelease));
         LOG.info("**********************************************************************");
     }
 
     @Test
     public void resolveDependenciesGAVSnapshot() throws Exception {
-        List<Path> pathsSnapshot = resolver.resolveDependencies(gavSnapshot);
+        List<ArtifactResult> result = resolver.resolveDependencies(gavSnapshot);
         LOG.info("**********************************************************************");
         LOG.info(String.format("Snapshot %s: ", gavSnapshot));
-        printPaths(pathsSnapshot);
+        printPaths(resolver.getPathsFromArtifactResult(result));
         LOG.info("**********************************************************************");
     }
 
     @Test
     public void resolveDependenciesFromJarSnapshot() throws Exception {
-        Optional<Path> pathToSnapshot = getPathToArtifact(gavSnapshot);
+        Path pathToSnapshot = getPathToArtifact(gavSnapshot);
         LOG.info("**********************************************************************");
-        if (pathToSnapshot.isPresent()) {
+        if (pathToSnapshot != null) {
             LOG.info(String.format("Snapshot %s: ", gavSnapshot));
-            printPaths(resolver.resolveDependencies(pathToSnapshot.get()));
+            printPaths(resolver.resolveDependencies(pathToSnapshot));
         } else throw new Exception("Cannot get path to release " + gavSnapshot);
         LOG.info("**********************************************************************");
     }
 
     @Test
     public void resolveDependenciesFromJarRelease() throws Exception {
-        Optional<Path> pathToRelease = getPathToArtifact(gavRelease);
+        Path pathToRelease = getPathToArtifact(gavRelease);
 
         LOG.info("**********************************************************************");
-        if (pathToRelease.isPresent()) {
+        if (pathToRelease != null) {
             LOG.info(String.format("Release %s: ", gavRelease));
-            printPaths(resolver.resolveDependencies(pathToRelease.get()));
+            printPaths(resolver.resolveDependencies(pathToRelease));
         } else throw new Exception("Cannot get path to release " + gavRelease);
     }
 
 
-    private List<Path> getResolvedDependenciesFromPomXml(Path pathToArtifact) throws Exception{
+    private List<ArtifactResult> getResolvedDependenciesFromPomXml(Path pathToArtifact) throws Exception{
         if (pathToArtifact == null) throw new Exception("Path to artifact can't be null!");
         Optional<Path> pomFromJar = JarUtils.getPomFromJar(pathToArtifact);
 
@@ -120,7 +124,13 @@ public class MavenResolverTest {
         }
     }
 
-    private Optional<Path> getPathToArtifact(String gav) {
-        return resolver.resolveArtifact(gav);
+    private Path getPathToArtifact(String gav) {
+        String [] arr = gav.split(":");
+        String group = arr[0];
+        String artifact = arr[1];
+        String version = arr[2];
+        Optional<Artifact> artifactOptional = resolver.resolveArtifact(group, artifact, version);
+
+        return artifactOptional.isPresent() ? artifactOptional.get().getFile().toPath() : null;
     }
 }

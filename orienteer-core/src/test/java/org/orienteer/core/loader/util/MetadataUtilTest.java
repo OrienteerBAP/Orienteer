@@ -1,11 +1,13 @@
 package org.orienteer.core.loader.util;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.orienteer.core.loader.ODependency;
+import org.orienteer.core.loader.MavenResolver;
 import org.orienteer.core.loader.util.metadata.MetadataUtil;
 import org.orienteer.core.loader.util.metadata.OModuleMetadata;
 import org.orienteer.core.service.OLoaderInitModule;
@@ -13,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Vitaliy Gonchar
@@ -24,76 +23,71 @@ import static org.junit.Assert.*;
 public class MetadataUtilTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(MetadataUtilTest.class);
+    private final String gavSnapshot = "org.orienteer:orienteer-devutils:1.3-SNAPSHOT";
+    private final String gavRelease  = "org.orienteer:orienteer-devutils:1.2";
+    private static MavenResolver resolver;
 
-
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void init() {
         Injector injector = Guice.createInjector(new OLoaderInitModule());
+        resolver = injector.getInstance(MavenResolver.class);
     }
 
     @Test
-    public void createMetadataXml() throws Exception {
-        Optional<Path> metadataXmlOptional = MetadataUtil.createMetadata();
-        assertTrue(metadataXmlOptional.isPresent());
-        assertNotNull( metadataXmlOptional.orNull());
+    public void createMetadata() throws Exception {
+        Optional<OModuleMetadata> moduleSnapshot = resolver.getModuleMetadata(gavSnapshot, null);
+        Optional<OModuleMetadata> moduleRelease = resolver.getModuleMetadata(gavRelease, null);
+        if (moduleSnapshot.isPresent() && moduleRelease.isPresent()) {
+            LOG.info("moduleMetadata: " + moduleSnapshot.orNull());
+            List<OModuleMetadata> metadata = Lists.newArrayList();
+            metadata.add(moduleSnapshot.get());
+            metadata.add(moduleRelease.get());
+            MetadataUtil.createMetadata(metadata);
+        } else throw new Exception("One of the modules is null");
     }
 
-    @Test
-    public void readModulesMetadata() throws Exception {
-        List<OModuleMetadata> modulesMetadata = MetadataUtil.readMetadata();
-        for (OModuleMetadata metadata : modulesMetadata) {
-            LOG.info("metadata: " + metadata);
+    @Test @Ignore
+    public void upateMetadata() throws Exception {
+        List<OModuleMetadata> metadata = MetadataUtil.readMetadata();
+        for (OModuleMetadata module : metadata) {
+            module.setLoad(!module.isLoad());
+            MetadataUtil.updateMetadata(module);
         }
     }
 
     @Test
-    public void updateExistsMetadata() throws Exception {
-        List<OModuleMetadata> modulesMetadata = MetadataUtil.readMetadata();
-        if (modulesMetadata.isEmpty()) throw new Exception("Test cannot run. Metadata does not exists");
-
-        OModuleMetadata oModuleMetadata = modulesMetadata.get(0);
-        oModuleMetadata.setLoad(false);
-        oModuleMetadata.setTrusted(true);
-        ODependency dependency = oModuleMetadata.getDependency();
-        dependency.setArtifactId("new-artifact");
-        dependency.setGroupId("new-group");
-        dependency.setArtifactVersion("1.987");
-        oModuleMetadata.setDependency(dependency);
-        Optional<Path> optional = MetadataUtil.updateMetadata(oModuleMetadata);
-        LOG.info("optional exists: " + optional.isPresent());
-        LOG.info("optional: " + optional.orNull());
+    public void addModulesToMetadata() throws Exception {
+        String gav = "org.orienteer:orienteer-pages:1.3-SNAPSHOT";
+        Optional<OModuleMetadata> moduleMetadata = resolver.getModuleMetadata(gav, null);
+        if (moduleMetadata.isPresent()) {
+            List<OModuleMetadata> modules = Lists.newArrayList();
+            modules.add(moduleMetadata.get());
+            MetadataUtil.addModulesToMetadata(modules);
+        } else throw new Exception("Cannot resolve dependencies");
     }
 
-    @Test
-    public void updateCreateNewModuleMetadata() {
-        OModuleMetadata metadata = new OModuleMetadata();
-        metadata.setTrusted(false);
-        metadata.setInitializerName("efg");
-        metadata.setLoad(false);
-
-        ODependency dependency = new ODependency();
-        dependency.setArtifactId("new-artifayyhuict");
-        dependency.setGroupId("new-group");
-        dependency.setArtifactVersion("1.987");
-        metadata.setDependency(dependency);
-
-        MetadataUtil.updateMetadata(metadata);
-    }
-
-    @Test
-    public void deleteMetadata() throws Exception {
+    @Test @Ignore
+    public void deleteModuleFromMetadata() throws Exception {
+        createMetadata();
         List<OModuleMetadata> metadata = MetadataUtil.readMetadata();
-        OModuleMetadata oModuleMetadata = metadata.get(0);
-        Optional<Path> optional = MetadataUtil.deleteMetadata(oModuleMetadata);
-        assertNotNull(optional.orNull());
+        for (OModuleMetadata module : metadata) {
+            MetadataUtil.deleteMetadata(module);
+        }
     }
 
     @Test
-    public void genMetadataException() throws Exception {
-        MetadataUtil.setModulesFolder(Paths.get("2e3wfr/"));
-        Optional<Path> metadataXmlOptional = MetadataUtil.createMetadata();
-        assertFalse(metadataXmlOptional.isPresent());
-        assertNull(metadataXmlOptional.orNull());
+    public void readPathToLoadedOnMetadata() throws Exception {
+        List<Path> paths = MetadataUtil.readLoadedOnResourcesInMetadata();
+        for (Path path : paths) {
+            LOG.info("path: " + path);
+        }
     }
 
+    @Test
+    public void readPathToLoadedOffMetadata() throws Exception {
+        List<Path> paths = MetadataUtil.readLoadedOffResourcesInMetadata();
+        for (Path path : paths) {
+            LOG.info("path: " + path);
+        }
+    }
 }
