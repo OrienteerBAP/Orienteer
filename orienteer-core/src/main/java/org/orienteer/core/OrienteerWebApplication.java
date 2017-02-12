@@ -7,8 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
+import org.apache.wicket.Application;
 import org.apache.wicket.Component;
+import org.apache.wicket.IApplicationListener;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.ThreadContext;
@@ -26,6 +29,7 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
+import org.joda.time.DateTimeZone;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
@@ -47,6 +51,8 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
+import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.security.OUser;
@@ -59,6 +65,7 @@ import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
 import ru.ydn.wicket.wicketorientdb.OrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -67,7 +74,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 {
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerWebApplication.class);
 	
-	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("M-", true);
+	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("M-", false);
 	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("MM", true);
 	
 	private LinkedHashMap<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
@@ -178,6 +185,26 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
+		getApplicationListeners().add(new IApplicationListener() {
+			
+			@Override
+			public void onAfterInitialized(Application application) {
+				new DBClosure<Boolean>() {
+
+					@Override
+					protected Boolean execute(ODatabaseDocument db) {
+						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
+						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
+						DateTimeZone.setDefault(DateTimeZone.forID(timeZoneId));
+						return true;
+					}
+				}.execute();
+			}
+			
+			@Override
+			public void onBeforeDestroyed(Application application) {/*NOP*/}
+			
+		});
 		getPageSettings().addComponentResolver(new WicketPropertyResolver());
 		//Remove default BookmarkableMapper to disallow direct accessing of pages through /wicket/bookmarkable/<class>
 		for(IRequestMapper mapper : getRootRequestMapperAsCompound()){
