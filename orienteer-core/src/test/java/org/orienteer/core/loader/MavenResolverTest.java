@@ -34,6 +34,17 @@ public class MavenResolverTest {
     }
 
     @Test
+    public void downloadWebJars() {
+        String group = "org.webjars";
+        String artifact = "weather-icons";
+        String version = "1.3.2";
+        Optional<Artifact> artifactOptional = resolver.resolveArtifact(group, artifact, version);
+        LOG.info("artifact present: " + artifactOptional.isPresent());
+        LOG.info("artifact: " + artifactOptional.orNull());
+        LOG.info("artifact file: " + artifactOptional.get().getFile());
+    }
+
+    @Test
     public void resolveArtifact() throws Exception {
         Path pathToArtifactRelease = getPathToArtifact(gavRelease);
         Path pathToArtifactSnapshot = getPathToArtifact(gavSnapshot);
