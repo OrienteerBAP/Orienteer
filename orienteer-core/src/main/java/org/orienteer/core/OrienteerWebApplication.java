@@ -178,7 +178,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
 		registerModule(OConsoleTasksModule.class);
-		registerOutsideModules();
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
@@ -186,7 +185,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
-
+		registerOutsideModules();
 	}
 
 	private void registerOutsideModules() {
