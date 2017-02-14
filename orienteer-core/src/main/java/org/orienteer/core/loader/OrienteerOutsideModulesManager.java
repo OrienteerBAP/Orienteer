@@ -31,58 +31,52 @@ public class OrienteerOutsideModulesManager {
     @Inject
     private OrienteerWebApplication application;
 
-    public synchronized FlexyClassLoader registerModule(String initializerClassName, OModuleMetadata metadata)
-            throws ClassNotFoundException{
+    public synchronized boolean registerModule(OModuleMetadata metadata) {
         if (application == null) {
             LOG.error("Application cannot be null");
-            return null;
+            return false;
         }
-        FlexyClassLoader classLoader = getClassLoader(metadata);
-        OLoaderStorage.getRootLoader().attachChild(classLoader);
-
-        Class<? extends IInitializer> loadClass = (Class<? extends IInitializer>) classLoader.loadClass(initializerClassName);
-        boolean isInvoke = invoke(loadClass, INIT_METHOD);
-        if (isInvoke) {
-            INIT_CLASSES.put(classLoader,  loadClass);
-            return classLoader;
-        }
-        return null;
-    }
-
-    public synchronized FlexyClassLoader unregisterModule(FlexyClassLoader classLoader) {
-        if (INIT_CLASSES.containsKey(classLoader)) {
-            Class<? extends IInitializer> initClass = INIT_CLASSES.get(classLoader);
-            boolean isInvoke = invoke(initClass, DESTROY_METHOD);
-            if (isInvoke) {
-                INIT_CLASSES.remove(classLoader);
-                return classLoader;
-            }
-        }
-        return null;
-    }
-
-    private boolean invoke(Class<? extends IInitializer> loadClass, String methodName) {
+        FlexyClassLoader classLoader = getClassLoader(metadata,
+                OLoaderStorage.getSandboxModuleLoader(true));
+        boolean loadModule = false;
         try {
-            Object initializer = loadClass.newInstance();
-            Method method = loadClass.getMethod(methodName, Application.class);
-            method.invoke(initializer, application);
-            return true;
-        } catch (NoSuchMethodException e) {
-            LOG.error("Cannot find method: " + methodName + "(Application app)");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            LOG.error("Cannot invoke init method!");
-            if (LOG.isDebugEnabled())
-                e.printStackTrace();
-        } catch (InstantiationException e) {
-            LOG.error("Cannot create new instance of " + loadClass.getName());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            Class<? extends IInitializer> loadClass = (Class<? extends IInitializer>)
+                    classLoader.loadClass(metadata.getInitializerName());
+            invoke(loadClass, INIT_METHOD);
+            INIT_CLASSES.put(classLoader,  loadClass);
+            OLoaderStorage.deleteSandboxModuleLoader();
+            classLoader = getClassLoader(metadata, OLoaderStorage.getTrustyModuleLoader(false));
+            loadClass = (Class<? extends IInitializer>)
+                    classLoader.loadClass(metadata.getInitializerName());
+            loadModule = true;
+        } catch (Exception ex) {
+            if (LOG.isDebugEnabled()) ex.printStackTrace();
         }
-        return false;
+        return loadModule;
     }
 
-    private FlexyClassLoader getClassLoader(OModuleMetadata metadata) {
-        FlexyClassLoader classLoader = OLoaderStorage.getModuleLoader(true);
+//    public synchronized FlexyClassLoader unregisterModule(FlexyClassLoader classLoader) {
+//        if (INIT_CLASSES.containsKey(classLoader)) {
+//            Class<? extends IInitializer> initClass = INIT_CLASSES.get(classLoader);
+//            boolean isInvoke = invoke(initClass, DESTROY_METHOD);
+//            if (isInvoke) {
+//                INIT_CLASSES.remove(classLoader);
+//                return classLoader;
+//            }
+//        }
+//        return null;
+//    }
+
+    private void invoke(Class<? extends IInitializer> loadClass, String methodName)
+            throws InvocationTargetException, IllegalAccessException,
+            NoSuchMethodException, InstantiationException {
+
+        Object initializer = loadClass.newInstance();
+        Method method = loadClass.getMethod(methodName, Application.class);
+        method.invoke(initializer, application);
+    }
+
+    private FlexyClassLoader getClassLoader(OModuleMetadata metadata, FlexyClassLoader classLoader) {
         try {
             classLoader.load(metadata.getMainArtifact().getFile().toURI().toURL());
             for (Artifact dependency : metadata.getDependencies()) {

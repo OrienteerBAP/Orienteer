@@ -6,7 +6,6 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
-import org.kevoree.kcl.api.FlexyClassLoader;
 import org.orienteer.core.loader.util.JarUtils;
 import org.orienteer.core.loader.util.metadata.MetadataUtil;
 import org.orienteer.core.loader.util.metadata.OModuleMetadata;
@@ -27,8 +26,11 @@ import java.util.concurrent.TimeUnit;
  * @author Vitaliy Gonchar
  */
 public abstract class OrienteerOutsideModules {
+    private static final Set<Integer> LOADED_MODULES       = Sets.newHashSet();
+    private static final List<OModuleMetadata> LOAD_ERRORS = Lists.newArrayList();
+
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerOutsideModules.class);
-    private static final Set<Integer> LOADED_MODULES = Sets.newHashSet();
+
     @Inject @Named("outside-modules")
     private static Path modulesFolder;
     @Inject
@@ -42,34 +44,41 @@ public abstract class OrienteerOutsideModules {
     public static synchronized void registerModules() {
         int i = 0;
 
-        for (OModuleMetadata metadata : getModulesForLoad()) {
-            if (LOADED_MODULES.contains(metadata.getId())) continue;
-            String className = metadata.getInitializerName();
-            if (className != null) {
-                FlexyClassLoader moduleLoader = executeInitClass(className, metadata);
-                if (moduleLoader != null) {
-                    LOG.info("Load module: " + className + " file: " + metadata.getMainArtifact().getFile().getAbsolutePath());
-                    OLoaderStorage.addModuleLoader(className, moduleLoader);
-                    LOADED_MODULES.add(metadata.getId());
-                    i++;
-                }
-            } else LOG.warn("Cannot found init class for " + metadata.getMainArtifact().getFile().getAbsolutePath());
+        for (OModuleMetadata module : getModulesForLoad()) {
+            if (LOADED_MODULES.contains(module.getId()) || LOAD_ERRORS.contains(module)) {
+                continue;
+            }
+
+            boolean moduleLoad = manager.registerModule(module);
+            if (moduleLoad) {
+                LOG.info("Load module: " + module.getInitializerName()
+                        + " file: " + module.getMainArtifact().getFile().getAbsolutePath());
+                LOADED_MODULES.add(module.getId());
+                i++;
+            } else {
+                module.setTrusted(false);
+                LOAD_ERRORS.add(module);
+                LOG.warn("Cannot load module: " + module);
+            }
         }
 
         if (i > 0) {
             reload();
+        } else {
+            turnOffModules(LOAD_ERRORS);
+            LOG.info("End load Orienteer outside modules.");
         }
     }
 
     public static synchronized void unregisterModule(String moduleName) {
-        if (OLoaderStorage.getNamesOfLoadedModules().contains(moduleName)) {
-            FlexyClassLoader classLoader = OLoaderStorage.getModuleLoader(moduleName);
-            FlexyClassLoader loader = manager.unregisterModule(classLoader);
-            if (loader != null) {
-                LOG.info("Unregistering module success");
-                OLoaderStorage.removeModuleLoader(moduleName);
-            }
-        } else LOG.warn(String.format("Module with name %s is not loaded", moduleName));
+//        if (OLoaderStorage.getNamesOfLoadedModules().contains(moduleName)) {
+//            FlexyClassLoader classLoader = OLoaderStorage.getModuleLoader(moduleName);
+//            FlexyClassLoader loader = manager.unregisterModule(classLoader);
+//            if (loader != null) {
+//                LOG.info("Unregistering module success");
+//                OLoaderStorage.removeModuleLoader(moduleName);
+//            }
+//        } else LOG.warn(String.format("Module with name %s is not loaded", moduleName));
     }
 
     private static void reload() {
@@ -80,26 +89,43 @@ public abstract class OrienteerOutsideModules {
 
     private static List<OModuleMetadata> getModulesForLoad() {
         Map<Path, OModuleMetadata> modules = MetadataUtil.readModulesForLoadAsMap();
-        List<Path> jars = readModulesInFolder(modulesFolder);
-
-        if (modules.isEmpty()) {
+        List<Path> jars = JarUtils.readJarsInFolder(modulesFolder);
+        if (jars.isEmpty() && modules.isEmpty()) {
+            return Lists.newArrayList();
+        } if (modules.isEmpty()) {
             LOADED_MODULES.clear();
             OLoaderStorage.clear();
             List<OModuleMetadata> newModules = getModulesMetadata(jars);
             MetadataUtil.createMetadata(newModules);
             return newModules;
         } else {
-            List<Path> modulesForWrite = Lists.newArrayList();
-            for (Path pathToModule : jars) {
-                if (!modules.keySet().contains(pathToModule.toAbsolutePath())) {
-                    modulesForWrite.add(pathToModule);
-                }
-            }
-            List<OModuleMetadata> modulesForAdd = getModulesMetadata(modulesForWrite);
-            MetadataUtil.addModulesToMetadata(modulesForAdd);
-            modulesForAdd.addAll(modules.values());
-            return Collections.unmodifiableList(modulesForAdd);
+            List<OModuleMetadata> modulesForWrite = getModulesForWrite(jars, modules.keySet());
+            List<OModuleMetadata> modulesForDelete = getModulesForDelete(jars, modules);
+            MetadataUtil.deleteMetadata(modulesForDelete);
+            MetadataUtil.addModulesToMetadata(modulesForWrite);
+            modulesForWrite.addAll(modules.values());
+            return Collections.unmodifiableList(modulesForWrite);
         }
+    }
+
+    private static List<OModuleMetadata> getModulesForWrite(List<Path> jars, Set<Path> jarsInMetadata) {
+        List<Path> modulesForWrite = Lists.newArrayList();
+        for (Path pathToJar : jars) {
+            if (!jarsInMetadata.contains(pathToJar)) {
+                modulesForWrite.add(pathToJar);
+            }
+        }
+        return getModulesMetadata(modulesForWrite);
+    }
+
+    private static List<OModuleMetadata> getModulesForDelete(List<Path> jars, Map<Path, OModuleMetadata> modules) {
+        List<OModuleMetadata> modulesForDelete = Lists.newArrayList();
+        for (Path path : modules.keySet()) {
+            if (!jars.contains(path)) {
+                modulesForDelete.add(modules.get(path));
+            }
+        }
+        return modulesForDelete;
     }
 
     private static List<OModuleMetadata> getModulesMetadata(List<Path> modules) {
@@ -114,20 +140,20 @@ public abstract class OrienteerOutsideModules {
         return metadata;
     }
 
-    private static List<Path> readModulesInFolder(Path folder) {
-        return JarUtils.readJarsInFolder(folder);
-    }
-
-
-    private static FlexyClassLoader executeInitClass(String className, OModuleMetadata metadata) {
-        FlexyClassLoader moduleLoader = null;
-        try {
-            moduleLoader = manager.registerModule(className, metadata);
-        } catch (ClassNotFoundException e) {
-            LOG.error("Cannot load class");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+    private static void turnOffModules(List<OModuleMetadata> modules) {
+        List<OModuleMetadata> modulesForWrite = Lists.newArrayList();
+        for (OModuleMetadata module : modules) {
+            if (module.isLoad()) {
+                module.setLoad(false);
+                modulesForWrite.add(module);
+            }
         }
-        return moduleLoader;
+        MetadataUtil.updateMetadata(modulesForWrite);
     }
 
+    public static List<OModuleMetadata> getLoadErrors() {
+        List<OModuleMetadata> errors = Collections.unmodifiableList(LOAD_ERRORS);
+        LOAD_ERRORS.clear();
+        return errors;
+    }
 }
