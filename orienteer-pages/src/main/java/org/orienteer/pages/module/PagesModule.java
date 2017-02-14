@@ -10,6 +10,7 @@ import org.orienteer.pages.PagesCompoundRequestMapper;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.pages.web.TestPage;
 
 /**
  * {@link AbstractOrienteerModule} to provide extentions for Orienteer Pages
@@ -74,6 +75,7 @@ public class PagesModule extends AbstractOrienteerModule {
 		app.registerWidgets("org.orienteer.pages.component.widget");
 		app.mount(pagesCompoundRequestMapper = new PagesCompoundRequestMapper());
 		app.getOrientDbSettings().getORecordHooks().add(PagesHook.class);
+		app.mountPage("/testpage", TestPage.class);
 	}
 	
 	@Override

@@ -48,36 +48,50 @@ public class MavenResolver {
     private Map<String, String> orienteerVersions;
 
     private int idCounter = 0;
-
     /**
      * @param file - path to Orienteer module pom.xml or jar archive.
+     * search of dependencies is in maven repositories.
      * @return module metadata for write in metadata.xml
      */
     public Optional<OModuleMetadata> getModuleMetadata(Path file) {
+        return getModuleMetadata(file, false);
+    }
+
+    /**
+     * @param file - path to Orienteer module pom.xml or jar archive.
+     * @param depsFromPomXml choose mode of search dependencies
+     *                       true - get dependencies from pom.xml in jar archive
+     *                       false - get dependencies from maven repositories.
+     * @return module metadata for write in metadata.xml
+     */
+    public Optional<OModuleMetadata> getModuleMetadata(Path file, boolean depsFromPomXml) {
         Optional<Path> pomXml = getPomXml(file);
         if (!pomXml.isPresent()) return Optional.absent();
         if (!file.toString().endsWith(".jar")) {
             file = null;
         }
+
         Optional<Artifact> dependencyOptional = PomXmlUtils.readGroupArtifactVersionInPomXml(pomXml.get());
         if (!dependencyOptional.isPresent()) return Optional.absent();
         Artifact dependency = dependencyOptional.get();
+
         return getModuleMetadata(
                 dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
-                file);
+                file, depsFromPomXml);
     }
 
     public Optional<OModuleMetadata> getModuleMetadata(String group, String artifact, String version,
-                                                       Path pathToMainArtifact) {
-        return getModuleMetadata(String.format("%s:%s:%s", group, artifact, version), pathToMainArtifact);
+                                                       Path pathToMainArtifact, boolean depsFromPomXml) {
+        return getModuleMetadata(String.format("%s:%s:%s", group, artifact, version), pathToMainArtifact, depsFromPomXml);
     }
 
-    public Optional<OModuleMetadata> getModuleMetadata(String groupArtifactVersion, Path pathToMainArtifact) {
-        Optional<Artifact> mainArtifact = pathToMainArtifact != null ?
-                getArtifact(groupArtifactVersion, pathToMainArtifact) : resolveArtifact(groupArtifactVersion);
+    public Optional<OModuleMetadata> getModuleMetadata(String groupArtifactVersion, Path pathToJar,
+                                                       boolean depsFromPomXml) {
+        Optional<Artifact> mainArtifact = pathToJar != null ?
+                getArtifact(groupArtifactVersion, pathToJar) : resolveArtifact(groupArtifactVersion);
         if (!mainArtifact.isPresent()) return Optional.absent();
-        List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion);
-        Optional<String> initializer = getInitializer(pathToMainArtifact);
+        List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion, pathToJar, depsFromPomXml);
+        Optional<String> initializer = getInitializer(pathToJar);
         if (!initializer.isPresent()) return Optional.absent();
 
         OModuleMetadata moduleMetadata = new OModuleMetadata();
@@ -101,11 +115,15 @@ public class MavenResolver {
         return JarUtils.searchOrienteerInitModule(pathToJarFile);
     }
 
-    public List<Artifact> resolveDependenciesInArtifacts(String groupArtifactVersion) {
+    public List<Artifact> resolveDependenciesInArtifacts(String groupArtifactVersion,
+                                                         Path pathToJar, boolean depsFromJar) {
         List<ArtifactResult> results;
         List<Artifact> artifacts = null;
         try {
-            results = resolveDependencies(groupArtifactVersion);
+            if (depsFromJar) {
+                Optional<Path> pomFromJar = JarUtils.getPomFromJar(pathToJar);
+                results = resolveDependenciesFromPomXml(pomFromJar.get());
+            } else results = resolveDependencies(groupArtifactVersion);
             artifacts = getArtifactsFromArtifactResult(results);
         } catch (ArtifactDescriptorException | DependencyCollectionException | DependencyResolutionException e) {
             e.printStackTrace();
@@ -128,7 +146,7 @@ public class MavenResolver {
         Optional<Artifact> dependency = PomXmlUtils.readGroupArtifactVersionInPomXml(pomXml);
         if (dependency.isPresent()) {
             try {
-                artifactResults = resolve(dependency.get());
+               artifactResults = resolve(dependency.get());
             } catch (ODependenciesNotResolvedException e) {
                 LOG.info("Cannot resolved dependencies by automatic downloading their from maven repositories");
                 if (LOG.isDebugEnabled()) e.printStackTrace();
