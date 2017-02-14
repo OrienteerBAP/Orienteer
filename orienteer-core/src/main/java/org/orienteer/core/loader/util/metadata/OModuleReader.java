@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
@@ -56,6 +57,8 @@ class OModuleReader {
             try {
                 xmlReader = getReader();
                 return new OModuleReader(this);
+            } catch (NoSuchFileException ex) {
+                LOG.warn("Cannot open file. File does not exists! File: " + pathToMetadataXml.toAbsolutePath());
             } catch (XMLStreamException | IOException e) {
                 LOG.error("Cannot open file to read: " + pathToMetadataXml);
                 if (LOG.isDebugEnabled()) e.printStackTrace();
