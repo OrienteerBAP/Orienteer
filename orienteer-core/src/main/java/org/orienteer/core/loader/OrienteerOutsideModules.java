@@ -16,7 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +74,7 @@ public abstract class OrienteerOutsideModules {
 
     private static void reload() {
         OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(5);
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
         executor.schedule(new Reload(orienteerFilter), 1, TimeUnit.SECONDS);
     }
 
@@ -80,6 +83,8 @@ public abstract class OrienteerOutsideModules {
         List<Path> jars = readModulesInFolder(modulesFolder);
 
         if (modules.isEmpty()) {
+            LOADED_MODULES.clear();
+            OLoaderStorage.clear();
             List<OModuleMetadata> newModules = getModulesMetadata(jars);
             MetadataUtil.createMetadata(newModules);
             return newModules;
