@@ -102,7 +102,7 @@ public abstract class JarUtils {
         File file = folder.toFile();
         File[] list = file.listFiles(filter);
         for (File f : list) {
-            jars.add(f.toPath());
+            jars.add(f.toPath().toAbsolutePath());
         }
         return jars;
     }
