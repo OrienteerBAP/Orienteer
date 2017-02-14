@@ -169,6 +169,18 @@ public abstract class MetadataUtil {
         }
     }
 
+    public static void deleteMetadata(List<OModuleMetadata> modules) {
+        OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(metadataPath);
+        try {
+            builder.setDelete(modules)
+                    .build()
+                    .write();
+        } catch (IOException | XMLStreamException e) {
+            LOG.error("Cannot write to metadata.xml");
+            if(LOG.isDebugEnabled()) e.printStackTrace();
+        }
+    }
+
     public static void deleteMetadata(OModuleMetadata moduleMetadata) {
         OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(metadataPath);
         List<OModuleMetadata> modulesToDelete = Lists.newArrayList();
