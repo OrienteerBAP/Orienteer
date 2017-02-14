@@ -144,17 +144,10 @@ public abstract class AetherUtils {
 
     private static Set<Artifact> differenceWithCoreDependencies(Set<Artifact> dependencies) {
         Set<Artifact> artifacts = Sets.newHashSet();
-        for (Artifact d: dependencies) {
-            for (Artifact core : coreDependencies) {
-                if (d.getGroupId().equals(core.getGroupId())
-                        && d.getArtifactId().equals(core.getArtifactId())
-                        && d.getVersion().equals(core.getVersion())) {
-                    continue;
-                } else {
-                    artifacts.add(d);
-                    break;
-                }
-            }
+        for (Artifact d : dependencies) {
+           if (!containsInCoreDependencies(d)) {
+               artifacts.add(d);
+           }
         }
         return artifacts;
     }

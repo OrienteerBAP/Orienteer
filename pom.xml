@@ -92,7 +92,6 @@
 		<module>orienteer-logger-server</module>
 		<module>orienteer-bpm</module>
 		<module>orienteer-camel</module>
-        <module>orienteer-module-loader</module>
     </modules>
 	<dependencyManagement>
 	    <dependencies>
