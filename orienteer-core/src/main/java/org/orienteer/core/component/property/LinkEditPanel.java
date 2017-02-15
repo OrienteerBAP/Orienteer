@@ -18,6 +18,7 @@ import org.orienteer.core.model.ODocumentNameModel;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -25,14 +26,14 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * {@link FormComponentPanel} to edit LINK properties
  */
-public class LinkEditPanel extends FormComponentPanel<ODocument> implements IExportable<String>
+public class LinkEditPanel extends FormComponentPanel<OIdentifiable> implements IExportable<String>
 {
 	protected IModel<ODocument> inputDocument;
 	protected ModalWindow modal;
 
 	public LinkEditPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
 	{
-		super(id, new DynamicPropertyValueModel<ODocument>(documentModel, propertyModel));
+		super(id, new DynamicPropertyValueModel<OIdentifiable>(documentModel, propertyModel));
 		setOutputMarkupPlaceholderTag(true);
 		setRenderBodyOnly(false);
 		inputDocument = new ODocumentModel(getModelObject());
