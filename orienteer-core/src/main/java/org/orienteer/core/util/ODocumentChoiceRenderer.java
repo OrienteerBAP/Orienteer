@@ -37,7 +37,7 @@ public class ODocumentChoiceRenderer implements IChoiceRenderer<ODocument>
 
 	@Override
 	public String getIdValue(ODocument object, int index) {
-		return object.getIdentity().toString();
+		return object!=null?object.getIdentity().toString():null;
 	}
 
 	@Override
