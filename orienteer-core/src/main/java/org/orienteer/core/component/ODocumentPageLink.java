@@ -55,7 +55,7 @@ public class ODocumentPageLink extends BookmarkablePageLink<ODocument>
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		setVisible(getModelObject()!=null);
+		setVisible(getModelObject()!=null && getModelObject() instanceof ODocument);
 	}
 
 	public ODocumentPageLink setDocumentNameAsBody(boolean docNameAsBody)
