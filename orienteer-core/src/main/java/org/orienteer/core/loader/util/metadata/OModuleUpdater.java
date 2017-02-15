@@ -118,6 +118,7 @@ class OModuleUpdater {
     }
 
     public void write() throws IOException, XMLStreamException {
+        if (xmlWriter == null) return;
         if (xmlReader == null) {
             createNewMetadata();
         } else if (pathToTempMetadata == null && !delete) {
