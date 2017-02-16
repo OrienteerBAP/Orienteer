@@ -283,7 +283,7 @@ public class OClassIntrospector implements IOClassIntrospector
 					case DATETIME:
 						return OrienteerWebApplication.DATE_TIME_CONVERTER.convertToString((Date)value, locale);
 					case LINK:
-						return getDocumentName((ODocument)value);
+						return value instanceof ODocument?getDocumentName((ODocument)value):null;
 					case EMBEDDEDMAP:
 						Map<String, Object> localizations = (Map<String, Object>)value;
 						Object localized = CommonUtils.localizeByMap(localizations, true, locale.getLanguage(), Locale.getDefault().getLanguage());
