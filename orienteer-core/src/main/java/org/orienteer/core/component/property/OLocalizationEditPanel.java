@@ -29,6 +29,7 @@ public class OLocalizationEditPanel<V> extends EmbeddedMapEditPanel<V> {
         select2.getSettings().setCloseOnSelect(true).setTheme(OClassMetaPanel.BOOTSTRAP_SELECT2_THEME);
         select2.add(new AttributeModifier("style", "width: 100%"));
         select2.setConvertEmptyInputStringToNull(false);
+        select2.setRequired(true);
         return select2;
     }
 }
