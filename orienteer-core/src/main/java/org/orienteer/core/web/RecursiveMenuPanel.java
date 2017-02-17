@@ -75,10 +75,12 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
     
     public List<ODocument> getItems(ODocument doc) {
     	List<ODocument> items = null;
-    	if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_PERSPECTIVE)) {
-    		items = (List<ODocument>)doc.field("menu");
-    	} else if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_ITEM)) {
-    		items = (List<ODocument>)doc.field("subItems");
+    	if(doc!=null) {
+	    	if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_PERSPECTIVE)) {
+	    		items = (List<ODocument>)doc.field("menu");
+	    	} else if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_ITEM)) {
+	    		items = (List<ODocument>)doc.field("subItems");
+	    	}
     	}
     	if(items!=null) items.remove(null); //Remove deleted records
     	return items;
