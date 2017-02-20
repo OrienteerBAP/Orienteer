@@ -128,6 +128,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 		List<IColumn<String, String>> sColumns = new ArrayList<IColumn<String, String>>();
 		sColumns.add(new CheckBoxColumn<String, String, String>(Converter.<String>identity()));
 		sColumns.add(new PropertyColumn<String, String>(new ResourceModel("orule"), ""));
+		sColumns.add(new SecurityRightsColumn(OrientPermission.EXECUTE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.CREATE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.READ));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.UPDATE));
