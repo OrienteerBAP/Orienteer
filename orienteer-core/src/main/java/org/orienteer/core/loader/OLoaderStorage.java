@@ -9,9 +9,10 @@ import org.kevoree.kcl.api.FlexyClassLoaderFactory;
 public abstract class OLoaderStorage {
 
     private static FlexyClassLoader rootLoader;
-
     private static FlexyClassLoader trustyModuleLoader;
     private static FlexyClassLoader sandboxModuleLoader;
+
+    private OLoaderStorage() {}
 
     public static synchronized FlexyClassLoader getRootLoader() {
         return rootLoader;
@@ -28,7 +29,7 @@ public abstract class OLoaderStorage {
     public static synchronized FlexyClassLoader getSandboxModuleLoader(boolean create) {
         if (sandboxModuleLoader == null || create) {
             sandboxModuleLoader = getClassLoader();
-            rootLoader.attachChild(sandboxModuleLoader);
+            getTrustyModuleLoader(false).attachChild(sandboxModuleLoader);
         }
         return sandboxModuleLoader;
     }
@@ -39,23 +40,23 @@ public abstract class OLoaderStorage {
         return rootLoader;
     }
 
+    public static synchronized void clear() {
+        deleteSandboxModuleLoader();
+        deleteTrustyModuleLoader();
+    }
+
     public static synchronized void deleteSandboxModuleLoader() {
         if (sandboxModuleLoader != null) {
-            rootLoader.detachChild(sandboxModuleLoader);
+            trustyModuleLoader.detachChild(sandboxModuleLoader);
             sandboxModuleLoader = null;
         }
     }
 
-    public static synchronized void deleteTrustyModuleLoader() {
+    private static void deleteTrustyModuleLoader() {
         if (trustyModuleLoader != null) {
             rootLoader.detachChild(trustyModuleLoader);
             trustyModuleLoader = null;
         }
-    }
-
-    public static synchronized void clear() {
-        deleteSandboxModuleLoader();
-        deleteTrustyModuleLoader();
     }
 
     private static FlexyClassLoader getClassLoader() {

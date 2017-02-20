@@ -95,8 +95,7 @@ public class MavenResolver {
         if (!initializer.isPresent()) return Optional.absent();
 
         OModuleMetadata moduleMetadata = new OModuleMetadata();
-        moduleMetadata.setTrusted(false)
-                .setLoad(true).setId(idCounter)
+        moduleMetadata.setLoad(true).setId(idCounter)
                 .setInitializerName(initializer.get())
                 .setMainArtifact(mainArtifact.get())
                 .setDependencies(artifacts);

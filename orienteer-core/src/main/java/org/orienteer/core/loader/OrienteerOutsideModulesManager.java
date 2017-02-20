@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,22 +33,20 @@ public class OrienteerOutsideModulesManager {
     private OrienteerWebApplication application;
 
     public synchronized boolean registerModule(OModuleMetadata metadata) {
+        return registerModule(metadata, false);
+    }
+
+    public synchronized boolean registerModule(OModuleMetadata metadata, boolean trustyClassLoader) {
         if (application == null) {
             LOG.error("Application cannot be null");
             return false;
         }
-        FlexyClassLoader classLoader = getClassLoader(metadata,
-                OLoaderStorage.getSandboxModuleLoader(true));
+        FlexyClassLoader classLoader = getClassLoader(metadata, trustyClassLoader);
         boolean loadModule = false;
         try {
             Class<? extends IInitializer> loadClass = (Class<? extends IInitializer>)
                     classLoader.loadClass(metadata.getInitializerName());
             invoke(loadClass, INIT_METHOD);
-            INIT_CLASSES.put(classLoader,  loadClass);
-            OLoaderStorage.deleteSandboxModuleLoader();
-            classLoader = getClassLoader(metadata, OLoaderStorage.getTrustyModuleLoader(false));
-            loadClass = (Class<? extends IInitializer>)
-                    classLoader.loadClass(metadata.getInitializerName());
             loadModule = true;
         } catch (Exception ex) {
             if (LOG.isDebugEnabled()) ex.printStackTrace();
@@ -55,17 +54,15 @@ public class OrienteerOutsideModulesManager {
         return loadModule;
     }
 
-//    public synchronized FlexyClassLoader unregisterModule(FlexyClassLoader classLoader) {
-//        if (INIT_CLASSES.containsKey(classLoader)) {
-//            Class<? extends IInitializer> initClass = INIT_CLASSES.get(classLoader);
-//            boolean isInvoke = invoke(initClass, DESTROY_METHOD);
-//            if (isInvoke) {
-//                INIT_CLASSES.remove(classLoader);
-//                return classLoader;
-//            }
-//        }
-//        return null;
-//    }
+    public synchronized void registerModules(List<OModuleMetadata> modules) {
+        registerModules(modules, false);
+    }
+
+    public synchronized void registerModules(List<OModuleMetadata> modules, boolean trustyClassLoader) {
+        for (OModuleMetadata metadata : modules) {
+            registerModule(metadata, trustyClassLoader);
+        }
+    }
 
     private void invoke(Class<? extends IInitializer> loadClass, String methodName)
             throws InvocationTargetException, IllegalAccessException,
@@ -76,7 +73,9 @@ public class OrienteerOutsideModulesManager {
         method.invoke(initializer, application);
     }
 
-    private FlexyClassLoader getClassLoader(OModuleMetadata metadata, FlexyClassLoader classLoader) {
+    private FlexyClassLoader getClassLoader(OModuleMetadata metadata, boolean trustyClassLoader) {
+        FlexyClassLoader classLoader = trustyClassLoader ? OLoaderStorage.getTrustyModuleLoader(false) :
+                OLoaderStorage.getSandboxModuleLoader(false);
         try {
             classLoader.load(metadata.getMainArtifact().getFile().toURI().toURL());
             for (Artifact dependency : metadata.getDependencies()) {

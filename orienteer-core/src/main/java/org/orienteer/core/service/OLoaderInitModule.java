@@ -48,6 +48,7 @@ public class OLoaderInitModule extends AbstractModule {
     private static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
     private static final String DEFAULT                      = "default";
     private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
+    private static final String DEPENDENCIES_FROM_POM_XML    = "orienteer.loader.dependencies.pomXml";
     private static final String METADATA_FILE                = "metadata.xml";
     private static final String METADATA_TEMP_FILE           = "metadata-temp.xml";
 
@@ -81,6 +82,14 @@ public class OLoaderInitModule extends AbstractModule {
                     return Paths.get(defaultModulesFolder);
                 String folder = properties.getProperty(MODULES_FOLDER);
                 return folder == null ? Paths.get(defaultModulesFolder) : Paths.get(folder);
+            }
+        });
+        bind(Boolean.class).annotatedWith(Names.named("dependencies-from-pom-xml")).toProvider(new Provider<Boolean>() {
+            @Override
+            public Boolean get() {
+                if (properties == null)
+                    return Boolean.FALSE;
+                return Boolean.valueOf(properties.getProperty(DEPENDENCIES_FROM_POM_XML));
             }
         });
         bind(Path.class).annotatedWith(Names.named("metadata-path")).toProvider(new Provider<Path>() {

@@ -13,6 +13,6 @@ public class OModuleManagerInitModule extends AbstractModule {
     protected void configure() {
         install(new OLoaderInitModule());
         bind(OrienteerOutsideModulesManager.class).in(Singleton.class);
-        requestStaticInjection(OrienteerOutsideModules.class);
+        bind(OrienteerOutsideModules.class).in(Singleton.class);
     }
 }

@@ -13,6 +13,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Vitaliy Gonchar
@@ -26,6 +28,12 @@ public class OrienteerFilter implements Filter {
     private static WicketFilter filter;
     private static Injector injector;
     private static boolean reload;
+
+    public static void reloadOrienteer(long delay) {
+        OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
+        executor.schedule(new Reload(orienteerFilter), delay, TimeUnit.SECONDS);
+    }
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
