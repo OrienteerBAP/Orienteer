@@ -284,16 +284,4 @@ public abstract class PomXmlUtils {
         return !artifactVersion.startsWith("$") ? "${" + artifactVersion + "}" : artifactVersion;
     }
 
-//    public static void main(String[] args) throws Exception {
-//        Path pomXml = Paths.get("pom.xml");
-//        LOG.info("pom path: " + pomXml.toAbsolutePath());
-//        Optional<Dependency> dependencyOptional = readGroupArtifactVersionInPomXml(pomXml);
-//        LOG.info("depndency present: " + dependencyOptional.isPresent());
-//        LOG.info("dependency: " + dependencyOptional.orNull());
-//
-//        Map<String, String> artifactVersions = getVersionsInProperties(Files.newInputStream(pomXml));
-//        for (String key : artifactVersions.keySet()) {
-//            LOG.info(key + " " + artifactVersions.get(key));
-//        }
-//    }
 }

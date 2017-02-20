@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +24,6 @@ public abstract class MetadataUtil {
     static final String MODULE          = "module";
     static final String ID              = "id";
     static final String LOAD            = "load";
-    static final String TRUSTED         = "trusted";
     static final String INITIALIZER     = "initializer";
     static final String MAVEN           = "maven";
     static final String GROUP_ID        = "groupId";
@@ -48,6 +49,7 @@ public abstract class MetadataUtil {
     static final String METADATA_TEMP = "metadata-temp.xml";
 
     private static final Logger LOG = LoggerFactory.getLogger(MetadataUtil.class);
+    private static FileTime lastModified;
 
     @Inject @Named("outside-modules")
     private static Path modulesFolder;
@@ -62,6 +64,7 @@ public abstract class MetadataUtil {
         try {
             builder.setCreateNewMetadata(modules)
                     .build().write();
+            updateModifiedTime();
         } catch (IOException | XMLStreamException e) {
             LOG.error("Cannot write to metadata.xml");
             if(LOG.isDebugEnabled()) e.printStackTrace();
@@ -81,8 +84,21 @@ public abstract class MetadataUtil {
     }
 
     public static Map<Path, OModuleMetadata> readModulesForLoadAsMap() {
+        return readModulesAsMap(false, true);
+    }
+
+    public static Map<Path, OModuleMetadata> readModulesAsMap() {
+        return readModulesAsMap(true, false);
+    }
+
+    private static Map<Path, OModuleMetadata> readModulesAsMap(boolean all, boolean load) {
+        if (!Files.exists(metadataPath)) return Maps.newHashMap();
+
         OModuleReader.OModuleReaderBuilder builder = new OModuleReader.OModuleReaderBuilder(metadataPath);
-        OModuleReader reader = builder.setLoad(true).build();
+        OModuleReader reader = builder
+                .setAllModules(all)
+                .setLoad(load)
+                .build();
         List<OModuleMetadata> modules = reader != null ? reader.read() : Lists.<OModuleMetadata>newArrayList();
         Map<Path, OModuleMetadata> result = Maps.newHashMap();
         for (OModuleMetadata module : modules) {
@@ -138,6 +154,7 @@ public abstract class MetadataUtil {
         try {
             builder.setOverwriteExistsModulesInMetadata(modules)
                     .build().write();
+            updateModifiedTime();
         } catch (IOException | XMLStreamException e) {
             LOG.error("Cannot write to metadata.xml");
             if(LOG.isDebugEnabled()) e.printStackTrace();
@@ -151,6 +168,7 @@ public abstract class MetadataUtil {
             builder.setOverwriteExistsModulesInMetadata(modules)
                     .build()
                     .write();
+            updateModifiedTime();
         } catch (IOException | XMLStreamException e) {
             LOG.error("Cannot write to metadata.xml");
             if(LOG.isDebugEnabled()) e.printStackTrace();
@@ -163,25 +181,36 @@ public abstract class MetadataUtil {
             builder.setAddModulesToExistsMetadata(modules)
                     .build()
                     .write();
+            updateModifiedTime();
         } catch (IOException | XMLStreamException e) {
             LOG.error("Cannot write to metadata.xml");
             if(LOG.isDebugEnabled()) e.printStackTrace();
         }
     }
 
-    public static void deleteMetadata(List<OModuleMetadata> modules) {
+    public static void deleteMetadata() {
+        try {
+            Files.deleteIfExists(metadataPath);
+        } catch (IOException e) {
+            LOG.warn("File metadata.xml does not exists.");
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+    }
+
+    public static void deleteModulesFromMetadata(List<OModuleMetadata> modules) {
         OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(metadataPath);
         try {
             builder.setDelete(modules)
                     .build()
                     .write();
+            updateModifiedTime();
         } catch (IOException | XMLStreamException e) {
             LOG.error("Cannot write to metadata.xml");
             if(LOG.isDebugEnabled()) e.printStackTrace();
         }
     }
 
-    public static void deleteMetadata(OModuleMetadata moduleMetadata) {
+    public static void deleteModuleFromMetadata(OModuleMetadata moduleMetadata) {
         OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(metadataPath);
         List<OModuleMetadata> modulesToDelete = Lists.newArrayList();
         modulesToDelete.add(moduleMetadata);
@@ -189,9 +218,29 @@ public abstract class MetadataUtil {
             builder.setDelete(modulesToDelete)
                     .build()
                     .write();
+            updateModifiedTime();
         } catch (IOException | XMLStreamException e) {
             LOG.error("Cannot write to metadata.xml");
             if(LOG.isDebugEnabled()) e.printStackTrace();
         }
+    }
+
+    public static boolean isMetadataModify() {
+        boolean isModify = false;
+        try {
+            FileTime modifiedTime = Files.getLastModifiedTime(metadataPath);
+            if (lastModified == null || !lastModified.equals(modifiedTime)) {
+                isModify = true;
+                lastModified = modifiedTime;
+            }
+        } catch (IOException e) {
+            LOG.warn("File metadata.xml does not exists.");
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        return isModify;
+    }
+
+    private static void updateModifiedTime() throws IOException {
+        lastModified = Files.getLastModifiedTime(metadataPath);
     }
 }

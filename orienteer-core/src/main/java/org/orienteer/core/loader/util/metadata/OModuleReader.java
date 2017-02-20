@@ -28,7 +28,6 @@ import static org.orienteer.core.loader.util.metadata.MetadataUtil.*;
 class OModuleReader {
     private final Path pathToMetadataXml;
     private final XMLEventReader xmlReader;
-    private final boolean trusted;
     private final boolean load;
     private final boolean allModules;
 
@@ -37,7 +36,6 @@ class OModuleReader {
     private OModuleReader(OModuleReaderBuilder builder) {
         this.pathToMetadataXml = builder.pathToMetadataXml;
         this.xmlReader = builder.xmlReader;
-        this.trusted = builder.trusted;
         this.load = builder.load;
         this.allModules = builder.allModules;
     }
@@ -45,7 +43,6 @@ class OModuleReader {
     public static class OModuleReaderBuilder {
         private final Path pathToMetadataXml;
         private XMLEventReader xmlReader = null;
-        private boolean trusted          = true;
         private boolean load             = true;
         private boolean allModules       = false;
 
@@ -64,11 +61,6 @@ class OModuleReader {
                 if (LOG.isDebugEnabled()) e.printStackTrace();
             }
             return null;
-        }
-
-        public OModuleReaderBuilder setTrusted(boolean trusted) {
-            this.trusted = trusted;
-            return this;
         }
 
         public OModuleReaderBuilder setLoad(boolean load) {
@@ -95,23 +87,9 @@ class OModuleReader {
         try {
             if (allModules) {
                 metadata = readAllModules();
-            } else metadata = readLoadedModules(load);
-//            if (allModules && trusted) {
-//                metadata = readTrustedModules();
-//            } else if (allModules && load) {
-//                metadata = readLoadedModules();
-//            } else if (allModules) {
-//                metadata = readAllModules();
-//            }
-//            else if (load && trusted) {
-//
-//            } else if (load && !trusted) {
-//
-//            } else if (!load && trusted) {
-//
-//            } else if (!load && !trusted) {
-//
-//            }
+            } else if (load) {
+                metadata = readLoadedModules(load);
+            }
         } catch (XMLStreamException ex) {
             LOG.error("Cannot read file: " + pathToMetadataXml.toAbsolutePath());
             if (LOG.isDebugEnabled()) ex.printStackTrace();
@@ -133,17 +111,6 @@ class OModuleReader {
         return metadata;
     }
 
-    private List<OModuleMetadata> readTrustedModules() throws XMLStreamException {
-        List<OModuleMetadata> metadata = readAllModules();
-        Iterator<OModuleMetadata> iterator = metadata.iterator();
-        while (iterator.hasNext()) {
-            OModuleMetadata module = iterator.next();
-            if (!module.isTrusted()) {
-                iterator.remove();
-            }
-        }
-        return metadata;
-    }
 
     private List<OModuleMetadata> readLoadedModules(boolean load) throws XMLStreamException {
         List<OModuleMetadata> metadata = readAllModules();
@@ -208,10 +175,6 @@ class OModuleReader {
                         break;
                     case INITIALIZER:
                         moduleMetadata.setInitializerName(xmlReader.getElementText());
-                        break;
-                    case TRUSTED:
-                        String trusted = xmlReader.getElementText();
-                        moduleMetadata.setTrusted(Boolean.parseBoolean(trusted));
                         break;
                     case LOAD:
                         String load = xmlReader.getElementText();

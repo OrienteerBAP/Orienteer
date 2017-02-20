@@ -11,7 +11,6 @@ public class OModuleMetadata {
     private String initializerName;
     private Artifact mainArtifact;
     private List<Artifact> dependencies;
-    private boolean trusted;
     private boolean load;
     private int id;
 
@@ -27,11 +26,6 @@ public class OModuleMetadata {
 
     public OModuleMetadata setDependencies(List<Artifact> dependencies) {
         this.dependencies = dependencies;
-        return this;
-    }
-
-    public OModuleMetadata setTrusted(boolean trusted) {
-        this.trusted = trusted;
         return this;
     }
 
@@ -57,10 +51,6 @@ public class OModuleMetadata {
         return dependencies;
     }
 
-    public boolean isTrusted() {
-        return trusted;
-    }
-
     public boolean isLoad() {
         return load;
     }
@@ -74,15 +64,14 @@ public class OModuleMetadata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OModuleMetadata that = (OModuleMetadata) o;
+        OModuleMetadata metadata = (OModuleMetadata) o;
 
-        if (trusted != that.trusted) return false;
-        if (load != that.load) return false;
-        if (id != that.id) return false;
-        if (initializerName != null ? !initializerName.equals(that.initializerName) : that.initializerName != null)
+        if (id != metadata.id) return false;
+        if (initializerName != null ? !initializerName.equals(metadata.initializerName) : metadata.initializerName != null)
             return false;
-        if (mainArtifact != null ? !mainArtifact.equals(that.mainArtifact) : that.mainArtifact != null) return false;
-        return dependencies != null ? dependencies.equals(that.dependencies) : that.dependencies == null;
+        if (mainArtifact != null ? !mainArtifact.equals(metadata.mainArtifact) : metadata.mainArtifact != null)
+            return false;
+        return dependencies != null ? dependencies.equals(metadata.dependencies) : metadata.dependencies == null;
     }
 
     @Override
@@ -90,8 +79,6 @@ public class OModuleMetadata {
         int result = initializerName != null ? initializerName.hashCode() : 0;
         result = 31 * result + (mainArtifact != null ? mainArtifact.hashCode() : 0);
         result = 31 * result + (dependencies != null ? dependencies.hashCode() : 0);
-        result = 31 * result + (trusted ? 1 : 0);
-        result = 31 * result + (load ? 1 : 0);
         result = 31 * result + id;
         return result;
     }
@@ -102,7 +89,6 @@ public class OModuleMetadata {
                 "initializerName='" + initializerName + '\'' +
                 ", mainArtifact=" + mainArtifact +
                 ", dependencies=" + dependencies +
-                ", trusted=" + trusted +
                 ", load=" + load +
                 ", id=" + id +
                 '}';

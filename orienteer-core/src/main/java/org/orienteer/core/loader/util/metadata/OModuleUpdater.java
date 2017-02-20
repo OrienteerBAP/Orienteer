@@ -257,9 +257,6 @@ class OModuleUpdater {
             case INITIALIZER:
                 metadataValue = moduleMetadata.getInitializerName();
                 break;
-            case TRUSTED:
-                metadataValue = Boolean.toString(moduleMetadata.isTrusted());
-                break;
             case LOAD:
                 metadataValue = Boolean.toString(moduleMetadata.isLoad());
                 break;
@@ -300,7 +297,6 @@ class OModuleUpdater {
         startElement(MODULE, TWO_SPACES);
         write(ID, Integer.toString(module.getId()), FOUR_SPACES);
         write(INITIALIZER, module.getInitializerName(), FOUR_SPACES);
-        write(TRUSTED, Boolean.toString(module.isTrusted()), FOUR_SPACES);
         write(LOAD, Boolean.toString(module.isLoad()), FOUR_SPACES);
 
         mavenDescription(module.getMainArtifact(), module.getDependencies());
