@@ -16,5 +16,5 @@ WORKDIR /orienteer/
 RUN rm -rf /tmp/src/
 
 RUN ln -s orienteer.war active.war
-VOLUME ["/orienteer/Orienteer/"]
+VOLUME ["/orienteer/OrienteerFuture/"]
 CMD ["java", "-jar", "jetty-runner.jar", "active.war"]
