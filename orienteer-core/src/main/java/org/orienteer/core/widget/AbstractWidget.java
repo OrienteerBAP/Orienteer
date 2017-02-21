@@ -41,6 +41,8 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private boolean hidden=false;
 	
+	private int loadedWidgetVersion=-1;
+	
 	private RepeatingView commands;
 	
 	private IModel<ODocument> widgetDocumentModel;
@@ -163,6 +165,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		if(doc==null) return;
 		hidden = MoreObjects.firstNonNull((Boolean)doc.field(OPROPERTY_HIDDEN), false);
 		getDashboardPanel().getDashboardSupport().loadSettings(this, doc);
+		loadedWidgetVersion = doc.getVersion();
 	}
 	
 	public void saveSettings() {
@@ -179,6 +182,16 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		add(new Label("title", getTitleModel()));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
+	}
+	
+	@Override
+	protected void onBeforeRender() {
+		// Reload settings of widget if they were changed
+		ODocument doc = getWidgetDocument();
+		if(doc!=null && doc.getVersion()!=loadedWidgetVersion) {
+			loadSettings();
+		}
+		super.onBeforeRender();
 	}
 	
 	@Override
