@@ -1,12 +1,14 @@
 package org.orienteer.core.component.property;
 
-import java.util.List;
-
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -14,14 +16,10 @@ import org.orienteer.core.component.IExportable;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.command.modal.SelectDialogPanel;
 import org.orienteer.core.model.ODocumentNameModel;
-
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
 
 /**
  * {@link FormComponentPanel} to edit LINK properties
@@ -36,7 +34,7 @@ public class LinkEditPanel extends FormComponentPanel<OIdentifiable> implements 
 		super(id, new DynamicPropertyValueModel<OIdentifiable>(documentModel, propertyModel));
 		setOutputMarkupPlaceholderTag(true);
 		setRenderBodyOnly(false);
-		inputDocument = new ODocumentModel(getModelObject());
+		inputDocument = new ODocumentModel((ORID) getModelObject());
 		add(new ODocumentPageLink("link", inputDocument).setDocumentNameAsBody(true));
 		
 		

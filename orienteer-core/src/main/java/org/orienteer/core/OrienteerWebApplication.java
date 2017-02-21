@@ -1,24 +1,22 @@
 package org.orienteer.core;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.Component;
-import org.apache.wicket.IApplicationListener;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.ThreadContext;
-import org.apache.wicket.WicketRuntimeException;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
+import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+import org.apache.wicket.*;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
+import org.apache.wicket.core.util.resource.locator.IResourceStreamLocator;
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
@@ -35,8 +33,10 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
+import org.orienteer.core.loader.OrienteerOutsideModules;
 import org.orienteer.core.module.*;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.service.OrienteerResourceStreamLocator;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
@@ -45,27 +45,12 @@ import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.name.Named;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.metadata.security.OUser;
-
-import de.agilecoders.wicket.webjars.WicketWebjars;
-import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
-import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
-import ru.ydn.wicket.wicketorientdb.OrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.*;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import java.io.IOException;
+import java.util.*;
+
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -99,7 +84,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
 
-	
+	@Inject
+	private OrienteerOutsideModules outsideModules;
+
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
 		setConfigurationType(production?RuntimeConfigurationType.DEPLOYMENT:RuntimeConfigurationType.DEVELOPMENT);
@@ -141,6 +128,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void init()
 	{
 		super.init();
+		initResourceStreamLocator();
 		if(embedded)
 		{
 			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
@@ -155,9 +143,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 						db = db.create();
 						onDbCreated(db, settings);
 					}
-					if(db.isClosed()) db.open(settings.getAdminUserName(), settings.getAdminPassword());
+					if(db.isClosed())
+						db.open(settings.getAdminUserName(), settings.getAdminPassword());
 					db.getMetadata().load();
 					db.close();
+					outsideModules.init();
 				}
 				
 				private void onDbCreated(ODatabaseDocumentTx db, IOrientDbSettings settings) {
@@ -229,6 +219,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 	}
 
+
 	@Override
 	protected Class<? extends WebPage> getSignInPageClass() {
 		return LoginPage.class;
@@ -285,6 +276,15 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registeredModules.put(module.getName(), getServiceInstance(moduleClass));
 		registeredModulesSorted = false;
 		return module;
+	}
+
+	public synchronized <M extends IOrienteerModule> M unregisterModule(Class<M> moduleClass) {
+		M module = getServiceInstance(moduleClass);
+		if (registeredModules.containsKey(module.getName())) {
+			registeredModules.remove(module.getName());
+			return module;
+		} else LOG.info("Orienteer application does not already registered module: " + module.getName());
+		return null;
 	}
 	
 	public IOrienteerModule getModuleByName(String name)
@@ -360,7 +360,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		IWidgetTypesRegistry registry = getServiceInstance(IWidgetTypesRegistry.class);
 		registry.unregister(packageName);
 	}
-	
+
+	private void initResourceStreamLocator() {
+		IResourceStreamLocator resourceStreamLocator = getResourceSettings().getResourceStreamLocator();
+		resourceStreamLocator = new OrienteerResourceStreamLocator(resourceStreamLocator);
+		getResourceSettings().setResourceStreamLocator(resourceStreamLocator);
+	}
+
 	@Override
 	public void restartResponseAtSignInPage() {
 		//This is required because home page is dynamic and depends on assigned perspective.

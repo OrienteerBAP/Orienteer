@@ -92,7 +92,7 @@
 		<module>orienteer-logger-server</module>
 		<module>orienteer-bpm</module>
 		<module>orienteer-camel</module>
-	</modules>
+    </modules>
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->

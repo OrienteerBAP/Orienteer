@@ -10,61 +10,75 @@
 	<artifactId>orienteer-core</artifactId>
 	<packaging>jar</packaging>
 	<name>orienteer-core</name>
+
 	<dependencies>
-	    <dependency>
-		    <groupId>ru.ydn.wicket.wicket-orientdb</groupId>
-		    <artifactId>wicket-orientdb</artifactId>
-	    </dependency>
-	    <dependency>
+		<dependency>
 			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>
-		    <artifactId>wicket-orientdb</artifactId>
-			<type>test-jar</type>
-      		<scope>test</scope>
+			<artifactId>wicket-orientdb</artifactId>
 		</dependency>
-	    <dependency>
-		    <groupId>org.apache.wicket</groupId>
-		    <artifactId>wicket-core</artifactId>
-	    </dependency>
-	    <!--  WICKET DEPENDENCIES -->
-	    <dependency>
-		<groupId>org.apache.wicket</groupId>
-		<artifactId>wicket-datetime</artifactId>
-	    </dependency>
-	    <dependency>
-		    <groupId>org.apache.wicket</groupId>
-		    <artifactId>wicket-extensions</artifactId>
-	    </dependency>
-	    <dependency>
-		    <groupId>org.apache.wicket</groupId>
-		    <artifactId>wicket-guice</artifactId>
-	    </dependency>
-	    <dependency>
-	            <groupId>org.wicketstuff</groupId>
-	            <artifactId>wicketstuff-select2</artifactId>
-	    </dependency>
-	    <dependency>
-		    <groupId>com.orientechnologies</groupId>
-		    <artifactId>orientdb-core</artifactId>
-		    <type>bundle</type>
-	    </dependency>
-	    <dependency>
-		    <groupId>com.orientechnologies</groupId>
-		    <artifactId>orientdb-server</artifactId>
-		    <type>bundle</type>
-	    </dependency>
-	    <dependency>
-		    <groupId>com.orientechnologies</groupId>
-		    <artifactId>orientdb-client</artifactId>
-		    <type>bundle</type>
-	    </dependency>
-	    <dependency>
-		    <groupId>com.google.inject</groupId>
-		    <artifactId>guice</artifactId>
-	    </dependency>
-	    <dependency>
-		    <groupId>com.google.inject.extensions</groupId>
-		    <artifactId>guice-servlet</artifactId>
-	    </dependency>
+		<dependency>
+			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>
+			<artifactId>wicket-orientdb</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-core</artifactId>
+			<version>${orientdb.version}</version>
+			<type>bundle</type>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.orientechnologies/orientdb-server -->
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-server</artifactId>
+			<version>2.1.19</version>
+		</dependency>
+
+		<!--  WICKET DEPENDENCIES -->
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-datetime</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-extensions</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.wicket</groupId>
+			<artifactId>wicket-guice</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.wicketstuff</groupId>
+			<artifactId>wicketstuff-select2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-core</artifactId>
+			<type>bundle</type>
+		</dependency>
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-server</artifactId>
+			<type>bundle</type>
+		</dependency>
+		<dependency>
+			<groupId>com.orientechnologies</groupId>
+			<artifactId>orientdb-client</artifactId>
+			<type>bundle</type>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject</groupId>
+			<artifactId>guice</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-servlet</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
@@ -72,62 +86,118 @@
 		</dependency>
 
 		<!-- WEB JARS -->
-	    <dependency>
-		    <groupId>de.agilecoders.wicket.webjars</groupId>
-		    <artifactId>wicket-webjars</artifactId>
-	    </dependency>
-	    <dependency>
+		<dependency>
+			<groupId>de.agilecoders.wicket.webjars</groupId>
+			<artifactId>wicket-webjars</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
-	    </dependency>
-	    <dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
-	    </dependency>
-	    <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>gridster.js</artifactId>
-        </dependency>
-        <dependency>
-		    <groupId>org.webjars</groupId>
-		    <artifactId>jquery-ui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>gridster.js</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery-ui</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>metisMenu</artifactId>
 		</dependency>
-	    <!-- LOGGING DEPENDENCIES - LOG4J -->
-	    <dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-	    </dependency>
-	    <dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-	    </dependency>
 
-	    <!--  JUNIT DEPENDENCY FOR TESTING -->
-	    <dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <scope>test</scope>
-	    </dependency>
-	    <dependency>
-		<groupId>javax.servlet</groupId>
-		<artifactId>javax.servlet-api</artifactId>
-	    </dependency>
-        <!-- MARKDOWN DEPENDENCY -->
-        <!--<dependency>
-            <groupId>org.pegdown</groupId>
-            <artifactId>pegdown</artifactId>
-            <version>1.4.2</version>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.1</version>
-        </dependency>-->
+		<!-- CLASS LOADING -->
+		<dependency>
+			<groupId>org.kevoree.kcl</groupId>
+			<artifactId>org.kevoree.kcl</artifactId>
+			<version>5</version>
+		</dependency>
+
+
+		<!-- ECLIPSE AETHER -->
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-aether-provider</artifactId>
+			<version>3.3.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-component-api</artifactId>
+			<version>1.0-alpha-33</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-api</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-connector-basic</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-impl</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-spi</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-file</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-util</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-http</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<version>3.0.24</version>
+		</dependency>
+
+		<!-- LOGGING DEPENDENCIES - LOG4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+
+		<!--  JUNIT DEPENDENCY FOR TESTING -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
 	</dependencies>
+
 	<build>
 		<finalName>orienteer</finalName>
 		<resources>
@@ -164,51 +234,53 @@
 		</testResources>
 		<plugins>
 			<plugin>
-		       <groupId>org.apache.maven.plugins</groupId>
-		       <artifactId>maven-jar-plugin</artifactId>
-		       <version>3.0.0</version>
-		       <configuration>
-		        <archive>
-		          <manifest>
-		            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-		            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-		          </manifest>
-		        </archive>
-		      </configuration>
-		       <executions>
-		         <execution>
-		           <goals>
-		             <goal>test-jar</goal>
-		           </goals>
-		         </execution>
-		       </executions>
-     		</plugin>	
-		    <plugin>
-			    <groupId>org.eclipse.jetty</groupId>
-			    <artifactId>jetty-maven-plugin</artifactId>
-			    <version>${jetty.version}</version>
-			    <configuration>
-			    <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
-				<webApp>
-				    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-				    <resourceBase>src/main/resources</resourceBase>
-				    <contextPath>/</contextPath>
-				</webApp>
-				<connectors>
-					<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-						<port>8080</port>
-						<maxIdleTime>3600000</maxIdleTime>
-					</connector>
-				</connectors>
-			    </configuration>
-			    <dependencies>
-				<dependency>
-					<groupId>org.eclipse.jetty.aggregate</groupId>
-					<artifactId>jetty-all</artifactId>
-					<version>${jetty.version}</version>
-				</dependency>
-			    </dependencies>
-		    </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
+					<webApp>
+						<descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+						<resourceBase>src/main/resources</resourceBase>
+						<contextPath>/</contextPath>
+					</webApp>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>8080</port>
+							<maxIdleTime>3600000</maxIdleTime>
+						</connector>
+					</connectors>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.jetty.aggregate</groupId>
+						<artifactId>jetty-all</artifactId>
+						<version>${jetty.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
+
+
 </project>
