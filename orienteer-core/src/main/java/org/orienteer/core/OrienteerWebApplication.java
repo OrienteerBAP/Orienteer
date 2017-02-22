@@ -33,7 +33,6 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
-import org.orienteer.core.loader.OrienteerOutsideModules;
 import org.orienteer.core.module.*;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.service.OrienteerResourceStreamLocator;
@@ -84,8 +83,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
 
-	@Inject
-	private OrienteerOutsideModules outsideModules;
 
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
@@ -147,7 +144,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 						db.open(settings.getAdminUserName(), settings.getAdminPassword());
 					db.getMetadata().load();
 					db.close();
-					outsideModules.init();
 				}
 				
 				private void onDbCreated(ODatabaseDocumentTx db, IOrientDbSettings settings) {
@@ -163,7 +159,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 						reader.setPassword(settings.getGuestPassword());
 						reader.save();
 					}
-					
 				}
 				
 			});

@@ -104,9 +104,8 @@ public class OrienteerInitModule extends ServletModule {
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 
-		install(loadFromClasspath(new OrienteerFilterInitModule()));
-        install(loadFromClasspath(new OrienteerModule()));
-        install(loadFromClasspath(new OModuleManagerInitModule()));
+		install(loadFromClasspath(new OrienteerFilterInitModule(),
+				new OrienteerModule(), new OrienteerOutsideModule()));
 	}
 	
 	protected void bindOrientDbProperties(Properties properties) {

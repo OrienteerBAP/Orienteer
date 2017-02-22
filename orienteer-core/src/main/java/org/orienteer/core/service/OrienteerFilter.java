@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceFilter;
 import org.apache.wicket.protocol.http.WicketFilter;
-import org.orienteer.core.loader.OLoaderStorage;
+import org.orienteer.core.service.loader.OLoaderStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @author Vitaliy Gonchar
  */
 @Singleton
-public class OrienteerFilter implements Filter {
+public final class OrienteerFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerFilter.class);
 
@@ -28,12 +28,6 @@ public class OrienteerFilter implements Filter {
     private static WicketFilter filter;
     private static Injector injector;
     private static boolean reload;
-
-    public static void reloadOrienteer(long delay) {
-        OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
-        executor.schedule(new Reload(orienteerFilter), delay, TimeUnit.SECONDS);
-    }
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
@@ -84,12 +78,42 @@ public class OrienteerFilter implements Filter {
         reload(filter.getFilterConfig());
     }
 
-    protected static Injector getInjector() {
-//        return  injector != null ? injector : Guice.createInjector(new ReloadOrienteerInitModule());
+    private static Injector getInjector() {
         return Guice.createInjector(new OrienteerInitModule());
     }
 
     public static boolean isReload() {
         return reload;
+    }
+
+    public static void reloadOrienteer(long delay) {
+        OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
+        executor.schedule(new Reload(orienteerFilter), delay, TimeUnit.SECONDS);
+    }
+
+    private static class Reload implements Runnable {
+
+        private final OrienteerFilter orienteerFilter;
+
+        private Reload(OrienteerFilter orienteerFilter) {
+            this.orienteerFilter = orienteerFilter;
+        }
+
+        @Override
+        public void run() {
+            LOG.info("Start reload Orienteer.");
+            reload();
+            LOG.info("End reload Orienteer.");
+        }
+
+        private void reload() {
+            try {
+                orienteerFilter.reload();
+            } catch (ServletException e) {
+                LOG.error("Cannot reload application");
+                if (LOG.isDebugEnabled()) e.printStackTrace();
+            }
+        }
     }
 }

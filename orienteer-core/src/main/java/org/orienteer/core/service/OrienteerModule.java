@@ -114,5 +114,4 @@ public class OrienteerModule extends AbstractModule {
 		return version!=null?version:"";
 	}
 
-	
 }
