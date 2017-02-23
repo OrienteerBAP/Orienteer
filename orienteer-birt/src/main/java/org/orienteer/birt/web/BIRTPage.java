@@ -2,10 +2,16 @@ package org.orienteer.birt.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
+import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
+import org.apache.wicket.markup.html.navigation.paging.PagingNavigator;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.eclipse.birt.report.engine.api.EngineException;
@@ -19,6 +25,7 @@ import org.eclipse.birt.report.engine.api.IRunTask;
 import org.orienteer.birt.Module;
 import org.orienteer.birt.component.BirtHtmlPanel;
 import org.orienteer.birt.component.BirtHtmlResource;
+import org.orienteer.birt.component.BirtPaginatedHtmlPanel;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.web.BasePage;
@@ -132,7 +139,33 @@ import org.orienteer.core.web.BasePage;
 			//ResourceModel
 			//add(new Label("reportText", new BirtHtmlResource().));
 			//add(new ResourceLink("report", new BirtHtmlResource()));
-			add(new BirtHtmlPanel("report"));
+
+			AjaxLazyLoadPanel panel = new AjaxLazyLoadPanel("report")
+			{
+			  @Override
+			  public Component getLazyLoadComponent(String id)
+			  {
+			       return new BirtPaginatedHtmlPanel(id,"remote",new HashMap<String,Object>());
+			  }
+			};
+			add(panel);
+			//final BirtHtmlPanel birtPanel = new BirtHtmlPanel("report","temp/remote.rptdesign");
+			//birtPanel.setOutputMarkupId(true);
+			//add(birtPanel);
+			Label pager = new Label("pages");
+			/*
+			AjaxPagingNavigator pager = new AjaxPagingNavigator("pages", birtPanel) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+			    protected void onAjaxEvent(AjaxRequestTarget target) {
+			        target.add(birtPanel);
+			        target.add(this);
+			    }
+			};
+			pager.setOutputMarkupId(true);
+			*/
+			add(pager);
 			
 		}		
 		@Override
