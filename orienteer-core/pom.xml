@@ -115,9 +115,8 @@
 		<dependency>
 			<groupId>org.kevoree.kcl</groupId>
 			<artifactId>org.kevoree.kcl</artifactId>
-			<version>5</version>
+			<version>23</version>
 		</dependency>
-
 
 		<!-- ECLIPSE AETHER -->
 		<dependency>

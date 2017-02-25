@@ -7,6 +7,7 @@ import org.eclipse.aether.artifact.Artifact;
 import org.kevoree.kcl.api.FlexyClassLoader;
 import org.orienteer.core.service.loader.MavenResolver;
 import org.orienteer.core.service.loader.OLoaderStorage;
+import org.orienteer.core.service.loader.OrienteerLoader;
 import org.orienteer.core.service.loader.util.InitUtils;
 import org.orienteer.core.service.loader.util.JarUtils;
 import org.orienteer.core.service.loader.util.metadata.MetadataUtil;
@@ -16,11 +17,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Vitaliy Gonchar
@@ -46,9 +45,9 @@ public class OrienteerOutsideModule extends AbstractModule {
      */
     private void initOutsideModules() {
         List<OModuleMetadata> modules = getModulesForLoad();
-        List<OModuleMetadata> trustyModules = searchTrustyModules(modules);
-        if (trustyModules.size() > 0) {
-            registerModules(trustyModules, true);
+//        List<OModuleMetadata> trustyModules = searchTrustyModules(modules);
+        if (modules.size() > 0) {
+            registerModules(modules, true);
         }
     }
 
@@ -59,7 +58,6 @@ public class OrienteerOutsideModule extends AbstractModule {
         List<OModuleMetadata> modulesForTurnOff = Lists.newArrayList();
         modulesForTurnOff.addAll(errors);
         turnOffModules(modulesForTurnOff);
-
     }
 
     /**
@@ -213,7 +211,7 @@ public class OrienteerOutsideModule extends AbstractModule {
      * @return true if class Initializer was successful add to classpath
      */
     private boolean registerModule(OModuleMetadata metadata, boolean trustyClassLoader) {
-        FlexyClassLoader classLoader = getClassLoader(metadata, trustyClassLoader);
+        ClassLoader classLoader = getClassLoader(metadata, trustyClassLoader);
         boolean loadModule = false;
         try {
             Class<? extends IInitializer> loadClass = (Class<? extends IInitializer>)
@@ -231,20 +229,18 @@ public class OrienteerOutsideModule extends AbstractModule {
      *                          false - use sandbox classloader
      * @return classloader with dependency resources
      */
-    private FlexyClassLoader getClassLoader(OModuleMetadata metadata, boolean trustyClassLoader) {
+    private ClassLoader getClassLoader(OModuleMetadata metadata, boolean trustyClassLoader) {
         FlexyClassLoader classLoader = trustyClassLoader ? OLoaderStorage.getTrustyModuleLoader(false) :
                 OLoaderStorage.getSandboxModuleLoader(false);
         try {
-            classLoader.load(metadata.getMainArtifact().getFile().toURI().toURL());
+            classLoader.load(metadata.getMainArtifact().getFile());
             for (Artifact dependency : metadata.getDependencies()) {
-                classLoader.load(dependency.getFile().toURI().toURL());
+                classLoader.load(dependency.getFile());
             }
-        } catch (MalformedURLException e) {
-            LOG.error("Cannot create URl from " + metadata.getMainArtifact().getFile());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        } catch (IOException e) {
-            LOG.error("Cannot open file " + metadata.getMainArtifact().getFile());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+        } catch (MalformedURLException ex) {
+            if (LOG.isDebugEnabled()) ex.printStackTrace();
+        } catch (IOException ex) {
+            if (LOG.isDebugEnabled()) ex.printStackTrace();
         }
         return classLoader;
     }
