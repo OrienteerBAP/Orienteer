@@ -1,9 +1,5 @@
 package org.orienteer.core.service.loader;
 
-import org.kevoree.kcl.api.FlexyClassLoader;
-import org.kevoree.kcl.api.FlexyClassLoaderFactory;
-import org.kevoree.kcl.impl.FlexyClassLoaderImpl;
-import org.kevoree.kcl.impl.FlexyClassLoaderWrapper;
 import org.orienteer.core.OrienteerWebApplication;
 
 /**
@@ -11,36 +7,35 @@ import org.orienteer.core.OrienteerWebApplication;
  */
 public abstract class OLoaderStorage {
 
-    private static FlexyClassLoader rootLoader;
-    private static FlexyClassLoader trustyModuleLoader;
-    private static FlexyClassLoader sandboxModuleLoader;
+    private static OrienteerClassLoader rootLoader;
+    private static OrienteerClassLoader trustyModuleLoader;
+    private static OrienteerClassLoader sandboxModuleLoader;
     private static final ClassLoader ORIENTEER_CLASS_LOADER = OrienteerWebApplication.class.getClassLoader();
 
     private OLoaderStorage() {}
 
-    public static synchronized ClassLoader getRootLoader() {
+    public static synchronized OrienteerClassLoader getRootLoader() {
         return rootLoader;
     }
 
-    public static synchronized FlexyClassLoader getTrustyModuleLoader(boolean create) {
+    public static synchronized OrienteerClassLoader getTrustyModuleLoader(boolean create) {
         if (trustyModuleLoader == null || create) {
-            trustyModuleLoader = getClassLoader();
+            trustyModuleLoader = OrienteerClassLoader.get();
             rootLoader.attachChild(trustyModuleLoader);
         }
         return trustyModuleLoader;
     }
 
-    public static synchronized FlexyClassLoader getSandboxModuleLoader(boolean create) {
+    public static synchronized OrienteerClassLoader getSandboxModuleLoader(boolean create) {
         if (sandboxModuleLoader == null || create) {
-            sandboxModuleLoader = getClassLoader();
-            rootLoader.attachChild(sandboxModuleLoader);
+            sandboxModuleLoader = OrienteerClassLoader.get();
+            getTrustyModuleLoader(false).attachChild(sandboxModuleLoader);
         }
         return sandboxModuleLoader;
     }
 
-    public static synchronized FlexyClassLoader createNewRootLoader() {
-        rootLoader = OrienteerLoader.get(ORIENTEER_CLASS_LOADER);
-//        rootLoader = getClassLoader();
+    public static synchronized OrienteerClassLoader createNewRootLoader() {
+        rootLoader = OrienteerClassLoader.get(ORIENTEER_CLASS_LOADER);
         if (sandboxModuleLoader != null) rootLoader.attachChild(sandboxModuleLoader);
         return rootLoader;
     }
@@ -52,20 +47,16 @@ public abstract class OLoaderStorage {
 
     public static synchronized void deleteSandboxModuleLoader() {
         if (sandboxModuleLoader != null) {
+            if (trustyModuleLoader != null) trustyModuleLoader.detachChild(sandboxModuleLoader);
             sandboxModuleLoader = null;
-            rootLoader.detachChild(sandboxModuleLoader);
         }
     }
 
     private static void deleteTrustyModuleLoader() {
         if (trustyModuleLoader != null) {
-            trustyModuleLoader = null;
             rootLoader.detachChild(trustyModuleLoader);
+            trustyModuleLoader = null;
         }
-    }
-
-    private static FlexyClassLoader getClassLoader() {
-        return FlexyClassLoaderFactory.INSTANCE.create();
     }
 
 }

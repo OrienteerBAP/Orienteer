@@ -7,7 +7,7 @@ import org.eclipse.aether.artifact.Artifact;
 import org.kevoree.kcl.api.FlexyClassLoader;
 import org.orienteer.core.service.loader.MavenResolver;
 import org.orienteer.core.service.loader.OLoaderStorage;
-import org.orienteer.core.service.loader.OrienteerLoader;
+import org.orienteer.core.service.loader.OrienteerClassLoader;
 import org.orienteer.core.service.loader.util.InitUtils;
 import org.orienteer.core.service.loader.util.JarUtils;
 import org.orienteer.core.service.loader.util.metadata.MetadataUtil;
@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -45,9 +44,9 @@ public class OrienteerOutsideModule extends AbstractModule {
      */
     private void initOutsideModules() {
         List<OModuleMetadata> modules = getModulesForLoad();
-//        List<OModuleMetadata> trustyModules = searchTrustyModules(modules);
+        List<OModuleMetadata> trustyModules = searchTrustyModules(modules);
         if (modules.size() > 0) {
-            registerModules(modules, true);
+            registerModules(trustyModules, true);
         }
     }
 
@@ -230,7 +229,7 @@ public class OrienteerOutsideModule extends AbstractModule {
      * @return classloader with dependency resources
      */
     private ClassLoader getClassLoader(OModuleMetadata metadata, boolean trustyClassLoader) {
-        FlexyClassLoader classLoader = trustyClassLoader ? OLoaderStorage.getTrustyModuleLoader(false) :
+        OrienteerClassLoader classLoader = trustyClassLoader ? OLoaderStorage.getTrustyModuleLoader(false) :
                 OLoaderStorage.getSandboxModuleLoader(false);
         try {
             classLoader.load(metadata.getMainArtifact().getFile());
