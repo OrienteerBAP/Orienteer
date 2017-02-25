@@ -86,6 +86,10 @@ public final class OrienteerFilter implements Filter {
         return reload;
     }
 
+    public static void reloadOrienteer() {
+        reloadOrienteer(1);
+    }
+
     public static void reloadOrienteer(long delay) {
         OrienteerFilter orienteerFilter = injector.getInstance(OrienteerFilter.class);
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);

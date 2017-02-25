@@ -36,7 +36,7 @@ public abstract class OLoaderStorage {
 
     public static synchronized OrienteerClassLoader createNewRootLoader() {
         rootLoader = OrienteerClassLoader.get(ORIENTEER_CLASS_LOADER);
-        if (sandboxModuleLoader != null) rootLoader.attachChild(sandboxModuleLoader);
+        if (trustyModuleLoader != null) rootLoader.attachChild(trustyModuleLoader);
         return rootLoader;
     }
 
