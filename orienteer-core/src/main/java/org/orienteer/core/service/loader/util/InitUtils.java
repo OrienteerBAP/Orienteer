@@ -32,7 +32,7 @@ public abstract class InitUtils {
     private static final String DEPENDENCIES_FROM_POM_XML    = "orienteer.loader.dependencies.pomXml";
     private static final String METADATA_FILE                = "metadata.xml";
 
-    private static final String DEFAULT_MODULES_FOLDER         = System.getProperty("user.dir") + "/modules/";
+    private static final String DEFAULT_MODULES_FOLDER         = System.getProperty("user.home") + "/modules/";
     private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = System.getProperty("user.home") + "/.m2/repository/";
     private static final String PARENT_POM                     = "../pom.xml";
     private static final String CORE_POM                       = "pom.xml";
@@ -57,9 +57,32 @@ public abstract class InitUtils {
 
     public static Path getPathToModulesFolder() {
         if (PROPERTIES == null)
-            return Paths.get(DEFAULT_MODULES_FOLDER);
+            return createDirectory(Paths.get(DEFAULT_MODULES_FOLDER));
         String folder = PROPERTIES.getProperty(MODULES_FOLDER);
-        return folder == null ? Paths.get(DEFAULT_MODULES_FOLDER) : Paths.get(folder);
+        Path pathToModules = folder == null ? Paths.get(DEFAULT_MODULES_FOLDER) : Paths.get(folder);
+        return createDirectory(pathToModules);
+    }
+
+    private static Path createDirectory(Path pathToDir) {
+        try {
+            if (!Files.exists(pathToDir))
+                Files.createDirectory(pathToDir);
+        } catch (IOException e) {
+            LOG.error("Cannot create folder: " + pathToDir.toAbsolutePath());
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        return pathToDir;
+    }
+
+    private static Path createFile(Path pathToFile) {
+        try {
+            if (!Files.exists(pathToFile))
+                Files.createFile(pathToFile);
+        } catch (IOException e) {
+            LOG.error("Cannot create file: " + pathToFile.toAbsolutePath());
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        return pathToFile;
     }
 
     public static Set<Artifact> getOrienteerParentDependencies() {
