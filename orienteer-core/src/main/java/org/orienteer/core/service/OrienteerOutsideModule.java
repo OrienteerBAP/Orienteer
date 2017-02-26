@@ -4,9 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import org.apache.wicket.IInitializer;
 import org.eclipse.aether.artifact.Artifact;
-import org.kevoree.kcl.api.FlexyClassLoader;
 import org.orienteer.core.service.loader.MavenResolver;
-import org.orienteer.core.service.loader.OLoaderStorage;
+import org.orienteer.core.service.loader.OClassLoaderStorage;
 import org.orienteer.core.service.loader.OrienteerClassLoader;
 import org.orienteer.core.service.loader.util.InitUtils;
 import org.orienteer.core.service.loader.util.JarUtils;
@@ -77,12 +76,12 @@ public class OrienteerOutsideModule extends AbstractModule {
                 trustyModules.add(module);
             } else {
                 errors.add(module);
-                OLoaderStorage.deleteSandboxModuleLoader();
+                OClassLoaderStorage.deleteSandboxModuleLoader();
                 registerModules(trustyModules, false);
                 LOG.warn("Cannot load module: " + module);
             }
         }
-        OLoaderStorage.deleteSandboxModuleLoader();
+        OClassLoaderStorage.deleteSandboxModuleLoader();
         return trustyModules;
     }
 
@@ -105,7 +104,7 @@ public class OrienteerOutsideModule extends AbstractModule {
         }
 
         if (metadataModify) {
-            OLoaderStorage.clear();
+            OClassLoaderStorage.clear();
         }
 
         return modulesForLoad;
@@ -229,8 +228,8 @@ public class OrienteerOutsideModule extends AbstractModule {
      * @return classloader with dependency resources
      */
     private ClassLoader getClassLoader(OModuleMetadata metadata, boolean trustyClassLoader) {
-        OrienteerClassLoader classLoader = trustyClassLoader ? OLoaderStorage.getTrustyModuleLoader(false) :
-                OLoaderStorage.getSandboxModuleLoader(false);
+        OrienteerClassLoader classLoader = trustyClassLoader ? OClassLoaderStorage.getTrustyModuleLoader(false) :
+                OClassLoaderStorage.getSandboxModuleLoader(false);
         try {
             classLoader.load(metadata.getMainArtifact().getFile());
             for (Artifact dependency : metadata.getDependencies()) {

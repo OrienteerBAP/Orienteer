@@ -6,7 +6,7 @@ import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WicketFilter;
-import org.orienteer.core.service.loader.OLoaderStorage;
+import org.orienteer.core.service.loader.OClassLoaderStorage;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
@@ -34,7 +34,7 @@ public class OrienteerFilterInitModule extends ServletModule {
                 return new WicketFilter() {
                     @Override
                     protected ClassLoader getClassLoader() {
-                        return OLoaderStorage.getRootLoader();
+                        return OClassLoaderStorage.getRootLoader();
                     }
                 };
             }

@@ -5,14 +5,14 @@ import org.orienteer.core.OrienteerWebApplication;
 /**
  * @author Vitaliy Gonchar
  */
-public abstract class OLoaderStorage {
+public abstract class OClassLoaderStorage {
 
     private static OrienteerClassLoader rootLoader;
     private static OrienteerClassLoader trustyModuleLoader;
     private static OrienteerClassLoader sandboxModuleLoader;
     private static final ClassLoader ORIENTEER_CLASS_LOADER = OrienteerWebApplication.class.getClassLoader();
 
-    private OLoaderStorage() {}
+    private OClassLoaderStorage() {}
 
     public static synchronized OrienteerClassLoader getRootLoader() {
         return rootLoader;

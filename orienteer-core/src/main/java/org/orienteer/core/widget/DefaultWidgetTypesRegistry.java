@@ -15,7 +15,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 
-import org.orienteer.core.service.loader.OLoaderStorage;
+import org.orienteer.core.service.loader.OClassLoaderStorage;
 import org.orienteer.core.service.loader.OrienteerClassLoader;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
@@ -209,7 +209,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	}
 
 	private void registerWidgetsInOutsideModules(String packageName) {
-		OrienteerClassLoader rootLoader = OLoaderStorage.getRootLoader();
+		OrienteerClassLoader rootLoader = OClassLoaderStorage.getRootLoader();
 		List<Class<? extends AbstractWidget<Object>>> widgets = rootLoader.getWidgetsInPackage(packageName);
 		for (Class<? extends AbstractWidget<Object>> widgetClass : widgets) {
 			register(widgetClass);

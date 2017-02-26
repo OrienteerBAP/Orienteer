@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceFilter;
 import org.apache.wicket.protocol.http.WicketFilter;
-import org.orienteer.core.service.loader.OLoaderStorage;
+import org.orienteer.core.service.loader.OClassLoaderStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,7 @@ public final class OrienteerFilter implements Filter {
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
-        OLoaderStorage.createNewRootLoader();
+        OClassLoaderStorage.createNewRootLoader();
         LOG.info("Start initialization: " + this.getClass().getName());
         ServletContext context = filterConfig.getServletContext();
         injector = getInjector();
