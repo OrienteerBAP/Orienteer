@@ -1,7 +1,6 @@
 package org.orienteer.core.widget;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,20 +10,20 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.common.collect.ImmutableSet;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.OrienteerWebApplication;
 
+import org.orienteer.core.service.loader.OClassLoaderStorage;
+import org.orienteer.core.service.loader.OrienteerClassLoader;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -193,18 +192,28 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 		} catch (IOException e) {
 			throw new WicketRuntimeException("Can't scan classpath", e);
 		}
-		
-		for(ClassInfo classInfo : classPath.getTopLevelClassesRecursive(packageName)) {
-			Class<?> clazz = classInfo.load();
-			Widget widgetDescription = clazz.getAnnotation(Widget.class);
-			if(widgetDescription!=null) {
-				if(!AbstractWidget.class.isAssignableFrom(clazz)) 
-					throw new WicketRuntimeException("@"+Widget.class.getSimpleName()+" should be only on widgets");
-				Class<? extends AbstractWidget<Object>> widgetClass = (Class<? extends AbstractWidget<Object>>) clazz;
-				register(widgetClass);
+		ImmutableSet<ClassInfo> classesInPackage = classPath.getTopLevelClassesRecursive(packageName);
+		if (classesInPackage.size() > 0) {
+			for (ClassInfo classInfo : classesInPackage) {
+				Class<?> clazz = classInfo.load();
+				Widget widgetDescription = clazz.getAnnotation(Widget.class);
+				if (widgetDescription != null) {
+					if (!AbstractWidget.class.isAssignableFrom(clazz))
+						throw new WicketRuntimeException("@" + Widget.class.getSimpleName() + " should be only on widgets");
+					Class<? extends AbstractWidget<Object>> widgetClass = (Class<? extends AbstractWidget<Object>>) clazz;
+					register(widgetClass);
+				}
 			}
-		}
+		} else registerWidgetsInOutsideModules(packageName);
 		return this;
+	}
+
+	private void registerWidgetsInOutsideModules(String packageName) {
+		OrienteerClassLoader rootLoader = OClassLoaderStorage.getRootLoader();
+		List<Class<? extends AbstractWidget<Object>>> widgets = rootLoader.getWidgetsInPackage(packageName);
+		for (Class<? extends AbstractWidget<Object>> widgetClass : widgets) {
+			register(widgetClass);
+		}
 	}
 
 	@Override

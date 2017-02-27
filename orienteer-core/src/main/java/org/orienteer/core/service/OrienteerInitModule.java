@@ -1,35 +1,23 @@
 package org.orienteer.core.service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ServiceLoader;
-
-import org.apache.wicket.guice.GuiceWebApplicationFactory;
+import com.google.common.collect.Iterables;
+import com.google.inject.Module;
+import com.google.inject.Provider;
+import com.google.inject.name.Names;
+import com.google.inject.servlet.ServletModule;
+import com.google.inject.util.Modules;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.WicketFilter;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.LookupResourceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
-import com.google.common.collect.Iterables;
-import com.google.inject.Injector;
-import com.google.inject.Module;
-import com.google.inject.Provider;
-import com.google.inject.Singleton;
-import com.google.inject.name.Names;
-import com.google.inject.servlet.ServletModule;
-import com.google.inject.util.Modules;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 
 /**
@@ -60,11 +48,9 @@ public class OrienteerInitModule extends ServletModule {
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerInitModule.class);
 	
 	public static final String ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME = "orienteer.qualifier";
-	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER = "orienteer";
-	
-	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT = "orienteer-default.properties";
-	
-	public static final String ORIENTDB_KEY_PREFIX="orientdb.";
+	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER 		= "orienteer";
+	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT 		= "orienteer-default.properties";
+	public static final String ORIENTDB_KEY_PREFIX							= "orientdb.";
 	
 	
 	public final static Properties PROPERTIES_DEFAULT = new Properties();
@@ -90,15 +76,7 @@ public class OrienteerInitModule extends ServletModule {
 	
 	@Override
 	protected void configureServlets() {
-		Map<String, String> params = new HashMap<String, String>();    
-        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");  
-        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
-        params.put("injectorContextAttribute", Injector.class.getName());
-        bind(WicketFilter.class).in(Singleton.class);
-        filter("/*").through(WicketFilter.class, params);  
-        
-        
-        Properties properties = retrieveProperties();
+		Properties properties = retrieveProperties();
 		Names.bindProperties(binder(), properties);
 		bindOrientDbProperties(properties);
 		String applicationClass = properties.getProperty("orienteer.application");
@@ -125,8 +103,9 @@ public class OrienteerInitModule extends ServletModule {
 		bind(WebApplication.class).toProvider(appProvider);
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
-        
-        install(loadFromClasspath(new OrienteerModule()));
+
+		install(loadFromClasspath(new OrienteerFilterInitModule(),
+				new OrienteerModule(), new OrienteerOutsideModule()));
 	}
 	
 	protected void bindOrientDbProperties(Properties properties) {

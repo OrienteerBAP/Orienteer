@@ -1,21 +1,22 @@
 package org.orienteer.core;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.ThreadContext;
-import org.apache.wicket.WicketRuntimeException;
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
+import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+import org.apache.wicket.*;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
+import org.apache.wicket.core.util.resource.locator.IResourceStreamLocator;
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
@@ -26,6 +27,7 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
+import org.joda.time.DateTimeZone;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
@@ -33,6 +35,7 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.module.*;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.service.OrienteerResourceStreamLocator;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
@@ -41,24 +44,12 @@ import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.*;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.name.Named;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.metadata.security.OUser;
+import java.io.IOException;
+import java.util.*;
 
-import de.agilecoders.wicket.webjars.WicketWebjars;
-import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
-import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
-import ru.ydn.wicket.wicketorientdb.OrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -67,7 +58,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 {
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerWebApplication.class);
 	
-	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("M-", true);
+	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("M-", false);
 	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("MM", true);
 	
 	private LinkedHashMap<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
@@ -92,7 +83,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
 
-	
+
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
 		setConfigurationType(production?RuntimeConfigurationType.DEPLOYMENT:RuntimeConfigurationType.DEVELOPMENT);
@@ -134,6 +125,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void init()
 	{
 		super.init();
+		initResourceStreamLocator();
 		if(embedded)
 		{
 			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
@@ -148,7 +140,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 						db = db.create();
 						onDbCreated(db, settings);
 					}
-					if(db.isClosed()) db.open(settings.getAdminUserName(), settings.getAdminPassword());
+					if(db.isClosed())
+						db.open(settings.getAdminUserName(), settings.getAdminPassword());
 					db.getMetadata().load();
 					db.close();
 				}
@@ -166,7 +159,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 						reader.setPassword(settings.getGuestPassword());
 						reader.save();
 					}
-					
 				}
 				
 			});
@@ -178,6 +170,26 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
+		getApplicationListeners().add(new IApplicationListener() {
+			
+			@Override
+			public void onAfterInitialized(Application application) {
+				new DBClosure<Boolean>() {
+
+					@Override
+					protected Boolean execute(ODatabaseDocument db) {
+						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
+						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
+						DateTimeZone.setDefault(DateTimeZone.forID(timeZoneId));
+						return true;
+					}
+				}.execute();
+			}
+			
+			@Override
+			public void onBeforeDestroyed(Application application) {/*NOP*/}
+			
+		});
 		getPageSettings().addComponentResolver(new WicketPropertyResolver());
 		//Remove default BookmarkableMapper to disallow direct accessing of pages through /wicket/bookmarkable/<class>
 		for(IRequestMapper mapper : getRootRequestMapperAsCompound()){
@@ -201,6 +213,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 	}
+
 
 	@Override
 	protected Class<? extends WebPage> getSignInPageClass() {
@@ -258,6 +271,15 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registeredModules.put(module.getName(), getServiceInstance(moduleClass));
 		registeredModulesSorted = false;
 		return module;
+	}
+
+	public synchronized <M extends IOrienteerModule> M unregisterModule(Class<M> moduleClass) {
+		M module = getServiceInstance(moduleClass);
+		if (registeredModules.containsKey(module.getName())) {
+			registeredModules.remove(module.getName());
+			return module;
+		} else LOG.info("Orienteer application does not already registered module: " + module.getName());
+		return null;
 	}
 	
 	public IOrienteerModule getModuleByName(String name)
@@ -333,7 +355,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		IWidgetTypesRegistry registry = getServiceInstance(IWidgetTypesRegistry.class);
 		registry.unregister(packageName);
 	}
-	
+
+	private void initResourceStreamLocator() {
+		IResourceStreamLocator resourceStreamLocator = getResourceSettings().getResourceStreamLocator();
+		resourceStreamLocator = new OrienteerResourceStreamLocator(resourceStreamLocator);
+		getResourceSettings().setResourceStreamLocator(resourceStreamLocator);
+	}
+
 	@Override
 	public void restartResponseAtSignInPage() {
 		//This is required because home page is dynamic and depends on assigned perspective.
