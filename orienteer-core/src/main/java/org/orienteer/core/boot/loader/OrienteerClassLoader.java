@@ -13,6 +13,7 @@ import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.ObjectName;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,7 +45,7 @@ public class OrienteerClassLoader extends URLClassLoader {
 
 	private OrienteerClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
-		
+
         Map<Path, OModuleMetadata> modules = MetadataUtil.readModulesAsMap();
         List<Path> jars = JarUtils.readJarsInFolder(modulesFolder);
 
@@ -58,7 +59,24 @@ public class OrienteerClassLoader extends URLClassLoader {
 
             } else modulesForLoad = getUpdateModules(jars, modules);
         }
+        modulesForLoad = searchTrustyModules(modulesForLoad, parent);
         addModulesToClassLoaderResources(modulesForLoad);
+    }
+
+    private List<OModuleMetadata> searchTrustyModules(List<OModuleMetadata> unTrustedModules,
+                                                      ClassLoader parent) {
+        List<OModuleMetadata> trustyModules = Lists.newArrayList();
+        OrienteerSandboxClassLoader sandboxClassLoader = new OrienteerSandboxClassLoader(parent);
+        for (OModuleMetadata module : unTrustedModules) {
+            boolean isTrusted = sandboxClassLoader.test(module);
+            if (isTrusted) {
+                trustyModules.add(module);
+            } else {
+                sandboxClassLoader = new OrienteerSandboxClassLoader(parent);
+                sandboxClassLoader.loadResourcesInClassLoader(trustyModules);
+            }
+        }
+        return trustyModules;
     }
 
     private void addModulesToClassLoaderResources(List<OModuleMetadata> modules) {
@@ -145,4 +163,40 @@ public class OrienteerClassLoader extends URLClassLoader {
         return modulesForLoad;
     }
 
+    private static class OrienteerSandboxClassLoader extends URLClassLoader {
+
+        public OrienteerSandboxClassLoader(ClassLoader parent) {
+            super(new URL[]{}, parent);
+        }
+
+        public void loadResourcesInClassLoader(List<OModuleMetadata> modules) {
+            for (OModuleMetadata module : modules) {
+                loadResourceInClassLoader(module);
+            }
+        }
+
+        private void loadResourceInClassLoader(OModuleMetadata module) {
+            try {
+                addURL(module.getMainArtifact().getFile().toURI().toURL());
+                for (Artifact artifact : module.getDependencies()) {
+                    addURL(artifact.getFile().toURI().toURL());
+                }
+            } catch (MalformedURLException e) {
+                LOG.error("Cannot load dependency.", e);
+            }
+        }
+
+        public boolean test(OModuleMetadata module) {
+            boolean trusted = false;
+            try {
+                loadResourceInClassLoader(module);
+                loadClass(module.getInitializerName());
+                trusted = true;
+            } catch (ClassNotFoundException e) {
+                LOG.warn("Cannot load init class for module: " + module);
+                if (LOG.isDebugEnabled()) e.printStackTrace();
+            }
+            return trusted;
+        }
+    }
 }
