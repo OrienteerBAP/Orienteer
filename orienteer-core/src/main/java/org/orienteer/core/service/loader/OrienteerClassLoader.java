@@ -96,4 +96,11 @@ public class OrienteerClassLoader extends FlexyClassLoaderImpl {
         return res;
     }
 
+
+    @Override
+    public String toString() {
+        return "OrienteerClassLoader{" +
+                "parent=" + parent +
+                '}';
+    }
 }
