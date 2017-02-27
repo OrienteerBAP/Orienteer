@@ -44,6 +44,8 @@ public class Module extends AbstractOrienteerModule{
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
 		app.mountPages("org.orienteer.birt.web");
+		app.registerWidgets("org.orienteer.birt.component.widget");
+
 		
 		try{
 			
@@ -63,12 +65,14 @@ public class Module extends AbstractOrienteerModule{
 		    engine.changeLogLevel( Level.WARNING );
 		}catch( Exception ex){
 		    ex.printStackTrace();
-		}		}
+		}
+	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.birt.web");
+		app.unregisterWidgets("org.orienteer.birt.component.widget");
 		try
 		{
 		    engine.destroy();

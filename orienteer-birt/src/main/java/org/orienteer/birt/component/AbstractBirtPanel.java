@@ -1,6 +1,9 @@
 package org.orienteer.birt.component;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +34,14 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	private static final long serialVersionUID = 1L;
 	protected static final String reportComponentName = "report";
 
-	protected static final String reportExtencion = ".rptdesign";
-	protected static final String reportFolder = "temp/";
-
 	protected static final String cacheExtencion = ".rptdocument";
 	protected static final String cacheFolder = "temp/";
 	
 	
 	private boolean cacheHasMaked = false;
-	private String reportName;
+	//private String reportName;
+	private InputStream reportInputStream = null;
+	
 	private long currentPage = 0;
 	private long pagesCount = 1;
 
@@ -48,14 +50,30 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	private Map<String, Object> parameters;
 	
 	
-	public AbstractBirtPanel(String id,String reportName){
-		this(id,reportName,new HashMap<String, Object>());
+	public AbstractBirtPanel(String id,String reportFileName){
+		this(id,reportFileName,new HashMap<String, Object>());
 	}
 
-	public AbstractBirtPanel(String id,String reportName,Map<String, Object> parameters){
+	public AbstractBirtPanel(String id,String reportFileName,Map<String, Object> parameters){
 		super(id);
-		this.reportName = reportName;
+		
+		try {
+			reportInputStream = new FileInputStream(reportFileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 		this.parameters = parameters;
+		init();
+	}
+
+	public AbstractBirtPanel(String id,InputStream report,Map<String, Object> parameters){
+		super(id);
+		reportInputStream = report;
+		this.parameters = parameters;
+		init();
+	}
+	
+	private void init() {
 		reportHash = makeReportHash();
 		Component reportComponent = new Label(reportComponentName,""); 
 		reportComponent.setEscapeModelStrings(false);
@@ -64,17 +82,14 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 		pagesCount = cache.getPageCount();
 		cache.close();
 	}
-	
+	/*
 	private String getReportName() {
-		return reportFolder+reportName+reportExtencion;
-	}
-
-	private String getReportPath() {
 		return reportName;
 	}
+*/
 	
 	private String makeReportHash() {
-		return Md5Util.getMD5(reportName+Math.random());
+		return Md5Util.getMD5(""+Math.random());
 	}
 	
 	public void setParameters(Map<String, Object> parameters) {
@@ -105,7 +120,7 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 		if (!cacheHasMaked){
 			try {
 				IReportRunnable design;
-				design = engine.openReportDesign(getReportName());
+				design = engine.openReportDesign(reportInputStream);
 				 
 				//Create task to run the report - use the task to execute the report and save to disk.
 				IRunTask runTask = engine.createRunTask(design); 
@@ -131,7 +146,7 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	
 	private String getReportCachePath() {
 		OrientDbWebSession session = OrientDbWebSession.get();
-		String path = cacheFolder+session.getUsername()+"/"+session.getId()+"/"+reportHash+"/"+reportName+cacheExtencion;
+		String path = cacheFolder+session.getUsername()+"/"+session.getId()+"/"+reportHash+cacheExtencion;
 		return path;
 	}
 	
