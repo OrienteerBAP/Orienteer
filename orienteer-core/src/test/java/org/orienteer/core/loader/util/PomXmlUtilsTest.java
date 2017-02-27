@@ -4,7 +4,7 @@ import com.google.common.base.Optional;
 import org.eclipse.aether.artifact.Artifact;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orienteer.core.service.loader.util.PomXmlUtils;
+import org.orienteer.core.boot.loader.util.PomXmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

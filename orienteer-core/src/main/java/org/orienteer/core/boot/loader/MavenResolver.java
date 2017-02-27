@@ -1,4 +1,4 @@
-package org.orienteer.core.service.loader;
+package org.orienteer.core.boot.loader;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -10,12 +10,12 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.*;
-import org.orienteer.core.service.loader.util.InitUtils;
-import org.orienteer.core.service.loader.util.JarUtils;
-import org.orienteer.core.service.loader.util.ODependenciesNotResolvedException;
-import org.orienteer.core.service.loader.util.PomXmlUtils;
-import org.orienteer.core.service.loader.util.aether.AetherUtils;
-import org.orienteer.core.service.loader.util.metadata.OModuleMetadata;
+import org.orienteer.core.boot.loader.util.InitUtils;
+import org.orienteer.core.boot.loader.util.JarUtils;
+import org.orienteer.core.boot.loader.util.ODependenciesNotResolvedException;
+import org.orienteer.core.boot.loader.util.PomXmlUtils;
+import org.orienteer.core.boot.loader.util.aether.AetherUtils;
+import org.orienteer.core.boot.loader.util.metadata.OModuleMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

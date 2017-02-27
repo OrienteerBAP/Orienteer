@@ -1,4 +1,4 @@
-package org.orienteer.core.service.loader.util.metadata;
+package org.orienteer.core.boot.loader.util.metadata;
 
 import org.eclipse.aether.artifact.Artifact;
 
