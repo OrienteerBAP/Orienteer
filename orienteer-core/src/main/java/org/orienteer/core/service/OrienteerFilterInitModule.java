@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WicketFilter;
+import org.orienteer.core.OrienteerFilter;
 import org.orienteer.core.service.loader.OClassLoaderStorage;
 
 import javax.servlet.FilterConfig;

@@ -32,11 +32,11 @@ public class OrienteerClassLoader extends FlexyClassLoaderImpl {
         this.parent = OrienteerWebApplication.class.getClassLoader();
     }
 
-    public static OrienteerClassLoader get(ClassLoader parent) {
+    public static OrienteerClassLoader create(ClassLoader parent) {
         return new OrienteerClassLoader(parent);
     }
 
-    public static OrienteerClassLoader get() {
+    public static OrienteerClassLoader create() {
         return new OrienteerClassLoader();
     }
 
@@ -54,46 +54,6 @@ public class OrienteerClassLoader extends FlexyClassLoaderImpl {
             list.add(resources.nextElement());
         }
         return list;
-    }
-
-    public List<Class<? extends AbstractWidget<Object>>> getWidgetsInPackage(String packageName) {
-        List<Class<? extends AbstractWidget<Object>>> widgets = Lists.newArrayList();
-        try {
-            for (URL url : getAllResources()) {
-                String file = url.getFile().replace('/', '.');
-                if (isTopClass(file) && isInPackage(file, packageName)) {
-                    Class<?> clazz = this.loadClass(getClassName(url.getFile()));
-                    Widget widgetDescription = clazz.getAnnotation(Widget.class);
-                    if (widgetDescription != null) {
-                        if(!AbstractWidget.class.isAssignableFrom(clazz))
-                            throw new WicketRuntimeException("@"+Widget.class.getSimpleName()+" should be only on widgets");
-                        Class<? extends AbstractWidget<Object>> widgetClass = (Class<? extends AbstractWidget<Object>>) clazz;
-                        widgets.add(widgetClass);
-                    }
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            LOG.warn("Cannot load class in package: " + packageName);
-            if (LOG.isDebugEnabled()) ex.printStackTrace();
-        }
-        return widgets;
-    }
-
-    private boolean isTopClass(String url) {
-        return url.endsWith(".class") && !url.contains("$");
-    }
-
-    private boolean isInPackage(String url, String packageName) {
-        return url.contains(packageName);
-    }
-
-    private String getClassName(String url) {
-        url = url.replace('/', '.');
-        if (url.contains("!")) {
-            url = url.substring(url.indexOf("!") + 2);
-        }
-        String res = url.substring(0, url.indexOf(".class"));
-        return res;
     }
 
 }

@@ -186,34 +186,29 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
 	@Override
 	public IWidgetTypesRegistry register(String packageName) {
+//		return register(packageName, OClassLoaderStorage.getRootLoader());
+		return register(packageName, DefaultWidgetTypesRegistry.class.getClassLoader());
+	}
+	
+	public IWidgetTypesRegistry register(String packageName, ClassLoader classLoader) {
 		ClassPath classPath;
 		try {
-			classPath = ClassPath.from(DefaultWidgetTypesRegistry.class.getClassLoader());
+			classPath = ClassPath.from(classLoader);
 		} catch (IOException e) {
 			throw new WicketRuntimeException("Can't scan classpath", e);
 		}
 		ImmutableSet<ClassInfo> classesInPackage = classPath.getTopLevelClassesRecursive(packageName);
-		if (classesInPackage.size() > 0) {
-			for (ClassInfo classInfo : classesInPackage) {
-				Class<?> clazz = classInfo.load();
-				Widget widgetDescription = clazz.getAnnotation(Widget.class);
-				if (widgetDescription != null) {
-					if (!AbstractWidget.class.isAssignableFrom(clazz))
-						throw new WicketRuntimeException("@" + Widget.class.getSimpleName() + " should be only on widgets");
-					Class<? extends AbstractWidget<Object>> widgetClass = (Class<? extends AbstractWidget<Object>>) clazz;
-					register(widgetClass);
-				}
+		for (ClassInfo classInfo : classesInPackage) {
+			Class<?> clazz = classInfo.load();
+			Widget widgetDescription = clazz.getAnnotation(Widget.class);
+			if (widgetDescription != null) {
+				if (!AbstractWidget.class.isAssignableFrom(clazz))
+					throw new WicketRuntimeException("@" + Widget.class.getSimpleName() + " should be only on widgets");
+				Class<? extends AbstractWidget<Object>> widgetClass = (Class<? extends AbstractWidget<Object>>) clazz;
+				register(widgetClass);
 			}
-		} else registerWidgetsInOutsideModules(packageName);
-		return this;
-	}
-
-	private void registerWidgetsInOutsideModules(String packageName) {
-		OrienteerClassLoader rootLoader = OClassLoaderStorage.getRootLoader();
-		List<Class<? extends AbstractWidget<Object>>> widgets = rootLoader.getWidgetsInPackage(packageName);
-		for (Class<? extends AbstractWidget<Object>> widgetClass : widgets) {
-			register(widgetClass);
 		}
+		return this;
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public abstract class OClassLoaderStorage {
 
     public static synchronized OrienteerClassLoader getTrustyModuleLoader(boolean create) {
         if (trustyModuleLoader == null || create) {
-            trustyModuleLoader = OrienteerClassLoader.get();
+            trustyModuleLoader = OrienteerClassLoader.create();
             rootLoader.attachChild(trustyModuleLoader);
         }
         return trustyModuleLoader;
@@ -28,14 +28,14 @@ public abstract class OClassLoaderStorage {
 
     public static synchronized OrienteerClassLoader getSandboxModuleLoader(boolean create) {
         if (sandboxModuleLoader == null || create) {
-            sandboxModuleLoader = OrienteerClassLoader.get();
+            sandboxModuleLoader = OrienteerClassLoader.create();
             getTrustyModuleLoader(false).attachChild(sandboxModuleLoader);
         }
         return sandboxModuleLoader;
     }
 
     public static synchronized OrienteerClassLoader createNewRootLoader() {
-        rootLoader = OrienteerClassLoader.get(ORIENTEER_CLASS_LOADER);
+        rootLoader = OrienteerClassLoader.create(ORIENTEER_CLASS_LOADER);
         if (trustyModuleLoader != null) rootLoader.attachChild(trustyModuleLoader);
         return rootLoader;
     }

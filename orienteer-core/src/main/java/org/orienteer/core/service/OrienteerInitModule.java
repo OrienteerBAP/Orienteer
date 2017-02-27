@@ -1,6 +1,7 @@
 package org.orienteer.core.service;
 
 import com.google.common.collect.Iterables;
+import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
@@ -43,7 +44,7 @@ import java.util.*;
  * <li>lookup of resource 'myapplication.properties' in a classpath</li>
  * </ol>
  */
-public class OrienteerInitModule extends ServletModule {
+public class OrienteerInitModule extends AbstractModule {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerInitModule.class);
 	
@@ -75,7 +76,7 @@ public class OrienteerInitModule extends ServletModule {
 	}
 	
 	@Override
-	protected void configureServlets() {
+	protected void configure() {
 		Properties properties = retrieveProperties();
 		Names.bindProperties(binder(), properties);
 		bindOrientDbProperties(properties);
