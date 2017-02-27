@@ -31,11 +31,21 @@ public class OrienteerClassLoader extends URLClassLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoader.class);
 
-	public OrienteerClassLoader(ClassLoader parent) {
+    private static OrienteerClassLoader orienteerClassLoader;
+
+    public static OrienteerClassLoader create(ClassLoader parent) {
+        orienteerClassLoader = new OrienteerClassLoader(parent);
+        return orienteerClassLoader;
+    }
+
+    public static OrienteerClassLoader get() {
+        return orienteerClassLoader;
+    }
+
+	private OrienteerClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
 		
         Map<Path, OModuleMetadata> modules = MetadataUtil.readModulesAsMap();
-        boolean metadataModify = MetadataUtil.isMetadataModify();
         List<Path> jars = JarUtils.readJarsInFolder(modulesFolder);
 
         List<OModuleMetadata> modulesForLoad;
@@ -48,15 +58,20 @@ public class OrienteerClassLoader extends URLClassLoader {
 
             } else modulesForLoad = getUpdateModules(jars, modules);
         }
-        
-        for(OModuleMetadata metadata : modulesForLoad) {
-        	try {
-				addURL(new URL(metadata.getInitializerName()));
-			} catch (MalformedURLException e) {
-				LOG.error("Can't load dependency", e);
-			}
-        }
+        addModulesToClassLoaderResources(modulesForLoad);
+    }
 
+    private void addModulesToClassLoaderResources(List<OModuleMetadata> modules) {
+        for(OModuleMetadata metadata : modules) {
+            try {
+                addURL(metadata.getMainArtifact().getFile().toURI().toURL());
+                for (Artifact artifact : metadata.getDependencies()) {
+                    addURL(artifact.getFile().toURI().toURL());
+                }
+            } catch (MalformedURLException e) {
+                LOG.error("Can't load dependency", e);
+            }
+        }
     }
 	
 	private List<OModuleMetadata> createModules(List<Path> jars) {
@@ -129,6 +144,5 @@ public class OrienteerClassLoader extends URLClassLoader {
         }
         return modulesForLoad;
     }
-
 
 }

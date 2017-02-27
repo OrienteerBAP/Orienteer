@@ -185,8 +185,7 @@ public class DefaultWidgetTypesRegistry implements IWidgetTypesRegistry {
 	
 	@Override
 	public IWidgetTypesRegistry register(String packageName) {
-//		return register(packageName, OClassLoaderStorage.getRootLoader());
-		return register(packageName, DefaultWidgetTypesRegistry.class.getClassLoader());
+		return register(packageName, OrienteerClassLoader.get());
 	}
 	
 	public IWidgetTypesRegistry register(String packageName, ClassLoader classLoader) {

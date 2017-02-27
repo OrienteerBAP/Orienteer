@@ -10,6 +10,9 @@ import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class for startup loader properties
+ */
 public class StartupPropertiesLoader {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(StartupPropertiesLoader.class);
@@ -41,6 +44,7 @@ public class StartupPropertiesLoader {
 		}
 	}
 
+	private StartupPropertiesLoader() {}
 
 	/**
 	 * Retrieve startup properties 
