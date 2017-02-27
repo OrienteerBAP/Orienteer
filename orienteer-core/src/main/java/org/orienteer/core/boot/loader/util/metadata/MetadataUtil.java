@@ -1,9 +1,9 @@
-package org.orienteer.core.service.loader.util.metadata;
+package org.orienteer.core.boot.loader.util.metadata;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.eclipse.aether.artifact.Artifact;
-import org.orienteer.core.service.loader.util.InitUtils;
+import org.orienteer.core.boot.loader.util.InitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -14,9 +14,8 @@ import com.google.common.collect.ImmutableSet;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.boot.loader.OrienteerClassLoader;
 
-import org.orienteer.core.service.loader.OClassLoaderStorage;
-import org.orienteer.core.service.loader.OrienteerClassLoader;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 import com.google.common.base.Predicate;

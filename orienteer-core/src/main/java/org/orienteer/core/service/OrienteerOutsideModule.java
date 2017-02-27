@@ -4,13 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.inject.AbstractModule;
 import org.apache.wicket.IInitializer;
 import org.eclipse.aether.artifact.Artifact;
-import org.orienteer.core.service.loader.MavenResolver;
-import org.orienteer.core.service.loader.OClassLoaderStorage;
-import org.orienteer.core.service.loader.OrienteerClassLoader;
-import org.orienteer.core.service.loader.util.InitUtils;
-import org.orienteer.core.service.loader.util.JarUtils;
-import org.orienteer.core.service.loader.util.metadata.MetadataUtil;
-import org.orienteer.core.service.loader.util.metadata.OModuleMetadata;
+import org.orienteer.core.boot.loader.MavenResolver;
+import org.orienteer.core.boot.loader.OrienteerClassLoader;
+import org.orienteer.core.boot.loader.util.InitUtils;
+import org.orienteer.core.boot.loader.util.JarUtils;
+import org.orienteer.core.boot.loader.util.metadata.MetadataUtil;
+import org.orienteer.core.boot.loader.util.metadata.OModuleMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +22,7 @@ import java.util.*;
  * @author Vitaliy Gonchar
  * Add Initializer of outside Orienteer modules in classpath when Injector was created.
  */
+@Deprecated
 public class OrienteerOutsideModule extends AbstractModule {
     private final List<OModuleMetadata> errors   = Lists.newArrayList();
     private final Path modulesFolder             = InitUtils.getPathToModulesFolder();
@@ -76,12 +76,12 @@ public class OrienteerOutsideModule extends AbstractModule {
                 trustyModules.add(module);
             } else {
                 errors.add(module);
-                OClassLoaderStorage.deleteSandboxModuleLoader();
+//                OClassLoaderStorage.deleteSandboxModuleLoader();
                 registerModules(trustyModules, false);
                 LOG.warn("Cannot load module: " + module);
             }
         }
-        OClassLoaderStorage.deleteSandboxModuleLoader();
+//        OClassLoaderStorage.deleteSandboxModuleLoader();
         return trustyModules;
     }
 
@@ -104,7 +104,7 @@ public class OrienteerOutsideModule extends AbstractModule {
         }
 
         if (metadataModify) {
-            OClassLoaderStorage.clear();
+//            OClassLoaderStorage.clear();
         }
 
         return modulesForLoad;
@@ -209,7 +209,7 @@ public class OrienteerOutsideModule extends AbstractModule {
      * @return true if class Initializer was successful add to classpath
      */
     private boolean registerModule(OModuleMetadata metadata, boolean trustyClassLoader) {
-        ClassLoader classLoader = getClassLoader(metadata, trustyClassLoader);
+        ClassLoader classLoader = null;//getClassLoader(metadata, trustyClassLoader);
         boolean loadModule = false;
         try {
             Class<? extends IInitializer> loadClass = (Class<? extends IInitializer>)
@@ -227,7 +227,7 @@ public class OrienteerOutsideModule extends AbstractModule {
      *                          false - use sandbox classloader
      * @return classloader with dependency resources
      */
-    private ClassLoader getClassLoader(OModuleMetadata metadata, boolean trustyClassLoader) {
+    /*private ClassLoader getClassLoader(OModuleMetadata metadata, boolean trustyClassLoader) {
         OrienteerClassLoader classLoader = trustyClassLoader ? OClassLoaderStorage.getTrustyModuleLoader(false) :
                 OClassLoaderStorage.getSandboxModuleLoader(false);
         try {
@@ -241,7 +241,7 @@ public class OrienteerOutsideModule extends AbstractModule {
             if (LOG.isDebugEnabled()) ex.printStackTrace();
         }
         return classLoader;
-    }
+    }*/
 
     private void clear() {
         JarUtils.deletePomFolder();
