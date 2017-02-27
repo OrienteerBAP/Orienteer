@@ -16,7 +16,6 @@ import org.apache.wicket.*;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
-import org.apache.wicket.core.util.resource.locator.IResourceStreamLocator;
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
@@ -35,7 +34,6 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.module.*;
 import org.orienteer.core.service.IOClassIntrospector;
-import org.orienteer.core.service.OrienteerResourceStreamLocator;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
@@ -125,7 +123,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void init()
 	{
 		super.init();
-		initResourceStreamLocator();
 		if(embedded)
 		{
 			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
@@ -354,12 +351,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void unregisterWidgets(String packageName) {
 		IWidgetTypesRegistry registry = getServiceInstance(IWidgetTypesRegistry.class);
 		registry.unregister(packageName);
-	}
-
-	private void initResourceStreamLocator() {
-		IResourceStreamLocator resourceStreamLocator = getResourceSettings().getResourceStreamLocator();
-		resourceStreamLocator = new OrienteerResourceStreamLocator(resourceStreamLocator);
-		getResourceSettings().setResourceStreamLocator(resourceStreamLocator);
 	}
 
 	@Override
