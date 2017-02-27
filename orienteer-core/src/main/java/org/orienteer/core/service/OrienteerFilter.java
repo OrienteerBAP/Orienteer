@@ -87,7 +87,7 @@ public final class OrienteerFilter implements Filter {
     }
 
     public static void reloadOrienteer() {
-        reloadOrienteer(1);
+        reloadOrienteer(2);
     }
 
     public static void reloadOrienteer(long delay) {

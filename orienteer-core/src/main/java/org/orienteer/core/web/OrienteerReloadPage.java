@@ -10,6 +10,7 @@ public class OrienteerReloadPage extends BasePage<Void> {
 
     @Override
     protected void onInitialize() {
+        add(new Label("title", new ResourceModel("reload.title")));
         super.onInitialize();
         add(new Label("reload-info", new ResourceModel("reload.info")));
     }

@@ -33,6 +33,7 @@ public class OrienteerOutsideModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        OClassLoaderStorage.clear();
         initOutsideModules();
         destroyErrors();
         clear();
