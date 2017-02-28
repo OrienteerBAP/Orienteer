@@ -65,10 +65,13 @@ class OMetadataUpdater {
         Element rootElement = document.getRootElement();
         List<Node> modules = rootElement.elements(MODULE);
         List<OModuleMetadata> updatedModules = Lists.newArrayList();
+        int id = 0;
         for (Node node : modules) {
             Element element = (Element) node;
             Element idElement = (Element) element.elements(ID).get(0);
-            OModuleMetadata module = containsInModulesList(Integer.valueOf(idElement.getText()), modulesForWrite);
+            int currentId = Integer.valueOf(idElement.getText());
+            if (id < currentId) id = currentId;
+            OModuleMetadata module = containsInModulesList(currentId, modulesForWrite);
             if (module != null) {
                 Iterator iterator = element.elementIterator();
                 changeModule(iterator, module);
@@ -76,6 +79,7 @@ class OMetadataUpdater {
             }
         }
         if (updatedModules.size() != modulesForWrite.size()) {
+            setIdForModules(modulesForWrite, ++id);
             addModules(difference(updatedModules, modulesForWrite), rootElement);
         }
         writeToFile(document);
@@ -206,6 +210,14 @@ class OMetadataUpdater {
         }
         return null;
     }
+
+    private void setIdForModules(List<OModuleMetadata> modules, int id) {
+        for (OModuleMetadata module : modules) {
+            module.setId(id);
+            id++;
+        }
+    }
+
     private Element addMavenDependency(Artifact artifact, Element element, String tag) {
         Element mavenElement = element.addElement(tag);
         mavenElement.addElement(GROUP_ID).addText(artifact.getGroupId());

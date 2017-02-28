@@ -78,7 +78,7 @@ class OMetadataReader {
                     break;
                 case MAVEN:
                     Artifact mainDependency = getMavenDependency(element.element(MAIN_DEPENDENCY));
-                    List<Artifact> dependencies = getDependencies(element.elements(DEPENDENCIES));
+                    List<Artifact> dependencies = getDependencies(element.element(DEPENDENCIES));
                     module.setMainArtifact(mainDependency)
                             .setDependencies(dependencies);
                     break;
@@ -87,10 +87,13 @@ class OMetadataReader {
         return module;
     }
 
-    private List<Artifact> getDependencies(List<Element> elements) {
+    private List<Artifact> getDependencies(Element dependenciesElement) {
         List<Artifact> dependencies = Lists.newArrayList();
+        List<Element> elements = dependenciesElement.elements(DEPENDENCY);
         for (Element element : elements) {
-            dependencies.add(getMavenDependency(element.element(DEPENDENCY)));
+            if (element.getName().equals(DEPENDENCY)) {
+                dependencies.add(getMavenDependency(element));
+            }
         }
         return dependencies;
     }

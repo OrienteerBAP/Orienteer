@@ -1,25 +1,22 @@
 package org.orienteer.core.boot.loader;
 
 import com.google.common.collect.Lists;
-import org.apache.wicket.WicketRuntimeException;
 import org.eclipse.aether.artifact.Artifact;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.InitUtils;
 import org.orienteer.core.boot.loader.util.JarUtils;
 import org.orienteer.core.boot.loader.util.metadata.MetadataUtil;
 import org.orienteer.core.boot.loader.util.metadata.OModuleMetadata;
-import org.orienteer.core.widget.AbstractWidget;
-import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.ObjectName;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Vitaliy Gonchar
@@ -164,6 +161,8 @@ public class OrienteerClassLoader extends URLClassLoader {
     }
 
     private static class OrienteerSandboxClassLoader extends URLClassLoader {
+
+        private static final String INIT = "init";
 
         public OrienteerSandboxClassLoader(ClassLoader parent) {
             super(new URL[]{}, parent);
