@@ -2,15 +2,14 @@ package org.orienteer.core.boot.loader.util.metadata;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.orienteer.core.boot.loader.util.OModuleMetadata;
+import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Vitaliy Gonchar
@@ -31,15 +30,13 @@ public class OMetadataReaderTest {
 
     @Test
     public void readModulesForLoad() throws Exception {
-        OMetadataReader reader = new OMetadataReader(pathToMetadata);
-        List<OModuleMetadata> modules = reader.readModulesForLoad();
+        List<OModuleMetadata> modules = OrienteerClassLoaderUtil.getMetadataModulesForLoad();
         print(modules);
     }
 
     @Test
     public void readAllModules() throws Exception {
-        OMetadataReader reader = new OMetadataReader(pathToMetadata);
-        List<OModuleMetadata> modules = reader.readAllModules();
+        List<OModuleMetadata> modules = OrienteerClassLoaderUtil.getMetadataModules();
         print(modules);
     }
 

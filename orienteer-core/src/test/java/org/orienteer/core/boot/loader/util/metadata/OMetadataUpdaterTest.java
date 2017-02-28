@@ -5,12 +5,12 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.junit.Before;
 import org.junit.Test;
+import org.orienteer.core.boot.loader.util.OModuleMetadata;
+import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Vitaliy Gonchar
@@ -37,21 +37,18 @@ public class OMetadataUpdaterTest {
 
     @Test
     public void create() throws Exception {
-        OMetadataUpdater updater = new OMetadataUpdater(pathToMetadata);
-        updater.create(Lists.newArrayList(metadata));
+        OrienteerClassLoaderUtil.createMetadata(Lists.newArrayList(metadata));
     }
 
     @Test
     public void update() throws Exception {
-        OMetadataUpdater updater = new OMetadataUpdater(pathToMetadata);
         metadata.setLoad(false);
         metadata.setInitializerName("org.weaxme.Initializer");
-        updater.update(metadata);
+        OrienteerClassLoaderUtil.updateModulesInMetadata(metadata);
     }
 
     @Test
     public void delete() throws Exception {
-        OMetadataUpdater updater = new OMetadataUpdater(pathToMetadata);
-        updater.delete(metadata);
+        OrienteerClassLoaderUtil.deleteModuleFromMetadata(metadata);
     }
 }

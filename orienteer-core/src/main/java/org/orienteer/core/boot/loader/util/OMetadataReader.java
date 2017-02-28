@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util.metadata;
+package org.orienteer.core.boot.loader.util;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-
-import static org.orienteer.core.boot.loader.util.metadata.MetadataUtil.*;
 
 /**
  * @author Vitaliy Gonchar
@@ -48,7 +46,7 @@ class OMetadataReader {
 
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
-        List<OModuleMetadata> modules = getModulesInMetadataXml(rootElement.elements(MODULE));
+        List<OModuleMetadata> modules = getModulesInMetadataXml(rootElement.elements(MetadataUtil.MODULE));
         return modules;
     }
 
@@ -67,18 +65,18 @@ class OMetadataReader {
         List<Element> elements = mainElement.elements();
         for (Element element : elements) {
             switch (element.getName()) {
-                case ID:
+                case MetadataUtil.ID:
                     module.setId(Integer.valueOf(element.getText()));
                     break;
-                case INITIALIZER:
+                case MetadataUtil.INITIALIZER:
                     module.setInitializerName(element.getText());
                     break;
-                case LOAD:
+                case MetadataUtil.LOAD:
                     module.setLoad(Boolean.valueOf(element.getText()));
                     break;
-                case MAVEN:
-                    Artifact mainDependency = getMavenDependency(element.element(MAIN_DEPENDENCY));
-                    List<Artifact> dependencies = getDependencies(element.element(DEPENDENCIES));
+                case MetadataUtil.MAVEN:
+                    Artifact mainDependency = getMavenDependency(element.element(MetadataUtil.MAIN_DEPENDENCY));
+                    List<Artifact> dependencies = getDependencies(element.element(MetadataUtil.DEPENDENCIES));
                     module.setMainArtifact(mainDependency)
                             .setDependencies(dependencies);
                     break;
@@ -89,9 +87,9 @@ class OMetadataReader {
 
     private List<Artifact> getDependencies(Element dependenciesElement) {
         List<Artifact> dependencies = Lists.newArrayList();
-        List<Element> elements = dependenciesElement.elements(DEPENDENCY);
+        List<Element> elements = dependenciesElement.elements(MetadataUtil.DEPENDENCY);
         for (Element element : elements) {
-            if (element.getName().equals(DEPENDENCY)) {
+            if (element.getName().equals(MetadataUtil.DEPENDENCY)) {
                 dependencies.add(getMavenDependency(element));
             }
         }
@@ -107,16 +105,16 @@ class OMetadataReader {
         List<Element> elements = mainElement.elements();
         for (Element element : elements) {
             switch (element.getName()) {
-                case GROUP_ID:
+                case MetadataUtil.GROUP_ID:
                     groupId = element.getText();
                     break;
-                case ARTIFACT_ID:
+                case MetadataUtil.ARTIFACT_ID:
                     artifactId = element.getText();
                     break;
-                case VERSION:
+                case MetadataUtil.VERSION:
                     version = element.getText();
                     break;
-                case JAR:
+                case MetadataUtil.JAR:
                     jar = element.getText();
                     break;
             }

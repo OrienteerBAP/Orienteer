@@ -2,10 +2,8 @@ package org.orienteer.core.boot.loader;
 
 import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
-import org.orienteer.core.boot.loader.util.InitUtils;
-import org.orienteer.core.boot.loader.util.JarUtils;
-import org.orienteer.core.boot.loader.util.metadata.MetadataUtil;
-import org.orienteer.core.boot.loader.util.metadata.OModuleMetadata;
+import org.orienteer.core.boot.loader.util.OModuleMetadata;
+import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +22,7 @@ import java.util.Set;
 public class OrienteerClassLoader extends URLClassLoader {
 	
 	private final MavenResolver resolver         = MavenResolver.get();
-	private final Path modulesFolder             = InitUtils.getPathToModulesFolder();
-    private final boolean dependenciesFromPomXml = InitUtils.isDependenciesResolveFromPomXml();
+    private final boolean dependenciesFromPomXml = OrienteerClassLoaderUtil.needLoadDependenciesFromPomXml();
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoader.class);
 
@@ -43,8 +40,8 @@ public class OrienteerClassLoader extends URLClassLoader {
 	private OrienteerClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
 
-        Map<Path, OModuleMetadata> modules = MetadataUtil.readModulesAsMap();
-        List<Path> jars = JarUtils.readJarsInFolder(modulesFolder);
+        Map<Path, OModuleMetadata> modules = OrienteerClassLoaderUtil.getMetadataModulesInMap();
+        List<Path> jars = OrienteerClassLoaderUtil.getJarsInModulesFolder();
 
         List<OModuleMetadata> modulesForLoad;
         if (modules.isEmpty()) {
@@ -92,8 +89,8 @@ public class OrienteerClassLoader extends URLClassLoader {
 	private List<OModuleMetadata> createModules(List<Path> jars) {
         List<OModuleMetadata> modulesForLoad = resolver.getResolvedModulesMetadata(jars, dependenciesFromPomXml);
         if (modulesForLoad.size() > 0) {
-            MetadataUtil.createMetadata(modulesForLoad);
-        } else MetadataUtil.deleteMetadata();
+            OrienteerClassLoaderUtil.createMetadata(modulesForLoad);
+        } else OrienteerClassLoaderUtil.deleteMetadataFile();
 
         return modulesForLoad;
     }
@@ -117,16 +114,16 @@ public class OrienteerClassLoader extends URLClassLoader {
 
         if (modulesForDelete.size() > 0) {
             if (modulesForDelete.size() == modules.values().size()) {
-                MetadataUtil.deleteMetadata();
+                OrienteerClassLoaderUtil.deleteMetadataFile();
             } else {
-                MetadataUtil.deleteModulesFromMetadata(modulesForDelete);
+                OrienteerClassLoaderUtil.deleteModuleFromMetadata(modulesForDelete);
             }
         }
         if (modulesForWrite.size() > 0) {
-            MetadataUtil.addModulesToMetadata(modulesForWrite);
+            OrienteerClassLoaderUtil.updateModulesInMetadata(modulesForWrite);
         }
 
-        modules = MetadataUtil.readModulesAsMap();
+        modules = OrienteerClassLoaderUtil.getMetadataModulesForLoadInMap();
 
         return getModulesForLoad(modules.values());
     }

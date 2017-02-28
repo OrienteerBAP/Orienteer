@@ -10,12 +10,7 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.*;
-import org.orienteer.core.boot.loader.util.InitUtils;
-import org.orienteer.core.boot.loader.util.JarUtils;
-import org.orienteer.core.boot.loader.util.ODependenciesNotResolvedException;
-import org.orienteer.core.boot.loader.util.PomXmlUtils;
-import org.orienteer.core.boot.loader.util.aether.AetherUtils;
-import org.orienteer.core.boot.loader.util.metadata.OModuleMetadata;
+import org.orienteer.core.boot.loader.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +24,6 @@ import java.util.Set;
  * @author Vitaliy Gonchar
  */
 public class MavenResolver {
-    private final RepositorySystem system               = AetherUtils.getRepositorySystem();
-    private final RepositorySystemSession session       = AetherUtils.getRepositorySystemSession(system, InitUtils.getMavenLocalRepository());
-    private final List<RemoteRepository> repositories   = InitUtils.getRemoteRepositoriesProvider();
-    private final Map<String, String> orienteerVersions = InitUtils.getOrienteerDependenciesVersions();
     private int idCounter = 0;
 
     private static final Logger LOG = LoggerFactory.getLogger(MavenResolver.class);
@@ -84,7 +75,7 @@ public class MavenResolver {
             file = null;
         }
 
-        Optional<Artifact> dependencyOptional = PomXmlUtils.readGroupArtifactVersionInPomXml(pomXml.get());
+        Optional<Artifact> dependencyOptional = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml.get());
         if (!dependencyOptional.isPresent()) return Optional.absent();
         Artifact dependency = dependencyOptional.get();
 
@@ -150,7 +141,7 @@ public class MavenResolver {
         List<Artifact> artifacts = null;
         try {
             if (depsFromJar) {
-                Optional<Path> pomFromJar = JarUtils.getPomFromJar(pathToJar);
+                Optional<Path> pomFromJar = OrienteerClassLoaderUtil.getPomFromJar(pathToJar);
                 results = resolveDependenciesFromPomXml(pomFromJar.get());
             } else results = resolveDependencies(groupArtifactVersion);
             artifacts = getArtifactsFromArtifactResult(results);
@@ -174,7 +165,7 @@ public class MavenResolver {
     }
 
     private List<ArtifactResult> resolveDependenciesFromPomXml(Path pomXml) {
-        Set<Artifact> dependencies = PomXmlUtils.readDependencies(pomXml, orienteerVersions);
+        Set<Artifact> dependencies = OrienteerClassLoaderUtil.readDependencies(pomXml);
         return resolveDependencies(dependencies);
     }
 
@@ -191,24 +182,17 @@ public class MavenResolver {
         if (Strings.isNullOrEmpty(groupArtifactVersion)) return Lists.newArrayList();
 
         Artifact artifact = new DefaultArtifact(groupArtifactVersion);
-        ArtifactDescriptorRequest descriptorRequest =
-                AetherUtils.createArtifactDescriptionRequest(artifact, repositories);
-        ArtifactDescriptorResult descriptorResult = system.readArtifactDescriptor(session, descriptorRequest);
-        List<ArtifactRequest> requests = AetherUtils.createArtifactRequests(descriptorResult);
-        return AetherUtils.resolveArtifactRequests(requests, system, session);
+        return OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
     }
 
     private List<ArtifactResult> resolveDependencies(Set<Artifact> dependencies) {
         if (dependencies == null) return Lists.newArrayList();
-        List<ArtifactRequest> requests = AetherUtils.createArtifactRequests(
-                Collections.unmodifiableSet(dependencies), repositories);
-        return AetherUtils.resolveArtifactRequests(requests, system, session);
+        return OrienteerClassLoaderUtil.downloadArtifacts(dependencies);
     }
 
     private Optional<Artifact> resolveArtifact(String groupArtifactVersion) {
         Artifact artifact = new DefaultArtifact(groupArtifactVersion);
-        ArtifactRequest artifactRequest = AetherUtils.createArtifactRequest(artifact, repositories);
-        return AetherUtils.resolveArtifactRequest(artifactRequest, system, session);
+        return OrienteerClassLoaderUtil.downloadArtifact(artifact);
     }
 
     private Optional<Path> getPomXml(Path file) {
@@ -216,7 +200,7 @@ public class MavenResolver {
         if (file.toString().endsWith(".xml")) {
             pomXml = Optional.of(file);
         } else if (file.toString().endsWith(".jar")) {
-            pomXml = JarUtils.getPomFromJar(file);
+            pomXml = OrienteerClassLoaderUtil.getPomFromJar(file);
         }
         return pomXml;
     }
@@ -237,6 +221,6 @@ public class MavenResolver {
     }
 
     private Optional<String> getInitializer(Path pathToJarFile) {
-        return JarUtils.searchOrienteerInitModule(pathToJarFile);
+        return OrienteerClassLoaderUtil.searchOrienteerInitModule(pathToJarFile);
     }
 }

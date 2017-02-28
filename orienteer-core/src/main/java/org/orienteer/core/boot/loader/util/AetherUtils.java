@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util.aether;
+package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -19,10 +19,12 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.orienteer.core.boot.loader.util.InitUtils;
+import org.orienteer.core.boot.loader.util.aether.ConsoleRepositoryListener;
+import org.orienteer.core.boot.loader.util.aether.ConsoleTransferListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -30,69 +32,85 @@ import java.util.Set;
  * @author Vitaliy Gonchar
  * Utility class for work with Eclipse Aether.
  */
-public abstract class AetherUtils {
+class AetherUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(AetherUtils.class);
 
     private static final String JAR_EXTENSION = "jar";
     private static final String ARTIFACT_TEMPLATE = "%s:%s:%s:%s";
 
+    private final Set<Artifact> parentDependencies;
+    private final RepositorySystem system;
+    private final RepositorySystemSession session;
+    private final List<RemoteRepository> repositories;
 
-    private static Set<Artifact> parentDependencies = InitUtils.getOrienteerParentDependencies();
-
-    private static Dependency getChangedDependency(Artifact artifact) {
-
-        String groupId = artifact.getGroupId();
-        String artifactId = artifact.getArtifactId();
-        String versionId = artifact.getVersion();
-        Artifact newArtifact = new DefaultArtifact(
-                String.format(ARTIFACT_TEMPLATE, groupId, artifactId, JAR_EXTENSION, versionId));
-        Dependency dependency = new Dependency(newArtifact, "");
-
-        return dependency;
+    AetherUtils(InitUtils initUtils) {
+        this.parentDependencies = initUtils.getOrienteerParentDependencies();
+        this.system = getRepositorySystem();
+        this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
+        this.repositories = initUtils.getRemoteRepositories();
     }
 
-    public static List<ArtifactRequest> createArtifactRequests(ArtifactDescriptorResult descriptorResult) {
+    public List<ArtifactResult> resolveArtifact(Artifact artifact) {
+        ArtifactDescriptorRequest descriptorRequest = createArtifactDescriptionRequest(artifact);
+        ArtifactDescriptorResult descriptorResult = null;
+        try {
+            descriptorResult = system.readArtifactDescriptor(session, descriptorRequest);
+        } catch (ArtifactDescriptorException e) {
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        List<ArtifactRequest> requests = createArtifactRequests(descriptorResult);
+        return resolveArtifactRequests(requests);
+    }
+
+    public List<ArtifactResult> downloadArtifacts(Set<Artifact> artifacts) {
+        List<ArtifactRequest> artifactRequests = createArtifactRequests(artifacts);
+        return resolveArtifactRequests(artifactRequests);
+    }
+
+    public Optional<Artifact> downloadArtifact(Artifact artifact) {
+        ArtifactRequest artifactRequest = createArtifactRequest(artifact);
+        return resolveArtifactRequest(artifactRequest);
+    }
+
+    private List<ArtifactRequest> createArtifactRequests(ArtifactDescriptorResult descriptorResult) {
         List<Dependency> dependencies = parseDependencies(descriptorResult.getDependencies());
         dependencies.addAll(parseDependencies(descriptorResult.getManagedDependencies()));
-        return createArtifactRequests(dependencies, descriptorResult.getRepositories());
+        return createArtifactRequests(dependencies);
     }
 
-    private static List<ArtifactRequest> createArtifactRequests(List<Dependency> dependencies,
-                                                               List<RemoteRepository> repositories) {
+    private List<ArtifactRequest> createArtifactRequests(List<Dependency> dependencies) {
         List<ArtifactRequest> artifactRequests = Lists.newArrayList();
         dependencies = parseDependencies(dependencies);
         for (Dependency dependency : dependencies) {
-            artifactRequests.add(createArtifactRequest(dependency.getArtifact(), repositories));
+            artifactRequests.add(createArtifactRequest(dependency.getArtifact()));
         }
         return artifactRequests;
     }
 
-    public static List<ArtifactRequest> createArtifactRequests(Set<Artifact> dependencies,
-                                                               List<RemoteRepository> repositories) {
+    private List<ArtifactRequest> createArtifactRequests(Set<Artifact> dependencies) {
         List<ArtifactRequest> requests = Lists.newArrayList();
         for (Artifact dependency : differenceWithCoreDependencies(dependencies)) {
-            requests.add(createArtifactRequest(dependency, repositories));
+            requests.add(createArtifactRequest(dependency));
         }
         return requests;
     }
 
-    public static ArtifactRequest createArtifactRequest(Artifact artifact, List<RemoteRepository> repositories) {
+    private ArtifactRequest createArtifactRequest(Artifact artifact) {
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(artifact);
         artifactRequest.setRepositories(repositories);
         return artifactRequest;
     }
 
-    public static ArtifactDescriptorRequest createArtifactDescriptionRequest(Artifact artifact,
-                                                                             List<RemoteRepository> repositories) {
+    private ArtifactDescriptorRequest createArtifactDescriptionRequest(Artifact artifact) {
         ArtifactDescriptorRequest descriptorRequest = new ArtifactDescriptorRequest();
         descriptorRequest.setArtifact(artifact);
         descriptorRequest.setRepositories(repositories);
         return descriptorRequest;
     }
 
-    private static List<Dependency> parseDependencies(List<Dependency> unchagedDeps) {
+    private List<Dependency> parseDependencies(List<Dependency> unchagedDeps) {
         List<Dependency> changedDeps = Lists.newArrayList();
         for (Dependency dependency : unchagedDeps) {
             Artifact artifact = dependency.getArtifact();
@@ -110,9 +128,7 @@ public abstract class AetherUtils {
         return changedDeps;
     }
 
-    public static Optional<Artifact> resolveArtifactRequest(ArtifactRequest request,
-                                                        RepositorySystem system,
-                                                        RepositorySystemSession session) {
+    private Optional<Artifact> resolveArtifactRequest(ArtifactRequest request) {
         Optional<Artifact> artifact = Optional.absent();
         try {
              ArtifactResult result = system.resolveArtifact(session, request);
@@ -124,9 +140,7 @@ public abstract class AetherUtils {
         return artifact;
     }
 
-    public static List<ArtifactResult> resolveArtifactRequests(List<ArtifactRequest> requests,
-                                                     RepositorySystem system,
-                                                     RepositorySystemSession session) {
+    private List<ArtifactResult> resolveArtifactRequests(List<ArtifactRequest> requests) {
         List<ArtifactResult> artifactResults = Lists.newArrayList();
         try {
              artifactResults = system.resolveArtifacts(session, requests);
@@ -140,7 +154,7 @@ public abstract class AetherUtils {
         return artifactResults;
     }
 
-    private static boolean containsInCoreDependencies(Artifact dependency) {
+    private boolean containsInCoreDependencies(Artifact dependency) {
         for (Artifact d : parentDependencies) {
             if (d.getGroupId().equals(dependency.getGroupId())
                     && d.getArtifactId().equals(dependency.getArtifactId())
@@ -151,7 +165,7 @@ public abstract class AetherUtils {
         return false;
     }
 
-    private static Set<Artifact> differenceWithCoreDependencies(Set<Artifact> dependencies) {
+    private Set<Artifact> differenceWithCoreDependencies(Set<Artifact> dependencies) {
         Set<Artifact> artifacts = Sets.newHashSet();
         for (Artifact d : dependencies) {
            if (!containsInCoreDependencies(d)) {
@@ -161,7 +175,7 @@ public abstract class AetherUtils {
         return artifacts;
     }
 
-    public static RepositorySystem getRepositorySystem() {
+    private RepositorySystem getRepositorySystem() {
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
         locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
         locator.addService(TransporterFactory.class, FileTransporterFactory.class);
@@ -178,7 +192,7 @@ public abstract class AetherUtils {
         return locator.getService(RepositorySystem.class);
     }
 
-    public static RepositorySystemSession getRepositorySystemSession(RepositorySystem system, String  localRepositoryPath) {
+    private RepositorySystemSession getRepositorySystemSession(RepositorySystem system, String  localRepositoryPath) {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 
         LocalRepository localRepo = new LocalRepository(localRepositoryPath);
@@ -189,5 +203,17 @@ public abstract class AetherUtils {
             session.setRepositoryListener(new ConsoleRepositoryListener());
         }
         return session;
+    }
+
+    private Dependency getChangedDependency(Artifact artifact) {
+
+        String groupId = artifact.getGroupId();
+        String artifactId = artifact.getArtifactId();
+        String versionId = artifact.getVersion();
+        Artifact newArtifact = new DefaultArtifact(
+                String.format(ARTIFACT_TEMPLATE, groupId, artifactId, JAR_EXTENSION, versionId));
+        Dependency dependency = new Dependency(newArtifact, "");
+
+        return dependency;
     }
 }

@@ -23,7 +23,7 @@ import java.util.Set;
  * @author Vitaliy Gonchar
  * Class for work with pom.xml which is located in module jar file.
  */
-public abstract class PomXmlUtils {
+class PomXmlUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(PomXmlUtils.class);
 
@@ -38,7 +38,18 @@ public abstract class PomXmlUtils {
     private static final String PROPERTIES_PROJECT_VERSION  = "${project.version}";
     private static final String WITHOUT_VERSION             = "without-version";
 
-    public static Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
+    private Map<String, String> orienteerVersions;
+
+    public PomXmlUtils setOrienteerVersions(Map<String, String> orienteerVersions) {
+        this.orienteerVersions = orienteerVersions;
+        return this;
+    }
+
+    public Map<String, String> getOrienteerVersions() {
+        return orienteerVersions;
+    }
+
+    public Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
         XMLInputFactory factory = XMLInputFactory.newFactory();
         Optional<Artifact> dependency = Optional.absent();
         try {
@@ -100,14 +111,12 @@ public abstract class PomXmlUtils {
         return dependency;
     }
 
-    public static Set<Artifact> readDependencies(Path pomXml, Map<String, String>...baseVersions){
+    public Set<Artifact> readDependencies(Path pomXml) {
         Set<Artifact> dependencies =  Sets.newHashSet();
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
             Map<String, String> versions = getVersionsInProperties(Files.newInputStream(pomXml));
-            for (Map<String, String> map : baseVersions) {
-                versions.putAll(map);
-            }
+            if (orienteerVersions != null) versions.putAll(orienteerVersions);
             XMLStreamReader streamReader = null;
             try {
                 streamReader = factory.createXMLStreamReader(
@@ -138,7 +147,7 @@ public abstract class PomXmlUtils {
         return dependencies;
     }
 
-    public static Map<String, String> getVersionsInProperties(Path pathToPomXml) {
+    public Map<String, String> getVersionsInProperties(Path pathToPomXml) {
         InputStream in = null;
         try {
             in = Files.newInputStream(pathToPomXml);
@@ -149,7 +158,7 @@ public abstract class PomXmlUtils {
         return in != null ? getVersionsInProperties(in) : Maps.<String, String>newHashMap();
     }
 
-    public static Map<String, String> getVersionsInProperties(InputStream in) {
+    public Map<String, String> getVersionsInProperties(InputStream in) {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         Map<String, String> versions = Maps.newHashMap();
         boolean isReadProjectVersion = false;
@@ -194,7 +203,7 @@ public abstract class PomXmlUtils {
         return versions;
     }
 
-    private static String getParrentVersion(XMLStreamReader streamReader) throws XMLStreamException {
+    private String getParrentVersion(XMLStreamReader streamReader) throws XMLStreamException {
         String version = null;
         while (streamReader.hasNext()) {
             streamReader.next();
@@ -210,7 +219,7 @@ public abstract class PomXmlUtils {
         return version != null ? version : WITHOUT_VERSION;
     }
 
-    private static Map<String, String> parseVersionProperty(XMLStreamReader streamReader)
+    private Map<String, String> parseVersionProperty(XMLStreamReader streamReader)
             throws XMLStreamException {
         Map<String, String> versions = Maps.newHashMap();
         while (!(streamReader.getEventType() == XMLStreamReader.END_ELEMENT)) {
@@ -231,7 +240,7 @@ public abstract class PomXmlUtils {
         return versions;
     }
 
-    private static Optional<Artifact> parseDependency(XMLStreamReader streamReader,
+    private Optional<Artifact> parseDependency(XMLStreamReader streamReader,
                                                        Map<String, String> versions)
             throws XMLStreamException {
         String groupId = null;
@@ -275,16 +284,16 @@ public abstract class PomXmlUtils {
         return dependencyOptional;
     }
 
-    private static String getGAV(String group, String artifact, String version) {
+    private String getGAV(String group, String artifact, String version) {
         return String.format("%s:%s:%s", group, artifact, version);
     }
 
-    private static boolean isLinkToVersion(String artifactVersion) {
+    private boolean isLinkToVersion(String artifactVersion) {
         return artifactVersion != null &&
                 (artifactVersion.contains("$") || artifactVersion.contains("{") || artifactVersion.contains("}"));
     }
 
-    private static String getLinkToVersion(String artifactVersion) {
+    private String getLinkToVersion(String artifactVersion) {
         return !artifactVersion.startsWith("$") ? "${" + artifactVersion + "}" : artifactVersion;
     }
 

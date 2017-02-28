@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util.metadata;
+package org.orienteer.core.boot.loader.util;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -16,8 +16,6 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.orienteer.core.boot.loader.util.metadata.MetadataUtil.*;
-
 /**
  * @author Vitaliy Gonchar
  */
@@ -33,7 +31,7 @@ class OMetadataUpdater {
 
     @VisibleForTesting void create(List<OModuleMetadata> modules) {
         Document document = DocumentHelper.createDocument();
-        Element root = document.addElement(METADATA);
+        Element root = document.addElement(MetadataUtil.METADATA);
         addModules(modules, root);
         writeToFile(document);
     }
@@ -42,11 +40,11 @@ class OMetadataUpdater {
         Document document = readFromFile();
         if (document == null) throw new UnsupportedOperationException("Cannot open metadata.xml for update it.");
         Element rootElement = document.getRootElement();
-        List<Node> modules = rootElement.elements(MODULE);
+        List<Node> modules = rootElement.elements(MetadataUtil.MODULE);
         boolean isUpdate = false;
         for (Node node : modules) {
             Element element = (Element) node;
-            Element idElement = (Element) element.elements(ID).get(0);
+            Element idElement = (Element) element.elements(MetadataUtil.ID).get(0);
             if (Integer.valueOf(idElement.getText()) == module.getId()) {
                 Iterator iterator = element.elementIterator();
                 changeModule(iterator, module);
@@ -63,12 +61,12 @@ class OMetadataUpdater {
         Document document = readFromFile();
         if (document == null) throw new UnsupportedOperationException("Cannot open metadata.xml for update it.");
         Element rootElement = document.getRootElement();
-        List<Node> modules = rootElement.elements(MODULE);
+        List<Node> modules = rootElement.elements(MetadataUtil.MODULE);
         List<OModuleMetadata> updatedModules = Lists.newArrayList();
         int id = 0;
         for (Node node : modules) {
             Element element = (Element) node;
-            Element idElement = (Element) element.elements(ID).get(0);
+            Element idElement = (Element) element.elements(MetadataUtil.ID).get(0);
             int currentId = Integer.valueOf(idElement.getText());
             if (id < currentId) id = currentId;
             OModuleMetadata module = containsInModulesList(currentId, modulesForWrite);
@@ -88,10 +86,10 @@ class OMetadataUpdater {
     @VisibleForTesting void delete(OModuleMetadata module) {
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
-        Iterator<Element> iterator = rootElement.elementIterator(MODULE);
+        Iterator<Element> iterator = rootElement.elementIterator(MetadataUtil.MODULE);
         while (iterator.hasNext()) {
             Element element = iterator.next();
-            String id = element.element(ID).getText();
+            String id = element.element(MetadataUtil.ID).getText();
             if (id.equals(Integer.toString(module.getId()))) {
                 iterator.remove();
                 break;
@@ -103,10 +101,10 @@ class OMetadataUpdater {
     void delete(List<OModuleMetadata> modules) {
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
-        Iterator<Element> iterator = rootElement.elementIterator(MODULE);
+        Iterator<Element> iterator = rootElement.elementIterator(MetadataUtil.MODULE);
         while (iterator.hasNext()) {
             Element element = iterator.next();
-            String id = element.element(ID).getText();
+            String id = element.element(MetadataUtil.ID).getText();
             OModuleMetadata metadata = containsInModulesList(Integer.valueOf(id), modules);
             if (metadata != null) {
                 iterator.remove();
@@ -122,15 +120,15 @@ class OMetadataUpdater {
     }
 
     private void addModule(OModuleMetadata module, Element root) {
-        Element moduleTag = root.addElement(MODULE);
-        moduleTag.addElement(ID).addText("" + module.getId());
-        moduleTag.addElement(INITIALIZER).addText(module.getInitializerName());
-        moduleTag.addElement(LOAD).addText(Boolean.toString(module.isLoad()));
-        Element maven = moduleTag.addElement(MAVEN);
-        addMavenDependency(module.getMainArtifact(), maven, MAIN_DEPENDENCY);
-        Element dependencies = maven.addElement(DEPENDENCIES);
+        Element moduleTag = root.addElement(MetadataUtil.MODULE);
+        moduleTag.addElement(MetadataUtil.ID).addText("" + module.getId());
+        moduleTag.addElement(MetadataUtil.INITIALIZER).addText(module.getInitializerName());
+        moduleTag.addElement(MetadataUtil.LOAD).addText(Boolean.toString(module.isLoad()));
+        Element maven = moduleTag.addElement(MetadataUtil.MAVEN);
+        addMavenDependency(module.getMainArtifact(), maven, MetadataUtil.MAIN_DEPENDENCY);
+        Element dependencies = maven.addElement(MetadataUtil.DEPENDENCIES);
         for (Artifact artifact : module.getDependencies()) {
-            addMavenDependency(artifact, dependencies, DEPENDENCY);
+            addMavenDependency(artifact, dependencies, MetadataUtil.DEPENDENCY);
         }
     }
 
@@ -138,17 +136,17 @@ class OMetadataUpdater {
         while (iterator.hasNext()) {
             Element element = (Element) iterator.next();
             switch (element.getName()) {
-                case INITIALIZER:
+                case MetadataUtil.INITIALIZER:
                     element.setText(module.getInitializerName());
                     break;
-                case LOAD:
+                case MetadataUtil.LOAD:
                     element.setText(Boolean.toString(module.isLoad()));
                     break;
-                case MAVEN:
-                    Element mainDependency = element.element(MAIN_DEPENDENCY);
-                    Element dependencies = element.element(DEPENDENCIES);
+                case MetadataUtil.MAVEN:
+                    Element mainDependency = element.element(MetadataUtil.MAIN_DEPENDENCY);
+                    Element dependencies = element.element(MetadataUtil.DEPENDENCIES);
                     changeMavenDependency(mainDependency, module.getMainArtifact());
-                    changeMavenDependencies(dependencies.elements(DEPENDENCY), module.getDependencies());
+                    changeMavenDependencies(dependencies.elements(MetadataUtil.DEPENDENCY), module.getDependencies());
                     break;
             }
         }
@@ -169,16 +167,16 @@ class OMetadataUpdater {
         while (iterator.hasNext()) {
             Element element = (Element) iterator.next();
             switch (element.getName()) {
-                case GROUP_ID:
+                case MetadataUtil.GROUP_ID:
                     element.setText(artifact.getGroupId());
                     break;
-                case ARTIFACT_ID:
+                case MetadataUtil.ARTIFACT_ID:
                     element.setText(artifact.getArtifactId());
                     break;
-                case VERSION:
+                case MetadataUtil.VERSION:
                     element.setText(artifact.getVersion());
                     break;
-                case JAR:
+                case MetadataUtil.JAR:
                     element.setText(artifact.getFile().getAbsolutePath());
                     break;
             }
@@ -201,8 +199,8 @@ class OMetadataUpdater {
     }
 
     private Artifact containsInDependencies(Element element, List<Artifact> dependencies) {
-        String groupId = element.element(GROUP_ID).getText();
-        String artifactId = element.element(ARTIFACT_ID).getText();
+        String groupId = element.element(MetadataUtil.GROUP_ID).getText();
+        String artifactId = element.element(MetadataUtil.ARTIFACT_ID).getText();
         for (Artifact dependency : dependencies) {
             if (dependency.getGroupId().equals(groupId) && dependency.getArtifactId().equals(artifactId)) {
                 return dependency;
@@ -220,10 +218,10 @@ class OMetadataUpdater {
 
     private Element addMavenDependency(Artifact artifact, Element element, String tag) {
         Element mavenElement = element.addElement(tag);
-        mavenElement.addElement(GROUP_ID).addText(artifact.getGroupId());
-        mavenElement.addElement(ARTIFACT_ID).addText(artifact.getArtifactId());
-        mavenElement.addElement(VERSION).addText(artifact.getVersion());
-        mavenElement.addElement(JAR).addText(artifact.getFile().getAbsolutePath());
+        mavenElement.addElement(MetadataUtil.GROUP_ID).addText(artifact.getGroupId());
+        mavenElement.addElement(MetadataUtil.ARTIFACT_ID).addText(artifact.getArtifactId());
+        mavenElement.addElement(MetadataUtil.VERSION).addText(artifact.getVersion());
+        mavenElement.addElement(MetadataUtil.JAR).addText(artifact.getFile().getAbsolutePath());
         return mavenElement;
     }
 
