@@ -1,12 +1,18 @@
 package org.orienteer.core.service;
 
 import com.google.common.collect.Iterables;
+import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
+import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.google.inject.util.Modules;
+
+import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WicketFilter;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.LookupResourceHelper;
@@ -47,36 +53,25 @@ public class OrienteerInitModule extends ServletModule {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerInitModule.class);
 	
-	public static final String ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME = "orienteer.qualifier";
-	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER 		= "orienteer";
-	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT 		= "orienteer-default.properties";
 	public static final String ORIENTDB_KEY_PREFIX							= "orientdb.";
 	
+	private final Properties properties;
 	
-	public final static Properties PROPERTIES_DEFAULT = new Properties();
-
-
-	private static final LookupResourceHelper.StackedResourceLookuper STACK_LOOKUPER = 
-			new LookupResourceHelper.StackedResourceLookuper(LookupResourceHelper.SystemPropertyFileLookuper.INSTANCE,
-															 LookupResourceHelper.SystemPropertyURLLookuper.INSTANCE,
-															 LookupResourceHelper.UpDirectoriesFileLookuper.INSTANCE,
-															 LookupResourceHelper.DirFileLookuper.CONFIG_DIR_INSTANCE,
-															 LookupResourceHelper.SystemPropertyResourceLookuper.INSTANCE);
-	
-	static {
-		InputStream propertiesDefaultInputStream
-			= Thread.currentThread().getContextClassLoader().getResourceAsStream(PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT);
-		try {
-			PROPERTIES_DEFAULT.load(propertiesDefaultInputStream);
-		} catch (IOException ex) {
-			LOG.error("Critical system resource '"+PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT+"' was not found. Terminating. ");
-			throw new ExceptionInInitializerError(ex);
-		}
+	public OrienteerInitModule(Properties properties) {
+		this.properties = properties;
 	}
+	
+	
 	
 	@Override
 	protected void configureServlets() {
-		Properties properties = retrieveProperties();
+		Map<String, String> params = new HashMap<String, String>();    
+        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");  
+        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
+        params.put("injectorContextAttribute", Injector.class.getName());
+        bind(WicketFilter.class).in(Singleton.class);
+        filter("/*").through(WicketFilter.class, params);  
+		
 		Names.bindProperties(binder(), properties);
 		bindOrientDbProperties(properties);
 		String applicationClass = properties.getProperty("orienteer.application");
@@ -104,8 +99,7 @@ public class OrienteerInitModule extends ServletModule {
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 
-		install(loadFromClasspath(new OrienteerFilterInitModule(),
-				new OrienteerModule(), new OrienteerOutsideModule()));
+		install(loadFromClasspath(new OrienteerModule()));
 	}
 	
 	protected void bindOrientDbProperties(Properties properties) {
@@ -117,81 +111,7 @@ public class OrienteerInitModule extends ServletModule {
 		}
 	}
 	
-	/**
-	 * Retrieve startup properties 
-	 * @return not null {@link Properties}
-	 */
-	public static Properties retrieveProperties() {
-		Properties loadedProperties = new Properties();
-		loadedProperties.putAll(PROPERTIES_DEFAULT);
-		String qualifier = System.getProperty(ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME);
-		if(!Strings.isEmpty(qualifier))
-		{
-			LOG.info("Orienteer startup properties qualifier: "+qualifier);
-			Properties qualifierProperties = retrieveProperties(qualifier);
-			if(qualifierProperties!=null)
-			{
-				loadedProperties.putAll(qualifierProperties);
-				loadedProperties = retrieveSystemProperties(loadedProperties);
-				return loadedProperties;
-			}
-			else
-			{
-				LOG.info("Properties for qualifier '"+qualifier+"' was not found.");
-			}
-		}
-		LOG.info("Using default orienteer startup properties qualifier");
-		Properties defaultQualifierProperties = retrieveProperties(DEFAULT_ORENTEER_PROPERTIES_QUALIFIER);
-		if(defaultQualifierProperties!=null)
-		{
-			loadedProperties.putAll(defaultQualifierProperties);
-			loadedProperties = retrieveSystemProperties(loadedProperties);
-			return loadedProperties;
-		}
-		else
-		{
-			LOG.info("Properties for qualifier '"+qualifier+"' was not found. Using embedded.");
-			loadedProperties = retrieveSystemProperties(loadedProperties);
-			return loadedProperties;
-		}
-		
-	}
-
-	/**
-	 * Lookup {@link Properties} for a specified qualifier
-	 * @param qualifier qualifier to be used during startup
-	 * @return {@link Properties} for a qualifier or null
-	 */
-	public static Properties retrieveProperties(String qualifier) {
-		String identification = qualifier+".properties";
-		URL propertiesURL = STACK_LOOKUPER.lookup(identification);
-		if(propertiesURL==null) return null;
-		Properties ret = new Properties();
-		try {
-			ret.load(propertiesURL.openStream());
-			LOG.info("Startup properties was loaded from '"+propertiesURL+"' for qualifier '"+qualifier+"'");
-			return ret;
-		} catch (IOException e) {
-			LOG.error("Can't read from properties file '"+propertiesURL+"' for qualifier '"+qualifier+"'", e);
-			return null;
-		}
-	}
-
-	private static Properties retrieveSystemProperties(Properties loadedProperties) {
-		//Try to load from OS env 
-		Map<String, String> osProperties = System.getenv();
-		for(Map.Entry<String, String> entry : osProperties.entrySet()) {
-			String env = entry.getKey().replace('_', '.');
-			if(loadedProperties.containsKey(env)) loadedProperties.setProperty(env, entry.getValue());
-			else {
-				env = env.toLowerCase();
-				if(loadedProperties.containsKey(env)) loadedProperties.setProperty(env, entry.getValue());
-			}
-		}
-		//Load from Java system properties
-		loadedProperties.putAll(System.getProperties());
-		return loadedProperties;
-	}
+	
 	
     public Module loadFromClasspath(Module... initModules) {
     	List<Module> allModules = new LinkedList<Module>();

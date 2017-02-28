@@ -1,4 +1,4 @@
-package org.orienteer.core.service.loader.util;
+package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

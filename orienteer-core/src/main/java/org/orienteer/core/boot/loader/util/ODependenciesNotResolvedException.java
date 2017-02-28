@@ -1,4 +1,4 @@
-package org.orienteer.core.service.loader.util;
+package org.orienteer.core.boot.loader.util;
 
 /**
  * @author Vitaliy Gonchar

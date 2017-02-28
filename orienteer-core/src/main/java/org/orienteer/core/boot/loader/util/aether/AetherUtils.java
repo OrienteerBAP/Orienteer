@@ -1,4 +1,4 @@
-package org.orienteer.core.service.loader.util.aether;
+package org.orienteer.core.boot.loader.util.aether;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -19,7 +19,7 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.orienteer.core.service.loader.util.InitUtils;
+import org.orienteer.core.boot.loader.util.InitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

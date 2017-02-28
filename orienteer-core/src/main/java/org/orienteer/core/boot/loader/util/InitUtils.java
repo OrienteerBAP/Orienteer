@@ -1,10 +1,11 @@
-package org.orienteer.core.service.loader.util;
+package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.orienteer.core.service.OrienteerInitModule;
+import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public abstract class InitUtils {
     private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = System.getProperty("user.home") + "/.m2/repository/";
     private static final String PARENT_POM                     = "../pom.xml";
     private static final String CORE_POM                       = "pom.xml";
-    private static final Properties PROPERTIES                 = OrienteerInitModule.retrieveProperties();
+    private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
 
     public static String getMavenLocalRepository() {

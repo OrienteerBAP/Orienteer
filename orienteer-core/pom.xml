@@ -111,13 +111,6 @@
 			<artifactId>metisMenu</artifactId>
 		</dependency>
 
-		<!-- CLASS LOADING -->
-		<dependency>
-			<groupId>org.kevoree.kcl</groupId>
-			<artifactId>org.kevoree.kcl</artifactId>
-			<version>23</version>
-		</dependency>
-
 		<!-- ECLIPSE AETHER -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
