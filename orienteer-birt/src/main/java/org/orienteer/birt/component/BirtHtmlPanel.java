@@ -1,5 +1,6 @@
 package org.orienteer.birt.component;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -16,16 +17,16 @@ public class BirtHtmlPanel  extends AbstractBirtPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public BirtHtmlPanel(String id,String reportFileName) {
+	public BirtHtmlPanel(String id,String reportFileName) throws EngineException, FileNotFoundException {
 		super(id, reportFileName);
 	}
 	
 
-	public BirtHtmlPanel(String id, String reportFileName, Map<String, Object> parameters) {
+	public BirtHtmlPanel(String id, String reportFileName, Map<String, Object> parameters) throws EngineException, FileNotFoundException {
 		super(id, reportFileName, parameters);
 	}
 
-	public BirtHtmlPanel(String id, InputStream report, Map<String, Object> parameters) {
+	public BirtHtmlPanel(String id, InputStream report, Map<String, Object> parameters) throws EngineException {
 		super(id, report, parameters);
 	}
 

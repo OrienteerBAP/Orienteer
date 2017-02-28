@@ -37,11 +37,6 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	protected static final String cacheExtencion = ".rptdocument";
 	protected static final String cacheFolder = "temp/";
 	
-	
-	private boolean cacheHasMaked = false;
-	//private String reportName;
-	private InputStream reportInputStream = null;
-	
 	private long currentPage = 0;
 	private long pagesCount = 1;
 
@@ -50,64 +45,38 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	private Map<String, Object> parameters;
 	
 	
-	public AbstractBirtPanel(String id,String reportFileName){
+	public AbstractBirtPanel(String id,String reportFileName) throws EngineException, FileNotFoundException{
 		this(id,reportFileName,new HashMap<String, Object>());
 	}
 
-	public AbstractBirtPanel(String id,String reportFileName,Map<String, Object> parameters){
+	public AbstractBirtPanel(String id,String reportFileName,Map<String, Object> parameters) throws EngineException, FileNotFoundException{
 		super(id);
 		
-		try {
-			reportInputStream = new FileInputStream(reportFileName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+
+		FileInputStream reportInputStream = new FileInputStream(reportFileName);
+
 		this.parameters = parameters;
-		init();
+		init(reportInputStream);
 	}
 
-	public AbstractBirtPanel(String id,InputStream report,Map<String, Object> parameters){
+	public AbstractBirtPanel(String id,InputStream report,Map<String, Object> parameters) throws EngineException{
 		super(id);
-		reportInputStream = report;
 		this.parameters = parameters;
-		init();
+		init(report);
 	}
 	
-	private void init() {
+	private void init(InputStream report) throws EngineException {
 		reportHash = makeReportHash();
 		Component reportComponent = new Label(reportComponentName,""); 
 		reportComponent.setEscapeModelStrings(false);
 		add(reportComponent);
-		IReportDocument cache = getReportCache();
+		IReportDocument cache = getReportCache(report);
 		pagesCount = cache.getPageCount();
 		cache.close();
 	}
-	/*
-	private String getReportName() {
-		return reportName;
-	}
-*/
 	
 	private String makeReportHash() {
 		return Md5Util.getMD5(""+Math.random());
-	}
-	
-	public void setParameters(Map<String, Object> parameters) {
-		if (!this.parameters.equals(parameters)){
-			this.parameters = parameters;
-			cacheHasMaked = false; 
-		}
-	}
-	
-	public Map<String, Object> getParameters() {
-		return parameters;
-	}
-	
-	public void setParameter(String name, Object value){
-		Object oldValue = parameters.get(name);
-		if ((oldValue!=value)||(oldValue!=null && !oldValue.equals(value))){
-			cacheHasMaked = false; 
-		}
 	}
 	
 	public Object getParameter(String name){
@@ -115,33 +84,23 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	}
 	
 	
-	private IReportDocument getReportCache(){
+	private IReportDocument getReportCache(InputStream reportInputStream) throws EngineException{
 		IReportEngine engine = getReportEngine();
-		if (!cacheHasMaked){
-			try {
-				IReportRunnable design;
-				design = engine.openReportDesign(reportInputStream);
-				 
-				//Create task to run the report - use the task to execute the report and save to disk.
-				IRunTask runTask = engine.createRunTask(design); 
-				
-				runTask.setParameterValues(parameters);
-				runTask.run(getReportCachePath());		
-				runTask.close();
-				cacheHasMaked = true;
-			} catch (EngineException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		IReportDocument cache = null;
-		try {
-			cache = engine.openReportDocument(getReportCachePath());
-		} catch (EngineException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		IReportRunnable design;
+		design = engine.openReportDesign(reportInputStream);
+		 
+		//Create task to run the report - use the task to execute the report and save to disk.
+		IRunTask runTask = engine.createRunTask(design); 
+		
+		runTask.setParameterValues(parameters);
+		runTask.run(getReportCachePath());		
+		runTask.close();
+		IReportDocument cache = engine.openReportDocument(getReportCachePath());
 		return cache;
+	}
+	
+	private IReportDocument getReportCache() throws EngineException{
+		return getReportEngine().openReportDocument(getReportCachePath());
 	}
 	
 	private String getReportCachePath() {
@@ -152,7 +111,7 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	
 	private IReportEngine getReportEngine(){
 		Module module = (Module)OrienteerWebApplication.get().getModuleByName("orienteer-birt");
-		return module.engine;
+		return module.getEngine();
 	}
 	
 	private void updateReportOut() throws EngineException {

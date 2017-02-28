@@ -36,7 +36,7 @@ public class BirtHtmlResource extends AbstractResource {
 	        OutputStream outputStream = attributes.getResponse().getOutputStream();
 	        
 			Module module = (Module)OrienteerWebApplication.get().getModuleByName("orienteer-birt");
-			IReportEngine engine = module.engine;
+			IReportEngine engine = module.getEngine();
 			
 			//Open the report design
 			IReportRunnable design;
