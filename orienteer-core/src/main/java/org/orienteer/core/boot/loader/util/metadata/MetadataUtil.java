@@ -56,27 +56,20 @@ public abstract class MetadataUtil {
     private MetadataUtil() {}
 
     public static void createMetadata(List<OModuleMetadata> modules) {
-        OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(METADATA_PATH);
-        try {
-            builder.setCreateNewMetadata(modules)
-                    .build().write();
-            updateModifiedTime();
-        } catch (IOException | XMLStreamException e) {
-            LOG.error("Cannot write to metadata.xml");
-            if(LOG.isDebugEnabled()) e.printStackTrace();
-        }
+        OMetadataUpdater updater = new OMetadataUpdater(METADATA_PATH);
+        updater.create(modules);
     }
 
     public static List<OModuleMetadata> readMetadata() {
-        OModuleReader.OModuleReaderBuilder builder = new OModuleReader.OModuleReaderBuilder(METADATA_PATH);
-        OModuleReader reader = builder.setAllModules(true).build();
-        return reader.read();
+        if (!metadataExists()) return Lists.newArrayList();
+        OMetadataReader reader = new OMetadataReader(METADATA_PATH);
+        return reader.readAllModules();
     }
 
     public static List<OModuleMetadata> readMetadataForLoad() {
-        OModuleReader.OModuleReaderBuilder builder = new OModuleReader.OModuleReaderBuilder(METADATA_PATH);
-        OModuleReader reader = builder.setLoad(true).build();
-        return reader != null ? reader.read() : Lists.<OModuleMetadata>newArrayList();
+        if (!metadataExists()) return Lists.newArrayList();
+        OMetadataReader reader = new OMetadataReader(METADATA_PATH);
+        return reader.readModulesForLoad();
     }
 
     public static Map<Path, OModuleMetadata> readModulesForLoadAsMap() {
@@ -88,14 +81,10 @@ public abstract class MetadataUtil {
     }
 
     private static Map<Path, OModuleMetadata> readModulesAsMap(boolean all, boolean load) {
-        if (!Files.exists(METADATA_PATH)) return Maps.newHashMap();
-
-        OModuleReader.OModuleReaderBuilder builder = new OModuleReader.OModuleReaderBuilder(METADATA_PATH);
-        OModuleReader reader = builder
-                .setAllModules(all)
-                .setLoad(load)
-                .build();
-        List<OModuleMetadata> modules = reader != null ? reader.read() : Lists.<OModuleMetadata>newArrayList();
+        if (!metadataExists()) return Maps.newHashMap();
+        OMetadataReader reader = new OMetadataReader(METADATA_PATH);
+        List<OModuleMetadata> modules = all ? reader.readAllModules() :
+                (load ? reader.readModulesForLoad() : reader.readAllModules());
         Map<Path, OModuleMetadata> result = Maps.newHashMap();
         for (OModuleMetadata module : modules) {
             result.put(module.getMainArtifact().getFile().toPath(), module);
@@ -108,31 +97,8 @@ public abstract class MetadataUtil {
      * @return load modules jars and their resources.
      */
     public static List<Path> readLoadedOnResourcesInMetadata() {
-        OModuleReader.OModuleReaderBuilder builder = new OModuleReader.OModuleReaderBuilder(METADATA_PATH);
-        OModuleReader reader = builder.setLoad(true).build();
         List<Path> resources = Lists.newArrayList();
-
-        List<OModuleMetadata> loadedModules = reader.read();
-        for (OModuleMetadata module : loadedModules) {
-            resources.add(module.getMainArtifact().getFile().toPath());
-            for (Artifact dependency : module.getDependencies()) {
-                resources.add(dependency.getFile().toPath());
-            }
-        }
-
-        return resources;
-    }
-
-    /**
-     * Read only modules with load=false.
-     * @return load modules jars and their resources.
-     */
-    public static List<Path> readLoadedOffResourcesInMetadata() {
-        OModuleReader.OModuleReaderBuilder builder = new OModuleReader.OModuleReaderBuilder(METADATA_PATH);
-        OModuleReader reader = builder.setLoad(false).build();
-        List<Path> resources = Lists.newArrayList();
-
-        List<OModuleMetadata> loadedModules = reader.read();
+        List<OModuleMetadata> loadedModules = readMetadataForLoad();
         for (OModuleMetadata module : loadedModules) {
             resources.add(module.getMainArtifact().getFile().toPath());
             for (Artifact dependency : module.getDependencies()) {
@@ -144,44 +110,21 @@ public abstract class MetadataUtil {
     }
 
     public static void updateMetadata(OModuleMetadata moduleMetadata) {
-        OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(METADATA_PATH);
-        List<OModuleMetadata> modules = Lists.newArrayList();
-        modules.add(moduleMetadata);
-        try {
-            builder.setOverwriteExistsModulesInMetadata(modules)
-                    .build().write();
-            updateModifiedTime();
-        } catch (IOException | XMLStreamException e) {
-            LOG.error("Cannot write to metadata.xml");
-            if(LOG.isDebugEnabled()) e.printStackTrace();
-        }
-
+        if (!metadataExists()) return;
+        OMetadataUpdater updater = new OMetadataUpdater(METADATA_PATH);
+        updater.update(moduleMetadata);
+        updateModifiedTime();
     }
 
     public static void updateMetadata(List<OModuleMetadata> modules) {
-        OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(METADATA_PATH);
-        try {
-            builder.setOverwriteExistsModulesInMetadata(modules)
-                    .build()
-                    .write();
-            updateModifiedTime();
-        } catch (IOException | XMLStreamException e) {
-            LOG.error("Cannot write to metadata.xml");
-            if(LOG.isDebugEnabled()) e.printStackTrace();
-        }
+        if (!metadataExists()) return;
+        OMetadataUpdater updater = new OMetadataUpdater(METADATA_PATH);
+        updater.update(modules);
+        updateModifiedTime();
     }
 
     public static void addModulesToMetadata(List<OModuleMetadata> modules) {
-        OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(METADATA_PATH);
-        try {
-            builder.setAddModulesToExistsMetadata(modules)
-                    .build()
-                    .write();
-            updateModifiedTime();
-        } catch (IOException | XMLStreamException e) {
-            LOG.error("Cannot write to metadata.xml");
-            if(LOG.isDebugEnabled()) e.printStackTrace();
-        }
+        updateMetadata(modules);
     }
 
     public static void deleteMetadata() {
@@ -194,31 +137,17 @@ public abstract class MetadataUtil {
     }
 
     public static void deleteModulesFromMetadata(List<OModuleMetadata> modules) {
-        OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(METADATA_PATH);
-        try {
-            builder.setDelete(modules)
-                    .build()
-                    .write();
-            updateModifiedTime();
-        } catch (IOException | XMLStreamException e) {
-            LOG.error("Cannot write to metadata.xml");
-            if(LOG.isDebugEnabled()) e.printStackTrace();
-        }
+        if (!metadataExists()) return;
+        OMetadataUpdater updater = new OMetadataUpdater(METADATA_PATH);
+        updater.delete(modules);
+        updateModifiedTime();
     }
 
-    public static void deleteModuleFromMetadata(OModuleMetadata moduleMetadata) {
-        OModuleUpdater.OModuleUpdaterBuilder builder = new OModuleUpdater.OModuleUpdaterBuilder(METADATA_PATH);
-        List<OModuleMetadata> modulesToDelete = Lists.newArrayList();
-        modulesToDelete.add(moduleMetadata);
-        try {
-            builder.setDelete(modulesToDelete)
-                    .build()
-                    .write();
-            updateModifiedTime();
-        } catch (IOException | XMLStreamException e) {
-            LOG.error("Cannot write to metadata.xml");
-            if(LOG.isDebugEnabled()) e.printStackTrace();
-        }
+    public static void deleteModuleFromMetadata(OModuleMetadata module) {
+        if (!metadataExists()) return;
+        OMetadataUpdater updater = new OMetadataUpdater(METADATA_PATH);
+        updater.delete(module);
+        updateModifiedTime();
     }
 
     public static boolean isMetadataModify() {
@@ -236,7 +165,15 @@ public abstract class MetadataUtil {
         return isModify;
     }
 
-    private static void updateModifiedTime() throws IOException {
-        lastModified = Files.getLastModifiedTime(METADATA_PATH);
+    private static void updateModifiedTime() {
+        try {
+            lastModified = Files.getLastModifiedTime(METADATA_PATH);
+        } catch (IOException e) {
+            LOG.error("Cannot get last modified time ", e);
+        }
+    }
+
+    private static boolean metadataExists() {
+        return Files.exists(METADATA_PATH);
     }
 }
