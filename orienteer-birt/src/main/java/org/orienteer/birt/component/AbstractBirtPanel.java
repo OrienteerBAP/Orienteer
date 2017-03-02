@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;

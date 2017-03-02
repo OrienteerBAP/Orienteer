@@ -2,8 +2,6 @@ package org.orienteer.birt.component.widget;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.wicket.Component;
@@ -12,14 +10,12 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
-import org.eclipse.birt.report.engine.api.EngineException;
 import org.orienteer.birt.component.BirtPaginatedHtmlPanel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.widget.AbstractWidget;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.sun.mail.handlers.message_rfc822;
 
 /**
  * Base widget for BIRT report widgets with ajax report loading

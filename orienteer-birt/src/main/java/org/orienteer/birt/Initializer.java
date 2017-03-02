@@ -17,7 +17,7 @@ public class Initializer implements IInitializer
 
 	@Override
 	public void destroy(Application application) {
-		OrienteerWebApplication app = (OrienteerWebApplication)application;
+		//OrienteerWebApplication app = (OrienteerWebApplication)application;
 	}
 	
 }

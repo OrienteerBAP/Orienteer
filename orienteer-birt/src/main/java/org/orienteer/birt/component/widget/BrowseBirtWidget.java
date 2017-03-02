@@ -1,8 +1,6 @@
 package org.orienteer.birt.component.widget;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.FAIcon;
-import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
