@@ -31,7 +31,7 @@ import org.orienteer.birt.orientdb.impl.Connection;
  */
 public class Module extends AbstractOrienteerModule{
 
-	public static final String logsPath = "/temp";
+	public static final String LOGS_PATH = "/temp";
 	
 	private IReportEngine engine;
 
@@ -78,7 +78,7 @@ public class Module extends AbstractOrienteerModule{
 						
 		    final EngineConfig config = new EngineConfig( );
 
-		    config.setLogConfig(logsPath, Level.FINE);
+		    config.setLogConfig(LOGS_PATH, Level.FINE);
 		    //config.setFontConfig("c:/temp/fontsConfig.xml");
 
 		    Platform.startup( config );

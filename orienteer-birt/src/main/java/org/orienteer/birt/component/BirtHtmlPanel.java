@@ -8,10 +8,10 @@ import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 
+/**
+ * Show BIRT report as plain embedded html
+ */
 public class BirtHtmlPanel  extends AbstractBirtPanel{
-
-
-
 	/**
 	 * 
 	 */

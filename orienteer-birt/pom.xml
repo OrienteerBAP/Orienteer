@@ -20,9 +20,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.orienteer</groupId>
 	<artifactId>orienteer-birt</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<!-- TODO project name  -->
 	<name>orienteer-birt</name>
 	<description></description>
@@ -53,37 +51,12 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${orienteer.version}</version>
 		</dependency>
-<dependency>
-  <groupId>com.orientechnologies</groupId>
-  <artifactId>orientdb-jdbc</artifactId>
-  <version>2.1.19</version>
-</dependency>
 <!-- BIRT depedencies -->
 
 <dependency>
-    <groupId>org.eclipse.birt.runtime</groupId>
-    <artifactId>org.eclipse.birt.runtime</artifactId>
-    <version>4.4.2</version>
-    <exclusions>
-        <exclusion>
-            <groupId>org.eclipse.birt.runtime</groupId>
-            <artifactId>org.eclipse.osgi.services</artifactId>
-        </exclusion>
-        <exclusion>
-            <groupId>org.eclipse.birt.runtime</groupId>
-            <artifactId>com.ibm.icu</artifactId>
-        </exclusion>
-    </exclusions>
-</dependency>
-<dependency>
-    <groupId>org.eclipse.birt.runtime</groupId>
-    <artifactId>org.eclipse.osgi.services</artifactId>
-    <version>3.4.0.v20140312-2051</version>
-</dependency>
-<dependency>
-    <groupId>org.eclipse.birt.runtime</groupId>
-    <artifactId>com.ibm.icu</artifactId>
-    <version>52.1.1.v201501240615</version>
+  <groupId>org.orienteer.birt.orientdb</groupId>
+  <artifactId>org.orienteer.birt.orientdb</artifactId>
+  <version>2.1.19</version>
 </dependency>
 
 
@@ -242,9 +215,59 @@
                 </dependency>
                 </dependencies>
             </plugin>
-		</plugins>
+		<!-- 
+           <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>${project.build.outputDirectory}/WEB-INF/lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-dependency-plugin</artifactId>
+	            <executions>
+	                <execution>
+	                    <id>copy</id>
+	                    <phase>install</phase>
+	                    <goals>
+	                        <goal>copy-dependencies</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>
+	                          ${project.build.outputDirectory}/WEB-INF/lib
+	                        </outputDirectory>
+	                    </configuration>
+	                </execution>
+	            </executions>
+	        </plugin>
+		 -->
+	        <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-dependency-plugin</artifactId>
+	            <executions>
+	                <execution>
+	                    <id>copy</id>
+	                    <phase>install</phase>
+	                    <goals>
+	                        <goal>copy-dependencies</goal>
+	                    </goals>
+	                    <configuration>
+	                    	<includeArtifactIds>org.orienteer.birt.orientdb</includeArtifactIds>
+	                        <outputDirectory>
+	                          ${project.build.outputDirectory}/WEB-INF/lib
+	                        </outputDirectory>
+	                    </configuration>
+	                </execution>
+	            </executions>
+	        </plugin>		 
+	    </plugins>
 	</build>
-
 	<repositories>
 		<repository>
 			<id>Apache Nexus</id>
@@ -257,4 +280,9 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	<parent>
+		<groupId>org.orienteer</groupId>
+		<artifactId>orienteer-parent</artifactId>
+		<version>1.3-SNAPSHOT</version>
+	</parent>
 </project>

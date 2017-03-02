@@ -8,9 +8,11 @@ import org.orienteer.core.widget.Widget;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * BIRT report for list of objects
+ */
 
 @Widget(id="birt-report", domain="browse", oClass=BrowseBirtWidget.OCLASS_NAME, order=10, autoEnable=false)
-
 public class BrowseBirtWidget extends AbstractBirtWidget<OClass>{
 
 	/**

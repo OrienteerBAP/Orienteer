@@ -11,6 +11,7 @@ import org.apache.wicket.extensions.ajax.markup.html.AjaxLazyLoadPanel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.util.string.Strings;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.orienteer.birt.component.BirtPaginatedHtmlPanel;
 import org.orienteer.core.component.FAIcon;
@@ -20,6 +21,10 @@ import org.orienteer.core.widget.AbstractWidget;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.sun.mail.handlers.message_rfc822;
 
+/**
+ * Base widget for BIRT report widgets with ajax report loading
+ * @param <T> Report object type
+ */
 public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 
 	/**
@@ -63,8 +68,10 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 				
 				return new BirtPaginatedHtmlPanel(id,reportStream,parameters);
 			} catch (Exception e) {
-				//error(e.getMessage());
 				String message = e.getMessage();
+				if (!Strings.isEmpty(message)){
+					error(message);
+				}
 				e.printStackTrace();
 				return new Label(id,"Report error: "+message);
 			}

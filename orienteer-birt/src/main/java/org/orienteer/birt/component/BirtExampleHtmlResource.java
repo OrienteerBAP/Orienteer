@@ -11,16 +11,15 @@ import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.orienteer.birt.Module;
 import org.orienteer.core.OrienteerWebApplication;
 
-public class BirtHtmlResource extends AbstractResource {
+/**
+ * Example BIRT resource
+ */
+public class BirtExampleHtmlResource extends AbstractResource {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	//public BirtHtmlResource() {
-		// TODO Auto-generated constructor stub
-	//}
 
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes) {

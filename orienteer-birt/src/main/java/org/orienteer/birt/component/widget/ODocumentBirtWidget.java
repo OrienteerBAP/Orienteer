@@ -8,8 +8,11 @@ import org.orienteer.core.widget.Widget;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * BIRT report for single ODocument
+ *
+ */
 @Widget(id="document-birt-report", domain="document", oClass=ODocumentBirtWidget.OCLASS_NAME, order=10, autoEnable=false)
-
 public class ODocumentBirtWidget extends AbstractBirtWidget<ODocument>{
 	
 	/**

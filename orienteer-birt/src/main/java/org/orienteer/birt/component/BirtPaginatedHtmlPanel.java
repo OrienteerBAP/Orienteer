@@ -9,6 +9,9 @@ import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.eclipse.birt.report.engine.api.EngineException;
 
+/**
+ * BirtHemlPanel with paginator
+ */
 public class BirtPaginatedHtmlPanel extends Panel{
 
 	/**

@@ -25,17 +25,21 @@ import org.orienteer.birt.Module;
 import org.orienteer.core.OrienteerWebApplication;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+//import java.io.
 
+/**
+ *	Base panel for other BIRT reports panels
+ */
 public abstract class AbstractBirtPanel extends Panel implements IPageable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected static final String reportComponentName = "report";
+	protected static final String REPORT_COMPONENT_NAME = "report";
 
-	protected static final String cacheExtencion = ".rptdocument";
-	protected static final String cacheFolder = "temp/";
+	protected static final String CACHE_EXTENCION = ".rptdocument";
+	protected static final String CACHE_FOLDER = System.getProperty("java.io.tmpdir");//"temp/";
 	
 	private long currentPage = 0;
 	private long pagesCount = 1;
@@ -67,7 +71,7 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	
 	private void init(InputStream report) throws EngineException {
 		reportHash = makeReportHash();
-		Component reportComponent = new Label(reportComponentName,""); 
+		Component reportComponent = new Label(REPORT_COMPONENT_NAME,""); 
 		reportComponent.setEscapeModelStrings(false);
 		add(reportComponent);
 		IReportDocument cache = getReportCache(report);
@@ -105,7 +109,7 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	
 	private String getReportCachePath() {
 		OrientDbWebSession session = OrientDbWebSession.get();
-		String path = cacheFolder+session.getUsername()+"/"+session.getId()+"/"+reportHash+cacheExtencion;
+		String path = CACHE_FOLDER+session.getUsername()+"/"+session.getId()+"/"+reportHash+CACHE_EXTENCION;
 		return path;
 	}
 	
@@ -137,7 +141,7 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 			e.printStackTrace();
 			out = buf.toString();
 		}
-		get(reportComponentName).setDefaultModelObject(out);
+		get(REPORT_COMPONENT_NAME).setDefaultModelObject(out);
 
 	}
 	
