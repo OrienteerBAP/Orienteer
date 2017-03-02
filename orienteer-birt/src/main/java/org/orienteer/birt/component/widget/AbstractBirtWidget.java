@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
+import org.eclipse.birt.report.engine.api.EngineException;
 import org.orienteer.birt.component.BirtPaginatedHtmlPanel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -54,7 +55,7 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 		    	ODocument modelObject = AbstractBirtWidget.this.getWidgetDocumentModel().getObject();
 				byte[] reportData = modelObject.field(REPORT_FIELD_NAME);
 		    	if (reportData==null || reportData.length==0){
-		    		throw new Exception("Configure report first");
+		    		throw new EngineException("Configure report first");
 		    	}
 				InputStream reportStream = new ByteArrayInputStream(reportData);
 				Map<String,Object> parameters = modelObject.field(PARAMETERS_FIELD_NAME);
@@ -63,7 +64,7 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 				}
 				
 				return new BirtPaginatedHtmlPanel(id,reportStream,parameters);
-			} catch (Exception e) {
+			} catch (EngineException e) {
 				String message = e.getMessage();
 				if (!Strings.isEmpty(message)){
 					error(message);

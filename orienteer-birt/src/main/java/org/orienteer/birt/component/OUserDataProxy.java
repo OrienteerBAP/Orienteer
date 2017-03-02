@@ -9,9 +9,6 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;;
  */
 public class OUserDataProxy implements IUserDataProxy {
 
-	public OUserDataProxy() {
-	}
-
 	@Override
 	public String getUserName() {
 		OrientDbWebSession session = OrientDbWebSession.get();
