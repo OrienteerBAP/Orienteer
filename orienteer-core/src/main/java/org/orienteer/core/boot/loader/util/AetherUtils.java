@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -38,17 +39,21 @@ class AetherUtils {
 
     private static final String JAR_EXTENSION = "jar";
     private static final String ARTIFACT_TEMPLATE = "%s:%s:%s:%s";
-
+    private static final String ORIENTEER_CORE = "orienteer-core";
     private final Set<Artifact> parentDependencies;
+    private final Set<Artifact> resolvedDependecies;
     private final RepositorySystem system;
     private final RepositorySystemSession session;
     private final List<RemoteRepository> repositories;
 
     AetherUtils(InitUtils initUtils) {
-        this.parentDependencies = initUtils.getOrienteerParentDependencies();
         this.system = getRepositorySystem();
         this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
         this.repositories = initUtils.getRemoteRepositories();
+        Set<Artifact> parentDependencies = getParentDependencies(initUtils.getOrienteerParent().get());
+//        this.parentDependencies = getParentDependencies(parentDependencies);
+        this.parentDependencies = parentDependencies;
+        this.resolvedDependecies = Sets.newHashSet();
     }
 
     public List<ArtifactResult> resolveArtifact(Artifact artifact) {
@@ -59,38 +64,43 @@ class AetherUtils {
         } catch (ArtifactDescriptorException e) {
             if (LOG.isDebugEnabled()) e.printStackTrace();
         }
-        List<ArtifactRequest> requests = createArtifactRequests(descriptorResult);
+        Set<ArtifactRequest> requests = createArtifactRequests(descriptorResult);
         return resolveArtifactRequests(requests);
     }
 
+    public List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
+        List<ArtifactResult> results = Lists.newArrayList();
+        for (Artifact artifact : artifacts) {
+            results.addAll(resolveArtifact(artifact));
+        }
+        return results;
+    }
+
     public List<ArtifactResult> downloadArtifacts(Set<Artifact> artifacts) {
-        List<ArtifactRequest> artifactRequests = createArtifactRequests(artifacts);
+        Set<ArtifactRequest> artifactRequests = createArtifactRequests(differenceWithCoreDependencies(artifacts));
         return resolveArtifactRequests(artifactRequests);
     }
 
     public Optional<Artifact> downloadArtifact(Artifact artifact) {
-        ArtifactRequest artifactRequest = createArtifactRequest(artifact);
-        return resolveArtifactRequest(artifactRequest);
-    }
-
-    private List<ArtifactRequest> createArtifactRequests(ArtifactDescriptorResult descriptorResult) {
-        List<Dependency> dependencies = parseDependencies(descriptorResult.getDependencies());
-        dependencies.addAll(parseDependencies(descriptorResult.getManagedDependencies()));
-        return createArtifactRequests(dependencies);
-    }
-
-    private List<ArtifactRequest> createArtifactRequests(List<Dependency> dependencies) {
-        List<ArtifactRequest> artifactRequests = Lists.newArrayList();
-        dependencies = parseDependencies(dependencies);
-        for (Dependency dependency : dependencies) {
-            artifactRequests.add(createArtifactRequest(dependency.getArtifact()));
+        if (containsIn(parentDependencies, artifact)) {
+            return getArtifactFromSet(parentDependencies, artifact);
+        } else if (containsIn(resolvedDependecies, artifact)) {
+            return getArtifactFromSet(resolvedDependecies, artifact);
         }
-        return artifactRequests;
+        ArtifactRequest artifactRequest = createArtifactRequest(artifact);
+        ArtifactResult result = resolveArtifactRequest(artifactRequest);
+        return result != null ? Optional.of(result.getArtifact()) : Optional.<Artifact>absent();
     }
 
-    private List<ArtifactRequest> createArtifactRequests(Set<Artifact> dependencies) {
-        List<ArtifactRequest> requests = Lists.newArrayList();
-        for (Artifact dependency : differenceWithCoreDependencies(dependencies)) {
+    private Set<ArtifactRequest> createArtifactRequests(ArtifactDescriptorResult descriptorResult) {
+        Set<Dependency> dependencies = parseDependencies(descriptorResult.getDependencies());
+//        dependencies.addAll(parseDependencies(descriptorResult.getManagedDependencies()));
+        return createArtifactRequests(getArtifactFromDependencies(dependencies));
+    }
+
+    private Set<ArtifactRequest> createArtifactRequests(Set<Artifact> dependencies) {
+        Set<ArtifactRequest> requests = Sets.newHashSet();
+        for (Artifact dependency : dependencies) {
             requests.add(createArtifactRequest(dependency));
         }
         return requests;
@@ -110,65 +120,79 @@ class AetherUtils {
         return descriptorRequest;
     }
 
-    private List<Dependency> parseDependencies(List<Dependency> unchagedDeps) {
-        List<Dependency> changedDeps = Lists.newArrayList();
+    private Set<Dependency> parseDependencies(Collection<Dependency> unchagedDeps) {
+        Set<Dependency> changedDeps = Sets.newHashSet();
         for (Dependency dependency : unchagedDeps) {
             Artifact artifact = dependency.getArtifact();
             String extension = artifact.getExtension();
-            if (containsInCoreDependencies(artifact))
+            if (containsIn(parentDependencies, artifact) || containsIn(resolvedDependecies, artifact))
                 continue;
 
             if (!extension.equals(JAR_EXTENSION)) {
                 dependency = getChangedDependency(artifact);
                 changedDeps.add(dependency);
-                LOG.info("Dependency.getArtifact: " + dependency.getArtifact());
             } else changedDeps.add(dependency);
 
         }
         return changedDeps;
     }
 
-    private Optional<Artifact> resolveArtifactRequest(ArtifactRequest request) {
-        Optional<Artifact> artifact = Optional.absent();
+    private ArtifactResult resolveArtifactRequest(ArtifactRequest request) {
+        ArtifactResult result = null;
         try {
-             ArtifactResult result = system.resolveArtifact(session, request);
-             artifact = Optional.of(result.getArtifact());
+            result = system.resolveArtifact(session, request);
+            resolvedDependecies.add(result.getArtifact());
         } catch (ArtifactResolutionException e) {
             LOG.error("Cannot resolve artifact: " + request.getArtifact());
             if (LOG.isDebugEnabled()) e.printStackTrace();
         }
-        return artifact;
+        return result;
     }
 
-    private List<ArtifactResult> resolveArtifactRequests(List<ArtifactRequest> requests) {
+    private List<ArtifactResult> resolveArtifactRequests(Set<ArtifactRequest> requests) {
         List<ArtifactResult> artifactResults = Lists.newArrayList();
-        try {
-             artifactResults = system.resolveArtifacts(session, requests);
-        } catch (ArtifactResolutionException e) {
-            LOG.error("Cannot resolve artifact!");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        } finally {
-            LOG.info(String.format("All dependencies - %d. Resolved dependencies - %d.",
-                    requests.size(), artifactResults.size()));
+        for (ArtifactRequest request : requests) {
+            ArtifactResult result = resolveArtifactRequest(request);
+            if (result != null) artifactResults.add(result);
         }
         return artifactResults;
     }
 
-    private boolean containsInCoreDependencies(Artifact dependency) {
-        for (Artifact d : parentDependencies) {
-            if (d.getGroupId().equals(dependency.getGroupId())
-                    && d.getArtifactId().equals(dependency.getArtifactId())
-                    && d.getVersion().equals(dependency.getVersion())) {
-                return true;
-            }
+    private boolean containsIn(Collection<Artifact> dependencies, Artifact dependency) {
+        for (Artifact d : dependencies) {
+            boolean contains = artifactsEquals(d, dependency);
+            if (contains) return contains;
         }
         return false;
+    }
+
+    private boolean artifactsEquals(Artifact artifact1, Artifact artifact2) {
+        if (artifact1.getGroupId().equals(artifact2.getGroupId())
+                && artifact1.getArtifactId().equals(artifact2.getArtifactId())
+                && artifact1.getVersion().equals(artifact2.getVersion())) {
+            return true;
+        } else if (artifact1.getGroupId().equals(artifact2.getGroupId())
+                && artifact1.getArtifactId().equals(artifact2.getArtifactId())) {
+            String versionInCoreDeps = artifact2.getVersion();
+            String versionInDependency = artifact2.getVersion();
+            return versionInCoreDeps.compareTo(versionInDependency) > 0 || versionInCoreDeps.compareTo(versionInCoreDeps) == 0;
+        }
+        return false;
+    }
+
+    private Optional<Artifact> getArtifactFromSet(Set<Artifact> set, Artifact artifact) {
+        Iterator<Artifact> iterator = set.iterator();
+        while (iterator.hasNext()) {
+            Artifact next = iterator.next();
+            if (artifactsEquals(next, artifact)) return Optional.of(next);
+        }
+        return Optional.absent();
     }
 
     private Set<Artifact> differenceWithCoreDependencies(Set<Artifact> dependencies) {
         Set<Artifact> artifacts = Sets.newHashSet();
         for (Artifact d : dependencies) {
-           if (!containsInCoreDependencies(d)) {
+           if (!containsIn(parentDependencies, d)) {
                artifacts.add(d);
            }
         }
@@ -215,5 +239,41 @@ class AetherUtils {
         Dependency dependency = new Dependency(newArtifact, "");
 
         return dependency;
+    }
+
+    private ArtifactDescriptorResult getArtifactDescription(ArtifactDescriptorRequest request) {
+        ArtifactDescriptorResult descriptorResult = null;
+        try {
+            descriptorResult = system.readArtifactDescriptor(session, request);
+        } catch (ArtifactDescriptorException e) {
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        return descriptorResult;
+    }
+
+    private Set<Artifact> getParentDependencies(Set<Artifact> artifacts) {
+        Set<Artifact> result = Sets.newHashSet();
+        for (Artifact artifact : artifacts) {
+            result.addAll(getParentDependencies(artifact));
+        }
+        return result;
+    }
+
+    private Set<Artifact> getParentDependencies(Artifact parent) {
+        ArtifactDescriptorRequest artifactDescriptionRequest = createArtifactDescriptionRequest(parent);
+        ArtifactDescriptorResult parentResult = getArtifactDescription(artifactDescriptionRequest);
+        Artifact core = new DefaultArtifact(
+                String.format("%s:%s:%s", parent.getGroupId(), ORIENTEER_CORE , parent.getVersion()));
+        Set<Artifact> result = Sets.newHashSet(getArtifactFromDependencies(parentResult.getManagedDependencies()));
+        result.add(core);
+        return result;
+    }
+
+    private Set<Artifact> getArtifactFromDependencies(Collection<Dependency> dependencies) {
+        Set<Artifact> result = Sets.newHashSet();
+        for (Dependency dependency : dependencies) {
+            result.add(dependency.getArtifact());
+        }
+        return result;
     }
 }

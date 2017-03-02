@@ -28,6 +28,10 @@ public abstract class OrienteerClassLoaderUtil {
         return AETHER_UTILS.downloadArtifacts(artifacts);
     }
 
+    public static List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
+        return AETHER_UTILS.resolveArtifacts(artifacts);
+    }
+
     public static Optional<Artifact> downloadArtifact(Artifact artifact) {
         return AETHER_UTILS.downloadArtifact(artifact);
     }

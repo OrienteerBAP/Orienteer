@@ -157,6 +157,22 @@ public class OrienteerClassLoader extends URLClassLoader {
         return modulesForLoad;
     }
 
+    @Override
+    protected Class<?> loadClass(String s, boolean b) throws ClassNotFoundException {
+        Class<?> clazz = null;
+        try {
+            clazz = findClass(s);
+        } catch (ClassNotFoundException e) {
+
+        }
+        if (clazz == null) {
+            clazz = super.loadClass(s, b);
+        } else if (b) {
+            resolveClass(clazz);
+        }
+        return clazz;
+    }
+
     private static class OrienteerSandboxClassLoader extends URLClassLoader {
 
         private static final String INIT = "init";

@@ -1,5 +1,6 @@
 package org.orienteer.core.boot.loader.util;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -105,19 +106,22 @@ class InitUtils {
         return pathToFile;
     }
 
-
-
-    public Set<Artifact> getOrienteerParentDependencies() {
-        Path corePom = Paths.get(CORE_POM);
-        Set<Artifact> coreDependencies = pomXmlUtils.readDependencies(corePom);
-        Set<Artifact> parentDependencies = pomXmlUtils.readDependencies(Paths.get(PARENT_POM));
-        parentDependencies.addAll(coreDependencies);
-        Map<String, String> versions = pomXmlUtils.getOrienteerVersions();
-        parentDependencies.add(
-                new DefaultArtifact(String.format("%s:%s:%s",
-                        "org.orienteer", "orienteer-core", versions.get("${project.version}"))));
-        return parentDependencies;
+    public Optional<Artifact> getOrienteerParent() {
+        Path pathToPom = Paths.get(CORE_POM);
+        return pomXmlUtils.readParentInPomXml(pathToPom);
     }
+
+//    public Set<Artifact> getOrienteerParentDependencies() {
+//        Path corePom = Paths.get(CORE_POM);
+//        Set<Artifact> coreDependencies = pomXmlUtils.readDependencies(corePom);
+//        Set<Artifact> parentDependencies = pomXmlUtils.readDependencies(Paths.get(PARENT_POM));
+//        parentDependencies.addAll(coreDependencies);
+//        Map<String, String> versions = pomXmlUtils.getOrienteerVersions();
+//        parentDependencies.add(
+//                new DefaultArtifact(String.format("%s:%s:%s",
+//                        "org.orienteer", "orienteer-core", versions.get("${project.version}"))));
+//        return parentDependencies;
+//    }
 
     public List<RemoteRepository> getRemoteRepositories() {
         if (PROPERTIES == null)

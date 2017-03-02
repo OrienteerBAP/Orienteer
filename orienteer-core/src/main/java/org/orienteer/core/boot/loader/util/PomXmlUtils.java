@@ -49,6 +49,44 @@ class PomXmlUtils {
         return orienteerVersions;
     }
 
+    public Optional<Artifact> readParentInPomXml(Path pomXml) {
+        XMLInputFactory factory = XMLInputFactory.newFactory();
+        Optional<Artifact> dependency = Optional.absent();
+        try {
+            XMLStreamReader streamReader = null;
+            try {
+                streamReader = factory.createXMLStreamReader(
+                        new InputStreamReader(Files.newInputStream(pomXml)));
+                boolean isRun = true;
+                while (streamReader.hasNext() && isRun) {
+                    streamReader.next();
+                    if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
+                        String elementName = streamReader.getLocalName();
+                        switch (elementName) {
+                            case PARENT:
+                                dependency = parseDependency(streamReader, null);
+                                isRun = false;
+                                break;
+                        }
+                        while(streamReader.getEventType() != XMLStreamReader.END_ELEMENT){
+                            streamReader.next();
+                        }
+                        streamReader.next();
+                    }
+                }
+            } finally {
+                if (streamReader != null) streamReader.close();
+            }
+        } catch (XMLStreamException e) {
+            LOG.error("Cannot read pom.xml");
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        } catch (IOException e) {
+            LOG.error("Cannot open pom.xml");
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        return dependency;
+    }
+
     public Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
         XMLInputFactory factory = XMLInputFactory.newFactory();
         Optional<Artifact> dependency = Optional.absent();

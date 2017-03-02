@@ -3,6 +3,7 @@ package org.orienteer.core.boot.loader;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
@@ -53,7 +54,7 @@ public class MavenResolver {
     public List<OModuleMetadata> getResolvedModulesMetadata(List<Path> modules, boolean depsFromPomXml) {
         List<OModuleMetadata> metadata = Lists.newArrayList();
         for (Path jarFile : modules) {
-            Optional<OModuleMetadata> moduleMetadata = resolver.getModuleMetadata(jarFile, depsFromPomXml);
+            Optional<OModuleMetadata> moduleMetadata = getModuleMetadata(jarFile, depsFromPomXml);
             if (moduleMetadata.isPresent()) {
                 metadata.add(moduleMetadata.get());
             }
@@ -187,7 +188,18 @@ public class MavenResolver {
 
     private List<ArtifactResult> resolveDependencies(Set<Artifact> dependencies) {
         if (dependencies == null) return Lists.newArrayList();
-        return OrienteerClassLoaderUtil.downloadArtifacts(dependencies);
+        List<ArtifactResult> results = Lists.newArrayList();
+        results.addAll(OrienteerClassLoaderUtil.downloadArtifacts(dependencies));
+        results.addAll(OrienteerClassLoaderUtil.resolveArtifacts(getArtifacts(results)));
+        return results;
+    }
+
+    private Set<Artifact> getArtifacts(List<ArtifactResult> results) {
+        Set<Artifact> artifacts = Sets.newHashSet();
+        for (ArtifactResult result : results) {
+            artifacts.add(result.getArtifact());
+        }
+        return artifacts;
     }
 
     private Optional<Artifact> resolveArtifact(String groupArtifactVersion) {
@@ -208,7 +220,7 @@ public class MavenResolver {
     private List<Artifact> getArtifactsFromArtifactResult(List<ArtifactResult> artifactResults) {
         List<Artifact> artifacts = Lists.newArrayList();
         for (ArtifactResult artifactResult : artifactResults) {
-            artifacts.add(artifactResult.getArtifact());
+            if (artifactResult != null) artifacts.add(artifactResult.getArtifact());
         }
         return artifacts;
     }
