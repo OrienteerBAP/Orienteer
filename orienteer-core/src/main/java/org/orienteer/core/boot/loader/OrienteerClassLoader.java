@@ -2,6 +2,7 @@ package org.orienteer.core.boot.loader;
 
 import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
+import org.orienteer.core.boot.loader.util.MavenResolver;
 import org.orienteer.core.boot.loader.util.OModuleMetadata;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.slf4j.Logger;
@@ -21,8 +22,7 @@ import java.util.Set;
  */
 public class OrienteerClassLoader extends URLClassLoader {
 	
-	private final MavenResolver resolver         = MavenResolver.get();
-    private final boolean dependenciesFromPomXml = OrienteerClassLoaderUtil.needLoadDependenciesFromPomXml();
+	private final MavenResolver resolver = MavenResolver.get();
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoader.class);
 
@@ -87,7 +87,7 @@ public class OrienteerClassLoader extends URLClassLoader {
     }
 	
 	private List<OModuleMetadata> createModules(List<Path> jars) {
-        List<OModuleMetadata> modulesForLoad = resolver.getResolvedModulesMetadata(jars, dependenciesFromPomXml);
+        List<OModuleMetadata> modulesForLoad = resolver.getResolvedModulesMetadata(jars);
         if (modulesForLoad.size() > 0) {
             OrienteerClassLoaderUtil.createMetadata(modulesForLoad);
         } else OrienteerClassLoaderUtil.deleteMetadataFile();
@@ -136,7 +136,7 @@ public class OrienteerClassLoader extends URLClassLoader {
                 modulesForWrite.add(pathToJar);
             }
         }
-        return resolver.getResolvedModulesMetadata(modulesForWrite, dependenciesFromPomXml);
+        return resolver.getResolvedModulesMetadata(modulesForWrite);
     }
 
     private List<OModuleMetadata> getModulesForDelete(List<Path> jars, Map<Path, OModuleMetadata> modules) {
@@ -157,21 +157,21 @@ public class OrienteerClassLoader extends URLClassLoader {
         return modulesForLoad;
     }
 
-    @Override
-    protected Class<?> loadClass(String s, boolean b) throws ClassNotFoundException {
-        Class<?> clazz = null;
-        try {
-            clazz = findClass(s);
-        } catch (ClassNotFoundException e) {
-
-        }
-        if (clazz == null) {
-            clazz = super.loadClass(s, b);
-        } else if (b) {
-            resolveClass(clazz);
-        }
-        return clazz;
-    }
+//    @Override
+//    protected Class<?> loadClass(String s, boolean b) throws ClassNotFoundException {
+//        Class<?> clazz = null;
+//        try {
+//            clazz = findClass(s);
+//        } catch (ClassNotFoundException e) {
+//
+//        }
+//        if (clazz == null) {
+//            clazz = super.loadClass(s, b);
+//        } else if (b) {
+//            resolveClass(clazz);
+//        }
+//        return clazz;
+//    }
 
     private static class OrienteerSandboxClassLoader extends URLClassLoader {
 

@@ -88,15 +88,19 @@ public abstract class OrienteerClassLoaderUtil {
         METADATA_UTIL.updateMetadata(modules);
     }
 
-    public static boolean needLoadDependenciesFromPomXml() {
-        return INIT_UTILS.isDependenciesResolveFromPomXml();
-    }
-
     public static List<OModuleMetadata> getMetadataModules() {
         return METADATA_UTIL.readMetadata();
     }
 
     public static List<OModuleMetadata> getMetadataModulesForLoad() {
         return METADATA_UTIL.readMetadataForLoad();
+    }
+
+    static boolean resolvingDependenciesRecursively() {
+        return INIT_UTILS.resolvingDependenciesRecursively();
+    }
+
+    static boolean needLoadDependenciesFromPomXml() {
+        return INIT_UTILS.isDependenciesResolveFromPomXml();
     }
 }

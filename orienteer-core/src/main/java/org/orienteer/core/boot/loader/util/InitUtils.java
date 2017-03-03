@@ -3,7 +3,6 @@ package org.orienteer.core.boot.loader.util;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
@@ -16,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * @author Vitaliy Gonchar
@@ -31,6 +29,7 @@ class InitUtils {
     private static final String DEFAULT                      = "default";
     private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
     private static final String DEPENDENCIES_FROM_POM_XML    = "orienteer.loader.dependencies.pomXml";
+    private static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
     private static final String METADATA_FILE                = "metadata.xml";
 
     private static final String DEFAULT_MODULES_FOLDER         = System.getProperty("user.home") + "/modules/";
@@ -69,6 +68,12 @@ class InitUtils {
         if (PROPERTIES == null)
             return Boolean.FALSE;
         return Boolean.valueOf(PROPERTIES.getProperty(DEPENDENCIES_FROM_POM_XML));
+    }
+
+    public boolean resolvingDependenciesRecursively() {
+        if (PROPERTIES == null)
+            return Boolean.FALSE;
+        return Boolean.valueOf(PROPERTIES.getProperty(RECURSIVELY_RESOLVING_DEPS));
     }
 
     public Path getMetadataPath() {
