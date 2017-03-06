@@ -11,22 +11,22 @@ import org.eclipse.birt.report.engine.api.IRenderOption;
 /**
  * Show BIRT report as plain embedded html
  */
-public class BirtHtmlPanel  extends AbstractBirtPanel{
+public class BirtHtmlReportPanel  extends AbstractBirtReportPanel{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public BirtHtmlPanel(String id,String reportFileName) throws EngineException, FileNotFoundException {
+	public BirtHtmlReportPanel(String id,String reportFileName) throws EngineException, FileNotFoundException {
 		super(id, reportFileName);
 	}
 	
 
-	public BirtHtmlPanel(String id, String reportFileName, Map<String, Object> parameters) throws EngineException, FileNotFoundException {
+	public BirtHtmlReportPanel(String id, String reportFileName, Map<String, Object> parameters) throws EngineException, FileNotFoundException {
 		super(id, reportFileName, parameters);
 	}
 
-	public BirtHtmlPanel(String id, InputStream report, Map<String, Object> parameters) throws EngineException {
+	public BirtHtmlReportPanel(String id, InputStream report, Map<String, Object> parameters) throws EngineException {
 		super(id, report, parameters);
 	}
 

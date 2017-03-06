@@ -14,6 +14,7 @@ import org.apache.wicket.markup.html.navigation.paging.IPageable;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.eclipse.birt.data.engine.executor.cache.Md5Util;
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderTask;
 import org.eclipse.birt.report.engine.api.IReportDocument;
@@ -29,7 +30,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 /**
  *	Base panel for other BIRT reports panels
  */
-public abstract class AbstractBirtPanel extends Panel implements IPageable {
+public abstract class AbstractBirtReportPanel extends Panel implements IPageable {
 
 	/**
 	 * 
@@ -48,11 +49,11 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 	private Map<String, Object> parameters;
 	
 	
-	public AbstractBirtPanel(String id,String reportFileName) throws EngineException, FileNotFoundException{
+	public AbstractBirtReportPanel(String id,String reportFileName) throws EngineException, FileNotFoundException{
 		this(id,reportFileName,new HashMap<String, Object>());
 	}
 
-	public AbstractBirtPanel(String id,String reportFileName,Map<String, Object> parameters) throws EngineException, FileNotFoundException{
+	public AbstractBirtReportPanel(String id,String reportFileName,Map<String, Object> parameters) throws EngineException, FileNotFoundException{
 		super(id);
 		
 
@@ -62,7 +63,7 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 		init(reportInputStream);
 	}
 
-	public AbstractBirtPanel(String id,InputStream report,Map<String, Object> parameters) throws EngineException{
+	public AbstractBirtReportPanel(String id,InputStream report,Map<String, Object> parameters) throws EngineException{
 		super(id);
 		this.parameters = parameters;
 		init(report);
@@ -72,10 +73,15 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 		reportHash = makeReportHash();
 		Component reportComponent = new Label(REPORT_COMPONENT_NAME,""); 
 		reportComponent.setEscapeModelStrings(false);
+		reportComponent.setOutputMarkupId(true);
 		add(reportComponent);
 		IReportDocument cache = getReportCache(report);
 		pagesCount = cache.getPageCount();
 		cache.close();
+	}
+	
+	public Component getReportComponent() {
+		return get(REPORT_COMPONENT_NAME);
 	}
 	
 	private String makeReportHash() {
@@ -92,27 +98,32 @@ public abstract class AbstractBirtPanel extends Panel implements IPageable {
 		IReportRunnable design;
 		design = engine.openReportDesign(reportInputStream);
 		 
-		//Create task to run the report - use the task to execute the report and save to disk.
-		IRunTask runTask = engine.createRunTask(design); 
+		//getting available report parameters
+		//IGetParameterDefinitionTask paramTask = engine.createGetParameterDefinitionTask(design);
+		//paramTask.getParameterDefn("my_parameter_name").getHandle().getElement().getProperty(null, "dataType").toString();
 		
+		//Create task to run the report - use the task to execute the report and save to disk.
+		IRunTask runTask = engine.createRunTask(design);
+
 		runTask.setParameterValues(parameters);
+		//HashMap parameters1 = runTask.getParameterValues(); 
 		runTask.run(getReportCachePath());		
 		runTask.close();
 		IReportDocument cache = engine.openReportDocument(getReportCachePath());
 		return cache;
 	}
 	
-	private IReportDocument getReportCache() throws EngineException{
+	public IReportDocument getReportCache() throws EngineException{
 		return getReportEngine().openReportDocument(getReportCachePath());
 	}
 	
-	private String getReportCachePath() {
+	public String getReportCachePath() {
 		OrientDbWebSession session = OrientDbWebSession.get();
 		String path = CACHE_FOLDER+session.getUsername()+"/"+session.getId()+"/"+reportHash+CACHE_EXTENCION;
 		return path;
 	}
 	
-	private IReportEngine getReportEngine(){
+	public IReportEngine getReportEngine(){
 		Module module = (Module)OrienteerWebApplication.get().getModuleByName("orienteer-birt");
 		return module.getEngine();
 	}
