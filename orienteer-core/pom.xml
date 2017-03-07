@@ -175,6 +175,14 @@
 			<version>3.0.24</version>
 		</dependency>
 
+        <!-- NEED FOR LOAD TELEGRAM BOT-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+
+
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
