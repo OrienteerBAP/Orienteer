@@ -1,11 +1,8 @@
 package org.orienteer.birt.component;
 
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.eclipse.birt.report.engine.api.EngineException;
 
@@ -23,9 +20,9 @@ public class BirtManagedHtmlReportPanel extends Panel{
 	private static final String REPORT_PANEL_NAME = "report";
 	
 	
-	public BirtManagedHtmlReportPanel(String id,InputStream report,Map<String, Object> parameters) throws EngineException {
+	public BirtManagedHtmlReportPanel(String id,InputStream report,Map<String, Object> parameters,boolean useLocalDB) throws EngineException {
 		super(id);
-		final BirtHtmlReportPanel birtPanel = new BirtHtmlReportPanel(REPORT_PANEL_NAME,report,parameters);
+		final BirtHtmlReportPanel birtPanel = new BirtHtmlReportPanel(REPORT_PANEL_NAME,report,parameters,useLocalDB);
 		birtPanel.setOutputMarkupId(true);
 		add(birtPanel);
 		

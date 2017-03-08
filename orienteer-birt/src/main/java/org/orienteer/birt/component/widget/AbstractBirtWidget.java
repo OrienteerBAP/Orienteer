@@ -31,6 +31,7 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 	public static final String OCLASS_NAME = "BirtWidget";
 	public static final String PARAMETERS_FIELD_NAME = "parameters";
 	public static final String REPORT_FIELD_NAME = "report";
+	public static final String USE_LOCAL_BASE_FIELD_NAME = "useLocalDB";
 
 
 	
@@ -62,8 +63,12 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 				if (additionalParameters!=null){
 					parameters.putAll(additionalParameters);
 				}
+				Boolean isUseLocalDB = modelObject.field(USE_LOCAL_BASE_FIELD_NAME);
+				if (isUseLocalDB == null){
+					isUseLocalDB = false;
+				}
 				
-				return new BirtManagedHtmlReportPanel(id,reportStream,parameters);
+				return new BirtManagedHtmlReportPanel(id,reportStream,parameters,isUseLocalDB);
 			} catch (EngineException e) {
 				String message = e.getMessage();
 				if (!Strings.isEmpty(message)){

@@ -58,7 +58,8 @@ public class Module extends AbstractOrienteerModule{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(AbstractBirtWidget.OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET).domain(OClassDomain.SYSTEM)
 			.oProperty(AbstractBirtWidget.REPORT_FIELD_NAME, OType.BINARY, 100)
-			.oProperty(AbstractBirtWidget.PARAMETERS_FIELD_NAME, OType.EMBEDDEDMAP, 110).linkedType(OType.STRING);
+			.oProperty(AbstractBirtWidget.PARAMETERS_FIELD_NAME, OType.EMBEDDEDMAP, 110).linkedType(OType.STRING)
+			.oProperty(AbstractBirtWidget.USE_LOCAL_BASE_FIELD_NAME, OType.BOOLEAN, 120);
 		
 		helper.oClass(BrowseBirtWidget.OCLASS_NAME, AbstractBirtWidget.OCLASS_NAME).domain(OClassDomain.SYSTEM);
 		helper.oClass(ODocumentBirtWidget.OCLASS_NAME, AbstractBirtWidget.OCLASS_NAME).domain(OClassDomain.SYSTEM);

@@ -1,15 +1,9 @@
 package org.orienteer.birt.component;
 
-import java.security.Policy.Parameters;
-import java.util.Map;
-
-import org.apache.log4j.lf5.util.Resource;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ResourceLink;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.eclipse.birt.report.engine.api.EngineException;
 
 public class BirtManagementPanel extends Panel{
 
@@ -20,7 +14,7 @@ public class BirtManagementPanel extends Panel{
 	private static final long serialVersionUID = 1L;
 	
 	private static final String PAGER_NAME = "paginator";
-	private static final String BUTTONS_NAME = "buttons";
+	//private static final String BUTTONS_NAME = "buttons";
 	
 	public BirtManagementPanel(String id,final AbstractBirtReportPanel reportPanel) {
 		super(id);
@@ -40,6 +34,8 @@ public class BirtManagementPanel extends Panel{
 		add(new ResourceLink<>("PDF", new PDFBirtResource(reportPanel)));
 		add(new ResourceLink<>("Excel", new ExcelBirtResource(reportPanel)));
 		
+		//add(new Label)
+		//add(new ResourceLink<>("parameter", new ExcelBirtResource(reportPanel)));
 		
 	}
 }

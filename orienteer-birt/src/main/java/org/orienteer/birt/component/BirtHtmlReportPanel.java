@@ -16,18 +16,13 @@ public class BirtHtmlReportPanel  extends AbstractBirtReportPanel{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public BirtHtmlReportPanel(String id,String reportFileName) throws EngineException, FileNotFoundException {
-		super(id, reportFileName);
-	}
 	
-
-	public BirtHtmlReportPanel(String id, String reportFileName, Map<String, Object> parameters) throws EngineException, FileNotFoundException {
-		super(id, reportFileName, parameters);
+	public BirtHtmlReportPanel(String id, String reportFileName, Map<String, Object> parameters,boolean useLocalDB) throws EngineException, FileNotFoundException {
+		super(id, reportFileName, parameters,useLocalDB);
 	}
 
-	public BirtHtmlReportPanel(String id, InputStream report, Map<String, Object> parameters) throws EngineException {
-		super(id, report, parameters);
+	public BirtHtmlReportPanel(String id, InputStream report, Map<String, Object> parameters,boolean useLocalDB) throws EngineException {
+		super(id, report, parameters,useLocalDB);
 	}
 
 
