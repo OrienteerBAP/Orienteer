@@ -5,8 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
@@ -14,6 +19,8 @@ import org.apache.wicket.markup.html.navigation.paging.IPageable;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.eclipse.birt.data.engine.executor.cache.Md5Util;
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
+import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderTask;
 import org.eclipse.birt.report.engine.api.IReportDocument;
@@ -50,28 +57,18 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	
 	private long currentPage = 0;
 	private long pagesCount = 1;
+	private BirtReportConfig config;
 
 	private String reportHash;
+	private List<BirtReportParameterDefinition> paramDefinitions;
+	private List<BirtReportParameterDefinition> hiddenParamDefinitions;
 	
-	private Map<String, Object> parameters;
-	private boolean useLocalDB = false;
-	
-	public AbstractBirtReportPanel(String id,String reportFileName,Map<String, Object> parameters,boolean useLocalDB) throws EngineException, FileNotFoundException{
+	public AbstractBirtReportPanel(String id,BirtReportConfig config) throws EngineException{
 		super(id);
-		
-
-		FileInputStream reportInputStream = new FileInputStream(reportFileName);
-
-		this.parameters = parameters;
-		this.useLocalDB = useLocalDB;
-		init(reportInputStream);
-	}
-
-	public AbstractBirtReportPanel(String id,InputStream report,Map<String, Object> parameters,boolean useLocalDB) throws EngineException{
-		super(id);
-		this.parameters = parameters;
-		this.useLocalDB = useLocalDB;
-		init(report);
+		this.config = config;
+		paramDefinitions = new ArrayList<BirtReportParameterDefinition>();
+		hiddenParamDefinitions = new ArrayList<BirtReportParameterDefinition>();
+		init(config.getReportDataStream());
 	}
 	
 	private void init(InputStream report) throws EngineException {
@@ -80,9 +77,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		reportComponent.setEscapeModelStrings(false);
 		reportComponent.setOutputMarkupId(true);
 		add(reportComponent);
-		IReportDocument cache = getReportCache(report);
-		pagesCount = cache.getPageCount();
-		cache.close();
+		updateReportCache();
 	}
 	
 	public Component getReportComponent() {
@@ -94,8 +89,13 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	}
 	
 	public Object getParameter(String name){
-		return parameters.get(name);
+		return config.getParameters().get(name);
 	}
+	
+	public Object setParameter(String name,Object value){
+		return config.getParameters().put(name, value);
+	}
+	
 	
 	
 	private IReportDocument getReportCache(InputStream reportInputStream) throws EngineException{
@@ -109,14 +109,15 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		 
 		//design.getDesignInstance().getDataSource("").set
 		//getting available report parameters
-		//IGetParameterDefinitionTask paramTask = engine.createGetParameterDefinitionTask(design);
+		//paramTask = engine.createGetParameterDefinitionTask(design);
+		updateParametersDefinitions(design);
 		//paramTask.getParameterDefn("my_parameter_name").getHandle().getElement().getProperty(null, "dataType").toString();
 		//paramTask.pa
 		
 		//Create task to run the report - use the task to execute the report and save to disk.
 		IRunTask runTask = engine.createRunTask(design);
 
-		runTask.setParameterValues(parameters);
+		runTask.setParameterValues(config.getParameters());
 		//HashMap parameters1 = runTask.getParameterValues();
 		runTask.run(getReportCachePath());		
 		runTask.close();
@@ -124,10 +125,27 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		return cache;
 	}
 	
+	public void updateReportCache() throws EngineException{
+		IReportDocument cache = getReportCache(getConfig().getReportDataStream());
+		pagesCount = cache.getPageCount();
+		cache.close();		
+	}
+	
+	
+	public List<BirtReportParameterDefinition> getParametersDefenitions() {
+		return paramDefinitions;
+	}
+	
+	public List<BirtReportParameterDefinition> getHiddenParametersDefinitions() {
+		return hiddenParamDefinitions;
+	}
+	
+	
+	@SuppressWarnings("rawtypes")
 	private static void updateDBUriToLocal(IReportRunnable design){
 		ReportDesignHandle handle = (ReportDesignHandle) design.getDesignHandle();
 		SlotHandle datasources = handle.getDataSources();
-		Iterator<?> dsiterator = datasources.iterator();
+		Iterator dsiterator = datasources.iterator();
 		for (;dsiterator.hasNext();) {
 			DesignElementHandle dsHandle = (DesignElementHandle) dsiterator.next();
 			if (dsHandle instanceof OdaDataSourceHandle ) {
@@ -142,6 +160,26 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 				}
 			}
 		}		
+	}
+	
+	private void updateParametersDefinitions(IReportRunnable design) {
+		IGetParameterDefinitionTask paramTask = getReportEngine().createGetParameterDefinitionTask(design);
+		
+		Set<Object> visibleParams = getConfig().getVisibleParameters();
+		if (visibleParams!=null){
+			for (Object object : visibleParams) {
+				IParameterDefnBase iParameterDefnBase = paramTask.getParameterDefn((String) object);
+				paramDefinitions.add(new BirtReportParameterDefinition(iParameterDefnBase));
+			}
+		}
+		
+		Collection<IParameterDefnBase> defs = paramTask.getParameterDefns(false);
+		for (Iterator iterator = defs.iterator(); iterator.hasNext();) {
+			IParameterDefnBase iParameterDefnBase = (IParameterDefnBase) iterator.next();
+			if (visibleParams==null || !visibleParams.contains(iParameterDefnBase.getName())){
+				hiddenParamDefinitions.add(new BirtReportParameterDefinition(iParameterDefnBase));
+			}
+		}
 	}
 	
 	
@@ -216,6 +254,10 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	}
 
 	public boolean isUseLocalDB() {
-		return useLocalDB;
+		return config.isUseLocalDB();
+	}
+	
+	public BirtReportConfig getConfig() {
+		return config;
 	}
 }

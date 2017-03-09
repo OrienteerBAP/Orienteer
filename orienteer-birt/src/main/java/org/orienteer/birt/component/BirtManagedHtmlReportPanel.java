@@ -20,9 +20,9 @@ public class BirtManagedHtmlReportPanel extends Panel{
 	private static final String REPORT_PANEL_NAME = "report";
 	
 	
-	public BirtManagedHtmlReportPanel(String id,InputStream report,Map<String, Object> parameters,boolean useLocalDB) throws EngineException {
+	public BirtManagedHtmlReportPanel(String id,BirtReportConfig config) throws EngineException {
 		super(id);
-		final BirtHtmlReportPanel birtPanel = new BirtHtmlReportPanel(REPORT_PANEL_NAME,report,parameters,useLocalDB);
+		final BirtHtmlReportPanel birtPanel = new BirtHtmlReportPanel(REPORT_PANEL_NAME,config);
 		birtPanel.setOutputMarkupId(true);
 		add(birtPanel);
 		

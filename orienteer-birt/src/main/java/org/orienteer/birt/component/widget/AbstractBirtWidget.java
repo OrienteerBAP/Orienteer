@@ -12,6 +12,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.orienteer.birt.component.BirtManagedHtmlReportPanel;
+import org.orienteer.birt.component.BirtReportConfig;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.widget.AbstractWidget;
@@ -32,6 +33,7 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 	public static final String PARAMETERS_FIELD_NAME = "parameters";
 	public static final String REPORT_FIELD_NAME = "report";
 	public static final String USE_LOCAL_BASE_FIELD_NAME = "useLocalDB";
+	public static final String VISIBLE_PARAMETERS_FIELD_NAME = "visibleParameters";
 
 
 	
@@ -53,22 +55,7 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 		  public Component getLazyLoadComponent(String id)
 		  {
 		    try {
-		    	ODocument modelObject = AbstractBirtWidget.this.getWidgetDocumentModel().getObject();
-				byte[] reportData = modelObject.field(REPORT_FIELD_NAME);
-		    	if (reportData==null || reportData.length==0){
-		    		throw new EngineException("Configure report first");
-		    	}
-				InputStream reportStream = new ByteArrayInputStream(reportData);
-				Map<String,Object> parameters = modelObject.field(PARAMETERS_FIELD_NAME);
-				if (additionalParameters!=null){
-					parameters.putAll(additionalParameters);
-				}
-				Boolean isUseLocalDB = modelObject.field(USE_LOCAL_BASE_FIELD_NAME);
-				if (isUseLocalDB == null){
-					isUseLocalDB = false;
-				}
-				
-				return new BirtManagedHtmlReportPanel(id,reportStream,parameters,isUseLocalDB);
+				return new BirtManagedHtmlReportPanel(id,new BirtReportConfig(AbstractBirtWidget.this.getWidgetDocumentModel(),additionalParameters));
 			} catch (EngineException e) {
 				String message = e.getMessage();
 				if (!Strings.isEmpty(message)){

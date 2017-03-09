@@ -1,9 +1,5 @@
 package org.orienteer.birt.component;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Map;
-
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
@@ -17,12 +13,9 @@ public class BirtHtmlReportPanel  extends AbstractBirtReportPanel{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public BirtHtmlReportPanel(String id, String reportFileName, Map<String, Object> parameters,boolean useLocalDB) throws EngineException, FileNotFoundException {
-		super(id, reportFileName, parameters,useLocalDB);
-	}
-
-	public BirtHtmlReportPanel(String id, InputStream report, Map<String, Object> parameters,boolean useLocalDB) throws EngineException {
-		super(id, report, parameters,useLocalDB);
+	
+	public BirtHtmlReportPanel(String id, BirtReportConfig config) throws EngineException {
+		super(id, config);
 	}
 
 
