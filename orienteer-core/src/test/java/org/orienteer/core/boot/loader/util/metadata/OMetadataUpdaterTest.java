@@ -24,15 +24,11 @@ public class OMetadataUpdaterTest {
     public void init() {
         pathToMetadata = Paths.get("metadata.xml");
         Artifact artifact = new DefaultArtifact("org.company:weaxme:1.0");
-        artifact = artifact.setFile(new File("/home/vetal/workspace/Orienteer/modules/orienteer-pages.jar"));
-        Artifact deps = new DefaultArtifact("org.company:deps:1.2");
-        deps = deps.setFile(new File("/home/vetal/workspace/Orienteer/modules/orienteer-pivottable.jar"));
+        artifact = artifact.setFile(new File("/home/vetal/workspace/Orienteer/modules/orienteer-pivottable.jar"));
         metadata = new OModuleMetadata();
         metadata.setMainArtifact(artifact);
-        metadata.setDependencies(Lists.newArrayList(deps, artifact));
-        metadata.setId(0);
         metadata.setLoad(true);
-        metadata.setInitializerName("org.orienteer.weaxme.Initializer");
+        metadata.setTrusted(true);
     }
 
     @Test
@@ -43,7 +39,7 @@ public class OMetadataUpdaterTest {
     @Test
     public void update() throws Exception {
         metadata.setLoad(false);
-        metadata.setInitializerName("org.weaxme.Initializer");
+        metadata.setTrusted(true);
         OrienteerClassLoaderUtil.updateModulesInMetadata(metadata);
     }
 

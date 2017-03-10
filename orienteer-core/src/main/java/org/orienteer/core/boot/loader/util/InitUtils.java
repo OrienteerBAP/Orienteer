@@ -117,14 +117,14 @@ class InitUtils {
     }
 
 //    public Set<Artifact> getOrienteerParentDependencies() {
-//        Path corePom = Paths.get(CORE_POM);
+//        Path corePom = Paths.getTrustedClassLoader(CORE_POM);
 //        Set<Artifact> coreDependencies = pomXmlUtils.readDependencies(corePom);
-//        Set<Artifact> parentDependencies = pomXmlUtils.readDependencies(Paths.get(PARENT_POM));
+//        Set<Artifact> parentDependencies = pomXmlUtils.readDependencies(Paths.getTrustedClassLoader(PARENT_POM));
 //        parentDependencies.addAll(coreDependencies);
 //        Map<String, String> versions = pomXmlUtils.getOrienteerVersions();
 //        parentDependencies.add(
 //                new DefaultArtifact(String.format("%s:%s:%s",
-//                        "org.orienteer", "orienteer-core", versions.get("${project.version}"))));
+//                        "org.orienteer", "orienteer-core", versions.getTrustedClassLoader("${project.version}"))));
 //        return parentDependencies;
 //    }
 

@@ -4,6 +4,8 @@ import com.google.common.base.Optional;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactResult;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -11,14 +13,21 @@ import java.util.Set;
 
 /**
  * @author Vitaliy Gonchar
+ * Utility class for OrienteerClassLoader
  */
 public abstract class OrienteerClassLoaderUtil {
-    private OrienteerClassLoaderUtil() {}
+
+    public static final String WITHOUT_JAR          = "WITHOUT_JAR";
+
     private static final PomXmlUtils POM_XML_UTILS  = new PomXmlUtils();
     private static final InitUtils INIT_UTILS       = new InitUtils(POM_XML_UTILS);
     private static final JarUtils JAR_UTILS         = new JarUtils(INIT_UTILS);
     private static final AetherUtils AETHER_UTILS   = new AetherUtils(INIT_UTILS);
-    private static final MetadataUtil METADATA_UTIL = new MetadataUtil(INIT_UTILS.getMetadataPath());
+    private static final MetadataUtil METADATA_UTIL = new MetadataUtil(INIT_UTILS.getMetadataPath(), INIT_UTILS.getPathToModulesFolder());
+
+
+    private OrienteerClassLoaderUtil() {}
+
 
     public static List<ArtifactResult> getResolvedArtifact(Artifact artifact) {
         return AETHER_UTILS.resolveArtifact(artifact);
@@ -80,6 +89,10 @@ public abstract class OrienteerClassLoaderUtil {
         METADATA_UTIL.deleteMetadata();
     }
 
+    public static void updateModulesJarsInMetadata(List<OModuleMetadata> modules) {
+        METADATA_UTIL.updateJarsInMetadata(modules);
+    }
+
     public static void updateModulesInMetadata(OModuleMetadata module) {
         METADATA_UTIL.updateMetadata(module);
     }
@@ -96,11 +109,16 @@ public abstract class OrienteerClassLoaderUtil {
         return METADATA_UTIL.readMetadataForLoad();
     }
 
+
     static boolean resolvingDependenciesRecursively() {
         return INIT_UTILS.resolvingDependenciesRecursively();
     }
 
     static boolean needLoadDependenciesFromPomXml() {
         return INIT_UTILS.isDependenciesResolveFromPomXml();
+    }
+
+    static Path getModulesFolder() {
+        return INIT_UTILS.getPathToModulesFolder();
     }
 }

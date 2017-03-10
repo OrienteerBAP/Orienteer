@@ -7,30 +7,35 @@ import com.google.common.collect.Sets;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyCollectionException;
-import org.eclipse.aether.resolution.*;
+import org.eclipse.aether.resolution.ArtifactDescriptorException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+
+import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.getModulesFolder;
+import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.resolvingDependenciesRecursively;
 
 /**
  * @author Vitaliy Gonchar
  */
 public class MavenResolver {
-    private int idCounter = 0;
-
     private static final Logger LOG = LoggerFactory.getLogger(MavenResolver.class);
 
     private static MavenResolver resolver;
-    private final boolean dependenciesFromPomXml;
+    private final Path modulesFolder;
     private final boolean resolvingRecursively;
 
-
-    private MavenResolver(boolean resolvingRecursively, boolean dependenciesFromPomXml) {
+    private MavenResolver(Path modulesFolder, boolean resolvingRecursively) {
+        this.modulesFolder = modulesFolder;
         this.resolvingRecursively = resolvingRecursively;
-        this.dependenciesFromPomXml = dependenciesFromPomXml;
     }
 
     /**
@@ -39,10 +44,25 @@ public class MavenResolver {
      */
     public static MavenResolver get() {
         if (resolver == null) {
-            resolver = new MavenResolver(OrienteerClassLoaderUtil.resolvingDependenciesRecursively(),
-                    OrienteerClassLoaderUtil.needLoadDependenciesFromPomXml());
+            resolver = new MavenResolver(getModulesFolder(), resolvingDependenciesRecursively());
         }
         return resolver;
+    }
+
+    /**
+     * Set dependency fot Orienteer modules
+     * @param modules - modules without dependencies
+     * @return modules with dependencies
+     */
+    public List<OModuleMetadata> setDependenciesInModules(List<OModuleMetadata> modules) {
+        for (OModuleMetadata module : modules) {
+            Artifact artifact = module.getMainArtifact();
+            File moduleJar = artifact.getFile();
+            Optional<Path> pomFromJar = OrienteerClassLoaderUtil.getPomFromJar(moduleJar.toPath());
+            List<Artifact> dependencies = getArtifactsFromArtifactResult(resolveDependenciesFromPomXml(pomFromJar.get()));
+            module.setDependencies(dependencies);
+        }
+        return modules;
     }
 
     /**
@@ -81,31 +101,35 @@ public class MavenResolver {
     }
 
     /**
-     * @param metadata list with OModuleMetadata for resolved dependencies
-     * @return true if all dependencies was resolved
+     * Download Orienteer modules to target folder.
+     * @param modules - modules for download
      */
-    public boolean resolveModuleMetadata(List<OModuleMetadata> metadata) {
-        for (OModuleMetadata module : metadata) {
-            boolean resolved = resolveModuleMetadata(module);
-            if (!resolved) return false;
+    public void downloadModules(List<OModuleMetadata> modules) {
+        for (OModuleMetadata module : modules) {
+            File file = module.getMainArtifact().getFile();
+            if (file == null) {
+                Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getMainArtifact());
+                if (artifactOptional.isPresent()) {
+                    File jar = moveToModulesFolder(artifactOptional.get().getFile().toPath());
+                    module.setMainArtifact(artifactOptional.get().setFile(jar));
+                }
+            }
         }
-        return true;
     }
 
     /**
-     * @param moduleMetadata metadata with unresolved dependencies
-     * @return true if all dependencies was resolved
+     * Move Orienteer module to modules folder
+     * @param pathToJar - path to Orienteer module
+     * @return path to module in modules folder
      */
-    public boolean resolveModuleMetadata(OModuleMetadata moduleMetadata) {
-        boolean resolved = false;
+    private File moveToModulesFolder(Path pathToJar) {
+        Path result = modulesFolder.resolve(pathToJar.getFileName());
         try {
-            resolve(moduleMetadata.getMainArtifact());
-            resolved = true;
-        } catch (ODependenciesNotResolvedException e) {
-            LOG.warn("Cannot resolve dependencies for " + moduleMetadata);
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            if (!Files.exists(result)) Files.move(pathToJar, result);
+        } catch (IOException e) {
+            LOG.warn("Cannot move modules jar to modules folder!", e);
         }
-        return resolved;
+        return result.toFile();
     }
 
     private Optional<OModuleMetadata> getModuleMetadata(String group, String artifact, String version,
@@ -118,15 +142,11 @@ public class MavenResolver {
                 getArtifact(groupArtifactVersion, pathToJar) : resolveArtifact(groupArtifactVersion);
         if (!mainArtifact.isPresent()) return Optional.absent();
         List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion, pathToJar);
-        Optional<String> initializer = getInitializer(pathToJar);
-        if (!initializer.isPresent()) return Optional.absent();
 
         OModuleMetadata moduleMetadata = new OModuleMetadata();
-        moduleMetadata.setLoad(true).setId(idCounter)
-                .setInitializerName(initializer.get())
+        moduleMetadata.setLoad(true)
                 .setMainArtifact(mainArtifact.get())
                 .setDependencies(artifacts);
-        idCounter++;
         return Optional.of(moduleMetadata);
     }
 
@@ -134,10 +154,7 @@ public class MavenResolver {
         List<ArtifactResult> results;
         List<Artifact> artifacts = null;
         try {
-            if (dependenciesFromPomXml) {
-                Optional<Path> pomFromJar = OrienteerClassLoaderUtil.getPomFromJar(pathToJar);
-                results = resolveDependenciesFromPomXml(pomFromJar.get());
-            } else results = resolveDependencies(groupArtifactVersion);
+            results = resolveDependencies(groupArtifactVersion);
             artifacts = getArtifactsFromArtifactResult(results);
         } catch (ArtifactDescriptorException | DependencyCollectionException | DependencyResolutionException e) {
             e.printStackTrace();
@@ -224,9 +241,5 @@ public class MavenResolver {
         if (!pathToArtifact.toString().endsWith(".jar")) return Optional.absent();
         DefaultArtifact defaultArtifact = new DefaultArtifact(groupArtifactVersion);
         return Optional.of(defaultArtifact.setFile(pathToArtifact.toFile()));
-    }
-
-    private Optional<String> getInitializer(Path pathToJarFile) {
-        return OrienteerClassLoaderUtil.searchOrienteerInitModule(pathToJarFile);
     }
 }

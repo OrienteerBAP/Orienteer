@@ -21,7 +21,6 @@ import java.util.List;
 class OMetadataReader {
     private static final Logger LOG = LoggerFactory.getLogger(OMetadataReader.class);
 
-
     private final Path pathToMetadata;
 
     @VisibleForTesting OMetadataReader(Path pathToMetadata) {
@@ -38,18 +37,15 @@ class OMetadataReader {
     }
 
     @VisibleForTesting List<OModuleMetadata> readAllModules() {
-        List<OModuleMetadata> modules = read();
-        return modules;
+        return read();
     }
 
+    @SuppressWarnings("unchecked")
     private List<OModuleMetadata> read() {
-
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
-        List<OModuleMetadata> modules = getModulesInMetadataXml(rootElement.elements(MetadataUtil.MODULE));
-        return modules;
+        return (List<OModuleMetadata>) getModulesInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
     }
-
 
     private List<OModuleMetadata> getModulesInMetadataXml(List<Element> elements) {
         List<OModuleMetadata> modules = Lists.newArrayList();
@@ -60,42 +56,39 @@ class OMetadataReader {
         return modules;
     }
 
+    @SuppressWarnings("unchecked")
     private OModuleMetadata getModule(Element mainElement) {
         OModuleMetadata module = new OModuleMetadata();
         List<Element> elements = mainElement.elements();
         for (Element element : elements) {
-            switch (element.getName()) {
-                case MetadataUtil.ID:
-                    module.setId(Integer.valueOf(element.getText()));
-                    break;
-                case MetadataUtil.INITIALIZER:
-                    module.setInitializerName(element.getText());
-                    break;
-                case MetadataUtil.LOAD:
+            MetadataTag tag = MetadataTag.getByName(element.getName());
+            switch (tag) {
+                case LOAD:
                     module.setLoad(Boolean.valueOf(element.getText()));
                     break;
-                case MetadataUtil.MAVEN:
-                    Artifact mainDependency = getMavenDependency(element.element(MetadataUtil.MAIN_DEPENDENCY));
-                    List<Artifact> dependencies = getDependencies(element.element(MetadataUtil.DEPENDENCIES));
-                    module.setMainArtifact(mainDependency)
-                            .setDependencies(dependencies);
+                case TRUSTED:
+                    module.setTrusted(Boolean.valueOf(element.getText()));
+                    break;
+                case DEPENDENCY:
+                    module.setMainArtifact(getMavenDependency(element));
                     break;
             }
         }
         return module;
     }
 
-    private List<Artifact> getDependencies(Element dependenciesElement) {
-        List<Artifact> dependencies = Lists.newArrayList();
-        List<Element> elements = dependenciesElement.elements(MetadataUtil.DEPENDENCY);
-        for (Element element : elements) {
-            if (element.getName().equals(MetadataUtil.DEPENDENCY)) {
-                dependencies.add(getMavenDependency(element));
-            }
-        }
-        return dependencies;
-    }
+//    private List<Artifact> getDependencies(Element dependenciesElement) {
+//        List<Artifact> dependencies = Lists.newArrayList();
+//        List<Element> elements = dependenciesElement.elements(MetadataUtil.DEPENDENCY);
+//        for (Element element : elements) {
+//            if (element.getName().equals(MetadataUtil.DEPENDENCY)) {
+//                dependencies.add(getMavenDependency(element));
+//            }
+//        }
+//        return dependencies;
+//    }
 
+    @SuppressWarnings("unchecked")
     private Artifact getMavenDependency(Element mainElement) {
         Artifact artifact;
         String groupId    = null;
@@ -104,30 +97,30 @@ class OMetadataReader {
         String jar        = null;
         List<Element> elements = mainElement.elements();
         for (Element element : elements) {
-            switch (element.getName()) {
-                case MetadataUtil.GROUP_ID:
+            MetadataTag tag = MetadataTag.getByName(element.getName());
+            switch (tag) {
+                case GROUP_ID:
                     groupId = element.getText();
                     break;
-                case MetadataUtil.ARTIFACT_ID:
+                case ARTIFACT_ID:
                     artifactId = element.getText();
                     break;
-                case MetadataUtil.VERSION:
+                case VERSION:
                     version = element.getText();
                     break;
-                case MetadataUtil.JAR:
+                case JAR:
                     jar = element.getText();
                     break;
             }
         }
         artifact = new DefaultArtifact(String.format("%s:%s:%s", groupId, artifactId, version));
-        return artifact.setFile(new File(jar));
+        return jar != null ? artifact.setFile(new File(jar)) : artifact;
     }
 
     private Document readFromFile() {
         SAXReader reader = new SAXReader();
         try {
-            Document document = reader.read(pathToMetadata.toFile());
-            return document;
+            return reader.read(pathToMetadata.toFile());
         } catch (DocumentException ex) {
             LOG.error("Cannot read metadata.xml", ex);
         }

@@ -1,14 +1,18 @@
 package org.orienteer.core.boot.loader.util;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.eclipse.aether.artifact.Artifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.List;
 import java.util.Map;
@@ -18,41 +22,15 @@ import java.util.Map;
  * Utility class for wotk with contents in metadata.xml
  */
 class MetadataUtil {
-    static final String METADATA        = "metadata";
-    static final String MODULE          = "module";
-    static final String ID              = "id";
-    static final String LOAD            = "load";
-    static final String INITIALIZER     = "initializer";
-    static final String MAVEN           = "maven";
-    static final String GROUP_ID        = "groupId";
-    static final String ARTIFACT_ID     = "artifactId";
-    static final String VERSION         = "version";
-    static final String JAR             = "jar";
-    static final String JARS            = "jars";
-
-    static final String LOAD_DEFAULT    = "true";
-    static final String TRUSTED_DEFAULT = "false";
-
-    static final String MAIN_DEPENDENCY = "mainDependency";
-    static final String DEPENDENCY    = "dependency";
-    static final String DEPENDENCIES  = "dependencies";
-
-    static final int TWO_SPACES    = 2;
-    static final int FOUR_SPACES   = 4;
-    static final int SIX_SPACES    = 6;
-    static final int EIGHT_SPACES  = 8;
-    static final int TEN_SPACES    = 10;
-    static final int TWELVE_SPACES = 12;
-
-    static final String METADATA_TEMP = "metadata-temp.xml";
-
     private static final Logger LOG = LoggerFactory.getLogger(MetadataUtil.class);
     private FileTime lastModified;
 
     private final Path metadataPath;
+    private final Path modulesFolder;
 
-    MetadataUtil(Path metadataPath) {
+    MetadataUtil(Path metadataPath, Path modulesFolder) {
         this.metadataPath = metadataPath;
+        this.modulesFolder = modulesFolder;
     }
 
     public void createMetadata(List<OModuleMetadata> modules) {
@@ -86,27 +64,14 @@ class MetadataUtil {
         List<OModuleMetadata> modules = all ? reader.readAllModules() :
                 (load ? reader.readModulesForLoad() : reader.readAllModules());
         Map<Path, OModuleMetadata> result = Maps.newHashMap();
+        int id = 0;
         for (OModuleMetadata module : modules) {
-            result.put(module.getMainArtifact().getFile().toPath(), module);
+            if (module.getMainArtifact().getFile() == null) {
+                result.put(Paths.get(OrienteerClassLoaderUtil.WITHOUT_JAR + id), module);
+                id++;
+            } else result.put(module.getMainArtifact().getFile().toPath(), module);
         }
         return result;
-    }
-
-    /**
-     * Read only modules with load=true.
-     * @return load modules jars and their resources.
-     */
-    public List<Path> readLoadedOnResourcesInMetadata() {
-        List<Path> resources = Lists.newArrayList();
-        List<OModuleMetadata> loadedModules = readMetadataForLoad();
-        for (OModuleMetadata module : loadedModules) {
-            resources.add(module.getMainArtifact().getFile().toPath());
-            for (Artifact dependency : module.getDependencies()) {
-                resources.add(dependency.getFile().toPath());
-            }
-        }
-
-        return resources;
     }
 
     public void updateMetadata(OModuleMetadata moduleMetadata) {
@@ -123,8 +88,11 @@ class MetadataUtil {
         updateModifiedTime();
     }
 
-    public void addModulesToMetadata(List<OModuleMetadata> modules) {
-        updateMetadata(modules);
+    public void updateJarsInMetadata(List<OModuleMetadata> modules) {
+        if (!metadataExists()) return;
+        OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
+        updater.update(modules, true);
+        updateModifiedTime();
     }
 
     public void deleteMetadata() {

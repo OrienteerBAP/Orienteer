@@ -22,10 +22,10 @@ public class OMetadataReaderTest {
 
     @Before
     public void init() throws Exception {
-        pathToMetadata = Paths.get("metadata.xml");
-        OMetadataUpdaterTest test = new OMetadataUpdaterTest();
-        test.init();
-        test.create();
+        pathToMetadata = Paths.get("/home/vetal/workspace/Orienteer/modules/metadata.xml");
+//        OMetadataUpdaterTest test = new OMetadataUpdaterTest();
+//        test.init();
+//        test.create();
     }
 
     @Test
@@ -39,7 +39,6 @@ public class OMetadataReaderTest {
         List<OModuleMetadata> modules = OrienteerClassLoaderUtil.getMetadataModules();
         print(modules);
     }
-
 
     private void print(List<OModuleMetadata> modules) {
         for (OModuleMetadata module : modules) {
