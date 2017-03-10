@@ -27,36 +27,61 @@ public class OrienteerClassLoader extends URLClassLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoader.class);
 
-    private static OrienteerClassLoader orienteerClassLoader;
+    private static ClassLoader orienteerClassLoader;
+    private static OrienteerClassLoader trustedClassLoader;
     private static OrienteerClassLoader untrustedClassLoader;
+    private static boolean useTrusted = true;
+    private static boolean useOrienteerClassLoader = false;
 
     /**
      * Create trusted and untrusted OrienteerClassLoader
      * @param parent - classloader for delegate loading classes
-     * @return - trusted OrienteerClassLoader
      */
-    public static OrienteerClassLoader create(ClassLoader parent) {
-        orienteerClassLoader = new OrienteerClassLoader(parent);
-        return orienteerClassLoader;
+    public static void create(ClassLoader parent) {
+        trustedClassLoader = new OrienteerClassLoader(parent);
+    }
+
+    /**
+     * Get Orienteer classloader.
+     * @return - return trusted or untrusted Orienteer classloader
+     */
+    public static OrienteerClassLoader getClassLoader() {
+        return useTrusted ? trustedClassLoader : untrustedClassLoader;
+    }
+
+    /**
+     * Disable using untrusted classloader and start using trusted Orienteer classloader.
+     */
+    public static void useTrustedClassLoader() {
+        useTrusted = true;
+        useOrienteerClassLoader = false;
+    }
+
+    /**
+     * Disable using trusted classloader and use custom Orienteer classloader.
+     */
+    public static void useOrienteerClassLoader() {
+        useOrienteerClassLoader = true;
+        useTrusted = false;
     }
 
     /**
      * @return - trusted OrienteerClassLoader
      */
-    public static OrienteerClassLoader getTrustedClassLoader() {
-        return orienteerClassLoader;
+    private static OrienteerClassLoader getTrustedClassLoader() {
+        return trustedClassLoader;
     }
 
     /**
      * @return - untrusted OrienteerClassLoader
      */
-    public static OrienteerClassLoader getUntrustedClassLoader() {
+    private static OrienteerClassLoader getUntrustedClassLoader() {
         return untrustedClassLoader;
     }
 
     public static void clear() {
         untrustedClassLoader = null;
-        orienteerClassLoader = null;
+        trustedClassLoader = null;
     }
 
     /**
@@ -67,7 +92,7 @@ public class OrienteerClassLoader extends URLClassLoader {
      */
 	private OrienteerClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
-
+        orienteerClassLoader = parent;
         Map<Path, OModuleMetadata> modules = OrienteerClassLoaderUtil.getMetadataModulesInMap();
         List<Path> jars = OrienteerClassLoaderUtil.getJarsInModulesFolder();
 

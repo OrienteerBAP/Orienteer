@@ -60,13 +60,29 @@ public final class OrienteerFilter implements Filter {
         ServletContext context = filterConfig.getServletContext();
         injector = Guice.createInjector(new OrienteerInitModule(properties));
         context.setAttribute(Injector.class.getName(), injector);
+        initFilter(filterConfig);
+    }
+
+    private void initFilter(final FilterConfig filterConfig) throws ServletException {
         filter = new GuiceFilter();
-        filter.init(filterConfig);
+        try {
+            filter.init(filterConfig);
+        } catch (Throwable ex) {
+            LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.");
+            useTrustedClassLoader();
+            try {
+                filter.init(filterConfig);
+            } catch (Throwable e) {
+                LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.");
+                useOrienteerClassLoader();
+                filter.init(filterConfig);
+            }
+        }
     }
     
     private ClassLoader initClassLoader(Properties properties) {
         OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
-    	return OrienteerClassLoader.getUntrustedClassLoader();
+    	return OrienteerClassLoader.getClassLoader();
     }
 
     @Override
@@ -76,10 +92,28 @@ public final class OrienteerFilter implements Filter {
             res.setStatus(503);
             LOG.info("Reload application. Send 503 code");
         } else {
-        	Thread.currentThread().setContextClassLoader(classLoader);
-        	if (filter != null) {
-        		filter.doFilter(request, response, chain);
-        	} else chain.doFilter(request, response);
+            filter(request, response, chain);
+        }
+    }
+
+    private void filter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        Thread.currentThread().setContextClassLoader(classLoader);
+        try {
+            if (filter != null) {
+                filter.doFilter(request, response, chain);
+            } else chain.doFilter(request, response);
+        } catch (Throwable ex) {
+            useTrustedClassLoader();
+            try {
+                if (filter != null) {
+                    filter.doFilter(request, response, chain);
+                } else chain.doFilter(request, response);
+            } catch (Throwable t) {
+                useOrienteerClassLoader();
+                if (filter != null) {
+                    filter.doFilter(request, response, chain);
+                } else chain.doFilter(request, response);
+            }
         }
     }
 
@@ -104,6 +138,18 @@ public final class OrienteerFilter implements Filter {
 	        init(filterConfig);
 	        reloading = false;
     	}
+    }
+
+    private void useTrustedClassLoader() {
+        OrienteerClassLoader.useTrustedClassLoader();
+        classLoader = OrienteerClassLoader.getClassLoader();
+        Thread.currentThread().setContextClassLoader(classLoader);
+    }
+
+    private void useOrienteerClassLoader() {
+        OrienteerClassLoader.useOrienteerClassLoader();
+        classLoader = OrienteerClassLoader.getClassLoader();
+        Thread.currentThread().setContextClassLoader(classLoader);
     }
 
     public boolean isReloading() {
