@@ -66,16 +66,14 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		this.config = config;
 		paramDefinitions = new ArrayList<BirtReportParameterDefinition>();
 		hiddenParamDefinitions = new ArrayList<BirtReportParameterDefinition>();
-		init(config.getReportDataStream());
-	}
-	
-	private void init(InputStream report) throws EngineException {
 		reportHash = makeReportHash();
+		updateReportCache();
+		
 		Component reportComponent = new Label(REPORT_COMPONENT_NAME,""); 
 		reportComponent.setEscapeModelStrings(false);
 		reportComponent.setOutputMarkupId(true);
 		add(reportComponent);
-		updateReportCache();
+		
 	}
 	
 	public Component getReportComponent() {

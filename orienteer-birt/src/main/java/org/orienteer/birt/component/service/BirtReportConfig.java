@@ -25,8 +25,8 @@ public class BirtReportConfig implements Serializable{
 
 	private Map<String, Object> parameters;
 	private Set<Object> visibleParameters;
-	boolean useLocalDB;
-	IModel<ODocument> configDocModel;
+	private boolean useLocalDB;
+	private IModel<ODocument> configDocModel;
 	
 
 	public BirtReportConfig(IModel<ODocument> configDocModel,Map<String,Object> additionalParameters) throws EngineException {
