@@ -1,10 +1,8 @@
 package org.orienteer.birt.component;
 
-import java.io.InputStream;
-import java.util.Map;
-
 import org.apache.wicket.markup.html.panel.Panel;
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.orienteer.birt.component.service.BirtReportConfig;
 
 /**
  * BirtHemlPanel with paginator

@@ -1,4 +1,4 @@
-package org.orienteer.birt.component;
+package org.orienteer.birt.component.service;
 
 import org.orienteer.birt.orientdb.impl.IUserDataProxy;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;;

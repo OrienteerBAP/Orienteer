@@ -18,11 +18,9 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import org.orienteer.birt.component.OUserDataProxy;
 import org.orienteer.birt.component.widget.AbstractBirtWidget;
 import org.orienteer.birt.component.widget.BrowseBirtWidget;
 import org.orienteer.birt.component.widget.ODocumentBirtWidget;
-import org.orienteer.birt.orientdb.impl.Connection;
 
 //import org.orienteer.birt.orientdb.*;
 
@@ -76,7 +74,7 @@ public class Module extends AbstractOrienteerModule{
 		
 		try{
 			
-			Connection.setUserData(new OUserDataProxy());
+			//Connection.setUserData(new OUserDataProxy());//remarked by "useLocalDB" settings parameter 
 						
 		    final EngineConfig config = new EngineConfig( );
 

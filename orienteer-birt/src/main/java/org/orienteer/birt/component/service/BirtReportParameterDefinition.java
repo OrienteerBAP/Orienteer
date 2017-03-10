@@ -1,10 +1,14 @@
-package org.orienteer.birt.component;
+package org.orienteer.birt.component.service;
 
 import java.io.Serializable;
 
 import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.impl.ScalarParameterDefn;
 
+/**
+ * Definition of BIRT report parameter from .rptdesign file
+ *
+ */
 public class BirtReportParameterDefinition implements Serializable{
 	/**
 	 * 

@@ -1,10 +1,15 @@
-package org.orienteer.birt.component;
+package org.orienteer.birt.component.resources;
 
 import java.io.OutputStream;
 
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
+import org.orienteer.birt.component.AbstractBirtReportPanel;
 
+/**
+ * BIRT report as dedicated HTML page
+ *
+ */
 public class HtmlBirtResource extends AbstractBirtResource{
 
 	/**
@@ -20,7 +25,7 @@ public class HtmlBirtResource extends AbstractBirtResource{
 	protected IRenderOption getRenderOptions(OutputStream output) {
 		HTMLRenderOption options = new HTMLRenderOption();
 		options.setOutputFormat("html");
-		options.setEmbeddable(true);
+		options.setEmbeddable(false);
 		options.setHtmlPagination(false);
 		options.setOutputStream(output);
 		return options;

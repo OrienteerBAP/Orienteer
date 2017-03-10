@@ -1,4 +1,4 @@
-package org.orienteer.birt.component;
+package org.orienteer.birt.component.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
@@ -12,6 +12,10 @@ import org.orienteer.birt.component.widget.AbstractBirtWidget;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Object for BIRT report configuration
+ *
+ */
 public class BirtReportConfig implements Serializable{
 	
 	/**

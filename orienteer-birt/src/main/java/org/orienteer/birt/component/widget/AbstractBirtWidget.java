@@ -1,7 +1,5 @@
 package org.orienteer.birt.component.widget;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.wicket.Component;
@@ -12,7 +10,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.orienteer.birt.component.BirtManagedHtmlReportPanel;
-import org.orienteer.birt.component.BirtReportConfig;
+import org.orienteer.birt.component.service.BirtReportConfig;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.widget.AbstractWidget;

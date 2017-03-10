@@ -1,13 +1,10 @@
 package org.orienteer.birt.component;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
@@ -17,10 +14,17 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.PropertyModel;
 import org.eclipse.birt.report.engine.api.EngineException;
-import org.eclipse.birt.report.engine.api.IParameterDefnBase;
+import org.orienteer.birt.component.resources.ExcelBirtResource;
+import org.orienteer.birt.component.resources.HtmlBirtResource;
+import org.orienteer.birt.component.resources.PDFBirtResource;
+import org.orienteer.birt.component.service.BirtReportParameterDefinition;
 
 import com.google.common.base.Strings;
 
+/**
+ * Panel for runtime birt report manage  
+ *
+ */
 public class BirtManagementPanel extends Panel{
 
 	

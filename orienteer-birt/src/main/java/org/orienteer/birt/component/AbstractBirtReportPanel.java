@@ -1,16 +1,12 @@
 package org.orienteer.birt.component;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.wicket.Component;
@@ -33,6 +29,8 @@ import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.SlotHandle;
 import org.eclipse.birt.report.model.api.activity.SemanticException;
 import org.orienteer.birt.Module;
+import org.orienteer.birt.component.service.BirtReportConfig;
+import org.orienteer.birt.component.service.BirtReportParameterDefinition;
 import org.orienteer.birt.orientdb.impl.Connection;
 import org.orienteer.birt.orientdb.impl.Driver;
 import org.orienteer.core.OrienteerWebApplication;
@@ -153,6 +151,8 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 				if (odash.getExtensionID().equals(Driver.ODA_DATA_SOURCE_ID)){
 					try {
 						odash.setProperty(Connection.DB_URI_PROPERTY, OrientDbWebApplication.get().getOrientDbSettings().getDBUrl());
+						odash.setProperty(Connection.DB_USER_PROPERTY, OrientDbWebSession.get().getUsername());
+						odash.setProperty(Connection.DB_PASSWORD_PROPERTY, OrientDbWebSession.get().getPassword());
 					} catch (SemanticException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -162,6 +162,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		}		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void updateParametersDefinitions(IReportRunnable design) {
 		IGetParameterDefinitionTask paramTask = getReportEngine().createGetParameterDefinitionTask(design);
 		
@@ -174,7 +175,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		}
 		
 		Collection<IParameterDefnBase> defs = paramTask.getParameterDefns(false);
-		for (Iterator iterator = defs.iterator(); iterator.hasNext();) {
+		for (Iterator<?> iterator = defs.iterator(); iterator.hasNext();) {
 			IParameterDefnBase iParameterDefnBase = (IParameterDefnBase) iterator.next();
 			if (visibleParams==null || !visibleParams.contains(iParameterDefnBase.getName())){
 				hiddenParamDefinitions.add(new BirtReportParameterDefinition(iParameterDefnBase));

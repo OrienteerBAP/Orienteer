@@ -3,6 +3,7 @@ package org.orienteer.birt.component;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
+import org.orienteer.birt.component.service.BirtReportConfig;
 
 /**
  * Show BIRT report as plain embedded html

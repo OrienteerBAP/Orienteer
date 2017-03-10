@@ -1,10 +1,15 @@
-package org.orienteer.birt.component;
+package org.orienteer.birt.component.resources;
 
 import java.io.OutputStream;
 
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.PDFRenderOption;
+import org.orienteer.birt.component.AbstractBirtReportPanel;
 
+/**
+ * BIRT report as PDF file
+ *
+ */
 public class PDFBirtResource extends AbstractBirtResource {
 
 	/**

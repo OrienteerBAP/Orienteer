@@ -1,4 +1,4 @@
-package org.orienteer.birt.component;
+package org.orienteer.birt.component.resources;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -7,7 +7,12 @@ import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderTask;
 import org.eclipse.birt.report.engine.api.IReportDocument;
+import org.orienteer.birt.component.AbstractBirtReportPanel;
 
+/**
+ * Base resource for BIRT reports export
+ *
+ */
 public abstract class AbstractBirtResource extends AbstractResource {
 
 	/**
@@ -24,8 +29,6 @@ public abstract class AbstractBirtResource extends AbstractResource {
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes) {
 	    final ResourceResponse resourceResponse = new ResourceResponse();
-	    //resourceResponse.setContentType("text/html");
-	    //resourceResponse.setTextEncoding("utf-8");
 	    setResourceData(resourceResponse);
 	    
 	    resourceResponse.setWriteCallback(new WriteCallback()
@@ -39,14 +42,6 @@ public abstract class AbstractBirtResource extends AbstractResource {
 				IRenderTask renderTask = reportPanel.getReportEngine().createRenderTask(cache);
 				
 		        OutputStream outputStream = attributes.getResponse().getOutputStream();
-		        /*
-				HTMLRenderOption options = new HTMLRenderOption();
-				options.setOutputFormat("html");
-				options.setEmbeddable(true);
-				options.setHtmlPagination(false);
-				options.setOutputStream(outputStream);
-				*/
-		        
 				renderTask.setRenderOption(getRenderOptions(outputStream));
 				//run the report
 				renderTask.render();
