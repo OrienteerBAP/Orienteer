@@ -3,6 +3,7 @@ package org.orienteer.core;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +17,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.wicket.ThreadContext;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
+import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
@@ -62,7 +65,8 @@ public final class OrienteerFilter implements Filter {
     }
     
     private ClassLoader initClassLoader(Properties properties) {
-    	return OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
+        OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
+    	return OrienteerClassLoader.getUntrustedClassLoader();
     }
 
     @Override
@@ -117,7 +121,7 @@ public final class OrienteerFilter implements Filter {
 			@Override
 			public void run() {
 				try {
-					instance.reload(wait);
+                    instance.reload(wait);
 				} catch (ServletException e) {
 					LOG.error("Can't reload Orienteer", e); 
 				}
