@@ -30,7 +30,7 @@ public class OrienteerClassLoader extends URLClassLoader {
     private static ClassLoader orienteerClassLoader;
     private static OrienteerClassLoader trustedClassLoader;
     private static OrienteerClassLoader untrustedClassLoader;
-    private static boolean useTrusted = true;
+    private static boolean useUnTrusted = true;
     private static boolean useOrienteerClassLoader = false;
 
     /**
@@ -45,15 +45,15 @@ public class OrienteerClassLoader extends URLClassLoader {
      * Get Orienteer classloader.
      * @return - return trusted or untrusted Orienteer classloader
      */
-    public static OrienteerClassLoader getClassLoader() {
-        return useTrusted ? trustedClassLoader : untrustedClassLoader;
+    public static ClassLoader getClassLoader() {
+        return useUnTrusted ? untrustedClassLoader : (useOrienteerClassLoader ? orienteerClassLoader : trustedClassLoader);
     }
 
     /**
      * Disable using untrusted classloader and start using trusted Orienteer classloader.
      */
     public static void useTrustedClassLoader() {
-        useTrusted = true;
+        useUnTrusted = true;
         useOrienteerClassLoader = false;
     }
 
@@ -62,21 +62,7 @@ public class OrienteerClassLoader extends URLClassLoader {
      */
     public static void useOrienteerClassLoader() {
         useOrienteerClassLoader = true;
-        useTrusted = false;
-    }
-
-    /**
-     * @return - trusted OrienteerClassLoader
-     */
-    private static OrienteerClassLoader getTrustedClassLoader() {
-        return trustedClassLoader;
-    }
-
-    /**
-     * @return - untrusted OrienteerClassLoader
-     */
-    private static OrienteerClassLoader getUntrustedClassLoader() {
-        return untrustedClassLoader;
+        useUnTrusted = false;
     }
 
     public static void clear() {
