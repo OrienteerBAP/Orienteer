@@ -67,6 +67,14 @@ public class OrienteerClassLoader extends URLClassLoader {
         useUnTrusted = false;
     }
 
+    /**
+     * Use default classloader properties. Orienteer runs with untrusted classloader.
+     */
+    public static void useDefaultClassLoaderProperties() {
+        useUnTrusted = true;
+        useOrienteerClassLoader = false;
+    }
+
     public static void clear() {
         untrustedClassLoader = null;
         trustedClassLoader = null;
@@ -269,5 +277,13 @@ public class OrienteerClassLoader extends URLClassLoader {
             }
             return trusted;
         }
+    }
+
+    @Override
+    public String toString() {
+        String trusted = "trustedOrienteerClassLoader";
+        String unTrusted = "unTrustedOrienteerClassLoader";
+        String custom = "customOrienteerClassLoader";
+        return useUnTrusted ? unTrusted : (useOrienteerClassLoader ? custom : trusted);
     }
 }
