@@ -9,9 +9,11 @@ import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +55,7 @@ public class OrienteerClassLoader extends URLClassLoader {
      * Disable using untrusted classloader and start using trusted Orienteer classloader.
      */
     public static void useTrustedClassLoader() {
-        useUnTrusted = true;
+        useUnTrusted = false;
         useOrienteerClassLoader = false;
     }
 
@@ -152,16 +154,8 @@ public class OrienteerClassLoader extends URLClassLoader {
         resolveModulesWithoutMainJar(modules);
 	    List<Path> jars = OrienteerClassLoaderUtil.getJarsInModulesFolder();
 	    List<OModuleMetadata> modulesForWrite = getModulesForAddToMetadata(jars, modules);
-        List<OModuleMetadata> modulesForDelete = getModulesForDelete(jars, modules);
 
-        if (modulesForDelete.size() > 0) {
-            if (modulesForDelete.size() == modules.values().size()) {
-                OrienteerClassLoaderUtil.deleteMetadataFile();
-            } else {
-                OrienteerClassLoaderUtil.deleteModuleFromMetadata(modulesForDelete);
-            }
-        }
-        if (modulesForWrite.size() > 0) {
+	    if (modulesForWrite.size() > 0) {
             OrienteerClassLoaderUtil.updateModulesInMetadata(modulesForWrite);
         }
 
@@ -179,16 +173,6 @@ public class OrienteerClassLoader extends URLClassLoader {
             }
         }
         return resolver.getResolvedModulesMetadata(modulesForWrite);
-    }
-
-    private List<OModuleMetadata> getModulesForDelete(List<Path> jars, Map<Path, OModuleMetadata> modules) {
-	    List<OModuleMetadata> modulesForDelete = Lists.newArrayList();
-        for (Path path : modules.keySet()) {
-            if (!jars.contains(path)) {
-                modulesForDelete.add(modules.get(path));
-            }
-        }
-        return modulesForDelete;
     }
 
     private List<OModuleMetadata> getModulesForLoad(Collection<OModuleMetadata> modules) {
@@ -222,7 +206,8 @@ public class OrienteerClassLoader extends URLClassLoader {
     private List<OModuleMetadata> getModulesWithoutMainJar(Collection<OModuleMetadata> modules) {
         List<OModuleMetadata> result = Lists.newArrayList();
         for (OModuleMetadata module : modules) {
-            if (module.getMainArtifact().getFile() == null) {
+            File jar = module.getMainArtifact().getFile();
+            if (jar == null || !jar.exists()) {
                 result.add(module);
             }
         }

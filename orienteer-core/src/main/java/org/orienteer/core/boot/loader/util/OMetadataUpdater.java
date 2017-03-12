@@ -64,7 +64,7 @@ class OMetadataUpdater {
             OModuleMetadata module = containsInModulesList(dependencyElement, modulesForWrite);
             if (module != null) {
                 if (updateJar) {
-                    changeModulesJar(element, module);
+                    changeModulesLoadAndJar(element, module);
                 } else changeModule(element, module);
                 updatedModules.add(module);
             }
@@ -141,21 +141,33 @@ class OMetadataUpdater {
         }
     }
 
-    private void changeModulesJar(Element moduleElement, OModuleMetadata module) {
-        Element dependency = moduleElement.element(MetadataTag.DEPENDENCY.get());
-        Iterator<Element> iterator = dependency.elementIterator();
+    @SuppressWarnings("unchecked")
+    private void changeModulesLoadAndJar(Element moduleElement, OModuleMetadata module) {
+        Iterator<Element> iterator = moduleElement.elementIterator();
         boolean isUpdate = false;
-        while (iterator.hasNext()) {
+        while (iterator.hasNext() && !isUpdate) {
             Element element = iterator.next();
             MetadataTag tag = MetadataTag.getByName(element.getName());
-            if (tag == MetadataTag.JAR) {
-                element.setText(module.getMainArtifact().getFile().getAbsolutePath());
-                isUpdate = true;
-                break;
+            switch (tag) {
+                case LOAD:
+                    element.setText(Boolean.toString(module.isLoad()));
+                    break;
+                case DEPENDENCY:
+                    Element dependency = moduleElement.element(MetadataTag.DEPENDENCY.get());
+                    Iterator<Element> depIterator = dependency.elementIterator();
+                    while (depIterator.hasNext()) {
+                        Element jarElement = depIterator.next();
+                        MetadataTag jarTag = MetadataTag.getByName(jarElement.getName());
+                        if (jarTag == MetadataTag.JAR) {
+                            jarElement.setText(module.getMainArtifact().getFile().getAbsolutePath());
+                            isUpdate = true;
+                        }
+                    }
+                    break;
             }
         }
         if (!isUpdate) {
-            Element jarElement = dependency.addElement(MetadataTag.JAR.get());
+            Element jarElement = moduleElement.addElement(MetadataTag.JAR.get());
             jarElement.setText(module.getMainArtifact().getFile().getAbsolutePath());
         }
     }
