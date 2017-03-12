@@ -1,9 +1,6 @@
 package org.orienteer.core;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.net.URLClassLoader;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -17,9 +14,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.wicket.ThreadContext;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
-import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
@@ -38,9 +33,13 @@ import com.google.inject.servlet.GuiceFilter;
 public final class OrienteerFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerFilter.class);
-    
+
+    private static final int HTTP_SERVER_UNAVAILABLE = 503;
+    private static final int HTTP_SERVER_ERROR = 500;
+
     private static OrienteerFilter instance;
-    
+    private static boolean useUnTrusted = true;
+
     private Filter filter;
     private Injector injector;
     
@@ -68,15 +67,15 @@ public final class OrienteerFilter implements Filter {
         try {
             filter.init(filterConfig);
         } catch (Throwable ex) {
-            LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.");
-            useTrustedClassLoader();
-            try {
-                filter.init(filterConfig);
-            } catch (Throwable e) {
+            if (useUnTrusted) {
+                LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.");
+                useTrustedClassLoader();
+                useUnTrusted = false;
+            } else {
                 LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.");
                 useOrienteerClassLoader();
-                filter.init(filterConfig);
             }
+            instance.reload(1000);
         }
     }
     
@@ -89,44 +88,44 @@ public final class OrienteerFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (reloading) {
             HttpServletResponse res = (HttpServletResponse) response;
-            res.setStatus(503);
+            res.setStatus(HTTP_SERVER_UNAVAILABLE);
             LOG.info("Reload application. Send 503 code");
         } else {
-            filter(request, response, chain);
+            doOrienteerFilter(request, response, chain);
         }
     }
 
-    private void filter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    private void doOrienteerFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         Thread.currentThread().setContextClassLoader(classLoader);
         try {
             if (filter != null) {
                 filter.doFilter(request, response, chain);
             } else chain.doFilter(request, response);
-        } catch (Throwable ex) {
-            useTrustedClassLoader();
-            try {
-                if (filter != null) {
-                    filter.doFilter(request, response, chain);
-                } else chain.doFilter(request, response);
-            } catch (Throwable t) {
+        } catch (Throwable t) {
+            if (useUnTrusted) {
+                LOG.warn("Error in untrusted classloader Orienteer will restart with trusted classloader!", t);
+                useTrustedClassLoader();
+                useUnTrusted = false;
+            } else {
+                LOG.warn("Error in trusted classloader Orienteer will restart with custom classloader!", t);
                 useOrienteerClassLoader();
-                if (filter != null) {
-                    filter.doFilter(request, response, chain);
-                } else chain.doFilter(request, response);
             }
+            HttpServletResponse res = (HttpServletResponse) response;
+            res.setStatus(HTTP_SERVER_ERROR);
+            instance.reload(1000);
         }
     }
 
     @Override
     public void destroy() {
-        LOG.info("Destroy filter - " + this.getClass().getName());
+        LOG.info("Destroy doOrienteerFilter - " + this.getClass().getName());
         filter.destroy();
         filter = null;
     }
 
     public void reload(long wait) throws ServletException {
     	if(!reloading) {
-	        LOG.info("Start reload filter with filter config: " + filterConfig);
+	        LOG.info("Start reload doOrienteerFilter with doOrienteerFilter config: " + filterConfig);
 	        reloading = true;
 	        destroy();
 	        try {
