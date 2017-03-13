@@ -28,7 +28,6 @@ class InitUtils {
     private static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
     private static final String DEFAULT                      = "default";
     private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
-    private static final String DEPENDENCIES_FROM_POM_XML    = "orienteer.loader.dependencies.pomXml";
     private static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
     private static final String METADATA_FILE                = "metadata.xml";
 
@@ -40,12 +39,6 @@ class InitUtils {
     public String getMavenLocalRepository() {
         String path = PROPERTIES.getProperty(MAVEN_LOCAL_REPOSITORY);
         return path == null ? DEFAULT_MAVEN_LOCAL_REPOSITORY : path;
-    }
-
-    public boolean isDependenciesResolveFromPomXml() {
-        if (PROPERTIES == null)
-            return Boolean.FALSE;
-        return Boolean.valueOf(PROPERTIES.getProperty(DEPENDENCIES_FROM_POM_XML));
     }
 
     public boolean resolvingDependenciesRecursively() {

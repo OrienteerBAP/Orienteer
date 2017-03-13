@@ -113,10 +113,6 @@ public abstract class OrienteerClassLoaderUtil {
         return INIT_UTILS.resolvingDependenciesRecursively();
     }
 
-    static boolean needLoadDependenciesFromPomXml() {
-        return INIT_UTILS.isDependenciesResolveFromPomXml();
-    }
-
     static Artifact getMainArtifact() {
         Path pathToPomXml = Paths.get(POM_XML);
         Optional<Artifact> artifactOptional = POM_XML_UTILS.readMainGAVInPomXml(pathToPomXml);
