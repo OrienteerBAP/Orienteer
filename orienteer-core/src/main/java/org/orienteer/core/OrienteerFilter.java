@@ -34,8 +34,7 @@ public final class OrienteerFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerFilter.class);
 
-    private static final int HTTP_SERVER_UNAVAILABLE = 503;
-    private static final int HTTP_SERVER_ERROR = 500;
+    private static final int HTTP_CODE_SERVER_UNAVAILABLE = 503;
 
     private static OrienteerFilter instance;
     private static boolean useUnTrusted = true;
@@ -88,31 +87,13 @@ public final class OrienteerFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (reloading) {
             HttpServletResponse res = (HttpServletResponse) response;
-            res.setStatus(HTTP_SERVER_UNAVAILABLE);
+            res.setStatus(HTTP_CODE_SERVER_UNAVAILABLE);
             LOG.info("Reload application. Send 503 code");
         } else {
-            doOrienteerFilter(request, response, chain);
-        }
-    }
-
-    private void doOrienteerFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        Thread.currentThread().setContextClassLoader(classLoader);
-        try {
+            Thread.currentThread().setContextClassLoader(classLoader);
             if (filter != null) {
                 filter.doFilter(request, response, chain);
             } else chain.doFilter(request, response);
-        } catch (Throwable t) {
-            if (useUnTrusted) {
-                LOG.warn("Error in untrusted classloader Orienteer will restart with trusted classloader!", t);
-                useTrustedClassLoader();
-                useUnTrusted = false;
-            } else {
-                LOG.warn("Error in trusted classloader Orienteer will restart with custom classloader!", t);
-                useOrienteerClassLoader();
-            }
-            HttpServletResponse res = (HttpServletResponse) response;
-            res.setStatus(HTTP_SERVER_ERROR);
-            instance.reload(1000);
         }
     }
 
