@@ -44,7 +44,6 @@ class AetherUtils {
     private static final String ORIENTEER_PARENT  = "orienteer-parent";
     private static final String ORIENTEER_CORE    = "orienteer-core";
     private final Set<Artifact> parentDependencies;
-    private final Set<Artifact> resolvedDependecies;
     private final RepositorySystem system;
     private final RepositorySystemSession session;
     private final List<RemoteRepository> repositories;
@@ -53,7 +52,6 @@ class AetherUtils {
         this.system = getRepositorySystem();
         this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
         this.repositories = initUtils.getRemoteRepositories();
-        this.resolvedDependecies = Sets.newHashSet();
         Artifact parent = OrienteerClassLoaderUtil.getMainArtifact();
         this.parentDependencies = getOrienteerMainDependencies(getOrienteerParent(parent));
     }
@@ -86,8 +84,6 @@ class AetherUtils {
     public Optional<Artifact> downloadArtifact(Artifact artifact) {
         if (containsIn(parentDependencies, artifact)) {
             return getArtifactFromSet(parentDependencies, artifact);
-        } else if (containsIn(resolvedDependecies, artifact)) {
-            return getArtifactFromSet(resolvedDependecies, artifact);
         }
         ArtifactRequest artifactRequest = createArtifactRequest(artifact);
         ArtifactResult result = resolveArtifactRequest(artifactRequest);
@@ -127,7 +123,7 @@ class AetherUtils {
         for (Dependency dependency : unchagedDeps) {
             Artifact artifact = dependency.getArtifact();
             String extension = artifact.getExtension();
-            if (containsIn(parentDependencies, artifact) || containsIn(resolvedDependecies, artifact))
+            if (containsIn(parentDependencies, artifact))
                 continue;
 
             if (!extension.equals(JAR_EXTENSION)) {
@@ -143,7 +139,6 @@ class AetherUtils {
         ArtifactResult result = null;
         try {
             result = system.resolveArtifact(session, request);
-            resolvedDependecies.add(result.getArtifact());
         } catch (ArtifactResolutionException e) {
             LOG.error("Cannot resolve artifact: " + request.getArtifact());
             if (LOG.isDebugEnabled()) e.printStackTrace();

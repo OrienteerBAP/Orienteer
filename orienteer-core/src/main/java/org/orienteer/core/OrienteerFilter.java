@@ -65,13 +65,13 @@ public final class OrienteerFilter implements Filter {
         filter = new GuiceFilter();
         try {
             filter.init(filterConfig);
-        } catch (Throwable ex) {
+        } catch (Throwable t) {
             if (useUnTrusted) {
-                LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.");
+                LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);
                 useTrustedClassLoader();
                 useUnTrusted = false;
             } else {
-                LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.");
+                LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.", t);
                 useOrienteerClassLoader();
             }
             instance.reload(1000);
