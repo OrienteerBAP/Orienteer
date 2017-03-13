@@ -40,8 +40,16 @@ class PomXmlUtils {
 
     private Map<String, String> orienteerVersions;
 
-    public PomXmlUtils setOrienteerVersions(Map<String, String> orienteerVersions) {
-        this.orienteerVersions = orienteerVersions;
+    PomXmlUtils addOrienteerVersions(Path pomXml) {
+        if (orienteerVersions == null){
+            orienteerVersions = Maps.newHashMap();
+        }
+        try {
+            orienteerVersions.putAll(getVersionsFromPomXml(pomXml));
+        } catch (IOException e) {
+            LOG.error("Cannot read pom.xml for get Orienteer versions!", e);
+            throw new IllegalStateException("Cannot read pom.xml for get Orienteer versions!");
+        }
         return this;
     }
 
@@ -49,7 +57,7 @@ class PomXmlUtils {
         return orienteerVersions;
     }
 
-    public Optional<Artifact> readParentInPomXml(Path pomXml) {
+    Optional<Artifact> readMainGAVInPomXml(Path pomXml) {
         XMLInputFactory factory = XMLInputFactory.newFactory();
         Optional<Artifact> dependency = Optional.absent();
         try {
@@ -87,7 +95,7 @@ class PomXmlUtils {
         return dependency;
     }
 
-    public Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
+    Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
         XMLInputFactory factory = XMLInputFactory.newFactory();
         Optional<Artifact> dependency = Optional.absent();
         try {
@@ -149,16 +157,18 @@ class PomXmlUtils {
         return dependency;
     }
 
-    public Set<Artifact> readDependencies(Path pomXml) {
+    Set<Artifact> readDependencies(Path pathToPomXml) {
         Set<Artifact> dependencies =  Sets.newHashSet();
         XMLInputFactory factory = XMLInputFactory.newInstance();
         try {
-            Map<String, String> versions = getVersionsInProperties(Files.newInputStream(pomXml));
-            if (orienteerVersions != null) versions.putAll(orienteerVersions);
+            Map<String, String> versions = getVersionsFromPomXml(pathToPomXml);
+            if (orienteerVersions != null) {
+                versions.putAll(orienteerVersions);
+            }
             XMLStreamReader streamReader = null;
             try {
                 streamReader = factory.createXMLStreamReader(
-                        new InputStreamReader(Files.newInputStream(pomXml)));
+                        new InputStreamReader(Files.newInputStream(pathToPomXml)));
 
                 while (streamReader.hasNext()) {
                     streamReader.next();
@@ -185,18 +195,8 @@ class PomXmlUtils {
         return dependencies;
     }
 
-    public Map<String, String> getVersionsInProperties(Path pathToPomXml) {
-        InputStream in = null;
-        try {
-            in = Files.newInputStream(pathToPomXml);
-        } catch (IOException e) {
-            LOG.error("Cannot open pom.xml for read: " + pathToPomXml);
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        }
-        return in != null ? getVersionsInProperties(in) : Maps.<String, String>newHashMap();
-    }
-
-    public Map<String, String> getVersionsInProperties(InputStream in) {
+    private Map<String, String> getVersionsFromPomXml(Path pathToPomXm) throws IOException {
+        InputStream in = Files.newInputStream(pathToPomXm);
         XMLInputFactory factory = XMLInputFactory.newInstance();
         Map<String, String> versions = Maps.newHashMap();
         boolean isReadProjectVersion = false;

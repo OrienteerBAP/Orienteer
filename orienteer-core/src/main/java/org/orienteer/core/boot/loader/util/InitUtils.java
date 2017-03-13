@@ -34,30 +34,8 @@ class InitUtils {
 
     private static final String DEFAULT_MODULES_FOLDER         = System.getProperty("user.home") + "/modules/";
     private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = System.getProperty("user.home") + "/.m2/repository/";
-    private static final String PARENT_POM                     = "../pom.xml";
-    private static final String CORE_POM                       = "pom.xml";
     private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
-    private final PomXmlUtils pomXmlUtils;
-
-    public InitUtils(PomXmlUtils pomXmlUtils) {
-        initOrienteerDependenciesVersions(pomXmlUtils);
-        this.pomXmlUtils = pomXmlUtils;
-    }
-
-
-    private Map<String, String> initOrienteerDependenciesVersions(PomXmlUtils pomXmlUtils) {
-        Path parentPom = Paths.get(PARENT_POM);
-        Map<String, String> versions = null;
-        try {
-            versions = pomXmlUtils.getVersionsInProperties(Files.newInputStream(parentPom));
-        } catch (IOException e) {
-            LOG.error("Cannot load artifact versions from orienteer-parent pom.xml!");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        }
-        pomXmlUtils.setOrienteerVersions(versions);
-        return versions;
-    }
 
     public String getMavenLocalRepository() {
         String path = PROPERTIES.getProperty(MAVEN_LOCAL_REPOSITORY);
@@ -100,34 +78,6 @@ class InitUtils {
         return pathToDir;
     }
 
-    private Path createFile(Path pathToFile) {
-        try {
-            if (!Files.exists(pathToFile))
-                Files.createFile(pathToFile);
-        } catch (IOException e) {
-            LOG.error("Cannot create file: " + pathToFile.toAbsolutePath());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        }
-        return pathToFile;
-    }
-
-    public Optional<Artifact> getOrienteerParent() {
-        Path pathToPom = Paths.get(CORE_POM);
-        return pomXmlUtils.readParentInPomXml(pathToPom);
-    }
-
-//    public Set<Artifact> getOrienteerParentDependencies() {
-//        Path corePom = Paths.getTrustedClassLoader(CORE_POM);
-//        Set<Artifact> coreDependencies = pomXmlUtils.readDependencies(corePom);
-//        Set<Artifact> parentDependencies = pomXmlUtils.readDependencies(Paths.getTrustedClassLoader(PARENT_POM));
-//        parentDependencies.addAll(coreDependencies);
-//        Map<String, String> versions = pomXmlUtils.getOrienteerVersions();
-//        parentDependencies.add(
-//                new DefaultArtifact(String.format("%s:%s:%s",
-//                        "org.orienteer", "orienteer-core", versions.getTrustedClassLoader("${project.version}"))));
-//        return parentDependencies;
-//    }
-
     public List<RemoteRepository> getRemoteRepositories() {
         if (PROPERTIES == null)
             return getDefaultRepositories();
@@ -164,4 +114,27 @@ class InitUtils {
                 "jitpack", "default", "https://jitpack.io/").build());
         return repositories;
     }
+
+    //    private Path createFile(Path pathToFile) {
+//        try {
+//            if (!Files.exists(pathToFile))
+//                Files.createFile(pathToFile);
+//        } catch (IOException e) {
+//            LOG.error("Cannot create file: " + pathToFile.toAbsolutePath());
+//            if (LOG.isDebugEnabled()) e.printStackTrace();
+//        }
+//        return pathToFile;
+//    }
+
+//    public Set<Artifact> getOrienteerParentDependencies() {
+//        Path corePom = Paths.getTrustedClassLoader(POM_XML);
+//        Set<Artifact> coreDependencies = pomXmlUtils.readDependencies(corePom);
+//        Set<Artifact> parentDependencies = pomXmlUtils.readDependencies(Paths.getTrustedClassLoader(PARENT_POM));
+//        parentDependencies.addAll(coreDependencies);
+//        Map<String, String> versions = pomXmlUtils.getOrienteerVersions();
+//        parentDependencies.add(
+//                new DefaultArtifact(String.format("%s:%s:%s",
+//                        "org.orienteer", "orienteer-core", versions.getTrustedClassLoader("${project.version}"))));
+//        return parentDependencies;
+//    }
 }

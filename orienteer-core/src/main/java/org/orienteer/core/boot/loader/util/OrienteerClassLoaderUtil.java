@@ -4,9 +4,8 @@ import com.google.common.base.Optional;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactResult;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,11 +19,12 @@ public abstract class OrienteerClassLoaderUtil {
     public static final String WITHOUT_JAR          = "WITHOUT_JAR";
 
     private static final PomXmlUtils POM_XML_UTILS  = new PomXmlUtils();
-    private static final InitUtils INIT_UTILS       = new InitUtils(POM_XML_UTILS);
+    private static final InitUtils INIT_UTILS       = new InitUtils();
     private static final JarUtils JAR_UTILS         = new JarUtils(INIT_UTILS);
     private static final AetherUtils AETHER_UTILS   = new AetherUtils(INIT_UTILS);
     private static final MetadataUtil METADATA_UTIL = new MetadataUtil(INIT_UTILS.getMetadataPath(), INIT_UTILS.getPathToModulesFolder());
 
+    static final String POM_XML                     = "pom.xml";
 
     private OrienteerClassLoaderUtil() {}
 
@@ -109,13 +109,24 @@ public abstract class OrienteerClassLoaderUtil {
         return METADATA_UTIL.readMetadataForLoad();
     }
 
-
     static boolean resolvingDependenciesRecursively() {
         return INIT_UTILS.resolvingDependenciesRecursively();
     }
 
     static boolean needLoadDependenciesFromPomXml() {
         return INIT_UTILS.isDependenciesResolveFromPomXml();
+    }
+
+    static Artifact getMainArtifact() {
+        Path pathToPomXml = Paths.get(POM_XML);
+        Optional<Artifact> artifactOptional = POM_XML_UTILS.readMainGAVInPomXml(pathToPomXml);
+        if (!artifactOptional.isPresent())
+            throw new IllegalStateException("Cannot read main artifact in pom.xml (" + pathToPomXml.toAbsolutePath() + ")");
+        return artifactOptional.get();
+    }
+
+    static void addOrienteerVersions(Path pathToPomXml) {
+        POM_XML_UTILS.addOrienteerVersions(pathToPomXml);
     }
 
     static Path getModulesFolder() {

@@ -1,5 +1,6 @@
 package org.orienteer.core.loader.util;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.eclipse.aether.artifact.Artifact;
@@ -31,7 +32,7 @@ public class DependencyTest {
         String groupId = "org.orienteer";
         String artifactId = "orienteer-devutils";
         String version = "1.3-SNAPSHOT";
-        artifact = new DefaultArtifact(gav(groupId, artifactId, version));
+        artifact = new DefaultArtifact(gav(groupId, artifactId, version, "jar"));
     }
 
     @Test
@@ -39,7 +40,7 @@ public class DependencyTest {
         String groupId = "com.github.rubenlagus";
         String artifactId = "TelegramBots";
         String version = "2.4.0";
-        Artifact artifact = new DefaultArtifact(gav(groupId, artifactId, version));
+        Artifact artifact = new DefaultArtifact(gav(groupId, artifactId, version, "jar"));
         List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
         LOG.info("Result size: " + resolvedArtifact.size());
         for (ArtifactResult res : resolvedArtifact) {
@@ -70,6 +71,21 @@ public class DependencyTest {
         resolveArtifacts(getArtifacts(results));
     }
 
+    @Test
+    public void downloadParentDependecy() throws Exception {
+        String groupId = "org.orienteer";
+        String artifactId = "orienteer-parent";
+        String version = "1.3-SNAPSHOT";
+        Artifact artifact = new DefaultArtifact(gav(groupId, artifactId, version, "pom"));
+        Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact);
+        Artifact result;
+        if (artifactOptional.isPresent()) {
+            result = artifactOptional.get();
+            LOG.info("Orienteer parent dependency: " + result);
+        } else throw new Exception("Cannot download Orienteer parent dependency!");
+
+    }
+
     private void resolveArtifacts(Set<Artifact> artifacts) {
         List<ArtifactResult> resultList = OrienteerClassLoaderUtil.resolveArtifacts(artifacts);
         for (ArtifactResult result : resultList) {
@@ -85,7 +101,7 @@ public class DependencyTest {
         return artifacts;
     }
 
-    private String gav(String groupId, String artifactId, String version) {
-        return String.format("%s:%s:%s", groupId, artifactId, version);
+    private String gav(String groupId, String artifactId, String version, String extension) {
+        return String.format("%s:%s:%s:%s", groupId, artifactId, extension, version);
     }
 }
