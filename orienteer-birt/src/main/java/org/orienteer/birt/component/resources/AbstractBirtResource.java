@@ -7,7 +7,7 @@ import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderTask;
 import org.eclipse.birt.report.engine.api.IReportDocument;
-import org.orienteer.birt.component.AbstractBirtReportPanel;
+import org.orienteer.birt.component.IBirtReportData;
 
 /**
  * Base resource for BIRT reports export
@@ -20,10 +20,10 @@ public abstract class AbstractBirtResource extends AbstractResource {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private AbstractBirtReportPanel reportPanel;
+	private IBirtReportData reportData;
 
-	public AbstractBirtResource(AbstractBirtReportPanel reportPanel) {
-		this.reportPanel = reportPanel;
+	public AbstractBirtResource(IBirtReportData reportData) {
+		this.reportData = reportData;
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public abstract class AbstractBirtResource extends AbstractResource {
 	      {
 	  		IReportDocument cache;
 			try {
-				cache = reportPanel.getReportCache();
-				IRenderTask renderTask = reportPanel.getReportEngine().createRenderTask(cache);
+				cache = reportData.getReportCache();
+				IRenderTask renderTask = reportData.getReportEngine().createRenderTask(cache);
 				
 		        OutputStream outputStream = attributes.getResponse().getOutputStream();
 				renderTask.setRenderOption(getRenderOptions(outputStream));

@@ -4,7 +4,7 @@ import java.io.OutputStream;
 
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.PDFRenderOption;
-import org.orienteer.birt.component.AbstractBirtReportPanel;
+import org.orienteer.birt.component.IBirtReportData;
 
 /**
  * BIRT report as PDF file
@@ -17,8 +17,8 @@ public class PDFBirtResource extends AbstractBirtResource {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public PDFBirtResource(AbstractBirtReportPanel reportPanel) {
-		super(reportPanel);
+	public PDFBirtResource(IBirtReportData reportData) {
+		super(reportData);
 	}
 
 	@Override

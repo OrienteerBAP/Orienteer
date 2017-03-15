@@ -10,7 +10,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.orienteer.birt.component.BirtManagedHtmlReportPanel;
-import org.orienteer.birt.component.service.BirtReportConfig;
+import org.orienteer.birt.component.service.BirtReportODocumentConfig;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.widget.AbstractWidget;
@@ -53,7 +53,7 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 		  public Component getLazyLoadComponent(String id)
 		  {
 		    try {
-				return new BirtManagedHtmlReportPanel(id,new BirtReportConfig(AbstractBirtWidget.this.getWidgetDocumentModel(),additionalParameters));
+				return new BirtManagedHtmlReportPanel(id,new BirtReportODocumentConfig(AbstractBirtWidget.this.getWidgetDocumentModel(),additionalParameters));
 			} catch (EngineException e) {
 				String message = e.getMessage();
 				if (!Strings.isEmpty(message)){

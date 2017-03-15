@@ -29,12 +29,16 @@ import org.orienteer.birt.component.widget.ODocumentBirtWidget;
  */
 public class Module extends AbstractOrienteerModule{
 
-	public static final String LOGS_PATH = "/temp";
+	public static final String LOGS_PATH = System.getProperty("java.io.tmpdir")+"/birt_logs";
+	
+	public static final String MODULE_NAME = "orienteer-birt";
+	
+	
 	
 	private IReportEngine engine;
 
 	protected Module() {
-		super("orienteer-birt", 1,OWidgetsModule.NAME);
+		super(MODULE_NAME, 1,OWidgetsModule.NAME);
 	}
 	
 	@Override

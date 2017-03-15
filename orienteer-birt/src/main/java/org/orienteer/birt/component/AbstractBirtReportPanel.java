@@ -29,8 +29,8 @@ import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.SlotHandle;
 import org.eclipse.birt.report.model.api.activity.SemanticException;
 import org.orienteer.birt.Module;
-import org.orienteer.birt.component.service.BirtReportConfig;
 import org.orienteer.birt.component.service.BirtReportParameterDefinition;
+import org.orienteer.birt.component.service.IBirtReportConfig;
 import org.orienteer.birt.orientdb.impl.Connection;
 import org.orienteer.birt.orientdb.impl.Driver;
 import org.orienteer.core.OrienteerWebApplication;
@@ -42,7 +42,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 /**
  *	Base panel for other BIRT reports panels
  */
-public abstract class AbstractBirtReportPanel extends Panel implements IPageable {
+public abstract class AbstractBirtReportPanel extends Panel implements IPageable,IBirtReportData {
 
 	/**
 	 * 
@@ -51,17 +51,17 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	protected static final String REPORT_COMPONENT_NAME = "report";
 
 	protected static final String CACHE_EXTENCION = ".rptdocument";
-	protected static final String CACHE_FOLDER = System.getProperty("java.io.tmpdir");//"temp/";
+	protected static final String CACHE_FOLDER = System.getProperty("java.io.tmpdir")+"/birt_cache";//"temp/";
 	
 	private long currentPage = 0;
 	private long pagesCount = 1;
-	private BirtReportConfig config;
+	private IBirtReportConfig config;
 
 	private String reportHash;
 	private List<BirtReportParameterDefinition> paramDefinitions;
 	private List<BirtReportParameterDefinition> hiddenParamDefinitions;
 	
-	public AbstractBirtReportPanel(String id,BirtReportConfig config) throws EngineException{
+	public AbstractBirtReportPanel(String id,IBirtReportConfig config) throws EngineException{
 		super(id);
 		this.config = config;
 		paramDefinitions = new ArrayList<BirtReportParameterDefinition>();
@@ -256,7 +256,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		return config.isUseLocalDB();
 	}
 	
-	public BirtReportConfig getConfig() {
+	public IBirtReportConfig getConfig() {
 		return config;
 	}
 }

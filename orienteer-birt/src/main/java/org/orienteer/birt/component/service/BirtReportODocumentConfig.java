@@ -1,7 +1,6 @@
 package org.orienteer.birt.component.service;
 
 import java.io.ByteArrayInputStream;
-import java.io.Serializable;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
@@ -13,10 +12,10 @@ import org.orienteer.birt.component.widget.AbstractBirtWidget;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
- * Object for BIRT report configuration
+ * Object for BIRT report configuration. Based on ODocument
  *
  */
-public class BirtReportConfig implements Serializable{
+public class BirtReportODocumentConfig implements IBirtReportConfig{
 	
 	/**
 	 * 
@@ -29,7 +28,7 @@ public class BirtReportConfig implements Serializable{
 	private IModel<ODocument> configDocModel;
 	
 
-	public BirtReportConfig(IModel<ODocument> configDocModel,Map<String,Object> additionalParameters) throws EngineException {
+	public BirtReportODocumentConfig(IModel<ODocument> configDocModel,Map<String,Object> additionalParameters) throws EngineException {
     	ODocument modelObject = configDocModel.getObject();
 		byte[] reportData = modelObject.field(AbstractBirtWidget.REPORT_FIELD_NAME);
     	if (reportData==null || reportData.length==0){

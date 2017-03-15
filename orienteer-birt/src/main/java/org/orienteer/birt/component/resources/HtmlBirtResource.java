@@ -4,7 +4,7 @@ import java.io.OutputStream;
 
 import org.eclipse.birt.report.engine.api.HTMLRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
-import org.orienteer.birt.component.AbstractBirtReportPanel;
+import org.orienteer.birt.component.IBirtReportData;
 
 /**
  * BIRT report as dedicated HTML page
@@ -17,8 +17,8 @@ public class HtmlBirtResource extends AbstractBirtResource{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public HtmlBirtResource(AbstractBirtReportPanel reportPanel) {
-		super(reportPanel);
+	public HtmlBirtResource(IBirtReportData reportData) {
+		super(reportData);
 	}
 
 	@Override

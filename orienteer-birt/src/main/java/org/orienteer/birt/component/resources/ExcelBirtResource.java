@@ -4,7 +4,7 @@ import java.io.OutputStream;
 
 import org.eclipse.birt.report.engine.api.EXCELRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderOption;
-import org.orienteer.birt.component.AbstractBirtReportPanel;
+import org.orienteer.birt.component.IBirtReportData;
 
 /**
  * BIRT report as xls file
@@ -17,8 +17,8 @@ public class ExcelBirtResource extends AbstractBirtResource{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ExcelBirtResource(AbstractBirtReportPanel reportPanel) {
-		super(reportPanel);
+	public ExcelBirtResource(IBirtReportData reportData) {
+		super(reportData);
 	}
 
 	@Override
