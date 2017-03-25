@@ -1,25 +1,19 @@
 package org.orienteer.core;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.util.string.Strings;
-
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import org.apache.wicket.util.string.Strings;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Orienteer needs in additional attributes specified for {@link OClass} and {@link OProperty}
  * This class allow flexibly access to that custom parameters.
  */
-public final class CustomAttribute
+public final class CustomAttribute implements Serializable
 {
 	private static final Map<String, CustomAttribute> CACHE = new HashMap<String, CustomAttribute>();
 	
@@ -140,6 +134,16 @@ public final class CustomAttribute
 		CustomAttribute ret = getIfExists(name);
 		if(ret==null) throw new IllegalArgumentException("Custom attribute with name '"+name+"' was not found");
 		return ret;
+	}
+
+	public static CustomAttribute getOrCreate(String name, OType type, Object defaultValue, boolean encode, boolean hiearchical) {
+		return getOrCreate(name, type, null, defaultValue, encode, hiearchical);
+	}
+
+	public static CustomAttribute getOrCreate(String name, OType type, Class<?> javaClass, Object defaultValue, boolean encode, boolean hiearchical) {
+		CustomAttribute ret = getIfExists(name);
+
+		return ret != null ? ret : create(name, type, javaClass, defaultValue, encode, hiearchical);
 	}
 	
 	public static CustomAttribute getIfExists(String name) {

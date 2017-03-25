@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util.metadata;
+package org.orienteer.core.boot.loader.util;
 
 import org.eclipse.aether.artifact.Artifact;
 
@@ -9,16 +9,10 @@ import java.util.List;
  * Class which contains all information about Orienteer outside module.
  */
 public class OModuleMetadata {
-    private String initializerName;
     private Artifact mainArtifact;
     private List<Artifact> dependencies;
     private boolean load;
-    private int id;
-
-    public OModuleMetadata setInitializerName(String initializerName) {
-        this.initializerName = initializerName;
-        return this;
-    }
+    private boolean trusted;
 
     public OModuleMetadata setMainArtifact(Artifact mainArtifact) {
         this.mainArtifact = mainArtifact;
@@ -35,13 +29,9 @@ public class OModuleMetadata {
         return this;
     }
 
-    public OModuleMetadata setId(int id) {
-        this.id = id;
+    public OModuleMetadata setTrusted(boolean trusted) {
+        this.trusted = trusted;
         return this;
-    }
-
-    public String getInitializerName() {
-        return initializerName;
     }
 
     public Artifact getMainArtifact() {
@@ -56,8 +46,8 @@ public class OModuleMetadata {
         return load;
     }
 
-    public int getId() {
-        return id;
+    public boolean isTrusted() {
+        return trusted;
     }
 
     @Override
@@ -65,33 +55,30 @@ public class OModuleMetadata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OModuleMetadata metadata = (OModuleMetadata) o;
+        OModuleMetadata that = (OModuleMetadata) o;
 
-        if (id != metadata.id) return false;
-        if (initializerName != null ? !initializerName.equals(metadata.initializerName) : metadata.initializerName != null)
-            return false;
-        if (mainArtifact != null ? !mainArtifact.equals(metadata.mainArtifact) : metadata.mainArtifact != null)
-            return false;
-        return dependencies != null ? dependencies.equals(metadata.dependencies) : metadata.dependencies == null;
+        if (load != that.load) return false;
+        if (trusted != that.trusted) return false;
+        if (mainArtifact != null ? !mainArtifact.equals(that.mainArtifact) : that.mainArtifact != null) return false;
+        return dependencies != null ? dependencies.equals(that.dependencies) : that.dependencies == null;
     }
 
     @Override
     public int hashCode() {
-        int result = initializerName != null ? initializerName.hashCode() : 0;
-        result = 31 * result + (mainArtifact != null ? mainArtifact.hashCode() : 0);
+        int result = mainArtifact != null ? mainArtifact.hashCode() : 0;
         result = 31 * result + (dependencies != null ? dependencies.hashCode() : 0);
-        result = 31 * result + id;
+        result = 31 * result + (load ? 1 : 0);
+        result = 31 * result + (trusted ? 1 : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "OModuleMetadata{" +
-                "initializerName='" + initializerName + '\'' +
-                ", mainArtifact=" + mainArtifact +
+                "mainArtifact=" + mainArtifact +
                 ", dependencies=" + dependencies +
                 ", load=" + load +
-                ", id=" + id +
+                ", trusted=" + trusted +
                 '}';
     }
 }

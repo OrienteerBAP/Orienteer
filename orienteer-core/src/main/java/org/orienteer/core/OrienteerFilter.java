@@ -1,8 +1,6 @@
 package org.orienteer.core;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.net.URLClassLoader;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +33,12 @@ import com.google.inject.servlet.GuiceFilter;
 public final class OrienteerFilter implements Filter {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerFilter.class);
-    
+
+    private static final int HTTP_CODE_SERVER_UNAVAILABLE = 503;
+
     private static OrienteerFilter instance;
-    
+    private static boolean useUnTrusted = true;
+
     private Filter filter;
     private Injector injector;
     
@@ -57,38 +58,55 @@ public final class OrienteerFilter implements Filter {
         ServletContext context = filterConfig.getServletContext();
         injector = Guice.createInjector(new OrienteerInitModule(properties));
         context.setAttribute(Injector.class.getName(), injector);
+        initFilter(filterConfig);
+    }
+
+    private void initFilter(final FilterConfig filterConfig) throws ServletException {
         filter = new GuiceFilter();
-        filter.init(filterConfig);
+        try {
+            filter.init(filterConfig);
+        } catch (Throwable t) {
+            if (useUnTrusted) {
+                LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);
+                useTrustedClassLoader();
+                useUnTrusted = false;
+            } else {
+                LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.", t);
+                useOrienteerClassLoader();
+            }
+            instance.reload(1000);
+        }
     }
     
     private ClassLoader initClassLoader(Properties properties) {
-    	return OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
+        OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
+    	return OrienteerClassLoader.getClassLoader();
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (reloading) {
             HttpServletResponse res = (HttpServletResponse) response;
-            res.setStatus(503);
+            res.setStatus(HTTP_CODE_SERVER_UNAVAILABLE);
             LOG.info("Reload application. Send 503 code");
         } else {
-        	Thread.currentThread().setContextClassLoader(classLoader);
-        	if (filter != null) {
-        		filter.doFilter(request, response, chain);
-        	} else chain.doFilter(request, response);
+            Thread.currentThread().setContextClassLoader(classLoader);
+            if (filter != null) {
+                filter.doFilter(request, response, chain);
+            } else chain.doFilter(request, response);
         }
     }
 
     @Override
     public void destroy() {
-        LOG.info("Destroy filter - " + this.getClass().getName());
+        LOG.info("Destroy doOrienteerFilter - " + this.getClass().getName());
         filter.destroy();
         filter = null;
     }
 
     public void reload(long wait) throws ServletException {
     	if(!reloading) {
-	        LOG.info("Start reload filter with filter config: " + filterConfig);
+	        LOG.info("Start reload doOrienteerFilter with doOrienteerFilter config: " + filterConfig);
 	        reloading = true;
 	        destroy();
 	        try {
@@ -100,6 +118,18 @@ public final class OrienteerFilter implements Filter {
 	        init(filterConfig);
 	        reloading = false;
     	}
+    }
+
+    private void useTrustedClassLoader() {
+        OrienteerClassLoader.useTrustedClassLoader();
+        classLoader = OrienteerClassLoader.getClassLoader();
+        Thread.currentThread().setContextClassLoader(classLoader);
+    }
+
+    private void useOrienteerClassLoader() {
+        OrienteerClassLoader.useOrienteerClassLoader();
+        classLoader = OrienteerClassLoader.getClassLoader();
+        Thread.currentThread().setContextClassLoader(classLoader);
     }
 
     public boolean isReloading() {
@@ -117,7 +147,7 @@ public final class OrienteerFilter implements Filter {
 			@Override
 			public void run() {
 				try {
-					instance.reload(wait);
+                    instance.reload(wait);
 				} catch (ServletException e) {
 					LOG.error("Can't reload Orienteer", e); 
 				}

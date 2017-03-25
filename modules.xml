@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<metadata>
+    <module>
+        <groupId>org.orienteer</groupId>
+        <artifactId>orienteer-pivottable</artifactId>
+        <version>1.3-SNAPSHOT</version>
+        <description>Module for view class documents in table</description>
+    </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+        <artifactId>orienteer-pages</artifactId>
+        <version>1.3-SNAPSHOT</version>
+        <description>CMS for Orienteer</description>
+    </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+        <artifactId>orienteer-devutils</artifactId>
+        <version>1.3-SNAPSHOT</version>
+        <description>Module for developers</description>
+    </module>
+</metadata>

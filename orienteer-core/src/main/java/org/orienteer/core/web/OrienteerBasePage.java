@@ -19,6 +19,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.OrienteerFilter;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.component.DefaultPageHeader;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ODocumentPageLink;
@@ -98,6 +99,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 			@Override
 			public void onClick() {
 				setResponsePage(new OrienteerReloadPage());
+				OrienteerClassLoader.useDefaultClassLoaderProperties();
 				OrienteerFilter.reloadOrienteer();
 			}
 		});

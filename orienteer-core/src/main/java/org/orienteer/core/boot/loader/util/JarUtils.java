@@ -18,16 +18,21 @@ import java.util.jar.JarFile;
  * @author Vitaliy Gonchar
  * Class for work with jar contents.
  */
-public abstract class JarUtils {
+class JarUtils {
     private static final Logger LOG = LoggerFactory.getLogger(JarUtils.class);
     private static final String POM_FOLDER_NAME = "pom/";
-    private static Path pomFolder;
+    private Path pomFolder;
+    private final Path modulesFolder;
 
-    public static Optional<Path> getPomFromJar(String path) {
+    JarUtils(InitUtils initUtils) {
+        this.modulesFolder = initUtils.getPathToModulesFolder();
+    }
+
+    public Optional<Path> getPomFromJar(String path) {
         return getPomFromJar(Paths.get(path));
     }
 
-    public static Optional<Path> getPomFromJar(Path path) {
+    public Optional<Path> getPomFromJar(Path path) {
         Optional<Path> result = Optional.absent();
         try {
             JarFile jarFile = new JarFile(path.toFile());
@@ -49,7 +54,7 @@ public abstract class JarUtils {
         return result;
     }
 
-    private static Optional<Path> unarchivePomFile(JarFile jarFile, JarEntry jarEntry) throws IOException {
+    private Optional<Path> unarchivePomFile(JarFile jarFile, JarEntry jarEntry) throws IOException {
         Optional<Path> resultOptional = Optional.absent();
 
         int pointer = jarEntry.getName().lastIndexOf("/") + 1;
@@ -81,11 +86,15 @@ public abstract class JarUtils {
         return resultOptional;
     }
 
-    public static List<Path> readNewJarsInFolder(String folder, List<Path> oldJars) {
+    public List<Path> readJarsInModulesFolder() {
+        return readJarsInFolder(modulesFolder);
+    }
+
+    public List<Path> readNewJarsInFolder(String folder, List<Path> oldJars) {
         return readNewJarsInFolder(Paths.get(folder), oldJars);
     }
 
-    public static List<Path> readJarsInFolder(Path folder) {
+    public List<Path> readJarsInFolder(Path folder) {
         return readJarsInFolder(folder, new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -94,7 +103,7 @@ public abstract class JarUtils {
         });
     }
 
-    public static List<Path> readJarsInFolder(String folder) {
+    public List<Path> readJarsInFolder(String folder) {
         return readJarsInFolder(Paths.get(folder), new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -103,7 +112,7 @@ public abstract class JarUtils {
         });
     }
 
-    private static List<Path> readJarsInFolder(Path folder, FilenameFilter filter) {
+    private List<Path> readJarsInFolder(Path folder, FilenameFilter filter) {
         if (!Files.isDirectory(folder)) return Lists.newArrayList();
         List<Path> jars = Lists.newArrayList();
         File file = folder.toFile();
@@ -115,7 +124,7 @@ public abstract class JarUtils {
     }
 
 
-    public static List<Path> readNewJarsInFolder(Path folder, final List<Path> jars) {
+    public List<Path> readNewJarsInFolder(Path folder, final List<Path> jars) {
         List<Path> jarsInFolder = readJarsInFolder(folder, new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -126,7 +135,7 @@ public abstract class JarUtils {
         return jarsInFolder != null ? jarsInFolder : Lists.<Path>newArrayList();
     }
 
-    public static Optional<String> searchOrienteerInitModule(Path pathToJar) {
+    public Optional<String> searchOrienteerInitModule(Path pathToJar) {
         Optional<String> fullClassName = Optional.absent();
         if (!pathToJar.toString().endsWith(".jar")) return fullClassName;
 
@@ -156,7 +165,7 @@ public abstract class JarUtils {
         return fullClassName;
     }
 
-    public static Set<String> getAllClassNamesInModule(Path pathToJar) throws IOException {
+    public Set<String> getAllClassNamesInModule(Path pathToJar) throws IOException {
         if (!pathToJar.toString().endsWith(".jar")) return Collections.emptySet();
         Set<String> classNames = new HashSet<>();
         JarFile jarFile = new JarFile(pathToJar.toFile());
@@ -175,7 +184,7 @@ public abstract class JarUtils {
         return classNames;
     }
 
-    public static void deletePomFolder() {
+    public void deletePomFolder() {
         if (pomFolder == null) return;
         try {
             DirectoryStream<Path> paths = Files.newDirectoryStream(pomFolder);

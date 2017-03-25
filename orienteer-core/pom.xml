@@ -111,6 +111,13 @@
 			<artifactId>metisMenu</artifactId>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+
 		<!-- ECLIPSE AETHER -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -167,6 +174,14 @@
 			<artifactId>plexus-utils</artifactId>
 			<version>3.0.24</version>
 		</dependency>
+
+        <!-- NEED FOR LOAD TELEGRAM BOT-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
