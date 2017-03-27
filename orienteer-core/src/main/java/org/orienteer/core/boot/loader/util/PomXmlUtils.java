@@ -3,19 +3,17 @@ package org.orienteer.core.boot.loader.util;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +32,7 @@ class PomXmlUtils {
     private static final String DEPENDENCIES                = "dependencies";
     private static final String PROPERTIES                  = "properties";
     private static final String DEPENDENCY                  = "dependency";
+    private static final String DEPENDENCIES_MANAGMENT      = "dependencyManagement";
     private static final String PROPERTIES_VERSION_END      = ".version";
     private static final String PROPERTIES_PROJECT_VERSION  = "${project.version}";
     private static final String WITHOUT_VERSION             = "without-version";
@@ -44,12 +43,8 @@ class PomXmlUtils {
         if (orienteerVersions == null){
             orienteerVersions = Maps.newHashMap();
         }
-        try {
-            orienteerVersions.putAll(getVersionsFromPomXml(pomXml));
-        } catch (IOException e) {
-            LOG.error("Cannot read pom.xml for get Orienteer versions!", e);
-            throw new IllegalStateException("Cannot read pom.xml for get Orienteer versions!");
-        }
+
+        orienteerVersions.putAll(getVersionsFromPomXml(getRootElement(pomXml)));
         return this;
     }
 
@@ -57,269 +52,102 @@ class PomXmlUtils {
         return orienteerVersions;
     }
 
-    Optional<Artifact> readMainGAVInPomXml(Path pomXml) {
-        XMLInputFactory factory = XMLInputFactory.newFactory();
-        Optional<Artifact> dependency = Optional.absent();
-        try {
-            XMLStreamReader streamReader = null;
-            try {
-                streamReader = factory.createXMLStreamReader(
-                        new InputStreamReader(Files.newInputStream(pomXml)));
-                boolean isRun = true;
-                while (streamReader.hasNext() && isRun) {
-                    streamReader.next();
-                    if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-                        String elementName = streamReader.getLocalName();
-                        switch (elementName) {
-                            case PARENT:
-                                dependency = parseDependency(streamReader, null);
-                                isRun = false;
-                                break;
-                        }
-                        while(streamReader.getEventType() != XMLStreamReader.END_ELEMENT){
-                            streamReader.next();
-                        }
-                        streamReader.next();
-                    }
-                }
-            } finally {
-                if (streamReader != null) streamReader.close();
-            }
-        } catch (XMLStreamException e) {
-            LOG.error("Cannot read pom.xml");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        } catch (IOException e) {
-            LOG.error("Cannot open pom.xml");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        }
-        return dependency;
+    Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
+        Element rootElement = getRootElement(pomXml);
+        Element parentElement = rootElement.element(PARENT);
+        String groupId = parentElement.element(GROUP).getText();
+        String artifactId = parentElement.element(ARTIFACT).getText();
+        String version = parentElement.element(VERSION).getText();
+        if (groupId != null && artifactId != null && version != null)
+            return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version)));
+        return Optional.absent();
     }
 
     Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
-        XMLInputFactory factory = XMLInputFactory.newFactory();
-        Optional<Artifact> dependency = Optional.absent();
-        try {
-            XMLStreamReader streamReader = null;
-            String group = null;
-            String artifact = null;
-            String version = null;
-            String parentVersion = null;
-            try {
-                streamReader = factory.createXMLStreamReader(
-                        new InputStreamReader(Files.newInputStream(pomXml)));
-                boolean isRun = true;
-                while (streamReader.hasNext() && isRun) {
-                    streamReader.next();
-                    if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-                        String elementName = streamReader.getLocalName();
-                        switch (elementName) {
-                            case GROUP:
-                                if (group == null) group = streamReader.getElementText();
-                                break;
-                            case ARTIFACT:
-                                artifact = streamReader.getElementText();
-                                break;
-                            case VERSION:
-                                version = streamReader.getElementText();
-                                break;
-                            case PARENT:
-                                Optional<Artifact> parentDependency =
-                                        parseDependency(streamReader, null);
-                                if (parentDependency.isPresent()) {
-                                    group = parentDependency.get().getGroupId();
-                                    parentVersion = parentDependency.get().getVersion();
-                                }
-                                break;
-                            default:
-                                if (elementName.equals(DEPENDENCIES) || elementName.equals(PROPERTIES)) {
-                                    isRun = false;
-                                }
-                        }
-                        while(streamReader.getEventType() != XMLStreamReader.END_ELEMENT){
-                            streamReader.next();
-                        }
-                        streamReader.next();
-                    }
-                }
-                if (version == null || isLinkToVersion(version)) version = parentVersion;
-                if (version != null && group != null && artifact != null)
-                    dependency = Optional.of((Artifact) new DefaultArtifact(getGAV(group, artifact, version)));
-            } finally {
-                if (streamReader != null) streamReader.close();
-            }
-        } catch (XMLStreamException e) {
-            LOG.error("Cannot read pom.xml");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        } catch (IOException e) {
-            LOG.error("Cannot open pom.xml");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-        }
-        return dependency;
+        Element rootElement = getRootElement(pomXml);
+        Element group = rootElement.element(GROUP);
+        Element artifact = rootElement.element(ARTIFACT);
+        Element version = rootElement.element(VERSION);
+        Artifact parent = readParentGAVInPomXml(pomXml).orNull();
+        String groupId = group != null ? group.getText() : (parent != null ? parent.getGroupId() : null);
+        String artifactId = artifact != null ? artifact.getText() : null;
+        String versionId = version != null ? version.getText() : (parent != null ? parent.getVersion() : null);
+        if (groupId != null && artifactId != null && versionId != null)
+            return  Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, versionId)));
+        return Optional.absent();
     }
 
+    @SuppressWarnings("unchecked")
     Set<Artifact> readDependencies(Path pathToPomXml) {
-        Set<Artifact> dependencies =  Sets.newHashSet();
-        XMLInputFactory factory = XMLInputFactory.newInstance();
-        try {
-            Map<String, String> versions = getVersionsFromPomXml(pathToPomXml);
-            if (orienteerVersions != null) {
-                versions.putAll(orienteerVersions);
-            }
-            XMLStreamReader streamReader = null;
-            try {
-                streamReader = factory.createXMLStreamReader(
-                        new InputStreamReader(Files.newInputStream(pathToPomXml)));
-
-                while (streamReader.hasNext()) {
-                    streamReader.next();
-                    if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-                        String elementName = streamReader.getLocalName();
-                        if (elementName.equals(DEPENDENCY)) {
-                            Optional<Artifact> depOptional = parseDependency(streamReader, versions);
-                            if (depOptional.isPresent()) dependencies.add(depOptional.get());
-                        }
-                    }
-                }
-            } finally {
-                if (streamReader != null) streamReader.close();
-            }
-        } catch (XMLStreamException e) {
-            LOG.error("Cannot read pom.xml");
-            if (LOG.isDebugEnabled())
-                e.printStackTrace();
-        } catch (IOException e) {
-            LOG.error("Cannot open pom.xml");
-            if (LOG.isDebugEnabled())
-                e.printStackTrace();
+        Element rootElement = getRootElement(pathToPomXml);
+        Element dependenciesElement = rootElement.element(DEPENDENCIES);
+        if (dependenciesElement == null) {
+            dependenciesElement = rootElement.element(DEPENDENCIES_MANAGMENT).element(DEPENDENCIES);
         }
+        List<Element> dependencyElements = dependenciesElement.elements();
+
+        Set<Artifact> dependencies =  Sets.newHashSet();
+        Map<String, String> versions = getVersionsFromPomXml(rootElement);
+        if (orienteerVersions != null) {
+            versions.putAll(orienteerVersions);
+        }
+        for (Element element : dependencyElements) {
+            Optional<Artifact> depOptional = parseDependency(element, versions);
+            if (depOptional.isPresent()) dependencies.add(depOptional.get());
+        }
+
         return dependencies;
     }
 
-    private Map<String, String> getVersionsFromPomXml(Path pathToPomXm) throws IOException {
-        InputStream in = Files.newInputStream(pathToPomXm);
-        XMLInputFactory factory = XMLInputFactory.newInstance();
+    private Map<String, String> getVersionsFromPomXml(Element rootElement) {
         Map<String, String> versions = Maps.newHashMap();
-        boolean isReadProjectVersion = false;
-        try {
-            XMLStreamReader streamReader = null;
-            try {
-                streamReader = factory.createXMLStreamReader(new InputStreamReader(in));
-                boolean isRun = true;
-                while (streamReader.hasNext() && isRun) {
-                    streamReader.next();
-                    if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-                        String elementName = streamReader.getLocalName();
-                        switch (elementName) {
-                            case PROPERTIES:
-                                versions.putAll(parseVersionProperty(streamReader));
-                                isRun = false;
-                                break;
-                            case PARENT:
-                                versions.put(PROPERTIES_PROJECT_VERSION, getParrentVersion(streamReader));
-                                isReadProjectVersion = true;
-                                break;
-                            case VERSION:
-                                if (!isReadProjectVersion) {
-                                    versions.put(PROPERTIES_PROJECT_VERSION, streamReader.getElementText());
-                                    isReadProjectVersion = true;
-                                }
-                                break;
-                        }
-                        while (streamReader.getEventType() != XMLStreamReader.END_ELEMENT) {
-                            streamReader.next();
-                        }
-                        streamReader.next();
-                    }
-                }
-            } finally {
-                if (streamReader != null) streamReader.close();
-            }
-        } catch (XMLStreamException e) {
-            LOG.error("Cannot read pom.xml");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+        Element properties = rootElement.element(PROPERTIES);
+        if (properties != null) {
+            versions.putAll(parseVersionProperty(properties));
+        }
+        Element parent = rootElement.element(PARENT);
+        if (parent != null) {
+            versions.put(PROPERTIES_PROJECT_VERSION, getParentVersion(parent));
+        }
+        Element version = rootElement.element(VERSION);
+        if (version != null) {
+            versions.put(PROPERTIES_PROJECT_VERSION, version.getText());
         }
         return versions;
     }
 
-    private String getParrentVersion(XMLStreamReader streamReader) throws XMLStreamException {
-        String version = null;
-        while (streamReader.hasNext()) {
-            streamReader.next();
-            if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-                String elementName = streamReader.getLocalName();
-                if (elementName.equals(VERSION)) {
-                    version = streamReader.getElementText();
-                    break;
-                }
-                streamReader.next();
-            }
-        }
+    private String getParentVersion(Element parentElement)  {
+        String version = parentElement.element(VERSION) != null ? parentElement.element(VERSION).getText() : null;
         return version != null ? version : WITHOUT_VERSION;
     }
 
-    private Map<String, String> parseVersionProperty(XMLStreamReader streamReader)
-            throws XMLStreamException {
+    @SuppressWarnings("unchecked")
+    private Map<String, String> parseVersionProperty(Element propertyElement) {
         Map<String, String> versions = Maps.newHashMap();
-        while (!(streamReader.getEventType() == XMLStreamReader.END_ELEMENT)) {
-            streamReader.next();
-            if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-                String elementName = streamReader.getLocalName();
-                if (elementName.endsWith(PROPERTIES_VERSION_END)) {
-                    elementName = getLinkToVersion(elementName);
-                    String version = streamReader.getElementText();
-                    if (version != null) versions.put(elementName, version);
-                }
-                while(streamReader.getEventType() != XMLStreamReader.END_ELEMENT){
-                    streamReader.next();
-                }
-                streamReader.next();
-            }
+        List<Element> elements = propertyElement.elements();
+        for (Element element : elements) {
+            String elementName = getLinkToVersion(element.getName());
+            versions.put(elementName, element.getText());
         }
         return versions;
     }
 
-    private Optional<Artifact> parseDependency(XMLStreamReader streamReader,
-                                                       Map<String, String> versions)
-            throws XMLStreamException {
-        String groupId = null;
-        String artifactId = null;
-        String artifactVersion = null;
-        Optional<Artifact> dependencyOptional = Optional.absent();
-        boolean run = true;
-        while(!(streamReader.getEventType() == XMLStreamReader.END_ELEMENT) && run) {
-            streamReader.next();
-
-            if(streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-                String elementName = streamReader.getLocalName();
-                switch (elementName) {
-                    case GROUP:
-                        groupId = streamReader.getElementText();
-                        break;
-                    case ARTIFACT:
-                        artifactId = streamReader.getElementText();
-                        break;
-                    case VERSION:
-                        String version = streamReader.getElementText();
-                        if (isLinkToVersion(version) && versions != null) {
-                            String ver = versions.get(version);
-                            version = ver != null ? ver : version;
-                        }
-                        artifactVersion = version;
-                        run = false;
-                        break;
-                }
-
-                while(streamReader.getEventType() != XMLStreamReader.END_ELEMENT){
-                    streamReader.next();
-                }
-                streamReader.next();
-            }
-        }
-        if (artifactVersion != null) {
-            dependencyOptional = Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, artifactVersion)));
+    private Optional<Artifact> parseDependency(Element dependencyElement, Map<String, String> versions) {
+        Element groupElement = dependencyElement.element(GROUP);
+        Element artifactElement = dependencyElement.element(ARTIFACT);
+        Element versionElement = dependencyElement.element(VERSION);
+        String groupId = groupElement != null ? groupElement.getText() : null;
+        String artifactId = artifactElement != null ? artifactElement.getText() : null;
+        String version = versionElement != null ? versionElement.getText() : null;
+        if (isLinkToVersion(version) && versions != null) {
+            String ver = versions.get(version);
+            if (ver != null) version = ver;
         }
 
-        return dependencyOptional;
+        if (groupId != null && artifactId != null && version != null)
+            return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version)));
+
+        return Optional.absent();
     }
 
     private String getGAV(String group, String artifact, String version) {
@@ -335,4 +163,18 @@ class PomXmlUtils {
         return !artifactVersion.startsWith("$") ? "${" + artifactVersion + "}" : artifactVersion;
     }
 
+    private Element getRootElement(Path path) {
+        Document document = readFromFile(path);
+        return document.getRootElement();
+    }
+
+    private Document readFromFile(Path path) {
+        SAXReader reader = new SAXReader();
+        try {
+            return reader.read(path.toFile());
+        } catch (DocumentException ex) {
+            LOG.error("Cannot read: " + path.toAbsolutePath(), ex);
+        }
+        return null;
+    }
 }

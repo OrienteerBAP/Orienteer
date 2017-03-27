@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
 
 /**
  * @author Vitaliy Gonchar
@@ -38,4 +37,10 @@ public class PomXmlUtilsTest {
         } else throw new Exception("Cannot read dependency from pom.xml: " + pomXml);
     }
 
+
+    @Test
+    public void readParentGAV() throws Exception {
+        Artifact mainArtifact = OrienteerClassLoaderUtil.getMainArtifact();
+        LOG.info("main artifact: " + mainArtifact);
+    }
 }
