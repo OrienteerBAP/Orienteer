@@ -14,24 +14,18 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
-import org.orienteer.core.OrienteerFilter;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.component.DefaultPageHeader;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
-
-import java.util.List;
 
 /**
  * Root page for pages which require Orienteers highlevel UI: top navigation bar and left menu
@@ -95,14 +89,6 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
-		add(new Link<Void>("reload") {
-			@Override
-			public void onClick() {
-				setResponsePage(new OrienteerReloadPage());
-				OrienteerClassLoader.useDefaultClassLoaderProperties();
-				OrienteerFilter.reloadOrienteer();
-			}
-		});
 		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
 		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
 		
