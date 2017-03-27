@@ -5,7 +5,8 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.junit.Before;
 import org.junit.Test;
-import org.orienteer.core.boot.loader.util.OModuleMetadata;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OModule;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 
 import java.io.File;
@@ -18,15 +19,15 @@ import java.nio.file.Paths;
 public class OMetadataUpdaterTest {
 
     private Path pathToMetadata;
-    private OModuleMetadata metadata;
+    private OModule metadata;
 
     @Before
     public void init() {
         pathToMetadata = Paths.get("metadata.xml");
         Artifact artifact = new DefaultArtifact("org.company:weaxme:1.0");
         artifact = artifact.setFile(new File("/home/vetal/workspace/Orienteer/modules/orienteer-pivottable.jar"));
-        metadata = new OModuleMetadata();
-        metadata.setMainArtifact(artifact);
+        metadata = new OModule();
+        metadata.setArtifact(OArtifact.valueOf(artifact));
         metadata.setLoad(true);
         metadata.setTrusted(true);
     }

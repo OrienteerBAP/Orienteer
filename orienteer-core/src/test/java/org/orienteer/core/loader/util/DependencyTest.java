@@ -1,15 +1,14 @@
 package org.orienteer.core.loader.util;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
+import org.orienteer.core.boot.loader.util.artifact.OModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,5 +102,13 @@ public class DependencyTest {
 
     private String gav(String groupId, String artifactId, String version, String extension) {
         return String.format("%s:%s:%s:%s", groupId, artifactId, extension, version);
+    }
+
+    @Test
+    public void getModulesTest() throws Exception {
+        List<OModule> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerModulesFromServer();
+        for (OModule artifact : orienteerModulesFromServer) {
+            LOG.info("artifact: " + artifact);
+        }
     }
 }

@@ -7,14 +7,16 @@ package org.orienteer.core.boot.loader.util;
 enum MetadataTag {
     METADATA("metadata"),
     MODULE("module"),
+    MODULES("modules"),
     LOAD("load"),
     TRUSTED("trusted"),
-    INITIALIZER("initializer"),
     GROUP_ID("groupId"),
     ARTIFACT_ID("artifactId"),
     VERSION("version"),
     DEPENDENCY("dependency"),
     JAR("jar"),
+    DESCRIPTION("description"),
+    REPOSITORY("repository"),
     EMPTY_TAG(" ");
 
     private final String tag;

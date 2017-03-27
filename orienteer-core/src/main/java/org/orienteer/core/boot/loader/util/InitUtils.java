@@ -1,8 +1,6 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
@@ -13,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -29,6 +26,7 @@ class InitUtils {
     private static final String DEFAULT                      = "default";
     private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
     private static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
+    private static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
     private static final String METADATA_FILE                = "metadata.xml";
 
     private static final String DEFAULT_MODULES_FOLDER         = System.getProperty("user.home") + "/modules/";
@@ -108,6 +106,9 @@ class InitUtils {
         return repositories;
     }
 
+    String getOrienteerModulesUrl() {
+        return PROPERTIES.getProperty(ORIENTEER_MODULES_URL);
+    }
     //    private Path createFile(Path pathToFile) {
 //        try {
 //            if (!Files.exists(pathToFile))

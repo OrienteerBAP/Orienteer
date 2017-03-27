@@ -47,13 +47,14 @@ class AetherUtils {
     private final RepositorySystem system;
     private final RepositorySystemSession session;
     private final List<RemoteRepository> repositories;
+    private Artifact parent;
 
     AetherUtils(InitUtils initUtils) {
         this.system = getRepositorySystem();
         this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
         this.repositories = initUtils.getRemoteRepositories();
-        Artifact parent = OrienteerClassLoaderUtil.getMainArtifact();
-        this.parentDependencies = getOrienteerMainDependencies(getOrienteerParent(parent));
+        this.parent = getOrienteerParent(OrienteerClassLoaderUtil.getMainArtifact());
+        this.parentDependencies = getOrienteerMainDependencies();
     }
 
     public List<ArtifactResult> resolveArtifact(Artifact artifact) {
@@ -90,6 +91,15 @@ class AetherUtils {
         return result != null ? Optional.of(result.getArtifact()) : Optional.<Artifact>absent();
     }
 
+    public Optional<Artifact> downloadArtifact(Artifact artifact, String repository) {
+        if (containsIn(parentDependencies, artifact)) {
+            return getArtifactFromSet(parentDependencies, artifact);
+        }
+        ArtifactRequest artifactRequest = createArtifactRequest(artifact, newUserRemoteRepository(repository));
+        ArtifactResult result = resolveArtifactRequest(artifactRequest);
+        return result != null ? Optional.of(result.getArtifact()) : Optional.<Artifact>absent();
+    }
+
     private Set<ArtifactRequest> createArtifactRequests(ArtifactDescriptorResult descriptorResult) {
         Set<Dependency> dependencies = parseDependencies(descriptorResult.getDependencies());
 //        dependencies.addAll(parseDependencies(descriptorResult.getManagedDependencies()));
@@ -108,6 +118,13 @@ class AetherUtils {
         ArtifactRequest artifactRequest = new ArtifactRequest();
         artifactRequest.setArtifact(artifact);
         artifactRequest.setRepositories(repositories);
+        return artifactRequest;
+    }
+
+    private ArtifactRequest createArtifactRequest(Artifact artifact, RemoteRepository repository) {
+        ArtifactRequest artifactRequest = new ArtifactRequest();
+        artifactRequest.setArtifact(artifact);
+        artifactRequest.setRepositories(Lists.newArrayList(repository));
         return artifactRequest;
     }
 
@@ -249,18 +266,18 @@ class AetherUtils {
         return descriptorResult;
     }
 
-    private Set<Artifact> getOrienteerMainDependencies(Artifact parent) {
+    private Set<Artifact> getOrienteerMainDependencies() {
 //        ArtifactDescriptorRequest artifactDescriptionRequest = createArtifactDescriptionRequest(parent);
 //        ArtifactDescriptorResult parentResult = getArtifactDescription(artifactDescriptionRequest);
         Optional<Artifact> parentOptional = downloadArtifact(parent);
         if (!parentOptional.isPresent()) throw new IllegalStateException("Cannot download Orienteer parent pom.xml");
-        Artifact parentResult = parentOptional.get();
         Artifact coreArtifact = getOrienteerCore(parent.getVersion());
+        parent = parentOptional.get();
         Optional<Artifact> coreOptional = downloadArtifact(coreArtifact);
         if (!coreOptional.isPresent()) throw new IllegalStateException("Cannot download Orienteer core pom.xml");
         Artifact coreResult = coreOptional.get();
-        Set<Artifact> parentDeps = OrienteerClassLoaderUtil.readDependencies(parentResult.getFile().toPath());
-        OrienteerClassLoaderUtil.addOrienteerVersions(parentResult.getFile().toPath());
+        Set<Artifact> parentDeps = OrienteerClassLoaderUtil.readDependencies(parent.getFile().toPath());
+        OrienteerClassLoaderUtil.addOrienteerVersions(parent.getFile().toPath());
         Set<Artifact> coreDeps = OrienteerClassLoaderUtil.readDependencies(coreResult.getFile().toPath());
         parentDeps.addAll(coreDeps);
         OrienteerClassLoaderUtil.addOrienteerVersions(coreResult.getFile().toPath());
@@ -290,5 +307,13 @@ class AetherUtils {
             return newParent;
         }
         return parent;
+    }
+
+    private RemoteRepository newUserRemoteRepository(String repository) {
+        return new RemoteRepository.Builder("user-" + repositories.size() + 1, "default", repository).build();
+    }
+
+    public void addRepository(String repository) {
+        repositories.add(newUserRemoteRepository(repository));
     }
 }
