@@ -34,8 +34,10 @@ import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import com.orientechnologies.orient.core.Orient;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.function.OFunction;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OResultSet;
 
 /**
  * {@link Widget} for execution of a OFunction
@@ -102,7 +104,24 @@ public class OFunctionExecuteWidget extends AbstractWidget<ODocument> {
 		} catch (Exception e) {
 			ret = Strings.toString(e);
 		}
-		return ret!=null?ret.toString():null;
+		if (ret==null){
+			return null;
+		}
+		if (ret.getClass().isArray()){
+			List<String> resultList = new ArrayList<String>(((OIdentifiable[]) ret).length);
+			for (OIdentifiable object : (OIdentifiable[]) ret) {
+				if (object instanceof ODocument){
+					resultList.add(((ODocument) object).toJSON());
+				}else{
+					resultList.add(object.toString());
+				}
+			}
+			return "[\n"+Strings.join(",\n", resultList)+"\n]";
+		}else if (ret instanceof ODocument){
+			return ((ODocument) ret).toJSON();
+		}else{
+			return ret.toString();
+		}
 	}
 	
 	@Override
