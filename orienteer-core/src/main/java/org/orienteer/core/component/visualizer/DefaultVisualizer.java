@@ -21,6 +21,7 @@ import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.BinaryEditPanel;
 import org.orienteer.core.component.property.BinaryViewPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
+import org.orienteer.core.component.property.DefaultEditPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.EmbeddedCollectionEditPanel;
 import org.orienteer.core.component.property.EmbeddedCollectionViewPanel;
@@ -127,9 +128,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case BINARY:
                 	return new BinaryEditPanel(id, documentModel, propertyModel, (IModel<byte[]>)valueModel);
                 default:
-                	TextField<V> ret = new TextField<V>(id, valueModel);
+                	DefaultEditPanel<V> ret = new DefaultEditPanel<V>(id, valueModel);
                 	Class<?> javaOType = oType.getDefaultJavaType();
-                	if(javaOType!=null) ret.setType(javaOType);
+                	if(javaOType!=null) ret.getTextfield().setType(javaOType);
                 	return ret;
 			}
 		}
