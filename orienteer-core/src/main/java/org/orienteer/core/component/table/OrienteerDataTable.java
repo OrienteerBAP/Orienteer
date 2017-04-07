@@ -1,5 +1,6 @@
 package org.orienteer.core.component.table;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
@@ -86,8 +87,8 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 
 
 	@Override
-	public void setFilter(IDataFilter<?> dataFilter, IModel<DisplayMode> modeModel) {
-		filterToolbar.setDataFilter(dataFilter, modeModel);
+	public void setFilter(IDataFilter<?> dataFilter, IModel<OClass> classModel, IModel<DisplayMode> modeModel) {
+		filterToolbar.setDataFilter(dataFilter, classModel);
 		filterToolbar.setVisible(true);
 	}
 
@@ -175,5 +176,10 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	{
 		return new MetaContextItem<T, Object>(id, index, model);
 	}
-	
+
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		filterToolbar.updateProvider();
+	}
 }

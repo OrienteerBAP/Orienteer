@@ -9,6 +9,7 @@ import org.apache.wicket.model.Model;
 public enum DataFilter {
     DOCUMENT("document"),
     CLASS("class"),
+    PROPERTY("property"),
     SQL("sql");
 
     private final String name;

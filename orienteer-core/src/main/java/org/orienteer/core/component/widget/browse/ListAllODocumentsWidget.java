@@ -3,7 +3,6 @@ package org.orienteer.core.component.widget.browse;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -38,16 +37,10 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
-		table.setFilter(provider, modeModel);
+		table.setFilter(provider, getModel(), modeModel);
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
 		table.addCommand(new EditODocumentsCommand(table, modeModel, getModel()));
-		table.addCommand(new SaveODocumentsCommand(table, modeModel) {
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				provider.updateDataProvider();
-				super.onClick(target);
-			}
-		});
+		table.addCommand(new SaveODocumentsCommand(table, modeModel));
 		table.addCommand(new CopyODocumentCommand(table, getModel()));
 		table.addCommand(new DeleteODocumentCommand(table, getModel()));
 		table.addCommand(new ExportCommand<ODocument>(table, new PropertyModel<String>(model, "name")));
