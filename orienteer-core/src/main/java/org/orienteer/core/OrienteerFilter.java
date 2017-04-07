@@ -6,6 +6,7 @@ import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceFilter;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
+import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
@@ -108,7 +109,7 @@ public final class OrienteerFilter implements Filter {
 			} catch (InterruptedException e) {
 				/*NOP*/
 			}
-	        
+            OrienteerClassLoaderUtil.reindex();
 	        init(filterConfig);
 	        WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
 	        reloading = false;

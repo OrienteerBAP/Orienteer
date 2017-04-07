@@ -27,11 +27,11 @@ public abstract class OrienteerClassLoaderUtil {
 
     public static final String WITHOUT_JAR          = "WITHOUT_JAR";
 
-    private static final PomXmlUtils POM_XML_UTILS  = new PomXmlUtils();
-    private static final InitUtils INIT_UTILS       = new InitUtils();
-    private static final JarUtils JAR_UTILS         = new JarUtils(INIT_UTILS);
-    private static final AetherUtils AETHER_UTILS   = new AetherUtils(INIT_UTILS);
-    private static final MetadataUtil METADATA_UTIL = new MetadataUtil(INIT_UTILS.getMetadataPath(), INIT_UTILS.getPathToModulesFolder());
+    private static PomXmlUtils pomXmlUtils   = new PomXmlUtils();
+    private static InitUtils initUtils       = new InitUtils();
+    private static JarUtils jarUtils         = new JarUtils(initUtils);
+    private static AetherUtils aetherUtils   = new AetherUtils(initUtils);
+    private static MetadataUtil metadataUtil = new MetadataUtil(initUtils.getMetadataPath(), initUtils.getPathToModulesFolder());
 
     static final String POM_XML                     = "pom.xml";
     static final String MODULES                     = "modules.xml";
@@ -40,8 +40,12 @@ public abstract class OrienteerClassLoaderUtil {
 
     private OrienteerClassLoaderUtil() {}
 
+    public static void reindex() {
+        aetherUtils = new AetherUtils(initUtils);
+    }
+
     public static List<OModule> getOrienteerModulesFromServer() {
-        HttpDownloader downloader = new HttpDownloader(INIT_UTILS.getOrienteerModulesUrl(), INIT_UTILS.getPathToModulesFolder());
+        HttpDownloader downloader = new HttpDownloader(initUtils.getOrienteerModulesUrl(), initUtils.getPathToModulesFolder());
         Path download = downloader.download(MODULES);
         if (download == null) return Lists.newArrayList();
         OrienteerArtifactsReader reader = new OrienteerArtifactsReader(download);
@@ -60,39 +64,39 @@ public abstract class OrienteerClassLoaderUtil {
     }
 
     public static List<ArtifactResult> getResolvedArtifact(Artifact artifact) {
-        return AETHER_UTILS.resolveArtifact(artifact);
+        return aetherUtils.resolveArtifact(artifact);
     }
 
     public static List<ArtifactResult> downloadArtifacts(Set<Artifact> artifacts) {
-        return AETHER_UTILS.downloadArtifacts(artifacts);
+        return aetherUtils.downloadArtifacts(artifacts);
     }
 
     public static List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
-        return AETHER_UTILS.resolveArtifacts(artifacts);
+        return aetherUtils.resolveArtifacts(artifacts);
     }
 
     public static Optional<Artifact> downloadArtifact(Artifact artifact) {
-        return AETHER_UTILS.downloadArtifact(artifact);
+        return aetherUtils.downloadArtifact(artifact);
     }
 
     public static Optional<Artifact> downloadArtifact(Artifact artifact, String repository) {
-        return AETHER_UTILS.downloadArtifact(artifact, repository);
+        return aetherUtils.downloadArtifact(artifact, repository);
     }
 
     public static Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
-        return POM_XML_UTILS.readGroupArtifactVersionInPomXml(pomXml);
+        return pomXmlUtils.readGroupArtifactVersionInPomXml(pomXml);
     }
 
     public static Set<Artifact> readDependencies(Path pomXml) {
-        return POM_XML_UTILS.readDependencies(pomXml);
+        return pomXmlUtils.readDependencies(pomXml);
     }
 
     public static Optional<String> searchOrienteerInitModule(Path pathToJar) {
-        return JAR_UTILS.searchOrienteerInitModule(pathToJar);
+        return jarUtils.searchOrienteerInitModule(pathToJar);
     }
 
     public static Optional<Path> getPomFromJar(Path path) {
-        return JAR_UTILS.getPomFromJar(path);
+        return jarUtils.getPomFromJar(path);
     }
 
     public static Optional<OModule> getOModuleFromJar(Path pathToJar) {
@@ -100,27 +104,27 @@ public abstract class OrienteerClassLoaderUtil {
     }
 
     public static List<Path> getJarsInModulesFolder() {
-        return JAR_UTILS.readJarsInModulesFolder();
+        return jarUtils.readJarsInModulesFolder();
     }
 
     public static Map<Path, OModule> getMetadataModulesInMap() {
-        return METADATA_UTIL.readModulesAsMap();
+        return metadataUtil.readModulesAsMap();
     }
 
     public static Map<Path, OModule> getMetadataModulesForLoadInMap() {
-        return METADATA_UTIL.readModulesForLoadAsMap();
+        return metadataUtil.readModulesForLoadAsMap();
     }
 
     public static void createMetadata(List<OModule> modules) {
-        METADATA_UTIL.createMetadata(modules);
+        metadataUtil.createMetadata(modules);
     }
 
     public static void deleteModuleFromMetadata(OModule module) {
-        METADATA_UTIL.deleteModuleFromMetadata(module);
+        metadataUtil.deleteModuleFromMetadata(module);
     }
 
     public static void deleteModulesFromMetadata(List<OModule> modules) {
-        METADATA_UTIL.deleteModulesFromMetadata(modules);
+        metadataUtil.deleteModulesFromMetadata(modules);
     }
 
     public static void deleteModuleArtifact(OModule module) {
@@ -132,52 +136,52 @@ public abstract class OrienteerClassLoaderUtil {
     }
 
     public static void deleteMetadataFile() {
-        METADATA_UTIL.deleteMetadata();
+        metadataUtil.deleteMetadata();
     }
 
     public static void updateModulesJarsInMetadata(List<OModule> modules) {
-        METADATA_UTIL.updateJarsInMetadata(modules);
+        metadataUtil.updateJarsInMetadata(modules);
     }
 
     public static void updateModulesInMetadata(OModule module) {
-        METADATA_UTIL.updateMetadata(module);
+        metadataUtil.updateMetadata(module);
     }
 
     public static void updateModulesInMetadata(OModule moduleForUpdate, OModule newModule) {
-        METADATA_UTIL.updateMetadata(moduleForUpdate, newModule);
+        metadataUtil.updateMetadata(moduleForUpdate, newModule);
     }
 
     public static void updateModulesInMetadata(List<OModule> modules) {
-        METADATA_UTIL.updateMetadata(modules);
+        metadataUtil.updateMetadata(modules);
     }
 
     public static List<OModule> getMetadataModules() {
-        return METADATA_UTIL.readMetadata();
+        return metadataUtil.readMetadata();
     }
 
     public static List<OModule> getMetadataModulesForLoad() {
-        return METADATA_UTIL.readMetadataForLoad();
+        return metadataUtil.readMetadataForLoad();
     }
 
     static boolean resolvingDependenciesRecursively() {
-        return INIT_UTILS.resolvingDependenciesRecursively();
+        return initUtils.resolvingDependenciesRecursively();
     }
 
 
     public static Artifact getMainArtifact() {
         Path pathToPomXml = Paths.get(POM_XML);
-        Optional<Artifact> artifactOptional = POM_XML_UTILS.readParentGAVInPomXml(pathToPomXml);
+        Optional<Artifact> artifactOptional = pomXmlUtils.readParentGAVInPomXml(pathToPomXml);
         if (!artifactOptional.isPresent())
             throw new IllegalStateException("Cannot read main artifact in pom.xml (" + pathToPomXml.toAbsolutePath() + ")");
         return artifactOptional.get();
     }
 
     static void addOrienteerVersions(Path pathToPomXml) {
-        POM_XML_UTILS.addOrienteerVersions(pathToPomXml);
+        pomXmlUtils.addOrienteerVersions(pathToPomXml);
     }
 
     static Path getModulesFolder() {
-        return INIT_UTILS.getPathToModulesFolder();
+        return initUtils.getPathToModulesFolder();
     }
 
     public static Optional<File> addModuleToModulesFolder(String moduleName, FileUpload fileUpload) {
