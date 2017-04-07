@@ -21,6 +21,7 @@ public abstract class AbstractModeAwareWidget<T> extends AbstractWidget<T> imple
 	public AbstractModeAwareWidget(String id, IModel<T> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
+		getMethodPanel().setDisplayModeModel(displayModeModel);
 	}
 	
 	@Override

@@ -10,4 +10,9 @@ public class DisallowFilter implements IMethodFilter{
 		return false;
 	}
 
+	@Override
+	public void setFilterData(String filterData) {
+		
+	}
+
 }

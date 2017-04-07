@@ -10,5 +10,10 @@ public class AllowFilter implements IMethodFilter{
 		return true;
 	}
 
+	@Override
+	public void setFilterData(String filterData) {
+		
+	}
+
 
 }

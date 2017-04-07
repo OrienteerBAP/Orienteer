@@ -1,5 +1,7 @@
 package org.orienteer.core.method;
 
-public interface IMethodEnvironmentData {
+import org.apache.wicket.model.IModel;
 
+public interface IMethodEnvironmentData {
+	public IModel<?> getDisplayObjectModel();
 }

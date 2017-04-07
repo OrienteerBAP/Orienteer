@@ -17,6 +17,7 @@ import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
+import org.orienteer.core.method.MethodPanel;
 import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.core.widget.command.FullScreenCommand;
@@ -46,6 +47,8 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	private RepeatingView commands;
 	
 	private IModel<ODocument> widgetDocumentModel;
+	
+	MethodPanel methodPanel;
 	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
@@ -98,6 +101,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 			}
 		});
 		addCommand(new FullScreenCommand<T>(commands.newChildId()));
+		add(methodPanel = new MethodPanel("methodPanel", model));
 	}
 	
 	@Override
@@ -225,5 +229,9 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected OSchema getSchema() {
 		return OrientDbWebSession.get().getSchema();
+	}
+
+	public MethodPanel getMethodPanel() {
+		return methodPanel;
 	}
 }

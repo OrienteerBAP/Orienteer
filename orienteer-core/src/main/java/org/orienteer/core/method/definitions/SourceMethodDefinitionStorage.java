@@ -47,7 +47,14 @@ public class SourceMethodDefinitionStorage implements IMethodDefinitionStorage{
 	public void reload() {
 		definitions = new HashSet<IMethodDefinition>();
 		for (Class<? extends IMethod> class1 : methodStorage.getMethodClasses()) {
-			definitions.add(new SourceMethodDefinition(class1));
+			if (SourceMethodDefinition.isSupportedClass(class1)){
+				try {
+					definitions.add(new SourceMethodDefinition(class1));
+				} catch (InstantiationException | IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }

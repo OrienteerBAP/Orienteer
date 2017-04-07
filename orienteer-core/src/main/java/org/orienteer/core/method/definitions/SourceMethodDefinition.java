@@ -10,17 +10,18 @@ public class SourceMethodDefinition implements IMethodDefinition{
 	Class<? extends IMethod> methodClass;
 	IMethodFilter filter;
 	
-	public SourceMethodDefinition(Class<? extends IMethod> methodClass) {
-		this.methodClass = methodClass;
+	public static boolean isSupportedClass(Class<? extends IMethod> methodClass){
 		if (methodClass.isAnnotationPresent(Method.class)){
-			Method methodAnnotation = methodClass.getAnnotation(Method.class);
-			try {
-				filter = methodAnnotation.filter().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			return true;
 		}
+		return false;
+	} 
+	
+	public SourceMethodDefinition(Class<? extends IMethod> methodClass) throws InstantiationException, IllegalAccessException {
+		this.methodClass = methodClass;
+		Method methodAnnotation = methodClass.getAnnotation(Method.class);
+		filter = methodAnnotation.filter().newInstance();
+		filter.setFilterData(methodAnnotation.filterData());
 	}
 
 	@Override
