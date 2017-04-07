@@ -1,6 +1,7 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -41,7 +42,9 @@ public abstract class OrienteerClassLoaderUtil {
 
     public static List<OModule> getOrienteerModulesFromServer() {
         HttpDownloader downloader = new HttpDownloader(INIT_UTILS.getOrienteerModulesUrl(), INIT_UTILS.getPathToModulesFolder());
-        OrienteerArtifactsReader reader = new OrienteerArtifactsReader(downloader.download(MODULES));
+        Path download = downloader.download(MODULES);
+        if (download == null) return Lists.newArrayList();
+        OrienteerArtifactsReader reader = new OrienteerArtifactsReader(download);
         List<OModule> oModules = reader.readModules();
         List<OModule> metadataModules = getMetadataModules();
         for (OModule metadataModule : metadataModules) {

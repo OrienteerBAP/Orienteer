@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,6 +38,8 @@ class HttpDownloader {
             HttpResponse response = client.execute(httpGet);
             InputStream content = response.getEntity().getContent();
             result = writeToFile(fileName, content);
+        } catch (UnknownHostException e) {
+            LOG.warn("No Internet connection. Cannot load Orienteer modules!");
         } catch (IOException e) {
             LOG.error("Cannot execute GET request.", e);
         }
