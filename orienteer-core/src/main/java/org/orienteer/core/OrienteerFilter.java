@@ -1,29 +1,22 @@
 package org.orienteer.core;
 
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
+import com.google.inject.servlet.GuiceFilter;
+import de.agilecoders.wicket.webjars.WicketWebjars;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Singleton;
-import com.google.inject.servlet.GuiceFilter;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Main Orienteer Filter to handle all requests.
@@ -116,6 +109,7 @@ public final class OrienteerFilter implements Filter {
 			}
 	        
 	        init(filterConfig);
+	        WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
 	        reloading = false;
     	}
     }
