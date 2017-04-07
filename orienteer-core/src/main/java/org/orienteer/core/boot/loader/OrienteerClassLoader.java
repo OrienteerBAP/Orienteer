@@ -2,6 +2,7 @@ package org.orienteer.core.boot.loader;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.MavenResolver;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
@@ -33,6 +34,7 @@ public class OrienteerClassLoader extends URLClassLoader {
     private static OrienteerClassLoader untrustedClassLoader;
     private static boolean useUnTrusted = true;
     private static boolean useOrienteerClassLoader = false;
+    private static boolean orienteerClassLoaderOn = false;
 
     /**
      * Create trusted and untrusted OrienteerClassLoader
@@ -44,9 +46,11 @@ public class OrienteerClassLoader extends URLClassLoader {
 
     /**
      * Get Orienteer classloader.
-     * @return - return trusted or untrusted Orienteer classloader
+     * @return - return trusted or untrusted or default Orienteer classloader (if OrienteerClassLoader is off)
      */
     public static ClassLoader getClassLoader() {
+        if (!isClassLoaderOn())
+            return OrienteerWebApplication.class.getClassLoader();
         return useUnTrusted ? untrustedClassLoader : (useOrienteerClassLoader ? orienteerClassLoader : trustedClassLoader);
     }
 
@@ -77,6 +81,23 @@ public class OrienteerClassLoader extends URLClassLoader {
     public static void clear() {
         untrustedClassLoader = null;
         trustedClassLoader = null;
+    }
+
+    /**
+     * On OrienteerClassLoader
+     */
+    public static void on() {
+        if (!orienteerClassLoaderOn)
+            orienteerClassLoaderOn = true;
+    }
+
+    public static void off() {
+        if (orienteerClassLoaderOn)
+            orienteerClassLoaderOn = false;
+    }
+
+    public static boolean isClassLoaderOn() {
+        return orienteerClassLoaderOn;
     }
 
     /**

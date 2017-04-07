@@ -73,6 +73,7 @@ public final class OrienteerFilter implements Filter {
     
     private ClassLoader initClassLoader(Properties properties) {
         OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
+        OrienteerClassLoader.on();
     	return OrienteerClassLoader.getClassLoader();
     }
 
