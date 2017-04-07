@@ -52,7 +52,8 @@
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-server</artifactId>
-			<type>bundle</type>
+			<version>${orientdb.version}</version>
+			<!--<type>bundle</type>-->
 		</dependency>
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
@@ -72,7 +73,6 @@
 			<artifactId>tika-core</artifactId>
 			<version>1.13</version>
 		</dependency>
-
 		<!-- WEB JARS -->
 		<dependency>
 			<groupId>de.agilecoders.wicket.webjars</groupId>
