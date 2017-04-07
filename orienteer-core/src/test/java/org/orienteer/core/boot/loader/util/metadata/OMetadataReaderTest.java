@@ -22,10 +22,7 @@ public class OMetadataReaderTest {
 
     @Before
     public void init() throws Exception {
-        pathToMetadata = Paths.get("/home/vetal/workspace/Orienteer/modules/metadata.xml");
-//        OMetadataUpdaterTest test = new OMetadataUpdaterTest();
-//        test.init();
-//        test.create();
+        pathToMetadata = Paths.get("org/orienteer/core/boot/loader/metadata.xml");
     }
 
     @Test
