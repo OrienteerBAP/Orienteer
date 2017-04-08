@@ -15,9 +15,9 @@ import org.orienteer.core.component.table.filter.DataFilter;
 /**
  * @author Vitaliy Gonchar
  */
-public class OrienteerFilterVisualizer extends AbstractSimpleVisualizer {
+public class DataTableFilterVisualizer extends AbstractSimpleVisualizer {
 
-    public OrienteerFilterVisualizer() {
+    public DataTableFilterVisualizer() {
         super(DataFilter.PROPERTY.getName(), false, OType.values());
     }
 
