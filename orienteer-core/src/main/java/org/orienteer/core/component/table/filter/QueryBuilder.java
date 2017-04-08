@@ -1,7 +1,10 @@
 package org.orienteer.core.component.table.filter;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.model.IModel;
 
 import java.util.Iterator;
@@ -12,7 +15,7 @@ import java.util.Map;
  */
 public class QueryBuilder {
 
-    private final Map<OProperty, IModel<?>> propertyFilters;
+    private Table<String, OType, IModel<?>> filterTable;
 
     private static final String SELECT_FROM_WHERE = "SELECT FROM %s WHERE %s";
     private static final String SELECT_FROM       = "SELECT FROM %s ";
@@ -20,65 +23,84 @@ public class QueryBuilder {
     private static final String LIKE = " %s LIKE '%s' ";
     private static final String AND  = " AND ";
 
+    private final String className;
+
     public QueryBuilder(Map<OProperty, IModel<?>> propertyFilters) {
-        this.propertyFilters = propertyFilters;
+        filterTable = HashBasedTable.create();
+        for (OProperty property : propertyFilters.keySet()) {
+            filterTable.put(property.getName(), property.getType(), propertyFilters.get(property));
+        }
+        this.className = getOClassName(propertyFilters);
+    }
+
+    public QueryBuilder(Table<String, OType, IModel<?>> filterTable, String className) {
+        this.filterTable = filterTable;
+        this.className = className;
+    }
+
+    private String getOClassName(Map<OProperty, ?> properties) {
+        String name = "";
+        Iterator<OProperty> iterator = properties.keySet().iterator();
+        if (iterator.hasNext()) {
+            name = iterator.next().getOwnerClass().getName();
+        }
+        return name;
     }
 
     public String build() {
         String queryString = getPropertyQueryString();
         if (Strings.isNullOrEmpty(queryString)) {
-            return String.format(SELECT_FROM, getOClassName());
+            return String.format(SELECT_FROM, className);
         }
-        return String.format(SELECT_FROM_WHERE, getOClassName(), queryString);
+        return String.format(SELECT_FROM_WHERE, className, queryString);
     }
 
     @SuppressWarnings("unchecked")
     private String getPropertyQueryString() {
         StringBuilder builder = new StringBuilder();
-        int notNullCounter = 0;
-        for (OProperty property : propertyFilters.keySet()) {
-            IModel<?> value = propertyFilters.get(property);
-            if (value.getObject() == null) {
-                continue;
-            } else {
-                notNullCounter++;
+        int counter = 0;
+        for (String name : filterTable.rowKeySet()) {
+            Map<OType, IModel<?>> nameRow = filterTable.row(name);
+            for (OType type : nameRow.keySet()) {
+                IModel<?> model = nameRow.get(type);
+                if (model.getObject() == null)
+                    continue;
+                String query = getQueryByNameTypeModel(name, type, model);
+                if (Strings.isNullOrEmpty(query))
+                    continue;
+                if (counter > 1) builder.append(AND);
+                builder.append(query);
+                counter++;
             }
-            String propertyName = property.getName();
-            switch (property.getType()) {
-                case STRING:
-                    builder.append(getStringQuery(propertyName, (String) value.getObject()));
-                    break;
-                case BOOLEAN:
-                    Boolean bool = (Boolean) value.getObject();
-                    builder.append(getValueQuery(propertyName, bool.toString()));
-                    break;
-                case INTEGER:
-                    Integer integer = (Integer) value.getObject();
-                    builder.append(getValueQuery(propertyName, integer.toString()));
-                    break;
-                case LONG:
-                    break;
-            }
-            if (notNullCounter > 1) builder.append(AND);
+
         }
         return builder.toString();
     }
 
+    private String getQueryByNameTypeModel(String name, OType type, IModel<?> model) {
+        String query;
+        switch (type) {
+            case STRING:
+                query = getStringQuery(name, (String) model.getObject());
+                break;
+            default:
+                query = getValueQuery(name, model.getObject().toString());
+        }
+        return query;
+    }
+
     private String getStringQuery(String name, String value) {
-        return value.contains("%") ? String.format(LIKE, name, value) :
-                String.format(LIKE, name, value + "%");
+        String query;
+        if (Strings.isNullOrEmpty(value)) {
+            query = "";
+        } else if (value.contains("%")) {
+            query = String.format(LIKE, name, value);
+        } else query = String.format(LIKE, name, value + "%");
+
+        return query;
     }
 
     private <V> String getValueQuery(String name, V value) {
         return String.format(" %s='%s' ", name, value.toString());
-    }
-
-    private String getOClassName() {
-        String name = "";
-        Iterator<OProperty> iterator = propertyFilters.keySet().iterator();
-        if (iterator.hasNext()) {
-            name = iterator.next().getOwnerClass().getName();
-        }
-        return name;
     }
 }
