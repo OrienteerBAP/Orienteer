@@ -5,6 +5,7 @@ import com.google.common.collect.Table;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.orienteer.junit.GuiceRule;
@@ -49,6 +50,9 @@ public class OrientDbFilterTest {
         List<Integer> falseVersionFilters = Lists.newArrayList(-1);
         List<Boolean> trueActiveFilters = Lists.newArrayList(true);
         List<Boolean> falseActiveFilters = Lists.newArrayList(false);
+        IModel<String> nameModel = Model.of();
+        IModel<Integer> verionModel = Model.of();
+        IModel<Boolean> activeModel = Model.of();
         for (String name : filterTable.rowKeySet()) {
             for (OType type : filterTable.row(name).keySet()) {
                 IModel<?> model = filterTable.row(name).get(type);
@@ -57,22 +61,30 @@ public class OrientDbFilterTest {
                         testFilters(name, (IModel<String>) model, trueNameFilters, queryFilter, OType.STRING,true);
                         testFilters(name, (IModel<String>) model, falseNameFilters, queryFilter, OType.STRING,false);
                         model.setObject(null);
+                        nameModel = (IModel<String>) model;
                         break;
                     case INTEGER:
                         testFilters(name, (IModel<Integer>) model, trueVersionFilters, queryFilter, OType.INTEGER,true);
                         testFilters(name, (IModel<Integer>) model, falseVersionFilters, queryFilter, OType.INTEGER,false);
                         model.setObject(null);
+                        verionModel = (IModel<Integer>) model;
                         break;
                     case BOOLEAN:
                         testFilters(name, (IModel<Boolean>) model, trueActiveFilters, queryFilter, OType.BOOLEAN,true);
                         testFilters(name, (IModel<Boolean>) model, falseActiveFilters, queryFilter, OType.BOOLEAN,false);
                         model.setObject(null);
+                        activeModel = (IModel<Boolean>) model;
                         break;
-
                 }
             }
         }
+
+        nameModel.setObject("l");
+        verionModel.setObject(1);
+        activeModel.setObject(true);
+        printODocuments(queryFilter.buildQueryAndExecute());
     }
+
 
     private <V> void testFilters(String propertyName, IModel<V> model,
                              List<V> filters, QueryFilterTest queryFilter, OType type, boolean success) {
@@ -110,8 +122,13 @@ public class OrientDbFilterTest {
         }
     }
 
+
     private <V> void printODocuments(List<ODocument> documents, V filter) {
         LOG.info("Executed filter {} value={}, result documents:", filter.getClass(), filter);
+        printODocuments(documents);
+    }
+
+    private void printODocuments(List<ODocument> documents) {
         for (ODocument document : documents) {
             LOG.info(document.toString());
         }

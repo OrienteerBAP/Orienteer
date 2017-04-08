@@ -68,7 +68,7 @@ public class QueryBuilder {
                 String query = getQueryByNameTypeModel(name, type, model);
                 if (Strings.isNullOrEmpty(query))
                     continue;
-                if (counter > 1) builder.append(AND);
+                if (counter > 0) builder.append(AND);
                 builder.append(query);
                 counter++;
             }
