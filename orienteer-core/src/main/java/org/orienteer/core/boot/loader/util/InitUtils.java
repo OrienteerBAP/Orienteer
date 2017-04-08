@@ -29,8 +29,8 @@ class InitUtils {
     private static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
     private static final String METADATA_FILE                = "metadata.xml";
 
-    private static final String DEFAULT_MODULES_FOLDER         = System.getProperty("user.home") + "/modules/";
-    private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = System.getProperty("user.home") + "/.m2/repository/";
+    private static final String DEFAULT_MODULES_FOLDER         = "libs/";
+    private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_MODULES_FOLDER + "deps/";
     private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
 
@@ -109,26 +109,4 @@ class InitUtils {
     String getOrienteerModulesUrl() {
         return PROPERTIES.getProperty(ORIENTEER_MODULES_URL);
     }
-    //    private Path createFile(Path pathToFile) {
-//        try {
-//            if (!Files.exists(pathToFile))
-//                Files.createFile(pathToFile);
-//        } catch (IOException e) {
-//            LOG.error("Cannot create file: " + pathToFile.toAbsolutePath());
-//            if (LOG.isDebugEnabled()) e.printStackTrace();
-//        }
-//        return pathToFile;
-//    }
-
-//    public Set<Artifact> getOrienteerParentDependencies() {
-//        Path corePom = Paths.getTrustedClassLoader(POM_XML);
-//        Set<Artifact> coreDependencies = pomXmlUtils.readDependencies(corePom);
-//        Set<Artifact> parentDependencies = pomXmlUtils.readDependencies(Paths.getTrustedClassLoader(PARENT_POM));
-//        parentDependencies.addAll(coreDependencies);
-//        Map<String, String> versions = pomXmlUtils.getOrienteerVersions();
-//        parentDependencies.add(
-//                new DefaultArtifact(String.format("%s:%s:%s",
-//                        "org.orienteer", "orienteer-core", versions.getTrustedClassLoader("${project.version}"))));
-//        return parentDependencies;
-//    }
 }

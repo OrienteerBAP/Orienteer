@@ -12,8 +12,6 @@ import org.orienteer.core.boot.loader.util.artifact.OModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
@@ -43,7 +41,8 @@ public class DependencyTest {
         List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
         LOG.info("Result size: " + resolvedArtifact.size());
         for (ArtifactResult res : resolvedArtifact) {
-            LOG.info("result artifact: " + res.getArtifact());
+            Artifact resArtifact = res.getArtifact();
+            LOG.info("result artifact: " + resArtifact);
         }
     }
 
@@ -59,18 +58,6 @@ public class DependencyTest {
     }
 
     @Test
-    public void resolveArtifacts() {
-        Path path = Paths.get("/home/vetal/workspace/Orienteer/modules/pom/OTelegramBot.pom.xml");
-        Set<Artifact> artifacts = OrienteerClassLoaderUtil.readDependencies(path);
-        List<ArtifactResult> results = OrienteerClassLoaderUtil.downloadArtifacts(artifacts);
-        for (ArtifactResult result : results) {
-            LOG.info("result: " + result);
-        }
-
-        resolveArtifacts(getArtifacts(results));
-    }
-
-    @Test
     public void downloadParentDependecy() throws Exception {
         String groupId = "org.orienteer";
         String artifactId = "orienteer-parent";
@@ -82,7 +69,14 @@ public class DependencyTest {
             result = artifactOptional.get();
             LOG.info("Orienteer parent dependency: " + result);
         } else throw new Exception("Cannot download Orienteer parent dependency!");
+    }
 
+    @Test
+    public void getModulesTest() throws Exception {
+        List<OModule> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerModulesFromServer();
+        for (OModule artifact : orienteerModulesFromServer) {
+            LOG.info("artifact: " + artifact);
+        }
     }
 
     private void resolveArtifacts(Set<Artifact> artifacts) {
@@ -102,13 +96,5 @@ public class DependencyTest {
 
     private String gav(String groupId, String artifactId, String version, String extension) {
         return String.format("%s:%s:%s:%s", groupId, artifactId, extension, version);
-    }
-
-    @Test
-    public void getModulesTest() throws Exception {
-        List<OModule> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerModulesFromServer();
-        for (OModule artifact : orienteerModulesFromServer) {
-            LOG.info("artifact: " + artifact);
-        }
     }
 }

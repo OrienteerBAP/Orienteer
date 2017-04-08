@@ -24,7 +24,6 @@ public class StaticInjectorProvider implements Provider<Injector>
 	{
 		LOG.info("Using embedded mode");
 		STATIC_INJECTOR = Guice.createInjector(new OrienteerInitModule(StartupPropertiesLoader.retrieveProperties()));
-//		OrienteerServletContextListener.predefinedInjector = STATIC_INJECTOR;
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
 			@Override

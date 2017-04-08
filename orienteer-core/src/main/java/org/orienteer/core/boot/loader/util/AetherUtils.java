@@ -267,14 +267,18 @@ class AetherUtils {
     }
 
     private Set<Artifact> getOrienteerMainDependencies() {
-//        ArtifactDescriptorRequest artifactDescriptionRequest = createArtifactDescriptionRequest(parent);
-//        ArtifactDescriptorResult parentResult = getArtifactDescription(artifactDescriptionRequest);
         Optional<Artifact> parentOptional = downloadArtifact(parent);
-        if (!parentOptional.isPresent()) throw new IllegalStateException("Cannot download Orienteer parent pom.xml");
+        if (!parentOptional.isPresent()) {
+            LOG.warn("Cannot download Orienteer parent pom.xml");
+            return Sets.newHashSet();
+        }
         Artifact coreArtifact = getOrienteerCore(parent.getVersion());
         parent = parentOptional.get();
         Optional<Artifact> coreOptional = downloadArtifact(coreArtifact);
-        if (!coreOptional.isPresent()) throw new IllegalStateException("Cannot download Orienteer core pom.xml");
+        if (!coreOptional.isPresent()) {
+            LOG.warn("Cannot download Orienteer core pom.xml");
+            return Sets.newHashSet();
+        }
         Artifact coreResult = coreOptional.get();
         Set<Artifact> parentDeps = OrienteerClassLoaderUtil.readDependencies(parent.getFile().toPath());
         OrienteerClassLoaderUtil.addOrienteerVersions(parent.getFile().toPath());

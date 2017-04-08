@@ -26,18 +26,6 @@
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-core</artifactId>
-			<version>${orientdb.version}</version>
-			<type>bundle</type>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.orientechnologies/orientdb-server -->
-		<dependency>
-			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-server</artifactId>
-			<version>2.1.19</version>
-		</dependency>
 
 		<!--  WICKET DEPENDENCIES -->
 		<dependency>
@@ -64,7 +52,8 @@
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-server</artifactId>
-			<type>bundle</type>
+			<version>${orientdb.version}</version>
+			<!--<type>bundle</type>-->
 		</dependency>
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
@@ -84,7 +73,6 @@
 			<artifactId>tika-core</artifactId>
 			<version>1.13</version>
 		</dependency>
-
 		<!-- WEB JARS -->
 		<dependency>
 			<groupId>de.agilecoders.wicket.webjars</groupId>
@@ -163,11 +151,6 @@
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-transport-http</artifactId>
 			<version>1.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
