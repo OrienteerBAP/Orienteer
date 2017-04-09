@@ -3,10 +3,15 @@ package org.orienteer.core.component.table.filter;
 import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import com.orientechnologies.orient.core.db.ODatabase;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.model.IModel;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -83,6 +88,14 @@ public class QueryBuilder {
             case STRING:
                 query = getStringQuery(name, (String) model.getObject());
                 break;
+            case DATE:
+                SimpleDateFormat dateFormat = new SimpleDateFormat(getDateFormat(OType.DATE));
+                query = getValueQuery(name, dateFormat.format((Date) model.getObject()));
+                break;
+            case DATETIME:
+                SimpleDateFormat dateTimeFormat = new SimpleDateFormat(getDateFormat(OType.DATETIME));
+                query = getValueQuery(name, dateTimeFormat.format((Date) model.getObject()));
+                break;
             default:
                 query = getValueQuery(name, model.getObject().toString());
         }
@@ -102,5 +115,20 @@ public class QueryBuilder {
 
     private <V> String getValueQuery(String name, V value) {
         return String.format(" %s='%s' ", name, value.toString());
+    }
+
+    private String getDateFormat(final OType type) {
+        return new DBClosure<String>() {
+            @Override
+            protected String execute(ODatabaseDocument db) {
+                String format = null;
+                if (type == OType.DATE) {
+                    format = (String) db.get(ODatabase.ATTRIBUTES.DATEFORMAT);
+                } else if (type == OType.DATETIME) {
+                    format = (String) db.get(ODatabase.ATTRIBUTES.DATETIMEFORMAT);
+                }
+                return format;
+            }
+        }.execute();
     }
 }
