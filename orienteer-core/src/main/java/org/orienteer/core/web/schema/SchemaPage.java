@@ -20,5 +20,13 @@ public class SchemaPage extends AbstractWidgetPage<Void> {
 	public String getDomain() {
 		return "schema";
 	}
+	
+	@Override
+	protected boolean switchToDefaultTab() {
+		if(super.switchToDefaultTab()) return true;
+		else {
+			return selectTab("classes");
+		}
+	}
 
 }

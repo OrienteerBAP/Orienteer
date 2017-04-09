@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Widget to manage Orienteers modules
  */
-@Widget(domain="schema", tab="modules", id="modules-manager", autoEnable=true)
+@Widget(domain="schema", tab="artifacts", id="artifacts-manager", autoEnable=true)
 public class OrienteerModulesManagerWidget extends AbstractWidget<OModule> {
 
     private static final String RELOAD_ORIENTEER = "reload.title";
@@ -66,25 +66,19 @@ public class OrienteerModulesManagerWidget extends AbstractWidget<OModule> {
         modulesTable.addCommand(new EditCommand<>(modulesTable, modeModel));
         modulesTable.addCommand(new SaveOModuleCommand(modulesTable, updater, modeModel, feedback));
         modulesTable.addCommand(new DeleteOModuleCommand(modulesTable, updater));
+        modulesTable.addCommand(new AjaxCommand<OModule>("reloadOrienteer", new ResourceModel(RELOAD_ORIENTEER)) {
+        	@Override
+        	public void onClick(AjaxRequestTarget target) {
+        		setResponsePage(new OrienteerReloadPage());
+        		OrienteerClassLoader.useDefaultClassLoaderProperties();
+        		OrienteerFilter.reloadOrienteer();
+        	}
+        }.setIcon(FAIconType.refresh)
+         .setBootstrapType(BootstrapType.PRIMARY)
+         .setBootstrapType(BootstrapType.WARNING)
+         .setChangingDisplayMode(true));
         form.add(modulesTable);
         form.add(feedback);
-        AjaxCommand<Void> reload = new AjaxCommand<Void>("reloadOrienteer", new ResourceModel(RELOAD_ORIENTEER)) {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                setResponsePage(new OrienteerReloadPage());
-                OrienteerClassLoader.useDefaultClassLoaderProperties();
-                OrienteerFilter.reloadOrienteer();
-            }
-
-            @Override
-            protected void onInstantiation() {
-                super.onInstantiation();
-                setIcon(FAIconType.refresh);
-                setBootstrapType(BootstrapType.PRIMARY);
-                setChangingDisplayMode(true);
-            }
-        };
-        add(reload);
         add(form);
     }
 
@@ -135,5 +129,10 @@ public class OrienteerModulesManagerWidget extends AbstractWidget<OModule> {
                 }
             }
         };
+    }
+    
+    @Override
+    protected String getWidgetStyleClass() {
+    	return "strict";
     }
 }
