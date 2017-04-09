@@ -6,8 +6,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 
@@ -15,7 +15,7 @@ import org.orienteer.core.component.property.DisplayMode;
 /**
  * @author Vitaliy Gonchar
  */
-public abstract class AbstractSaveOModuleCommand extends AbstractSaveCommand<OModule> {
+public abstract class AbstractSaveOModuleConfigurationCommand extends AbstractSaveCommand<OModuleConfiguration> {
 
     private static final String STYLE = "style";
     private static final String ERROR_STYLE   = "color:red; font-weight:bold;";
@@ -30,20 +30,20 @@ public abstract class AbstractSaveOModuleCommand extends AbstractSaveCommand<OMo
 
     private final Label feedback;
 
-    public AbstractSaveOModuleCommand(ICommandsSupportComponent<OModule> component, IModel<DisplayMode> modeModel, Label feedback) {
+    public AbstractSaveOModuleConfigurationCommand(ICommandsSupportComponent<OModuleConfiguration> component, IModel<DisplayMode> modeModel, Label feedback) {
         super(component, modeModel);
         this.feedback = feedback;
     }
 
 
     /**
-     * Validate user OModule and send error message if OModule is not valid.
-     * @param module - user OModule
-     * @return true - if user OModule is valid
-     *         false - if user OModule is not valid
+     * Validate user OModuleConfiguration and send error message if OModuleConfiguration is not valid.
+     * @param module - user OModuleConfiguration
+     * @return true - if user OModuleConfiguration is valid
+     *         false - if user OModuleConfiguration is not valid
      */
-    protected boolean isUserOModuleValid(AjaxRequestTarget target, OModule module) {
-        OArtifact artifact = module.getArtifact();
+    protected boolean isUserOModuleValid(AjaxRequestTarget target, OModuleConfiguration module) {
+        OArtifactReference artifact = module.getArtifact();
         if (Strings.isNullOrEmpty(artifact.getGroupId())) {
             sendErrorFeedback(target, new ResourceModel(GROUP_NULL));
             return false;

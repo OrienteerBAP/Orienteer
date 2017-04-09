@@ -8,39 +8,39 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 
 /**
  * @author Vitaliy Gonchar
  */
-public class SaveUserOModuleCommand extends AbstractSaveOModuleCommand {
+public class SaveUserOModuleConfigurationCommand extends AbstractSaveOModuleConfigurationCommand {
 
-    public SaveUserOModuleCommand(OrienteerStructureTable<OModule, ?> table, IModel<DisplayMode> displayModeModel, Label feedback) {
+    public SaveUserOModuleConfigurationCommand(OrienteerStructureTable<OModuleConfiguration, ?> table, IModel<DisplayMode> displayModeModel, Label feedback) {
         super(table, displayModeModel, feedback);
     }
 
     @Override
     public void onClick(AjaxRequestTarget target) {
-        IModel<OModule> model = getModel();
+        IModel<OModuleConfiguration> model = getModel();
         if (model == null) {
             sendErrorFeedback(target, new ResourceModel(ERROR));
             return;
         }
-        OModule module = model.getObject();
+        OModuleConfiguration module = model.getObject();
         if (isUserOModuleValid(target, module)) {
             if (module.getArtifact().getFile() != null) {
-                OrienteerClassLoaderUtil.updateModulesInMetadata(module);
+                OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(module);
                 sendSuccessFeedback(target);
             } else resolveUserOModule(target, module);
         }
     }
 
-    private void resolveUserOModule(AjaxRequestTarget target, OModule module) {
+    private void resolveUserOModule(AjaxRequestTarget target, OModuleConfiguration module) {
         String repository = module.getArtifact().getRepository();
-        OArtifact artifact = module.getArtifact();
+        OArtifactReference artifact = module.getArtifact();
         Optional<Artifact> artifactOptional;
         if (!Strings.isNullOrEmpty(repository)) {
             artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact.toAetherArtifact(), repository);
@@ -48,7 +48,7 @@ public class SaveUserOModuleCommand extends AbstractSaveOModuleCommand {
 
         if (artifactOptional.isPresent()) {
             artifact.setFile(artifactOptional.get().getFile());
-            OrienteerClassLoaderUtil.updateModulesInMetadata(module);
+            OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(module);
             sendSuccessFeedback(target);
         } else {
             sendErrorFeedback(target, new ResourceModel(DOWNLOAD_ERROR));

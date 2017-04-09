@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * @author Vitaliy Gonchar
  */
-public class OArtifact implements Serializable {
+public class OArtifactReference implements Serializable {
     private String groupId;
     private String artifactId;
     private String version;
@@ -17,20 +17,20 @@ public class OArtifact implements Serializable {
     private String repository  = "";
     private File file;
 
-    public OArtifact(String groupId, String artifactId, String version, File file) {
+    public OArtifactReference(String groupId, String artifactId, String version, File file) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.file = file;
     }
 
-    public OArtifact(String groupId, String artifactId, String version) {
+    public OArtifactReference(String groupId, String artifactId, String version) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
     }
 
-    public OArtifact(String groupId, String artifactId, String version, String repository, String description) {
+    public OArtifactReference(String groupId, String artifactId, String version, String repository, String description) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
@@ -38,7 +38,7 @@ public class OArtifact implements Serializable {
         this.description = description;
     }
 
-    public OArtifact(String groupId, String artifactId, String version, String repository, String description, File file) {
+    public OArtifactReference(String groupId, String artifactId, String version, String repository, String description, File file) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
@@ -47,24 +47,24 @@ public class OArtifact implements Serializable {
         this.file = file;
     }
 
-    public OArtifact(String groupId, String artifactId, String version, String description) {
+    public OArtifactReference(String groupId, String artifactId, String version, String description) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.description = description;
     }
 
-    public static OArtifact valueOf(Artifact artifact) {
+    public static OArtifactReference valueOf(Artifact artifact) {
         if (artifact == null) return null;
         String groupId = artifact.getGroupId();
         String artifactId = artifact.getArtifactId();
         String version = artifact.getVersion();
         File file = artifact.getFile();
-        return new OArtifact(groupId, artifactId, version, file);
+        return new OArtifactReference(groupId, artifactId, version, file);
     }
 
-    public static OArtifact getEmptyArtifact() {
-        return new OArtifact("", "", "").setRepository("");
+    public static OArtifactReference getEmptyArtifact() {
+        return new OArtifactReference("", "", "").setRepository("");
     }
 
     public Artifact toAetherArtifact() {
@@ -72,17 +72,17 @@ public class OArtifact implements Serializable {
         return result.setFile(file);
     }
 
-    public OArtifact setGroupId(String groupId) {
+    public OArtifactReference setGroupId(String groupId) {
         this.groupId = groupId;
         return this;
     }
 
-    public OArtifact setArtifactId(String artifactId) {
+    public OArtifactReference setArtifactId(String artifactId) {
         this.artifactId = artifactId;
         return this;
     }
 
-    public OArtifact setRepository(String repository) {
+    public OArtifactReference setRepository(String repository) {
         this.repository = repository;
         return this;
     }
@@ -91,17 +91,17 @@ public class OArtifact implements Serializable {
         return repository;
     }
 
-    public OArtifact setVersion(String version) {
+    public OArtifactReference setVersion(String version) {
         this.version = version;
         return this;
     }
 
-    public OArtifact setFile(File file) {
+    public OArtifactReference setFile(File file) {
         this.file = file;
         return this;
     }
 
-    public OArtifact setDescription(String description) {
+    public OArtifactReference setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -131,7 +131,7 @@ public class OArtifact implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OArtifact artifact = (OArtifact) o;
+        OArtifactReference artifact = (OArtifactReference) o;
 
         if (groupId != null ? !groupId.equals(artifact.groupId) : artifact.groupId != null) return false;
         if (artifactId != null ? !artifactId.equals(artifact.artifactId) : artifact.artifactId != null) return false;
@@ -148,7 +148,7 @@ public class OArtifact implements Serializable {
 
     @Override
     public String toString() {
-        return "OArtifact{" +
+        return "OArtifactReference{" +
                 "groupId='" + groupId + '\'' +
                 ", artifactId='" + artifactId + '\'' +
                 ", version='" + version + '\'' +

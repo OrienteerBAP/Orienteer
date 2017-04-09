@@ -8,8 +8,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
-import org.orienteer.core.boot.loader.util.artifact.OModuleField;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfigurationField;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
@@ -17,12 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Meta panel for {@link OModule}
+ * Meta panel for {@link OModuleConfiguration}
  * @param <V> type of value
  */
-public class OModuleMetaPanel<V> extends AbstractComplexModeMetaPanel<OModule, DisplayMode, OModuleField, V> {
+public class OModuleConfigurationMetaPanel<V> extends AbstractComplexModeMetaPanel<OModuleConfiguration, DisplayMode, OModuleConfigurationField, V> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OModuleMetaPanel.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OModuleConfigurationMetaPanel.class);
 
     private static final String GROUP       = "widget.modules.group";
     private static final String ARTIFACT    = "widget.modules.artifact";
@@ -33,72 +33,72 @@ public class OModuleMetaPanel<V> extends AbstractComplexModeMetaPanel<OModule, D
     private static final String LOAD        = "widget.modules.load";
     private static final String TRUSTED     = "widget.modules.trusted";
 
-    public OModuleMetaPanel(String id, IModel<DisplayMode> modeModel,
-                            IModel<OModule> entityModel, IModel<OModuleField> criteryModel) {
+    public OModuleConfigurationMetaPanel(String id, IModel<DisplayMode> modeModel,
+                                         IModel<OModuleConfiguration> entityModel, IModel<OModuleConfigurationField> criteryModel) {
         super(id, modeModel, entityModel, criteryModel);
     }
 
 
     @Override
     @SuppressWarnings("unchecked")
-    protected V getValue(OModule entity, OModuleField critery) {
+    protected V getValue(OModuleConfiguration moduleConfiguration, OModuleConfigurationField critery) {
         V value = null;
         switch (critery) {
             case GROUP:
-                value = (V) entity.getArtifact().getGroupId();
+                value = (V) moduleConfiguration.getArtifact().getGroupId();
                 break;
             case ARTIFACT:
-                value = (V) entity.getArtifact().getArtifactId();
+                value = (V) moduleConfiguration.getArtifact().getArtifactId();
                 break;
             case VERSION:
-                value = (V) entity.getArtifact().getVersion();
+                value = (V) moduleConfiguration.getArtifact().getVersion();
                 break;
             case DESCRIPTION:
-                value = (V) entity.getArtifact().getDescription();
+                value = (V) moduleConfiguration.getArtifact().getDescription();
                 break;
             case DOWNLOADED:
-                value = (V) Boolean.valueOf(entity.isDownloaded());
+                value = (V) Boolean.valueOf(moduleConfiguration.isDownloaded());
                 break;
             case LOAD:
-                value = (V) Boolean.valueOf(entity.isLoad());
+                value = (V) Boolean.valueOf(moduleConfiguration.isLoad());
                 break;
             case TRUSTED:
-                value = (V) Boolean.valueOf(entity.isTrusted());
+                value = (V) Boolean.valueOf(moduleConfiguration.isTrusted());
                 break;
         }
         return value;
     }
 
     @Override
-    protected void setValue(OModule module, OModuleField critery, V value) {
+    protected void setValue(OModuleConfiguration moduleConfiguration, OModuleConfigurationField critery, V value) {
         switch (critery) {
             case GROUP:
-                module.getArtifact().setGroupId((String) value);
+                moduleConfiguration.getArtifact().setGroupId((String) value);
                 break;
             case ARTIFACT:
-                module.getArtifact().setArtifactId((String) value);
+                moduleConfiguration.getArtifact().setArtifactId((String) value);
                 break;
             case VERSION:
-                module.getArtifact().setVersion((String) value);
+                moduleConfiguration.getArtifact().setVersion((String) value);
                 break;
             case REPOSITORY:
-                module.getArtifact().setRepository((String) value);
+                moduleConfiguration.getArtifact().setRepository((String) value);
                 break;
             case DESCRIPTION:
-                module.getArtifact().setDescription((String) value);
+                moduleConfiguration.getArtifact().setDescription((String) value);
                 break;
             case LOAD:
-                module.setLoad((Boolean) value);
+                moduleConfiguration.setLoad((Boolean) value);
                 break;
             case TRUSTED:
-                module.setTrusted((Boolean) value);
+                moduleConfiguration.setTrusted((Boolean) value);
                 break;
         }
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Component resolveComponent(String id, DisplayMode mode, OModuleField critery) {
+    protected Component resolveComponent(String id, DisplayMode mode, OModuleConfigurationField critery) {
         Component result = null;
         IModel<V> model = getModel();
         if (DisplayMode.EDIT.equals(mode)) {

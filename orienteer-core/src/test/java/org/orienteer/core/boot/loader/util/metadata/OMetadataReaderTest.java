@@ -2,7 +2,7 @@ package org.orienteer.core.boot.loader.util.metadata;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,18 +27,18 @@ public class OMetadataReaderTest {
 
     @Test
     public void readModulesForLoad() throws Exception {
-        List<OModule> modules = OrienteerClassLoaderUtil.getMetadataModulesForLoad();
+        List<OModuleConfiguration> modules = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataForLoadAsList();
         print(modules);
     }
 
     @Test
     public void readAllModules() throws Exception {
-        List<OModule> modules = OrienteerClassLoaderUtil.getMetadataModules();
+        List<OModuleConfiguration> modules = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataAsList();
         print(modules);
     }
 
-    private void print(List<OModule> modules) {
-        for (OModule module : modules) {
+    private void print(List<OModuleConfiguration> modules) {
+        for (OModuleConfiguration module : modules) {
             LOG.info("module: " + module);
         }
     }

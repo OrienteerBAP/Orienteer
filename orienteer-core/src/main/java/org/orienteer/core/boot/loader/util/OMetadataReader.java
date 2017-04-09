@@ -6,8 +6,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author Vitaliy Gonchar
- * Class for read {@link OModule} from metadata.xml
+ * Class for read {@link OModuleConfiguration} from metadata.xml
  */
 class OMetadataReader {
     private static final Logger LOG = LoggerFactory.getLogger(OMetadataReader.class);
@@ -28,38 +28,38 @@ class OMetadataReader {
         this.pathToMetadata = pathToMetadata;
     }
 
-    @VisibleForTesting List<OModule> readModulesForLoad() {
-        List<OModule> modules = read();
-        List<OModule> modulesForLoad = Lists.newArrayList();
-        for (OModule module : modules) {
+    @VisibleForTesting List<OModuleConfiguration> readModulesForLoad() {
+        List<OModuleConfiguration> modules = read();
+        List<OModuleConfiguration> modulesForLoad = Lists.newArrayList();
+        for (OModuleConfiguration module : modules) {
             if (module.isLoad()) modulesForLoad.add(module);
         }
         return modulesForLoad;
     }
 
-    @VisibleForTesting List<OModule> readAllModules() {
+    @VisibleForTesting List<OModuleConfiguration> readAllOModulesConfigurations() {
         return read();
     }
 
     @SuppressWarnings("unchecked")
-    private List<OModule> read() {
+    private List<OModuleConfiguration> read() {
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
-        return (List<OModule>) getModulesInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
+        return (List<OModuleConfiguration>) getOModulesConfigurationsInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
     }
 
-    private List<OModule> getModulesInMetadataXml(List<Element> elements) {
-        List<OModule> modules = Lists.newArrayList();
+    private List<OModuleConfiguration> getOModulesConfigurationsInMetadataXml(List<Element> elements) {
+        List<OModuleConfiguration> modules = Lists.newArrayList();
         for (Element element : elements) {
-            OModule module = getModule(element);
+            OModuleConfiguration module = getOModuleConfiguration(element);
             modules.add(module);
         }
         return modules;
     }
 
     @SuppressWarnings("unchecked")
-    private OModule getModule(Element mainElement) {
-        OModule module = new OModule();
+    private OModuleConfiguration getOModuleConfiguration(Element mainElement) {
+        OModuleConfiguration module = new OModuleConfiguration();
         List<Element> elements = mainElement.elements();
         for (Element element : elements) {
             MetadataTag tag = MetadataTag.getByName(element.getName());
@@ -78,20 +78,9 @@ class OMetadataReader {
         return module;
     }
 
-//    private List<Artifact> getDependencies(Element dependenciesElement) {
-//        List<Artifact> dependencies = Lists.newArrayList();
-//        List<Element> elements = dependenciesElement.elements(MetadataUtil.DEPENDENCY);
-//        for (Element element : elements) {
-//            if (element.getName().equals(MetadataUtil.DEPENDENCY)) {
-//                dependencies.add(getMavenDependency(element));
-//            }
-//        }
-//        return dependencies;
-//    }
-
     @SuppressWarnings("unchecked")
-    private OArtifact getMavenDependency(Element mainElement) {
-        OArtifact artifact;
+    private OArtifactReference getMavenDependency(Element mainElement) {
+        OArtifactReference artifact;
         String groupId    = null;
         String artifactId = null;
         String version    = null;
@@ -122,7 +111,7 @@ class OMetadataReader {
                     break;
             }
         }
-        artifact = new OArtifact(groupId, artifactId, version, repository, description);
+        artifact = new OArtifactReference(groupId, artifactId, version, repository, description);
         return jar != null ? artifact.setFile(new File(jar)) : artifact;
     }
 

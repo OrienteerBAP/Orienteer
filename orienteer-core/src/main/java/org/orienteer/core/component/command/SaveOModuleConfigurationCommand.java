@@ -7,27 +7,27 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.OrienteerDataTable.MetaContextItem;
-import org.orienteer.core.component.widget.loader.IOModulesUpdater;
+import org.orienteer.core.component.widget.loader.IOModulesConfigurationsUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Vitaliy Gonchar
  */
-public class SaveOModuleCommand extends AbstractSaveOModuleCommand {
+public class SaveOModuleConfigurationCommand extends AbstractSaveOModuleConfigurationCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SaveOModuleCommand.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SaveOModuleConfigurationCommand.class);
 
-    private OrienteerDataTable<OModule, ?> table;
+    private OrienteerDataTable<OModuleConfiguration, ?> table;
 
-    private final IOModulesUpdater subject;
+    private final IOModulesConfigurationsUpdater subject;
 
-    public SaveOModuleCommand(OrienteerDataTable<OModule, ?> table, IOModulesUpdater subject,
-                              IModel<DisplayMode> modeModel, Label feedback) {
+    public SaveOModuleConfigurationCommand(OrienteerDataTable<OModuleConfiguration, ?> table, IOModulesConfigurationsUpdater subject,
+                                           IModel<DisplayMode> modeModel, Label feedback) {
         super(table, modeModel, feedback);
         this.table = table;
         this.subject = subject;
@@ -36,15 +36,15 @@ public class SaveOModuleCommand extends AbstractSaveOModuleCommand {
     @Override
     public void onClick(final AjaxRequestTarget target) {
         final IModel<Boolean> failed = Model.of(Boolean.FALSE);
-        table.visitChildren(MetaContextItem.class, new IVisitor<MetaContextItem<OModule, ?>,Void >() {
+        table.visitChildren(MetaContextItem.class, new IVisitor<MetaContextItem<OModuleConfiguration, ?>,Void >() {
             @Override
-            public void component(MetaContextItem<OModule, ?> rowItem, IVisit<Void> visit) {
-                OModule module = rowItem.getModelObject();
+            public void component(MetaContextItem<OModuleConfiguration, ?> rowItem, IVisit<Void> visit) {
+                OModuleConfiguration module = rowItem.getModelObject();
                 if (isUserOModuleValid(target, module)) {
-                    OModule moduleForUpdate = new OModule(module.getPreviousArtifact());
+                    OModuleConfiguration moduleForUpdate = new OModuleConfiguration(module.getPreviousArtifact());
                     moduleForUpdate.setLoad(module.isLoad())
                             .setTrusted(module.isTrusted());
-                    OrienteerClassLoaderUtil.updateModulesInMetadata(moduleForUpdate, module);
+                    OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(moduleForUpdate, module);
                 } else failed.setObject(Boolean.TRUE);
                 visit.dontGoDeeper();
             }

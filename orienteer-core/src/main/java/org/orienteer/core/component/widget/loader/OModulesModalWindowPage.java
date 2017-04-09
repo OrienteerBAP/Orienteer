@@ -3,13 +3,13 @@ package org.orienteer.core.component.widget.loader;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.orienteer.core.web.BasePage;
 
 /**
  * @author Vitaliy Gonchar
  */
-public class OModulesModalWindowPage extends BasePage<OModule> {
+public class OModulesModalWindowPage extends BasePage<OModuleConfiguration> {
 
     private final Panel orienteerModulesPanel;
     private final Panel userModulePanel;
@@ -18,13 +18,13 @@ public class OModulesModalWindowPage extends BasePage<OModule> {
     private boolean showOrienteerModulesPanel = false;
     private boolean showUserJarUploadPanel = false;
 
-    private IModel<OModule> userModule = Model.of(OModule.getEmptyModule());
+    private IModel<OModuleConfiguration> userModule = Model.of(OModuleConfiguration.getEmptyModule());
 
-    public OModulesModalWindowPage(AbstractOModuleProvider provider) {
+    public OModulesModalWindowPage(AbstractOModulesConfigurationsProvider provider) {
         super();
         setOutputMarkupPlaceholderTag(true);
-        orienteerModulesPanel = new OrienteerModulesPanel("orienteerModulesPanel", this, provider);
-        userModulePanel = new UserTableOModulePanel("userModulePanel", userModule,this);
+        orienteerModulesPanel = new OrienteerCloudOModulesConfigurationsPanel("orienteerModulesPanel", this, provider);
+        userModulePanel = new UserOModuleConfigurationPanel("userModulePanel", userModule,this);
         userJarUploadPanel = new UserJarUploadPanel("userJarUploadPanel", this);
 
         add(orienteerModulesPanel);
@@ -40,7 +40,7 @@ public class OModulesModalWindowPage extends BasePage<OModule> {
         showUserJarUploadPanel = show;
     }
 
-    public void setUserModule(OModule module) {
+    public void setUserModule(OModuleConfiguration module) {
         userModule.setObject(module);
     }
 

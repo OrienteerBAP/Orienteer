@@ -102,7 +102,6 @@ class AetherUtils {
 
     private Set<ArtifactRequest> createArtifactRequests(ArtifactDescriptorResult descriptorResult) {
         Set<Dependency> dependencies = parseDependencies(descriptorResult.getDependencies());
-//        dependencies.addAll(parseDependencies(descriptorResult.getManagedDependencies()));
         return createArtifactRequests(getArtifactFromDependencies(dependencies));
     }
 

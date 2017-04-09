@@ -7,59 +7,59 @@ import java.util.List;
  * @author Vitaliy Gonchar
  * Class which contains all information about Orienteer outside module.
  */
-public class OModule implements Comparable<OModule>, Serializable {
-    private OArtifact artifact;
-    private OArtifact previousArtifact;
-    private List<OArtifact> dependencies;
+public class OModuleConfiguration implements Comparable<OModuleConfiguration>, Serializable {
+    private OArtifactReference artifact;
+    private OArtifactReference previousArtifact;
+    private List<OArtifactReference> dependencies;
     private boolean load;
     private boolean trusted;
     private boolean downloaded; // optional need only for Orienteer default modules
 
-    public OModule() {}
+    public OModuleConfiguration() {}
 
-    public OModule(OArtifact artifact) {
+    public OModuleConfiguration(OArtifactReference artifact) {
         this.artifact = artifact;
-        this.previousArtifact = new OArtifact(this.artifact.getGroupId(), this.artifact.getArtifactId(),
+        this.previousArtifact = new OArtifactReference(this.artifact.getGroupId(), this.artifact.getArtifactId(),
                 this.getArtifact().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
     }
 
-    public OModule(OArtifact artifact, boolean load, boolean trusted, boolean downloaded) {
+    public OModuleConfiguration(OArtifactReference artifact, boolean load, boolean trusted, boolean downloaded) {
         this.artifact = artifact;
         this.load = load;
         this.trusted = trusted;
         this.downloaded = downloaded;
-        this.previousArtifact = new OArtifact(this.artifact.getGroupId(), this.artifact.getArtifactId(),
+        this.previousArtifact = new OArtifactReference(this.artifact.getGroupId(), this.artifact.getArtifactId(),
                 this.getArtifact().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
     }
 
-    public static OModule getEmptyModule() {
-        OArtifact artifact = new OArtifact("", "", "");
-        return new OModule(artifact);
+    public static OModuleConfiguration getEmptyModule() {
+        OArtifactReference artifact = new OArtifactReference("", "", "");
+        return new OModuleConfiguration(artifact);
     }
 
-    public OModule setArtifact(OArtifact artifact) {
+    public OModuleConfiguration setArtifact(OArtifactReference artifact) {
         this.artifact = artifact;
-        this.previousArtifact = new OArtifact(this.artifact.getGroupId(), this.artifact.getArtifactId(),
+        this.previousArtifact = new OArtifactReference(this.artifact.getGroupId(), this.artifact.getArtifactId(),
                 this.getArtifact().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
         return this;
     }
 
-    public OModule setDependencies(List<OArtifact> dependencies) {
+    public OModuleConfiguration setDependencies(List<OArtifactReference> dependencies) {
         this.dependencies = dependencies;
         return this;
     }
 
-    public OModule setLoad(boolean load) {
+    public OModuleConfiguration setLoad(boolean load) {
         this.load = load;
         return this;
     }
 
-    public OModule setTrusted(boolean trusted) {
+    public OModuleConfiguration setTrusted(boolean trusted) {
         this.trusted = trusted;
         return this;
     }
 
-    public OModule setDownloaded(boolean downloaded) {
+    public OModuleConfiguration setDownloaded(boolean downloaded) {
         this.downloaded = downloaded;
         return this;
     }
@@ -68,15 +68,15 @@ public class OModule implements Comparable<OModule>, Serializable {
         return downloaded;
     }
 
-    public OArtifact getArtifact() {
+    public OArtifactReference getArtifact() {
         return artifact;
     }
 
-    public OArtifact getPreviousArtifact() {
+    public OArtifactReference getPreviousArtifact() {
         return previousArtifact;
     }
 
-    public List<OArtifact> getDependencies() {
+    public List<OArtifactReference> getDependencies() {
         return dependencies;
     }
 
@@ -93,7 +93,7 @@ public class OModule implements Comparable<OModule>, Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        OModule that = (OModule) o;
+        OModuleConfiguration that = (OModuleConfiguration) o;
 
         if (load != that.load) return false;
         if (trusted != that.trusted) return false;
@@ -112,7 +112,7 @@ public class OModule implements Comparable<OModule>, Serializable {
 
     @Override
     public String toString() {
-        return "OModule{" +
+        return "OModuleConfiguration{" +
                 "artifact=" + artifact +
                 ", dependencies=" + dependencies +
                 ", load=" + load +
@@ -121,7 +121,7 @@ public class OModule implements Comparable<OModule>, Serializable {
     }
 
     @Override
-    public int compareTo(OModule moduleMetadata) {
+    public int compareTo(OModuleConfiguration moduleMetadata) {
         String groupId = moduleMetadata.getArtifact().getGroupId();
         int result = artifact.getGroupId().compareTo(groupId);
         if (result == 0) {

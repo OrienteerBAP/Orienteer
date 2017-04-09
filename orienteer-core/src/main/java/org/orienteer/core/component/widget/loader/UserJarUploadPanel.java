@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -94,7 +94,7 @@ public class UserJarUploadPanel extends Panel {
             if (!jarFile.isPresent()) {
                 sendErrorMessage(target, new ResourceModel(ERROR_JAR_MSG));
             } else {
-                Optional<OModule> module = OrienteerClassLoaderUtil.getOModuleFromJar(jarFile.get().toPath());
+                Optional<OModuleConfiguration> module = OrienteerClassLoaderUtil.getOModuleConfigurationFromJar(jarFile.get().toPath());
                 if (module.isPresent()) {
                     modalWindowPage.setUserModule(module.get());
                     modalWindowPage.showUserJarUploadPanel(false);

@@ -6,5 +6,5 @@ import java.io.Serializable;
  * @author Vitaliy Gonchar
  */
 public interface IOModulesUpdateListener extends Serializable {
-    void updateModules();
+    void updateModulesConfigurations();
 }
