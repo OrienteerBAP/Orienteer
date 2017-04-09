@@ -9,6 +9,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.property.BooleanFilterPanel;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.property.NumberEditPanel;
 import org.orienteer.core.component.property.StringEditPanel;
 import org.orienteer.core.component.table.filter.DataFilter;
 
@@ -33,6 +34,12 @@ public class DataTableFilterVisualizer extends AbstractSimpleVisualizer {
                 break;
             case BOOLEAN:
                 component = new BooleanFilterPanel(id, (IModel<Boolean>) valueModel);
+                break;
+            case LONG:
+            case FLOAT:
+            case DECIMAL:
+            case INTEGER:
+                component = new NumberEditPanel(id, (IModel<Number>) valueModel);
                 break;
         }
         if (component != null) {
