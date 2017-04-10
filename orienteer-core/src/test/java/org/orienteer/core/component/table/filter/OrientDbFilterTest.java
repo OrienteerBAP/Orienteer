@@ -43,8 +43,8 @@ public class OrientDbFilterTest {
 
     private static final String ORIENTEER_TEST_CLASS = "OModule";
 
-    private String dateFormat;
-    private String dateTimeFormat;
+    static String dateFormat;
+    static String dateTimeFormat;
 
     @BeforeClass
     public static void initialize() {
@@ -111,10 +111,11 @@ public class OrientDbFilterTest {
                         model.setObject(null);
                         dateModel = (IModel<Date>) model;
                         break;
-//                    case DATETIME:
-//                        testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATETIME, true);
-//                        model.setObject(null);
-//                        break;
+                    case DATETIME:
+                        manager.showDocuments();
+                        testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATETIME, true);
+                        model.setObject(null);
+                        break;
                     case STRING:
                         testFilters(name, (IModel<String>) model, stringFilters, queryFilter, OType.STRING,true);
                         testFilters(name, (IModel<String>) model, Lists.newArrayList("abcd", "asbcd%;sd", "1234"), queryFilter, OType.STRING,false);

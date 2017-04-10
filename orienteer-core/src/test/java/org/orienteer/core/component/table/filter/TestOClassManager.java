@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -151,7 +152,7 @@ class TestOClassManager {
                     break;
                 case DATE:
                     Date date = new Date();
-                    document.field(name, date);
+                    document.field(name, new SimpleDateFormat(OrientDbFilterTest.dateFormat).format(date));
                     break;
                 case DATETIME:
                     try {
@@ -160,7 +161,7 @@ class TestOClassManager {
                         e.printStackTrace();
                     }
                     Date dateTime = new Date();
-                    document.field(name, dateTime);
+                    document.field(name, new SimpleDateFormat(OrientDbFilterTest.dateTimeFormat).format(dateTime));
                     successDateFilters.add(dateTime);
                     break;
                 case STRING:

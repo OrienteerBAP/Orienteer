@@ -88,6 +88,7 @@ public class QueryFilterTest {
             @Override
             protected List<V> execute(ODatabaseDocument db) {
                 LOG.info("Executed query: {}", query);
+
                 OQuery<V> oQuery = new OSQLSynchQuery<>(query);
                 List<V> result = db.query(oQuery);
                 return result != null ? result : Lists.<V>newArrayList();
