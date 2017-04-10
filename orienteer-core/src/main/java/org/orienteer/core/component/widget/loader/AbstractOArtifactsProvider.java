@@ -12,38 +12,38 @@ import java.util.List;
 /**
  * @author Vitaliy Gonchar
  */
-public abstract class AbstractOArtifactsProvider extends SortableDataProvider<OArtifact, String> implements IOModulesUpdateListener {
+public abstract class AbstractOArtifactsProvider extends SortableDataProvider<OArtifact, String> implements IOArtifactsUpdateListener {
 
-    private List<OArtifact> modulesConfigurations;
+    private List<OArtifact> oArtifacts;
 
     public AbstractOArtifactsProvider() {
-        updateModulesConfigurations();
+        updateOArtifacts();
     }
 
     @Override
     public Iterator<? extends OArtifact> iterator(long first, long count) {
-        return modulesConfigurations.subList((int) first, (int) (first + count)).iterator();
+        return oArtifacts.subList((int) first, (int) (first + count)).iterator();
     }
 
     @Override
     public long size() {
-        return modulesConfigurations.size();
+        return oArtifacts.size();
     }
 
-    protected abstract List<OArtifact> getModulesConfigurations();
+    protected abstract List<OArtifact> getOArtifacts();
 
-    private void sort(List<OArtifact> modulesConfigurations) {
-        Collections.sort(modulesConfigurations);
-    }
-
-    @Override
-    public IModel<OArtifact> model(final OArtifact moduleConfiguration) {
-        return Model.of(moduleConfiguration);
+    private void sort(List<OArtifact> oArtifacts) {
+        Collections.sort(oArtifacts);
     }
 
     @Override
-    public void updateModulesConfigurations() {
-        modulesConfigurations = getModulesConfigurations();
-        sort(modulesConfigurations);
+    public IModel<OArtifact> model(final OArtifact oArtifact) {
+        return Model.of(oArtifact);
+    }
+
+    @Override
+    public void updateOArtifacts() {
+        oArtifacts = getOArtifacts();
+        sort(oArtifacts);
     }
 }

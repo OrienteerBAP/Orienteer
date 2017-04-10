@@ -13,7 +13,7 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.component.command.SaveUserOModuleConfigurationCommand;
+import org.orienteer.core.component.command.SaveUserOArtifactCommand;
 import org.orienteer.core.component.meta.OArtifactMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
@@ -46,7 +46,7 @@ public class UserOArtifactPanel extends Panel {
                 return new OArtifactMetaPanel<>(id, displayMode, module, rowModel);
             }
         };
-        table.addCommand(new SaveUserOModuleConfigurationCommand(table, displayMode, feedback));
+        table.addCommand(new SaveUserOArtifactCommand(table, displayMode, feedback));
         table.addCommand(new AjaxCommand<OArtifact>(new ResourceModel(SHOW_USER_UPLOAD_PANEL_BUT), table) {
             @Override
             public void onClick(AjaxRequestTarget target) {

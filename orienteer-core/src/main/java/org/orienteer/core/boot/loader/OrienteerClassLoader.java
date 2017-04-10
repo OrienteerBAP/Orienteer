@@ -109,14 +109,14 @@ public class OrienteerClassLoader extends URLClassLoader {
 	private OrienteerClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
         orienteerClassLoader = parent;
-        Map<Path, OArtifact> modulesConfigurations = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataInMap();
-        List<Path> jars = OrienteerClassLoaderUtil.getJarsInOModulesConfigurationsFolder();
+        Map<Path, OArtifact> oArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataInMap();
+        List<Path> jars = OrienteerClassLoaderUtil.getJarsInArtifactsFolder();
 
         List<OArtifact> modulesForLoad;
-        if (modulesConfigurations.isEmpty()) {
+        if (oArtifacts.isEmpty()) {
             modulesForLoad = createModules(jars);
         } else {
-            modulesForLoad = getUpdateModules(modulesConfigurations);
+            modulesForLoad = getUpdateModules(oArtifacts);
             resolver.setDependencies(modulesForLoad);
         }
         modulesForLoad = searchTrustyModules(modulesForLoad, parent);
@@ -159,7 +159,7 @@ public class OrienteerClassLoader extends URLClassLoader {
     private void addModulesToClassLoaderResources(List<OArtifact> modules) {
         for(OArtifact metadata : modules) {
             try {
-                addURL(metadata.getArtifact().getFile().toURI().toURL());
+                addURL(metadata.getArtifactReference().getFile().toURI().toURL());
                 for (OArtifactReference artifact : metadata.getDependencies()) {
                     addURL(artifact.getFile().toURI().toURL());
                 }
@@ -170,9 +170,9 @@ public class OrienteerClassLoader extends URLClassLoader {
     }
 	
 	private List<OArtifact> createModules(List<Path> jars) {
-        List<OArtifact> modulesForLoad = resolver.getResolvedModulesConfigurations(jars);
+        List<OArtifact> modulesForLoad = resolver.getResolvedoArtifacts(jars);
         if (modulesForLoad.size() > 0) {
-            OrienteerClassLoaderUtil.createOModulesConfigurationsMetadata(modulesForLoad);
+            OrienteerClassLoaderUtil.createOArtifactsMetadata(modulesForLoad);
         } else OrienteerClassLoaderUtil.deleteMetadataFile();
 
         return modulesForLoad;
@@ -180,14 +180,14 @@ public class OrienteerClassLoader extends URLClassLoader {
 	
     private List<OArtifact> getUpdateModules(Map<Path, OArtifact> modules) {
         resolveModulesWithoutMainJar(modules);
-	    List<Path> jars = OrienteerClassLoaderUtil.getJarsInOModulesConfigurationsFolder();
+	    List<Path> jars = OrienteerClassLoaderUtil.getJarsInArtifactsFolder();
 	    List<OArtifact> modulesForWrite = getModulesForAddToMetadata(jars, modules);
 
 	    if (modulesForWrite.size() > 0) {
-            OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(modulesForWrite);
+            OrienteerClassLoaderUtil.updateOoArtifactInMetadata(modulesForWrite);
         }
 
-        modules = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataForLoadInMap();
+        modules = OrienteerClassLoaderUtil.getOArtifactsMetadataForLoadInMap();
 
         return getModulesForLoad(modules.values());
     }
@@ -200,7 +200,7 @@ public class OrienteerClassLoader extends URLClassLoader {
                 modulesForWrite.add(pathToJar);
             }
         }
-        return resolver.getResolvedModulesConfigurations(modulesForWrite);
+        return resolver.getResolvedoArtifacts(modulesForWrite);
     }
 
     private List<OArtifact> getModulesForLoad(Collection<OArtifact> modules) {
@@ -214,7 +214,7 @@ public class OrienteerClassLoader extends URLClassLoader {
     private void resolveModulesWithoutMainJar(Map<Path, OArtifact> modules) {
         List<OArtifact> modulesWithoutMainJar = getModulesWithoutMainJar(modules.values());
         if (modulesWithoutMainJar.size() > 0) {
-            resolver.downloadModules(modulesWithoutMainJar);
+            resolver.downloadOArtifacts(modulesWithoutMainJar);
             List<Path> keysForDelete = Lists.newArrayList();
             for (Path key : modules.keySet()) {
                 if (key.toString().contains(OrienteerClassLoaderUtil.WITHOUT_JAR)) {
@@ -225,16 +225,16 @@ public class OrienteerClassLoader extends URLClassLoader {
                 modules.remove(key);
             }
             for (OArtifact module : modulesWithoutMainJar) {
-                modules.put(module.getArtifact().getFile().toPath(), module);
+                modules.put(module.getArtifactReference().getFile().toPath(), module);
             }
-            OrienteerClassLoaderUtil.updateOModulesConfigurationsJarsInMetadata(modulesWithoutMainJar);
+            OrienteerClassLoaderUtil.updateOArtifactsJarsInMetadata(modulesWithoutMainJar);
         }
     }
 
     private List<OArtifact> getModulesWithoutMainJar(Collection<OArtifact> modules) {
         List<OArtifact> result = Lists.newArrayList();
         for (OArtifact module : modules) {
-            File jar = module.getArtifact().getFile();
+            File jar = module.getArtifactReference().getFile();
             if (jar == null || !jar.exists()) {
                 result.add(module);
             }
@@ -272,7 +272,7 @@ public class OrienteerClassLoader extends URLClassLoader {
 
         private void loadResourceInClassLoader(OArtifact module) {
             try {
-                addURL(module.getArtifact().getFile().toURI().toURL());
+                addURL(module.getArtifactReference().getFile().toURI().toURL());
                 for (OArtifactReference artifact : module.getDependencies()) {
                     addURL(artifact.getFile().toURI().toURL());
                 }
@@ -285,7 +285,7 @@ public class OrienteerClassLoader extends URLClassLoader {
             boolean trusted = false;
             try {
                 loadResourceInClassLoader(module);
-                Path pathToJar = module.getArtifact().getFile().toPath();
+                Path pathToJar = module.getArtifactReference().getFile().toPath();
                 Optional<String> className = OrienteerClassLoaderUtil.searchOrienteerInitModule(pathToJar);
                 if (className.isPresent()) {
                     loadClass(className.get());

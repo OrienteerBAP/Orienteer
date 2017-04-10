@@ -86,7 +86,7 @@ class JarUtils {
         return resultOptional;
     }
 
-    public List<Path> readJarsInModulesFolder() {
+    public List<Path> readJarsInArtifactsFolder() {
         return readJarsInFolder(modulesFolder);
     }
 

@@ -30,18 +30,18 @@ public class OMetadataUpdaterTest {
 
     @Test
     public void create() throws Exception {
-        OrienteerClassLoaderUtil.createOModulesConfigurationsMetadata(Lists.newArrayList(metadata));
+        OrienteerClassLoaderUtil.createOArtifactsMetadata(Lists.newArrayList(metadata));
     }
 
     @Test
     public void update() throws Exception {
         metadata.setLoad(false);
         metadata.setTrusted(true);
-        OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(metadata);
+        OrienteerClassLoaderUtil.updateOArtifactInMetadata(metadata);
     }
 
     @AfterClass
     public static void delete() throws Exception {
-        OrienteerClassLoaderUtil.deleteOModuleConfigurationFromMetadata(metadata);
+        OrienteerClassLoaderUtil.deleteOArtifactFromMetadata(metadata);
     }
 }

@@ -58,12 +58,12 @@ public class MavenResolver {
      */
     public List<OArtifact> setDependencies(List<OArtifact> modulesConfigs) {
         for (OArtifact module : modulesConfigs) {
-            OArtifactReference artifact = module.getArtifact();
+            OArtifactReference artifact = module.getArtifactReference();
             File moduleJar = artifact.getFile();
             Optional<Path> pomFromJar = OrienteerClassLoaderUtil.getPomFromJar(moduleJar.toPath());
             if (pomFromJar.isPresent()) {
                 List<Artifact> dependencies = getArtifactsFromArtifactResult(resolveDependenciesFromPomXml(pomFromJar.get()));
-                module.setDependencies(toOrienteerArtifactDependencies(dependencies));
+                module.setDependencies(toOArtifactDependencies(dependencies));
             }
         }
         return modulesConfigs;
@@ -73,10 +73,10 @@ public class MavenResolver {
      * @param jars paths to unresolved modules in jar files
      * @return list with modules metadata for write in metadata.xml
      */
-    public List<OArtifact> getResolvedModulesConfigurations(List<Path> jars) {
+    public List<OArtifact> getResolvedoArtifacts(List<Path> jars) {
         List<OArtifact> metadata = Lists.newArrayList();
         for (Path jarFile : jars) {
-            Optional<OArtifact> moduleMetadata = getModuleConfiguration(jarFile);
+            Optional<OArtifact> moduleMetadata = getOArtifact(jarFile);
             if (moduleMetadata.isPresent()) {
                 metadata.add(moduleMetadata.get());
             }
@@ -88,7 +88,7 @@ public class MavenResolver {
      * @param file - path to Orienteer module pom.xml or jar archive.
      * @return module metadata for write in metadata.xml
      */
-    public Optional<OArtifact> getModuleConfiguration(Path file) {
+    public Optional<OArtifact> getOArtifact(Path file) {
         Optional<Path> pomXml = getPomXml(file);
         if (!pomXml.isPresent()) return Optional.absent();
         if (!file.toString().endsWith(".jar")) {
@@ -99,20 +99,20 @@ public class MavenResolver {
         if (!dependencyOptional.isPresent()) return Optional.absent();
         Artifact dependency = dependencyOptional.get();
 
-        return getModuleConfiguration(
+        return getOArtifact(
                 dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
                 file);
     }
 
     /**
-     * Download Orienteer modules to target folder.
-     * @param modulesConfigurations - modules configurations for download modules
+     * Download Orienteer artifacts to target folder.
+     * @param oArtifacts - artifacts for download modules
      */
-    public void downloadModules(List<OArtifact> modulesConfigurations) {
-        for (OArtifact module : modulesConfigurations) {
-            File jar = module.getArtifact().getFile();
+    public void downloadOArtifacts(List<OArtifact> oArtifacts) {
+        for (OArtifact module : oArtifacts) {
+            File jar = module.getArtifactReference().getFile();
             if (jar == null || !jar.exists()) {
-                Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getArtifact().toAetherArtifact());
+                Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getArtifactReference().toAetherArtifact());
                 if (artifactOptional.isPresent()) {
                     module.setArtifact(OArtifactReference.valueOf(artifactOptional.get()));
                 } else {
@@ -123,26 +123,26 @@ public class MavenResolver {
     }
 
     /**
-     * Move Orienteer module to modules folder
+     * Move Orienteer artifacts to artifacts folder
      * @param pathToJar - path to Orienteer module
      * @return path to module in modules folder
      */
-    private File moveToModulesFolder(Path pathToJar) {
+    private File moveToArtifactsFolder(Path pathToJar) {
         Path result = modulesFolder.resolve(pathToJar.getFileName());
         try {
             if (!Files.exists(result)) Files.move(pathToJar, result);
         } catch (IOException e) {
-            LOG.warn("Cannot move modules jar to modules folder!", e);
+            LOG.warn("Cannot move artifact jar to artifacts folder!", e);
         }
         return result.toFile();
     }
 
-    private Optional<OArtifact> getModuleConfiguration(String group, String artifact, String version,
+    private Optional<OArtifact> getOArtifact(String group, String artifact, String version,
                                                                   Path pathToMainArtifact) {
-        return getModuleConfiguration(String.format("%s:%s:%s", group, artifact, version), pathToMainArtifact);
+        return getOArtifact(String.format("%s:%s:%s", group, artifact, version), pathToMainArtifact);
     }
 
-    private Optional<OArtifact> getModuleConfiguration(String groupArtifactVersion, Path pathToJar) {
+    private Optional<OArtifact> getOArtifact(String groupArtifactVersion, Path pathToJar) {
         Optional<OArtifactReference> mainArtifact = pathToJar != null ?
                 getArtifactReference(groupArtifactVersion, pathToJar) : resolveAndGetArtifactReference(groupArtifactVersion);
         if (!mainArtifact.isPresent()) return Optional.absent();
@@ -151,7 +151,7 @@ public class MavenResolver {
         OArtifact moduleMetadata = new OArtifact();
         moduleMetadata.setLoad(false)
                 .setArtifact(mainArtifact.get())
-                .setDependencies(toOrienteerArtifactDependencies(artifacts));
+                .setDependencies(toOArtifactDependencies(artifacts));
         return Optional.of(moduleMetadata);
     }
 
@@ -249,7 +249,7 @@ public class MavenResolver {
         return Optional.of(OArtifactReference.valueOf(defaultArtifact.setFile(pathToArtifact.toFile())));
     }
 
-    private List<OArtifactReference> toOrienteerArtifactDependencies(List<Artifact> dependencies) {
+    private List<OArtifactReference> toOArtifactDependencies(List<Artifact> dependencies) {
         List<OArtifactReference> oArtifactReferenceDependencies = Lists.newArrayList();
         for (Artifact artifact : dependencies) {
             oArtifactReferenceDependencies.add(OArtifactReference.valueOf(artifact));

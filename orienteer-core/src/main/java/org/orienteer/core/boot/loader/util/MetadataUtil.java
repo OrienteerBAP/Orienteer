@@ -31,67 +31,67 @@ class MetadataUtil {
         this.modulesFolder = modulesFolder;
     }
 
-    public void createOModulesConfigurationsMetadata(List<OArtifact> modules) {
+    public void createOArtifactsMetadata(List<OArtifact> modules) {
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.create(modules);
     }
 
-    public List<OArtifact> readOModulesConfigurationsAsList() {
+    public List<OArtifact> readOoArtifactsAsList() {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(Collections.<OArtifact>emptyList());
+            createOArtifactsMetadata(Collections.<OArtifact>emptyList());
             return Lists.newArrayList();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
-        return reader.readAllOModulesConfigurations();
+        return reader.readAllOoArtifacts();
     }
 
-    public List<OArtifact> readOModulesConfigurationsForLoadAsList() {
+    public List<OArtifact> readOoArtifactsForLoadAsList() {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(Collections.<OArtifact>emptyList());
+            createOArtifactsMetadata(Collections.<OArtifact>emptyList());
             return Lists.newArrayList();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
         return reader.readModulesForLoad();
     }
 
-    public Map<Path, OArtifact> readOModulesConfigurationsForLoadAsMap() {
-        return readOModulesConfigurationsAsMap(false, true);
+    public Map<Path, OArtifact> readOArtifactsForLoadAsMap() {
+        return readOoArtifactsAsMap(false, true);
     }
 
-    public Map<Path, OArtifact> readOModulesConfigurationsAsMap() {
-        return readOModulesConfigurationsAsMap(true, false);
+    public Map<Path, OArtifact> readOArtifactsAsMap() {
+        return readOoArtifactsAsMap(true, false);
     }
 
-    private Map<Path, OArtifact> readOModulesConfigurationsAsMap(boolean all, boolean load) {
+    private Map<Path, OArtifact> readOoArtifactsAsMap(boolean all, boolean load) {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(Collections.<OArtifact>emptyList());
+            createOArtifactsMetadata(Collections.<OArtifact>emptyList());
             return Maps.newHashMap();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
-        List<OArtifact> modules = all ? reader.readAllOModulesConfigurations() :
-                (load ? reader.readModulesForLoad() : reader.readAllOModulesConfigurations());
+        List<OArtifact> modules = all ? reader.readAllOoArtifacts() :
+                (load ? reader.readModulesForLoad() : reader.readAllOoArtifacts());
         Map<Path, OArtifact> result = Maps.newHashMap();
         int id = 0;
         for (OArtifact module : modules) {
-            if (module.getArtifact().getFile() == null) {
+            if (module.getArtifactReference().getFile() == null) {
                 result.put(Paths.get(OrienteerClassLoaderUtil.WITHOUT_JAR + id), module);
                 id++;
-            } else result.put(module.getArtifact().getFile().toPath(), module);
+            } else result.put(module.getArtifactReference().getFile().toPath(), module);
         }
         return result;
     }
 
-    public void updateOModulesConfigurationsMetadata(OArtifact moduleConfiguration) {
+    public void updateOoArtifactsMetadata(OArtifact oArtifact) {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(Lists.newArrayList(moduleConfiguration));
+            createOArtifactsMetadata(Lists.newArrayList(oArtifact));
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-            updater.update(moduleConfiguration);
+            updater.update(oArtifact);
             updateModifiedTime();
         }
     }
 
-    public void updateOModulesConfigurationsMetadata(OArtifact moduleConfigForUpdate, OArtifact newModuleConfig) {
+    public void updateOoArtifactsMetadata(OArtifact moduleConfigForUpdate, OArtifact newModuleConfig) {
         if (!metadataExists()) {
             return;
         }
@@ -101,22 +101,22 @@ class MetadataUtil {
         updateModifiedTime();
     }
 
-    public void updateOModulesConfigurationsMetadata(List<OArtifact> moduleConfigurations) {
+    public void updateOoArtifactsMetadata(List<OArtifact> oArtifacts) {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(moduleConfigurations);
+            createOArtifactsMetadata(oArtifacts);
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-            updater.update(moduleConfigurations);
+            updater.update(oArtifacts);
             updateModifiedTime();
         }
     }
 
-    public void updateJarsInOModulesConfigurationsMetadata(List<OArtifact> moduleConfigurations) {
+    public void updateJarsInOoArtifactsMetadata(List<OArtifact> oArtifacts) {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(moduleConfigurations);
+            createOArtifactsMetadata(oArtifacts);
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-            updater.update(moduleConfigurations, true);
+            updater.update(oArtifacts, true);
             updateModifiedTime();
         }
     }
@@ -130,17 +130,17 @@ class MetadataUtil {
         }
     }
 
-    public void deleteOModulesConfigurationsFromMetadata(List<OArtifact> moduleConfigurations) {
+    public void deleteOArtifactsFromMetadata(List<OArtifact> oArtifacts) {
         if (!metadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-        updater.delete(moduleConfigurations);
+        updater.delete(oArtifacts);
         updateModifiedTime();
     }
 
-    public void deleteOModuleConfigurationFromMetadata(OArtifact moduleConfiguration) {
+    public void deleteOArtifactFromMetadata(OArtifact oArtifact) {
         if (!metadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-        updater.delete(moduleConfiguration);
+        updater.delete(oArtifact);
         updateModifiedTime();
     }
 

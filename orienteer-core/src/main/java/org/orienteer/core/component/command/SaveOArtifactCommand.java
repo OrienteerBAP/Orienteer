@@ -18,15 +18,15 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Vitaliy Gonchar
  */
-public class SaveOModuleConfigurationCommand extends AbstractSaveOModuleConfigurationCommand {
+public class SaveOArtifactCommand extends AbstractSaveOArtifactCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SaveOModuleConfigurationCommand.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SaveOArtifactCommand.class);
 
     private OrienteerDataTable<OArtifact, ?> table;
 
     private final IOArtifactsUpdater subject;
 
-    public SaveOModuleConfigurationCommand(OrienteerDataTable<OArtifact, ?> table, IOArtifactsUpdater subject,
+    public SaveOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, IOArtifactsUpdater subject,
                                            IModel<DisplayMode> modeModel, Label feedback) {
         super(table, modeModel, feedback);
         this.table = table;
@@ -41,10 +41,10 @@ public class SaveOModuleConfigurationCommand extends AbstractSaveOModuleConfigur
             public void component(MetaContextItem<OArtifact, ?> rowItem, IVisit<Void> visit) {
                 OArtifact module = rowItem.getModelObject();
                 if (isUserOModuleValid(target, module)) {
-                    OArtifact moduleForUpdate = new OArtifact(module.getPreviousArtifact());
+                    OArtifact moduleForUpdate = new OArtifact(module.getPreviousArtifactRefence());
                     moduleForUpdate.setLoad(module.isLoad())
                             .setTrusted(module.isTrusted());
-                    OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(moduleForUpdate, module);
+                    OrienteerClassLoaderUtil.updateOoArtifactInMetadata(moduleForUpdate, module);
                 } else failed.setObject(Boolean.TRUE);
                 visit.dontGoDeeper();
             }

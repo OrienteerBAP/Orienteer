@@ -73,7 +73,7 @@ public class DependencyTest {
 
     @Test
     public void getModulesTest() throws Exception {
-        List<OArtifact> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerModulesConfigurationsFromServer();
+        List<OArtifact> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerArtifactsFromServer();
         for (OArtifact artifact : orienteerModulesFromServer) {
             LOG.info("artifact: " + artifact);
         }

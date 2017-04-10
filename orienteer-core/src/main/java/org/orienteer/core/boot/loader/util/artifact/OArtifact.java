@@ -20,7 +20,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
     public OArtifact(OArtifactReference artifact) {
         this.artifact = artifact;
         this.previousArtifact = new OArtifactReference(this.artifact.getGroupId(), this.artifact.getArtifactId(),
-                this.getArtifact().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
+                this.getArtifactReference().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
     }
 
     public OArtifact(OArtifactReference artifact, boolean load, boolean trusted, boolean downloaded) {
@@ -29,7 +29,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
         this.trusted = trusted;
         this.downloaded = downloaded;
         this.previousArtifact = new OArtifactReference(this.artifact.getGroupId(), this.artifact.getArtifactId(),
-                this.getArtifact().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
+                this.getArtifactReference().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
     }
 
     public static OArtifact getEmptyModule() {
@@ -40,7 +40,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
     public OArtifact setArtifact(OArtifactReference artifact) {
         this.artifact = artifact;
         this.previousArtifact = new OArtifactReference(this.artifact.getGroupId(), this.artifact.getArtifactId(),
-                this.getArtifact().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
+                this.getArtifactReference().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
         return this;
     }
 
@@ -68,11 +68,11 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
         return downloaded;
     }
 
-    public OArtifactReference getArtifact() {
+    public OArtifactReference getArtifactReference() {
         return artifact;
     }
 
-    public OArtifactReference getPreviousArtifact() {
+    public OArtifactReference getPreviousArtifactRefence() {
         return previousArtifact;
     }
 
@@ -112,7 +112,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
 
     @Override
     public String toString() {
-        return "OModuleConfiguration{" +
+        return "OoArtifact{" +
                 "artifact=" + artifact +
                 ", dependencies=" + dependencies +
                 ", load=" + load +
@@ -122,14 +122,14 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
 
     @Override
     public int compareTo(OArtifact moduleMetadata) {
-        String groupId = moduleMetadata.getArtifact().getGroupId();
+        String groupId = moduleMetadata.getArtifactReference().getGroupId();
         int result = artifact.getGroupId().compareTo(groupId);
         if (result == 0) {
-            String artifactId = moduleMetadata.getArtifact().getArtifactId();
+            String artifactId = moduleMetadata.getArtifactReference().getArtifactId();
             result = artifact.getArtifactId().compareTo(artifactId);
         }
         if (result == 0) {
-            String version = moduleMetadata.getArtifact().getVersion();
+            String version = moduleMetadata.getArtifactReference().getVersion();
             result = artifact.getVersion().compareTo(version);
         }
         return result;

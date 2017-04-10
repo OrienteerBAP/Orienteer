@@ -27,13 +27,13 @@ public class OMetadataReaderTest {
 
     @Test
     public void readModulesForLoad() throws Exception {
-        List<OArtifact> modules = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataForLoadAsList();
+        List<OArtifact> modules = OrienteerClassLoaderUtil.getOoArtifactsMetadataForLoadAsList();
         print(modules);
     }
 
     @Test
     public void readAllModules() throws Exception {
-        List<OArtifact> modules = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataAsList();
+        List<OArtifact> modules = OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList();
         print(modules);
     }
 

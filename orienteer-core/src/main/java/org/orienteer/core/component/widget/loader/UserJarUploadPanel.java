@@ -94,7 +94,7 @@ public class UserJarUploadPanel extends Panel {
             if (!jarFile.isPresent()) {
                 sendErrorMessage(target, new ResourceModel(ERROR_JAR_MSG));
             } else {
-                Optional<OArtifact> module = OrienteerClassLoaderUtil.getOModuleConfigurationFromJar(jarFile.get().toPath());
+                Optional<OArtifact> module = OrienteerClassLoaderUtil.getOArtifactFromJar(jarFile.get().toPath());
                 if (module.isPresent()) {
                     modalWindowPage.setUserModule(module.get());
                     modalWindowPage.showUserJarUploadPanel(false);

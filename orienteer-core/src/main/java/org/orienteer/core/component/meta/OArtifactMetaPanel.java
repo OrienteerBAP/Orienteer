@@ -41,57 +41,57 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
 
     @Override
     @SuppressWarnings("unchecked")
-    protected V getValue(OArtifact moduleConfiguration, OArtifactField critery) {
+    protected V getValue(OArtifact oArtifact, OArtifactField critery) {
         V value = null;
         switch (critery) {
             case GROUP:
-                value = (V) moduleConfiguration.getArtifact().getGroupId();
+                value = (V) oArtifact.getArtifactReference().getGroupId();
                 break;
             case ARTIFACT:
-                value = (V) moduleConfiguration.getArtifact().getArtifactId();
+                value = (V) oArtifact.getArtifactReference().getArtifactId();
                 break;
             case VERSION:
-                value = (V) moduleConfiguration.getArtifact().getVersion();
+                value = (V) oArtifact.getArtifactReference().getVersion();
                 break;
             case DESCRIPTION:
-                value = (V) moduleConfiguration.getArtifact().getDescription();
+                value = (V) oArtifact.getArtifactReference().getDescription();
                 break;
             case DOWNLOADED:
-                value = (V) Boolean.valueOf(moduleConfiguration.isDownloaded());
+                value = (V) Boolean.valueOf(oArtifact.isDownloaded());
                 break;
             case LOAD:
-                value = (V) Boolean.valueOf(moduleConfiguration.isLoad());
+                value = (V) Boolean.valueOf(oArtifact.isLoad());
                 break;
             case TRUSTED:
-                value = (V) Boolean.valueOf(moduleConfiguration.isTrusted());
+                value = (V) Boolean.valueOf(oArtifact.isTrusted());
                 break;
         }
         return value;
     }
 
     @Override
-    protected void setValue(OArtifact moduleConfiguration, OArtifactField critery, V value) {
+    protected void setValue(OArtifact oArtifact, OArtifactField critery, V value) {
         switch (critery) {
             case GROUP:
-                moduleConfiguration.getArtifact().setGroupId((String) value);
+                oArtifact.getArtifactReference().setGroupId((String) value);
                 break;
             case ARTIFACT:
-                moduleConfiguration.getArtifact().setArtifactId((String) value);
+                oArtifact.getArtifactReference().setArtifactId((String) value);
                 break;
             case VERSION:
-                moduleConfiguration.getArtifact().setVersion((String) value);
+                oArtifact.getArtifactReference().setVersion((String) value);
                 break;
             case REPOSITORY:
-                moduleConfiguration.getArtifact().setRepository((String) value);
+                oArtifact.getArtifactReference().setRepository((String) value);
                 break;
             case DESCRIPTION:
-                moduleConfiguration.getArtifact().setDescription((String) value);
+                oArtifact.getArtifactReference().setDescription((String) value);
                 break;
             case LOAD:
-                moduleConfiguration.setLoad((Boolean) value);
+                oArtifact.setLoad((Boolean) value);
                 break;
             case TRUSTED:
-                moduleConfiguration.setTrusted((Boolean) value);
+                oArtifact.setTrusted((Boolean) value);
                 break;
         }
     }

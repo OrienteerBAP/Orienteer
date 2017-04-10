@@ -16,9 +16,9 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 /**
  * @author Vitaliy Gonchar
  */
-public class SaveUserOModuleConfigurationCommand extends AbstractSaveOModuleConfigurationCommand {
+public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
 
-    public SaveUserOModuleConfigurationCommand(OrienteerStructureTable<OArtifact, ?> table, IModel<DisplayMode> displayModeModel, Label feedback) {
+    public SaveUserOArtifactCommand(OrienteerStructureTable<OArtifact, ?> table, IModel<DisplayMode> displayModeModel, Label feedback) {
         super(table, displayModeModel, feedback);
     }
 
@@ -31,16 +31,16 @@ public class SaveUserOModuleConfigurationCommand extends AbstractSaveOModuleConf
         }
         OArtifact module = model.getObject();
         if (isUserOModuleValid(target, module)) {
-            if (module.getArtifact().getFile() != null) {
-                OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(module);
+            if (module.getArtifactReference().getFile() != null) {
+                OrienteerClassLoaderUtil.updateOArtifactInMetadata(module);
                 sendSuccessFeedback(target);
             } else resolveUserOModule(target, module);
         }
     }
 
     private void resolveUserOModule(AjaxRequestTarget target, OArtifact module) {
-        String repository = module.getArtifact().getRepository();
-        OArtifactReference artifact = module.getArtifact();
+        String repository = module.getArtifactReference().getRepository();
+        OArtifactReference artifact = module.getArtifactReference();
         Optional<Artifact> artifactOptional;
         if (!Strings.isNullOrEmpty(repository)) {
             artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact.toAetherArtifact(), repository);
@@ -48,7 +48,7 @@ public class SaveUserOModuleConfigurationCommand extends AbstractSaveOModuleConf
 
         if (artifactOptional.isPresent()) {
             artifact.setFile(artifactOptional.get().getFile());
-            OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(module);
+            OrienteerClassLoaderUtil.updateOArtifactInMetadata(module);
             sendSuccessFeedback(target);
         } else {
             sendErrorFeedback(target, new ResourceModel(DOWNLOAD_ERROR));

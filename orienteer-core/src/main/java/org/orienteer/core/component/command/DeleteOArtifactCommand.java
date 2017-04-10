@@ -12,11 +12,11 @@ import java.util.List;
  * @author Vitaliy Gonchar
  * Delete Orienteer module
  */
-public class DeleteOModuleConfigurationCommand extends AbstractDeleteCommand<OArtifact> {
+public class DeleteOArtifactCommand extends AbstractDeleteCommand<OArtifact> {
 
     private final IOArtifactsUpdater subject;
 
-    public DeleteOModuleConfigurationCommand(OrienteerDataTable<OArtifact, ?> table, IOArtifactsUpdater subject) {
+    public DeleteOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, IOArtifactsUpdater subject) {
         super(table);
         this.subject = subject;
     }
@@ -29,7 +29,7 @@ public class DeleteOModuleConfigurationCommand extends AbstractDeleteCommand<OAr
 
     @Override
     protected void perfromSingleAction(AjaxRequestTarget target, final OArtifact module) {
-        OrienteerClassLoaderUtil.deleteOModuleConfigurationArtifactFile(module);
-        OrienteerClassLoaderUtil.deleteOModuleConfigurationFromMetadata(module);
+        OrienteerClassLoaderUtil.deleteOArtifactArtifactFile(module);
+        OrienteerClassLoaderUtil.deleteOArtifactFromMetadata(module);
     }
 }

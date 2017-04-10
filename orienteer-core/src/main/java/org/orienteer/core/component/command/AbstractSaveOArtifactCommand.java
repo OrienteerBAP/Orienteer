@@ -15,7 +15,7 @@ import org.orienteer.core.component.property.DisplayMode;
 /**
  * @author Vitaliy Gonchar
  */
-public abstract class AbstractSaveOModuleConfigurationCommand extends AbstractSaveCommand<OArtifact> {
+public abstract class AbstractSaveOArtifactCommand extends AbstractSaveCommand<OArtifact> {
 
     private static final String STYLE = "style";
     private static final String ERROR_STYLE   = "color:red; font-weight:bold;";
@@ -30,20 +30,20 @@ public abstract class AbstractSaveOModuleConfigurationCommand extends AbstractSa
 
     private final Label feedback;
 
-    public AbstractSaveOModuleConfigurationCommand(ICommandsSupportComponent<OArtifact> component, IModel<DisplayMode> modeModel, Label feedback) {
+    public AbstractSaveOArtifactCommand(ICommandsSupportComponent<OArtifact> component, IModel<DisplayMode> modeModel, Label feedback) {
         super(component, modeModel);
         this.feedback = feedback;
     }
 
 
     /**
-     * Validate user OModuleConfiguration and send error message if OModuleConfiguration is not valid.
-     * @param module - user OModuleConfiguration
-     * @return true - if user OModuleConfiguration is valid
-     *         false - if user OModuleConfiguration is not valid
+     * Validate user OoArtifact and send error message if OModuleConfiguration is not valid.
+     * @param module - user OoArtifact
+     * @return true - if user OoArtifact is valid
+     *         false - if user OoArtifact is not valid
      */
     protected boolean isUserOModuleValid(AjaxRequestTarget target, OArtifact module) {
-        OArtifactReference artifact = module.getArtifact();
+        OArtifactReference artifact = module.getArtifactReference();
         if (Strings.isNullOrEmpty(artifact.getGroupId())) {
             sendErrorFeedback(target, new ResourceModel(GROUP_NULL));
             return false;

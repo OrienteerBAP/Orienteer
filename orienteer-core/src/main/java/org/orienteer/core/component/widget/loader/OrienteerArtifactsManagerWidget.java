@@ -48,24 +48,24 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
         AbstractOArtifactsProvider installedModulesProvider = new AbstractOArtifactsProvider() {
 
             @Override
-            protected List<OArtifact> getModulesConfigurations() {
-                return OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataAsList();
+            protected List<OArtifact> getOArtifacts() {
+                return OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList();
             }
         };
         AbstractOArtifactsProvider availableModulesProvider = new AbstractOArtifactsProvider() {
             @Override
-            protected List<OArtifact> getModulesConfigurations() {
-                return OrienteerClassLoaderUtil.getOrienteerModulesConfigurationsFromServer();
+            protected List<OArtifact> getOArtifacts() {
+                return OrienteerClassLoaderUtil.getOrienteerArtifactsFromServer();
             }
         };
-        IOArtifactsUpdater updater = getUpdater(Lists.<IOModulesUpdateListener>newArrayList(installedModulesProvider, availableModulesProvider));
+        IOArtifactsUpdater updater = getUpdater(Lists.<IOArtifactsUpdateListener>newArrayList(installedModulesProvider, availableModulesProvider));
         final OrienteerDataTable<OArtifact, String> modulesTable =
-                new OrienteerDataTable<>("modulesConfigurationsTable", columns, installedModulesProvider, 20);
+                new OrienteerDataTable<>("oArtifactsTable", columns, installedModulesProvider, 20);
         modulesTable.addCommand(new AddOArtifactCommand(modulesTable, new OArtifactsModalWindowPage(availableModulesProvider), updater));
 
         modulesTable.addCommand(new EditCommand<>(modulesTable, modeModel));
-        modulesTable.addCommand(new SaveOModuleConfigurationCommand(modulesTable, updater, modeModel, feedback));
-        modulesTable.addCommand(new DeleteOModuleConfigurationCommand(modulesTable, updater));
+        modulesTable.addCommand(new SaveOArtifactCommand(modulesTable, updater, modeModel, feedback));
+        modulesTable.addCommand(new DeleteOArtifactCommand(modulesTable, updater));
         modulesTable.addCommand(new AjaxCommand<OArtifact>("reloadOrienteer", new ResourceModel(RELOAD_ORIENTEER)) {
         	@Override
         	public void onClick(AjaxRequestTarget target) {
@@ -110,22 +110,22 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
     public static class OArtifactsConverter extends Converter<OArtifact, OArtifact> implements Serializable {
 
         @Override
-        protected OArtifact doForward(OArtifact moduleConfiguration) {
-            return moduleConfiguration;
+        protected OArtifact doForward(OArtifact oArtifact) {
+            return oArtifact;
         }
 
         @Override
-        protected OArtifact doBackward(OArtifact moduleConfiguration) {
-            return moduleConfiguration;
+        protected OArtifact doBackward(OArtifact oArtifact) {
+            return oArtifact;
         }
     }
 
-    private IOArtifactsUpdater getUpdater(final List<IOModulesUpdateListener> listeners) {
+    private IOArtifactsUpdater getUpdater(final List<IOArtifactsUpdateListener> listeners) {
         return new IOArtifactsUpdater() {
             @Override
             public void notifyAboutNewModules() {
-                for (IOModulesUpdateListener listener : listeners) {
-                    listener.updateModulesConfigurations();
+                for (IOArtifactsUpdateListener listener : listeners) {
+                    listener.updateOArtifacts();
                 }
             }
         };

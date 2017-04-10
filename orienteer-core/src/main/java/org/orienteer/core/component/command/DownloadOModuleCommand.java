@@ -41,19 +41,19 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArti
 
     @Override
     protected void perfromSingleAction(AjaxRequestTarget target, OArtifact module) {
-        Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getArtifact().toAetherArtifact());
+        Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getArtifactReference().toAetherArtifact());
         if (artifactOptional.isPresent()) {
-            OArtifact oModuleConfiguration = new OArtifact();
-            oModuleConfiguration.setTrusted(true);
-            oModuleConfiguration.setLoad(false);
-            oModuleConfiguration.setDownloaded(true);
+            OArtifact ooArtifact = new OArtifact();
+            ooArtifact.setTrusted(true);
+            ooArtifact.setLoad(false);
+            ooArtifact.setDownloaded(true);
 
             module.setDownloaded(true);
             Artifact artifact = artifactOptional.get();
-            OArtifactReference oArtifactReference = OArtifactReference.valueOf(artifact.setVersion(module.getArtifact().getVersion()));
-            oArtifactReference.setDescription(module.getArtifact().getDescription());
-            oModuleConfiguration.setArtifact(oArtifactReference);
-            OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(oModuleConfiguration);
+            OArtifactReference oArtifactReference = OArtifactReference.valueOf(artifact.setVersion(module.getArtifactReference().getVersion()));
+            oArtifactReference.setDescription(module.getArtifactReference().getDescription());
+            ooArtifact.setArtifact(oArtifactReference);
+            OrienteerClassLoaderUtil.updateOArtifactInMetadata(ooArtifact);
             feedback.setDefaultModel(new ResourceModel(DOWNLOAD_SUCCESS));
             feedback.add(AttributeModifier.append("style", "color:green; font-weight:bold"));
         } else {

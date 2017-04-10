@@ -37,7 +37,7 @@ class OMetadataReader {
         return modulesForLoad;
     }
 
-    @VisibleForTesting List<OArtifact> readAllOModulesConfigurations() {
+    @VisibleForTesting List<OArtifact> readAllOoArtifacts() {
         return read();
     }
 
@@ -45,20 +45,20 @@ class OMetadataReader {
     private List<OArtifact> read() {
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
-        return (List<OArtifact>) getOModulesConfigurationsInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
+        return (List<OArtifact>) getOoArtifactsInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
     }
 
-    private List<OArtifact> getOModulesConfigurationsInMetadataXml(List<Element> elements) {
+    private List<OArtifact> getOoArtifactsInMetadataXml(List<Element> elements) {
         List<OArtifact> modules = Lists.newArrayList();
         for (Element element : elements) {
-            OArtifact module = getOModuleConfiguration(element);
+            OArtifact module = getOoArtifact(element);
             modules.add(module);
         }
         return modules;
     }
 
     @SuppressWarnings("unchecked")
-    private OArtifact getOModuleConfiguration(Element mainElement) {
+    private OArtifact getOoArtifact(Element mainElement) {
         OArtifact module = new OArtifact();
         List<Element> elements = mainElement.elements();
         for (Element element : elements) {
