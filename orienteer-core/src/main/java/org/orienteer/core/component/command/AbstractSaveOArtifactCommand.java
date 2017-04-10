@@ -21,12 +21,12 @@ public abstract class AbstractSaveOArtifactCommand extends AbstractSaveCommand<O
     private static final String ERROR_STYLE   = "color:red; font-weight:bold;";
     private static final String SUCCESS_STYLE = "color:green; font-weight:bold;";
 
-    protected static final String SUCCESS_MSG     = "widget.modules.modal.window.user.module.feedback.success";
-    protected static final String GROUP_NULL      = "widget.modules.modal.window.user.module.feedback.failed.groupId";
-    protected static final String ARTIFACT_NULL   = "widget.modules.modal.window.user.module.feedback.failed.artifactId";
-    protected static final String VERSION_NULL    = "widget.modules.modal.window.user.module.feedback.failed.version";
-    protected static final String DOWNLOAD_ERROR  = "widget.modules.modal.window.user.module.feedback.failed.download";
-    protected static final String ERROR           = "widget.modules.modal.window.user.module.feedback.failed.error";
+    protected static final String SUCCESS_MSG     = "widget.artifacts.modal.window.user.artifact.feedback.success";
+    protected static final String GROUP_NULL      = "widget.artifacts.modal.window.user.artifact.feedback.failed.groupId";
+    protected static final String ARTIFACT_NULL   = "widget.artifacts.modal.window.user.artifact.feedback.failed.artifactId";
+    protected static final String VERSION_NULL    = "widget.artifacts.modal.window.user.artifact.feedback.failed.version";
+    protected static final String DOWNLOAD_ERROR  = "widget.artifacts.modal.window.user.artifact.feedback.failed.download";
+    protected static final String ERROR           = "widget.artifacts.modal.window.user.artifact.feedback.failed.error";
 
     private final Label feedback;
 
@@ -37,12 +37,12 @@ public abstract class AbstractSaveOArtifactCommand extends AbstractSaveCommand<O
 
 
     /**
-     * Validate user OoArtifact and send error message if OModuleConfiguration is not valid.
+     * Validate user OArtifact and send error message if OModuleConfiguration is not valid.
      * @param module - user OoArtifact
      * @return true - if user OoArtifact is valid
      *         false - if user OoArtifact is not valid
      */
-    protected boolean isUserOModuleValid(AjaxRequestTarget target, OArtifact module) {
+    protected boolean isUserArtifactValid(AjaxRequestTarget target, OArtifact module) {
         OArtifactReference artifact = module.getArtifactReference();
         if (Strings.isNullOrEmpty(artifact.getGroupId())) {
             sendErrorFeedback(target, new ResourceModel(GROUP_NULL));

@@ -40,7 +40,7 @@ public class SaveOArtifactCommand extends AbstractSaveOArtifactCommand {
             @Override
             public void component(MetaContextItem<OArtifact, ?> rowItem, IVisit<Void> visit) {
                 OArtifact module = rowItem.getModelObject();
-                if (isUserOModuleValid(target, module)) {
+                if (isUserArtifactValid(target, module)) {
                     OArtifact moduleForUpdate = new OArtifact(module.getPreviousArtifactRefence());
                     moduleForUpdate.setLoad(module.isLoad())
                             .setTrusted(module.isTrusted());

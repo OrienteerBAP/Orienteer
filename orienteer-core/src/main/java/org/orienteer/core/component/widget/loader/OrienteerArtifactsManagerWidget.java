@@ -101,7 +101,7 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
 
     @Override
     protected IModel<String> getDefaultTitleModel() {
-        return new ResourceModel("widget.modules.manager.title");
+        return new ResourceModel("widget.artifacts.manager.title");
     }
 
     /**

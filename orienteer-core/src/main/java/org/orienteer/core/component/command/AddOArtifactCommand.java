@@ -23,7 +23,7 @@ public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
     private final IOArtifactsUpdater updater;
 
     private static final String ADD_BUT            = "command.add";
-    private static final String MODAL_WINDOW_TITLE = "widget.modules.modal.window.title";
+    private static final String MODAL_WINDOW_TITLE = "widget.artifacts.modal.window.title";
 
     public AddOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, WebPage page, IOArtifactsUpdater updater) {
         super(new ResourceModel(ADD_BUT), table);

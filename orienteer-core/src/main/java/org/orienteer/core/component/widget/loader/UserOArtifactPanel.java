@@ -25,8 +25,8 @@ import java.util.List;
  */
 public class UserOArtifactPanel extends Panel {
 
-    private static final String SHOW_ORIENTEER_MODULES_BUT = "widget.modules.modal.window.button.available.orienteer.modules";
-    private static final String SHOW_USER_UPLOAD_PANEL_BUT = "widget.modules.modal.window.user.module.button.upload";
+    private static final String SHOW_ORIENTEER_MODULES_BUT = "widget.artifacts.modal.window.button.available.orienteer.modules";
+    private static final String SHOW_USER_UPLOAD_PANEL_BUT = "widget.artifacts.modal.window.user.artifact.button.upload";
 
     public UserOArtifactPanel(String id, final IModel<OArtifact> module,
                                          final OArtifactsModalWindowPage windowPage) {

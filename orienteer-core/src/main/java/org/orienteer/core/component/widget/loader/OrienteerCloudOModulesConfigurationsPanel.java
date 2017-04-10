@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
 
-    private static final String SHOW_USER_MODULE_ADD_BUT = "widget.modules.modal.window.button.user.module";
+    private static final String SHOW_USER_ARTIFACT_ADD_BUT = "widget.artifacts.modal.window.button.user.artifact";
 
     public OrienteerCloudOModulesConfigurationsPanel(String id, final OArtifactsModalWindowPage windowPage, AbstractOArtifactsProvider provider) {
         super(id);
@@ -39,7 +39,7 @@ public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
         List<IColumn<OArtifact, String>> columns = getColumns(modeModel);
         OrienteerDataTable<OArtifact, String> table = new OrienteerDataTable<>("availableModules", columns, provider, 10);
         table.addCommand(new DownloadOModuleCommand(table, feedback));
-        table.addCommand(new AjaxCommand<OArtifact>(new ResourceModel(SHOW_USER_MODULE_ADD_BUT), table) {
+        table.addCommand(new AjaxCommand<OArtifact>(new ResourceModel(SHOW_USER_ARTIFACT_ADD_BUT), table) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 windowPage.showOrienteerModulesPanel(false);

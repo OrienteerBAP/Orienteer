@@ -21,8 +21,8 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArti
 
     private Label feedback;
 
-    private static final String DOWNLOAD_FAILED = "widget.modules.modal.window.download.failed";
-    private static final String DOWNLOAD_SUCCESS = "widget.modules.modal.window.download.success";
+    private static final String DOWNLOAD_FAILED = "widget.artifacts.modal.window.download.failed";
+    private static final String DOWNLOAD_SUCCESS = "widget.artifacts.modal.window.download.success";
 
     private static final String DOWNLOAD_BUT = "command.download";
 

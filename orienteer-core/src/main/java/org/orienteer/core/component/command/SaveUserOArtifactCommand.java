@@ -30,15 +30,15 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
             return;
         }
         OArtifact module = model.getObject();
-        if (isUserOModuleValid(target, module)) {
+        if (isUserArtifactValid(target, module)) {
             if (module.getArtifactReference().getFile() != null) {
                 OrienteerClassLoaderUtil.updateOArtifactInMetadata(module);
                 sendSuccessFeedback(target);
-            } else resolveUserOModule(target, module);
+            } else resolveUserArtifact(target, module);
         }
     }
 
-    private void resolveUserOModule(AjaxRequestTarget target, OArtifact module) {
+    private void resolveUserArtifact(AjaxRequestTarget target, OArtifact module) {
         String repository = module.getArtifactReference().getRepository();
         OArtifactReference artifact = module.getArtifactReference();
         Optional<Artifact> artifactOptional;

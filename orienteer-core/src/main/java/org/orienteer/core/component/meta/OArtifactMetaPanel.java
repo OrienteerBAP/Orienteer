@@ -24,14 +24,14 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
 
     private static final Logger LOG = LoggerFactory.getLogger(OArtifactMetaPanel.class);
 
-    private static final String GROUP       = "widget.modules.group";
-    private static final String ARTIFACT    = "widget.modules.artifact";
-    private static final String VERSION     = "widget.modules.version";
-    private static final String REPOSITORY  = "widget.modules.repository";
-    private static final String DESCRIPTION = "widget.modules.description";
-    private static final String FILE        = "widget.modules.file";
-    private static final String LOAD        = "widget.modules.load";
-    private static final String TRUSTED     = "widget.modules.trusted";
+    private static final String GROUP       = "widget.artifacts.group";
+    private static final String ARTIFACT    = "widget.artifacts.artifact";
+    private static final String VERSION     = "widget.artifacts.version";
+    private static final String REPOSITORY  = "widget.artifacts.repository";
+    private static final String DESCRIPTION = "widget.artifacts.description";
+    private static final String FILE        = "widget.artifacts.file";
+    private static final String LOAD        = "widget.artifacts.load";
+    private static final String TRUSTED     = "widget.artifacts.trusted";
 
     public OArtifactMetaPanel(String id, IModel<DisplayMode> modeModel,
                                          IModel<OArtifact> entityModel, IModel<OArtifactField> criteryModel) {

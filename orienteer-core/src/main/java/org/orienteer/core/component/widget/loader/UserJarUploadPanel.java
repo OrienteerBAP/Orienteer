@@ -27,10 +27,10 @@ public class UserJarUploadPanel extends Panel {
     private static final String STYLE         = "style";
     private static final String ERROR_STYLE   = "color:red; font-weight:bold;";
 
-    private static final String TITLE         = "widget.modules.modal.window.user.module.jar.title";
-    private static final String ERROR_JAR_MSG = "widget.modules.modal.window.user.module.feedback.failed.jar";
+    private static final String TITLE         = "widget.artifacts.modal.window.user.artifact.jar.title";
+    private static final String ERROR_JAR_MSG = "widget.artifacts.modal.window.user.artifact.feedback.failed.jar";
 
-    private static final String UPLOAD_BUT    = "widget.modules.modal.window.user.module.button.upload";
+    private static final String UPLOAD_BUT    = "widget.artifacts.modal.window.user.artifact.button.upload";
     private static final String BACK_BUT      = "command.back";
 
     private static final String JAR_EXTENSION = ".jar";

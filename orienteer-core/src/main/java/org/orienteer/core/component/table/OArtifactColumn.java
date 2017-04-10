@@ -32,25 +32,25 @@ public class OArtifactColumn extends AbstractModeMetaColumn<OArtifact, DisplayMo
         IModel<String> label = Model.of("No name");
         switch (critery) {
             case GROUP:
-                label = new ResourceModel("widget.modules.group");
+                label = new ResourceModel("widget.artifacts.group");
                 break;
             case ARTIFACT:
-                label = new ResourceModel("widget.modules.artifact");
+                label = new ResourceModel("widget.artifacts.artifact");
                 break;
             case VERSION:
-                label = new ResourceModel("widget.modules.version");
+                label = new ResourceModel("widget.artifacts.version");
                 break;
             case DESCRIPTION:
-                label = new ResourceModel("widget.modules.description");
+                label = new ResourceModel("widget.artifacts.description");
                 break;
             case DOWNLOADED:
-                label = new ResourceModel("widget.modules.downloaded");
+                label = new ResourceModel("widget.artifacts.downloaded");
                 break;
             case LOAD:
-                label = new ResourceModel("widget.modules.load");
+                label = new ResourceModel("widget.artifacts.load");
                 break;
             case TRUSTED:
-                label = new ResourceModel("widget.modules.trusted");
+                label = new ResourceModel("widget.artifacts.trusted");
                 break;
         }
         return label;
