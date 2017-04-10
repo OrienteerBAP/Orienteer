@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * @author Vitaliy Gonchar
  */
-public enum OModuleConfigurationField implements Serializable {
+public enum OArtifactField implements Serializable {
     GROUP("group"),
     ARTIFACT("artifact"),
     VERSION("version"),
@@ -21,7 +21,7 @@ public enum OModuleConfigurationField implements Serializable {
 
     private final String field;
 
-    OModuleConfigurationField(String field) {
+    OArtifactField(String field) {
         this.field = field;
     }
 
@@ -29,8 +29,8 @@ public enum OModuleConfigurationField implements Serializable {
         return field;
     }
 
-    public OModuleConfigurationField getByName(String name) {
-        for (OModuleConfigurationField field : values()) {
+    public OArtifactField getByName(String name) {
+        for (OArtifactField field : values()) {
             if (field.getName().equals(name)) {
                 return field;
             }
@@ -38,11 +38,11 @@ public enum OModuleConfigurationField implements Serializable {
         return null;
     }
 
-    public IModel<OModuleConfigurationField> getModelOf(String name) {
+    public IModel<OArtifactField> getModelOf(String name) {
         return Model.of(getByName(name));
     }
 
-    public IModel<OModuleConfigurationField> asModel() {
+    public IModel<OArtifactField> asModel() {
         return Model.of(this);
     }
 }

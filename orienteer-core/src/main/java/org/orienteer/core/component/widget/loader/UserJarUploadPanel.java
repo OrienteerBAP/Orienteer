@@ -11,7 +11,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -35,7 +35,7 @@ public class UserJarUploadPanel extends Panel {
 
     private static final String JAR_EXTENSION = ".jar";
 
-    public UserJarUploadPanel(String id, final OModulesModalWindowPage modalWindowPage) {
+    public UserJarUploadPanel(String id, final OArtifactsModalWindowPage modalWindowPage) {
         super(id);
         setOutputMarkupPlaceholderTag(true);
         Label jarLabel = new Label("jarLabel", new ResourceModel(TITLE));
@@ -69,11 +69,11 @@ public class UserJarUploadPanel extends Panel {
 
     private static class UploadFileCommand extends AjaxFormCommand<Void> {
 
-        private final OModulesModalWindowPage modalWindowPage;
+        private final OArtifactsModalWindowPage modalWindowPage;
         private final Label feedback;
         private final FileUploadField fileUploadField;
 
-        UploadFileCommand(String commandId, FileUploadField fileUploadField, Label feedback, OModulesModalWindowPage modalWindowPage) {
+        UploadFileCommand(String commandId, FileUploadField fileUploadField, Label feedback, OArtifactsModalWindowPage modalWindowPage) {
             super(commandId, new ResourceModel(UPLOAD_BUT));
             this.fileUploadField = fileUploadField;
             this.feedback = feedback;
@@ -94,7 +94,7 @@ public class UserJarUploadPanel extends Panel {
             if (!jarFile.isPresent()) {
                 sendErrorMessage(target, new ResourceModel(ERROR_JAR_MSG));
             } else {
-                Optional<OModuleConfiguration> module = OrienteerClassLoaderUtil.getOModuleConfigurationFromJar(jarFile.get().toPath());
+                Optional<OArtifact> module = OrienteerClassLoaderUtil.getOModuleConfigurationFromJar(jarFile.get().toPath());
                 if (module.isPresent()) {
                     modalWindowPage.setUserModule(module.get());
                     modalWindowPage.showUserJarUploadPanel(false);

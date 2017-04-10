@@ -5,27 +5,27 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.component.widget.loader.IOModulesConfigurationsUpdater;
+import org.orienteer.core.component.widget.loader.IOArtifactsUpdater;
 
 /**
  * @author Vitaliy Gonchar
  * Add Orienteers module command
  */
-public class AddOModuleConfigurationCommand extends AbstractModalWindowCommand<OModuleConfiguration> {
+public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
 
-    private final OrienteerDataTable<OModuleConfiguration, ?> table;
+    private final OrienteerDataTable<OArtifact, ?> table;
     private final WebPage modalWindowPage;
 
-    private final IOModulesConfigurationsUpdater updater;
+    private final IOArtifactsUpdater updater;
 
     private static final String ADD_BUT            = "command.add";
     private static final String MODAL_WINDOW_TITLE = "widget.modules.modal.window.title";
 
-    public AddOModuleConfigurationCommand(OrienteerDataTable<OModuleConfiguration, ?> table, WebPage page, IOModulesConfigurationsUpdater updater) {
+    public AddOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, WebPage page, IOArtifactsUpdater updater) {
         super(new ResourceModel(ADD_BUT), table);
         this.modalWindowPage = page;
         this.table = table;

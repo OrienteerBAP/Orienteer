@@ -8,7 +8,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -17,7 +17,7 @@ import org.orienteer.core.component.table.OrienteerDataTable;
  * @author Vitaliy Gonchar
  * Command for download Orienteer module from repository
  */
-public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OModuleConfiguration> {
+public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtifact> {
 
     private Label feedback;
 
@@ -26,7 +26,7 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OModu
 
     private static final String DOWNLOAD_BUT = "command.download";
 
-    public DownloadOModuleCommand(OrienteerDataTable<OModuleConfiguration, ?> table, Label feedback) {
+    public DownloadOModuleCommand(OrienteerDataTable<OArtifact, ?> table, Label feedback) {
         super(new ResourceModel(DOWNLOAD_BUT), table);
         this.feedback = feedback;
     }
@@ -40,10 +40,10 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OModu
     }
 
     @Override
-    protected void perfromSingleAction(AjaxRequestTarget target, OModuleConfiguration module) {
+    protected void perfromSingleAction(AjaxRequestTarget target, OArtifact module) {
         Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getArtifact().toAetherArtifact());
         if (artifactOptional.isPresent()) {
-            OModuleConfiguration oModuleConfiguration = new OModuleConfiguration();
+            OArtifact oModuleConfiguration = new OArtifact();
             oModuleConfiguration.setTrusted(true);
             oModuleConfiguration.setLoad(false);
             oModuleConfiguration.setDownloaded(true);

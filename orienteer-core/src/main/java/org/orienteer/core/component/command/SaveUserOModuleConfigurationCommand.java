@@ -9,7 +9,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 
@@ -18,18 +18,18 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
  */
 public class SaveUserOModuleConfigurationCommand extends AbstractSaveOModuleConfigurationCommand {
 
-    public SaveUserOModuleConfigurationCommand(OrienteerStructureTable<OModuleConfiguration, ?> table, IModel<DisplayMode> displayModeModel, Label feedback) {
+    public SaveUserOModuleConfigurationCommand(OrienteerStructureTable<OArtifact, ?> table, IModel<DisplayMode> displayModeModel, Label feedback) {
         super(table, displayModeModel, feedback);
     }
 
     @Override
     public void onClick(AjaxRequestTarget target) {
-        IModel<OModuleConfiguration> model = getModel();
+        IModel<OArtifact> model = getModel();
         if (model == null) {
             sendErrorFeedback(target, new ResourceModel(ERROR));
             return;
         }
-        OModuleConfiguration module = model.getObject();
+        OArtifact module = model.getObject();
         if (isUserOModuleValid(target, module)) {
             if (module.getArtifact().getFile() != null) {
                 OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(module);
@@ -38,7 +38,7 @@ public class SaveUserOModuleConfigurationCommand extends AbstractSaveOModuleConf
         }
     }
 
-    private void resolveUserOModule(AjaxRequestTarget target, OModuleConfiguration module) {
+    private void resolveUserOModule(AjaxRequestTarget target, OArtifact module) {
         String repository = module.getArtifact().getRepository();
         OArtifactReference artifact = module.getArtifact();
         Optional<Artifact> artifactOptional;

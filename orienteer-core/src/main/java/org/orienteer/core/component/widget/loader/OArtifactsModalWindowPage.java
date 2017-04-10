@@ -3,13 +3,13 @@ package org.orienteer.core.component.widget.loader;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.web.BasePage;
 
 /**
  * @author Vitaliy Gonchar
  */
-public class OModulesModalWindowPage extends BasePage<OModuleConfiguration> {
+public class OArtifactsModalWindowPage extends BasePage<OArtifact> {
 
     private final Panel orienteerModulesPanel;
     private final Panel userModulePanel;
@@ -18,13 +18,13 @@ public class OModulesModalWindowPage extends BasePage<OModuleConfiguration> {
     private boolean showOrienteerModulesPanel = false;
     private boolean showUserJarUploadPanel = false;
 
-    private IModel<OModuleConfiguration> userModule = Model.of(OModuleConfiguration.getEmptyModule());
+    private IModel<OArtifact> userModule = Model.of(OArtifact.getEmptyModule());
 
-    public OModulesModalWindowPage(AbstractOModulesConfigurationsProvider provider) {
+    public OArtifactsModalWindowPage(AbstractOArtifactsProvider provider) {
         super();
         setOutputMarkupPlaceholderTag(true);
         orienteerModulesPanel = new OrienteerCloudOModulesConfigurationsPanel("orienteerModulesPanel", this, provider);
-        userModulePanel = new UserOModuleConfigurationPanel("userModulePanel", userModule,this);
+        userModulePanel = new UserOArtifactPanel("userModulePanel", userModule,this);
         userJarUploadPanel = new UserJarUploadPanel("userJarUploadPanel", this);
 
         add(orienteerModulesPanel);
@@ -40,7 +40,7 @@ public class OModulesModalWindowPage extends BasePage<OModuleConfiguration> {
         showUserJarUploadPanel = show;
     }
 
-    public void setUserModule(OModuleConfiguration module) {
+    public void setUserModule(OArtifact module) {
         userModule.setObject(module);
     }
 

@@ -8,7 +8,7 @@ import org.eclipse.aether.resolution.ArtifactResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +73,8 @@ public class DependencyTest {
 
     @Test
     public void getModulesTest() throws Exception {
-        List<OModuleConfiguration> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerModulesConfigurationsFromServer();
-        for (OModuleConfiguration artifact : orienteerModulesFromServer) {
+        List<OArtifact> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerModulesConfigurationsFromServer();
+        for (OArtifact artifact : orienteerModulesFromServer) {
             LOG.info("artifact: " + artifact);
         }
     }

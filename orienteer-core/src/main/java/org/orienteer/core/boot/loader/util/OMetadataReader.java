@@ -7,7 +7,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * @author Vitaliy Gonchar
- * Class for read {@link OModuleConfiguration} from metadata.xml
+ * Class for read {@link OArtifact} from metadata.xml
  */
 class OMetadataReader {
     private static final Logger LOG = LoggerFactory.getLogger(OMetadataReader.class);
@@ -28,38 +28,38 @@ class OMetadataReader {
         this.pathToMetadata = pathToMetadata;
     }
 
-    @VisibleForTesting List<OModuleConfiguration> readModulesForLoad() {
-        List<OModuleConfiguration> modules = read();
-        List<OModuleConfiguration> modulesForLoad = Lists.newArrayList();
-        for (OModuleConfiguration module : modules) {
+    @VisibleForTesting List<OArtifact> readModulesForLoad() {
+        List<OArtifact> modules = read();
+        List<OArtifact> modulesForLoad = Lists.newArrayList();
+        for (OArtifact module : modules) {
             if (module.isLoad()) modulesForLoad.add(module);
         }
         return modulesForLoad;
     }
 
-    @VisibleForTesting List<OModuleConfiguration> readAllOModulesConfigurations() {
+    @VisibleForTesting List<OArtifact> readAllOModulesConfigurations() {
         return read();
     }
 
     @SuppressWarnings("unchecked")
-    private List<OModuleConfiguration> read() {
+    private List<OArtifact> read() {
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
-        return (List<OModuleConfiguration>) getOModulesConfigurationsInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
+        return (List<OArtifact>) getOModulesConfigurationsInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
     }
 
-    private List<OModuleConfiguration> getOModulesConfigurationsInMetadataXml(List<Element> elements) {
-        List<OModuleConfiguration> modules = Lists.newArrayList();
+    private List<OArtifact> getOModulesConfigurationsInMetadataXml(List<Element> elements) {
+        List<OArtifact> modules = Lists.newArrayList();
         for (Element element : elements) {
-            OModuleConfiguration module = getOModuleConfiguration(element);
+            OArtifact module = getOModuleConfiguration(element);
             modules.add(module);
         }
         return modules;
     }
 
     @SuppressWarnings("unchecked")
-    private OModuleConfiguration getOModuleConfiguration(Element mainElement) {
-        OModuleConfiguration module = new OModuleConfiguration();
+    private OArtifact getOModuleConfiguration(Element mainElement) {
+        OArtifact module = new OArtifact();
         List<Element> elements = mainElement.elements();
         for (Element element : elements) {
             MetadataTag tag = MetadataTag.getByName(element.getName());

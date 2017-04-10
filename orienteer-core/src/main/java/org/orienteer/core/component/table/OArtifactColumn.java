@@ -3,32 +3,32 @@ package org.orienteer.core.component.table;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfigurationField;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
-import org.orienteer.core.component.meta.OModuleConfigurationMetaPanel;
+import org.orienteer.core.component.meta.OArtifactMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 
 /**
  * @author Vitaliy Gonchar
- * Column for {@link OModuleConfiguration}
+ * Column for {@link OArtifact}
  */
-public class OModuleConfigurationColumn extends AbstractModeMetaColumn<OModuleConfiguration, DisplayMode, OModuleConfigurationField, String> {
+public class OArtifactColumn extends AbstractModeMetaColumn<OArtifact, DisplayMode, OArtifactField, String> {
 
-    public OModuleConfigurationColumn(IModel<OModuleConfigurationField> criteryModel,
+    public OArtifactColumn(IModel<OArtifactField> criteryModel,
                                       IModel<DisplayMode> modeModel) {
         super(criteryModel, modeModel);
     }
 
     @Override
-    protected <V> AbstractMetaPanel<OModuleConfiguration, OModuleConfigurationField, V> newMetaPanel(
-            String id, IModel<OModuleConfigurationField> criteryModel, IModel<OModuleConfiguration> rowModel) {
-        return new OModuleConfigurationMetaPanel<V>(id, getModeModel(), rowModel, criteryModel);
+    protected <V> AbstractMetaPanel<OArtifact, OArtifactField, V> newMetaPanel(
+            String id, IModel<OArtifactField> criteryModel, IModel<OArtifact> rowModel) {
+        return new OArtifactMetaPanel<V>(id, getModeModel(), rowModel, criteryModel);
     }
 
     @Override
     protected IModel<String> newLabelModel() {
-        OModuleConfigurationField critery = getCriteryModel().getObject();
+        OArtifactField critery = getCriteryModel().getObject();
         IModel<String> label = Model.of("No name");
         switch (critery) {
             case GROUP:

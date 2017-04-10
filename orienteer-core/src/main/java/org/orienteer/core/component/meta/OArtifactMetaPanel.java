@@ -8,8 +8,8 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfigurationField;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
@@ -17,12 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Meta panel for {@link OModuleConfiguration}
+ * Meta panel for {@link OArtifact}
  * @param <V> type of value
  */
-public class OModuleConfigurationMetaPanel<V> extends AbstractComplexModeMetaPanel<OModuleConfiguration, DisplayMode, OModuleConfigurationField, V> {
+public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifact, DisplayMode, OArtifactField, V> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OModuleConfigurationMetaPanel.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OArtifactMetaPanel.class);
 
     private static final String GROUP       = "widget.modules.group";
     private static final String ARTIFACT    = "widget.modules.artifact";
@@ -33,15 +33,15 @@ public class OModuleConfigurationMetaPanel<V> extends AbstractComplexModeMetaPan
     private static final String LOAD        = "widget.modules.load";
     private static final String TRUSTED     = "widget.modules.trusted";
 
-    public OModuleConfigurationMetaPanel(String id, IModel<DisplayMode> modeModel,
-                                         IModel<OModuleConfiguration> entityModel, IModel<OModuleConfigurationField> criteryModel) {
+    public OArtifactMetaPanel(String id, IModel<DisplayMode> modeModel,
+                                         IModel<OArtifact> entityModel, IModel<OArtifactField> criteryModel) {
         super(id, modeModel, entityModel, criteryModel);
     }
 
 
     @Override
     @SuppressWarnings("unchecked")
-    protected V getValue(OModuleConfiguration moduleConfiguration, OModuleConfigurationField critery) {
+    protected V getValue(OArtifact moduleConfiguration, OArtifactField critery) {
         V value = null;
         switch (critery) {
             case GROUP:
@@ -70,7 +70,7 @@ public class OModuleConfigurationMetaPanel<V> extends AbstractComplexModeMetaPan
     }
 
     @Override
-    protected void setValue(OModuleConfiguration moduleConfiguration, OModuleConfigurationField critery, V value) {
+    protected void setValue(OArtifact moduleConfiguration, OArtifactField critery, V value) {
         switch (critery) {
             case GROUP:
                 moduleConfiguration.getArtifact().setGroupId((String) value);
@@ -98,7 +98,7 @@ public class OModuleConfigurationMetaPanel<V> extends AbstractComplexModeMetaPan
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Component resolveComponent(String id, DisplayMode mode, OModuleConfigurationField critery) {
+    protected Component resolveComponent(String id, DisplayMode mode, OArtifactField critery) {
         Component result = null;
         IModel<V> model = getModel();
         if (DisplayMode.EDIT.equals(mode)) {

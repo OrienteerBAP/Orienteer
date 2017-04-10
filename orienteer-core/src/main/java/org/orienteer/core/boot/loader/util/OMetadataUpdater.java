@@ -8,7 +8,7 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.eclipse.aether.artifact.Artifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ class OMetadataUpdater {
     }
 
     @VisibleForTesting
-    void create(List<OModuleConfiguration> modulesConfigurations) {
+    void create(List<OArtifact> modulesConfigurations) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement(MetadataTag.METADATA.get());
         addModules(modulesConfigurations, root);
@@ -41,29 +41,29 @@ class OMetadataUpdater {
     }
 
     @VisibleForTesting
-    void update(OModuleConfiguration moduleConfiguration) {
+    void update(OArtifact moduleConfiguration) {
         update(moduleConfiguration, false);
     }
 
-    void update(List<OModuleConfiguration> modulesConfigurations) {
+    void update(List<OArtifact> modulesConfigurations) {
         update(modulesConfigurations, false);
     }
 
-    void update(OModuleConfiguration moduleConfiguration, boolean updateJar) {
+    void update(OArtifact moduleConfiguration, boolean updateJar) {
         update(Lists.newArrayList(moduleConfiguration), updateJar);
     }
 
     @SuppressWarnings("unchecked")
-    void update(List<OModuleConfiguration> modulesConfigurations, boolean updateJar) {
+    void update(List<OArtifact> modulesConfigurations, boolean updateJar) {
         Document document = readFromFile();
         if (document == null) throw new UnsupportedOperationException("Cannot open metadata.xml for update it.");
         Element rootElement = document.getRootElement();
         List<Node> modules = rootElement.elements(MetadataTag.MODULE.get());
-        List<OModuleConfiguration> updatedModules = Lists.newArrayList();
+        List<OArtifact> updatedModules = Lists.newArrayList();
         for (Node node : modules) {
             Element element = (Element) node;
             Element dependencyElement = element.element(MetadataTag.DEPENDENCY.get());
-            OModuleConfiguration moduleConfiguration = containsInModulesConfigsList(dependencyElement, modulesConfigurations);
+            OArtifact moduleConfiguration = containsInModulesConfigsList(dependencyElement, modulesConfigurations);
             if (moduleConfiguration != null) {
                 if (updateJar) {
                     changeModulesConfigurationsLoadAndJar(element, moduleConfiguration);
@@ -78,7 +78,7 @@ class OMetadataUpdater {
     }
 
     @SuppressWarnings("unchecked")
-    void update(OModuleConfiguration moduleConfigForUpdate, OModuleConfiguration newModuleConfig) {
+    void update(OArtifact moduleConfigForUpdate, OArtifact newModuleConfig) {
         Document document = readFromFile();
         if (document == null) throw new UnsupportedOperationException("Cannot open metadata.xml for update it.");
         Element rootElement = document.getRootElement();
@@ -86,7 +86,7 @@ class OMetadataUpdater {
         for (Node node : modules) {
             Element element = (Element) node;
             Element dependencyElement = element.element(MetadataTag.DEPENDENCY.get());
-            OModuleConfiguration module = containsInModulesConfigsList(dependencyElement, Lists.newArrayList(moduleConfigForUpdate));
+            OArtifact module = containsInModulesConfigsList(dependencyElement, Lists.newArrayList(moduleConfigForUpdate));
             if (module != null) {
                 changeModule(element, newModuleConfig);
                 break;
@@ -98,7 +98,7 @@ class OMetadataUpdater {
 
     @SuppressWarnings("unchecked")
     @VisibleForTesting
-    void delete(OModuleConfiguration moduleConfiguration) {
+    void delete(OArtifact moduleConfiguration) {
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
         Iterator<Element> iterator = rootElement.elementIterator(MetadataTag.MODULE.get());
@@ -114,14 +114,14 @@ class OMetadataUpdater {
     }
 
     @SuppressWarnings("unchecked")
-    void delete(List<OModuleConfiguration> modulesConfigurations) {
+    void delete(List<OArtifact> modulesConfigurations) {
         Document document = readFromFile();
         Element rootElement = document.getRootElement();
         Iterator<Element> iterator = rootElement.elementIterator(MetadataTag.MODULE.get());
         while (iterator.hasNext()) {
             Element element = iterator.next();
             Element dependencyElement = element.element(MetadataTag.DEPENDENCY.get());
-            OModuleConfiguration metadata = containsInModulesConfigsList(dependencyElement, modulesConfigurations);
+            OArtifact metadata = containsInModulesConfigsList(dependencyElement, modulesConfigurations);
             if (metadata != null) {
                 iterator.remove();
             }
@@ -129,13 +129,13 @@ class OMetadataUpdater {
         writeToFile(document);
     }
 
-    private void addModules(List<OModuleConfiguration> modulesConfigurations, Element root) {
-        for (OModuleConfiguration module : modulesConfigurations) {
+    private void addModules(List<OArtifact> modulesConfigurations, Element root) {
+        for (OArtifact module : modulesConfigurations) {
             addModule(module, root);
         }
     }
 
-    private void addModule(OModuleConfiguration moduleConfiguration, Element root) {
+    private void addModule(OArtifact moduleConfiguration, Element root) {
         Element moduleTag = root.addElement(MetadataTag.MODULE.get());
         moduleTag.addElement(MetadataTag.LOAD.get()).addText(Boolean.toString(moduleConfiguration.isLoad()));
         moduleTag.addElement(MetadataTag.TRUSTED.get()).addText(Boolean.toString(moduleConfiguration.isTrusted()));
@@ -143,7 +143,7 @@ class OMetadataUpdater {
     }
 
     @SuppressWarnings("unchecked")
-    private void changeModule(Element moduleElement, OModuleConfiguration moduleConfiguration) {
+    private void changeModule(Element moduleElement, OArtifact moduleConfiguration) {
         Iterator<Element> iterator = moduleElement.elementIterator();
         while (iterator.hasNext()) {
             Element element = iterator.next();
@@ -164,7 +164,7 @@ class OMetadataUpdater {
 
     @SuppressWarnings("unchecked")
     private void changeModulesConfigurationsLoadAndJar(Element moduleElement,
-                                                       OModuleConfiguration moduleConfiguration) {
+                                                       OArtifact moduleConfiguration) {
         Iterator<Element> iterator = moduleElement.elementIterator();
         boolean isUpdate = false;
         while (iterator.hasNext() && !isUpdate) {
@@ -222,7 +222,7 @@ class OMetadataUpdater {
         }
     }
 
-    private boolean isNecessaryElement(Element dependencyElement, OModuleConfiguration module) {
+    private boolean isNecessaryElement(Element dependencyElement, OArtifact module) {
         Element groupElement = (Element) dependencyElement.elements(MetadataTag.GROUP_ID.get()).get(0);
         Element artifactElement = (Element) dependencyElement.elements(MetadataTag.ARTIFACT_ID.get()).get(0);
         OArtifactReference artifact = module.getArtifact();
@@ -230,16 +230,16 @@ class OMetadataUpdater {
                 && artifactElement.getText().equals(artifact.getArtifactId());
     }
 
-    private OModuleConfiguration containsInModulesConfigsList(Element dependencyElement, List<OModuleConfiguration> modulesConfigs) {
-        for (OModuleConfiguration moduleConfig : modulesConfigs) {
+    private OArtifact containsInModulesConfigsList(Element dependencyElement, List<OArtifact> modulesConfigs) {
+        for (OArtifact moduleConfig : modulesConfigs) {
             if (isNecessaryElement(dependencyElement, moduleConfig)) return moduleConfig;
         }
         return null;
     }
 
-    private List<OModuleConfiguration> difference(List<OModuleConfiguration> list1, List<OModuleConfiguration> list2) {
-        List<OModuleConfiguration> result = Lists.newArrayList();
-        for (OModuleConfiguration module : list2) {
+    private List<OArtifact> difference(List<OArtifact> list1, List<OArtifact> list2) {
+        List<OArtifact> result = Lists.newArrayList();
+        for (OArtifact module : list2) {
             if (!list1.contains(module)) result.add(module);
         }
         return result;

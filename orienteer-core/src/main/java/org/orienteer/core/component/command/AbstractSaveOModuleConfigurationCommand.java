@@ -7,7 +7,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 
@@ -15,7 +15,7 @@ import org.orienteer.core.component.property.DisplayMode;
 /**
  * @author Vitaliy Gonchar
  */
-public abstract class AbstractSaveOModuleConfigurationCommand extends AbstractSaveCommand<OModuleConfiguration> {
+public abstract class AbstractSaveOModuleConfigurationCommand extends AbstractSaveCommand<OArtifact> {
 
     private static final String STYLE = "style";
     private static final String ERROR_STYLE   = "color:red; font-weight:bold;";
@@ -30,7 +30,7 @@ public abstract class AbstractSaveOModuleConfigurationCommand extends AbstractSa
 
     private final Label feedback;
 
-    public AbstractSaveOModuleConfigurationCommand(ICommandsSupportComponent<OModuleConfiguration> component, IModel<DisplayMode> modeModel, Label feedback) {
+    public AbstractSaveOModuleConfigurationCommand(ICommandsSupportComponent<OArtifact> component, IModel<DisplayMode> modeModel, Label feedback) {
         super(component, modeModel);
         this.feedback = feedback;
     }
@@ -42,7 +42,7 @@ public abstract class AbstractSaveOModuleConfigurationCommand extends AbstractSa
      * @return true - if user OModuleConfiguration is valid
      *         false - if user OModuleConfiguration is not valid
      */
-    protected boolean isUserOModuleValid(AjaxRequestTarget target, OModuleConfiguration module) {
+    protected boolean isUserOModuleValid(AjaxRequestTarget target, OArtifact module) {
         OArtifactReference artifact = module.getArtifact();
         if (Strings.isNullOrEmpty(artifact.getGroupId())) {
             sendErrorFeedback(target, new ResourceModel(GROUP_NULL));

@@ -6,7 +6,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +28,8 @@ class OrienteerArtifactsReader {
     }
 
     @SuppressWarnings("unchecked")
-    List<OModuleConfiguration> readModules() {
-        List<OModuleConfiguration> artifacts = Lists.newArrayList();
+    List<OArtifact> readModules() {
+        List<OArtifact> artifacts = Lists.newArrayList();
         Element rootElement = getRootElement();
         List<Element> modules = rootElement.elements();
         for (Element module : modules) {
@@ -38,7 +38,7 @@ class OrienteerArtifactsReader {
         return artifacts;
     }
 
-    private OModuleConfiguration getModule(Element dependencyElement) {
+    private OArtifact getModule(Element dependencyElement) {
         Element groupElement = dependencyElement.element(MetadataTag.GROUP_ID.get());
         Element artifactElement = dependencyElement.element(MetadataTag.ARTIFACT_ID.get());
         Element versionElement = dependencyElement.element(MetadataTag.VERSION.get());
@@ -47,7 +47,7 @@ class OrienteerArtifactsReader {
         String artifactId = artifactElement != null ? artifactElement.getText() : null;
         String version = versionElement != null ? versionElement.getText() : null;
         String description = descriptionElement != null ? descriptionElement.getText() : null;
-        OModuleConfiguration module = new OModuleConfiguration();
+        OArtifact module = new OArtifact();
         return module.setArtifact(new OArtifactReference(groupId, artifactId, version, description));
     }
 

@@ -5,6 +5,6 @@ import java.io.Serializable;
 /**
  * @author Vitaliy Gonchar
  */
-public interface IOModulesConfigurationsUpdater extends Serializable {
+public interface IOArtifactsUpdater extends Serializable {
     void notifyAboutNewModules();
 }

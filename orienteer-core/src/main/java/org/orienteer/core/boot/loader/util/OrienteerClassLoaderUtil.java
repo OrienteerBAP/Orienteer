@@ -6,7 +6,7 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +44,15 @@ public abstract class OrienteerClassLoaderUtil {
         aetherUtils = new AetherUtils(initUtils);
     }
 
-    public static List<OModuleConfiguration> getOrienteerModulesConfigurationsFromServer() {
+    public static List<OArtifact> getOrienteerModulesConfigurationsFromServer() {
         HttpDownloader downloader = new HttpDownloader(initUtils.getOrienteerModulesUrl(), initUtils.getPathToModulesFolder());
         Path download = downloader.download(MODULES);
         if (download == null) return Lists.newArrayList();
         OrienteerArtifactsReader reader = new OrienteerArtifactsReader(download);
-        List<OModuleConfiguration> oModuleConfigurations = reader.readModules();
-        List<OModuleConfiguration> metadataModules = getOModulesConfigurationsMetadataAsList();
-        for (OModuleConfiguration metadataModule : metadataModules) {
-            for (OModuleConfiguration module : oModuleConfigurations) {
+        List<OArtifact> oModuleConfigurations = reader.readModules();
+        List<OArtifact> metadataModules = getOModulesConfigurationsMetadataAsList();
+        for (OArtifact metadataModule : metadataModules) {
+            for (OArtifact module : oModuleConfigurations) {
                 OArtifactReference metadataArtifact = metadataModule.getArtifact();
                 OArtifactReference moduleArtifact = module.getArtifact();
                 if (metadataArtifact.equals(moduleArtifact)) {
@@ -99,7 +99,7 @@ public abstract class OrienteerClassLoaderUtil {
         return jarUtils.getPomFromJar(path);
     }
 
-    public static Optional<OModuleConfiguration> getOModuleConfigurationFromJar(Path pathToJar) {
+    public static Optional<OArtifact> getOModuleConfigurationFromJar(Path pathToJar) {
         return MavenResolver.get().getModuleConfiguration(pathToJar);
     }
 
@@ -107,27 +107,27 @@ public abstract class OrienteerClassLoaderUtil {
         return jarUtils.readJarsInModulesFolder();
     }
 
-    public static Map<Path, OModuleConfiguration> getOModulesConfigurationsMetadataInMap() {
+    public static Map<Path, OArtifact> getOModulesConfigurationsMetadataInMap() {
         return metadataUtil.readOModulesConfigurationsAsMap();
     }
 
-    public static Map<Path, OModuleConfiguration> getOModulesConfigurationsMetadataForLoadInMap() {
+    public static Map<Path, OArtifact> getOModulesConfigurationsMetadataForLoadInMap() {
         return metadataUtil.readOModulesConfigurationsForLoadAsMap();
     }
 
-    public static void createOModulesConfigurationsMetadata(List<OModuleConfiguration> modulesConfigurations) {
+    public static void createOModulesConfigurationsMetadata(List<OArtifact> modulesConfigurations) {
         metadataUtil.createOModulesConfigurationsMetadata(modulesConfigurations);
     }
 
-    public static void deleteOModuleConfigurationFromMetadata(OModuleConfiguration moduleConfiguration) {
+    public static void deleteOModuleConfigurationFromMetadata(OArtifact moduleConfiguration) {
         metadataUtil.deleteOModuleConfigurationFromMetadata(moduleConfiguration);
     }
 
-    public static void deleteOModulesConfigurationsFromMetadata(List<OModuleConfiguration> modulesConfigurations) {
+    public static void deleteOModulesConfigurationsFromMetadata(List<OArtifact> modulesConfigurations) {
         metadataUtil.deleteOModulesConfigurationsFromMetadata(modulesConfigurations);
     }
 
-    public static void deleteOModuleConfigurationArtifactFile(OModuleConfiguration moduleConfiguration) {
+    public static void deleteOModuleConfigurationArtifactFile(OArtifact moduleConfiguration) {
         try {
             Files.deleteIfExists(moduleConfiguration.getArtifact().getFile().toPath());
         } catch (IOException e) {
@@ -139,28 +139,28 @@ public abstract class OrienteerClassLoaderUtil {
         metadataUtil.deleteMetadata();
     }
 
-    public static void updateOModulesConfigurationsJarsInMetadata(List<OModuleConfiguration> modulesConfigurations) {
+    public static void updateOModulesConfigurationsJarsInMetadata(List<OArtifact> modulesConfigurations) {
         metadataUtil.updateJarsInOModulesConfigurationsMetadata(modulesConfigurations);
     }
 
-    public static void updateOModuleConfigurationInMetadata(OModuleConfiguration moduleConfiguration) {
+    public static void updateOModuleConfigurationInMetadata(OArtifact moduleConfiguration) {
         metadataUtil.updateOModulesConfigurationsMetadata(moduleConfiguration);
     }
 
-    public static void updateOModuleConfigurationInMetadata(OModuleConfiguration moduleConfigForUpdate,
-                                                            OModuleConfiguration newModuleConfig) {
+    public static void updateOModuleConfigurationInMetadata(OArtifact moduleConfigForUpdate,
+                                                            OArtifact newModuleConfig) {
         metadataUtil.updateOModulesConfigurationsMetadata(moduleConfigForUpdate, newModuleConfig);
     }
 
-    public static void updateOModuleConfigurationInMetadata(List<OModuleConfiguration> modulesConfigurations) {
+    public static void updateOModuleConfigurationInMetadata(List<OArtifact> modulesConfigurations) {
         metadataUtil.updateOModulesConfigurationsMetadata(modulesConfigurations);
     }
 
-    public static List<OModuleConfiguration> getOModulesConfigurationsMetadataAsList() {
+    public static List<OArtifact> getOModulesConfigurationsMetadataAsList() {
         return metadataUtil.readOModulesConfigurationsAsList();
     }
 
-    public static List<OModuleConfiguration> getOModulesConfigurationsMetadataForLoadAsList() {
+    public static List<OArtifact> getOModulesConfigurationsMetadataForLoadAsList() {
         return metadataUtil.readOModulesConfigurationsForLoadAsList();
     }
 

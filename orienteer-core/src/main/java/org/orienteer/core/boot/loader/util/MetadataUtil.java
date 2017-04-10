@@ -2,7 +2,7 @@ package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
+import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,48 +31,48 @@ class MetadataUtil {
         this.modulesFolder = modulesFolder;
     }
 
-    public void createOModulesConfigurationsMetadata(List<OModuleConfiguration> modules) {
+    public void createOModulesConfigurationsMetadata(List<OArtifact> modules) {
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.create(modules);
     }
 
-    public List<OModuleConfiguration> readOModulesConfigurationsAsList() {
+    public List<OArtifact> readOModulesConfigurationsAsList() {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(Collections.<OModuleConfiguration>emptyList());
+            createOModulesConfigurationsMetadata(Collections.<OArtifact>emptyList());
             return Lists.newArrayList();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
         return reader.readAllOModulesConfigurations();
     }
 
-    public List<OModuleConfiguration> readOModulesConfigurationsForLoadAsList() {
+    public List<OArtifact> readOModulesConfigurationsForLoadAsList() {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(Collections.<OModuleConfiguration>emptyList());
+            createOModulesConfigurationsMetadata(Collections.<OArtifact>emptyList());
             return Lists.newArrayList();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
         return reader.readModulesForLoad();
     }
 
-    public Map<Path, OModuleConfiguration> readOModulesConfigurationsForLoadAsMap() {
+    public Map<Path, OArtifact> readOModulesConfigurationsForLoadAsMap() {
         return readOModulesConfigurationsAsMap(false, true);
     }
 
-    public Map<Path, OModuleConfiguration> readOModulesConfigurationsAsMap() {
+    public Map<Path, OArtifact> readOModulesConfigurationsAsMap() {
         return readOModulesConfigurationsAsMap(true, false);
     }
 
-    private Map<Path, OModuleConfiguration> readOModulesConfigurationsAsMap(boolean all, boolean load) {
+    private Map<Path, OArtifact> readOModulesConfigurationsAsMap(boolean all, boolean load) {
         if (!metadataExists()) {
-            createOModulesConfigurationsMetadata(Collections.<OModuleConfiguration>emptyList());
+            createOModulesConfigurationsMetadata(Collections.<OArtifact>emptyList());
             return Maps.newHashMap();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
-        List<OModuleConfiguration> modules = all ? reader.readAllOModulesConfigurations() :
+        List<OArtifact> modules = all ? reader.readAllOModulesConfigurations() :
                 (load ? reader.readModulesForLoad() : reader.readAllOModulesConfigurations());
-        Map<Path, OModuleConfiguration> result = Maps.newHashMap();
+        Map<Path, OArtifact> result = Maps.newHashMap();
         int id = 0;
-        for (OModuleConfiguration module : modules) {
+        for (OArtifact module : modules) {
             if (module.getArtifact().getFile() == null) {
                 result.put(Paths.get(OrienteerClassLoaderUtil.WITHOUT_JAR + id), module);
                 id++;
@@ -81,7 +81,7 @@ class MetadataUtil {
         return result;
     }
 
-    public void updateOModulesConfigurationsMetadata(OModuleConfiguration moduleConfiguration) {
+    public void updateOModulesConfigurationsMetadata(OArtifact moduleConfiguration) {
         if (!metadataExists()) {
             createOModulesConfigurationsMetadata(Lists.newArrayList(moduleConfiguration));
         } else {
@@ -91,7 +91,7 @@ class MetadataUtil {
         }
     }
 
-    public void updateOModulesConfigurationsMetadata(OModuleConfiguration moduleConfigForUpdate, OModuleConfiguration newModuleConfig) {
+    public void updateOModulesConfigurationsMetadata(OArtifact moduleConfigForUpdate, OArtifact newModuleConfig) {
         if (!metadataExists()) {
             return;
         }
@@ -101,7 +101,7 @@ class MetadataUtil {
         updateModifiedTime();
     }
 
-    public void updateOModulesConfigurationsMetadata(List<OModuleConfiguration> moduleConfigurations) {
+    public void updateOModulesConfigurationsMetadata(List<OArtifact> moduleConfigurations) {
         if (!metadataExists()) {
             createOModulesConfigurationsMetadata(moduleConfigurations);
         } else {
@@ -111,7 +111,7 @@ class MetadataUtil {
         }
     }
 
-    public void updateJarsInOModulesConfigurationsMetadata(List<OModuleConfiguration> moduleConfigurations) {
+    public void updateJarsInOModulesConfigurationsMetadata(List<OArtifact> moduleConfigurations) {
         if (!metadataExists()) {
             createOModulesConfigurationsMetadata(moduleConfigurations);
         } else {
@@ -130,14 +130,14 @@ class MetadataUtil {
         }
     }
 
-    public void deleteOModulesConfigurationsFromMetadata(List<OModuleConfiguration> moduleConfigurations) {
+    public void deleteOModulesConfigurationsFromMetadata(List<OArtifact> moduleConfigurations) {
         if (!metadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.delete(moduleConfigurations);
         updateModifiedTime();
     }
 
-    public void deleteOModuleConfigurationFromMetadata(OModuleConfiguration moduleConfiguration) {
+    public void deleteOModuleConfigurationFromMetadata(OArtifact moduleConfiguration) {
         if (!metadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.delete(moduleConfiguration);
