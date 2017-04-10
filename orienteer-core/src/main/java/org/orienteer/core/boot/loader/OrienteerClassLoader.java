@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.MavenResolver;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,15 +109,15 @@ public class OrienteerClassLoader extends URLClassLoader {
 	private OrienteerClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
         orienteerClassLoader = parent;
-        Map<Path, OModule> modules = OrienteerClassLoaderUtil.getMetadataModulesInMap();
-        List<Path> jars = OrienteerClassLoaderUtil.getJarsInModulesFolder();
+        Map<Path, OModuleConfiguration> modulesConfigurations = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataInMap();
+        List<Path> jars = OrienteerClassLoaderUtil.getJarsInOModulesConfigurationsFolder();
 
-        List<OModule> modulesForLoad;
-        if (modules.isEmpty()) {
+        List<OModuleConfiguration> modulesForLoad;
+        if (modulesConfigurations.isEmpty()) {
             modulesForLoad = createModules(jars);
         } else {
-            modulesForLoad = getUpdateModules(modules);
-            resolver.setDependenciesInModules(modulesForLoad);
+            modulesForLoad = getUpdateModules(modulesConfigurations);
+            resolver.setDependencies(modulesForLoad);
         }
         modulesForLoad = searchTrustyModules(modulesForLoad, parent);
         addModulesToClassLoaderResources(getTrustedModules(modulesForLoad));
@@ -129,7 +129,7 @@ public class OrienteerClassLoader extends URLClassLoader {
      * @param unTrustedModules - untrusted modules for load in untrusted classloader
      * @param parent - parent classloader
      */
-    private OrienteerClassLoader(List<OModule> unTrustedModules, ClassLoader parent) {
+    private OrienteerClassLoader(List<OModuleConfiguration> unTrustedModules, ClassLoader parent) {
 	    super(new URL[0], parent);
 	    addModulesToClassLoaderResources(unTrustedModules);
     }
@@ -140,11 +140,11 @@ public class OrienteerClassLoader extends URLClassLoader {
      * @param parent - parent classloader
      * @return list with tested Orienteer modules
      */
-    private List<OModule> searchTrustyModules(List<OModule> unTrustedModules,
-                                              ClassLoader parent) {
-        List<OModule> trustyModules = Lists.newArrayList();
+    private List<OModuleConfiguration> searchTrustyModules(List<OModuleConfiguration> unTrustedModules,
+                                                           ClassLoader parent) {
+        List<OModuleConfiguration> trustyModules = Lists.newArrayList();
         OrienteerSandboxClassLoader sandboxClassLoader = new OrienteerSandboxClassLoader(parent);
-        for (OModule module : unTrustedModules) {
+        for (OModuleConfiguration module : unTrustedModules) {
             boolean isTrusted = sandboxClassLoader.test(module);
             if (isTrusted) {
                 trustyModules.add(module);
@@ -156,11 +156,11 @@ public class OrienteerClassLoader extends URLClassLoader {
         return trustyModules;
     }
 
-    private void addModulesToClassLoaderResources(List<OModule> modules) {
-        for(OModule metadata : modules) {
+    private void addModulesToClassLoaderResources(List<OModuleConfiguration> modules) {
+        for(OModuleConfiguration metadata : modules) {
             try {
                 addURL(metadata.getArtifact().getFile().toURI().toURL());
-                for (OArtifact artifact : metadata.getDependencies()) {
+                for (OArtifactReference artifact : metadata.getDependencies()) {
                     addURL(artifact.getFile().toURI().toURL());
                 }
             } catch (MalformedURLException e) {
@@ -169,30 +169,30 @@ public class OrienteerClassLoader extends URLClassLoader {
         }
     }
 	
-	private List<OModule> createModules(List<Path> jars) {
-        List<OModule> modulesForLoad = resolver.getResolvedModulesMetadata(jars);
+	private List<OModuleConfiguration> createModules(List<Path> jars) {
+        List<OModuleConfiguration> modulesForLoad = resolver.getResolvedModulesConfigurations(jars);
         if (modulesForLoad.size() > 0) {
-            OrienteerClassLoaderUtil.createMetadata(modulesForLoad);
+            OrienteerClassLoaderUtil.createOModulesConfigurationsMetadata(modulesForLoad);
         } else OrienteerClassLoaderUtil.deleteMetadataFile();
 
         return modulesForLoad;
     }
 	
-    private List<OModule> getUpdateModules(Map<Path, OModule> modules) {
+    private List<OModuleConfiguration> getUpdateModules(Map<Path, OModuleConfiguration> modules) {
         resolveModulesWithoutMainJar(modules);
-	    List<Path> jars = OrienteerClassLoaderUtil.getJarsInModulesFolder();
-	    List<OModule> modulesForWrite = getModulesForAddToMetadata(jars, modules);
+	    List<Path> jars = OrienteerClassLoaderUtil.getJarsInOModulesConfigurationsFolder();
+	    List<OModuleConfiguration> modulesForWrite = getModulesForAddToMetadata(jars, modules);
 
 	    if (modulesForWrite.size() > 0) {
-            OrienteerClassLoaderUtil.updateModulesInMetadata(modulesForWrite);
+            OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(modulesForWrite);
         }
 
-        modules = OrienteerClassLoaderUtil.getMetadataModulesForLoadInMap();
+        modules = OrienteerClassLoaderUtil.getOModulesConfigurationsMetadataForLoadInMap();
 
         return getModulesForLoad(modules.values());
     }
     
-    private List<OModule> getModulesForAddToMetadata(List<Path> jars, Map<Path, OModule> modules) {
+    private List<OModuleConfiguration> getModulesForAddToMetadata(List<Path> jars, Map<Path, OModuleConfiguration> modules) {
         List<Path> modulesForWrite = Lists.newArrayList();
         Set<Path> jarsInMetadata = modules.keySet();
         for (Path pathToJar : jars) {
@@ -200,19 +200,19 @@ public class OrienteerClassLoader extends URLClassLoader {
                 modulesForWrite.add(pathToJar);
             }
         }
-        return resolver.getResolvedModulesMetadata(modulesForWrite);
+        return resolver.getResolvedModulesConfigurations(modulesForWrite);
     }
 
-    private List<OModule> getModulesForLoad(Collection<OModule> modules) {
-        List<OModule> modulesForLoad = Lists.newArrayList();
-        for (OModule metadata : modules) {
+    private List<OModuleConfiguration> getModulesForLoad(Collection<OModuleConfiguration> modules) {
+        List<OModuleConfiguration> modulesForLoad = Lists.newArrayList();
+        for (OModuleConfiguration metadata : modules) {
             if (metadata.isLoad()) modulesForLoad.add(metadata);
         }
         return modulesForLoad;
     }
 
-    private void resolveModulesWithoutMainJar(Map<Path, OModule> modules) {
-        List<OModule> modulesWithoutMainJar = getModulesWithoutMainJar(modules.values());
+    private void resolveModulesWithoutMainJar(Map<Path, OModuleConfiguration> modules) {
+        List<OModuleConfiguration> modulesWithoutMainJar = getModulesWithoutMainJar(modules.values());
         if (modulesWithoutMainJar.size() > 0) {
             resolver.downloadModules(modulesWithoutMainJar);
             List<Path> keysForDelete = Lists.newArrayList();
@@ -224,16 +224,16 @@ public class OrienteerClassLoader extends URLClassLoader {
             for (Path key : keysForDelete) {
                 modules.remove(key);
             }
-            for (OModule module : modulesWithoutMainJar) {
+            for (OModuleConfiguration module : modulesWithoutMainJar) {
                 modules.put(module.getArtifact().getFile().toPath(), module);
             }
-            OrienteerClassLoaderUtil.updateModulesJarsInMetadata(modulesWithoutMainJar);
+            OrienteerClassLoaderUtil.updateOModulesConfigurationsJarsInMetadata(modulesWithoutMainJar);
         }
     }
 
-    private List<OModule> getModulesWithoutMainJar(Collection<OModule> modules) {
-        List<OModule> result = Lists.newArrayList();
-        for (OModule module : modules) {
+    private List<OModuleConfiguration> getModulesWithoutMainJar(Collection<OModuleConfiguration> modules) {
+        List<OModuleConfiguration> result = Lists.newArrayList();
+        for (OModuleConfiguration module : modules) {
             File jar = module.getArtifact().getFile();
             if (jar == null || !jar.exists()) {
                 result.add(module);
@@ -242,17 +242,17 @@ public class OrienteerClassLoader extends URLClassLoader {
         return result;
     }
 
-    private List<OModule> getTrustedModules(List<OModule> modules) {
-	    List<OModule> trustedModules = Lists.newArrayList();
-	    for (OModule module : modules) {
+    private List<OModuleConfiguration> getTrustedModules(List<OModuleConfiguration> modules) {
+	    List<OModuleConfiguration> trustedModules = Lists.newArrayList();
+	    for (OModuleConfiguration module : modules) {
 	        if (module.isTrusted()) trustedModules.add(module);
         }
 	    return trustedModules;
     }
 
-    private List<OModule> getUnTrustedModules(List<OModule> modules) {
-        List<OModule> unTrustedModules = Lists.newArrayList();
-        for (OModule module : modules) {
+    private List<OModuleConfiguration> getUnTrustedModules(List<OModuleConfiguration> modules) {
+        List<OModuleConfiguration> unTrustedModules = Lists.newArrayList();
+        for (OModuleConfiguration module : modules) {
             if (!module.isTrusted()) unTrustedModules.add(module);
         }
         return unTrustedModules;
@@ -264,16 +264,16 @@ public class OrienteerClassLoader extends URLClassLoader {
             super(new URL[]{}, parent);
         }
 
-        public void loadResourcesInClassLoader(List<OModule> modules) {
-            for (OModule module : modules) {
+        public void loadResourcesInClassLoader(List<OModuleConfiguration> modules) {
+            for (OModuleConfiguration module : modules) {
                 loadResourceInClassLoader(module);
             }
         }
 
-        private void loadResourceInClassLoader(OModule module) {
+        private void loadResourceInClassLoader(OModuleConfiguration module) {
             try {
                 addURL(module.getArtifact().getFile().toURI().toURL());
-                for (OArtifact artifact : module.getDependencies()) {
+                for (OArtifactReference artifact : module.getDependencies()) {
                     addURL(artifact.getFile().toURI().toURL());
                 }
             } catch (MalformedURLException e) {
@@ -281,7 +281,7 @@ public class OrienteerClassLoader extends URLClassLoader {
             }
         }
 
-        public boolean test(OModule module) {
+        public boolean test(OModuleConfiguration module) {
             boolean trusted = false;
             try {
                 loadResourceInClassLoader(module);

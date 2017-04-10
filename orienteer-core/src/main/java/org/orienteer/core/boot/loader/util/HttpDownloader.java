@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 
 /**
  * @author Vitaliy Gonchar
+ * Class for download xml file with Orienteer modules description from github
  */
 class HttpDownloader {
     private final String url;

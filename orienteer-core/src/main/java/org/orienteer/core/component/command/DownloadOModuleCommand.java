@@ -7,16 +7,17 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
 /**
  * @author Vitaliy Gonchar
+ * Command for download Orienteer module from repository
  */
-public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OModule> {
+public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OModuleConfiguration> {
 
     private Label feedback;
 
@@ -25,7 +26,7 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OModu
 
     private static final String DOWNLOAD_BUT = "command.download";
 
-    public DownloadOModuleCommand(OrienteerDataTable<OModule, ?> table, Label feedback) {
+    public DownloadOModuleCommand(OrienteerDataTable<OModuleConfiguration, ?> table, Label feedback) {
         super(new ResourceModel(DOWNLOAD_BUT), table);
         this.feedback = feedback;
     }
@@ -39,20 +40,20 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OModu
     }
 
     @Override
-    protected void perfromSingleAction(AjaxRequestTarget target, OModule module) {
+    protected void perfromSingleAction(AjaxRequestTarget target, OModuleConfiguration module) {
         Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getArtifact().toAetherArtifact());
         if (artifactOptional.isPresent()) {
-            OModule oModule = new OModule();
-            oModule.setTrusted(true);
-            oModule.setLoad(false);
-            oModule.setDownloaded(true);
+            OModuleConfiguration oModuleConfiguration = new OModuleConfiguration();
+            oModuleConfiguration.setTrusted(true);
+            oModuleConfiguration.setLoad(false);
+            oModuleConfiguration.setDownloaded(true);
 
             module.setDownloaded(true);
             Artifact artifact = artifactOptional.get();
-            OArtifact oArtifact = OArtifact.valueOf(artifact.setVersion(module.getArtifact().getVersion()));
-            oArtifact.setDescription(module.getArtifact().getDescription());
-            oModule.setArtifact(oArtifact);
-            OrienteerClassLoaderUtil.updateModulesInMetadata(oModule);
+            OArtifactReference oArtifactReference = OArtifactReference.valueOf(artifact.setVersion(module.getArtifact().getVersion()));
+            oArtifactReference.setDescription(module.getArtifact().getDescription());
+            oModuleConfiguration.setArtifact(oArtifactReference);
+            OrienteerClassLoaderUtil.updateOModuleConfigurationInMetadata(oModuleConfiguration);
             feedback.setDefaultModel(new ResourceModel(DOWNLOAD_SUCCESS));
             feedback.add(AttributeModifier.append("style", "color:green; font-weight:bold"));
         } else {

@@ -2,7 +2,7 @@ package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.orienteer.core.boot.loader.util.artifact.OModule;
+import org.orienteer.core.boot.loader.util.artifact.OModuleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,48 +31,48 @@ class MetadataUtil {
         this.modulesFolder = modulesFolder;
     }
 
-    public void createMetadata(List<OModule> modules) {
+    public void createOModulesConfigurationsMetadata(List<OModuleConfiguration> modules) {
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.create(modules);
     }
 
-    public List<OModule> readMetadata() {
+    public List<OModuleConfiguration> readOModulesConfigurationsAsList() {
         if (!metadataExists()) {
-            createMetadata(Collections.<OModule>emptyList());
+            createOModulesConfigurationsMetadata(Collections.<OModuleConfiguration>emptyList());
             return Lists.newArrayList();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
-        return reader.readAllModules();
+        return reader.readAllOModulesConfigurations();
     }
 
-    public List<OModule> readMetadataForLoad() {
+    public List<OModuleConfiguration> readOModulesConfigurationsForLoadAsList() {
         if (!metadataExists()) {
-            createMetadata(Collections.<OModule>emptyList());
+            createOModulesConfigurationsMetadata(Collections.<OModuleConfiguration>emptyList());
             return Lists.newArrayList();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
         return reader.readModulesForLoad();
     }
 
-    public Map<Path, OModule> readModulesForLoadAsMap() {
-        return readModulesAsMap(false, true);
+    public Map<Path, OModuleConfiguration> readOModulesConfigurationsForLoadAsMap() {
+        return readOModulesConfigurationsAsMap(false, true);
     }
 
-    public Map<Path, OModule> readModulesAsMap() {
-        return readModulesAsMap(true, false);
+    public Map<Path, OModuleConfiguration> readOModulesConfigurationsAsMap() {
+        return readOModulesConfigurationsAsMap(true, false);
     }
 
-    private Map<Path, OModule> readModulesAsMap(boolean all, boolean load) {
+    private Map<Path, OModuleConfiguration> readOModulesConfigurationsAsMap(boolean all, boolean load) {
         if (!metadataExists()) {
-            createMetadata(Collections.<OModule>emptyList());
+            createOModulesConfigurationsMetadata(Collections.<OModuleConfiguration>emptyList());
             return Maps.newHashMap();
         }
         OMetadataReader reader = new OMetadataReader(metadataPath);
-        List<OModule> modules = all ? reader.readAllModules() :
-                (load ? reader.readModulesForLoad() : reader.readAllModules());
-        Map<Path, OModule> result = Maps.newHashMap();
+        List<OModuleConfiguration> modules = all ? reader.readAllOModulesConfigurations() :
+                (load ? reader.readModulesForLoad() : reader.readAllOModulesConfigurations());
+        Map<Path, OModuleConfiguration> result = Maps.newHashMap();
         int id = 0;
-        for (OModule module : modules) {
+        for (OModuleConfiguration module : modules) {
             if (module.getArtifact().getFile() == null) {
                 result.put(Paths.get(OrienteerClassLoaderUtil.WITHOUT_JAR + id), module);
                 id++;
@@ -81,42 +81,42 @@ class MetadataUtil {
         return result;
     }
 
-    public void updateMetadata(OModule moduleMetadata) {
+    public void updateOModulesConfigurationsMetadata(OModuleConfiguration moduleConfiguration) {
         if (!metadataExists()) {
-            createMetadata(Lists.newArrayList(moduleMetadata));
+            createOModulesConfigurationsMetadata(Lists.newArrayList(moduleConfiguration));
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-            updater.update(moduleMetadata);
+            updater.update(moduleConfiguration);
             updateModifiedTime();
         }
     }
 
-    public void updateMetadata(OModule moduleForUpdate, OModule newModule) {
+    public void updateOModulesConfigurationsMetadata(OModuleConfiguration moduleConfigForUpdate, OModuleConfiguration newModuleConfig) {
         if (!metadataExists()) {
             return;
         }
 
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-        updater.update(moduleForUpdate, newModule);
+        updater.update(moduleConfigForUpdate, newModuleConfig);
         updateModifiedTime();
     }
 
-    public void updateMetadata(List<OModule> modules) {
+    public void updateOModulesConfigurationsMetadata(List<OModuleConfiguration> moduleConfigurations) {
         if (!metadataExists()) {
-            createMetadata(modules);
+            createOModulesConfigurationsMetadata(moduleConfigurations);
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-            updater.update(modules);
+            updater.update(moduleConfigurations);
             updateModifiedTime();
         }
     }
 
-    public void updateJarsInMetadata(List<OModule> modules) {
+    public void updateJarsInOModulesConfigurationsMetadata(List<OModuleConfiguration> moduleConfigurations) {
         if (!metadataExists()) {
-            createMetadata(modules);
+            createOModulesConfigurationsMetadata(moduleConfigurations);
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-            updater.update(modules, true);
+            updater.update(moduleConfigurations, true);
             updateModifiedTime();
         }
     }
@@ -130,17 +130,17 @@ class MetadataUtil {
         }
     }
 
-    public void deleteModulesFromMetadata(List<OModule> modules) {
+    public void deleteOModulesConfigurationsFromMetadata(List<OModuleConfiguration> moduleConfigurations) {
         if (!metadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-        updater.delete(modules);
+        updater.delete(moduleConfigurations);
         updateModifiedTime();
     }
 
-    public void deleteModuleFromMetadata(OModule module) {
+    public void deleteOModuleConfigurationFromMetadata(OModuleConfiguration moduleConfiguration) {
         if (!metadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
-        updater.delete(module);
+        updater.delete(moduleConfiguration);
         updateModifiedTime();
     }
 
