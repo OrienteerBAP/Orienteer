@@ -8,11 +8,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 
- * Filter by ODocument class. Allow if we seen ODocument with type "filterData"
+ * Filter by ODocument class. Allow if we seen ODocument with type "fData"
  * 
  * example :  
  * 
- * filterData="OUser"
+ * fData="OUser"
  *
  */
 public class ODocumentFilter implements IMethodFilter{
@@ -28,7 +28,7 @@ public class ODocumentFilter implements IMethodFilter{
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
 		if (model!=null && model.getObject()!=null && model.getObject() instanceof ODocument){
-			if (((ODocument) (model.getObject())).getClassName().equals(oClassName)){
+			if (((ODocument) (model.getObject())).getSchemaClass().isSubClassOf(oClassName)){
 				return true;
 			}
 		};

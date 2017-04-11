@@ -11,6 +11,20 @@ import org.orienteer.core.component.property.DisplayMode;
  *
  */
 public interface IMethod {
-	public void setDisplayModeModel(IModel<DisplayMode> displayModeModel);
+	/**
+	 * Init method instance by environment data
+	 * Called only once per creation 
+	 * 
+	 * @param envData
+	 */
+	public void initialize(IMethodEnvironmentData envData);
+	
+	/**
+	 * Return display {@link Component} with signed id
+	 * May be created every time or storages into method 
+	 * 
+	 * @param componentId
+	 * @return
+	 */
 	public Component getDisplayComponent(String componentId);
 }

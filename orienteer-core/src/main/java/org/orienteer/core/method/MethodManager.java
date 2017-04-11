@@ -1,12 +1,17 @@
 package org.orienteer.core.method;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.orienteer.core.method.definitions.SourceMethodDefinitionStorage;
 import org.orienteer.core.module.IOrienteerModule;
+import org.orienteer.core.widget.IWidgetType;
+
+import com.google.common.collect.TreeMultiset;
 
 /**
  * 
@@ -56,13 +61,33 @@ public class MethodManager {
 
 	
 	public List<IMethod> getMethods(IMethodEnvironmentData dataObject){
-		List<IMethod> result = new ArrayList<IMethod>();
+		//sort support
+		TreeMultiset<IMethodDefinition> sortlist = TreeMultiset.create(new Comparator<IMethodDefinition>() {
+			@Override
+			public int compare(IMethodDefinition o1, IMethodDefinition o2) {
+				int ret = Integer.compare(o1.getOrder(), o2.getOrder());
+				if(ret==0) ret=o1.getMethodId().compareTo(o2.getMethodId());
+				return ret;
+			}
+		});
+		//getting and sorting
+		//this strange thing, but it works faster than List.sort
+		//maybe it changed in future
 		for (IMethodDefinitionStorage iMethodDefinitionStorage : definitionsStorages) {
-			List<IMethod> curResult = iMethodDefinitionStorage.getMethods(dataObject);
-			for (IMethod iMethod : curResult) {
-				result.add(iMethod);
+			List<IMethodDefinition> curResult = iMethodDefinitionStorage.getMethodsDefinitions(dataObject);
+			for (IMethodDefinition iMethodDefinition: curResult) {
+				sortlist.add(iMethodDefinition);
 			}
 		}
+		
+		//If we need methods - return methods
+		//No need to externalize stuff like "IMethodDefinitionStorage" without REALLY necessary
+		List<IMethod> result = new ArrayList<IMethod>(sortlist.size());
+		
+		for (IMethodDefinition iMethodDefinition : sortlist) {
+			result.add(iMethodDefinition.getMethod(dataObject));
+		}
+		
 		return result;
 	}
 

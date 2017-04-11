@@ -4,13 +4,13 @@ import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.DisplayMode;
 
-public class SimpleMethod implements IMethod {
+/**
+ * 
+ * This method annotated NOT as {@link SourceMethodDefinition} and NOT loaded into {@link SourceMethodDefinitionStorage} 
+ *
+ */
 
-	@Override
-	public void setDisplayModeModel(IModel<DisplayMode> displayModeModel) {
-		// TODO Auto-generated method stub
-		
-	}
+public class SimpleMethod implements IMethod {
 
 	@Override
 	public Component getDisplayComponent(String componentId) {
@@ -18,5 +18,9 @@ public class SimpleMethod implements IMethod {
 		return null;
 	}
 
-
+	@Override
+	public void initialize(IMethodEnvironmentData envData) {
+		// TODO Auto-generated method stub
+		
+	}
 }

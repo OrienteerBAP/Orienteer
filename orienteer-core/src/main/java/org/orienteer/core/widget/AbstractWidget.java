@@ -101,7 +101,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 			}
 		});
 		addCommand(new FullScreenCommand<T>(commands.newChildId()));
-		add(methodPanel = new MethodPanel("methodPanel", model));
+		add(methodPanel = new MethodPanel("methodPanel", model,this));
 	}
 	
 	@Override

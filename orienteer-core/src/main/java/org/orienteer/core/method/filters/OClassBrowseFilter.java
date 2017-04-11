@@ -9,11 +9,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 
- * Filter by OClass. Allow if we browse OClass documents with type "filterData"
+ * Filter by OClass. Allow if we browse OClass documents with type "fData"
  * 
  * example :  
  * 
- * filterData="OUser"
+ * fData="OUser"
  *
  */
 
@@ -30,7 +30,7 @@ public class OClassBrowseFilter implements IMethodFilter{
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
 		if (model!=null && model.getObject()!=null && model.getObject() instanceof OClass){
-			if (((OClass) (model.getObject())).getName().equals(oClassName)){
+			if (((OClass) (model.getObject())).isSubClassOf(oClassName)){
 				return true;
 			}
 		};

@@ -27,11 +27,11 @@ public class SourceMethodDefinitionStorage implements IMethodDefinitionStorage{
 	}
 	
 	@Override
-	public List<IMethod> getMethods(IMethodEnvironmentData dataObject) {
-		ArrayList<IMethod> result = new ArrayList<IMethod>();
+	public List<IMethodDefinition> getMethodsDefinitions(IMethodEnvironmentData dataObject) {
+		ArrayList<IMethodDefinition> result = new ArrayList<IMethodDefinition>();
 		for (IMethodDefinition iMethodDefinition : definitions) {
 			if (iMethodDefinition.isSupportedMethod(dataObject)){
-				result.add(iMethodDefinition.getMethod(dataObject));
+				result.add(iMethodDefinition);
 			}
 		}
 		return result;

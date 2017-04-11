@@ -8,7 +8,7 @@ import com.google.common.base.Predicate;
 
 
 /**
- * Dummy interface over {@link Predicate} just to make it {@link Serializable}
+ * Dummy interface over {@link Filter} just to make it {@link Serializable}
  *
  * @param <T> the type of widget's main object
  */

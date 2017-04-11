@@ -11,6 +11,6 @@ import java.util.Set;
 public interface IMethodDefinitionStorage {
 	public void reload();
 	public void setMethodStorage(MethodStorage methodStorage);
-	public List<IMethod> getMethods(IMethodEnvironmentData dataObject);
+	public List<IMethodDefinition> getMethodsDefinitions(IMethodEnvironmentData dataObject);
 
 }
