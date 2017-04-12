@@ -5,6 +5,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * 
  * Filter annotation for {@link Method} annotation 
+ * Method will display only if all filters passed
  *
  */
 

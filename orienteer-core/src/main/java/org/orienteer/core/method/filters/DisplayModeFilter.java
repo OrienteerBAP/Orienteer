@@ -4,6 +4,12 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
 
+/**
+ * 
+ * {@link DisplayMode} filter
+ *
+ */
+
 public class DisplayModeFilter implements IMethodFilter{
 
 	DisplayMode filterData;
@@ -15,6 +21,9 @@ public class DisplayModeFilter implements IMethodFilter{
 
 	@Override
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
-		return filterData.equals(dataObject.getDisplayModeModel().getObject());
+		if (dataObject.getDisplayModeModel()!=null){
+			return filterData.equals(dataObject.getDisplayModeModel().getObject());
+		}
+		return false;
 	}
 }

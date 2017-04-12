@@ -28,7 +28,7 @@ public class MethodsTest {
 	public void baseTest() throws Exception{
 //		MethodManager.get().reload();
 		List<IMethod> methods = MethodManager.get().getMethods(new TestData());
-		assertTrue(methods.size()>1);
+		assertTrue(methods.size()>0);
 		int equals = 0;
 		for (IMethod iMethod : methods) {
 			if (iMethod instanceof AnnotatedMethod || iMethod instanceof SimpleMethod){

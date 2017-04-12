@@ -1,8 +1,6 @@
 package org.orienteer.core.method;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.property.DisplayMode;
 
 /**
  * 
@@ -22,6 +20,7 @@ public interface IMethod {
 	/**
 	 * Return display {@link Component} with signed id
 	 * May be created every time or storages into method 
+	 * If you need to use integrated markup, see {@link ExampleMethodWithIntMarkup} for example
 	 * 
 	 * @param componentId
 	 * @return

@@ -24,6 +24,8 @@ import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.method.MethodPanel;
+import org.orienteer.core.method.MethodPlace;
 
 import ru.ydn.wicket.wicketorientdb.behavior.SyncVisibilityBehaviour;
 
@@ -47,6 +49,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	private ListView<C> listView;
 	private long toolbarIdCounter;
 	private IModel<? extends List<? extends C>> criteriesModel;
+	private MethodPanel methodPanel;
 	
 	public StructureTable(String id, IModel<T> model, List<C> list) {
 		this(id, model, Model.ofList(list));
@@ -60,6 +63,8 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 		topToolbars = new ToolbarsContainer("topToolbars");
 		bottomToolbars = new ToolbarsContainer("bottomToolbars");
 		add(caption, topToolbars, bottomToolbars);
+		methodPanel = new MethodPanel("methodPanel", model,MethodPlace.STRUCTURE_TABLE);
+		topToolbars.add(methodPanel);
 		this.listView = new ListView<C>("rows", criteriesModel) {
 
 			/**

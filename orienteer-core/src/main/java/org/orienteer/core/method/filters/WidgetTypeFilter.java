@@ -2,7 +2,12 @@ package org.orienteer.core.method.filters;
 
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
-import org.orienteer.core.module.OWidgetsModule;
+
+/**
+ * 
+ * Widget type filter. Support regexp patterns.
+ *
+ */
 
 public class WidgetTypeFilter implements IMethodFilter{
 

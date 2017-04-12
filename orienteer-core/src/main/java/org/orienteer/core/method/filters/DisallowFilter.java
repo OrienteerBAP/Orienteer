@@ -3,6 +3,11 @@ package org.orienteer.core.method.filters;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
 
+/**
+ * 
+ * Always disallow filter
+ *
+ */
 public class DisallowFilter implements IMethodFilter{
 
 	@Override

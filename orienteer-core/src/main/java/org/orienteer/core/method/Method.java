@@ -5,13 +5,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.orienteer.core.method.filters.AllowFilter;
-import org.orienteer.core.method.filters.DisallowFilter;
-
 /**
  * 
  * All methods should implement {@link IMethod} interface
- * Method allowed only if all filters return "true"
+ * 
+ * Method will display only if all filters passed
  * 
  * Example:
  * 

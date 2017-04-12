@@ -4,10 +4,6 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
-import org.orienteer.core.widget.IWidgetType;
-
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Base Method environment data.
@@ -20,14 +16,16 @@ public class MethodBaseData implements IMethodEnvironmentData{
 	AbstractWidget<?> widget;
 	String widgetType;
 	IModel<DisplayMode> displayModeModel;
+	MethodPlace place;
 	
-	public MethodBaseData(IModel<?> objModel,AbstractWidget<?> widget,IModel<DisplayMode> displayModeModel) {
+	public MethodBaseData(IModel<?> objModel,AbstractWidget<?> widget,IModel<DisplayMode> displayModeModel,MethodPlace place) {
 		this.objModel = objModel;
 		this.widget = widget;
 		if (widget!=null){
 			this.widgetType = widget.getWidgetDocument().field(OWidgetsModule.OPROPERTY_TYPE_ID);
 		}
 		this.displayModeModel = displayModeModel;
+		this.place = place;
 	}
 
 	@Override
@@ -48,6 +46,11 @@ public class MethodBaseData implements IMethodEnvironmentData{
 	@Override
 	public IModel<DisplayMode> getDisplayModeModel() {
 		return displayModeModel;
+	}
+
+	@Override
+	public MethodPlace getPlace() {
+		return place;
 	}
 
 

@@ -11,6 +11,8 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
+import org.orienteer.core.method.MethodPanel;
+import org.orienteer.core.method.MethodPlace;
 
 /**
  * {@link AbstractToolbar} to collect {@link Command}s
@@ -21,6 +23,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 {
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
+	private MethodPanel methodPanel;
     public DataTableCommandsToolbar(DataTable<T, ?> table)
     {
         super(table);
@@ -29,6 +32,9 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
         commands = new RepeatingView("commands");
         span.add(commands);
         add(span);
+        
+		methodPanel = new MethodPanel("methodPanel", table.getDefaultModel(),MethodPlace.DATA_TABLE);
+		span.add(methodPanel);
     }
 
     @Override

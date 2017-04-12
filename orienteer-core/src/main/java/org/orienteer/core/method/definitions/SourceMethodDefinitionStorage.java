@@ -10,7 +10,6 @@ import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodDefinitionStorage;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.MethodStorage;
-import org.reflections.Reflections;
 
 /**
  * 

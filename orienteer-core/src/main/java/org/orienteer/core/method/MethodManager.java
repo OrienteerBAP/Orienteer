@@ -1,7 +1,6 @@
 package org.orienteer.core.method;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.Set;
 
 import org.orienteer.core.method.definitions.SourceMethodDefinitionStorage;
 import org.orienteer.core.module.IOrienteerModule;
-import org.orienteer.core.widget.IWidgetType;
-
 import com.google.common.collect.TreeMultiset;
 
 /**

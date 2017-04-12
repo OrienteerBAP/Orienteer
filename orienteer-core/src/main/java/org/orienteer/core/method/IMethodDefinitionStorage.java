@@ -1,7 +1,6 @@
 package org.orienteer.core.method;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * 

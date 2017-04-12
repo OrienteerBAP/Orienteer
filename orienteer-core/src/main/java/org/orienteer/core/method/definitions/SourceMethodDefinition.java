@@ -9,7 +9,13 @@ import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.Method;
 import org.orienteer.core.method.Filter;
-
+/**
+ * {@link IMethodDefinition} implementation for Java source method definitions
+ * 
+ * Using annotation {@link Method} for define metadata. 
+ * 
+ *
+ */
 public class SourceMethodDefinition implements IMethodDefinition{
 	private Class<? extends IMethod> methodClass;
 	private List<IMethodFilter> filters;

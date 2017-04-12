@@ -31,4 +31,10 @@ public interface IMethodEnvironmentData {
 	 * @return
 	 */
 	public IModel<DisplayMode> getDisplayModeModel();
+	/**
+	 * Current place
+	 * 
+	 * @return
+	 */
+	public MethodPlace getPlace();
 }

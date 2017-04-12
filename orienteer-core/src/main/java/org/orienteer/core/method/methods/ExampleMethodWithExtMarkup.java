@@ -4,17 +4,25 @@ import java.io.Serializable;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.method.Filter;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.Method;
-import org.orienteer.core.method.filters.WidgetTypeFilter;
+import org.orienteer.core.method.filters.DisallowFilter;
+
+/**
+ * 
+ * Example method with external markup.
+ * More flexible than internal markup.
+ * Using for complex methods.
+ */
 
 @Method(order=2,filters={
-		//@Filter(fClass = WidgetTypeFilter.class, fData = "parameters")
+		@Filter(fClass = DisallowFilter.class, fData = ""), // not need to show this method outside development
+		//@Filter(fClass = WidgetTypeFilter.class, fData = "parameters|list-all"),
+		//@Filter(fClass = DisplayModeFilter.class, fData = "VIEW"),
+		//@Filter(fClass = OEntityFilter.class, fData = "OUser")
+		//@Filter(fClass = PlaceFilter.class, fData = "ACTIONS|DATA_TABLE|STRUCTURE_TABLE"),
 })
 public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 	/**
