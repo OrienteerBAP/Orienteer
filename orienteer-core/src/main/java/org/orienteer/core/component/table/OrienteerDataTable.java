@@ -1,6 +1,5 @@
 package org.orienteer.core.component.table;
 
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
@@ -16,7 +15,6 @@ import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.filter.IDataFilter;
 import org.orienteer.core.component.table.filter.IFilterSupportComponent;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
@@ -75,21 +73,17 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	{
 		super(id, columns, dataProvider, rowsPerPage);
 		addTopToolbar(commandsToolbar= new DataTableCommandsToolbar<T>(this));
-		addTopToolbar(filterToolbar = new DataTableFilterToolbar<T, S>(this));
 		addTopToolbar(headersToolbar = new AjaxFallbackHeadersToolbar<S>(this, dataProvider));
 		addBottomToolbar(navigationToolbar = new OrienteerNavigationToolbar(this));
 		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
 		setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
 		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
-		filterToolbar.setVisible(false);
 	}
 
-
 	@Override
-	public void setFilter(IDataFilter<?> dataFilter, IModel<OClass> classModel, IModel<DisplayMode> modeModel) {
-		filterToolbar.setDataFilter(dataFilter, classModel);
-		filterToolbar.setVisible(true);
+	public void setFilter(IDataFilter dataFilter) {
+		addTopToolbar(filterToolbar = new DataTableFilterToolbar<>(this, dataFilter));
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {
@@ -175,11 +169,5 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	protected Item<T> newRowItem(final String id, final int index, final IModel<T> model)
 	{
 		return new MetaContextItem<T, Object>(id, index, model);
-	}
-
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		filterToolbar.updateProvider();
 	}
 }

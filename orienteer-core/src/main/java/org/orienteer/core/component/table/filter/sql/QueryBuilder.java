@@ -1,4 +1,4 @@
-package org.orienteer.core.component.table.filter;
+package org.orienteer.core.component.table.filter.sql;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.HashBasedTable;
@@ -30,26 +30,21 @@ public class QueryBuilder {
 
     private final String className;
 
-    public QueryBuilder(Map<OProperty, IModel<?>> propertyFilters) {
+    public QueryBuilder(Map<IModel<OProperty>, IModel<?>> propertyFilters) {
         filterTable = HashBasedTable.create();
-        for (OProperty property : propertyFilters.keySet()) {
-            filterTable.put(property.getName(), property.getType(), propertyFilters.get(property));
+        for (IModel<OProperty> property : propertyFilters.keySet()) {
+            OProperty oProperty = property.getObject();
+            filterTable.put(oProperty.getName(), oProperty.getType(), propertyFilters.get(property));
         }
-        this.className = getOClassName(propertyFilters);
+        Iterator<IModel<OProperty>> iterator = propertyFilters.keySet().iterator();
+        if (iterator.hasNext()) {
+            this.className = iterator.next().getObject().getOwnerClass().getName();
+        } else this.className = "";
     }
 
     public QueryBuilder(Table<String, OType, IModel<?>> filterTable, String className) {
         this.filterTable = filterTable;
         this.className = className;
-    }
-
-    private String getOClassName(Map<OProperty, ?> properties) {
-        String name = "";
-        Iterator<OProperty> iterator = properties.keySet().iterator();
-        if (iterator.hasNext()) {
-            name = iterator.next().getOwnerClass().getName();
-        }
-        return name;
     }
 
     public String build() {

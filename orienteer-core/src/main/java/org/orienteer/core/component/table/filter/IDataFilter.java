@@ -9,9 +9,10 @@ import java.util.Map;
 
 /**
  * @author Vitaliy Gonchar
- * @param <F> type of filter parameter
  */
-public interface IDataFilter<F> extends IClusterable {
-    void updateDataProvider(Map<OProperty, IModel<?>> propertyFilters);
+public interface IDataFilter extends IClusterable {
+    Map<IModel<OProperty>, IModel<?>> getDataFilters();
+    void updateDataProvider();
+    IModel<OProperty> getOPropertyModelByName(String name);
     IVisualizer getVisualizer();
 }

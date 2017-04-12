@@ -33,11 +33,12 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
 		Form<ODocument> form = new Form<ODocument>("form");
-		final OrientDbSqlDataProvider<ODocument> provider = new OrientDbSqlDataProvider<>("select from "+getModelObject().getName());
+		final OrientDbSqlDataProvider<ODocument> provider
+				= new OrientDbSqlDataProvider<>("select from "+getModelObject().getName(), getModel());
 		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
-		table.setFilter(provider, getModel(), modeModel);
+		table.setFilter(provider);
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
 		table.addCommand(new EditODocumentsCommand(table, modeModel, getModel()));
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));
