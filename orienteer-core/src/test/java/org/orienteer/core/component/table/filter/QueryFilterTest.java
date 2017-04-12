@@ -13,6 +13,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
+import org.orienteer.core.component.table.filter.sql.QueryBuilder;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

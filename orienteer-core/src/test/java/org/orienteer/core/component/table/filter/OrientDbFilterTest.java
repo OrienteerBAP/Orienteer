@@ -22,6 +22,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -41,15 +42,17 @@ public class OrientDbFilterTest {
     static final String CLASS_NAME = "____OrienteerFilterTestClass____";
     static final int DOCUMENTS_NUM = 2;
 
-    private static final String ORIENTEER_TEST_CLASS = "OModule";
-
     static String dateFormat;
     static String dateTimeFormat;
+
+    private static final String ORIENTEER_TEST_CLASS = "OModule";
 
     @BeforeClass
     public static void initialize() {
         filterTest = new FilterTest();
         manager = new TestOClassManager(CLASS_NAME, DOCUMENTS_NUM);
+        dateFormat = getDateFormat(OType.DATE);
+        dateTimeFormat = getDateFormat(OType.DATETIME);
     }
 
     @AfterClass
@@ -72,8 +75,6 @@ public class OrientDbFilterTest {
     @SuppressWarnings("unchecked")
     public void testPrimitives() {
         initialize();
-        dateFormat = getDateFormat(OType.DATE);
-        dateTimeFormat = getDateFormat(OType.DATETIME);
         OClass testClass = manager.createAndGetOClassWithPrimitives();
         QueryFilterTest queryFilter = new QueryFilterTest(testClass.getName());
         Table<String, OType, IModel<?>> filterTable = queryFilter.getFilterTable();
@@ -83,7 +84,6 @@ public class OrientDbFilterTest {
         IModel<String> stringModel = Model.of();
         IModel<Number> numberModel = Model.of();
         IModel<Boolean> booleanModel = Model.of();
-        IModel<Date> dateModel = Model.of();
         for (String name : filterTable.rowKeySet()) {
             for (OType type: filterTable.row(name).keySet()) {
                 IModel<?> model = filterTable.row(name).get(type);
@@ -109,7 +109,6 @@ public class OrientDbFilterTest {
                     case DATE:
                         testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATE, true);
                         model.setObject(null);
-                        dateModel = (IModel<Date>) model;
                         break;
                     case DATETIME:
                         manager.showDocuments();
@@ -133,6 +132,35 @@ public class OrientDbFilterTest {
         stringModel.setObject(stringFilters.get(0));
         LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         printODocuments(queryFilter.buildQueryAndExecute());
+    }
+
+    @Test
+    public void testEmbedded() {
+        OClass testClass = manager.createAndGetOClassWithEmbeded(ORIENTEER_TEST_CLASS);
+        QueryFilterTest queryFilter = new QueryFilterTest(testClass.getName());
+        Table<String, OType, IModel<?>> filterTable = queryFilter.getFilterTable();
+        Map<String, String> successEmbeddedString = manager.getSuccessEmbeddedString();
+        Map<String, Integer> successEmbeddedInteger = manager.getSuccessEmbeddedInteger();
+        Map<String, Boolean> successEmbeddedBoolean = manager.getSuccessEmbeddedBoolean();
+        for (String name : filterTable.rowKeySet()) {
+            for (OType type : filterTable.row(name).keySet()) {
+                IModel<?> model = filterTable.row(name).get(type);
+                switch (type) {
+                    case EMBEDDED:
+
+                        break;
+                    case EMBEDDEDLIST:
+
+                        break;
+                    case EMBEDDEDSET:
+
+                        break;
+                    case EMBEDDEDMAP:
+
+                        break;
+                }
+            }
+        }
     }
 
     private <V> void testFilters(String propertyName, IModel<V> model,
@@ -251,7 +279,7 @@ public class OrientDbFilterTest {
         return df.format(date);
     }
 
-    private String getDateFormat(final OType type) {
+    private static String getDateFormat(final OType type) {
         return new DBClosure<String>() {
             @Override
             protected String execute(ODatabaseDocument db) {

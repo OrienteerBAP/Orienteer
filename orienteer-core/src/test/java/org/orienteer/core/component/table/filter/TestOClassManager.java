@@ -31,6 +31,9 @@ class TestOClassManager {
     private List<Number> successNumberFilters = Lists.newArrayList();
     private List<Date>   successDateFilters   = Lists.newArrayList();
 
+    private Map<String, String> successEmbeddedString = Maps.newHashMap();
+    private Map<String, Integer> successEmbeddedInteger = Maps.newHashMap();
+    private Map<String, Boolean> successEmbeddedBoolean = Maps.newHashMap();
 
     private final String linkNameStart     = "link-";
     private final String embeddedNameStart = "embedded-";
@@ -227,6 +230,12 @@ class TestOClassManager {
     private ODocument createEmbeddedDocument(OClass embeddedClass, int id) {
         ODocument document = new ODocument(embeddedClass);
         buildDocumentWithPrimitives(document, embeddedClass, id);
+        successEmbeddedString.put(OType.STRING.toString(),
+                (String) document.field(OType.STRING.toString(), OType.STRING));
+        successEmbeddedInteger.put(OType.INTEGER.toString(),
+                (Integer) document.field(OType.INTEGER.toString(), OType.INTEGER));
+        successEmbeddedBoolean.put(OType.BOOLEAN.toString(),
+                (Boolean) document.field(OType.BOOLEAN.toString(), OType.BOOLEAN));
         return document;
     }
 
@@ -311,5 +320,17 @@ class TestOClassManager {
 
     public List<Date> getSuccessDateFilters() {
         return successDateFilters;
+    }
+
+    public Map<String, String> getSuccessEmbeddedString() {
+        return successEmbeddedString;
+    }
+
+    public Map<String, Integer> getSuccessEmbeddedInteger() {
+        return successEmbeddedInteger;
+    }
+
+    public Map<String, Boolean> getSuccessEmbeddedBoolean() {
+        return successEmbeddedBoolean;
     }
 }
