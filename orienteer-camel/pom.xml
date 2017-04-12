@@ -23,7 +23,7 @@
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-core</artifactId>
-			<version>2.17.3</version>
+			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.orienteer.camel.component</groupId>
@@ -33,29 +33,29 @@
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-jdbc</artifactId>
-			<version>2.17.3</version>
+			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-gson</artifactId>
-			<version>2.17.3</version>
+			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-xstream</artifactId>
-			<version>2.17.3</version>
+			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-xmljson</artifactId>
-			<version>2.17.3</version>
+			<version>${camel.version}</version>
 			<!-- Use the same version as camel-core, but remember that this component 
 				is only available from 2.10 onwards -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-csv</artifactId>
-			<version>2.17.3</version>
+			<version>${camel.version}</version>
 		</dependency>
 
 		<!-- And also XOM must be included. XOM cannot be included by default due 
@@ -219,4 +219,7 @@
 			</snapshots>
 		</repository>
 	</repositories>
+	<properties>
+		<camel.version>2.17.6</camel.version>
+	</properties>
 </project>
