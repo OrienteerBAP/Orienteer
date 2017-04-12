@@ -12,7 +12,7 @@ import org.orienteer.core.method.IMethodFilter;
 
 public class DisplayModeFilter implements IMethodFilter{
 
-	DisplayMode filterData;
+	private DisplayMode filterData;
 	
 	@Override
 	public void setFilterData(String filterData) {

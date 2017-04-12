@@ -28,7 +28,7 @@ public class MethodPanel extends Panel implements IDisplayModeAware{
 
 	private AbstractWidget<?> widget;
 	
-	MethodPlace place;
+	private MethodPlace place;
 	
 
 	public MethodPanel(String id, IModel<?> displayObjectModel,MethodPlace place) {

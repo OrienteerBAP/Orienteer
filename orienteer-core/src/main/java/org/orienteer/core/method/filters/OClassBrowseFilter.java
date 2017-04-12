@@ -17,9 +17,7 @@ public class OClassBrowseFilter extends AbstractStringFilter{
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
 		if (model!=null && model.getObject()!=null && model.getObject() instanceof OClass){
-			if (((OClass) (model.getObject())).isSubClassOf(this.filterData)){
-				return true;
-			}
+			return ((OClass) (model.getObject())).isSubClassOf(this.filterData);
 		}
 		return false;
 	}

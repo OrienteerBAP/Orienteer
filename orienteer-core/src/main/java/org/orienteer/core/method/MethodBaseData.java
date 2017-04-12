@@ -12,11 +12,11 @@ import org.orienteer.core.widget.AbstractWidget;
  */
 public class MethodBaseData implements IMethodEnvironmentData{
 
-	IModel<?> objModel;
-	AbstractWidget<?> widget;
-	String widgetType;
-	IModel<DisplayMode> displayModeModel;
-	MethodPlace place;
+	private IModel<?> objModel;
+	private AbstractWidget<?> widget;
+	private String widgetType;
+	private IModel<DisplayMode> displayModeModel;
+	private MethodPlace place;
 	
 	public MethodBaseData(IModel<?> objModel,AbstractWidget<?> widget,IModel<DisplayMode> displayModeModel,MethodPlace place) {
 		this.objModel = objModel;

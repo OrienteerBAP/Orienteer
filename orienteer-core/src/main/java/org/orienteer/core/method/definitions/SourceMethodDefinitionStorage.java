@@ -18,8 +18,8 @@ import org.orienteer.core.method.MethodStorage;
  */
 public class SourceMethodDefinitionStorage implements IMethodDefinitionStorage{
 
-	Set<IMethodDefinition> definitions;
-	MethodStorage methodStorage;
+	private Set<IMethodDefinition> definitions;
+	private MethodStorage methodStorage;
 	
 	public SourceMethodDefinitionStorage(MethodStorage storage) {
 		setMethodStorage(storage);

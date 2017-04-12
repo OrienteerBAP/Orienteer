@@ -24,10 +24,7 @@ public class SourceMethodDefinition implements IMethodDefinition{
 	
 	
 	public static boolean isSupportedClass(Class<? extends IMethod> methodClass){
-		if (methodClass.isAnnotationPresent(Method.class)){
-			return true;
-		}
-		return false;
+		return methodClass.isAnnotationPresent(Method.class);
 	} 
 	
 	public SourceMethodDefinition(Class<? extends IMethod> methodClass) throws InstantiationException, IllegalAccessException {

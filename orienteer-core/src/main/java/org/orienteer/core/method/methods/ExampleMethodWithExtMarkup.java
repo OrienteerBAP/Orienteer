@@ -35,7 +35,7 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 
 	@Override
 	public void initialize(IMethodEnvironmentData envData) {
-		
+		//TODO: stub
 	}
 
 	@Override

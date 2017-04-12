@@ -17,8 +17,8 @@ import com.google.common.collect.TreeMultiset;
  */
 public class MethodManager {
 	
-	MethodStorage methodStorage;
-	Set<IMethodDefinitionStorage> definitionsStorages;
+	private MethodStorage methodStorage;
+	private Set<IMethodDefinitionStorage> definitionsStorages;
 	
 	private static final MethodManager INSTANCE = new MethodManager();
 

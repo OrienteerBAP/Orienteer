@@ -14,8 +14,8 @@ public class MethodStorage {
 	
 	private static final String CORE_PATH = "org.orienteer.core";
 
-	Set<Class<? extends IMethod>> methodClasses;
-	Set<String> paths;
+	private Set<Class<? extends IMethod>> methodClasses;
+	private Set<String> paths;
 	
 	public MethodStorage() {
 		paths = new HashSet<String>();

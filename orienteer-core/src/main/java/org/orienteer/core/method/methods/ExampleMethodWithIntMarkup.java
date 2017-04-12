@@ -36,6 +36,7 @@ public class ExampleMethodWithIntMarkup extends Panel implements IMethod{
 	
 	@Override
 	public void initialize(IMethodEnvironmentData envData) {
+		//TODO: stub
 	}
 
 	@Override

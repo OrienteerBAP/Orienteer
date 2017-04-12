@@ -9,13 +9,7 @@ import org.orienteer.core.method.IMethodFilter;
  *
  */
 
-public class WidgetTypeFilter implements IMethodFilter{
-
-	String filterData; 
-	@Override
-	public void setFilterData(String filterData) {
-		this.filterData = filterData ;
-	}
+public class WidgetTypeFilter extends AbstractStringFilter{
 
 	@Override
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {

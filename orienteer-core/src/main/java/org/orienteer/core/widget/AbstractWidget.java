@@ -49,7 +49,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private IModel<ODocument> widgetDocumentModel;
 	
-	MethodPanel methodPanel;
+	private MethodPanel methodPanel;
 	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);

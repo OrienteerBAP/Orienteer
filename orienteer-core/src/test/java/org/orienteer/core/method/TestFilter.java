@@ -2,7 +2,7 @@ package org.orienteer.core.method;
 
 public class TestFilter implements IMethodFilter{
 
-	String filterData;
+	private String filterData;
 	
 	@Override
 	public void setFilterData(String filterData) {
@@ -14,7 +14,7 @@ public class TestFilter implements IMethodFilter{
 		return (dataObject.getCurrentWidget()==null && 
 				dataObject.getDisplayModeModel()==null && 
 				dataObject.getDisplayObjectModel()==null &&
-				filterData.equals("testData")
+				"testData".equals(filterData)
 				);
 	}
 
