@@ -15,9 +15,7 @@ public class ODocumentFilter extends AbstractStringFilter{
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
 		if (model!=null && model.getObject()!=null && model.getObject() instanceof ODocument){
-			if (((ODocument) (model.getObject())).getSchemaClass().isSubClassOf(this.filterData)){
-				return true;
-			}
+			return ((ODocument) (model.getObject())).getSchemaClass().isSubClassOf(this.filterData);
 		}
 		return false;
 	}
