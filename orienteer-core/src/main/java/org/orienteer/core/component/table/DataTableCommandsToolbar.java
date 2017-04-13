@@ -79,7 +79,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
             }
         };
 		Boolean ret = commands.visitChildren(visitor);
-		if (ret==null || ret==false){
+		if (ret==null || !ret){
 			ret = methods.visitChildren(visitor);
 		}
 		setVisible(ret!=null?ret:false);

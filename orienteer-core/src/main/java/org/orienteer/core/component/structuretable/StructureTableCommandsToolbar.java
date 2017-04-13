@@ -67,7 +67,7 @@ public class StructureTableCommandsToolbar<P> extends
             }
         };
 		Boolean ret = commands.visitChildren(visitor);
-		if (ret==null || ret==false){
+		if (ret==null || !ret){
 			ret = methods.visitChildren(visitor);
 		}
 		setVisible(ret!=null?ret:false);

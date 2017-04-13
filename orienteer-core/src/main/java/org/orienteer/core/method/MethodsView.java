@@ -66,5 +66,10 @@ public class MethodsView extends RepeatingView{
 		bootstrapTypeOverriden = true;
 		return this;
 	}
+
+
+	public List<IMethod> getMethods() {
+		return methods;
+	}
 	
 }
