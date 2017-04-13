@@ -1,25 +1,25 @@
 package org.orienteer.core.component.table.filter;
 
-import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Table;
+import com.google.common.collect.Maps;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
-import org.orienteer.core.component.table.filter.sql.QueryBuilder;
+import org.orienteer.core.component.table.filter.sql.OQueryBuilder;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,39 +29,27 @@ public class QueryFilterTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryFilterTest.class);
 
-    private final Table<String, OType, IModel<?>> filterTable;
-    private final QueryBuilder builder;
+    private final OQueryBuilder builder;
+    private final Map<IModel<OProperty>, IModel<?>> filteredValues;
+
 
     public QueryFilterTest(final String className) {
         OClass oClass = Args.notNull(getOClassByName(className), "oClass");
-        filterTable = HashBasedTable.create();
+        filteredValues = Maps.newHashMap();
         for (OProperty property : oClass.properties()) {
-            filterTable.put(property.getName(), property.getType(), Model.of());
+            filteredValues.put(new OPropertyModel(property), Model.of());
         }
-        builder = new QueryBuilder(filterTable, oClass.getName());
+
+        builder = new OQueryBuilder(oClass.getName());
     }
 
-    public Table<String, OType, IModel<?>> getFilterTable() {
-        return filterTable;
+    public Map<IModel<OProperty>, IModel<?>> getFilteredValues() {
+        return this.filteredValues;
     }
 
     public List<ODocument> buildQueryAndExecute() {
-        String query = builder.build();
+        String query = builder.build(filteredValues);
         return execute(query);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<String> testStringQuery(String propertyName, List<String> filters) {
-        IModel<String> name = (IModel<String>) filterTable.row(propertyName).get(OType.STRING);
-        if (name == null)
-            throw new IllegalStateException("Cannot find property with name " + propertyName + " in table");
-        List<String> result = Lists.newArrayList();
-        for (String filter : filters) {
-            name.setObject(filter);
-            String query = builder.build();
-            result.addAll(executeAndPrintResult(query));
-        }
-        return result;
     }
 
     private List<String> executeAndPrintResult(String query) {

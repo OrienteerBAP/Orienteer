@@ -1,6 +1,8 @@
 package org.orienteer.core.component.table;
 
 import com.orientechnologies.orient.core.storage.OCluster;
+import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
@@ -30,5 +32,10 @@ public class OClusterMetaColumn extends AbstractModeMetaColumn<OCluster, Display
     @Override
     protected IModel<String> newLabelModel() {
         return new SimpleNamingModel<String>("cluster."+ getCriteryModel().getObject().toLowerCase());
+    }
+
+    @Override
+    public Component getFilter(String componentId, FilterForm<?> form) {
+        return null;
     }
 }

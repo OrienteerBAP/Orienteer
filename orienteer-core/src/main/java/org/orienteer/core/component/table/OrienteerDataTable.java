@@ -6,6 +6,8 @@ import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.*;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
@@ -15,8 +17,8 @@ import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
-import org.orienteer.core.component.table.filter.IDataFilter;
 import org.orienteer.core.component.table.filter.IFilterSupportComponent;
+import org.orienteer.core.component.table.filter.IODataFilter;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
 import org.orienteer.core.event.ActionPerformedEvent;
 
@@ -30,7 +32,7 @@ import java.util.List;
  * @param <S>
  *            the type of the sorting parameter
  */
-public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>, IFilterSupportComponent
+public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>, IFilterSupportComponent<T, S>
 {
 	/**
 	 * {@link Item} that allows every row to be an {@link IMetaContext}
@@ -64,7 +66,6 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	protected AjaxFallbackHeadersToolbar<S> headersToolbar;
 	protected OrienteerNavigationToolbar navigationToolbar;
 	protected NoRecordsToolbar noRecordsToolbar;
-	protected DataTableFilterToolbar<T, S> filterToolbar;
 
 	private IModel<String> captionModel;
 	
@@ -82,8 +83,8 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	}
 
 	@Override
-	public void setFilter(IDataFilter dataFilter) {
-		addTopToolbar(filterToolbar = new DataTableFilterToolbar<>(this, dataFilter));
+	public void setTableFilterForm(FilterForm<IODataFilter<T, S>> filterForm) {
+		addTopToolbar(new FilterToolbar(this, filterForm));
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {
@@ -98,7 +99,6 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	{
 		return noRecordsToolbar;
 	}
-
 
 	@Override
 	public OrienteerDataTable<T, S> addCommand(Command<T> command)

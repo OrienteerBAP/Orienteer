@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.BootstrapSize;
@@ -67,5 +68,10 @@ public class DeleteRowCommandColumn extends AbstractModeMetaColumn<ODocument, Di
     @Override
     protected IModel<String> newLabelModel() {
         return new Model<String>("");
+    }
+
+    @Override
+    public Component getFilter(String componentId, FilterForm<?> form) {
+        return null;
     }
 }

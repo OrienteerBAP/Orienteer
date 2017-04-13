@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.OClassMetaPanel;
@@ -66,5 +67,10 @@ public class OPropertyValueComboBoxColumn<T> extends AbstractModeMetaColumn<ODoc
     @Override
     public String getCssClass() {
         return "combobox-column";
+    }
+
+    @Override
+    public Component getFilter(String componentId, FilterForm<?> form) {
+        return null;
     }
 }

@@ -1,10 +1,10 @@
 package org.orienteer.core.component.table.filter;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Table;
 import com.orientechnologies.orient.core.db.ODatabase;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
@@ -77,55 +77,56 @@ public class OrientDbFilterTest {
         initialize();
         OClass testClass = manager.createAndGetOClassWithPrimitives();
         QueryFilterTest queryFilter = new QueryFilterTest(testClass.getName());
-        Table<String, OType, IModel<?>> filterTable = queryFilter.getFilterTable();
+        Map<IModel<OProperty>, IModel<?>> filteredValues = queryFilter.getFilteredValues();
         List<String> stringFilters = manager.getSuccessStringFilters();
         List<Number> numberFilters = manager.getSuccessNumberFilters();
         List<Date> dateFilters = manager.getSuccessDateFilters();
         IModel<String> stringModel = Model.of();
         IModel<Number> numberModel = Model.of();
         IModel<Boolean> booleanModel = Model.of();
-        for (String name : filterTable.rowKeySet()) {
-            for (OType type: filterTable.row(name).keySet()) {
-                IModel<?> model = filterTable.row(name).get(type);
-                switch (type) {
-                    case BOOLEAN:
-                        testFilters(name, (IModel<Boolean>) model, Lists.newArrayList(true, false), queryFilter, OType.BOOLEAN,true);
-                        model.setObject(null);
-                        booleanModel = (IModel<Boolean>) model;
-                        break;
-                    case INTEGER:
-                    case SHORT:
-                    case BYTE:
-                    case LONG:
-                    case DECIMAL:
-                    case FLOAT:
-                    case DOUBLE:
-                        testFilters(name, (IModel<Number>) model, numberFilters, queryFilter, OType.INTEGER,true);
-                        testFilters(name, (IModel<Number>) model,
-                                Lists.<Number>newArrayList(-1, -2, -100, 12345), queryFilter, OType.INTEGER,false);
-                        model.setObject(null);
-                        numberModel = (IModel<Number>) model;
-                        break;
-                    case DATE:
-                        testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATE, true);
-                        model.setObject(null);
-                        break;
-                    case DATETIME:
-                        manager.showDocuments();
-                        testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATETIME, true);
-                        model.setObject(null);
-                        break;
-                    case STRING:
-                        testFilters(name, (IModel<String>) model, stringFilters, queryFilter, OType.STRING,true);
-                        testFilters(name, (IModel<String>) model, Lists.newArrayList("abcd", "asbcd%;sd", "1234"), queryFilter, OType.STRING,false);
-                        model.setObject(null);
-                        stringModel = (IModel<String>) model;
-                        break;
-                    case BINARY:
-                        break;
-                }
+        for (IModel<OProperty> propertyModel : filteredValues.keySet()) {
+            OProperty property = propertyModel.getObject();
+            IModel<?> model = filteredValues.get(propertyModel);
+            String name = property.getName();
+            switch (property.getType()) {
+                case BOOLEAN:
+                    testFilters(name, (IModel<Boolean>) model, Lists.newArrayList(true, false), queryFilter, OType.BOOLEAN,true);
+                    model.setObject(null);
+                    booleanModel = (IModel<Boolean>) model;
+                    break;
+                case INTEGER:
+                case SHORT:
+                case BYTE:
+                case LONG:
+                case DECIMAL:
+                case FLOAT:
+                case DOUBLE:
+                    testFilters(name, (IModel<Number>) model, numberFilters, queryFilter, OType.INTEGER,true);
+                    testFilters(name, (IModel<Number>) model,
+                            Lists.<Number>newArrayList(-1, -2, -100, 12345), queryFilter, OType.INTEGER,false);
+                    model.setObject(null);
+                    numberModel = (IModel<Number>) model;
+                    break;
+                case DATE:
+                    testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATE, true);
+                    model.setObject(null);
+                    break;
+                case DATETIME:
+                    manager.showDocuments();
+                    testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATETIME, true);
+                    model.setObject(null);
+                    break;
+                case STRING:
+                    testFilters(name, (IModel<String>) model, stringFilters, queryFilter, OType.STRING,true);
+                    testFilters(name, (IModel<String>) model, Lists.newArrayList("abcd", "asbcd%;sd", "1234"), queryFilter, OType.STRING,false);
+                    model.setObject(null);
+                    stringModel = (IModel<String>) model;
+                    break;
+                case BINARY:
+                    break;
             }
         }
+
 
         numberModel.setObject(numberFilters.get(0));
         booleanModel.setObject(true);
@@ -135,32 +136,13 @@ public class OrientDbFilterTest {
     }
 
     @Test
+    @Ignore
     public void testEmbedded() {
         OClass testClass = manager.createAndGetOClassWithEmbeded(ORIENTEER_TEST_CLASS);
         QueryFilterTest queryFilter = new QueryFilterTest(testClass.getName());
-        Table<String, OType, IModel<?>> filterTable = queryFilter.getFilterTable();
         Map<String, String> successEmbeddedString = manager.getSuccessEmbeddedString();
         Map<String, Integer> successEmbeddedInteger = manager.getSuccessEmbeddedInteger();
         Map<String, Boolean> successEmbeddedBoolean = manager.getSuccessEmbeddedBoolean();
-        for (String name : filterTable.rowKeySet()) {
-            for (OType type : filterTable.row(name).keySet()) {
-                IModel<?> model = filterTable.row(name).get(type);
-                switch (type) {
-                    case EMBEDDED:
-
-                        break;
-                    case EMBEDDEDLIST:
-
-                        break;
-                    case EMBEDDEDSET:
-
-                        break;
-                    case EMBEDDEDMAP:
-
-                        break;
-                }
-            }
-        }
     }
 
     private <V> void testFilters(String propertyName, IModel<V> model,
