@@ -8,6 +8,7 @@ import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.Method;
+import org.orienteer.core.method.filters.SelectorFilter;
 import org.orienteer.core.method.Filter;
 /**
  * {@link IMethodDefinition} implementation for Java source method definitions
@@ -37,6 +38,12 @@ public class SourceMethodDefinition implements IMethodDefinition{
 				newFilter.setFilterData(iMethodFilter.fData());
 				filters.add(newFilter);
 			}
+		}
+		if (!methodAnnotation.selector().isEmpty()){
+			SelectorFilter selectorFilter = new SelectorFilter();
+			selectorFilter.setFilterData(methodAnnotation.selector());
+			filters.add(selectorFilter);
+			
 		}
 		order = methodAnnotation.order();
 		methodId = methodClass.getName();

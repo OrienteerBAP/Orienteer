@@ -1,7 +1,6 @@
 package org.orienteer.core.method;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**
@@ -24,12 +23,6 @@ public class MethodEmptyData implements IMethodEnvironmentData{
 
 	@Override
 	public String getCurrentWidgetType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IModel<DisplayMode> getDisplayModeModel() {
 		// TODO Auto-generated method stub
 		return null;
 	}

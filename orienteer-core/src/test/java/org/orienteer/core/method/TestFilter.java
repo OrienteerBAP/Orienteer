@@ -12,7 +12,6 @@ public class TestFilter implements IMethodFilter{
 	@Override
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
 		return (dataObject.getCurrentWidget()==null && 
-				dataObject.getDisplayModeModel()==null && 
 				dataObject.getDisplayObjectModel()==null &&
 				"testData".equals(filterData)
 				);

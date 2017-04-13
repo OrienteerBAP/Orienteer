@@ -7,9 +7,11 @@ import java.lang.annotation.Target;
 
 /**
  * 
- * All methods should implement {@link IMethod} interface
+ * All methods should implement {@link IMethod} 
  * 
  * Method will display only if all filters passed
+ * 
+ * All filters should implement {@link IMethodFilter}
  * 
  * Example:
  * 
@@ -22,6 +24,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface Method{
+	public String selector() default ""; // hardcode link to SelectorFilter
 	public int order() default 0;
 	Filter[] filters() default {};
 }

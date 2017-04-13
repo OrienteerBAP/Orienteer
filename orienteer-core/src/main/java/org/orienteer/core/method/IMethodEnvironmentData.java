@@ -1,7 +1,6 @@
 package org.orienteer.core.method;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**
@@ -26,11 +25,6 @@ public interface IMethodEnvironmentData {
 	 * @return
 	 */
 	public String getCurrentWidgetType();
-	/**
-	 * {@link IModel} for current {@link DisplayMode}
-	 * @return
-	 */
-	public IModel<DisplayMode> getDisplayModeModel();
 	/**
 	 * Current place
 	 * 

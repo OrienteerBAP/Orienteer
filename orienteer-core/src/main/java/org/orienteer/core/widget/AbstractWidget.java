@@ -17,7 +17,7 @@ import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
-import org.orienteer.core.method.MethodPanel;
+import org.orienteer.core.method.MethodsView;
 import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
@@ -49,14 +49,14 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private IModel<ODocument> widgetDocumentModel;
 	
-	private MethodPanel methodPanel;
-	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
 		this.widgetDocumentModel = widgetDocumentModel;
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
 		add(commands = new RepeatingView("commands"));
+		add(new MethodsView("methods", model,MethodPlace.ACTIONS).overrideBootstrapType(null));
+
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override
@@ -102,7 +102,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 			}
 		});
 		addCommand(new FullScreenCommand<T>(commands.newChildId()));
-		add(methodPanel = new MethodPanel("methodPanel", model,MethodPlace.ACTIONS));
 	}
 	
 	@Override
@@ -230,9 +229,5 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected OSchema getSchema() {
 		return OrientDbWebSession.get().getSchema();
-	}
-
-	public MethodPanel getMethodPanel() {
-		return methodPanel;
 	}
 }

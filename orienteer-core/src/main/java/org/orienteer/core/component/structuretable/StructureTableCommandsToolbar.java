@@ -6,6 +6,8 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
+import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.method.MethodPlace;
 
 /**
  * {@link AbstractStructureTableToolbar} to add {@link Command}s
@@ -17,12 +19,16 @@ public class StructureTableCommandsToolbar<P> extends
 {
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
+	private MethodsView methods;
 
 	public StructureTableCommandsToolbar(StructureTable<P, ?> table)
 	{
 		super(table);
         commands = new RepeatingView("commands");
         add(commands);
+		methods = new MethodsView("methods", getModel(),MethodPlace.STRUCTURE_TABLE);
+		add(methods);
+
 	}
 	
 	@Override
@@ -45,21 +51,25 @@ public class StructureTableCommandsToolbar<P> extends
     @Override
 	protected void onConfigure() {
 		super.onConfigure();
-		Boolean ret = commands.visitChildren(new IVisitor<Component, Boolean>()
-		        {
-		            public void component(Component component, IVisit<Boolean> visit)
-		            {
-		            	component.configure();
-		                if(component.determineVisibility())
-		                {
-		                    visit.stop(true);
-		                }
-		                else
-		                {
-		                	visit.dontGoDeeper();
-		                }
-		            }
-		        });
+		IVisitor<Component, Boolean> visitor = new IVisitor<Component, Boolean>()
+        {
+            public void component(Component component, IVisit<Boolean> visit)
+            {
+            	component.configure();
+                if(component.determineVisibility())
+                {
+                    visit.stop(true);
+                }
+                else
+                {
+                	visit.dontGoDeeper();
+                }
+            }
+        };
+		Boolean ret = commands.visitChildren(visitor);
+		if (ret==null || ret==false){
+			ret = methods.visitChildren(visitor);
+		}
 		setVisible(ret!=null?ret:false);
 	}
 
