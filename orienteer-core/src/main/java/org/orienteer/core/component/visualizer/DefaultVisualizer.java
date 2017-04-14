@@ -1,8 +1,10 @@
 package org.orienteer.core.component.visualizer;
 
-import java.io.Serializable;
-import java.util.*;
-
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.yui.calendar.DateField;
@@ -10,39 +12,18 @@ import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.component.meta.ODocumentMetaPanel;
-import org.orienteer.core.component.property.BinaryEditPanel;
-import org.orienteer.core.component.property.BinaryViewPanel;
-import org.orienteer.core.component.property.BooleanViewPanel;
-import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.property.EmbeddedCollectionEditPanel;
-import org.orienteer.core.component.property.EmbeddedCollectionViewPanel;
-import org.orienteer.core.component.property.EmbeddedDocumentPanel;
-import org.orienteer.core.component.property.EmbeddedMapEditPanel;
-import org.orienteer.core.component.property.EmbeddedMapViewPanel;
-import org.orienteer.core.component.property.LinkEditPanel;
-import org.orienteer.core.component.property.LinkViewPanel;
-import org.orienteer.core.component.property.LinksCollectionEditPanel;
-import org.orienteer.core.component.property.LinksCollectionViewPanel;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+import org.orienteer.core.component.property.*;
+import org.orienteer.core.component.property.filter.BooleanFilterPanel;
+import org.orienteer.core.component.property.filter.FilterOPropertyPanel;
 import org.orienteer.core.service.IOClassIntrospector;
-
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 
-import com.google.common.base.Predicate;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Default {@link IVisualizer}. Should cover all property types
@@ -144,5 +125,34 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 		IModel<OProperty> propertyModel = new OPropertyModel(virtualizedProperty);
 		IModel<V> valueModel = new DynamicPropertyValueModel<V>(documentModel, propertyModel);
 		return createComponent(id, mode, documentModel, propertyModel, oType, valueModel);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <V> Component createComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+		Component component;
+		OProperty property = propertyModel.getObject();
+		switch (property.getType()) {
+			case BOOLEAN:
+				component = new BooleanFilterPanel(id, (IModel<Boolean>) valueModel);
+				break;
+			case EMBEDDED:
+			case EMBEDDEDLIST:
+			case EMBEDDEDMAP:
+			case EMBEDDEDSET:
+			case LINK:
+			case LINKBAG:
+			case LINKLIST:
+			case LINKMAP:
+			case LINKSET:
+			case CUSTOM:
+			case BINARY:
+				component = null;
+				break;
+			default:
+				component = createComponent(id, DisplayMode.EDIT, null, propertyModel, valueModel);
+		}
+
+		return component != null ? new FilterOPropertyPanel(id, component) : component;
 	}
 }

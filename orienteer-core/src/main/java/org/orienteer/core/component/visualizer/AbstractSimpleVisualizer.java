@@ -1,17 +1,16 @@
 package org.orienteer.core.component.visualizer;
 
-import java.io.Serializable;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.util.lang.Args;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.Component;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Args;
-
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import org.orienteer.core.component.property.*;
 
 /**
  * Abstract {@link IVisualizer} to simplify stubbing
@@ -54,4 +53,8 @@ public abstract class AbstractSimpleVisualizer implements IVisualizer
 		return supportedTypes;
 	}
 
+	@Override
+	public <V> Component createComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+		return new Label(id, Model.of("No realisation for filtering component in current visualizer: " + getName()));
+	}
 }
