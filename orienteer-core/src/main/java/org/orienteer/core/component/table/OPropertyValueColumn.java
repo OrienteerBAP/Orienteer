@@ -10,7 +10,6 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.table.filter.DataFilter;
 import org.orienteer.core.component.table.filter.IODataFilter;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
@@ -22,6 +21,7 @@ import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, DisplayMode, OProperty, String>
 {
 	private static final long serialVersionUID = 1L;
+
 
 	public OPropertyValueColumn(OProperty oProperty, IModel<DisplayMode> modeModel)
 	{
@@ -57,14 +57,14 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Component getFilter(String componentId, FilterForm<?> form) {
-		IModel<OProperty> propertyModel = getCriteryModel();
+	public Component getFilter(final String componentId, FilterForm<?> form) {
+		final IModel<OProperty> propertyModel = getCriteryModel();
 		UIVisualizersRegistry registry = OrienteerWebApplication.lookupApplication().getUIVisualizersRegistry();
-		IVisualizer visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), DataFilter.PROPERTY.getName());
+		IVisualizer visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), "default");
 		IFilterStateLocator<IODataFilter<ODocument, String>> stateLocator =
 				(IFilterStateLocator<IODataFilter<ODocument, String>>) form.getStateLocator();
 		IODataFilter<ODocument, String> filterState = stateLocator.getFilterState();
-		IModel<?> model = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
-		return visualizer.createComponent(componentId, DisplayMode.EDIT, null, propertyModel, model);
+		IModel<?> valueModel = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
+		return visualizer.createComponentForFiltering(componentId, propertyModel, valueModel);
 	}
 }
