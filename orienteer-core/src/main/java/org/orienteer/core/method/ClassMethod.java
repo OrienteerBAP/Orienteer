@@ -13,6 +13,8 @@ import org.orienteer.core.method.methods.OClassMethod;
  * Method will display only if all filters passed
  * 
  * All filters should implement {@link IMethodFilter}
+ * 
+ * Java Class with this method SHOULD be named equals same OClass 
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
