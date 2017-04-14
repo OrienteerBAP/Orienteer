@@ -12,7 +12,8 @@ public abstract class AbstractStringFilter implements IMethodFilter{
 	protected String filterData;
 	
 	@Override
-	public void setFilterData(String filterData) {
+	public IMethodFilter setFilterData(String filterData) {
 		this.filterData = filterData;
+		return this;
 	}
 }

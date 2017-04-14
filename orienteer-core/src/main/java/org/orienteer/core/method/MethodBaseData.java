@@ -1,5 +1,7 @@
 package org.orienteer.core.method;
 
+import java.io.Serializable;
+
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
@@ -9,8 +11,10 @@ import org.orienteer.core.widget.AbstractWidget;
  * Any input parameters may be null.
  *
  */
-public class MethodBaseData implements IMethodEnvironmentData{
+public class MethodBaseData implements Serializable,IMethodEnvironmentData{
 
+	private static final long serialVersionUID = 1L;
+	
 	private IModel<?> objModel;
 	private AbstractWidget<?> widget;
 	private String widgetType;

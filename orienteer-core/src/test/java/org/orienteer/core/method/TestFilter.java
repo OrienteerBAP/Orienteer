@@ -5,8 +5,9 @@ public class TestFilter implements IMethodFilter{
 	private String filterData;
 	
 	@Override
-	public void setFilterData(String filterData) {
+	public IMethodFilter setFilterData(String filterData) {
 		this.filterData = filterData;
+		return this;
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public interface IMethodFilter {
 	 * 
 	 * @param filterData
 	 */
-	public void setFilterData(String filterData);
+	public IMethodFilter setFilterData(String filterData);
 	/**
 	 * Checks linked method for using in signed environment
 	 * This method calls often - do not use hard calculation into 

@@ -17,7 +17,7 @@ public class PlaceFilter implements IMethodFilter{
 	private List<MethodPlace> places;
 	
 	@Override
-	public void setFilterData(String filterData) {
+	public IMethodFilter setFilterData(String filterData) {
 		String[] strPlaces = filterData.split("\\|");
 		if (strPlaces.length>0){
 			places = new ArrayList<MethodPlace>(strPlaces.length);
@@ -28,6 +28,7 @@ public class PlaceFilter implements IMethodFilter{
 				}
 			}
 		}
+		return this;
 	}
 
 	@Override

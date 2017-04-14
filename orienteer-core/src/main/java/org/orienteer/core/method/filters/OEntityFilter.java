@@ -23,11 +23,13 @@ public class OEntityFilter extends AbstractStringFilter {
 	}
 	
 	private OClass getOClass(IMethodEnvironmentData dataObject){
-		Object obj = dataObject.getDisplayObjectModel().getObject();
-		if (obj instanceof OClass){
-			return (OClass) obj;
-		}else if (obj instanceof ODocument){
-			return ((ODocument)obj).getSchemaClass();
+		if (dataObject.getDisplayObjectModel()!=null){
+			Object obj = dataObject.getDisplayObjectModel().getObject();
+			if (obj instanceof OClass){
+				return (OClass) obj;
+			}else if (obj instanceof ODocument){
+				return ((ODocument)obj).getSchemaClass();
+			}
 		}
 		return null;
 	}

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.orienteer.core.method.definitions.ClassMethodDefinitionStorage;
 import org.orienteer.core.method.definitions.SourceMethodDefinitionStorage;
 import org.orienteer.core.module.IOrienteerModule;
 import com.google.common.collect.TreeMultiset;
@@ -30,6 +31,7 @@ public class MethodManager {
 		methodStorage = new MethodStorage();
 		definitionsStorages = new HashSet<IMethodDefinitionStorage>();
 		addDefinitionsStorage(new SourceMethodDefinitionStorage(methodStorage));
+		addDefinitionsStorage(new ClassMethodDefinitionStorage(methodStorage));
 	}
 	
 	public void reload(){
@@ -82,7 +84,11 @@ public class MethodManager {
 		List<IMethod> result = new ArrayList<IMethod>(sortlist.size());
 		
 		for (IMethodDefinition iMethodDefinition : sortlist) {
-			result.add(iMethodDefinition.getMethod(dataObject));
+			IMethod newMethod = iMethodDefinition.getMethod(dataObject);
+			if (newMethod!=null){
+				newMethod.initialize(dataObject);
+				result.add(newMethod);
+			}
 		}
 		
 		return result;
