@@ -31,12 +31,10 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
         span.add(new AttributeModifier("colspan", new Model<String>(String.valueOf(table.getColumns().size()))));
         commands = new RepeatingView("commands");
         span.add(commands);
-		methods = new MethodsView("methods", table.getDefaultModel(),MethodPlace.DATA_TABLE);
-		span.add(methods);
         add(span);
-        
+		methods = new MethodsView(commands, table.getDefaultModel(),MethodPlace.DATA_TABLE);
     }
-
+    
     @Override
 	public DataTableCommandsToolbar<T> addCommand(Command<T> command) {
 		commands.add(command);
@@ -61,6 +59,12 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	}
 
 	@Override
+    protected void onInitialize() {
+    	super.onInitialize();
+		methods.loadMethods();
+    }
+
+	@Override
 	protected void onConfigure() {
 		super.onConfigure();
 		IVisitor<Component, Boolean> visitor = new IVisitor<Component, Boolean>()
@@ -79,9 +83,6 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
             }
         };
 		Boolean ret = commands.visitChildren(visitor);
-		if (ret==null || !ret){
-			ret = methods.visitChildren(visitor);
-		}
 		setVisible(ret!=null?ret:false);
 	}
 

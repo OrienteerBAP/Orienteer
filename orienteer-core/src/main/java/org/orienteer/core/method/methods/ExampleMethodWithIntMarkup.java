@@ -7,20 +7,20 @@ import org.orienteer.core.method.Filter;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.Method;
-import org.orienteer.core.method.filters.PlaceFilter;
+import org.orienteer.core.method.filters.DisallowFilter;
 
 /**
  * Example method with internal markup.
- * Less flexible than internal markup.
+ * Less flexible than external markup.
  * Using for simple methods.
  * 
  */
 
 @Method(order=10,filters={
-		//@Filter(fClass = DisallowFilter.class, fData = ""), // not need to show this method outside development
+		@Filter(fClass = DisallowFilter.class, fData = ""), // not need to show this method outside development
 		//@Filter(fClass = WidgetTypeFilter.class, fData = "parameters"),
 		//@Filter(fClass = OEntityFilter.class, fData = "OUser")
-		@Filter(fClass = PlaceFilter.class, fData = "DATA_TABLE|STRUCTURE_TABLE")
+		//@Filter(fClass = PlaceFilter.class, fData = "DATA_TABLE|STRUCTURE_TABLE")
 })
 public class ExampleMethodWithIntMarkup extends Panel implements IMethod{
 	/**

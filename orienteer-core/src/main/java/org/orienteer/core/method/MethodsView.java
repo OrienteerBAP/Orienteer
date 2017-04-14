@@ -1,5 +1,6 @@
 package org.orienteer.core.method;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.wicket.Component;
@@ -14,7 +15,7 @@ import org.orienteer.core.widget.AbstractWidget;
  * Panel for methods display.
  *
  */
-public class MethodsView extends RepeatingView{
+public class MethodsView implements Serializable{
 	/**
 	 * 
 	 */
@@ -22,43 +23,33 @@ public class MethodsView extends RepeatingView{
 	
 	private List<IMethod> methods;
 
-	private AbstractWidget<?> widget;
-	
 	private MethodPlace place;
+	private RepeatingView externalList;
+	private IModel<?> displayObjectModel;
 
 	private BootstrapType bootstrapType;
 	private boolean bootstrapTypeOverriden = false;
 	
-	public MethodsView(String id, IModel<?> displayObjectModel,MethodPlace place) {
-		super(id, displayObjectModel);
+	public MethodsView(RepeatingView externalList, IModel<?> displayObjectModel,MethodPlace place) {
+		this.externalList = externalList;
+		this.displayObjectModel = displayObjectModel;
 		this.place = place;
-		//this.setOutputMarkupId(true);
-		//this.widget = widget;
-		//add(UpdateOnDashboardDisplayModeChangeBehavior.INSTANCE);
-		//add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 	
-	
-	@Override
-	protected void onInitialize() {
-		super.onInitialize();
-		widget = findParent(AbstractWidget.class);
-		loadMethods();
-	}
-	
-	private void loadMethods(){
-		methods = MethodManager.get().getMethods(new MethodBaseData(getDefaultModel(),widget,place));
+	public void loadMethods(){
+		AbstractWidget<?> widget = externalList.findParent(AbstractWidget.class);
+		methods = MethodManager.get().getMethods(new MethodBaseData(displayObjectModel,widget,place));
 		for ( IMethod method : methods) {
-			Component component = method.getDisplayComponent(newChildId()); 
+			Component component = method.getDisplayComponent(externalList.newChildId()); 
 			if (component instanceof IBootstrapAware && bootstrapTypeOverriden){
 				((IBootstrapAware)component).setBootstrapType(bootstrapType);
 			}
-			add(component);
+			externalList.add(component);
 		}
 	}
 	
 	/**
-	 * Use it before onInitialize
+	 * Use it only before loadMethods
 	 * @param type
 	 */	
 	public MethodsView overrideBootstrapType(BootstrapType bootstrapType){

@@ -26,9 +26,7 @@ public class StructureTableCommandsToolbar<P> extends
 		super(table);
         commands = new RepeatingView("commands");
         add(commands);
-		methods = new MethodsView("methods", getModel(),MethodPlace.STRUCTURE_TABLE);
-		add(methods);
-
+		methods = new MethodsView(commands, getModel(),MethodPlace.STRUCTURE_TABLE);
 	}
 	
 	@Override
@@ -48,6 +46,12 @@ public class StructureTableCommandsToolbar<P> extends
 		return commands.newChildId();
 	}
 
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+		methods.loadMethods();
+	}
+	
     @Override
 	protected void onConfigure() {
 		super.onConfigure();
@@ -67,9 +71,6 @@ public class StructureTableCommandsToolbar<P> extends
             }
         };
 		Boolean ret = commands.visitChildren(visitor);
-		if (ret==null || !ret){
-			ret = methods.visitChildren(visitor);
-		}
 		setVisible(ret!=null?ret:false);
 	}
 

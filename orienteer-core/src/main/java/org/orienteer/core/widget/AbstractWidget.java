@@ -48,6 +48,8 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	private RepeatingView commands;
 	
 	private IModel<ODocument> widgetDocumentModel;
+
+	private MethodsView methods;
 	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
@@ -55,7 +57,8 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
 		add(commands = new RepeatingView("commands"));
-		add(new MethodsView("methods", model,MethodPlace.ACTIONS).overrideBootstrapType(null));
+		methods = new MethodsView(commands, model,MethodPlace.ACTIONS);
+		methods.overrideBootstrapType(null);
 
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
@@ -186,6 +189,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		add(new Label("title", getTitleModel()));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
+		methods.loadMethods();
 	}
 	
 	@Override

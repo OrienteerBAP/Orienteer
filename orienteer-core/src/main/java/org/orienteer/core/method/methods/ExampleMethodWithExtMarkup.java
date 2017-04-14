@@ -5,9 +5,11 @@ import java.io.Serializable;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.method.Filter;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.Method;
+import org.orienteer.core.method.filters.DisallowFilter;
 
 /**
  * 
@@ -17,7 +19,7 @@ import org.orienteer.core.method.Method;
  */
 
 @Method(order=2,filters={
-		//@Filter(fClass = DisallowFilter.class, fData = ""), // not need to show this method outside development
+		@Filter(fClass = DisallowFilter.class, fData = ""), // not need to show this method outside development
 		//@Filter(fClass = WidgetTypeFilter.class, fData = "parameters|list-all"),
 		//@Filter(fClass = OEntityFilter.class, fData = "OUser")
 		//@Filter(fClass = PlaceFilter.class, fData = "ACTIONS|DATA_TABLE|STRUCTURE_TABLE"),
@@ -39,7 +41,7 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 	@Override
 	public Component getDisplayComponent(String componentId) {
 		if (displayComponent==null){
-			displayComponent = new AjaxCommand<Object>(componentId, "SimpleMethodExt") {
+			displayComponent = new AjaxCommand<Object>(componentId, "command.settings") {
 				
 				/**
 				 * 
@@ -48,15 +50,11 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 
 				@Override
 				public void onClick(AjaxRequestTarget target) {
-					//DashboardPanel<T> dashboard = getDashboardPanel();
-					//dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
-					//setHidden(true);
 				}
 				
 				@Override
 				protected void onConfigure() {
 					super.onConfigure();
-					//setVisible(getDashboardPanel().getModeObject().canModify());
 				}
 			};
 		}else{
