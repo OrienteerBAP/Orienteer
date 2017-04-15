@@ -6,6 +6,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
@@ -58,13 +59,26 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 	@SuppressWarnings("unchecked")
 	@Override
 	public Component getFilter(final String componentId, FilterForm<?> form) {
-		final IModel<OProperty> propertyModel = getCriteryModel();
-		UIVisualizersRegistry registry = OrienteerWebApplication.lookupApplication().getUIVisualizersRegistry();
-		IVisualizer visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), "default");
+		IModel<OProperty> propertyModel = getCriteryModel();
 		IFilterStateLocator<IODataFilter<ODocument, String>> stateLocator =
 				(IFilterStateLocator<IODataFilter<ODocument, String>>) form.getStateLocator();
 		IODataFilter<ODocument, String> filterState = stateLocator.getFilterState();
 		IModel<?> valueModel = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
-		return visualizer.createComponentForFiltering(componentId, propertyModel, valueModel);
+		return getComponentForFiltering(componentId, propertyModel, valueModel);
+	}
+
+	private Component getComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<?> valueModel) {
+		UIVisualizersRegistry registry = OrienteerWebApplication.lookupApplication().getUIVisualizersRegistry();
+		String visualizerName = CustomAttribute.VISUALIZATION_TYPE.getValue(propertyModel.getObject());
+		if (visualizerName == null) {
+			visualizerName = "default";
+		}
+		IVisualizer visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), visualizerName);
+		Component component = visualizer.createComponentForFiltering(id, propertyModel, valueModel);
+		if (component == null) {
+			visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), "default");
+			component = visualizer.createComponentForFiltering(id, propertyModel, valueModel);
+		}
+		return component;
 	}
 }
