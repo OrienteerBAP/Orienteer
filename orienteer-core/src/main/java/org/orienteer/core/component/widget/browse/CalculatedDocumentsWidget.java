@@ -17,7 +17,8 @@ public class CalculatedDocumentsWidget extends AbstractCalculatedDocumentsWidget
 	public CalculatedDocumentsWidget(String id, IModel<OClass> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 	}
-	
+
+	@Override
 	protected String getSql() {
 		String sql = super.getSql();
 		if(!Strings.isEmpty(sql)) return sql;
