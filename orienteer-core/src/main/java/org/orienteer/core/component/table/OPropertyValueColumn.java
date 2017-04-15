@@ -13,6 +13,8 @@ import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
@@ -22,7 +24,6 @@ import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, DisplayMode, OProperty, String>
 {
 	private static final long serialVersionUID = 1L;
-
 
 	public OPropertyValueColumn(OProperty oProperty, IModel<DisplayMode> modeModel)
 	{
@@ -56,29 +57,24 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 		return new OPropertyNamingModel(getCriteryModel());
 	}
 
+	private static final Logger LOG = LoggerFactory.getLogger(OPropertyValueColumn.class);
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Component getFilter(final String componentId, FilterForm<?> form) {
 		IModel<OProperty> propertyModel = getCriteryModel();
-		IFilterStateLocator<IODataFilter<ODocument, String>> stateLocator =
-				(IFilterStateLocator<IODataFilter<ODocument, String>>) form.getStateLocator();
-		IODataFilter<ODocument, String> filterState = stateLocator.getFilterState();
-		IModel<?> valueModel = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
-		return getComponentForFiltering(componentId, propertyModel, valueModel);
-	}
-
-	private Component getComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<?> valueModel) {
-		UIVisualizersRegistry registry = OrienteerWebApplication.lookupApplication().getUIVisualizersRegistry();
-		String visualizerName = CustomAttribute.VISUALIZATION_TYPE.getValue(propertyModel.getObject());
-		if (visualizerName == null) {
-			visualizerName = "default";
-		}
-		IVisualizer visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), visualizerName);
-		Component component = visualizer.createFilterComponent(id, propertyModel, valueModel);
-		if (component == null) {
-			visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), "default");
-			component = visualizer.createFilterComponent(id, propertyModel, valueModel);
+		OProperty property = propertyModel.getObject();
+		Component component = null;
+		if (property != null) {
+			IFilterStateLocator<IODataFilter<ODocument, String>> stateLocator =
+					(IFilterStateLocator<IODataFilter<ODocument, String>>) form.getStateLocator();
+			IODataFilter<ODocument, String> filterState = stateLocator.getFilterState();
+			IModel<?> valueModel = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
+			component = getComponentForFiltering(componentId, propertyModel, valueModel);
 		}
 		return component;
 	}
+
+
+
 }
