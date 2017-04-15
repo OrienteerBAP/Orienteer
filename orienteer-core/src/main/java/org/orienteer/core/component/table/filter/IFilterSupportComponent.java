@@ -8,5 +8,5 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
  * @param <S> type of sort
  */
 public interface IFilterSupportComponent<T, S> {
-    void setTableFilterForm(FilterForm<IODataFilter<T, S>> filterForm);
+    void addFilterForm(FilterForm<IODataFilter<T, S>> filterForm);
 }

@@ -12,6 +12,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
@@ -66,6 +67,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	protected AjaxFallbackHeadersToolbar<S> headersToolbar;
 	protected OrienteerNavigationToolbar navigationToolbar;
 	protected NoRecordsToolbar noRecordsToolbar;
+	protected FilterToolbar filterToolbar;
 
 	private IModel<String> captionModel;
 	
@@ -83,8 +85,11 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	}
 
 	@Override
-	public void setTableFilterForm(FilterForm<IODataFilter<T, S>> filterForm) {
-		addTopToolbar(new FilterToolbar(this, filterForm));
+	public void addFilterForm(FilterForm<IODataFilter<T, S>> filterForm) {
+		Args.notNull(filterForm, "filterForm");
+		if (filterToolbar == null) {
+			addTopToolbar(filterToolbar = new FilterToolbar(this, filterForm));
+		}
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {
