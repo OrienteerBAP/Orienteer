@@ -1,8 +1,10 @@
 package org.orienteer.core.component.widget;
 
-import java.util.List;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -19,12 +21,10 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
-
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
+import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+
+import java.util.List;
 
 /**
  * Widget for calculated document
@@ -37,16 +37,18 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
     @Inject
     protected OClassIntrospector oClassIntrospector;
 
+    @SuppressWarnings("unchecked")
 	public AbstractCalculatedDocumentsWidget(String id, IModel<T> model,
                                     IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-        Form<ODocument> form = new Form<ODocument>("form");
+        Form form;
         final String sql = getSql();
         
         if(!Strings.isEmpty(sql)) {
         	OQueryDataProvider<ODocument> provider = newDataProvider(sql);
+        	form = new FilterForm<>("form", provider);
         	OClass expectedClass = getExpectedClass(provider);
         	if(expectedClass!=null) {
 	        	oClassIntrospector.defineDefaultSorting(provider, expectedClass);
@@ -58,6 +60,7 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 	        	table.addCommand(new SaveODocumentsCommand(table, modeModel));
 	        	table.addCommand(new DeleteODocumentCommand(table, expectedClass));
 	        	table.addCommand(new ExportCommand<>(table, getTitleModel()));
+	        	table.addFilterForm((FilterForm<IODataFilter<ODocument,String>>) form);
 	        	form.add(table);
 	        	add(new EmptyPanel("error").setVisible(false));
         	} else {
@@ -66,6 +69,7 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
             	add(new Label("error", new ResourceModel("error.class.not.defined")));
         	}
         } else {
+        	form = new Form("form");
         	form.add(new EmptyPanel("table").setVisible(false));
         	form.setVisible(false);
         	add(new Label("error", new ResourceModel("error.query.not.defined")));
@@ -88,7 +92,7 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 	}
 	
 	protected OQueryDataProvider<ODocument> newDataProvider(String sql) {
-		return new OQueryDataProvider<ODocument>(sql);
+		return new OQueryDataProvider<>(sql);
 	}
 	
 	@Override

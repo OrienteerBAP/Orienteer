@@ -155,7 +155,7 @@ class TestOClassManager {
                     break;
                 case DATE:
                     Date date = new Date();
-                    document.field(name, new SimpleDateFormat(OrientDbFilterTest.dateFormat).format(date));
+                    document.field(name, new SimpleDateFormat(OrienteerDefaultQueryBuilderTest.dateFormat).format(date));
                     break;
                 case DATETIME:
                     try {
@@ -164,7 +164,7 @@ class TestOClassManager {
                         e.printStackTrace();
                     }
                     Date dateTime = new Date();
-                    document.field(name, new SimpleDateFormat(OrientDbFilterTest.dateTimeFormat).format(dateTime));
+                    document.field(name, new SimpleDateFormat(OrienteerDefaultQueryBuilderTest.dateTimeFormat).format(dateTime));
                     successDateFilters.add(dateTime);
                     break;
                 case STRING:

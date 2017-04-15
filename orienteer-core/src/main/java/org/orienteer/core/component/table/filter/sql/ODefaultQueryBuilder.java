@@ -7,7 +7,9 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.io.IClusterable;
+import org.apache.wicket.util.lang.Args;
+import ru.ydn.wicket.wicketorientdb.filter.IQueryBuilder;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.text.SimpleDateFormat;
@@ -19,21 +21,24 @@ import static com.github.raymanrt.orientqb.query.Projection.projection;
 
 /**
  * @author Vitaliy Gonchar
+ * @param <K> The provider object type
  */
-public class OQueryBuilder implements IClusterable {
+public class ODefaultQueryBuilder<K> implements IQueryBuilder<K> {
 
     private final String className;
 
-    public OQueryBuilder(String className) {
+    public ODefaultQueryBuilder(String className) {
+        Args.notNull(className, "className");
+        Args.notEmpty(className, "className");
         this.className = className;
     }
 
-    public String build(Map<IModel<OProperty>, IModel<?>> filteredValues) {
+    public OQueryModel<K> build(Map<IModel<OProperty>, IModel<?>> filteredValues) {
         String sql = "select from " + className;
         if (needGenerateNewSql(filteredValues.values())) {
             sql = generateSql(filteredValues);
         }
-        return sql;
+        return new OQueryModel<K>(sql);
     }
 
     @SuppressWarnings("unchecked")

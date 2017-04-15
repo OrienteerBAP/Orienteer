@@ -1,6 +1,7 @@
 package org.orienteer.core.component.table.filter;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.orientechnologies.orient.core.db.ODatabase;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -13,10 +14,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.orienteer.core.component.table.filter.sql.ODefaultQueryBuilder;
 import org.orienteer.junit.GuiceRule;
 import org.orienteer.junit.StaticInjectorProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.filter.IQueryBuilder;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.text.SimpleDateFormat;
@@ -31,15 +35,17 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Vitaliy Gonchar
  */
-public class OrientDbFilterTest {
+public class OrienteerDefaultQueryBuilderTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OrientDbFilterTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OrienteerDefaultQueryBuilderTest.class);
 
     private static TestOClassManager manager;
     private static FilterTest filterTest;
 
-    static final String CLASS_NAME = "____OrienteerFilterTestClass____";
-    static final int DOCUMENTS_NUM = 2;
+    private static final String CLASS_NAME = "____OrienteerDefaultQueryBuilderTestClass____";
+    private static final int DOCUMENTS_NUM = 2;
+    private final Map<IModel<OProperty>, IModel<?>> filteredValues = Maps.newHashMap();
+    private final IQueryBuilder<ODocument> queryBuilder = new ODefaultQueryBuilder<>(CLASS_NAME);
 
     static String dateFormat;
     static String dateTimeFormat;
@@ -62,10 +68,8 @@ public class OrientDbFilterTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testPrimitives() {
-        initialize();
         OClass testClass = manager.createAndGetOClassWithPrimitives();
-        QueryFilterTest queryFilter = new QueryFilterTest(testClass.getName());
-        Map<IModel<OProperty>, IModel<?>> filteredValues = queryFilter.getFilteredValues();
+        clearAndInitFilteredValues(testClass);
         List<String> stringFilters = manager.getSuccessStringFilters();
         List<Number> numberFilters = manager.getSuccessNumberFilters();
         List<Date> dateFilters = manager.getSuccessDateFilters();
@@ -78,7 +82,7 @@ public class OrientDbFilterTest {
             String name = property.getName();
             switch (property.getType()) {
                 case BOOLEAN:
-                    testFilters(name, (IModel<Boolean>) model, Lists.newArrayList(true, false), queryFilter, OType.BOOLEAN,true);
+                    testFilters(name, (IModel<Boolean>) model, Lists.newArrayList(true, false), OType.BOOLEAN,true);
                     model.setObject(null);
                     booleanModel = (IModel<Boolean>) model;
                     break;
@@ -89,24 +93,24 @@ public class OrientDbFilterTest {
                 case DECIMAL:
                 case FLOAT:
                 case DOUBLE:
-                    testFilters(name, (IModel<Number>) model, numberFilters, queryFilter, OType.INTEGER,true);
+                    testFilters(name, (IModel<Number>) model, numberFilters, OType.INTEGER,true);
                     testFilters(name, (IModel<Number>) model,
-                            Lists.<Number>newArrayList(-1, -2, -100, 12345), queryFilter, OType.INTEGER,false);
+                            Lists.<Number>newArrayList(-1, -2, -100, 12345), OType.INTEGER,false);
                     model.setObject(null);
                     numberModel = (IModel<Number>) model;
                     break;
                 case DATE:
-                    testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATE, true);
+                    testFilters(name, (IModel<Date>) model, dateFilters, OType.DATE, true);
                     model.setObject(null);
                     break;
                 case DATETIME:
                     manager.showDocuments();
-                    testFilters(name, (IModel<Date>) model, dateFilters, queryFilter, OType.DATETIME, true);
+                    testFilters(name, (IModel<Date>) model, dateFilters, OType.DATETIME, true);
                     model.setObject(null);
                     break;
                 case STRING:
-                    testFilters(name, (IModel<String>) model, stringFilters, queryFilter, OType.STRING,true);
-                    testFilters(name, (IModel<String>) model, Lists.newArrayList("abcd", "asbcd%;sd", "1234"), queryFilter, OType.STRING,false);
+                    testFilters(name, (IModel<String>) model, stringFilters, OType.STRING,true);
+                    testFilters(name, (IModel<String>) model, Lists.newArrayList("abcd", "asbcd%;sd", "1234"), OType.STRING,false);
                     model.setObject(null);
                     stringModel = (IModel<String>) model;
                     break;
@@ -115,28 +119,26 @@ public class OrientDbFilterTest {
             }
         }
 
-
         numberModel.setObject(numberFilters.get(0));
         booleanModel.setObject(true);
         stringModel.setObject(stringFilters.get(0));
-        printODocuments(queryFilter.buildQueryAndExecute());
+        printODocuments(queryBuilder.build(filteredValues).getObject());
     }
 
     @Test
     @Ignore
     public void testEmbedded() {
         OClass testClass = manager.createAndGetOClassWithEmbeded(ORIENTEER_TEST_CLASS);
-        QueryFilterTest queryFilter = new QueryFilterTest(testClass.getName());
         Map<String, String> successEmbeddedString = manager.getSuccessEmbeddedString();
         Map<String, Integer> successEmbeddedInteger = manager.getSuccessEmbeddedInteger();
         Map<String, Boolean> successEmbeddedBoolean = manager.getSuccessEmbeddedBoolean();
     }
 
     private <V> void testFilters(String propertyName, IModel<V> model,
-                             List<V> filters, QueryFilterTest queryFilter, OType type, boolean success) {
+                             List<V> filters, OType type, boolean success) {
         for (V filter : filters) {
             model.setObject(filter);
-            List<ODocument> documents = queryFilter.buildQueryAndExecute();
+            List<ODocument> documents = queryBuilder.build(filteredValues).getObject();
             assertEquals("Size of query documents", documents.size() > 0, success);
             if (LOG.isDebugEnabled()) printODocuments(documents, filter);
             switch (type) {
@@ -212,6 +214,13 @@ public class OrientDbFilterTest {
 
         public FilterTest() {
             super(StaticInjectorProvider.INSTANCE);
+        }
+    }
+
+    private void clearAndInitFilteredValues(OClass filteredClass) {
+        filteredValues.clear();
+        for (OProperty property : filteredClass.properties()) {
+            filteredValues.put(new OPropertyModel(property), Model.of());
         }
     }
 

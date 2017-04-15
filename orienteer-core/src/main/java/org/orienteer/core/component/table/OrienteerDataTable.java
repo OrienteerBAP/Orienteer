@@ -19,9 +19,9 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
 import org.orienteer.core.component.table.filter.IFilterSupportComponent;
-import org.orienteer.core.component.table.filter.IODataFilter;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
 import org.orienteer.core.event.ActionPerformedEvent;
+import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
 
 import java.util.List;
 
