@@ -62,9 +62,9 @@ class TestOClassManager {
             @Override
             protected Void execute(ODatabaseDocument db) {
                 ORecordIteratorClass<ODocument> documents = db.browseClass(className);
-                LOG.info("Browse class {}:", className);
+                LOG.debug("Browse class {}:", className);
                 for (ODocument document : documents) {
-                    LOG.info(document.toString());
+                    LOG.debug(document.toString());
                 }
                 return null;
             }

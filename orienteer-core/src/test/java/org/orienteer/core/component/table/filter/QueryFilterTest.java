@@ -57,7 +57,7 @@ public class QueryFilterTest {
         List<String> docNames = Lists.newArrayList();
         for (ODocument result : resultList) {
             ODocumentNameModel docModel = new ODocumentNameModel(Model.of(result));
-            LOG.info("result: {}", docModel.getObject());
+            LOG.debug("result: {}", docModel.getObject());
             docNames.add(docModel.getObject());
         }
         return docNames;
@@ -76,7 +76,7 @@ public class QueryFilterTest {
         return new DBClosure<List<V>>() {
             @Override
             protected List<V> execute(ODatabaseDocument db) {
-                LOG.info("Executed query: {}", query);
+                LOG.debug("Executed query: {}", query);
 
                 OQuery<V> oQuery = new OSQLSynchQuery<>(query);
                 List<V> result = db.query(oQuery);

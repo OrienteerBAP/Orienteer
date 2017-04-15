@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
@@ -58,17 +57,6 @@ public class OrientDbFilterTest {
     @AfterClass
     public static void clear() {
         manager.deleteOClass();
-    }
-
-    @Test
-    public void testDate() throws InterruptedException {
-        Date date = new Date();
-        LOG.info("date: " + date);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        LOG.info("dateTime format before sleep: " + dateFormat.format(date));
-        TimeUnit.SECONDS.sleep(3);
-        LOG.info("dateTime format after sleep: " + dateFormat.format(date));
-        LOG.info("new Date() " + new Date());
     }
 
     @Test
@@ -131,7 +119,6 @@ public class OrientDbFilterTest {
         numberModel.setObject(numberFilters.get(0));
         booleanModel.setObject(true);
         stringModel.setObject(stringFilters.get(0));
-        LOG.info("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         printODocuments(queryFilter.buildQueryAndExecute());
     }
 
@@ -181,12 +168,6 @@ public class OrientDbFilterTest {
         }
     }
 
-    @Test
-    public void testNumbers() {
-        Double d = 0.0;
-        Integer in = 0;
-        LOG.info("{}", d.doubleValue() == in);
-    }
 
     private <V> void assertValueProperty(String propertyName, V value, List<ODocument> documents) {
         for (ODocument document : documents) {
@@ -206,36 +187,14 @@ public class OrientDbFilterTest {
 
 
     private <V> void printODocuments(List<ODocument> documents, V filter) {
-        LOG.info("Executed filter {} value={}, result documents:", filter.getClass(), filter);
+        LOG.debug("Executed filter {} value={}, result documents:", filter.getClass(), filter);
         printODocuments(documents);
     }
 
     private void printODocuments(List<ODocument> documents) {
         for (ODocument document : documents) {
-            LOG.info(document.toString());
+            LOG.debug(document.toString());
         }
-    }
-
-    @Ignore
-    @Test
-    public void testPattern() {
-        Pattern pattern = getPattern("a%b%c");
-        LOG.info("pattern a%b%c: " + pattern.matcher("agjjjbkljkc").matches());
-        pattern = getPattern("abc%");
-        LOG.info("pattern abc% abcd: " + pattern.matcher("abcd").matches());
-        LOG.info("pattern abc% abc: " + pattern.matcher("abc").matches());
-        LOG.info("pattern abc% a: " + pattern.matcher("a").matches());
-        pattern = getPattern("%l");
-        LOG.info("pattern %l abl: " + pattern.matcher("abl").matches());
-        LOG.info("pattern %l a: " + pattern.matcher("a").matches());
-        LOG.info("pattern %l ergflwefrgfergflwefrgf: " + pattern.matcher("ergflwefrgf").matches());
-
-        pattern = getPattern("abc");
-        LOG.info("pattern abc abcd: " + pattern.matcher("abcd").matches());
-
-
-        pattern = getPattern("l%");
-        LOG.info("pattern l% localization: " + pattern.matcher("localization").matches());
     }
 
     private Pattern getPattern(String filter) {
