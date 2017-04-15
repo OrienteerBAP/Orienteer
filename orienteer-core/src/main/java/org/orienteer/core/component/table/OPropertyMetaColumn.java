@@ -1,8 +1,6 @@
 package org.orienteer.core.component.table;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import org.apache.wicket.Component;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.CustomAttribute;
@@ -43,8 +41,4 @@ public class OPropertyMetaColumn  extends AbstractModeMetaColumn<OProperty, Disp
 		return new SimpleNamingModel<String>("property", getCriteryModel());
 	}
 
-	@Override
-	public Component getFilter(String componentId, FilterForm<?> form) {
-		return null;
-	}
 }

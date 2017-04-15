@@ -1,8 +1,10 @@
 package org.orienteer.core.component.table;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.IExportableColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilteredAbstractColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -76,6 +78,8 @@ public abstract class AbstractMetaColumn<T, C, S> extends FilteredAbstractColumn
 		if(labelModel!=null) labelModel.detach();
 	}
 
-	
-
+	@Override
+	public Component getFilter(String componentId, FilterForm<?> form) {
+		return null;
+	}
 }
