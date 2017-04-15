@@ -52,7 +52,7 @@ public abstract class AbstractSimpleVisualizer implements IVisualizer
 	}
 
 	@Override
-	public <V> Component createComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
 		return null;
 	}
 }

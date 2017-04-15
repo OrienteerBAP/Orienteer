@@ -74,10 +74,10 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 			visualizerName = "default";
 		}
 		IVisualizer visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), visualizerName);
-		Component component = visualizer.createComponentForFiltering(id, propertyModel, valueModel);
+		Component component = visualizer.createFilterComponent(id, propertyModel, valueModel);
 		if (component == null) {
 			visualizer = registry.getComponentFactory(propertyModel.getObject().getType(), "default");
-			component = visualizer.createComponentForFiltering(id, propertyModel, valueModel);
+			component = visualizer.createFilterComponent(id, propertyModel, valueModel);
 		}
 		return component;
 	}

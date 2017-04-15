@@ -129,7 +129,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> Component createComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
 		Component component;
 		OProperty property = propertyModel.getObject();
 		switch (property.getType()) {

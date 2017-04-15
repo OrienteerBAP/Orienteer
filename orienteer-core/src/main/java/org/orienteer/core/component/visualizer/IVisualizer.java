@@ -20,6 +20,6 @@ public interface IVisualizer extends IClusterable
 	public boolean isExtended();
 	public Collection<OType> getSupportedTypes();
 	public <V> Component createComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel);
-	<V> Component createComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<V> valueModel);
+	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, IModel<V> valueModel);
 
 }
