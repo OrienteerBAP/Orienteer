@@ -3,9 +3,7 @@ package org.orienteer.core.component.visualizer;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
 
 import java.util.Arrays;
@@ -55,6 +53,6 @@ public abstract class AbstractSimpleVisualizer implements IVisualizer
 
 	@Override
 	public <V> Component createComponentForFiltering(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
-		return new Label(id, Model.of("No realisation for filtering component in current visualizer: " + getName()));
+		return null;
 	}
 }
