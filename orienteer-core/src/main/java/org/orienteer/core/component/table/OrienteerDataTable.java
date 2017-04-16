@@ -1,33 +1,29 @@
 package org.orienteer.core.component.table;
 
-import java.util.List;
-
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxNavigationToolbar;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.DefaultDataTable;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.HeadersToolbar;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.NavigationToolbar;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.NoRecordsToolbar;
-import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.*;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.OddEvenItem;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
+import org.orienteer.core.component.table.filter.IFilterSupportComponent;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
 import org.orienteer.core.event.ActionPerformedEvent;
+import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
+
+import java.util.List;
 
 /**
  * Bootstrap enabled {@link DataTable}
@@ -37,7 +33,7 @@ import org.orienteer.core.event.ActionPerformedEvent;
  * @param <S>
  *            the type of the sorting parameter
  */
-public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>
+public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>, IFilterSupportComponent<T, S>
 {
 	/**
 	 * {@link Item} that allows every row to be an {@link IMetaContext}
@@ -71,7 +67,8 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	protected AjaxFallbackHeadersToolbar<S> headersToolbar;
 	protected OrienteerNavigationToolbar navigationToolbar;
 	protected NoRecordsToolbar noRecordsToolbar;
-	
+	protected FilterToolbar filterToolbar;
+
 	private IModel<String> captionModel;
 	
 	public OrienteerDataTable(String id, List<? extends IColumn<T, S>> columns,
@@ -85,6 +82,14 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 		setOutputMarkupPlaceholderTag(true);
 		setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
 		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
+	}
+
+	@Override
+	public void addFilterForm(FilterForm<IODataFilter<T, S>> filterForm) {
+		Args.notNull(filterForm, "filterForm");
+		if (filterToolbar == null) {
+			addTopToolbar(filterToolbar = new FilterToolbar(this, filterForm));
+		}
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {
@@ -170,5 +175,4 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	{
 		return new MetaContextItem<T, Object>(id, index, model);
 	}
-	
 }
