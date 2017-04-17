@@ -1,16 +1,19 @@
 package org.orienteer.core.component.table;
 
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
-
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * {@link AbstractModeMetaColumn} for {@link ODocument}s
  */
@@ -49,5 +52,25 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 	protected IModel<String> newLabelModel() {
 		return new OPropertyNamingModel(getCriteryModel());
 	}
+
+	private static final Logger LOG = LoggerFactory.getLogger(OPropertyValueColumn.class);
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Component getFilter(final String componentId, FilterForm<?> form) {
+		IModel<OProperty> propertyModel = getCriteryModel();
+		OProperty property = propertyModel.getObject();
+		Component component = null;
+		if (property != null) {
+			IFilterStateLocator<IODataFilter<ODocument, String>> stateLocator =
+					(IFilterStateLocator<IODataFilter<ODocument, String>>) form.getStateLocator();
+			IODataFilter<ODocument, String> filterState = stateLocator.getFilterState();
+			IModel<?> valueModel = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
+			component = getComponentForFiltering(componentId, propertyModel, valueModel);
+		}
+		return component;
+	}
+
+
 
 }

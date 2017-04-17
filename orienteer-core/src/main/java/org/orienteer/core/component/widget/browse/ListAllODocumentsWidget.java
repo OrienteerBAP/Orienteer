@@ -1,29 +1,26 @@
 package org.orienteer.core.component.widget.browse;
 
-import org.apache.wicket.markup.html.form.Form;
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.CopyODocumentCommand;
-import org.orienteer.core.component.command.CreateODocumentCommand;
-import org.orienteer.core.component.command.DeleteODocumentCommand;
-import org.orienteer.core.component.command.EditODocumentsCommand;
-import org.orienteer.core.component.command.ExportCommand;
-import org.orienteer.core.component.command.SaveODocumentsCommand;
+import org.orienteer.core.component.command.*;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.filter.sql.ODefaultQueryBuilder;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-
+import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
+import ru.ydn.wicket.wicketorientdb.filter.IQueryBuilder;
+import ru.ydn.wicket.wicketorientdb.filter.impl.DefaultDataFilter;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
-
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Widget to list all documents of a class
@@ -33,26 +30,30 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
-	
+
 	public ListAllODocumentsWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-		
-		Form<ODocument> form = new Form<ODocument>("form");
-		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+getModelObject().getName());
+		String className = getModelObject().getName();
+		String sql = "select from " + className;
+		IQueryBuilder<ODocument> builder = new ODefaultQueryBuilder<>(className);
+		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
+		provider.setFilterState(new DefaultDataFilter<>(getModel(), builder));
+		FilterForm<IODataFilter<ODocument, String>> filterForm = new FilterForm<>("form", provider);
 		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
 		OrienteerDataTable<ODocument, String> table = 
-				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
+				new OrienteerDataTable<>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
+		table.addFilterForm(filterForm);
 		table.getCommandsToolbar().setDefaultModel(getModel());
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
 		table.addCommand(new EditODocumentsCommand(table, modeModel, getModel()));
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));
 		table.addCommand(new CopyODocumentCommand(table, getModel()));
 		table.addCommand(new DeleteODocumentCommand(table, getModel()));
-		table.addCommand(new ExportCommand<ODocument>(table, new PropertyModel<String>(model, "name")));
-		form.add(table);
-		add(form);
+		table.addCommand(new ExportCommand<>(table, new PropertyModel<String>(model, "name")));
+		filterForm.add(table);
+		add(filterForm);
 	}
 
 	@Override

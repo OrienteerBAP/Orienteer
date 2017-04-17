@@ -50,7 +50,7 @@
 	    <dependency>
 		    <groupId>com.orientechnologies</groupId>
 		    <artifactId>orientdb-server</artifactId>
-		    <type>bundle</type>
+		    <version>${orientdb.version}</version>
 	    </dependency>
 	    <dependency>
 		    <groupId>com.orientechnologies</groupId>
@@ -109,6 +109,13 @@
 		    <groupId>log4j</groupId>
 		    <artifactId>log4j</artifactId>
 	    </dependency>
+
+		<!-- ORIENTDB SQL GENERATOR DEPENDENCY-->
+		<dependency>
+			<groupId>com.github.raymanrt</groupId>
+			<artifactId>orientqb</artifactId>
+			<version>0.2.0</version>
+		</dependency>
 
 	    <!--  JUNIT DEPENDENCY FOR TESTING -->
 	    <dependency>

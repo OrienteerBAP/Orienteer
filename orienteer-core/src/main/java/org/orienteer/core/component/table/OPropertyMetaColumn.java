@@ -1,18 +1,13 @@
 package org.orienteer.core.component.table;
 
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
-import org.orienteer.core.component.meta.OIndexMetaPanel;
 import org.orienteer.core.component.meta.OPropertyMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
-
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
-
-import com.orientechnologies.orient.core.index.OIndex;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
 /**
  * {@link AbstractModeMetaColumn} for {@link OProperty}es
@@ -45,4 +40,5 @@ public class OPropertyMetaColumn  extends AbstractModeMetaColumn<OProperty, Disp
 	protected IModel<String> newLabelModel() {
 		return new SimpleNamingModel<String>("property", getCriteryModel());
 	}
+
 }
