@@ -11,6 +11,7 @@ import org.apache.wicket.extensions.yui.calendar.DateField;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -129,12 +130,12 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, Form form, IModel<V> valueModel) {
 		Component component;
 		OProperty property = propertyModel.getObject();
 		switch (property.getType()) {
 			case BOOLEAN:
-				component = new BooleanFilterPanel(id, (IModel<Boolean>) valueModel);
+				component = new BooleanFilterPanel(id, form, (IModel<Boolean>) valueModel);
 				break;
 			case EMBEDDED:
 			case EMBEDDEDLIST:

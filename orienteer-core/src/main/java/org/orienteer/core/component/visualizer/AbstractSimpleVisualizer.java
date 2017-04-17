@@ -3,6 +3,7 @@ package org.orienteer.core.component.visualizer;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 
@@ -52,7 +53,7 @@ public abstract class AbstractSimpleVisualizer implements IVisualizer
 	}
 
 	@Override
-	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, IModel<V> valueModel) {
+	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, Form form, IModel<V> valueModel) {
 		return null;
 	}
 }

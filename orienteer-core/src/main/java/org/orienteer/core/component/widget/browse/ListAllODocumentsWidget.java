@@ -3,7 +3,6 @@ package org.orienteer.core.component.widget.browse;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
@@ -12,11 +11,14 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.filter.component.FilterTablePanel;
 import org.orienteer.core.component.table.filter.sql.ODefaultQueryBuilder;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.filter.AbstractFilteredDataProvider;
 import ru.ydn.wicket.wicketorientdb.filter.IQueryBuilder;
 import ru.ydn.wicket.wicketorientdb.filter.impl.DefaultDataFilter;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
@@ -31,6 +33,8 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 
+	private static final Logger LOG = LoggerFactory.getLogger(ListAllODocumentsWidget.class);
+
 	public ListAllODocumentsWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
@@ -38,21 +42,21 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		String className = getModelObject().getName();
 		String sql = "select from " + className;
 		IQueryBuilder<ODocument> builder = new ODefaultQueryBuilder<>(className);
-		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
+		AbstractFilteredDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
 		provider.setFilterState(new DefaultDataFilter<>(getModel(), builder));
-		FilterForm<IODataFilter<ODocument, String>> filterForm = new FilterForm<>("form", provider);
 		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
-		OrienteerDataTable<ODocument, String> table = 
-				new OrienteerDataTable<>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
-		table.addFilterForm(filterForm);
+		FilterTablePanel<ODocument> tablePanel =
+				new FilterTablePanel<>("tablePanel", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
+
+		final OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
 		table.addCommand(new EditODocumentsCommand(table, modeModel, getModel()));
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));
 		table.addCommand(new CopyODocumentCommand(table, getModel()));
 		table.addCommand(new DeleteODocumentCommand(table, getModel()));
 		table.addCommand(new ExportCommand<>(table, new PropertyModel<String>(model, "name")));
-		filterForm.add(table);
-		add(filterForm);
+
+		add(tablePanel);
 	}
 
 	@Override
