@@ -11,7 +11,7 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.component.table.filter.component.FilterTablePanel;
+import org.orienteer.core.component.table.filter.component.GenericTablePanel;
 import org.orienteer.core.component.table.filter.sql.ODefaultQueryBuilder;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
@@ -45,8 +45,8 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		AbstractFilteredDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
 		provider.setFilterState(new DefaultDataFilter<>(getModel(), builder));
 		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
-		FilterTablePanel<ODocument> tablePanel =
-				new FilterTablePanel<>("tablePanel", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
+		GenericTablePanel<ODocument> tablePanel =
+				new GenericTablePanel<>("tablePanel", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
 
 		final OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
 		table.addCommand(new CreateODocumentCommand(table, getModel()));

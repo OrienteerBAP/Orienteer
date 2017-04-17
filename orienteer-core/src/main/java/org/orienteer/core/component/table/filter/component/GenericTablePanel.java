@@ -19,13 +19,13 @@ import java.util.List;
 
 /**
  * @author Vitaliy Gonchar
- * @param <K> - type of filtered value
+ * @param <K> - type value in table
  */
-public class FilterTablePanel<K> extends Panel {
+public class GenericTablePanel<K> extends Panel {
 
     private final OrienteerDataTable<K, String> dataTable;
 
-    public FilterTablePanel(String id, List<? extends IColumn<K, String>> columns, AbstractFilteredDataProvider<K> provider, int rowsPerRange) {
+    public GenericTablePanel(String id, List<? extends IColumn<K, String>> columns, AbstractFilteredDataProvider<K> provider, int rowsPerRange) {
         super(id);
         Args.notNull(columns, "columns");
         Args.notNull(provider, "provider");
@@ -50,7 +50,7 @@ public class FilterTablePanel<K> extends Panel {
         add(new EmptyPanel("error").setVisible(false));
     }
 
-    public FilterTablePanel(String id, IModel<String> errorMessage) {
+    public GenericTablePanel(String id, IModel<String> errorMessage) {
         super(id);
         dataTable = null;
         Form form = new Form("form");

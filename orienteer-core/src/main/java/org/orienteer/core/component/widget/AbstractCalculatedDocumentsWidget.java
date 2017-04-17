@@ -15,7 +15,7 @@ import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.component.table.filter.component.FilterTablePanel;
+import org.orienteer.core.component.table.filter.component.GenericTablePanel;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -40,14 +40,14 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         final String sql = getSql();
-	    FilterTablePanel<ODocument> tablePanel;
+	    GenericTablePanel<ODocument> tablePanel;
         if(!Strings.isEmpty(sql)) {
         	OQueryDataProvider<ODocument> provider = newDataProvider(sql);
         	OClass expectedClass = getExpectedClass(provider);
         	if(expectedClass!=null) {
 	        	oClassIntrospector.defineDefaultSorting(provider, expectedClass);
 		        List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(expectedClass, true, modeModel);
-	        	tablePanel = new FilterTablePanel<>("tablePanel", columns, provider, 20);
+	        	tablePanel = new GenericTablePanel<>("tablePanel", columns, provider, 20);
 		        OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
 	        	
 	        	table.addCommand(new EditODocumentsCommand(table, modeModel, expectedClass));
@@ -55,10 +55,10 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 	        	table.addCommand(new DeleteODocumentCommand(table, expectedClass));
 	        	table.addCommand(new ExportCommand<>(table, getTitleModel()));
         	} else {
-        		tablePanel = new FilterTablePanel<>("tablePanel",  new ResourceModel("error.class.not.defined"));
+        		tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.class.not.defined"));
         	}
         } else {
-	        tablePanel = new FilterTablePanel<>("tablePanel",  new ResourceModel("error.query.not.defined"));
+	        tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.query.not.defined"));
         }
         add(tablePanel);
 	}
