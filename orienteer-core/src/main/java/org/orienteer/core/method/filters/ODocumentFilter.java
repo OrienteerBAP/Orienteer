@@ -6,7 +6,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 
- * Filter by ODocument class. Allow if we seen ODocument with type "fData"
+ * OFilter by ODocument class. Allow if we seen ODocument with type "fData"
  *
  */
 public class ODocumentFilter extends AbstractStringFilter{

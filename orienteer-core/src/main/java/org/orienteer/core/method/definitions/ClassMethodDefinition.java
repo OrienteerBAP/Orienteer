@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.orienteer.core.method.ClassMethod;
-import org.orienteer.core.method.Filter;
+import org.orienteer.core.method.ClassOMethod;
+import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.IClassMethod;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodDefinition;
@@ -28,7 +28,7 @@ public class ClassMethodDefinition implements IMethodDefinition{
 	private Method javaMethod;
 
 	public ClassMethodDefinition(java.lang.reflect.Method javaMethod) throws InstantiationException, IllegalAccessException {
-		ClassMethod methodAnnotation = javaMethod.getAnnotation(ClassMethod.class);
+		ClassOMethod methodAnnotation = javaMethod.getAnnotation(ClassOMethod.class);
 		order = methodAnnotation.order();
 		methodId = javaMethod.getDeclaringClass().getSimpleName()+"."+javaMethod.getName();
 		methodClass = methodAnnotation.methodClass();
@@ -38,7 +38,7 @@ public class ClassMethodDefinition implements IMethodDefinition{
 		
 		if (methodAnnotation.filters().length>0){
 			filters = new ArrayList<IMethodFilter>();
-			for (Filter iMethodFilter : methodAnnotation.filters()) {
+			for (OFilter iMethodFilter : methodAnnotation.filters()) {
 				IMethodFilter newFilter = iMethodFilter.fClass().newInstance();
 				newFilter.setFilterData(iMethodFilter.fData());
 				filters.add(newFilter);
@@ -58,7 +58,7 @@ public class ClassMethodDefinition implements IMethodDefinition{
 		try {
 			if (IClassMethod.class.isAssignableFrom(methodClass)){
 				IMethod newMethod = methodClass.newInstance();
-				((IClassMethod)newMethod).initOClassMethod(javaMethod,methodId);
+				((IClassMethod)newMethod).initOClassMethod(javaMethod);
 				return newMethod;
 			}
 		} catch (InstantiationException | IllegalAccessException e) {

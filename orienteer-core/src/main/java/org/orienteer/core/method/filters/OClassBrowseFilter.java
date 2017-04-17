@@ -6,7 +6,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
  * 
- * Filter by OClass. Allow if we browse OClass documents with type "fData"
+ * OFilter by OClass. Allow if we browse OClass documents with type "fData"
  * 
  *
  */

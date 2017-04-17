@@ -8,23 +8,23 @@ import org.apache.wicket.Component;
  *
  */
 
-@Method(filters = { 
-			@Filter(fClass = TestFilter.class, fData = "testData" ) 
+@OMethod(filters = { 
+			@OFilter(fClass = TestFilter.class, fData = "testData" ) 
 		})
 public class AnnotatedMethod implements IMethod{
 
+	@Override
+	public void methodInit(String id, IMethodEnvironmentData envData) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	@Override
-	public Component getDisplayComponent(String componentId) {
+	public Component getDisplayComponent() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public void initialize(IMethodEnvironmentData envData) {
-		// TODO Auto-generated method stub
-		
-	}
 
 
 

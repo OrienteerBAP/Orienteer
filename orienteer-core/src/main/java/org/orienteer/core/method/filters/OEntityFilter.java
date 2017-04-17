@@ -7,7 +7,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 
- * Filter by OClass of current ODocument or OClass
+ * OFilter by OClass of current ODocument or OClass
  *
  */
 

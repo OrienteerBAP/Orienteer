@@ -8,7 +8,7 @@ import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.MethodPlace;
 
 /**
- * Filter allowed if any place overlapped 
+ * OFilter allowed if any place overlapped 
  * 
  *
  */

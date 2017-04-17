@@ -44,6 +44,7 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
 		OrienteerDataTable<ODocument, String> table = 
 				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);
+		table.getCommandsToolbar().setDefaultModel(getModel());
 		table.addCommand(new CreateODocumentCommand(table, getModel()));
 		table.addCommand(new EditODocumentsCommand(table, modeModel, getModel()));
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));

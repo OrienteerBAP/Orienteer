@@ -9,22 +9,22 @@ import java.lang.annotation.Target;
  * 
  * All methods should implement {@link IMethod} 
  * 
- * Method will display only if all filters passed
+ * OMethod will display only if all filters passed
  * 
  * All filters should implement {@link IMethodFilter}
  * 
  * Example:
  * 
- * @Method(order=10,filters = { 
- *			@Filter(fClass = OClassBrowseFilter.class, fData = "OUser") 
+ * @OMethod(order=10,filters = { 
+ *			@OFilter(fClass = OClassBrowseFilter.class, fData = "OUser") 
  *		})
  *
  */
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface Method{
+public @interface OMethod{
 	public String selector() default ""; // hardcode link to SelectorFilter
 	public int order() default 0;
-	Filter[] filters() default {};
+	OFilter[] filters() default {};
 }

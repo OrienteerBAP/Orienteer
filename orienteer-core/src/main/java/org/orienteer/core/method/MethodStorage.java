@@ -33,7 +33,7 @@ public class MethodStorage {
 			reflections.merge(new Reflections(path,new TypeElementsScanner(),new MethodAnnotationsScanner(),new SubTypesScanner()));
 		}
 		try {
-			methodFields = reflections.getMethodsAnnotatedWith(ClassMethod.class);
+			methodFields = reflections.getMethodsAnnotatedWith(ClassOMethod.class);
 			methodClasses = reflections.getSubTypesOf(IMethod.class);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

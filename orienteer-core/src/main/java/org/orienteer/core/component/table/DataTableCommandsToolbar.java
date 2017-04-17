@@ -23,7 +23,6 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 {
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
-	private MethodsView methods;
     public DataTableCommandsToolbar(DataTable<T, ?> table)
     {
         super(table);
@@ -32,7 +31,6 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
         commands = new RepeatingView("commands");
         span.add(commands);
         add(span);
-		methods = new MethodsView(commands, table.getDefaultModel(),MethodPlace.DATA_TABLE);
     }
     
     @Override
@@ -61,6 +59,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	@Override
     protected void onInitialize() {
     	super.onInitialize();
+		MethodsView methods = new MethodsView(commands, getDefaultModel(),MethodPlace.DATA_TABLE);
 		methods.loadMethods();
     }
 

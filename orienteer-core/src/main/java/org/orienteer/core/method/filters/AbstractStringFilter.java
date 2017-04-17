@@ -4,7 +4,7 @@ import org.orienteer.core.method.IMethodFilter;
 
 /**
  * 
- * Filter stub for pure string filters
+ * OFilter stub for pure string filters
  *
  */
 public abstract class AbstractStringFilter implements IMethodFilter{

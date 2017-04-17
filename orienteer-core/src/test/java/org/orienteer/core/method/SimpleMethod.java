@@ -11,14 +11,16 @@ import org.apache.wicket.Component;
 public class SimpleMethod implements IMethod {
 
 	@Override
-	public Component getDisplayComponent(String componentId) {
+	public void methodInit(String id, IMethodEnvironmentData envData) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Component getDisplayComponent() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public void initialize(IMethodEnvironmentData envData) {
-		// TODO Auto-generated method stub
-		
-	}
+
 }

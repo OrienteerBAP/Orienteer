@@ -7,14 +7,14 @@ import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
-import org.orienteer.core.method.Method;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.SelectorFilter;
 
-import org.orienteer.core.method.Filter;
+import org.orienteer.core.method.OFilter;
 /**
  * {@link IMethodDefinition} implementation for Java source method definitions
  * 
- * Using annotation {@link Method} for define metadata. 
+ * Using annotation {@link OMethod} for define metadata. 
  * 
  *
  */
@@ -26,15 +26,15 @@ public class SourceMethodDefinition implements IMethodDefinition{
 	
 	
 	public static boolean isSupportedClass(Class<? extends IMethod> methodClass){
-		return methodClass.isAnnotationPresent(Method.class);
+		return methodClass.isAnnotationPresent(OMethod.class);
 	} 
 	
 	public SourceMethodDefinition(Class<? extends IMethod> methodClass) throws InstantiationException, IllegalAccessException {
 		this.methodClass = methodClass;
-		Method methodAnnotation = methodClass.getAnnotation(Method.class);
+		OMethod methodAnnotation = methodClass.getAnnotation(OMethod.class);
 		if (methodAnnotation.filters().length>0){
 			filters = new ArrayList<IMethodFilter>();
-			for (Filter iMethodFilter : methodAnnotation.filters()) {
+			for (OFilter iMethodFilter : methodAnnotation.filters()) {
 				IMethodFilter newFilter = iMethodFilter.fClass().newInstance();
 				newFilter.setFilterData(iMethodFilter.fData());
 				filters.add(newFilter);

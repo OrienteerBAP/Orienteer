@@ -5,12 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.orienteer.core.method.methods.OClassMethod;
+import org.orienteer.core.method.methods.OClassOMethod;
 
 /**
  * OClass method annotation for Java methods 
  * 
- * Method will display only if all filters passed
+ * OMethod will display only if all filters passed
  * 
  * All filters should implement {@link IMethodFilter}
  * 
@@ -19,8 +19,8 @@ import org.orienteer.core.method.methods.OClassMethod;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface ClassMethod {
-	public Class<? extends IMethod> methodClass() default OClassMethod.class;
+public @interface ClassOMethod {
+	public Class<? extends IMethod> methodClass() default OClassOMethod.class;
 	public int order() default 0;
-	Filter[] filters() default {};
+	OFilter[] filters() default {};
 }

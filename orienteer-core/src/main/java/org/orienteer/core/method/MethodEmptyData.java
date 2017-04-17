@@ -5,7 +5,7 @@ import org.orienteer.core.widget.AbstractWidget;
 
 /**
  * 
- * Empty Method environment data. Not parameterized, always return null or false  
+ * Empty OMethod environment data. Not parameterized, always return null or false  
  *
  */
 public class MethodEmptyData implements IMethodEnvironmentData{

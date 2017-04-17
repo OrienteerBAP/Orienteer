@@ -7,7 +7,7 @@ import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**
- * Base Method environment data.
+ * Base OMethod environment data.
  * Any input parameters may be null.
  *
  */

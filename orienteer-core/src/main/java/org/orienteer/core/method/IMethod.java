@@ -5,7 +5,7 @@ import org.apache.wicket.Component;
 /**
  * 
  * Base interface for all methods
- * If you need to use source method definition, annotate you class by {@link Method} annotation}
+ * If you need to use source method definition, annotate you class by {@link OMethod} annotation}
  *
  */
 public interface IMethod {
@@ -15,15 +15,14 @@ public interface IMethod {
 	 * 
 	 * @param envData
 	 */
-	public void initialize(IMethodEnvironmentData envData);
+	public void methodInit(String id,IMethodEnvironmentData envData);
 	
 	/**
 	 * Return display {@link Component} with signed id
 	 * May be created every time or storages into method 
 	 * If you need to use integrated markup, see {@link ExampleMethodWithIntMarkup} for example
 	 * 
-	 * @param componentId
 	 * @return
 	 */
-	public Component getDisplayComponent(String componentId);
+	public Component getDisplayComponent();
 }

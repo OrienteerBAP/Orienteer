@@ -11,8 +11,8 @@ public interface IMethodFilter {
 	 * Init data from filter definition
 	 * Example for {@link SourceMethodDefinition} :
 	 * 
-	 *  @Method(order=10,filters = { 
-	 *			@Filter(fClass = OClassBrowseFilter.class, fData = "OUser") 
+	 *  @OMethod(order=10,filters = { 
+	 *			@OFilter(fClass = OClassBrowseFilter.class, fData = "OUser") 
 	 *	})
 	 * 
 	 * There fData - input for "setFilterData" method 

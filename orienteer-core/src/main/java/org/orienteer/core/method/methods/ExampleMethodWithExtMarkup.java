@@ -5,10 +5,10 @@ import java.io.Serializable;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.method.Filter;
+import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
-import org.orienteer.core.method.Method;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.DisallowFilter;
 
 /**
@@ -18,11 +18,11 @@ import org.orienteer.core.method.filters.DisallowFilter;
  * Using for complex methods.
  */
 
-@Method(order=2,filters={
-		@Filter(fClass = DisallowFilter.class, fData = ""), // not need to show this method outside development
-		//@Filter(fClass = WidgetTypeFilter.class, fData = "parameters|list-all"),
-		//@Filter(fClass = OEntityFilter.class, fData = "OUser")
-		//@Filter(fClass = PlaceFilter.class, fData = "ACTIONS|DATA_TABLE|STRUCTURE_TABLE"),
+@OMethod(order=2,filters={
+		@OFilter(fClass = DisallowFilter.class, fData = ""), // not need to show this method outside development
+		//@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters|list-all"),
+		//@OFilter(fClass = OEntityFilter.class, fData = "OUser")
+		//@OFilter(fClass = PlaceFilter.class, fData = "ACTIONS|DATA_TABLE|STRUCTURE_TABLE"),
 })
 public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 	/**
@@ -32,16 +32,17 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 
 	
 	private Component displayComponent;
+	private String id;
 
 	@Override
-	public void initialize(IMethodEnvironmentData envData) {
-		//TODO: stub
+	public void methodInit(String id, IMethodEnvironmentData envData) {
+		this.id = id;
 	}
 
 	@Override
-	public Component getDisplayComponent(String componentId) {
+	public Component getDisplayComponent() {
 		if (displayComponent==null){
-			displayComponent = new AjaxCommand<Object>(componentId, "command.settings") {
+			displayComponent = new AjaxCommand<Object>(id, "command.settings") {
 				
 				/**
 				 * 
@@ -57,8 +58,6 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 					super.onConfigure();
 				}
 			};
-		}else{
-			displayComponent.setMarkupId(componentId);
 		}
 		return displayComponent;
 	}

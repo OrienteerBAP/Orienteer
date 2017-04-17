@@ -13,27 +13,28 @@ import org.orienteer.core.method.IMethodEnvironmentData;
 
 /**
  * 
- * Method for display and use OClass methods as buttons
+ * OMethod for display and use OClass methods as buttons
  *
  */
-public class OClassMethod implements Serializable,IMethod,IClassMethod{
+public class OClassOMethod implements Serializable,IMethod,IClassMethod{
 
 	private IMethodEnvironmentData envData; 
 	private String javaMethodName;
 	private String javaClassName;
-	private String methodId;
+	private String id;
 	private Component displayComponent;
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void initialize(IMethodEnvironmentData envData) {
+	public void methodInit(String id,IMethodEnvironmentData envData) {
 		this.envData = envData;
+		this.id = id;
 	}
 
 	@Override
-	public Component getDisplayComponent(String componentId) {
+	public Component getDisplayComponent() {
 		if (displayComponent==null){
-			displayComponent = new AjaxCommand<Object>(componentId, methodId) {
+			displayComponent = new AjaxCommand<Object>(id, id) {
 				
 				/**
 				 * 
@@ -48,18 +49,15 @@ public class OClassMethod implements Serializable,IMethod,IClassMethod{
 					}
 				}
 			};
-		}else{
-			displayComponent.setMarkupId(componentId);
 		}
 		return displayComponent;
 	}
 
 
 	@Override
-	public void initOClassMethod(Method javaMethod,String methodId) {
+	public void initOClassMethod(Method javaMethod) {
 		this.javaMethodName = javaMethod.getName();
 		this.javaClassName = javaMethod.getDeclaringClass().getName();
-		this.methodId=methodId;
 	}
 	
 	private void invoke(){
@@ -71,6 +69,4 @@ public class OClassMethod implements Serializable,IMethod,IClassMethod{
 			e.printStackTrace();
 		}
 	}
-
-
 }

@@ -40,7 +40,7 @@ public class MethodsView implements Serializable{
 		AbstractWidget<?> widget = externalList.findParent(AbstractWidget.class);
 		methods = MethodManager.get().getMethods(new MethodBaseData(displayObjectModel,widget,place));
 		for ( IMethod method : methods) {
-			Component component = method.getDisplayComponent(externalList.newChildId()); 
+			Component component = method.getDisplayComponent(); 
 			if (component !=null){
 				if (component instanceof IBootstrapAware && bootstrapTypeOverriden){
 					((IBootstrapAware)component).setBootstrapType(bootstrapType);
