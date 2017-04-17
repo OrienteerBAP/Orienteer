@@ -1,4 +1,4 @@
-package org.orienteer.core.component.table.filter.component;
+package org.orienteer.core.component.table.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
