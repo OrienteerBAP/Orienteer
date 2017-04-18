@@ -6,12 +6,15 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.yui.calendar.DateField;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -130,8 +133,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, Form form, IModel<V> valueModel) {
-		Component component;
+	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, final Form form, IModel<V> valueModel) {
+		final Component component;
 		OProperty property = propertyModel.getObject();
 		switch (property.getType()) {
 			case BOOLEAN:
@@ -153,7 +156,21 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 			default:
 				component = createComponent(id, DisplayMode.EDIT, null, propertyModel, valueModel);
 		}
-
-		return component != null ? new FilterOPropertyPanel(id, component) : component;
+        if (component != null && form != null && form.getDefaultButton() instanceof Component) {
+            final IFormSubmittingComponent defaultButton = form.getDefaultButton();
+            component.add(new AjaxEventBehavior("focusin") {
+                @Override
+                protected void onEvent(AjaxRequestTarget target) {
+                    defaultButton.setDefaultFormProcessing(true);
+                }
+            });
+            component.add(new AjaxEventBehavior("focusout") {
+                @Override
+                protected void onEvent(AjaxRequestTarget target) {
+                    defaultButton.setDefaultFormProcessing(false);
+                }
+            });
+        }
+		return component != null ? new FilterOPropertyPanel(id, component) : null;
 	}
 }

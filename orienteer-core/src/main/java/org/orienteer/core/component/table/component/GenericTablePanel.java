@@ -41,8 +41,7 @@ public class GenericTablePanel<K> extends Panel {
         dataTable = new OrienteerDataTable<>("table", columns, provider, rowsPerRange);
         dataTable.addFilterForm(filterForm);
         filterForm.add(dataTable);
-        AjaxFallbackButton button = new AjaxFallbackButton("submit", filterForm) {
-        };
+        AjaxFallbackButton button = new AjaxFallbackButton("submit", filterForm) {};
         filterForm.setDefaultButton(button);
         filterForm.enableFocusTracking(button);
         filterForm.add(button);
