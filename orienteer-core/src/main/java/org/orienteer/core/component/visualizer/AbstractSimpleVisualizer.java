@@ -3,7 +3,10 @@ package org.orienteer.core.component.visualizer;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IFormSubmittingComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 
@@ -53,7 +56,29 @@ public abstract class AbstractSimpleVisualizer implements IVisualizer
 	}
 
 	@Override
-	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, Form form, IModel<V> valueModel) {
+	public final <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, Form form, IModel<V> valueModel) {
+		final Component component = getFilterComponent(id, propertyModel, form, valueModel);
+		if (component != null && form != null && form.getDefaultButton() instanceof Component) {
+			final IFormSubmittingComponent defaultButton = form.getDefaultButton();
+			component.add(new AjaxEventBehavior("focusin") {
+				@Override
+				protected void onEvent(AjaxRequestTarget target) {
+					defaultButton.setDefaultFormProcessing(true);
+					Component indicator = component.get("indicator");
+					if (indicator != null) indicator.setVisible(false);
+				}
+			});
+			component.add(new AjaxEventBehavior("focusout") {
+				@Override
+				protected void onEvent(AjaxRequestTarget target) {
+					defaultButton.setDefaultFormProcessing(false);
+				}
+			});
+		}
+		return component;
+	}
+
+	protected <V> Component getFilterComponent(String id, IModel<OProperty> propertyModel, Form form, IModel<V> valueModel) {
 		return null;
 	}
 }
