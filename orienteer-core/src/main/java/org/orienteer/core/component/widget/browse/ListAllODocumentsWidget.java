@@ -16,8 +16,6 @@ import org.orienteer.core.component.table.filter.sql.ODefaultQueryBuilder;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.filter.AbstractFilteredDataProvider;
 import ru.ydn.wicket.wicketorientdb.filter.IQueryBuilder;
 import ru.ydn.wicket.wicketorientdb.filter.impl.DefaultDataFilter;
@@ -32,8 +30,6 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
-
-	private static final Logger LOG = LoggerFactory.getLogger(ListAllODocumentsWidget.class);
 
 	public ListAllODocumentsWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
