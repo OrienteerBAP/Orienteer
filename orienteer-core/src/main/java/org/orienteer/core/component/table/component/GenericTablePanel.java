@@ -27,6 +27,7 @@ public class GenericTablePanel<K> extends Panel {
 
     public GenericTablePanel(String id, List<? extends IColumn<K, String>> columns, AbstractFilteredDataProvider<K> provider, int rowsPerRange) {
         super(id);
+        setOutputMarkupPlaceholderTag(true);
         Args.notNull(columns, "columns");
         Args.notNull(provider, "provider");
         FilterForm<IODataFilter<K, String>> filterForm = new FilterForm<IODataFilter<K, String>>("form", provider) {
