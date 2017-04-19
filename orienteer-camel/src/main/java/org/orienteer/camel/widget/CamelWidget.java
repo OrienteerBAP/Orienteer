@@ -1,9 +1,8 @@
 package org.orienteer.camel.widget;
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -14,7 +13,6 @@ import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.ResourceModel;
@@ -31,22 +29,22 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.ITaskSession;
-import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 /**
  * Widget for Orienteer Camel integration, linked to OIntegrationConfig
  *
@@ -64,8 +62,8 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 		private static final long serialVersionUID = 1L;
 	};
 	
-	private Form form;
-	
+	private final GenericTablePanel<ODocument> tablePanel;
+
 	private static final List<String> COLUMNS_NAMES = new ArrayList<String>();
 	static{
 		COLUMNS_NAMES.add(ITaskSession.Field.THREAD_NAME.fieldName());
@@ -91,8 +89,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 	public CamelWidget(String id, IModel<ODocument> model, final IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 
-		form = new Form<Void>("form");
-        
+
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
 		OClass taskSessionClass = getModelObject().getDatabase().getMetadata().getSchema().getClass(OCamelTaskSession.TASK_SESSION_CLASS);
@@ -103,16 +100,13 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 				"select from "+OCamelTaskSession.TASK_SESSION_CLASS+" where "+
 				OCamelTaskSession.Field.CONFIG.fieldName()+"="+CamelWidget.this.getModelObject().getIdentity());
 		oClassIntrospector.defineDefaultSorting(provider, taskSessionClass);
-		OrienteerDataTable<ODocument, String> table = 
-				new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
-		
-		form.add(table);
+		tablePanel = new GenericTablePanel<ODocument>("tablePanel", columns, provider, 20);
+		OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
+
 		table.addCommand(makeStartButton());
 		table.addCommand(makeStopButton());
 		table.addCommand(makeSuspendButton());
-		form.setOutputMarkupId(true);
-
-		add(form);
+		add(tablePanel);
 	}
 	
 	private List<IColumn<ODocument, String>> makeColumns(OClass taskSessionClass) {
@@ -148,7 +142,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 
 					if (context.getStatus().isSuspended()){
 						context.resume();
-						target.add(CamelWidget.this.form);
+						target.add(CamelWidget.this.tablePanel);
 					}else if (!context.getStatus().isStarted()){
 						clearContext(context);
 						String script = doc.field("script");
@@ -157,7 +151,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 						context.addRouteDefinitions(routes.getRoutes());
 
 						context.start();
-						target.add(CamelWidget.this.form);
+						target.add(CamelWidget.this.tablePanel);
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -197,7 +191,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 					}else if(status.isStarted()){
 						context.suspend();
 					}
-					target.add(CamelWidget.this.form);
+					target.add(CamelWidget.this.tablePanel);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -230,7 +224,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 				CamelContext context = getOrMakeContext();
 				try {
 					context.stop();
-					target.add(CamelWidget.this.form);
+					target.add(CamelWidget.this.tablePanel);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
