@@ -26,7 +26,7 @@ public class StructureTableCommandsToolbar<P> extends
 		super(table);
         commands = new RepeatingView("commands");
         add(commands);
-		methods = new MethodsView(commands, getModel(),MethodPlace.STRUCTURE_TABLE);
+		methods = new MethodsView(commands, getModel(),MethodPlace.STRUCTURE_TABLE,table);
 	}
 	
 	@Override

@@ -31,4 +31,10 @@ public interface IMethodEnvironmentData {
 	 * @return
 	 */
 	public MethodPlace getPlace();
+	/**
+	 * Current table object.Often with internal structure or additional data for {@link getDisplayObjectModel}
+	 * Not mandatory
+	 * @return
+	 */
+	public Object getTableObject();
 }

@@ -56,11 +56,11 @@ public class OTaskManager {
 		return activeSessions.containsKey(doc.getIdentity());
 	}
 	
-	public boolean isActive(OTaskSessionPersisted holder) {
+	public boolean isActive(OTaskSession holder) {
 		return isActive(holder.getDocument());
 	}
 	
-	public OTaskSessionRuntime getTaskSession(OTaskSessionPersisted holder) {
+	public OTaskSessionRuntime getTaskSession(OTaskSession holder) {
 		return activeSessions.get(holder.getDocument().getIdentity());
 	}
 	

@@ -59,7 +59,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	@Override
     protected void onInitialize() {
     	super.onInitialize();
-		MethodsView methods = new MethodsView(commands, getDefaultModel(),MethodPlace.DATA_TABLE);
+		MethodsView methods = new MethodsView(commands, getDefaultModel(),MethodPlace.DATA_TABLE,getTable());
 		methods.loadMethods();
     }
 

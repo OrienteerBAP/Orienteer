@@ -21,7 +21,7 @@ public interface IMethodFilter {
 	 */
 	public IMethodFilter setFilterData(String filterData);
 	/**
-	 * Checks linked method for using in signed environment
+	 * Checks linked method for using in assigned environment
 	 * This method calls often - do not use hard calculation into 
 	 * @param dataObject
 	 * @return

@@ -22,6 +22,7 @@ import org.orienteer.camel.component.OrientDBComponent;
 import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -107,12 +108,13 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 				new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
 		
 		form.add(table);
-		table.addCommand(makeStartButton());
-		table.addCommand(makeStopButton());
-		table.addCommand(makeSuspendButton());
+		//table.addCommand(makeStartButton());
+		//table.addCommand(makeStopButton());
+		//table.addCommand(makeSuspendButton());
 		form.setOutputMarkupId(true);
 
 		add(form);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 	
 	private List<IColumn<ODocument, String>> makeColumns(OClass taskSessionClass) {
@@ -253,7 +255,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 		return getOrMakeContextByRid(doc.getIdentity().toString());
 	}
 
-	private CamelContext getOrMakeContextByRid(String rid){
+	public CamelContext getOrMakeContextByRid(String rid){
 		CamelContext context;
 		Map<String,CamelContext> contextMap = getApplication().getMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY);
 		if (contextMap.containsKey(rid)){
@@ -278,7 +280,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 		return context;
 	}
 	
-	private void clearContext(CamelContext context) throws Exception{
+	public void clearContext(CamelContext context) throws Exception{
 		List<RouteDefinition> definitions = context.getRouteDefinitions();
 		if (!definitions.isEmpty()){
 			context.removeRouteDefinitions(new ArrayList<RouteDefinition>(definitions));

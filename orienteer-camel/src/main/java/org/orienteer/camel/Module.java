@@ -11,6 +11,7 @@ import org.apache.camel.model.RoutesDefinition;
 import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.camel.widget.CamelWidget;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.method.MethodManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
@@ -45,6 +46,8 @@ public class Module extends AbstractOrienteerModule{
 		app.setMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
 		app.mountPages("org.orienteer.camel.web");
 		app.registerWidgets("org.orienteer.camel.widget");
+		MethodManager.get().addModule(Module.class);
+		MethodManager.get().reload();
 		
 		OCamelTaskSession.onInstallModule(app, db);
 	}
@@ -62,6 +65,9 @@ public class Module extends AbstractOrienteerModule{
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.camel.web");
 		app.unregisterWidgets("org.orienteer.camel.widget");
+		
+		MethodManager.get().removeModule(Module.class);
+		MethodManager.get().reload();
 	}
 	
 }

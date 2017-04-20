@@ -57,7 +57,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
 		add(commands = new RepeatingView("commands"));
-		methods = new MethodsView(commands, model,MethodPlace.ACTIONS);
+		methods = new MethodsView(commands, model,MethodPlace.ACTIONS,null);
 		methods.overrideBootstrapType(null);
 
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {

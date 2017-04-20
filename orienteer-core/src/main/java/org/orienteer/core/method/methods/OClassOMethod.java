@@ -1,70 +1,82 @@
 package org.orienteer.core.method.methods;
 
-import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.method.IClassMethod;
-import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
+
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 
- * OMethod for display and use OClass methods as buttons
+ * OMethod for display and use OClass methods as buttons in single view
  *
  */
-public class OClassOMethod implements Serializable,IMethod,IClassMethod{
+public class OClassOMethod extends AbstractOClassOMethod{
 
-	private IMethodEnvironmentData envData; 
-	private String javaMethodName;
-	private String javaClassName;
-	private String id;
 	private Component displayComponent;
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public void methodInit(String id,IMethodEnvironmentData envData) {
-		this.envData = envData;
-		this.id = id;
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public Component getDisplayComponent() {
 		if (displayComponent==null){
-			displayComponent = new AjaxCommand<Object>(id, id) {
-				
-				/**
-				 * 
-				 */
+			IModel<Object> model = (IModel<Object>) envData.getDisplayObjectModel();
+			displayComponent = new AjaxCommand<Object>(id, id,model) {
 				private static final long serialVersionUID = 1L;
-
+				{
+					setIcon(annotation.icon());
+					setBootstrapType(annotation.bootstrap());
+					setChangingDisplayMode(annotation.changingDisplayMode());	
+					setChandingModel(annotation.changingModel());
+				}
 				@Override
 				public void onClick(AjaxRequestTarget target) {
 					invoke();
-					if (envData.getCurrentWidget()!=null){
-						target.add(envData.getCurrentWidget());
-					}
 				}
 			};
+			if (annotation.behaviors().length>0){
+				for ( Class<? extends Behavior> behavior : annotation.behaviors()) {
+					try {
+						displayComponent.add(behavior.newInstance());
+					} catch (InstantiationException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 		return displayComponent;
 	}
 
-
-	@Override
-	public void initOClassMethod(Method javaMethod) {
-		this.javaMethodName = javaMethod.getName();
-		this.javaClassName = javaMethod.getDeclaringClass().getName();
-	}
-	
 	private void invoke(){
+		
 		try {
+			Constructor<?> constructor=null;
+			try {
+				constructor = Class.forName(javaClassName).getConstructor(ODocument.class);
+			} catch (NoSuchMethodException e1) {
+				// TODO it is correct catch block with muffling
+			}
+			
 			Method javaMethod = Class.forName(javaClassName).getMethod(javaMethodName, IMethodEnvironmentData.class);
-			javaMethod.invoke(null,envData);
+			
+			if (constructor!=null && envData.getDisplayObjectModel().getObject() instanceof ODocument){
+				Object newInstance = constructor.newInstance(envData.getDisplayObjectModel().getObject());
+				javaMethod.invoke(newInstance,envData);
+			}else{
+				javaMethod.invoke(null,envData);
+			}
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

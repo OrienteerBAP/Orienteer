@@ -18,7 +18,7 @@ public interface IMethod {
 	public void methodInit(String id,IMethodEnvironmentData envData);
 	
 	/**
-	 * Return display {@link Component} with signed id
+	 * Return display {@link Component} with assigned id
 	 * May be created every time or storages into method 
 	 * If you need to use integrated markup, see {@link ExampleMethodWithIntMarkup} for example
 	 * 

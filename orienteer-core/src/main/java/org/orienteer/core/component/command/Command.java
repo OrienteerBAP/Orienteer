@@ -51,8 +51,17 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	private String btnCssClass;
 	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
 	private BootstrapSize bootstrapSize = BootstrapSize.DEFAULT;
+	/**
+	 * If true - activate on event {@link UpdateOnActionPerformedEventBehavior} UpdateAlwaysOnActionPerformedEventBehavior/UpdateChangingOnActionPerformedEventBehavior 
+	 */
 	private boolean changingModel=false;
+	/**
+	 * If true - activate on event {@link UpdateOnDashboardDisplayModeChangeBehavior} behavior 
+	 */
 	private boolean changingDisplayMode=false;
+	/**
+	 * Auto send notes for {@link UpdateOnActionPerformedEventBehavior}(s)  
+	 */
 	private boolean autoNotify=true;
 	
 	@SuppressWarnings("unchecked")

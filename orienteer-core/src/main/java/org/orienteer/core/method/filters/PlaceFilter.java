@@ -9,7 +9,7 @@ import org.orienteer.core.method.MethodPlace;
 
 /**
  * OFilter allowed if any place overlapped 
- * 
+ * Used {@link MethodPlace}
  *
  */
 public class PlaceFilter implements IMethodFilter{

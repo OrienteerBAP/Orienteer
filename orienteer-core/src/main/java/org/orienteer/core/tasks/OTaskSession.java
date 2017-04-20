@@ -1,5 +1,13 @@
 package org.orienteer.core.tasks;
 
+import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.method.ClassOMethod;
+import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.filters.PlaceFilter;
+import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
+
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
@@ -9,9 +17,25 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 /**
  * Wrapper class for exiting {@link OTaskSessionRuntime} document in DB
  */
-public class OTaskSessionPersisted extends ODocumentWrapper implements ITaskSession {
-	
-	public OTaskSessionPersisted(ODocument sessionDoc) {
+public class OTaskSession extends ODocumentWrapper implements ITaskSession {
+
+	///////////////////////////////////////////////////////////////////////
+	//OMethods
+	@ClassOMethod(
+		icon = FAIconType.stop, bootstrap=BootstrapType.DANGER,
+		filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),},
+		behaviors={OTaskSessionInterruptBehavior.class}
+	)
+	public void interrupt( IMethodEnvironmentData data){
+		try {
+			interrupt();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	///////////////////////////////////////////////////////////////////////
+	public OTaskSession(ODocument sessionDoc) {
 		super(sessionDoc);
 	}
 	
@@ -33,7 +57,7 @@ public class OTaskSessionPersisted extends ODocumentWrapper implements ITaskSess
 		return ret;
 	}
 	
-	public OTaskSessionPersisted getOTaskSessionPersisted() {
+	public OTaskSession getOTaskSessionPersisted() {
 		return this;
 	}
 	
@@ -77,7 +101,7 @@ public class OTaskSessionPersisted extends ODocumentWrapper implements ITaskSess
 	public ITaskSession start() {
 		throw new IllegalStateException("Session can't be marked as started from persisted version");
 	}
-
+	
 	@Override
 	public ITaskSession finish() {
 		checkedOTaskSession().finish();
