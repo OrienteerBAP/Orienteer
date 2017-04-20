@@ -11,6 +11,8 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
+import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.method.MethodPlace;
 
 /**
  * {@link AbstractToolbar} to collect {@link Command}s
@@ -30,7 +32,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
         span.add(commands);
         add(span);
     }
-
+    
     @Override
 	public DataTableCommandsToolbar<T> addCommand(Command<T> command) {
 		commands.add(command);
@@ -55,23 +57,31 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	}
 
 	@Override
+    protected void onInitialize() {
+    	super.onInitialize();
+		MethodsView methods = new MethodsView(commands, getDefaultModel(),MethodPlace.DATA_TABLE);
+		methods.loadMethods();
+    }
+
+	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		Boolean ret = commands.visitChildren(new IVisitor<Component, Boolean>()
-		        {
-		            public void component(Component component, IVisit<Boolean> visit)
-		            {
-		            	component.configure();
-		                if(component.determineVisibility())
-		                {
-		                    visit.stop(true);
-		                }
-		                else
-		                {
-		                	visit.dontGoDeeper();
-		                }
-		            }
-		        });
+		IVisitor<Component, Boolean> visitor = new IVisitor<Component, Boolean>()
+        {
+            public void component(Component component, IVisit<Boolean> visit)
+            {
+            	component.configure();
+                if(component.determineVisibility())
+                {
+                    visit.stop(true);
+                }
+                else
+                {
+                	visit.dontGoDeeper();
+                }
+            }
+        };
+		Boolean ret = commands.visitChildren(visitor);
 		setVisible(ret!=null?ret:false);
 	}
 
