@@ -1,17 +1,13 @@
 package org.orienteer.camel.widget;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.camel.CamelContext;
-import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.model.RoutesDefinition;
 import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.form.Form;
@@ -23,18 +19,14 @@ import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
-import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.ITaskSession;
-import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -108,9 +100,6 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 				new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
 		
 		form.add(table);
-		//table.addCommand(makeStartButton());
-		//table.addCommand(makeStopButton());
-		//table.addCommand(makeSuspendButton());
 		form.setOutputMarkupId(true);
 
 		add(form);
@@ -129,125 +118,6 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 			}
 		}
 		return columns;
-	}
-	
-	private Command makeStartButton() {
-		return new AjaxCommand("start","integration.start") {
-			@Override
-			protected void onInitialize() {
-				super.onInitialize();
-				setIcon(FAIconType.play);
-				setBootstrapType(BootstrapType.SUCCESS);
-				setChangingDisplayMode(true);
-			}
-			
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				try {
-					
-					ODocument doc = (ODocument) CamelWidget.this.getDefaultModelObject();
-					CamelContext context = getOrMakeContextByRid(doc.getIdentity().toString());
-
-					if (context.getStatus().isSuspended()){
-						context.resume();
-						target.add(CamelWidget.this.form);
-					}else if (!context.getStatus().isStarted()){
-						clearContext(context);
-						String script = doc.field("script");
-						
-						RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
-						context.addRouteDefinitions(routes.getRoutes());
-
-						context.start();
-						target.add(CamelWidget.this.form);
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			@Override
-			public boolean isEnabled() {
-				CamelContext context = getOrMakeContext();
-				ServiceStatus status = context.getStatus();
-				if (status.isStarted()){
-					return false;
-				}
-				return super.isEnabled();
-			}
-		};
-
-	}
-
-	
-	private Command makeSuspendButton() {
-		return new AjaxCommand("suspend","integration.suspend") {
-			@Override
-			protected void onInitialize() {
-				super.onInitialize();
-				setIcon(FAIconType.pause);
-				setBootstrapType(BootstrapType.WARNING);
-				setChangingDisplayMode(true);
-			}
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				try {
-					CamelContext context = getOrMakeContext();
-					ServiceStatus status = context.getStatus();
-					if (status.isSuspended()){
-						context.start();
-					}else if(status.isStarted()){
-						context.suspend();
-					}
-					target.add(CamelWidget.this.form);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			@Override
-			public boolean isEnabled() {
-				CamelContext context = getOrMakeContext();
-				ServiceStatus status = context.getStatus();
-				if (!status.isStarted()){
-					return false;
-				}
-				return super.isEnabled();
-			}
-		};
-	}
-	
-
-	private Command makeStopButton() {
-		return new AjaxCommand("stop","integration.stop") {
-			@Override
-			protected void onInitialize() {
-				super.onInitialize();
-				setIcon(FAIconType.stop);
-				setBootstrapType(BootstrapType.DANGER);
-				setChangingDisplayMode(true);
-			}
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				CamelContext context = getOrMakeContext();
-				try {
-					context.stop();
-					target.add(CamelWidget.this.form);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			@Override
-			public boolean isEnabled() {
-				CamelContext context = getOrMakeContext();
-				ServiceStatus status = context.getStatus();
-				if (status.isStopped()){
-					return false;
-				}
-				return super.isEnabled();
-			}
-		};
 	}
 	
 	private CamelContext getOrMakeContext(){

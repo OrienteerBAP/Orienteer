@@ -33,7 +33,10 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) envData.getTableObject();
 			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel(id),table){
 				private static final long serialVersionUID = 1L;
-				{
+				
+				@Override
+				protected void onInitialize() {
+					super.onInitialize();
 					setIcon(annotation.icon());
 					setBootstrapType(annotation.bootstrap());
 					setChangingDisplayMode(annotation.changingDisplayMode());	

@@ -11,7 +11,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -29,7 +28,6 @@ import ru.ydn.wicket.wicketorientdb.model.NvlModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -224,7 +222,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	}
 	
 	public void onActionPerformed(ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
-		
+		//for soft overriding
 	}
 	
 	protected ODatabaseDocument getDatabase() {

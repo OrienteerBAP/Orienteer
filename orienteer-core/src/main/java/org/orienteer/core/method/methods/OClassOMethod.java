@@ -30,7 +30,9 @@ public class OClassOMethod extends AbstractOClassOMethod{
 			IModel<Object> model = (IModel<Object>) envData.getDisplayObjectModel();
 			displayComponent = new AjaxCommand<Object>(id, id,model) {
 				private static final long serialVersionUID = 1L;
-				{
+				@Override
+				protected void onInitialize() {
+					super.onInitialize();
 					setIcon(annotation.icon());
 					setBootstrapType(annotation.bootstrap());
 					setChangingDisplayMode(annotation.changingDisplayMode());	
