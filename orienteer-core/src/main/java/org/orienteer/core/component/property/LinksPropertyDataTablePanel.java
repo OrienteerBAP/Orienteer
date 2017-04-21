@@ -1,37 +1,22 @@
 package org.orienteer.core.component.property;
 
-import java.util.HashMap;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
-import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LoadableDetachableModel;
-import org.orienteer.core.CustomAttribute;
-import org.orienteer.core.component.command.CreateODocumentCommand;
-import org.orienteer.core.component.command.DeleteODocumentCommand;
-import org.orienteer.core.component.command.EditODocumentsCommand;
-import org.orienteer.core.component.command.ExportCommand;
-import org.orienteer.core.component.command.CopyODocumentCommand;
-import org.orienteer.core.component.command.ReleaseODocumentCommand;
-import org.orienteer.core.component.command.SaveODocumentsCommand;
-import org.orienteer.core.component.command.SelectODocumentCommand;
-import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.service.IOClassIntrospector;
-
-import ru.ydn.wicket.wicketorientdb.behavior.SecurityBehavior;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
-import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
-import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
-import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
-
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
+import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.component.command.*;
+import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
+import org.orienteer.core.service.IOClassIntrospector;
+import ru.ydn.wicket.wicketorientdb.behavior.SecurityBehavior;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 /**
  * {@link GenericPanel} to visualize 'table' for a LINKSET/LINKLIST properties
@@ -61,8 +46,9 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		
 		ISortableDataProvider<ODocument, String> provider = oClassIntrospector.prepareDataProviderForProperty(property, documentModel);
-		OrienteerDataTable<ODocument, String> table = 
-				new OrienteerDataTable<ODocument, String>("table", oClassIntrospector.getColumnsFor(linkedClass, true, modeModel), provider, 20);
+		GenericTablePanel<ODocument> tablePanel =
+				new GenericTablePanel<ODocument>("tablePanel", oClassIntrospector.getColumnsFor(linkedClass, true, modeModel), provider, 20);
+		OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
 		final OPropertyNamingModel propertyNamingModel = new OPropertyNamingModel(propertyModel);
 		table.setCaptionModel(propertyNamingModel);
 		SecurityBehavior securityBehaviour = new SecurityBehavior(documentModel, OrientPermission.UPDATE);
@@ -88,7 +74,7 @@ public class LinksPropertyDataTablePanel extends GenericPanel<ODocument>
 				"."+propertyNamingModel.getObject();
 			}
 		}));
-		add(table);
+		add(tablePanel);
 	}
 	
 	@Override

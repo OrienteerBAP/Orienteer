@@ -65,8 +65,10 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 			IFilterStateLocator<IODataFilter<ODocument, String>> stateLocator =
 					(IFilterStateLocator<IODataFilter<ODocument, String>>) form.getStateLocator();
 			IODataFilter<ODocument, String> filterState = stateLocator.getFilterState();
-			IModel<?> valueModel = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
-			component = getComponentForFiltering(componentId, propertyModel, valueModel);
+			if (filterState != null) {
+				IModel<?> valueModel = filterState.getFilteredValueByProperty(propertyModel.getObject().getName());
+				component = getComponentForFiltering(componentId, propertyModel, form, valueModel);
+			}
 		}
 		return component;
 	}

@@ -23,6 +23,9 @@ import org.orienteer.core.method.ClassOMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
@@ -36,7 +39,9 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
  */
 
 public class OIntegrationConfig extends ODocumentWrapper {
+    private static final Logger LOG = LoggerFactory.getLogger(OIntegrationConfig.class);
 	private static final long serialVersionUID = 1L;
+	
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
 	@ClassOMethod(
@@ -63,11 +68,11 @@ public class OIntegrationConfig extends ODocumentWrapper {
 						context.start();
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOG.error("Cannot start or resume Camel Context",e);
 				}
 			}
 		}).start();
+		waitingRefresh(context);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
@@ -77,19 +82,14 @@ public class OIntegrationConfig extends ODocumentWrapper {
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
 	public void stop(IMethodEnvironmentData data){
-		try {
 
-			CamelContext context = getOrMakeContextByRid(getDocument().getIdentity().toString(),data.getCurrentWidget());
-			try {
-				context.stop();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		CamelContext context = getOrMakeContextByRid(getDocument().getIdentity().toString(),data.getCurrentWidget());
+		try {
+			context.stop();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+			LOG.error("Cannot stop Camel Context",e);
+		}
+		waitingRefresh(context);		
 	} 
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
 	@ClassOMethod(
@@ -100,7 +100,6 @@ public class OIntegrationConfig extends ODocumentWrapper {
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
 	public void suspend(IMethodEnvironmentData data){
-		try {
 			final CamelContext context = getOrMakeContext(data.getCurrentWidget());
 			new Thread(new Runnable() {
 				@Override
@@ -113,15 +112,11 @@ public class OIntegrationConfig extends ODocumentWrapper {
 							context.suspend();
 						}
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LOG.error("Cannot start or suspend Camel Context",e);
 					}
 				}
 			}).start();			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			waitingRefresh(context);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
 	public OIntegrationConfig(ODocument doc) {
@@ -162,6 +157,21 @@ public class OIntegrationConfig extends ODocumentWrapper {
 	
 	public CamelContext getOrMakeContext(Component component){
 		return getOrMakeContextByRid(getDocument().getIdentity().toString(),component);
+	}
+	
+	// wait for context status refresh
+	private void waitingRefresh(CamelContext context){
+		ServiceStatus oldStatus = context.getStatus();
+		try {
+			for(int i =0 ;i<10;i++){
+				Thread.sleep(100);
+				if (!oldStatus.equals(context.getStatus())){
+					return ;
+				}
+			}
+		} catch (InterruptedException e) {
+			// silently escape
+		}
 	}
 
 

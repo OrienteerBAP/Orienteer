@@ -1,27 +1,24 @@
 package org.orienteer.core.component.widget;
 
 import com.orientechnologies.orient.core.index.OIndex;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.*;
+import org.orienteer.core.component.command.DeleteOIndexCommand;
+import org.orienteer.core.component.command.EditSchemaCommand;
+import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.OIndexDefinitionColumn;
 import org.orienteer.core.component.table.OIndexMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.event.ActionPerformedEvent;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
-
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
 import ru.ydn.wicket.wicketorientdb.model.OIndexesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
@@ -43,7 +40,6 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
                                 IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
 
-        Form<OClass> iForm = new Form<OClass>("form");
         IModel<DisplayMode> indexesDisplayMode = getModeModel();
         List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
         iColumns.add(new CheckBoxColumn<OIndex<?>, String, String>(OIndexNameConverter.INSTANCE));
@@ -57,13 +53,13 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
 
         OIndexesDataProvider iProvider = getIndexDataProvider();
         iProvider.setSort("name", SortOrder.ASCENDING);
-        iTable = new OrienteerDataTable<OIndex<?>, String>("indexes", iColumns, iProvider ,20);
+        GenericTablePanel<OIndex<?>> tablePanel = new GenericTablePanel<OIndex<?>>("tablePanel", iColumns, iProvider ,20);
+        iTable = tablePanel.getDataTable();
         iTable.addCommand(new EditSchemaCommand<OIndex<?>>(iTable, indexesDisplayMode));
         iTable.addCommand(new SaveSchemaCommand<OIndex<?>>(iTable, indexesDisplayMode));
         iTable.addCommand(new DeleteOIndexCommand(iTable));
         iTable.setCaptionModel(new ResourceModel("class.indexes"));
-        iForm.add(iTable);
-        add(iForm);
+        add(tablePanel);
         add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 

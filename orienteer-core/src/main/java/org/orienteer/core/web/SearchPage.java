@@ -1,43 +1,34 @@
 package org.orienteer.core.web;
 
-import java.util.List;
-
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.TabsPanel;
-import org.orienteer.core.component.command.CreateODocumentCommand;
-import org.orienteer.core.component.command.DeleteODocumentCommand;
 import org.orienteer.core.component.command.EditODocumentsCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.IOClassIntrospector;
-
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Ordering;
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
 
 /**
  * Page to search and display search results
@@ -141,11 +132,12 @@ public class SearchPage extends OrienteerBasePage<String>
 		OQueryDataProvider<ODocument> provider = oClassIntrospector.getDataProviderForGenericSearch(oClass, getModel());
 		oClassIntrospector.defineDefaultSorting(provider, oClass);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-		OrienteerDataTable<ODocument, String> table = 
-				new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20);
+		GenericTablePanel<ODocument> tablePanel =
+				new GenericTablePanel<ODocument>("results", oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20);
+		OrienteerDataTable<ODocument, String> table =  tablePanel.getDataTable();
 		table.addCommand(new EditODocumentsCommand(table, modeModel, oClass));
 		table.addCommand(new SaveODocumentsCommand(table, modeModel));
-		resultsContainer.addOrReplace(table);
+		resultsContainer.addOrReplace(tablePanel);
 	}
 
 	@Override

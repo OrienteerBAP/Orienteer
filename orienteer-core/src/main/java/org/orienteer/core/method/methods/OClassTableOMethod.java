@@ -29,9 +29,12 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 	public Component getDisplayComponent() {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
 		if (displayComponent == null && envData.getTableObject()!=null && envData.getTableObject() instanceof OrienteerDataTable){
-			
+			String titleKey = annotation.titleKey();
+			if (titleKey.isEmpty()){
+				titleKey = id;
+			}			
 			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) envData.getTableObject();
-			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel(id),table){
+			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(getTitleModel(),table){
 				private static final long serialVersionUID = 1L;
 				
 				@Override

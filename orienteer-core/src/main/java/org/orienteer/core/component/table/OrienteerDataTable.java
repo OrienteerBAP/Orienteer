@@ -1,5 +1,6 @@
 package org.orienteer.core.component.table;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
@@ -8,6 +9,7 @@ import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFal
 import org.apache.wicket.extensions.markup.html.repeater.data.table.*;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilteredColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
@@ -87,9 +89,24 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	@Override
 	public void addFilterForm(FilterForm<IODataFilter<T, S>> filterForm) {
 		Args.notNull(filterForm, "filterForm");
-		if (filterToolbar == null) {
+		if (needAddFilterToolbar(filterForm)) {
 			addTopToolbar(filterToolbar = new FilterToolbar(this, filterForm));
 		}
+	}
+
+	private boolean needAddFilterToolbar(FilterForm<IODataFilter<T, S>> filterForm) {
+		if (filterToolbar != null)
+			return false;
+		final String filterId = "filter";
+		for (IColumn<T, S> column : getColumns()) {
+			if (column instanceof IFilteredColumn) {
+				IFilteredColumn<T, S> filteredColumn = (IFilteredColumn<T, S>) column;
+				Component filter = filteredColumn.getFilter(filterId, filterForm);
+				if (filter != null)
+					return true;
+			}
+		}
+		return false;
 	}
 
 	public DataTableCommandsToolbar<T> getCommandsToolbar() {

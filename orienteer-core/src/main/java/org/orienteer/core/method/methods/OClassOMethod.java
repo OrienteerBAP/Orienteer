@@ -28,7 +28,7 @@ public class OClassOMethod extends AbstractOClassOMethod{
 	public Component getDisplayComponent() {
 		if (displayComponent==null){
 			IModel<Object> model = (IModel<Object>) envData.getDisplayObjectModel();
-			displayComponent = new AjaxCommand<Object>(id, id,model) {
+			displayComponent = new AjaxCommand<Object>(id, getTitleModel(),model) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				protected void onInitialize() {

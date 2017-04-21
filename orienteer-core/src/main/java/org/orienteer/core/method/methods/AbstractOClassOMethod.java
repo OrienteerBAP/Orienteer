@@ -8,6 +8,8 @@ import org.orienteer.core.method.IClassMethod;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+
 /**
  * 
  * @author Asm
@@ -35,6 +37,13 @@ public abstract class AbstractOClassOMethod implements Serializable,IMethod,ICla
 	public void methodInit(String id,IMethodEnvironmentData envData) {
 		this.envData = envData;
 		this.id = id;
+	}
+	
+	protected SimpleNamingModel<String> getTitleModel(){
+		if (annotation.titleKey().isEmpty()){
+			return new SimpleNamingModel<String>(annotation.titleKey());			
+		}
+		return new SimpleNamingModel<String>(id);
 	}
 
 }
