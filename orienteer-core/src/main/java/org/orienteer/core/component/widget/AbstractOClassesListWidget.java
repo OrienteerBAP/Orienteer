@@ -7,7 +7,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -16,7 +15,11 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.BookmarkablePageLinkCommand;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.table.*;
+import org.orienteer.core.component.table.CheckBoxColumn;
+import org.orienteer.core.component.table.OClassColumn;
+import org.orienteer.core.component.table.OClassMetaColumn;
+import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.widget.AbstractWidget;
 import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
@@ -35,7 +38,6 @@ public abstract class AbstractOClassesListWidget<T> extends AbstractWidget<T> {
     public AbstractOClassesListWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
 
-        Form<?> form = new Form<Object>("form");
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         List<IColumn<OClass, String>> columns = new ArrayList<IColumn<OClass,String>>();
         columns.add(new CheckBoxColumn<OClass, String, String>(OClassClassNameConverter.INSTANCE));
@@ -65,10 +67,10 @@ public abstract class AbstractOClassesListWidget<T> extends AbstractWidget<T> {
         });
         AbstractJavaSortableDataProvider<OClass, String> provider = getOClassesDataProvider();
         provider.setSort("name", SortOrder.ASCENDING);
-        OrienteerDataTable<OClass, String> table = new OrienteerDataTable<OClass, String>("table", columns, provider ,20);
+        GenericTablePanel<OClass> tablePanel = new GenericTablePanel<OClass>("tablePanel", columns, provider ,20);
+        OrienteerDataTable<OClass, String> table = tablePanel.getDataTable();
         addTableCommands(table, modeModel);
-        form.add(table);
-        add(form);
+        add(tablePanel);
     }
 
     protected abstract void addTableCommands(OrienteerDataTable<OClass, String> table, IModel<DisplayMode> modeModel);

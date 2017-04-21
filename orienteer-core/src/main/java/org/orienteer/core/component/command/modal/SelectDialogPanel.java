@@ -1,7 +1,8 @@
 package org.orienteer.core.component.command.modal;
 
-import java.util.List;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -20,16 +21,14 @@ import org.orienteer.core.component.TabsPanel;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.SearchPage;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
 
 /**
  * Modal window for selecting an {@link ODocument}
@@ -119,8 +118,9 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	{
 		OQueryDataProvider<ODocument> provider = oClassIntrospector.getDataProviderForGenericSearch(oClass, getModel());
 		oClassIntrospector.defineDefaultSorting(provider, oClass);
-		OrienteerDataTable<ODocument, String> table = 
-				new OrienteerDataTable<ODocument, String>("results", oClassIntrospector.getColumnsFor(oClass, true, DisplayMode.VIEW.asModel()), provider, 20);
+		GenericTablePanel<ODocument> tablePanel
+				= new GenericTablePanel<ODocument>("results", oClassIntrospector.getColumnsFor(oClass, true, DisplayMode.VIEW.asModel()), provider, 20);
+		OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
 		table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.select"), table)
 				{
 					
@@ -158,7 +158,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 
 			});
 		}
-		resultsContainer.addOrReplace(table);
+		resultsContainer.addOrReplace(tablePanel);
 	}
 
 	protected abstract boolean onSelect(AjaxRequestTarget target, List<ODocument> objects, boolean selectMore);

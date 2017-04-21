@@ -1,17 +1,12 @@
 package org.orienteer.graph.component.widget;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -24,18 +19,15 @@ import org.orienteer.core.component.command.EditODocumentsCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.LinkViewPanel;
-import org.orienteer.core.component.table.OEntityColumn;
-import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.graph.component.command.CreateEdgeCommand;
 import org.orienteer.graph.component.command.DeleteEdgeCommand;
-
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
-import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
@@ -54,8 +46,6 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
         super(id, model, widgetDocumentModel);
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-        Form<ODocument> form = new Form<ODocument>("form");
-
         OQueryDataProvider<ODocument> vertexEdgesDataProvider = new OQueryDataProvider<ODocument>("SELECT expand(bothE()) FROM "+model.getObject().getIdentity());
 
         OClass commonParent = vertexEdgesDataProvider.probeOClass(20);
@@ -77,16 +67,15 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
                 components.add(new LinkViewPanel(s, vertex));
             }
         });
-
-        OrienteerDataTable<ODocument, String> table =
-                new OrienteerDataTable<ODocument, String>("edges", columns, vertexEdgesDataProvider, 20);
+        GenericTablePanel<ODocument> tablePanel =
+                new GenericTablePanel<ODocument>("edges", columns, vertexEdgesDataProvider, 20);
+        OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
         table.addCommand(new CreateEdgeCommand(new ResourceModel("command.create"),table, getModel()).setBootstrapType(BootstrapType.PRIMARY));
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
         table.addCommand(new DeleteEdgeCommand(table, getModel()));
 
-        form.add(table);
-        add(form);
+        add(tablePanel);
         add(DisableIfDocumentNotSavedBehavior.INSTANCE,UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 
