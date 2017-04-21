@@ -23,7 +23,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
  */
 public class OTaskSessionRuntime implements ITaskSession{
 	
-	private OTaskSessionPersisted persistedSession;
+	private OTaskSession persistedSession;
 	private ITaskSessionCallback callback;
 	private Status status = Status.NOT_STARTED;
 	
@@ -36,10 +36,10 @@ public class OTaskSessionRuntime implements ITaskSession{
 	}
 
 	public OTaskSessionRuntime(String sessionClass, boolean forceSave) {
-		persistedSession = new OTaskSessionPersisted(new ODocument(sessionClass));
+		persistedSession = new OTaskSession(new ODocument(sessionClass));
 		setStatus(Status.NOT_STARTED);
 		if (forceSave){
-			persistedSession.save().getDocument().getDatabase().commit();
+			persistedSession.persist();
 		}
 	}
 	
@@ -127,7 +127,7 @@ public class OTaskSessionRuntime implements ITaskSession{
 	}
 
 	@Override
-	public OTaskSessionPersisted getOTaskSessionPersisted() {
+	public OTaskSession getOTaskSessionPersisted() {
 		return persistedSession;
 	}
 

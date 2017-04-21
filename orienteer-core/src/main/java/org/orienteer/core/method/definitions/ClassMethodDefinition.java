@@ -11,6 +11,7 @@ import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
+import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.method.filters.OEntityFilter;
 
 /**
@@ -23,6 +24,7 @@ public class ClassMethodDefinition implements IMethodDefinition{
 	private int order;
 	private String methodId;
 	private Class<? extends IMethod> methodClass;
+	private Class<? extends IMethod> groupMethodClass;
 	private String oClassName;
 	private List<IMethodFilter> filters;
 	private Method javaMethod;
@@ -32,6 +34,7 @@ public class ClassMethodDefinition implements IMethodDefinition{
 		order = methodAnnotation.order();
 		methodId = javaMethod.getDeclaringClass().getSimpleName()+"."+javaMethod.getName();
 		methodClass = methodAnnotation.methodClass();
+		groupMethodClass = methodAnnotation.oClassTableMethodClass();
 		oClassName = javaMethod.getDeclaringClass().getSimpleName();
 		filters = new ArrayList<IMethodFilter>();
 		this.javaMethod = javaMethod;
@@ -56,10 +59,18 @@ public class ClassMethodDefinition implements IMethodDefinition{
 	@Override
 	public IMethod getMethod(IMethodEnvironmentData dataObject) {
 		try {
-			if (IClassMethod.class.isAssignableFrom(methodClass)){
-				IMethod newMethod = methodClass.newInstance();
-				((IClassMethod)newMethod).initOClassMethod(javaMethod);
-				return newMethod;
+			if(MethodPlace.DATA_TABLE.equals(dataObject.getPlace())){
+				if (IClassMethod.class.isAssignableFrom(groupMethodClass)){
+					IMethod newMethod = groupMethodClass.newInstance();
+					((IClassMethod)newMethod).initOClassMethod(javaMethod);
+					return newMethod;
+				}
+			}else{
+				if (IClassMethod.class.isAssignableFrom(methodClass)){
+					IMethod newMethod = methodClass.newInstance();
+					((IClassMethod)newMethod).initOClassMethod(javaMethod);
+					return newMethod;
+				}
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
 			// TODO Auto-generated catch block

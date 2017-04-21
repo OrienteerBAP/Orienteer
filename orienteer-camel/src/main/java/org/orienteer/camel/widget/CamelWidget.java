@@ -1,16 +1,19 @@
 package org.orienteer.camel.widget;
 
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import org.apache.camel.CamelContext;
-import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.model.RouteDefinition;
-import org.apache.camel.model.RoutesDefinition;
 import org.apache.wicket.Component;
 import org.apache.wicket.MetaDataKey;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.model.IModel;
@@ -20,11 +23,9 @@ import org.orienteer.camel.component.OrientDBComponent;
 import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
-import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OPropertyValueColumn;
@@ -42,9 +43,6 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 /**
  * Widget for Orienteer Camel integration, linked to OIntegrationConfig
  *
@@ -77,14 +75,6 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 	
-	private class CamelContextModel extends LoadableDetachableModel<CamelContext>{
-		private static final long serialVersionUID = 1L;
-		@Override
-		protected CamelContext load() {
-			return getOrMakeContext();
-		}
-	}
-	
 	
 	public CamelWidget(String id, IModel<ODocument> model, final IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
@@ -100,13 +90,13 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 				"select from "+OCamelTaskSession.TASK_SESSION_CLASS+" where "+
 				OCamelTaskSession.Field.CONFIG.fieldName()+"="+CamelWidget.this.getModelObject().getIdentity());
 		oClassIntrospector.defineDefaultSorting(provider, taskSessionClass);
+
 		tablePanel = new GenericTablePanel<ODocument>("tablePanel", columns, provider, 20);
 		OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
 
-		table.addCommand(makeStartButton());
-		table.addCommand(makeStopButton());
-		table.addCommand(makeSuspendButton());
 		add(tablePanel);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
+
 	}
 	
 	private List<IColumn<ODocument, String>> makeColumns(OClass taskSessionClass) {
@@ -121,164 +111,7 @@ public class CamelWidget extends AbstractWidget<ODocument>{
 			}
 		}
 		return columns;
-	}
-	
-	private Command makeStartButton() {
-		return new AjaxCommand("start","integration.start") {
-			@Override
-			protected void onInitialize() {
-				super.onInitialize();
-				setIcon(FAIconType.play);
-				setBootstrapType(BootstrapType.SUCCESS);
-				setChangingDisplayMode(true);
-			}
-			
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				try {
-					
-					ODocument doc = (ODocument) CamelWidget.this.getDefaultModelObject();
-					CamelContext context = getOrMakeContextByRid(doc.getIdentity().toString());
-
-					if (context.getStatus().isSuspended()){
-						context.resume();
-						target.add(CamelWidget.this.tablePanel);
-					}else if (!context.getStatus().isStarted()){
-						clearContext(context);
-						String script = doc.field("script");
-						
-						RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
-						context.addRouteDefinitions(routes.getRoutes());
-
-						context.start();
-						target.add(CamelWidget.this.tablePanel);
-					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			@Override
-			public boolean isEnabled() {
-				CamelContext context = getOrMakeContext();
-				ServiceStatus status = context.getStatus();
-				if (status.isStarted()){
-					return false;
-				}
-				return super.isEnabled();
-			}
-		};
-
-	}
-
-	
-	private Command makeSuspendButton() {
-		return new AjaxCommand("suspend","integration.suspend") {
-			@Override
-			protected void onInitialize() {
-				super.onInitialize();
-				setIcon(FAIconType.pause);
-				setBootstrapType(BootstrapType.WARNING);
-				setChangingDisplayMode(true);
-			}
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				try {
-					CamelContext context = getOrMakeContext();
-					ServiceStatus status = context.getStatus();
-					if (status.isSuspended()){
-						context.start();
-					}else if(status.isStarted()){
-						context.suspend();
-					}
-					target.add(CamelWidget.this.tablePanel);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			@Override
-			public boolean isEnabled() {
-				CamelContext context = getOrMakeContext();
-				ServiceStatus status = context.getStatus();
-				if (!status.isStarted()){
-					return false;
-				}
-				return super.isEnabled();
-			}
-		};
-	}
-	
-
-	private Command makeStopButton() {
-		return new AjaxCommand("stop","integration.stop") {
-			@Override
-			protected void onInitialize() {
-				super.onInitialize();
-				setIcon(FAIconType.stop);
-				setBootstrapType(BootstrapType.DANGER);
-				setChangingDisplayMode(true);
-			}
-			@Override
-			public void onClick(AjaxRequestTarget target) {
-				CamelContext context = getOrMakeContext();
-				try {
-					context.stop();
-					target.add(CamelWidget.this.tablePanel);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			@Override
-			public boolean isEnabled() {
-				CamelContext context = getOrMakeContext();
-				ServiceStatus status = context.getStatus();
-				if (status.isStopped()){
-					return false;
-				}
-				return super.isEnabled();
-			}
-		};
-	}
-	
-	private CamelContext getOrMakeContext(){
-		ODocument doc = (ODocument) CamelWidget.this.getDefaultModelObject();
-		return getOrMakeContextByRid(doc.getIdentity().toString());
-	}
-
-	private CamelContext getOrMakeContextByRid(String rid){
-		CamelContext context;
-		Map<String,CamelContext> contextMap = getApplication().getMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY);
-		if (contextMap.containsKey(rid)){
-			context = contextMap.get(rid);
-		}else{
-			IOrientDbSettings dbSettings = OrientDbWebApplication.get().getOrientDbSettings();
-			OrientDbWebSession session = OrientDbWebSession.get();
-			if (session.getUsername()==null){
-				throw new UnauthorizedActionException(this, Component.RENDER);
-			}
-			context = new DefaultCamelContext();
-			Map<String, String> properties = context.getProperties();
-			properties.put(OrientDBComponent.DB_URL, dbSettings.getDBUrl());
-			properties.put(OrientDBComponent.DB_USERNAME, session.getUsername());
-			properties.put(OrientDBComponent.DB_PASSWORD, session.getPassword());
-			context.setProperties(properties);
-			
-			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(new OCamelTaskSessionCallback(context),rid,context));
-
-			contextMap.put(rid, context);
-		}
-		return context;
-	}
-	
-	private void clearContext(CamelContext context) throws Exception{
-		List<RouteDefinition> definitions = context.getRouteDefinitions();
-		if (!definitions.isEmpty()){
-			context.removeRouteDefinitions(new ArrayList<RouteDefinition>(definitions));
-		}
-	}
-	
+	}	
 	
 	@Override
 	protected FAIcon newIcon(String id) {
