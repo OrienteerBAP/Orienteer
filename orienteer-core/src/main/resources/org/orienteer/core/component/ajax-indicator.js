@@ -1,15 +1,27 @@
+'use strict';
+
+var timeoutID;
+var needShow = false;
+
 function showAjaxIndicator() {
-	$('#${componentId}').show();
+	needShow = true;
+    timeoutID = window.setTimeout(function () {
+        if (needShow) $('#${componentId}').show();
+    }, 100);
 }
 
 function hideAjaxIndicator() {
-	$('#${componentId}').hide();
+	needShow = false;
+    window.clearTimeout(timeoutID);
+    $('#${componentId}').hide();
 }
+
 Wicket.Event.subscribe('/ajax/call/beforeSend', 
 	function( attributes, jqXHR, settings ) {
-		showAjaxIndicator()
+		showAjaxIndicator();
     });
+
 Wicket.Event.subscribe('/ajax/call/complete', 
 	function( attributes, jqXHR, textStatus) {
-		hideAjaxIndicator()
+		hideAjaxIndicator();
     });
