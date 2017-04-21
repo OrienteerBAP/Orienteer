@@ -64,8 +64,6 @@ public abstract class AbstractSimpleVisualizer implements IVisualizer
 				@Override
 				protected void onEvent(AjaxRequestTarget target) {
 					defaultButton.setDefaultFormProcessing(true);
-					Component indicator = component.get("indicator");
-					if (indicator != null) indicator.setVisible(false);
 				}
 			});
 			component.add(new AjaxEventBehavior("focusout") {
