@@ -24,13 +24,13 @@ class InitUtils {
     private static final String MAVEN_REMOTE_REPOSITORY_ID   = "orienteer.loader.repository.remote.%d.id";
     private static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
     private static final String DEFAULT                      = "default";
-    private static final String MODULES_FOLDER               = "orienteer.loader.modules.folder";
+    private static final String LIBS_FOLDER 	             = "orienteer.loader.libs.folder";
     private static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
     private static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
     private static final String METADATA_FILE                = "metadata.xml";
 
-    private static final String DEFAULT_MODULES_FOLDER         = "libs/";
-    private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_MODULES_FOLDER + "deps/";
+    private static final String DEFAULT_LIBS_FOLDER         = "libs/";
+    private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_LIBS_FOLDER + "deps/";
     private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
 
@@ -52,9 +52,9 @@ class InitUtils {
 
     public Path getPathToModulesFolder() {
         if (PROPERTIES == null)
-            return createDirectory(Paths.get(DEFAULT_MODULES_FOLDER));
-        String folder = PROPERTIES.getProperty(MODULES_FOLDER);
-        Path pathToModules = folder == null ? Paths.get(DEFAULT_MODULES_FOLDER) : Paths.get(folder);
+            return createDirectory(Paths.get(DEFAULT_LIBS_FOLDER));
+        String folder = PROPERTIES.getProperty(LIBS_FOLDER);
+        Path pathToModules = folder == null ? Paths.get(DEFAULT_LIBS_FOLDER) : Paths.get(folder);
         return createDirectory(pathToModules);
     }
 
