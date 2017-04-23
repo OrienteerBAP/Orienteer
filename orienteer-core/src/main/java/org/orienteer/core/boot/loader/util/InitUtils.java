@@ -34,23 +34,23 @@ class InitUtils {
     private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
 
-    String getMavenLocalRepository() {
+    public String getMavenLocalRepository() {
         String path = PROPERTIES.getProperty(MAVEN_LOCAL_REPOSITORY);
         return path == null ? DEFAULT_MAVEN_LOCAL_REPOSITORY : path;
     }
 
-    boolean resolvingDependenciesRecursively() {
+    public boolean resolvingDependenciesRecursively() {
         if (PROPERTIES == null)
             return Boolean.FALSE;
         return Boolean.valueOf(PROPERTIES.getProperty(RECURSIVELY_RESOLVING_DEPS));
     }
 
-    Path getMetadataPath() {
+    public Path getMetadataPath() {
         Path modulesFolder = getPathToModulesFolder();
         return modulesFolder.resolve(METADATA_FILE);
     }
 
-    Path getPathToModulesFolder() {
+    public Path getPathToModulesFolder() {
         if (PROPERTIES == null)
             return createDirectory(Paths.get(DEFAULT_LIBS_FOLDER));
         String folder = PROPERTIES.getProperty(LIBS_FOLDER);
@@ -69,7 +69,7 @@ class InitUtils {
         return pathToDir;
     }
 
-    List<RemoteRepository> getRemoteRepositories() {
+    public List<RemoteRepository> getRemoteRepositories() {
         if (PROPERTIES == null)
             return getDefaultRepositories();
 
@@ -106,7 +106,7 @@ class InitUtils {
         return repositories;
     }
 
-    String getOrienteerModulesUrl() {
+    public String getOrienteerModulesUrl() {
         return PROPERTIES.getProperty(ORIENTEER_MODULES_URL);
     }
 }

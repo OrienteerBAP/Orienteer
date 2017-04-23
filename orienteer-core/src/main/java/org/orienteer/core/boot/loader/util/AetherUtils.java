@@ -37,24 +37,23 @@ class AetherUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(AetherUtils.class);
 
-    static final String JAR_EXTENSION     = "jar";
-    static final String POM_EXTENSION     = "pom";
-    static final String ARTIFACT_TEMPLATE = "%s:%s:%s:%s";
-    static final String ORIENTEER_GROUP   = "org.orienteer";
-    static final String ORIENTEER_PARENT  = "orienteer-parent";
-    static final String ORIENTEER_CORE    = "orienteer-core";
+    private static final String JAR_EXTENSION     = "jar";
+    private static final String POM_EXTENSION     = "pom";
+    private static final String ARTIFACT_TEMPLATE = "%s:%s:%s:%s";
+    private static final String ORIENTEER_GROUP   = "org.orienteer";
+    private static final String ORIENTEER_PARENT  = "orienteer-parent";
+    private static final String ORIENTEER_CORE    = "orienteer-core";
 
     private final Set<Artifact> parentDependencies = Sets.newHashSet();
     private final RepositorySystem system;
     private final RepositorySystemSession session;
     private final List<RemoteRepository> repositories;
-    private final Artifact currentArtifact;
 
     AetherUtils(InitUtils initUtils) {
         this.system = getRepositorySystem();
         this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
         this.repositories = initUtils.getRemoteRepositories();
-        this.currentArtifact = OrienteerClassLoaderUtil.getOrienteerCurrentArtifact();
+        Artifact currentArtifact = OrienteerClassLoaderUtil.getOrienteerCurrentArtifact();
         addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_PARENT, currentArtifact.getVersion()));
         addOrienteerMainDependencies(currentArtifact);
         addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_CORE, currentArtifact.getVersion()));

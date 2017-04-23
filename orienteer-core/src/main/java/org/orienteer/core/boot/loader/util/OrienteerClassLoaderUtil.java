@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.orienteer.core.boot.loader.util.AetherUtils.*;
-
 /**
  * @author Vitaliy Gonchar
  * Utility class for OrienteerClassLoader
@@ -191,7 +189,7 @@ public abstract class OrienteerClassLoaderUtil {
                     "\nPath to pom.xml: " + pomXml.toAbsolutePath() +
                     "\nImplementationVersion: " + OrienteerClassLoaderUtil.class.getPackage().getImplementationVersion() +
                     "\nImplementationTitle:   " + OrienteerClassLoaderUtil.class.getPackage().getImplementationTitle());
-        return new DefaultArtifact(String.format(ARTIFACT_TEMPLATE, ORIENTEER_GROUP, artifactId, POM_EXTENSION, version));
+        return new DefaultArtifact(String.format("%s:%s:%s:%s", "org.orienteer", artifactId, "pom", version));
     }
 
     static void addOrienteerVersions(Path pathToPomXml) {
