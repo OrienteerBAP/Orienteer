@@ -92,6 +92,7 @@
 		<module>orienteer-logger-server</module>
 		<module>orienteer-bpm</module>
 		<module>orienteer-camel</module>
+		<module>orienteer-birt</module>
 	</modules>
 	<dependencyManagement>
 	    <dependencies>
