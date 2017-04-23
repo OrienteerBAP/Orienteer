@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -170,26 +169,17 @@ public abstract class OrienteerClassLoaderUtil {
     }
 
     static Artifact getOrienteerCurrentArtifact() {
-        String version    = null;
-        String artifactId = null;
-        Path pomXml = Paths.get(POM_XML);
-        if (Files.exists(pomXml)) {
-            Optional<Artifact> artifactOptional = pomXmlUtils.readGroupArtifactVersionInPomXml(pomXml);
-            if (artifactOptional.isPresent()) {
-                version = artifactOptional.get().getVersion();
-                artifactId = artifactOptional.get().getArtifactId();
-            }
-        }
-        if (version == null || artifactId == null) {
-            version = OrienteerClassLoaderUtil.class.getPackage().getImplementationVersion();
+        String version    = initUtils.getCurrentOrienteerVersionId();
+        String artifactId = initUtils.getCurrentOrienteerArtifactId();
+        String groupId    = initUtils.getCurrentOrienteerGroupId();
+        if (version == null || artifactId == null || groupId == null) {
+            version    = OrienteerClassLoaderUtil.class.getPackage().getImplementationVersion();
             artifactId = OrienteerClassLoaderUtil.class.getPackage().getImplementationTitle();
+            groupId    = "org.orienteer";
         }
         if (version == null || artifactId == null)
-            throw new IllegalStateException("Cannot initialize current Orienteer artifact! " +
-                    "\nPath to pom.xml: " + pomXml.toAbsolutePath() +
-                    "\nImplementationVersion: " + OrienteerClassLoaderUtil.class.getPackage().getImplementationVersion() +
-                    "\nImplementationTitle:   " + OrienteerClassLoaderUtil.class.getPackage().getImplementationTitle());
-        return new DefaultArtifact(String.format("%s:%s:%s:%s", "org.orienteer", artifactId, "pom", version));
+            throw new IllegalStateException("Cannot initialize current Orienteer artifact! ");
+        return new DefaultArtifact(String.format("%s:%s:%s:%s", groupId, artifactId, "pom", version));
     }
 
     static void addOrienteerVersions(Path pathToPomXml) {
