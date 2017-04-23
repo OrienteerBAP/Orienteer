@@ -29,28 +29,28 @@ class InitUtils {
     private static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
     private static final String METADATA_FILE                = "metadata.xml";
 
-    private static final String DEFAULT_LIBS_FOLDER         = "libs/";
+    private static final String DEFAULT_LIBS_FOLDER          = "libs/";
     private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_LIBS_FOLDER + "deps/";
     private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
 
-    public String getMavenLocalRepository() {
+    String getMavenLocalRepository() {
         String path = PROPERTIES.getProperty(MAVEN_LOCAL_REPOSITORY);
         return path == null ? DEFAULT_MAVEN_LOCAL_REPOSITORY : path;
     }
 
-    public boolean resolvingDependenciesRecursively() {
+    boolean resolvingDependenciesRecursively() {
         if (PROPERTIES == null)
             return Boolean.FALSE;
         return Boolean.valueOf(PROPERTIES.getProperty(RECURSIVELY_RESOLVING_DEPS));
     }
 
-    public Path getMetadataPath() {
+    Path getMetadataPath() {
         Path modulesFolder = getPathToModulesFolder();
         return modulesFolder.resolve(METADATA_FILE);
     }
 
-    public Path getPathToModulesFolder() {
+    Path getPathToModulesFolder() {
         if (PROPERTIES == null)
             return createDirectory(Paths.get(DEFAULT_LIBS_FOLDER));
         String folder = PROPERTIES.getProperty(LIBS_FOLDER);
@@ -69,7 +69,7 @@ class InitUtils {
         return pathToDir;
     }
 
-    public List<RemoteRepository> getRemoteRepositories() {
+    List<RemoteRepository> getRemoteRepositories() {
         if (PROPERTIES == null)
             return getDefaultRepositories();
 
