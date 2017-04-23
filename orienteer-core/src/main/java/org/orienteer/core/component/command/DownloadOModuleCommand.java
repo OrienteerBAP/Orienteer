@@ -45,7 +45,7 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArti
         if (artifactOptional.isPresent()) {
             OArtifact ooArtifact = new OArtifact();
             ooArtifact.setTrusted(true);
-            ooArtifact.setLoad(false);
+            ooArtifact.setLoad(true);
             ooArtifact.setDownloaded(true);
 
             module.setDownloaded(true);
