@@ -27,9 +27,12 @@ class InitUtils {
     private static final String LIBS_FOLDER 	             = "orienteer.loader.libs.folder";
     private static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
     private static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
+    private static final String ORIENTEER_GROUP_ID           = "orienteer.groupId";
+    private static final String ORIENTEER_ARTIFACT_ID        = "orienteer.artifactId";
+    private static final String ORIENTEER_VERSION            = "orienteer.version";
     private static final String METADATA_FILE                = "metadata.xml";
 
-    private static final String DEFAULT_LIBS_FOLDER         = "libs/";
+    private static final String DEFAULT_LIBS_FOLDER          = "libs/";
     private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_LIBS_FOLDER + "deps/";
     private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
@@ -106,7 +109,19 @@ class InitUtils {
         return repositories;
     }
 
-    String getOrienteerModulesUrl() {
+    public String getOrienteerModulesUrl() {
         return PROPERTIES.getProperty(ORIENTEER_MODULES_URL);
+    }
+
+    public String getCurrentOrienteerGroupId() {
+        return PROPERTIES.getProperty(ORIENTEER_GROUP_ID);
+    }
+
+    public String getCurrentOrienteerArtifactId() {
+        return PROPERTIES.getProperty(ORIENTEER_ARTIFACT_ID);
+    }
+
+    public String getCurrentOrienteerVersionId() {
+        return PROPERTIES.getProperty(ORIENTEER_VERSION);
     }
 }

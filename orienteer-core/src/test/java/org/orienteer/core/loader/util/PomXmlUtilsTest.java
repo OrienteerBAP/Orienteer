@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Vitaliy Gonchar
  */
@@ -31,16 +33,8 @@ public class PomXmlUtilsTest {
 
     @Test
     public void readGroupArtifactVersionInPomXml() throws Exception {
-        Optional<Artifact> oDependencyOptional = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml);
-        if (oDependencyOptional.isPresent()) {
-            LOG.info("dependency: " + oDependencyOptional.get());
-        } else throw new Exception("Cannot read dependency from pom.xml: " + pomXml);
+        Optional<Artifact> artifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml);
+        assertEquals("Artifact from pom.xml", true, artifact.isPresent());
     }
 
-
-    @Test
-    public void readParentGAV() throws Exception {
-        Artifact mainArtifact = OrienteerClassLoaderUtil.getMainArtifact();
-        LOG.info("main artifact: " + mainArtifact);
-    }
 }

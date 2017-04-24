@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * @author Vitaliy Gonchar
  */
@@ -39,20 +42,25 @@ public class DependencyTest {
         String version = "2.4.0";
         Artifact artifact = new DefaultArtifact(gav(groupId, artifactId, version, "jar"));
         List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
-        LOG.info("Result size: " + resolvedArtifact.size());
+        assertEquals("Size of resolved dependencies", true, resolvedArtifact.size() > 0);
+        LOG.debug("Result size: " + resolvedArtifact.size());
         for (ArtifactResult res : resolvedArtifact) {
             Artifact resArtifact = res.getArtifact();
-            LOG.info("result artifact: " + resArtifact);
+            assertNotNull("Result artifact", resArtifact);
+            LOG.debug("result artifact: " + resArtifact);
         }
     }
 
     @Test
     public void resolveDevutils() {
         List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
-        LOG.info("Result size: " + resolvedArtifact.size());
+        assertEquals("Size of resolved dependencies", true, resolvedArtifact.size() > 0);
+        LOG.debug("Result size: " + resolvedArtifact.size());
 
         for (ArtifactResult res : resolvedArtifact) {
-            LOG.info("result artifact: " + res.getArtifact());
+            Artifact resArtifact = res.getArtifact();
+            assertNotNull("Result artifact", resArtifact);
+            LOG.debug("Result artifact: " + resArtifact);
         }
         resolveArtifacts(getArtifacts(resolvedArtifact));
     }
@@ -61,28 +69,29 @@ public class DependencyTest {
     public void downloadParentDependecy() throws Exception {
         String groupId = "org.orienteer";
         String artifactId = "orienteer-parent";
-        String version = "1.3-SNAPSHOT";
+        String version = "1.2";
         Artifact artifact = new DefaultArtifact(gav(groupId, artifactId, version, "pom"));
         Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact);
-        Artifact result;
-        if (artifactOptional.isPresent()) {
-            result = artifactOptional.get();
-            LOG.info("Orienteer parent dependency: " + result);
-        } else throw new Exception("Cannot download Orienteer parent dependency!");
+        assertEquals("Parent dependecy is not present!", true, artifactOptional.isPresent());
+        LOG.debug("Parent artifact: " + artifactOptional.orNull());
     }
 
     @Test
     public void getModulesTest() throws Exception {
         List<OArtifact> orienteerModulesFromServer = OrienteerClassLoaderUtil.getOrienteerArtifactsFromServer();
         for (OArtifact artifact : orienteerModulesFromServer) {
-            LOG.info("artifact: " + artifact);
+            assertNotNull("Module from server cannot be null", artifact);
+            LOG.debug("Module from server: " + artifact);
         }
     }
 
     private void resolveArtifacts(Set<Artifact> artifacts) {
-        List<ArtifactResult> resultList = OrienteerClassLoaderUtil.resolveArtifacts(artifacts);
-        for (ArtifactResult result : resultList) {
-            LOG.info("result: " + result);
+        List<ArtifactResult> resolvedArtifacts = OrienteerClassLoaderUtil.resolveArtifacts(artifacts);
+        assertEquals("Size of resolved dependencies cannot be 0", true, resolvedArtifacts.size() > 0);
+        for (ArtifactResult result : resolvedArtifacts) {
+            Artifact resultArtifact = result.getArtifact();
+            assertNotNull("Result artifact cannot be null", resultArtifact);
+            LOG.debug("Result result: " + resultArtifact);
         }
     }
 

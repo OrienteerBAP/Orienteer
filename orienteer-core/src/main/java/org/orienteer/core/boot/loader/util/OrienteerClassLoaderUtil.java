@@ -4,9 +4,10 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +24,7 @@ import java.util.Set;
  * Utility class for OrienteerClassLoader
  */
 public abstract class OrienteerClassLoaderUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoaderUtil.class);
 
     public static final String WITHOUT_JAR          = "WITHOUT_JAR";
 
@@ -33,10 +34,9 @@ public abstract class OrienteerClassLoaderUtil {
     private static AetherUtils aetherUtils   = new AetherUtils(initUtils);
     private static MetadataUtil metadataUtil = new MetadataUtil(initUtils.getMetadataPath(), initUtils.getPathToModulesFolder());
 
-    static final String POM_XML                     = "pom.xml";
+    private static final String POM_XML             = "pom.xml";
     static final String MODULES                     = "modules.xml";
 
-    private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoaderUtil.class);
 
     private OrienteerClassLoaderUtil() {}
 
@@ -168,13 +168,18 @@ public abstract class OrienteerClassLoaderUtil {
         return initUtils.resolvingDependenciesRecursively();
     }
 
-
-    public static Artifact getMainArtifact() {
-        Path pathToPomXml = Paths.get(POM_XML);
-        Optional<Artifact> artifactOptional = pomXmlUtils.readParentGAVInPomXml(pathToPomXml);
-        if (!artifactOptional.isPresent())
-            throw new IllegalStateException("Cannot read main artifact in pom.xml (" + pathToPomXml.toAbsolutePath() + ")");
-        return artifactOptional.get();
+    static Artifact getOrienteerCurrentArtifact() {
+        String version    = initUtils.getCurrentOrienteerVersionId();
+        String artifactId = initUtils.getCurrentOrienteerArtifactId();
+        String groupId    = initUtils.getCurrentOrienteerGroupId();
+        if (version == null || artifactId == null || groupId == null) {
+            version    = OrienteerClassLoaderUtil.class.getPackage().getImplementationVersion();
+            artifactId = OrienteerClassLoaderUtil.class.getPackage().getImplementationTitle();
+            groupId    = "org.orienteer";
+        }
+        if (version == null || artifactId == null)
+            throw new IllegalStateException("Cannot initialize current Orienteer artifact! ");
+        return new DefaultArtifact(String.format("%s:%s:%s:%s", groupId, artifactId, "pom", version));
     }
 
     static void addOrienteerVersions(Path pathToPomXml) {
