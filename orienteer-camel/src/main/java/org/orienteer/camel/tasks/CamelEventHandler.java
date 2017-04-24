@@ -3,17 +3,13 @@ package org.orienteer.camel.tasks;
 import java.util.EventObject;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
 import org.apache.camel.management.event.ExchangeSentEvent;
 import org.apache.camel.support.EventNotifierSupport;
+import org.orienteer.camel.component.OIntegrationConfig;
 import org.orienteer.core.tasks.ITaskSessionCallback;
+import org.orienteer.core.tasks.OTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.orientechnologies.orient.core.db.ODatabase;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 /**
  * To handle camel events
@@ -24,12 +20,12 @@ public class CamelEventHandler extends EventNotifierSupport{
 	private static final Logger LOG = LoggerFactory.getLogger(CamelEventHandler.class);
 	private ITaskSessionCallback callback;
 	private volatile OCamelTaskSession taskSession;
-	private String configId;
+	private OIntegrationConfig config;
 	private CamelContext context;
 	
-	public CamelEventHandler(ITaskSessionCallback callback,String configId,CamelContext context) {
+	public CamelEventHandler(ITaskSessionCallback callback,OIntegrationConfig config,CamelContext context) {
 		this.callback = callback;
-		this.configId = configId;
+		this.config = config;
 		this.context = context;
 	}
 
@@ -63,9 +59,10 @@ public class CamelEventHandler extends EventNotifierSupport{
 
 //		if (taskSession == null){
 			taskSession = new OCamelTaskSession();
+			taskSession.setOTask(config);
 			taskSession.setCallback(callback);
-			taskSession.setDeleteOnFinish(false);
-			taskSession.setConfig(configId);
+			taskSession.setDeleteOnFinish((Boolean)config.getDocument().field(OTask.Field.AUTODELETE_SESSIONS.fieldName()));
+			taskSession.setConfig(config.getDocument().getIdentity().toString());
 			taskSession.setFinalProgress(context.getRoutes().size());
 			taskSession.start();
 //		}
@@ -77,5 +74,6 @@ public class CamelEventHandler extends EventNotifierSupport{
 		if(taskSession!=null) taskSession.interrupt();
 		super.doStop();
 	}
+	
 
 }

@@ -14,6 +14,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.method.MethodManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
+import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -42,22 +43,22 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-
+		makeSchema(app,db);
+		
 		app.setMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
 		app.mountPages("org.orienteer.camel.web");
 		app.registerWidgets("org.orienteer.camel.widget");
 		MethodManager.get().addModule(Module.class);
 		MethodManager.get().reload();
 		
-		OCamelTaskSession.onInstallModule(app, db);
+
 	}
 	
 	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass("OIntegrationConfig")
-			.oProperty("name", OType.STRING, 10).markAsDocumentName()
-			.oProperty("description", OType.STRING, 20)
-			.oProperty("script", OType.STRING, 30).assignVisualization("textarea");
+		helper.oClass("OIntegrationConfig",OTask.TASK_CLASS)
+			.oProperty("script", OType.STRING, 15).assignVisualization("textarea");
+		OCamelTaskSession.onInstallModule(app, db);
 	}
 	
 	@Override
