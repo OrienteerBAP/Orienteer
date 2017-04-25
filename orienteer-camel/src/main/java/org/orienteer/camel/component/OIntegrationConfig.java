@@ -12,11 +12,11 @@ import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
+import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.orienteer.camel.behavior.OIntegrationConfigStopBehavior;
 import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
-import org.orienteer.camel.widget.CamelWidget;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
@@ -43,6 +43,11 @@ public class OIntegrationConfig extends OTask {
     private static final Logger LOG = LoggerFactory.getLogger(OIntegrationConfig.class);
 	private static final long serialVersionUID = 1L;
 	public static final String TASK_CLASS = "OIntegrationConfig";
+	
+	public static final MetaDataKey<Map<String,CamelContext>> INTEGRATION_SESSIONS_KEY = new MetaDataKey<Map<String,CamelContext>>()
+	{
+		private static final long serialVersionUID = 1L;
+	};
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
 	@ClassOMethod(
 			order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
@@ -130,7 +135,7 @@ public class OIntegrationConfig extends OTask {
 
 	public CamelContext getOrMakeContextByRid(String rid,Component component){
 		CamelContext context;
-		Map<String,CamelContext> contextMap = Application.get().getMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY);
+		Map<String,CamelContext> contextMap = Application.get().getMetaData(INTEGRATION_SESSIONS_KEY);
 		if (contextMap.containsKey(rid)){
 			context = contextMap.get(rid);
 		}else{

@@ -6,6 +6,7 @@ import org.orienteer.core.method.ClassOMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
+import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -18,12 +19,15 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
  * Wrapper class for exiting {@link OTaskSessionRuntime} document in DB
  */
 public class OTaskSession extends ODocumentWrapper implements ITaskSession {
+	private static final long serialVersionUID = 1L;
 
 	///////////////////////////////////////////////////////////////////////
 	//OMethods
 	@ClassOMethod(
 		icon = FAIconType.stop, bootstrap=BootstrapType.DANGER,
-		filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),},
+		filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
+				@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),		
+		},
 		behaviors={OTaskSessionInterruptBehavior.class}
 	)
 	public void interrupt( IMethodEnvironmentData data){

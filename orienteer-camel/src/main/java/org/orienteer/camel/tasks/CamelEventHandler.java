@@ -61,7 +61,8 @@ public class CamelEventHandler extends EventNotifierSupport{
 			taskSession = new OCamelTaskSession();
 			taskSession.setOTask(config);
 			taskSession.setCallback(callback);
-			taskSession.setDeleteOnFinish((Boolean)config.getDocument().field(OTask.Field.AUTODELETE_SESSIONS.fieldName()));
+			Object deleteOnFinish = config.getDocument().field(OTask.Field.AUTODELETE_SESSIONS.fieldName());
+			taskSession.setDeleteOnFinish(deleteOnFinish!=null?(Boolean)deleteOnFinish:false);
 			taskSession.setConfig(config.getDocument().getIdentity().toString());
 			taskSession.setFinalProgress(context.getRoutes().size());
 			taskSession.start();
