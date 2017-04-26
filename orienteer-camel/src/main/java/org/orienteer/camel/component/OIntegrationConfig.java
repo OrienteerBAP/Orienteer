@@ -12,23 +12,24 @@ import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.RoutesDefinition;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
+import org.apache.wicket.MetaDataKey;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.orienteer.camel.behavior.OIntegrationConfigStopBehavior;
 import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
-import org.orienteer.camel.widget.CamelWidget;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
+import org.orienteer.core.method.filters.WidgetTypeFilter;
+import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
-
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -38,17 +39,23 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
  *
  */
 
-public class OIntegrationConfig extends ODocumentWrapper {
+public class OIntegrationConfig extends OTask {
     private static final Logger LOG = LoggerFactory.getLogger(OIntegrationConfig.class);
 	private static final long serialVersionUID = 1L;
+	public static final String TASK_CLASS = "OIntegrationConfig";
 	
-
+	public static final MetaDataKey<Map<String,CamelContext>> INTEGRATION_SESSIONS_KEY = new MetaDataKey<Map<String,CamelContext>>()
+	{
+		private static final long serialVersionUID = 1L;
+	};
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
 	@ClassOMethod(
 			order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
 			filters={
 					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
+					@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),
 //					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE|DATA_TABLE"),
+
 			}
 	)
 	public void start(IMethodEnvironmentData data){
@@ -78,7 +85,9 @@ public class OIntegrationConfig extends ODocumentWrapper {
 	
 	@ClassOMethod(
 			order = 30,bootstrap=BootstrapType.DANGER,icon = FAIconType.stop,
-			filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),},
+			filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
+					@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),		
+			},
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
 	public void stop(IMethodEnvironmentData data){
@@ -96,6 +105,7 @@ public class OIntegrationConfig extends ODocumentWrapper {
 			order = 20,bootstrap=BootstrapType.WARNING,icon = FAIconType.pause,
 			filters={
 					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
+					@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),					
 					},
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
@@ -125,7 +135,7 @@ public class OIntegrationConfig extends ODocumentWrapper {
 
 	public CamelContext getOrMakeContextByRid(String rid,Component component){
 		CamelContext context;
-		Map<String,CamelContext> contextMap = Application.get().getMetaData(CamelWidget.INTEGRATION_SESSIONS_KEY);
+		Map<String,CamelContext> contextMap = Application.get().getMetaData(INTEGRATION_SESSIONS_KEY);
 		if (contextMap.containsKey(rid)){
 			context = contextMap.get(rid);
 		}else{
@@ -141,7 +151,7 @@ public class OIntegrationConfig extends ODocumentWrapper {
 			properties.put(OrientDBComponent.DB_PASSWORD, session.getPassword());
 			context.setProperties(properties);
 			
-			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(new OCamelTaskSessionCallback(context),rid,context));
+			context.getManagementStrategy().addEventNotifier(new CamelEventHandler(new OCamelTaskSessionCallback(context),this,context));
 
 			contextMap.put(rid, context);
 		}
@@ -172,6 +182,11 @@ public class OIntegrationConfig extends ODocumentWrapper {
 		} catch (InterruptedException e) {
 			// silently escape
 		}
+	}
+
+	@Override
+	public OTaskSessionRuntime startNewSession() {
+		throw new RuntimeException("Cannot start new Camel session outside CamelEventHandler");
 	}
 
 
