@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Orienteer now reloads</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <style>
+    body {
+      padding: 10px;
+      background-color: #f8f8f8;
+    }
+
+    #progressbar {
+      width: 100%;
+      height: 15px;
+      background-color: #eee;
+      padding: 2px;
+      margin: .6em 0;
+      border: 1px #000 double;
+      clear: both;
+    }
+
+    #progress {
+      background: #A1C969; /*-- Color of the bar --*/
+      height: 15px;
+      width: 0%;
+      max-width: 100%;
+      float: left;
+      -webkit-animation: progress 0s 1 forwards;
+      -moz-animation: progress 0s 1 forwards;
+      -ms-animation: progress 0s 1 forwards;
+      animation: progress 0s 1 forwards;
+    }
+
+    #pbaranim {
+      height: 15px;
+      width: 100%;
+      overflow: hidden;
+      background: url('/org/orienteer/core/web/reload/bar.gif') repeat-x;
+      -moz-opacity: 0.25;
+      -khtml-opacity: 0.25;
+      opacity: 0.25;
+      -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=25);
+      filter: progid:DXImageTransform.Microsoft.Alpha(opacity=25);
+      filter: alpha(opacity=25);
+    }
+
+    @-webkit-keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+
+    @-moz-keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+
+    @-ms-keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+
+    @keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+  </style>
+</head>
+<body>
+  <script>
+      window.onload = function () {
+          'use strict';
+          const HTTP_UNAVAILABLE = 503;
+          var url = '/';
+          var request = function () {
+              var xhr = new XMLHttpRequest();
+              xhr.open('GET', url);
+              xhr.timeout = 5000;
+              xhr.addEventListener('loadend', function () {
+                  if (xhr.status !== HTTP_UNAVAILABLE) {
+                      window.location.href = url;
+                  }
+              });
+              xhr.send();
+          };
+          var changeStateRun = function () {
+              request();
+              setTimeout(changeStateRun, 3000);
+          };
+          changeStateRun();
+      };
+  </script>
+  <h1 style="text-align: center; color: red;">Orienteer now reloads. Please wait...</h1>
+  <div id="progressbar">
+    <div id="progress" >
+      <div id="pbaranim"></div>
+  </div>
+</div>
+</body>
+</html>

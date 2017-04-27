@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
@@ -30,6 +31,8 @@ public final class OrienteerFilter implements Filter {
 
     private static final int HTTP_CODE_SERVER_UNAVAILABLE = 503;
 
+    private static final String RELOAD_HTML = "org/orienteer/core/web/reload/reload-page.html";
+
     private static OrienteerFilter instance;
     private static boolean useUnTrusted = true;
 
@@ -39,7 +42,8 @@ public final class OrienteerFilter implements Filter {
     private FilterConfig filterConfig;
     private ClassLoader classLoader;
     private boolean reloading;
-    
+
+
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
     	instance = this;
@@ -80,10 +84,14 @@ public final class OrienteerFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse res = (HttpServletResponse) response;
         if (reloading) {
-            HttpServletResponse res = (HttpServletResponse) response;
-            res.setStatus(HTTP_CODE_SERVER_UNAVAILABLE);
-            LOG.info("Reload application. Send 503 code");
+            String url = req.getRequestURI();
+            if (!url.contains("reload")) {
+                res.setStatus(HTTP_CODE_SERVER_UNAVAILABLE);
+                request.getRequestDispatcher(RELOAD_HTML).forward(request, response);
+            } else chain.doFilter(request, response);
         } else {
             Thread.currentThread().setContextClassLoader(classLoader);
             if (filter != null) {
