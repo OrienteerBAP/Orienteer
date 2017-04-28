@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +32,8 @@ public final class OrienteerFilter implements Filter {
 
     private static final int HTTP_CODE_SERVER_UNAVAILABLE = 503;
 
+    private static final String RELOAD_HTML = "org/orienteer/core/web/ReloadOrienteerPage.html";
+
     private static OrienteerFilter instance;
     private static boolean useUnTrusted = true;
 
@@ -39,7 +43,7 @@ public final class OrienteerFilter implements Filter {
     private FilterConfig filterConfig;
     private ClassLoader classLoader;
     private boolean reloading;
-    
+
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
     	instance = this;
@@ -82,8 +86,18 @@ public final class OrienteerFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (reloading) {
             HttpServletResponse res = (HttpServletResponse) response;
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            URL html = classLoader.getResource(RELOAD_HTML);
+            if (html != null) {
+                ServletOutputStream out = response.getOutputStream();
+                InputStream in = html.openStream();
+                int bytes;
+                byte [] buff = new byte[4096];
+                while ((bytes = in.read(buff)) != -1) {
+                    out.write(buff, 0, bytes);
+                }
+            }
             res.setStatus(HTTP_CODE_SERVER_UNAVAILABLE);
-            LOG.info("Reload application. Send 503 code");
         } else {
             Thread.currentThread().setContextClassLoader(classLoader);
             if (filter != null) {
