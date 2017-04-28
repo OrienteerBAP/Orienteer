@@ -7,6 +7,4 @@ import org.apache.wicket.markup.html.WebPage;
  */
 public class ReloadOrienteerPage extends WebPage {
 
-    public ReloadOrienteerPage() {
-    }
 }
