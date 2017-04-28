@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -84,8 +86,18 @@ public final class OrienteerFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (reloading) {
             HttpServletResponse res = (HttpServletResponse) response;
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            URL html = classLoader.getResource(RELOAD_HTML);
+            if (html != null) {
+                ServletOutputStream out = response.getOutputStream();
+                InputStream in = html.openStream();
+                int bytes;
+                byte [] buff = new byte[4096];
+                while ((bytes = in.read(buff)) != -1) {
+                    out.write(buff, 0, bytes);
+                }
+            }
             res.setStatus(HTTP_CODE_SERVER_UNAVAILABLE);
-            request.getRequestDispatcher(RELOAD_HTML).forward(request, response);
         } else {
             Thread.currentThread().setContextClassLoader(classLoader);
             if (filter != null) {
