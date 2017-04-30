@@ -3,17 +3,26 @@ package org.orienteer.core.boot.loader.util;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
+import org.apache.http.util.Args;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,10 +30,11 @@ import java.util.Set;
  * @author Vitaliy Gonchar
  * Class for work with pom.xml which is located in module jar file.
  */
-class PomXmlUtils {
+class PomXmlUtils extends AbstractXmlUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(PomXmlUtils.class);
 
+    private static final String PROJECT                     = "project";
     private static final String PARENT                      = "parent";
     private static final String GROUP                       = "groupId";
     private static final String ARTIFACT                    = "artifactId";
@@ -37,108 +47,125 @@ class PomXmlUtils {
     private static final String PROPERTIES_PROJECT_VERSION  = "${project.version}";
     private static final String WITHOUT_VERSION             = "without-version";
 
-    private Map<String, String> orienteerVersions;
 
-    PomXmlUtils addOrienteerVersions(Path pomXml) {
-        if (orienteerVersions == null){
-            orienteerVersions = Maps.newHashMap();
+    private final Map<String, String> orienteerVersions     = Maps.newHashMap();
+
+    public PomXmlUtils addOrienteerVersions(Path pomXml) {
+        orienteerVersions.putAll(getPropertiesVersionsFromPomXml(pomXml));
+        String parentVersion = getParentVersion(pomXml);
+        if (parentVersion != null) {
+            orienteerVersions.put(PROPERTIES_PROJECT_VERSION, parentVersion);
         }
-
-        orienteerVersions.putAll(getVersionsFromPomXml(getRootElement(pomXml)));
         return this;
     }
 
     public Map<String, String> getOrienteerVersions() {
-        return orienteerVersions;
+        return Collections.unmodifiableMap(orienteerVersions);
     }
 
-    Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
-        Element rootElement = getRootElement(pomXml);
-        Element parentElement = rootElement.element(PARENT);
-        String groupId = parentElement.element(GROUP).getText();
-        String artifactId = parentElement.element(ARTIFACT).getText();
-        String version = parentElement.element(VERSION).getText();
-        if (groupId != null && artifactId != null && version != null)
-            return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version)));
+
+    public Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
+        Args.notNull(pomXml, "pomXml");
+        Document doc = readDocumentFromFile(pomXml);
+        String expression = String.format("/%s/%s", PROJECT, PARENT);
+        NodeList nodeList = executeExpression(expression, doc);
+        if (nodeList != null && nodeList.getLength() > 0) {
+            Element element = (Element) nodeList.item(0);
+            String groupId = element.getElementsByTagName(GROUP).item(0).getTextContent();
+            String artifactId = element.getElementsByTagName(ARTIFACT).item(0).getTextContent();
+            String version = element.getElementsByTagName(VERSION).item(0).getTextContent();
+            if (groupId != null && artifactId != null && version != null)
+                return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version)));
+        }
+
         return Optional.absent();
     }
 
-    Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
-        Element rootElement = getRootElement(pomXml);
-        Element group = rootElement.element(GROUP);
-        Element artifact = rootElement.element(ARTIFACT);
-        Element version = rootElement.element(VERSION);
+    public Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
+        String groupExpression    = String.format("/%s/%s", PROJECT, GROUP);
+        String artifactExpression = String.format("/%s/%s", PROJECT, ARTIFACT);
+        String versionExpression  = String.format("/%s/%s", PROJECT, VERSION);
+        Document doc = readDocumentFromFile(pomXml);
+        NodeList group = executeExpression(groupExpression, doc);
+        NodeList artifact = executeExpression(artifactExpression, doc);
+        NodeList version = executeExpression(versionExpression, doc);
+
         Artifact parent = readParentGAVInPomXml(pomXml).orNull();
-        String groupId = group != null ? group.getText() : (parent != null ? parent.getGroupId() : null);
-        String artifactId = artifact != null ? artifact.getText() : null;
-        String versionId = version != null ? version.getText() : (parent != null ? parent.getVersion() : null);
+        String groupId = (group != null && group.getLength() > 0) ? group.item(0).getTextContent() : (parent != null ? parent.getGroupId() : null);
+        String artifactId = (artifact != null && artifact.getLength() > 0) ? artifact.item(0).getTextContent() : null;
+        String versionId = (version != null && version.getLength() > 0) ? version.item(0).getTextContent() : (parent != null ? parent.getVersion() : null);
+
         if (groupId != null && artifactId != null && versionId != null)
-            return  Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, versionId)));
+            return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, versionId)));
+
         return Optional.absent();
     }
 
     @SuppressWarnings("unchecked")
-    Set<Artifact> readDependencies(Path pathToPomXml) {
-        Element rootElement = getRootElement(pathToPomXml);
-        Element dependenciesElement = rootElement.element(DEPENDENCIES);
-        if (dependenciesElement == null) {
-            dependenciesElement = rootElement.element(DEPENDENCIES_MANAGMENT).element(DEPENDENCIES);
+    public Set<Artifact> readDependencies(Path pomXml) {
+        String dependenciesExp          = String.format("/%s/%s/*", PROJECT, DEPENDENCIES);
+        String dependenciesManagmentExp = String.format("/%s/%s/%s/*", PROJECT, DEPENDENCIES_MANAGMENT, DEPENDENCIES);
+        Document doc = readDocumentFromFile(pomXml);
+        NodeList dependenciesNode = executeExpression(dependenciesExp, doc);
+        if (dependenciesNode == null || dependenciesNode.getLength() == 0) {
+            dependenciesNode = executeExpression(dependenciesManagmentExp, doc);
         }
-        List<Element> dependencyElements = dependenciesElement.elements();
-
         Set<Artifact> dependencies =  Sets.newHashSet();
-        Map<String, String> versions = getVersionsFromPomXml(rootElement);
-        if (orienteerVersions != null) {
+        if (dependenciesNode != null && dependenciesNode.getLength() != 0) {
+            Map<String, String> versions = getPropertiesVersionsFromPomXml(pomXml);
             versions.putAll(orienteerVersions);
-        }
-        for (Element element : dependencyElements) {
-            Optional<Artifact> depOptional = parseDependency(element, versions);
-            if (depOptional.isPresent()) dependencies.add(depOptional.get());
+            for (int i = 0; i < dependenciesNode.getLength(); i++) {
+                Node node = dependenciesNode.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    Optional<Artifact> artifactOptional = parseDependency(element, versions);
+                    if (artifactOptional.isPresent()) dependencies.add(artifactOptional.get());
+                }
+            }
         }
 
         return dependencies;
     }
 
-    private Map<String, String> getVersionsFromPomXml(Element rootElement) {
+    private Map<String, String> getPropertiesVersionsFromPomXml(Path pomXml) {
+        return getPropertiesVersionsFromPomXml(readDocumentFromFile(pomXml));
+    }
+
+    private Map<String, String> getPropertiesVersionsFromPomXml(Document doc) {
+        String expression = String.format("/%s/%s/*", PROJECT, PROPERTIES);
         Map<String, String> versions = Maps.newHashMap();
-        Element properties = rootElement.element(PROPERTIES);
-        if (properties != null) {
-            versions.putAll(parseVersionProperty(properties));
-        }
-        Element parent = rootElement.element(PARENT);
-        if (parent != null) {
-            versions.put(PROPERTIES_PROJECT_VERSION, getParentVersion(parent));
-        }
-        Element version = rootElement.element(VERSION);
-        if (version != null) {
-            versions.put(PROPERTIES_PROJECT_VERSION, version.getText());
+        NodeList properties = executeExpression(expression, doc);
+        for (int i = 0; i < properties.getLength(); i++) {
+            Node node = properties.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                versions.put(getLinkToVersion(element.getTagName()), element.getTextContent());
+            }
         }
         return versions;
     }
 
-    private String getParentVersion(Element parentElement)  {
-        String version = parentElement.element(VERSION) != null ? parentElement.element(VERSION).getText() : null;
-        return version != null ? version : WITHOUT_VERSION;
+    private String getParentVersion(Path pomXml) {
+        return getParentVersion(readDocumentFromFile(pomXml));
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, String> parseVersionProperty(Element propertyElement) {
-        Map<String, String> versions = Maps.newHashMap();
-        List<Element> elements = propertyElement.elements();
-        for (Element element : elements) {
-            String elementName = getLinkToVersion(element.getName());
-            versions.put(elementName, element.getText());
+    private String getParentVersion(Document doc)  {
+        String expression = String.format("/%s/%s/%s", PROJECT, PARENT, VERSION);
+        NodeList nodeList = executeExpression(expression, doc);
+        if (nodeList != null && nodeList.getLength() > 0) {
+            Element element = (Element) nodeList.item(0);
+            return element.getTextContent();
         }
-        return versions;
+        return WITHOUT_VERSION;
     }
 
-    private Optional<Artifact> parseDependency(Element dependencyElement, Map<String, String> versions) {
-        Element groupElement = dependencyElement.element(GROUP);
-        Element artifactElement = dependencyElement.element(ARTIFACT);
-        Element versionElement = dependencyElement.element(VERSION);
-        String groupId = groupElement != null ? groupElement.getText() : null;
-        String artifactId = artifactElement != null ? artifactElement.getText() : null;
-        String version = versionElement != null ? versionElement.getText() : null;
+    private Optional<Artifact> parseDependency(Element element, Map<String, String> versions) {
+        Element groupElement = (Element) element.getElementsByTagName(GROUP).item(0);
+        Element artifactElement = (Element) element.getElementsByTagName(ARTIFACT).item(0);
+        Element versionElement = (Element) element.getElementsByTagName(VERSION).item(0);
+        String groupId = groupElement != null ? groupElement.getTextContent() : null;
+        String artifactId = artifactElement != null ? artifactElement.getTextContent() : null;
+        String version = versionElement != null ? versionElement.getTextContent() : null;
         if (isLinkToVersion(version) && versions != null) {
             String ver = versions.get(version);
             if (ver != null) version = ver;
@@ -161,20 +188,5 @@ class PomXmlUtils {
 
     private String getLinkToVersion(String artifactVersion) {
         return !artifactVersion.startsWith("$") ? "${" + artifactVersion + "}" : artifactVersion;
-    }
-
-    private Element getRootElement(Path path) {
-        Document document = readFromFile(path);
-        return document.getRootElement();
-    }
-
-    private Document readFromFile(Path path) {
-        SAXReader reader = new SAXReader();
-        try {
-            return reader.read(path.toFile());
-        } catch (DocumentException ex) {
-            LOG.error("Cannot read: " + path.toAbsolutePath(), ex);
-        }
-        return null;
     }
 }

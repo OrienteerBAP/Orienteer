@@ -1,14 +1,12 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -17,11 +15,9 @@ import java.util.List;
  * Read Orienteer artifacts from modules.xml
  * @author Vitaliy Gonchar
  */
-class OrienteerArtifactsReader {
+class OrienteerArtifactsReader extends AbstractXmlUtil {
 
     private final Path pathToFile;
-
-    private static final Logger LOG = LoggerFactory.getLogger(OrienteerArtifactsReader.class);
 
     OrienteerArtifactsReader(Path pathToFile) {
         this.pathToFile = pathToFile;
@@ -30,39 +26,33 @@ class OrienteerArtifactsReader {
     @SuppressWarnings("unchecked")
     List<OArtifact> readModules() {
         List<OArtifact> artifacts = Lists.newArrayList();
-        Element rootElement = getRootElement();
-        List<Element> modules = rootElement.elements();
-        for (Element module : modules) {
-            artifacts.add(getModule(module));
+        Document document = readDocumentFromFile(pathToFile);
+        if (document == null) documentCannotReadException(pathToFile);
+        String expression = String.format("/%s/*", MetadataTag.METADATA.get());
+
+        NodeList nodeList = executeExpression(expression, document);
+        if (nodeList != null) {
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Node node = nodeList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    artifacts.add(getModule((Element) node));
+                }
+            }
         }
         return artifacts;
     }
 
     private OArtifact getModule(Element dependencyElement) {
-        Element groupElement = dependencyElement.element(MetadataTag.GROUP_ID.get());
-        Element artifactElement = dependencyElement.element(MetadataTag.ARTIFACT_ID.get());
-        Element versionElement = dependencyElement.element(MetadataTag.VERSION.get());
-        Element descriptionElement = dependencyElement.element(MetadataTag.DESCRIPTION.get());
-        String groupId = groupElement != null ? groupElement.getText() : null;
-        String artifactId = artifactElement != null ? artifactElement.getText() : null;
-        String version = versionElement != null ? versionElement.getText() : null;
-        String description = descriptionElement != null ? descriptionElement.getText() : null;
+        Element groupElement = (Element) dependencyElement.getElementsByTagName(MetadataTag.GROUP_ID.get()).item(0);
+        Element artifactElement = (Element) dependencyElement.getElementsByTagName(MetadataTag.ARTIFACT_ID.get()).item(0);
+        Element versionElement = (Element) dependencyElement.getElementsByTagName(MetadataTag.VERSION.get()).item(0);
+        Element descriptionElement = (Element) dependencyElement.getElementsByTagName(MetadataTag.DESCRIPTION.get()).item(0);
+        String groupId = groupElement != null ? groupElement.getTextContent() : null;
+        String artifactId = artifactElement != null ? artifactElement.getTextContent() : null;
+        String version = versionElement != null ? versionElement.getTextContent() : null;
+        String description = descriptionElement != null ? descriptionElement.getTextContent() : null;
         OArtifact module = new OArtifact();
         return module.setArtifact(new OArtifactReference(groupId, artifactId, version, description));
     }
 
-    private Element getRootElement() {
-        Document document = readFromFile();
-        return document.getRootElement();
-    }
-
-    private Document readFromFile() {
-        SAXReader reader = new SAXReader();
-        try {
-            return reader.read(pathToFile.toFile());
-        } catch (DocumentException ex) {
-            LOG.error("Cannot read: " + pathToFile.toAbsolutePath(), ex);
-        }
-        return null;
-    }
 }
