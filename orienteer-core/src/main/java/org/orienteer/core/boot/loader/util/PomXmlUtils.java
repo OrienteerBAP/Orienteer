@@ -42,7 +42,7 @@ class PomXmlUtils extends AbstractXmlUtil {
 
     private final Map<String, String> orienteerVersions     = Maps.newHashMap();
 
-    public PomXmlUtils addOrienteerVersions(Path pomXml) {
+    PomXmlUtils addOrienteerVersions(Path pomXml) {
         orienteerVersions.putAll(getPropertiesVersionsFromPomXml(pomXml));
         String parentVersion = getParentVersion(pomXml);
         if (parentVersion != null) {
@@ -56,7 +56,7 @@ class PomXmlUtils extends AbstractXmlUtil {
     }
 
 
-    public Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
+    Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
         Args.notNull(pomXml, "pomXml");
         Document doc = readDocumentFromFile(pomXml);
         String expression = String.format("/%s/%s", PROJECT, PARENT);
@@ -73,7 +73,7 @@ class PomXmlUtils extends AbstractXmlUtil {
         return Optional.absent();
     }
 
-    public Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
+    Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
         String groupExpression    = String.format("/%s/%s", PROJECT, GROUP);
         String artifactExpression = String.format("/%s/%s", PROJECT, ARTIFACT);
         String versionExpression  = String.format("/%s/%s", PROJECT, VERSION);
@@ -94,7 +94,7 @@ class PomXmlUtils extends AbstractXmlUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public Set<Artifact> readDependencies(Path pomXml) {
+    Set<Artifact> readDependencies(Path pomXml) {
         String dependenciesExp          = String.format("/%s/%s/*", PROJECT, DEPENDENCIES);
         String dependenciesManagmentExp = String.format("/%s/%s/%s/*", PROJECT, DEPENDENCIES_MANAGMENT, DEPENDENCIES);
         Document doc = readDocumentFromFile(pomXml);

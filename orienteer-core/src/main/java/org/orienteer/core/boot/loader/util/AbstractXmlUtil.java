@@ -35,7 +35,7 @@ class AbstractXmlUtil implements Serializable {
         try {
             return factory.newDocumentBuilder().parse(xml.toFile());
         } catch (SAXException | ParserConfigurationException | IOException e) {
-            LOG.warn("Can't create document from metadata.xml! Path: {}", xml.toAbsolutePath(), e);
+            LOG.warn("Can't create document xml! Path: {}", xml.toAbsolutePath(), e);
         }
         return null;
     }
