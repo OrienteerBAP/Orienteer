@@ -7,8 +7,10 @@ import org.junit.Test;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Vitaliy Gonchar
@@ -19,8 +21,7 @@ public class PomXmlUtilsTest {
 
     @BeforeClass
     public static void init() {
-        String pathToPomXml = "src/test/java/org/orienteer/core/loader/util/pom.xml";
-        pomXml = Paths.get(pathToPomXml);
+        pomXml = Paths.get("pom.xml");
     }
 
     @Test
@@ -28,4 +29,12 @@ public class PomXmlUtilsTest {
         Optional<Artifact> artifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml);
         assertEquals("Artifact from pom.xml", true, artifact.isPresent());
     }
+
+    @Test
+    public void readDependencies() {
+        Path parent = Paths.get("../pom.xml");
+        Set<Artifact> artifacts = OrienteerClassLoaderUtil.readDependencies(parent);
+        assertTrue("Dependencies from parent pom.xml", artifacts.size() > 0);
+    }
+
 }
