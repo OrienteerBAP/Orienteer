@@ -180,7 +180,8 @@ class AetherUtils {
         try {
             result = system.resolveArtifact(session, request);
         } catch (ArtifactResolutionException e) {
-            LOG.warn("Cannot resolve artifact: {}", request.getArtifact(), e);
+            LOG.warn("Can't resolve artifact: {}", request.getArtifact());
+            if (LOG.isDebugEnabled()) e.printStackTrace();
         }
         return result;
     }
@@ -287,7 +288,8 @@ class AetherUtils {
         try {
             descriptorResult = system.readArtifactDescriptor(session, request);
         } catch (ArtifactDescriptorException e) {
-            LOG.warn("Can't get artifact description: {}", request, e);
+            LOG.warn("Can't get artifact description: {}", request);
+            if (LOG.isDebugEnabled()) e.printStackTrace();
         }
         return descriptorResult;
     }
@@ -299,9 +301,9 @@ class AetherUtils {
             parentDependencies.add(artifact);
             ArtifactDescriptorResult artifactDescriptor = getArtifactDescription(artifact);
             if(artifactDescriptor!=null) {
-	            List<Dependency> dependencies = artifactDescriptor.getDependencies();
+  	            List<Dependency> dependencies = artifactDescriptor.getDependencies();
 	            for (Dependency dependency : dependencies) {
-	            	if("compile".equals(dependency.getScope())) 
+	            	if("compile".equals(dependency.getScope()))
 	            			parentDependencies.add(dependency.getArtifact());
 				}
             }
