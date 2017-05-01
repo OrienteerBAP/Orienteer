@@ -1,4 +1,4 @@
-package org.orienteer.core.loader.util;
+package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -8,7 +8,6 @@ import org.eclipse.aether.resolution.ArtifactResult;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

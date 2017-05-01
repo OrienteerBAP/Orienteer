@@ -28,6 +28,7 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
 import org.apache.wicket.util.string.Strings;
 import org.joda.time.DateTimeZone;
+import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
@@ -300,7 +301,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	}
 	
 	public void mountPages(String packageName) {
-		mountPages(packageName, OrienteerWebApplication.class.getClassLoader());
+		mountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
 	public void mountPages(String packageName, ClassLoader classLoader) {
@@ -308,7 +309,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	}
 
 	public void unmountPages(String packageName) {
-		unmountPages(packageName, OrienteerWebApplication.class.getClassLoader());
+		unmountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
 	public void unmountPages(String packageName, ClassLoader classLoader) {
