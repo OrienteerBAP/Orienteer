@@ -24,6 +24,9 @@ import org.orienteer.core.boot.loader.util.aether.ConsoleTransferListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -53,11 +56,29 @@ class AetherUtils {
         this.system = getRepositorySystem();
         this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
         this.repositories = initUtils.getRemoteRepositories();
-        Artifact currentArtifact = OrienteerClassLoaderUtil.getOrienteerCurrentArtifact();
-        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_PARENT, currentArtifact.getVersion()));
-        addOrienteerMainDependencies(currentArtifact);
-        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_CORE, currentArtifact.getVersion()));
-        LOG.debug("Orienteer default dependencies: " + parentDependencies.size());
+        Path localPomXml = FileSystems.getDefault().getPath("pom.xml");
+        Collection<Artifact> availableArtifacts = null;
+        if(Files.exists(localPomXml)) {
+        	// We run as mvn jetty:run
+        	Optional<Artifact> thisArtifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(localPomXml);
+        	if(thisArtifact.isPresent()) {
+//        		addOrienteerMainDependencies(thisArtifact.get());
+        		availableArtifacts = OrienteerClassLoaderUtil.readDependencies(localPomXml);
+        	}
+        } else {
+        	//we run in WAR mode
+        	availableArtifacts = OrienteerClassLoaderUtil.getAvailableArtifacts(getClass().getClassLoader());
+        }
+        if(availableArtifacts!=null) {
+	        for (Artifact artifact : availableArtifacts) {
+				addOrienteerMainDependencies(artifact);
+			}
+        }
+//        Artifact currentArtifact = OrienteerClassLoaderUtil.getOrienteerCurrentArtifact();
+//        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_PARENT, initUtils.getOrienteerVersion()));
+//        addOrienteerMainDependencies(currentArtifact);
+//        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_CORE, initUtils.getOrienteerVersion()));
+        LOG.info("Orienteer default dependencies: " + parentDependencies.size());
     }
 
     public List<ArtifactResult> resolveArtifact(Artifact artifact) {
@@ -257,6 +278,10 @@ class AetherUtils {
 
         return dependency;
     }
+    
+    private ArtifactDescriptorResult getArtifactDescription(Artifact artifact) {
+    	return getArtifactDescription(new ArtifactDescriptorRequest().setArtifact(artifact));
+    }
 
     private ArtifactDescriptorResult getArtifactDescription(ArtifactDescriptorRequest request) {
         ArtifactDescriptorResult descriptorResult = null;
@@ -272,8 +297,19 @@ class AetherUtils {
         Optional<Artifact> artifactOptional = downloadArtifact(artifactToDownload);
         if (artifactOptional.isPresent()) {
             Artifact artifact = artifactOptional.get();
-            parentDependencies.addAll(OrienteerClassLoaderUtil.readDependencies(artifact.getFile().toPath()));
-            OrienteerClassLoaderUtil.addOrienteerVersions(artifact.getFile().toPath());
+            parentDependencies.add(artifact);
+            ArtifactDescriptorResult artifactDescriptor = getArtifactDescription(artifact);
+            if(artifactDescriptor!=null) {
+	            List<Dependency> dependencies = artifactDescriptor.getDependencies();
+	            for (Dependency dependency : dependencies) {
+	            	if("compile".equals(dependency.getScope())) 
+	            			parentDependencies.add(dependency.getArtifact());
+				}
+            }
+//            Artifact pomArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "pom", artifact.getVersion());
+//            Optional<Artifact> downloadedPom = downloadArtifact(pomArtifact);
+//            parentDependencies.addAll(OrienteerClassLoaderUtil.readDependencies(downloadedPom.get().getFile().toPath()));
+//            OrienteerClassLoaderUtil.addOrienteerVersions(downloadedPom.get().getFile().toPath());
         } else LOG.warn("Cannot download Orienteer artifact pom.xml! artifact: {}", artifactToDownload);
     }
 

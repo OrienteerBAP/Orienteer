@@ -26,6 +26,7 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
+import org.apache.wicket.util.string.Strings;
 import org.joda.time.DateTimeZone;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
@@ -80,6 +81,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
+	
+	@Inject
+	@Named("orienteer.version")
+	private String version;
 
 
 	@Inject(optional=true)
@@ -364,5 +369,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Override
 	protected void onUnauthorizedPage(Component page) {
 		throw new RestartResponseException(UnauthorizedPage.class);
+	}
+	
+	public String getVersion() {
+		return Strings.isEmpty(version)?OrienteerWebApplication.class.getPackage().getImplementationVersion():version;
 	}
 }

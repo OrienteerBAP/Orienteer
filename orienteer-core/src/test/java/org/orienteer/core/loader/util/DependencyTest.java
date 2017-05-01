@@ -6,6 +6,7 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Vitaliy Gonchar
  */
+@Ignore
 public class DependencyTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(DependencyTest.class);

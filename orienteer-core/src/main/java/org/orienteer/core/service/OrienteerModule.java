@@ -105,13 +105,4 @@ public class OrienteerModule extends AbstractModule {
 		return OTaskManager.get();
 	}
 
-	@Provides
-	@Named("version")
-	@Singleton
-	public String getVersion() 
-	{
-		String version = getClass().getPackage().getImplementationVersion();
-		return version!=null?version:"";
-	}
-
 }

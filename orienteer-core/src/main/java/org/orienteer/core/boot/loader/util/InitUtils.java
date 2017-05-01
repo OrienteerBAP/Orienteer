@@ -1,7 +1,10 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
+
+import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,7 +124,8 @@ class InitUtils {
         return PROPERTIES.getProperty(ORIENTEER_ARTIFACT_ID);
     }
 
-    public String getCurrentOrienteerVersionId() {
-        return PROPERTIES.getProperty(ORIENTEER_VERSION);
+    public String getOrienteerVersion() {
+        String version = PROPERTIES.getProperty(ORIENTEER_VERSION);
+        return Strings.isEmpty(version)?OrienteerWebApplication.class.getPackage().getImplementationVersion():version;
     }
 }

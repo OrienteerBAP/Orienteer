@@ -2,7 +2,9 @@ package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+
 import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -13,11 +15,19 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
+import java.util.jar.Manifest;
 
 /**
  * @author Vitaliy Gonchar
@@ -167,9 +177,40 @@ public abstract class OrienteerClassLoaderUtil {
     static boolean resolvingDependenciesRecursively() {
         return initUtils.resolvingDependenciesRecursively();
     }
+    
+    @SuppressWarnings("deprecation")
+    public static Collection<Artifact> getAvailableArtifacts(ClassLoader classLoader) {
+    	Collection<Artifact> ret = new HashSet<>();
+    	try {
+			Enumeration<URL> urls = classLoader.getResources("META-INF/MANIFEST.MF");
+			while (urls.hasMoreElements()) {
+				URL url = (URL) urls.nextElement();
+				LOG.info("URL: "+url);
+				try(InputStream is = url.openStream()) {
+					Manifest manifest = new Manifest(is);
+					Attributes attrs = manifest.getMainAttributes();
+					String groupId = attrs.getValue(Name.IMPLEMENTATION_VENDOR_ID);
+					String artifactId = attrs.getValue(Name.IMPLEMENTATION_TITLE);
+					String version = attrs.getValue(Name.IMPLEMENTATION_VERSION);
+					if(!Strings.isEmpty(groupId) && !Strings.isEmpty(artifactId) && !Strings.isEmpty(version)) {
+						try {
+							LOG.info("AVAILABLE ARTIFACT: "+String.format("%s:%s:pom:%s", groupId, artifactId, version));
+							ret.add(new DefaultArtifact(String.format("%s:%s:pom:%s", groupId, artifactId, version)));
+						} catch (IllegalArgumentException e) { /*NOP*/
+						}
+					}
+				} catch (IOException e) {
+					LOG.error("Can't load manifest from "+url, e);
+				}
+			}
+		} catch (IOException e) {
+			LOG.error("Can't list available artifacts", e);
+		}
+    	return ret;
+    }
 
     static Artifact getOrienteerCurrentArtifact() {
-        String version    = initUtils.getCurrentOrienteerVersionId();
+        String version    = initUtils.getOrienteerVersion();
         String artifactId = initUtils.getCurrentOrienteerArtifactId();
         String groupId    = initUtils.getCurrentOrienteerGroupId();
         if (version == null || artifactId == null || groupId == null) {
@@ -179,7 +220,7 @@ public abstract class OrienteerClassLoaderUtil {
         }
         if (version == null || artifactId == null)
             throw new IllegalStateException("Cannot initialize current Orienteer artifact! ");
-        return new DefaultArtifact(String.format("%s:%s:%s:%s", groupId, artifactId, "pom", version));
+        return new DefaultArtifact(String.format("%s:%s:pom:%s", groupId, artifactId, version));
     }
 
     static void addOrienteerVersions(Path pathToPomXml) {

@@ -15,6 +15,7 @@ databases/
 /OrienteerFuture/
 /*/Orienteer/
 /*/OrienteerFuture/
+/*/libs/
 .idea/
 *.iml
 *.log

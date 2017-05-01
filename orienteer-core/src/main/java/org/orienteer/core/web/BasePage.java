@@ -26,6 +26,7 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.settings.JavaScriptLibrarySettings;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.AjaxIndicator;
@@ -54,10 +55,6 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
 	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
 
-	@Inject
-	@Named("version")
-	private String version;
-	
 	@Inject
 	private PerspectivesModule perspectivesModule;
 	
@@ -111,7 +108,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	protected void onInitialize() {
 		super.onInitialize();
 		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS_FOR_CHANGING));
-		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(version);
+		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(OrienteerWebApplication.get().getVersion());
 		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
 									.setEscapeModelStrings(false).setRenderBodyOnly(true));
