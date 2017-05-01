@@ -68,7 +68,7 @@ public class OArtifactReference implements Serializable {
     }
 
     public Artifact toAetherArtifact() {
-        Artifact result = new DefaultArtifact(String.format("%s:%s:%s", groupId, artifactId, version));
+        Artifact result = new DefaultArtifact(String.format("%s:%s:jar:%s", groupId, artifactId,version));
         return result.setFile(file);
     }
 
