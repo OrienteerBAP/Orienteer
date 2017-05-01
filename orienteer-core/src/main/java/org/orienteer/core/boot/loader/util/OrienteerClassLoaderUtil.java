@@ -2,7 +2,6 @@ package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.artifact.Artifact;
@@ -19,12 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
@@ -207,24 +201,6 @@ public abstract class OrienteerClassLoaderUtil {
 			LOG.error("Can't list available artifacts", e);
 		}
     	return ret;
-    }
-
-    static Artifact getOrienteerCurrentArtifact() {
-        String version    = initUtils.getOrienteerVersion();
-        String artifactId = initUtils.getCurrentOrienteerArtifactId();
-        String groupId    = initUtils.getCurrentOrienteerGroupId();
-        if (version == null || artifactId == null || groupId == null) {
-            version    = OrienteerClassLoaderUtil.class.getPackage().getImplementationVersion();
-            artifactId = OrienteerClassLoaderUtil.class.getPackage().getImplementationTitle();
-            groupId    = "org.orienteer";
-        }
-        if (version == null || artifactId == null)
-            throw new IllegalStateException("Cannot initialize current Orienteer artifact! ");
-        return new DefaultArtifact(String.format("%s:%s:pom:%s", groupId, artifactId, version));
-    }
-
-    static void addOrienteerVersions(Path pathToPomXml) {
-        pomXmlUtils.addOrienteerVersions(pathToPomXml);
     }
 
     static Path getModulesFolder() {

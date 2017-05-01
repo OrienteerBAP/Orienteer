@@ -58,11 +58,11 @@ class AetherUtils {
         this.repositories = initUtils.getRemoteRepositories();
         Path localPomXml = FileSystems.getDefault().getPath("pom.xml");
         Collection<Artifact> availableArtifacts = null;
+        String orienteerVersion = initUtils.getOrienteerVersion();
         if(Files.exists(localPomXml)) {
         	// We run as mvn jetty:run
         	Optional<Artifact> thisArtifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(localPomXml);
         	if(thisArtifact.isPresent()) {
-//        		addOrienteerMainDependencies(thisArtifact.get());
         		availableArtifacts = OrienteerClassLoaderUtil.readDependencies(localPomXml);
         	}
         } else {
@@ -74,10 +74,10 @@ class AetherUtils {
 				addOrienteerMainDependencies(artifact);
 			}
         }
-//        Artifact currentArtifact = OrienteerClassLoaderUtil.getOrienteerCurrentArtifact();
-//        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_PARENT, initUtils.getOrienteerVersion()));
-//        addOrienteerMainDependencies(currentArtifact);
-//        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_CORE, initUtils.getOrienteerVersion()));
+        if (orienteerVersion != null) {
+            addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_PARENT, orienteerVersion));
+            addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_CORE, orienteerVersion));
+        }
         LOG.info("Orienteer default dependencies: " + parentDependencies.size());
     }
 
@@ -180,8 +180,7 @@ class AetherUtils {
         try {
             result = system.resolveArtifact(session, request);
         } catch (ArtifactResolutionException e) {
-            LOG.error("Cannot resolve artifact: " + request.getArtifact());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            LOG.warn("Cannot resolve artifact: {}", request.getArtifact(), e);
         }
         return result;
     }
@@ -288,7 +287,7 @@ class AetherUtils {
         try {
             descriptorResult = system.readArtifactDescriptor(session, request);
         } catch (ArtifactDescriptorException e) {
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            LOG.warn("Can't get artifact description: {}", request, e);
         }
         return descriptorResult;
     }
@@ -306,11 +305,7 @@ class AetherUtils {
 	            			parentDependencies.add(dependency.getArtifact());
 				}
             }
-//            Artifact pomArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "pom", artifact.getVersion());
-//            Optional<Artifact> downloadedPom = downloadArtifact(pomArtifact);
-//            parentDependencies.addAll(OrienteerClassLoaderUtil.readDependencies(downloadedPom.get().getFile().toPath()));
-//            OrienteerClassLoaderUtil.addOrienteerVersions(downloadedPom.get().getFile().toPath());
-        } else LOG.warn("Cannot download Orienteer artifact pom.xml! artifact: {}", artifactToDownload);
+        } else LOG.warn("Can't download Orienteer artifact pom.xml! artifact: {}", artifactToDownload);
     }
 
     private Set<Artifact> getArtifactFromDependencies(Collection<Dependency> dependencies) {

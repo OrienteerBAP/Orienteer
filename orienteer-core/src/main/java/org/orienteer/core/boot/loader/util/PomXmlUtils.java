@@ -14,7 +14,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,22 +37,6 @@ class PomXmlUtils extends AbstractXmlUtil {
     private static final String PROPERTIES_VERSION_END      = ".version";
     private static final String PROPERTIES_PROJECT_VERSION  = "${project.version}";
     private static final String WITHOUT_VERSION             = "without-version";
-
-
-    private final Map<String, String> orienteerVersions     = Maps.newHashMap();
-
-    PomXmlUtils addOrienteerVersions(Path pomXml) {
-        orienteerVersions.putAll(getPropertiesVersionsFromPomXml(pomXml));
-        String parentVersion = getParentVersion(pomXml);
-        if (parentVersion != null) {
-            orienteerVersions.put(PROPERTIES_PROJECT_VERSION, parentVersion);
-        }
-        return this;
-    }
-
-    public Map<String, String> getOrienteerVersions() {
-        return Collections.unmodifiableMap(orienteerVersions);
-    }
 
 
     Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
@@ -105,7 +88,6 @@ class PomXmlUtils extends AbstractXmlUtil {
         Set<Artifact> dependencies =  Sets.newHashSet();
         if (dependenciesNode != null && dependenciesNode.getLength() != 0) {
             Map<String, String> versions = getPropertiesVersionsFromPomXml(pomXml);
-            versions.putAll(orienteerVersions);
             for (int i = 0; i < dependenciesNode.getLength(); i++) {
                 Node node = dependenciesNode.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -159,8 +141,7 @@ class PomXmlUtils extends AbstractXmlUtil {
         String artifactId = artifactElement != null ? artifactElement.getTextContent() : null;
         String version = versionElement != null ? versionElement.getTextContent() : null;
         if (isLinkToVersion(version) && versions != null) {
-            String ver = versions.get(version);
-            if (ver != null) version = ver;
+            version = versions.get(version);
         }
 
         if (groupId != null && artifactId != null && version != null)
