@@ -1,15 +1,14 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -19,16 +18,16 @@ import java.util.List;
  * @author Vitaliy Gonchar
  * Class for read {@link OArtifact} from metadata.xml
  */
-class OMetadataReader {
+class OMetadataReader extends AbstractXmlUtil {
     private static final Logger LOG = LoggerFactory.getLogger(OMetadataReader.class);
 
     private final Path pathToMetadata;
 
-    @VisibleForTesting OMetadataReader(Path pathToMetadata) {
+    OMetadataReader(Path pathToMetadata) {
         this.pathToMetadata = pathToMetadata;
     }
 
-    @VisibleForTesting List<OArtifact> readModulesForLoad() {
+    List<OArtifact> readModulesForLoad() {
         List<OArtifact> modules = read();
         List<OArtifact> modulesForLoad = Lists.newArrayList();
         for (OArtifact module : modules) {
@@ -37,22 +36,26 @@ class OMetadataReader {
         return modulesForLoad;
     }
 
-    @VisibleForTesting List<OArtifact> readAllOoArtifacts() {
+    List<OArtifact> readAllOoArtifacts() {
         return read();
     }
 
     @SuppressWarnings("unchecked")
     private List<OArtifact> read() {
-        Document document = readFromFile();
-        Element rootElement = document.getRootElement();
-        return (List<OArtifact>) getOoArtifactsInMetadataXml(rootElement.elements(MetadataTag.MODULE.get()));
+        Document document = readDocumentFromFile(pathToMetadata);
+        String expression = String.format("/%s/*", MetadataTag.METADATA.get());
+        return getOoArtifactsInMetadataXml(executeExpression(expression, document));
     }
 
-    private List<OArtifact> getOoArtifactsInMetadataXml(List<Element> elements) {
+    private List<OArtifact> getOoArtifactsInMetadataXml(NodeList nodeList) {
         List<OArtifact> modules = Lists.newArrayList();
-        for (Element element : elements) {
-            OArtifact module = getOoArtifact(element);
-            modules.add(module);
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                OArtifact module = getOoArtifact(element);
+                modules.add(module);
+            }
         }
         return modules;
     }
@@ -60,19 +63,23 @@ class OMetadataReader {
     @SuppressWarnings("unchecked")
     private OArtifact getOoArtifact(Element mainElement) {
         OArtifact module = new OArtifact();
-        List<Element> elements = mainElement.elements();
-        for (Element element : elements) {
-            MetadataTag tag = MetadataTag.getByName(element.getName());
-            switch (tag) {
-                case LOAD:
-                    module.setLoad(Boolean.valueOf(element.getText()));
-                    break;
-                case TRUSTED:
-                    module.setTrusted(Boolean.valueOf(element.getText()));
-                    break;
-                case DEPENDENCY:
-                    module.setArtifact(getMavenDependency(element));
-                    break;
+        NodeList nodeList = mainElement.getElementsByTagName("*");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                MetadataTag tag = MetadataTag.getByName(element.getTagName());
+                switch (tag) {
+                    case LOAD:
+                        module.setLoad(Boolean.valueOf(element.getTextContent()));
+                        break;
+                    case TRUSTED:
+                        module.setTrusted(Boolean.valueOf(element.getTextContent()));
+                        break;
+                    case DEPENDENCY:
+                        module.setArtifact(getMavenDependency(element));
+                        break;
+                }
             }
         }
         return module;
@@ -87,41 +94,36 @@ class OMetadataReader {
         String jar        = null;
         String repository = "";
         String description = "";
-        List<Element> elements = mainElement.elements();
-        for (Element element : elements) {
-            MetadataTag tag = MetadataTag.getByName(element.getName());
-            switch (tag) {
-                case GROUP_ID:
-                    groupId = element.getText();
-                    break;
-                case ARTIFACT_ID:
-                    artifactId = element.getText();
-                    break;
-                case VERSION:
-                    version = element.getText();
-                    break;
-                case REPOSITORY:
-                    repository = element.getText();
-                    break;
-                case DESCRIPTION:
-                    description = element.getText();
-                    break;
-                case JAR:
-                    jar = element.getText();
-                    break;
+        NodeList nodeList = mainElement.getElementsByTagName("*");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node;
+                MetadataTag tag = MetadataTag.getByName(element.getTagName());
+                switch (tag) {
+                    case GROUP_ID:
+                        groupId = element.getTextContent();
+                        break;
+                    case ARTIFACT_ID:
+                        artifactId = element.getTextContent();
+                        break;
+                    case VERSION:
+                        version = element.getTextContent();
+                        break;
+                    case REPOSITORY:
+                        repository = element.getTextContent();
+                        break;
+                    case DESCRIPTION:
+                        description = element.getTextContent();
+                        break;
+                    case JAR:
+                        jar = element.getTextContent();
+                        break;
+                }
             }
         }
         artifact = new OArtifactReference(groupId, artifactId, version, repository, description);
         return jar != null ? artifact.setFile(new File(jar)) : artifact;
     }
 
-    private Document readFromFile() {
-        SAXReader reader = new SAXReader();
-        try {
-            return reader.read(pathToMetadata.toFile());
-        } catch (DocumentException ex) {
-            LOG.error("Cannot read metadata.xml", ex);
-        }
-        return null;
-    }
 }

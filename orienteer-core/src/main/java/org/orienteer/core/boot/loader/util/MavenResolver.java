@@ -10,8 +10,8 @@ import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.resolution.ArtifactDescriptorException;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResolutionException;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
