@@ -1,7 +1,6 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
-
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.orienteer.core.OrienteerWebApplication;

@@ -3,6 +3,7 @@ package org.orienteer.core.boot.loader.util;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.http.util.Args;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
@@ -24,6 +25,7 @@ import org.orienteer.core.boot.loader.util.aether.ConsoleTransferListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,7 +49,7 @@ class AetherUtils {
     private static final String ORIENTEER_PARENT  = "orienteer-parent";
     private static final String ORIENTEER_CORE    = "orienteer-core";
 
-    private final Set<Artifact> parentDependencies = Sets.newHashSet();
+    private static final Set<Artifact> PARENT_DEPENDENCIES = Sets.newHashSet();
     private final RepositorySystem system;
     private final RepositorySystemSession session;
     private final List<RemoteRepository> repositories;
@@ -56,29 +58,43 @@ class AetherUtils {
         this.system = getRepositorySystem();
         this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
         this.repositories = initUtils.getRemoteRepositories();
-        Path localPomXml = FileSystems.getDefault().getPath("pom.xml");
-        Collection<Artifact> availableArtifacts = null;
-        String orienteerVersion = initUtils.getOrienteerVersion();
-        if(Files.exists(localPomXml)) {
-        	// We run as mvn jetty:run
-        	Optional<Artifact> thisArtifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(localPomXml);
-        	if(thisArtifact.isPresent()) {
-        		availableArtifacts = OrienteerClassLoaderUtil.readDependencies(localPomXml);
-        	}
-        } else {
-        	//we run in WAR mode
-        	availableArtifacts = OrienteerClassLoaderUtil.getAvailableArtifacts(getClass().getClassLoader());
+        initParentDependencies(initUtils);
+        LOG.info("Orienteer default dependencies: " + PARENT_DEPENDENCIES.size());
+    }
+
+    private void initParentDependencies(InitUtils initUtils) {
+        if (needCreateParentDependenciesSet()) {
+            PARENT_DEPENDENCIES.clear();
+            Path localPomXml = FileSystems.getDefault().getPath("pom.xml");
+            Collection<Artifact> availableArtifacts = null;
+            String orienteerVersion = initUtils.getOrienteerVersion();
+            if (orienteerVersion != null) {
+                Artifact parent = downloadArtifact(getOrienteerArtifact(ORIENTEER_PARENT, orienteerVersion)).orNull();
+                Artifact core = downloadArtifact(getOrienteerArtifact(ORIENTEER_CORE, orienteerVersion)).orNull();
+                Args.notNull(parent, "parent");
+                Args.notNull(core, "core");
+                addOrienteerMainDependencies(parent);
+                addOrienteerMainDependencies(core);
+                OrienteerClassLoaderUtil.addOrienteerVersions(parent.getFile().toPath());
+                OrienteerClassLoaderUtil.addOrienteerVersions(parent.getFile().toPath());
+            }
+            if(Files.exists(localPomXml)) {
+                // We run as mvn jetty:run
+                Optional<Artifact> thisArtifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(localPomXml);
+                if(thisArtifact.isPresent()) {
+                    availableArtifacts = OrienteerClassLoaderUtil.readDependencies(localPomXml);
+                }
+            } else {
+                //we run in WAR mode
+                availableArtifacts = OrienteerClassLoaderUtil.getAvailableArtifacts(getClass().getClassLoader());
+            }
+            if(availableArtifacts != null) {
+                for (Artifact artifact : availableArtifacts) {
+                    addOrienteerMainDependencies(artifact);
+                }
+            }
+
         }
-        if(availableArtifacts!=null) {
-	        for (Artifact artifact : availableArtifacts) {
-				addOrienteerMainDependencies(artifact);
-			}
-        }
-        if (orienteerVersion != null) {
-            addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_PARENT, orienteerVersion));
-            addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_CORE, orienteerVersion));
-        }
-        LOG.info("Orienteer default dependencies: " + parentDependencies.size());
     }
 
     public List<ArtifactResult> resolveArtifact(Artifact artifact) {
@@ -107,8 +123,8 @@ class AetherUtils {
     }
 
     public Optional<Artifact> downloadArtifact(Artifact artifact) {
-        if (containsIn(parentDependencies, artifact)) {
-            return getArtifactFromSet(parentDependencies, artifact);
+        if (containsIn(PARENT_DEPENDENCIES, artifact)) {
+            return getArtifactFromSet(PARENT_DEPENDENCIES, artifact);
         }
         ArtifactRequest artifactRequest = createArtifactRequest(artifact);
         ArtifactResult result = resolveArtifactRequest(artifactRequest);
@@ -116,8 +132,8 @@ class AetherUtils {
     }
 
     public Optional<Artifact> downloadArtifact(Artifact artifact, String repository) {
-        if (containsIn(parentDependencies, artifact)) {
-            return getArtifactFromSet(parentDependencies, artifact);
+        if (containsIn(PARENT_DEPENDENCIES, artifact)) {
+            return getArtifactFromSet(PARENT_DEPENDENCIES, artifact);
         }
         ArtifactRequest artifactRequest = createArtifactRequest(artifact, newUserRemoteRepository(repository));
         ArtifactResult result = resolveArtifactRequest(artifactRequest);
@@ -163,7 +179,7 @@ class AetherUtils {
         for (Dependency dependency : unchagedDeps) {
             Artifact artifact = dependency.getArtifact();
             String extension = artifact.getExtension();
-            if (containsIn(parentDependencies, artifact))
+            if (containsIn(PARENT_DEPENDENCIES, artifact))
                 continue;
 
             if (!extension.equals(JAR_EXTENSION)) {
@@ -230,7 +246,7 @@ class AetherUtils {
     private Set<Artifact> differenceWithCoreDependencies(Set<Artifact> dependencies) {
         Set<Artifact> artifacts = Sets.newHashSet();
         for (Artifact d : dependencies) {
-           if (!containsIn(parentDependencies, d)) {
+           if (!containsIn(PARENT_DEPENDENCIES, d)) {
                artifacts.add(d);
            }
         }
@@ -298,15 +314,22 @@ class AetherUtils {
         Optional<Artifact> artifactOptional = downloadArtifact(artifactToDownload);
         if (artifactOptional.isPresent()) {
             Artifact artifact = artifactOptional.get();
-            parentDependencies.add(artifact);
-            ArtifactDescriptorResult artifactDescriptor = getArtifactDescription(artifact);
-            if(artifactDescriptor!=null) {
-  	            List<Dependency> dependencies = artifactDescriptor.getDependencies();
-	            for (Dependency dependency : dependencies) {
-	            	if("compile".equals(dependency.getScope()))
-	            			parentDependencies.add(dependency.getArtifact());
-				}
+            PARENT_DEPENDENCIES.add(artifact);
+            List<ArtifactResult> artifactResults = resolveArtifact(artifact);
+            for (ArtifactResult result : artifactResults) {
+                Artifact res = result.getArtifact();
+                if (res != null && res.getFile() != null) {
+                    PARENT_DEPENDENCIES.add(res);
+                }
             }
+//            ArtifactDescriptorResult artifactDescriptor = getArtifactDescription(artifact);
+//            if(artifactDescriptor!=null) {
+//  	            List<Dependency> dependencies = artifactDescriptor.getDependencies();
+//	            for (Dependency dependency : dependencies) {
+//	            	if("compile".equals(dependency.getScope()))
+//	            			PARENT_DEPENDENCIES.add(dependency.getArtifact());
+//				}
+//            }
         } else LOG.warn("Can't download Orienteer artifact pom.xml! artifact: {}", artifactToDownload);
     }
 
@@ -329,5 +352,16 @@ class AetherUtils {
 
     public void addRepository(String repository) {
         repositories.add(newUserRemoteRepository(repository));
+    }
+
+    private boolean needCreateParentDependenciesSet() {
+        if (PARENT_DEPENDENCIES.size() == 0) return true;
+        for (Artifact artifact: PARENT_DEPENDENCIES) {
+            File jar = artifact.getFile();
+            if (!jar.exists()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
