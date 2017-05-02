@@ -16,4 +16,4 @@ ln -s /app/orienteer.war /app/active.war
 
 WORKDIR /app/runtime/
 VOLUME ["/app/runtime/"]
-CMD sh -c "exec java -Dorienteer.loader.repository.local=$MAVEN_CONFIG/.m2/repository  $JAVA_OPTIONS -jar ../jetty-runner.jar ../active.war"
+CMD ["java",  "-server", "-Dorienteer.loader.repository.local=/root/.m2/repository", "-jar", "../jetty-runner.jar", "../active.war"]
