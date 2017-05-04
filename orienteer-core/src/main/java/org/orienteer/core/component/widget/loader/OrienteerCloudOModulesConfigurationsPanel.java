@@ -22,7 +22,7 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
+ * Panel for representation of Orienteer cloud modules
  */
 public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
 

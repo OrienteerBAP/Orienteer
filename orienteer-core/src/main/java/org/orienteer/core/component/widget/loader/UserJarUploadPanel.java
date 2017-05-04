@@ -20,7 +20,7 @@ import org.orienteer.core.component.command.AjaxFormCommand;
 import java.io.File;
 
 /**
- * @author Vitaliy Gonchar
+ * Panel for upload user jar file with Orienteer module
  */
 public class UserJarUploadPanel extends Panel {
 
@@ -112,7 +112,7 @@ public class UserJarUploadPanel extends Panel {
             if (fileUpload == null) return Optional.absent();
             String clientFileName = fileUpload.getClientFileName();
             if (!fileUpload.getClientFileName().endsWith(JAR_EXTENSION)) return Optional.absent();
-            return OrienteerClassLoaderUtil.addModuleToModulesFolder(clientFileName, fileUpload);
+            return OrienteerClassLoaderUtil.addArtifactToArtifactsFolder(clientFileName, fileUpload);
         }
 
         private void sendErrorMessage(AjaxRequestTarget target, IModel<String> message) {

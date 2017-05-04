@@ -6,7 +6,7 @@ import org.apache.wicket.model.Model;
 import java.io.Serializable;
 
 /**
- * @author Vitaliy Gonchar
+ * Utility class which contains fields tags for {@link org.orienteer.core.component.widget.loader.OrienteerArtifactsManagerWidget}
  */
 public enum OArtifactField implements Serializable {
     GROUP("group"),

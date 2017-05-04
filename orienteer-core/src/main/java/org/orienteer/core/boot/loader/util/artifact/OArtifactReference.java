@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * @author Vitaliy Gonchar
+ * Class which contains information about maven coordinates and jar file.
  */
 public class OArtifactReference implements Serializable {
     private String groupId;

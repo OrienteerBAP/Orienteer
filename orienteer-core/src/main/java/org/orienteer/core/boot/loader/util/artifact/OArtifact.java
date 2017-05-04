@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
  * Class which contains all information about Orienteer outside module.
  */
 public class OArtifact implements Comparable<OArtifact>, Serializable {

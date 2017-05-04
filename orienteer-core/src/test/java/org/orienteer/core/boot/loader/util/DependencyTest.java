@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 
@@ -12,9 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-/**
- * @author Vitaliy Gonchar
- */
+@Ignore
 public class DependencyTest {
 
     @Test
@@ -26,7 +25,7 @@ public class DependencyTest {
         Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact);
         assertTrue("Artifact must present", artifactOptional.isPresent());
         assertNotNull("Jar file of artifact can't be null", artifactOptional.get().getFile());
-        List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
+        List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifactOptional.get());
         assertEquals("Size of resolved dependencies", true, resolvedArtifact.size() > 0);
 
         for (ArtifactResult res : resolvedArtifact) {

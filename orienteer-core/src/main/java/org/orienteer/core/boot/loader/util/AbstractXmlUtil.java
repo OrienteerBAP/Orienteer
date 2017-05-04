@@ -23,12 +23,18 @@ import java.io.Serializable;
 import java.nio.file.Path;
 
 /**
- * @author Vitaliy Gonchar
+ * Abstract utility class for work with xml
  */
 class AbstractXmlUtil implements Serializable {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlUtil.class);
 
+    /**
+     * Create {@link Document} from {@link Path}
+     * @param xml - xml file
+     * @return - created {@link Document} or null if can't create {@link Document}
+     * @throws IllegalArgumentException if xml is null
+     */
     protected final Document readDocumentFromFile(Path xml) {
         Args.notNull(xml, "xml");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -40,6 +46,10 @@ class AbstractXmlUtil implements Serializable {
         return null;
     }
 
+    /**
+     * Create new {@link Document}
+     * @return new {@link Document} or null if can't create {@link Document}
+     */
     protected final Document createNewDocument() {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
@@ -51,6 +61,12 @@ class AbstractXmlUtil implements Serializable {
         return null;
     }
 
+    /**
+     * Save {@link Document} document in file system with {@link Path} xml
+     * @param document - {@link Document} for save
+     * @param xml - {@link Path} for saving document
+     * @throws IllegalArgumentException if document or xml is null
+     */
     protected final void saveDocument(Document document, Path xml) {
         Args.notNull(document, "document");
         Args.notNull(xml, "xml");
@@ -67,6 +83,13 @@ class AbstractXmlUtil implements Serializable {
         }
     }
 
+    /**
+     * Execute XPath expression
+     * @param expression - {@link String} expression for execute
+     * @param document {@link Document} in which expression will execute
+     * @return {@link NodeList} with result or null if can't execute expression.
+     * @throws IllegalArgumentException if expression or document is null
+     */
     protected final NodeList executeExpression(String expression, Document document) {
         Args.notNull(expression, "expression");
         Args.notNull(document, "document");
@@ -79,11 +102,19 @@ class AbstractXmlUtil implements Serializable {
         return null;
     }
 
-    protected void documentCannotCreateException(Path path) {
+    /**
+     * @throws IllegalStateException
+     * @param path - {@link Path} for information
+     */
+    protected final void documentCannotCreateException(Path path) {
         throw new IllegalStateException("Can't create document from file: " + path.toAbsolutePath());
     }
 
-    protected void documentCannotReadException(Path path) {
+    /**
+     * @throws IllegalStateException
+     * @param path - {@link Path} for information
+     */
+    protected final void documentCannotReadException(Path path) {
         throw new IllegalStateException("Can't read document from file: " + path.toAbsolutePath());
     }
 }
