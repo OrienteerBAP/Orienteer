@@ -2,7 +2,6 @@ package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import org.apache.http.util.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.artifact.Artifact;
@@ -25,7 +24,6 @@ import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
 
 /**
- * @author Vitaliy Gonchar
  * Utility class for OrienteerClassLoader
  */
 public abstract class OrienteerClassLoaderUtil {
@@ -39,8 +37,8 @@ public abstract class OrienteerClassLoaderUtil {
     private static MetadataUtil metadataUtil = new MetadataUtil(initUtils.getMetadataPath(), initUtils.getPathToModulesFolder());
     private static AetherUtils aetherUtils   = new AetherUtils(initUtils);
 
-    private static final String POM_XML             = "pom.xml";
-    static final String MODULES                     = "modules.xml";
+    private static final String POM_XM       = "pom.xml";
+    private static final String MODULES      = "modules.xml";
 
 
     private OrienteerClassLoaderUtil() {}
@@ -208,13 +206,6 @@ public abstract class OrienteerClassLoaderUtil {
         return initUtils.getPathToModulesFolder();
     }
 
-    static void addOrienteerVersions(Path pomXml) {
-        Args.notNull(pomXml, "pomXml");
-        if (pomXml.toString().endsWith(".jar")) {
-            Optional<Path> pom = jarUtils.getPomFromJar(pomXml);
-            if (pom.isPresent()) pomXmlUtils.addOrienteerVersions(pom.get());
-        } else pomXmlUtils.addOrienteerVersions(pomXml);
-    }
 
     public static Optional<File> addModuleToModulesFolder(String moduleName, FileUpload fileUpload) {
         File file = getModulesFolder().resolve(moduleName).toFile();

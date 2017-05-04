@@ -75,8 +75,6 @@ class AetherUtils {
                 Args.notNull(core, "core");
                 addOrienteerMainDependencies(parent);
                 addOrienteerMainDependencies(core);
-                OrienteerClassLoaderUtil.addOrienteerVersions(parent.getFile().toPath());
-                OrienteerClassLoaderUtil.addOrienteerVersions(parent.getFile().toPath());
             }
             if(Files.exists(localPomXml)) {
                 // We run as mvn jetty:run
@@ -322,14 +320,6 @@ class AetherUtils {
                     PARENT_DEPENDENCIES.add(res);
                 }
             }
-//            ArtifactDescriptorResult artifactDescriptor = getArtifactDescription(artifact);
-//            if(artifactDescriptor!=null) {
-//  	            List<Dependency> dependencies = artifactDescriptor.getDependencies();
-//	            for (Dependency dependency : dependencies) {
-//	            	if("compile".equals(dependency.getScope()))
-//	            			PARENT_DEPENDENCIES.add(dependency.getArtifact());
-//				}
-//            }
         } else LOG.warn("Can't download Orienteer artifact pom.xml! artifact: {}", artifactToDownload);
     }
 

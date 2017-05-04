@@ -38,12 +38,6 @@ class PomXmlUtils extends AbstractXmlUtil {
     private static final String PROPERTIES_PROJECT_VERSION  = "${project.version}";
     private static final String WITHOUT_VERSION             = "without-version";
 
-    private final Map<String, String> orienteerVersions     = Maps.newHashMap();
-
-    void addOrienteerVersions(Path pomXml) {
-        Args.notNull(pomXml, "pomXml");
-        orienteerVersions.putAll(getPropertiesVersionsFromPomXml(pomXml));
-    }
 
     Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
         Args.notNull(pomXml, "pomXml");
@@ -94,7 +88,6 @@ class PomXmlUtils extends AbstractXmlUtil {
         Set<Artifact> dependencies =  Sets.newHashSet();
         if (dependenciesNode != null && dependenciesNode.getLength() != 0) {
             Map<String, String> versions = getPropertiesVersionsFromPomXml(pomXml);
-            versions.putAll(orienteerVersions);
             for (int i = 0; i < dependenciesNode.getLength(); i++) {
                 Node node = dependenciesNode.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
