@@ -1,10 +1,9 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
+import org.apache.http.util.Args;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -15,19 +14,27 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
  * Class for read {@link OArtifact} from metadata.xml
  */
 class OMetadataReader extends AbstractXmlUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(OMetadataReader.class);
 
     private final Path pathToMetadata;
 
+    /**
+     * Constructor
+     * @param pathToMetadata {@link Path} of metadata.xml
+     * @throws IllegalArgumentException if pathToMetadata is null
+     */
     OMetadataReader(Path pathToMetadata) {
+        Args.notNull(pathToMetadata, "pathToMetadata");
         this.pathToMetadata = pathToMetadata;
     }
 
-    List<OArtifact> readModulesForLoad() {
+    /**
+     * Read artifacts for load from metadata.xml
+     * @return list {@link OArtifact} of artifacts for load in metadata.xml or empty list if metadata.xml is empty
+     */
+    List<OArtifact> readArtifactsForLoad() {
         List<OArtifact> modules = read();
         List<OArtifact> modulesForLoad = Lists.newArrayList();
         for (OArtifact module : modules) {
@@ -36,10 +43,18 @@ class OMetadataReader extends AbstractXmlUtil {
         return modulesForLoad;
     }
 
+    /**
+     * Read all artifacts from metadata.xml
+     * @return list {@link OArtifact} of artifacts in metadata.xml or empty list if metadata.xml is empty
+     */
     List<OArtifact> readAllOoArtifacts() {
         return read();
     }
 
+    /**
+     * Read all artifacts from metadata.xml
+     * @return list {@link OArtifact} of artifacts in metadata.xml or empty list if metadata.xml is empty
+     */
     @SuppressWarnings("unchecked")
     private List<OArtifact> read() {
         Document document = readDocumentFromFile(pathToMetadata);
@@ -47,6 +62,11 @@ class OMetadataReader extends AbstractXmlUtil {
         return getOoArtifactsInMetadataXml(executeExpression(expression, document));
     }
 
+    /**
+     * Search artifacts in nodeList
+     * @param nodeList list with nodes in metadata.xml
+     * @return list {@link OArtifact} with artifacts or empty list if nodeList don't contains any artifact
+     */
     private List<OArtifact> getOoArtifactsInMetadataXml(NodeList nodeList) {
         List<OArtifact> modules = Lists.newArrayList();
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -60,6 +80,11 @@ class OMetadataReader extends AbstractXmlUtil {
         return modules;
     }
 
+    /**
+     * Parse mainElement and get {@link OArtifact} from it.
+     * @param mainElement - {@link Element}t for parse
+     * @return {@link OArtifact} from mainElement
+     */
     @SuppressWarnings("unchecked")
     private OArtifact getOoArtifact(Element mainElement) {
         OArtifact module = new OArtifact();
@@ -85,6 +110,11 @@ class OMetadataReader extends AbstractXmlUtil {
         return module;
     }
 
+    /**
+     * Parse mainElement and get {@link OArtifactReference} from it.
+     * @param mainElement - {@link Element} for parse.
+     * @return {@link OArtifactReference} from mainElement.
+     */
     @SuppressWarnings("unchecked")
     private OArtifactReference getMavenDependency(Element mainElement) {
         OArtifactReference artifact;

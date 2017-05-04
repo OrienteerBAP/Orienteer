@@ -48,7 +48,7 @@ public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
         modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
             @Override
             public void onClose(AjaxRequestTarget target) {
-                updater.notifyAboutNewModules();
+                updater.notifyAboutNewArtifacts();
                 target.add(table);
             }
         });

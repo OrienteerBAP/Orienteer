@@ -7,7 +7,7 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.web.BasePage;
 
 /**
- * @author Vitaliy Gonchar
+ * ModalWindow for add Orienteer modules.
  */
 public class OArtifactsModalWindowPage extends BasePage<OArtifact> {
 

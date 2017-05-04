@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.Serializable;
 
 /**
- * @author Vitaliy Gonchar
+ * Class which contains information about maven coordinates and jar file.
  */
 public class OArtifactReference implements Serializable {
     private String groupId;
@@ -68,7 +68,7 @@ public class OArtifactReference implements Serializable {
     }
 
     public Artifact toAetherArtifact() {
-        Artifact result = new DefaultArtifact(String.format("%s:%s:%s", groupId, artifactId, version));
+        Artifact result = new DefaultArtifact(String.format("%s:%s:jar:%s", groupId, artifactId,version));
         return result.setFile(file);
     }
 

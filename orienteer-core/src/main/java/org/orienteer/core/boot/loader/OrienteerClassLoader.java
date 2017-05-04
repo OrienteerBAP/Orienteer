@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.MavenResolver;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Vitaliy Gonchar
+ * Orienteer's classloader loads modules.
+ * Orienteer runs with all modules for load - if trusted and untrusted modules loads correctly
+ * Orienteer runs only with trusted modules for load - if untrusted modules don't load correctly, but trusted modules loads correctly
+ * Orienteer runs without modules - if trusted and untrusted modules don't loads correctly
  */
 public class OrienteerClassLoader extends URLClassLoader {
 	
@@ -49,7 +52,7 @@ public class OrienteerClassLoader extends URLClassLoader {
      * @return - return trusted or untrusted or default Orienteer classloader (if OrienteerClassLoader is off)
      */
     public static ClassLoader getClassLoader() {
-        if (!isClassLoaderOn())
+        if (!isOrienteerClassLoaderEnable())
             return OrienteerWebApplication.class.getClassLoader();
         return useUnTrusted ? untrustedClassLoader : (useOrienteerClassLoader ? orienteerClassLoader : trustedClassLoader);
     }
@@ -78,25 +81,29 @@ public class OrienteerClassLoader extends URLClassLoader {
         useOrienteerClassLoader = false;
     }
 
-    public static void clear() {
-        untrustedClassLoader = null;
-        trustedClassLoader = null;
-    }
 
     /**
-     * On OrienteerClassLoader
+     * Enable OrienteerClassLoader. It's possible to run Orienteer with modules
      */
-    public static void on() {
+    public static void enable() {
         if (!orienteerClassLoaderOn)
             orienteerClassLoaderOn = true;
     }
 
-    public static void off() {
+    /**
+     * Disable OrienteerClassloader. It's not possible to run Orienteer with modules
+     */
+    public static void disable() {
         if (orienteerClassLoaderOn)
             orienteerClassLoaderOn = false;
     }
 
-    public static boolean isClassLoaderOn() {
+    /**
+     * Get state of OrienteerClassLoader
+     * @return true - OrienteerClassLoader is enable and Orienteer runs with untrusted or trusted classloader
+     *         false - OrienteerClassLoader is disable and Orienteer runs with default classloader (container's classloader)
+     */
+    public static boolean isOrienteerClassLoaderEnable() {
         return orienteerClassLoaderOn;
     }
 
@@ -156,6 +163,12 @@ public class OrienteerClassLoader extends URLClassLoader {
         return trustyModules;
     }
 
+
+    /**
+     * Add Orienteer modules to classloader resources.
+     * @param modules - list which contains modules for add
+     * @throws NullPointerException if jar file of module is null
+     */
     private void addModulesToClassLoaderResources(List<OArtifact> modules) {
         for(OArtifact metadata : modules) {
             try {
@@ -168,33 +181,49 @@ public class OrienteerClassLoader extends URLClassLoader {
             }
         }
     }
-	
+
+    /**
+     * Create modules list from modules folder.
+     * @param jars jars in modules folder
+     * @return list which contains Orienteer modules
+     */
 	private List<OArtifact> createModules(List<Path> jars) {
-        List<OArtifact> modulesForLoad = resolver.getResolvedoArtifacts(jars);
-        if (modulesForLoad.size() > 0) {
-            OrienteerClassLoaderUtil.createOArtifactsMetadata(modulesForLoad);
+        List<OArtifact> modules = resolver.getResolvedoArtifacts(jars);
+        if (modules.size() > 0) {
+            OrienteerClassLoaderUtil.createOArtifactsMetadata(modules);
         } else OrienteerClassLoaderUtil.deleteMetadataFile();
 
-        return modulesForLoad;
+        return modules;
     }
-	
-    private List<OArtifact> getUpdateModules(Map<Path, OArtifact> modules) {
-        resolveModulesWithoutMainJar(modules);
+
+    /**
+     * Search new modules and update metadata.xml if it's need.
+     * @param oArtifacts -  modules which read from metadata.xml
+     * @return modules for load
+     */
+    private List<OArtifact> getUpdateModules(Map<Path, OArtifact> oArtifacts) {
+        resolveModulesWithoutMainJar(oArtifacts);
 	    List<Path> jars = OrienteerClassLoaderUtil.getJarsInArtifactsFolder();
-	    List<OArtifact> modulesForWrite = getModulesForAddToMetadata(jars, modules);
+	    List<OArtifact> modulesForWrite = getModulesForAddToMetadata(jars, oArtifacts);
 
 	    if (modulesForWrite.size() > 0) {
-            OrienteerClassLoaderUtil.updateOoArtifactInMetadata(modulesForWrite);
+            OrienteerClassLoaderUtil.updateOoArtifactsInMetadata(modulesForWrite);
         }
 
-        modules = OrienteerClassLoaderUtil.getOArtifactsMetadataForLoadInMap();
+        oArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataForLoadInMap();
 
-        return getModulesForLoad(modules.values());
+        return getModulesForLoad(oArtifacts.values());
     }
-    
-    private List<OArtifact> getModulesForAddToMetadata(List<Path> jars, Map<Path, OArtifact> modules) {
+
+    /**
+     * Search artifacts for add to metadata.xml
+     * @param jars - jars in artifacts folder
+     * @param oArtifacts - artifacts in metadata.xml
+     * @return list with resolved artifact for add to metadata
+     */
+    private List<OArtifact> getModulesForAddToMetadata(List<Path> jars, Map<Path, OArtifact> oArtifacts) {
         List<Path> modulesForWrite = Lists.newArrayList();
-        Set<Path> jarsInMetadata = modules.keySet();
+        Set<Path> jarsInMetadata = oArtifacts.keySet();
         for (Path pathToJar : jars) {
             if (!jarsInMetadata.contains(pathToJar)) {
                 modulesForWrite.add(pathToJar);
@@ -203,6 +232,11 @@ public class OrienteerClassLoader extends URLClassLoader {
         return resolver.getResolvedoArtifacts(modulesForWrite);
     }
 
+    /**
+     * Search modules for load
+     * @param modules collection with modules
+     * @return modules fir load
+     */
     private List<OArtifact> getModulesForLoad(Collection<OArtifact> modules) {
         List<OArtifact> modulesForLoad = Lists.newArrayList();
         for (OArtifact metadata : modules) {
@@ -211,6 +245,13 @@ public class OrienteerClassLoader extends URLClassLoader {
         return modulesForLoad;
     }
 
+    /**
+     * Download jars for modules. Search modules which {@link Path} contains {@value OrienteerClassLoaderUtil#WITHOUT_JAR} and
+     * create new {@link OArtifact} for that modules.
+     * @param modules modules which must resolved
+     *                {@link Path} - path to jar file
+     *                {@link OArtifact} - module for resolve
+     */
     private void resolveModulesWithoutMainJar(Map<Path, OArtifact> modules) {
         List<OArtifact> modulesWithoutMainJar = getModulesWithoutMainJar(modules.values());
         if (modulesWithoutMainJar.size() > 0) {
@@ -231,6 +272,11 @@ public class OrienteerClassLoader extends URLClassLoader {
         }
     }
 
+    /**
+     * Search modules without correctly jar file.
+     * @param modules - collection which contains modules
+     * @return list of modules which does not contains correctly jar file
+     */
     private List<OArtifact> getModulesWithoutMainJar(Collection<OArtifact> modules) {
         List<OArtifact> result = Lists.newArrayList();
         for (OArtifact module : modules) {
@@ -242,6 +288,11 @@ public class OrienteerClassLoader extends URLClassLoader {
         return result;
     }
 
+    /**
+     * Search trusted modules in input list
+     * @param modules list with trusted and untrusted modules
+     * @return list with trusted modules
+     */
     private List<OArtifact> getTrustedModules(List<OArtifact> modules) {
 	    List<OArtifact> trustedModules = Lists.newArrayList();
 	    for (OArtifact module : modules) {
@@ -250,6 +301,11 @@ public class OrienteerClassLoader extends URLClassLoader {
 	    return trustedModules;
     }
 
+    /**
+     * Search untrusted modules in input list
+     * @param modules list with trusted and untrusted modules
+     * @return list with untrusted modules
+     */
     private List<OArtifact> getUnTrustedModules(List<OArtifact> modules) {
         List<OArtifact> unTrustedModules = Lists.newArrayList();
         for (OArtifact module : modules) {
@@ -258,18 +314,29 @@ public class OrienteerClassLoader extends URLClassLoader {
         return unTrustedModules;
     }
 
+    /**
+     * Sandbox classloader for testing Orienteer modules before their loading
+     */
     private static class OrienteerSandboxClassLoader extends URLClassLoader {
 
         public OrienteerSandboxClassLoader(ClassLoader parent) {
             super(new URL[]{}, parent);
         }
 
+        /**
+         * Test loading resources in classloader
+         * @param modules - list of modules for load
+         */
         public void loadResourcesInClassLoader(List<OArtifact> modules) {
             for (OArtifact module : modules) {
                 loadResourceInClassLoader(module);
             }
         }
 
+        /**
+         * Load module and resources of module in classloader
+         * @param module - {@link OArtifact} for load in classloader
+         */
         private void loadResourceInClassLoader(OArtifact module) {
             try {
                 addURL(module.getArtifactReference().getFile().toURI().toURL());
@@ -281,6 +348,12 @@ public class OrienteerClassLoader extends URLClassLoader {
             }
         }
 
+        /**
+         * Testing module. Search and load Wicket init class {@link org.apache.wicket.IInitializer}.
+         * @param module - {@link OArtifact} for testing
+         * @return true - if loading is success (loading without {@link ClassNotFoundException})
+         *         false - if loading is failed (loading with {@link ClassNotFoundException})
+         */
         public boolean test(OArtifact module) {
             boolean trusted = false;
             try {
@@ -292,7 +365,7 @@ public class OrienteerClassLoader extends URLClassLoader {
                     trusted = true;
                 }
             } catch (ClassNotFoundException e) {
-                LOG.warn("Cannot load init class for module: " + module);
+                LOG.warn("Cannot search and load init class for module: {}", module);
                 if (LOG.isDebugEnabled()) e.printStackTrace();
             }
             return trusted;

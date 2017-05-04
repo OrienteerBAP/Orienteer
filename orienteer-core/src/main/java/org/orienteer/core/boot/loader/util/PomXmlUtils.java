@@ -6,25 +6,19 @@ import com.google.common.collect.Sets;
 import org.apache.http.util.Args;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * @author Vitaliy Gonchar
- * Class for work with pom.xml which is located in module jar file.
+ * Class for work with pom.xml which is located in artifact jar file.
  */
 class PomXmlUtils extends AbstractXmlUtil {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PomXmlUtils.class);
 
     private static final String PROJECT                     = "project";
     private static final String PARENT                      = "parent";
@@ -33,29 +27,15 @@ class PomXmlUtils extends AbstractXmlUtil {
     private static final String VERSION                     = "version";
     private static final String DEPENDENCIES                = "dependencies";
     private static final String PROPERTIES                  = "properties";
-    private static final String DEPENDENCY                  = "dependency";
     private static final String DEPENDENCIES_MANAGMENT      = "dependencyManagement";
-    private static final String PROPERTIES_VERSION_END      = ".version";
-    private static final String PROPERTIES_PROJECT_VERSION  = "${project.version}";
     private static final String WITHOUT_VERSION             = "without-version";
 
 
-    private final Map<String, String> orienteerVersions     = Maps.newHashMap();
-
-    PomXmlUtils addOrienteerVersions(Path pomXml) {
-        orienteerVersions.putAll(getPropertiesVersionsFromPomXml(pomXml));
-        String parentVersion = getParentVersion(pomXml);
-        if (parentVersion != null) {
-            orienteerVersions.put(PROPERTIES_PROJECT_VERSION, parentVersion);
-        }
-        return this;
-    }
-
-    public Map<String, String> getOrienteerVersions() {
-        return Collections.unmodifiableMap(orienteerVersions);
-    }
-
-
+    /**
+     * Read maven group, artifact, version in xml node <parent></parent>
+     * @param pomXml pom.xml for read
+     * @return {@link Artifact} with parent's group, artifact, version
+     */
     Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
         Args.notNull(pomXml, "pomXml");
         Document doc = readDocumentFromFile(pomXml);
@@ -73,6 +53,13 @@ class PomXmlUtils extends AbstractXmlUtil {
         return Optional.absent();
     }
 
+    /**
+     * Read group, artifact, version from nodes:
+     * <groupId></groupId>, <artifactId></artifactId>, <version></version>
+     * If presents parent node group and artifact takes from parent node
+     * @param pomXml pom.xml for read
+     * @return {@link Artifact} with group, artifact, version
+     */
     Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
         String groupExpression    = String.format("/%s/%s", PROJECT, GROUP);
         String artifactExpression = String.format("/%s/%s", PROJECT, ARTIFACT);
@@ -93,6 +80,11 @@ class PomXmlUtils extends AbstractXmlUtil {
         return Optional.absent();
     }
 
+    /**
+     * Read dependencies from xml node <dependencies></dependencies>
+     * @param pomXml pom.xml for read
+     * @return collection with dependencies in pom.xml
+     */
     @SuppressWarnings("unchecked")
     Set<Artifact> readDependencies(Path pomXml) {
         String dependenciesExp          = String.format("/%s/%s/*", PROJECT, DEPENDENCIES);
@@ -105,7 +97,6 @@ class PomXmlUtils extends AbstractXmlUtil {
         Set<Artifact> dependencies =  Sets.newHashSet();
         if (dependenciesNode != null && dependenciesNode.getLength() != 0) {
             Map<String, String> versions = getPropertiesVersionsFromPomXml(pomXml);
-            versions.putAll(orienteerVersions);
             for (int i = 0; i < dependenciesNode.getLength(); i++) {
                 Node node = dependenciesNode.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -119,10 +110,23 @@ class PomXmlUtils extends AbstractXmlUtil {
         return dependencies;
     }
 
+    /**
+     * Search versions which are in xml node <properties></properties>
+     * @param pomXml pom.xml for read
+     * @return map with versions
+     * example: ${wicket.version} : 7.6.0
+     */
     private Map<String, String> getPropertiesVersionsFromPomXml(Path pomXml) {
         return getPropertiesVersionsFromPomXml(readDocumentFromFile(pomXml));
     }
 
+
+    /**
+     * Search versions which are in xml node <properties></properties>
+     * @param doc {@link Document} for read
+     * @return map with versions
+     * example: ${wicket.version} : 7.6.0
+     */
     private Map<String, String> getPropertiesVersionsFromPomXml(Document doc) {
         String expression = String.format("/%s/%s/*", PROJECT, PROPERTIES);
         Map<String, String> versions = Maps.newHashMap();
@@ -137,10 +141,21 @@ class PomXmlUtils extends AbstractXmlUtil {
         return versions;
     }
 
+    /**
+     * Search parent version in pom.xml
+     * @param pomXml - pom.xml for read
+     * @return parent version
+     */
     private String getParentVersion(Path pomXml) {
         return getParentVersion(readDocumentFromFile(pomXml));
     }
 
+
+    /**
+     * Search parent version in pom.xml
+     * @param doc {@link Document} for read
+     * @return parent version
+     */
     private String getParentVersion(Document doc)  {
         String expression = String.format("/%s/%s/%s", PROJECT, PARENT, VERSION);
         NodeList nodeList = executeExpression(expression, doc);
@@ -151,6 +166,13 @@ class PomXmlUtils extends AbstractXmlUtil {
         return WITHOUT_VERSION;
     }
 
+    /**
+     * Parse element for getting {@link Artifact} from it
+     * @param element - {@link Element} for parse
+     * @param versions - versions which are in <properties></properties> of pom.xml
+     * @return {@link Optional<Artifact>} - if parse is success
+     *         Optional.absent() - if parse is failed
+     */
     private Optional<Artifact> parseDependency(Element element, Map<String, String> versions) {
         Element groupElement = (Element) element.getElementsByTagName(GROUP).item(0);
         Element artifactElement = (Element) element.getElementsByTagName(ARTIFACT).item(0);
@@ -159,8 +181,7 @@ class PomXmlUtils extends AbstractXmlUtil {
         String artifactId = artifactElement != null ? artifactElement.getTextContent() : null;
         String version = versionElement != null ? versionElement.getTextContent() : null;
         if (isLinkToVersion(version) && versions != null) {
-            String ver = versions.get(version);
-            if (ver != null) version = ver;
+            version = versions.get(version);
         }
 
         if (groupId != null && artifactId != null && version != null)
@@ -169,16 +190,37 @@ class PomXmlUtils extends AbstractXmlUtil {
         return Optional.absent();
     }
 
+    /**
+     * Create group, artifact, version string for {@link Artifact}
+     * syntax - groupId:artifactId:version
+     * example - org.orienteer:devutils:1.2
+     * @param group    - artifact groupId
+     * @param artifact - artifact artifactId
+     * @param version  - artifact version
+     * @return GAV string for creating {@link Artifact}
+     */
     private String getGAV(String group, String artifact, String version) {
         return String.format("%s:%s:%s", group, artifact, version);
     }
 
-    private boolean isLinkToVersion(String artifactVersion) {
-        return artifactVersion != null &&
-                (artifactVersion.contains("$") || artifactVersion.contains("{") || artifactVersion.contains("}"));
+    /**
+     * Checks if artifact version is link to version in xml node <properties></properties>
+     * @param version - version for check
+     * @return true - if version is link
+     *         false - if version is not link
+     */
+    private boolean isLinkToVersion(String version) {
+        return version != null &&
+                (version.contains("$") || version.contains("{") || version.contains("}"));
     }
 
-    private String getLinkToVersion(String artifactVersion) {
-        return !artifactVersion.startsWith("$") ? "${" + artifactVersion + "}" : artifactVersion;
+    /**
+     * Create link for version.
+     * example: wicket.version -> ${wicket.version}
+     * @param version - version for creating link
+     * @return link for version
+     */
+    private String getLinkToVersion(String version) {
+        return !version.startsWith("$") ? "${" + version + "}" : version;
     }
 }

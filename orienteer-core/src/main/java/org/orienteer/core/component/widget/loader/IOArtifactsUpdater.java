@@ -3,8 +3,8 @@ package org.orienteer.core.component.widget.loader;
 import java.io.Serializable;
 
 /**
- * @author Vitaliy Gonchar
+ * Interface for notify when need to update artifacts.
  */
 public interface IOArtifactsUpdater extends Serializable {
-    void notifyAboutNewModules();
+    void notifyAboutNewArtifacts();
 }

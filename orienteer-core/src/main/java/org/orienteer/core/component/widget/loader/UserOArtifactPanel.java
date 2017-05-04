@@ -21,7 +21,7 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
+ * Panel for user configuration of Orienteer module
  */
 public class UserOArtifactPanel extends Panel {
 

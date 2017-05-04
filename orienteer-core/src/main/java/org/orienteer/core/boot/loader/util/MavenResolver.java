@@ -12,31 +12,23 @@ import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
-import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.getModulesFolder;
 import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.resolvingDependenciesRecursively;
 
 /**
- * @author Vitaliy Gonchar
+ * Utility class for download maven dependencies.
  */
 public class MavenResolver {
-    private static final Logger LOG = LoggerFactory.getLogger(MavenResolver.class);
 
     private static MavenResolver resolver;
-    private final Path modulesFolder;
     private final boolean resolvingRecursively;
 
-    private MavenResolver(Path modulesFolder, boolean resolvingRecursively) {
-        this.modulesFolder = modulesFolder;
+    private MavenResolver(boolean resolvingRecursively) {
         this.resolvingRecursively = resolvingRecursively;
     }
 
@@ -46,7 +38,7 @@ public class MavenResolver {
      */
     public static MavenResolver get() {
         if (resolver == null) {
-            resolver = new MavenResolver(getModulesFolder(), resolvingDependenciesRecursively());
+            resolver = new MavenResolver(resolvingDependenciesRecursively());
         }
         return resolver;
     }
@@ -71,7 +63,7 @@ public class MavenResolver {
 
     /**
      * @param jars paths to unresolved modules in jar files
-     * @return list with modules metadata for write in metadata.xml
+     * @return list with modules for write in metadata.xml
      */
     public List<OArtifact> getResolvedoArtifacts(List<Path> jars) {
         List<OArtifact> metadata = Lists.newArrayList();
@@ -122,21 +114,6 @@ public class MavenResolver {
         }
     }
 
-    /**
-     * Move Orienteer artifacts to artifacts folder
-     * @param pathToJar - path to Orienteer module
-     * @return path to module in modules folder
-     */
-    private File moveToArtifactsFolder(Path pathToJar) {
-        Path result = modulesFolder.resolve(pathToJar.getFileName());
-        try {
-            if (!Files.exists(result)) Files.move(pathToJar, result);
-        } catch (IOException e) {
-            LOG.warn("Cannot move artifact jar to artifacts folder!", e);
-        }
-        return result.toFile();
-    }
-
     private Optional<OArtifact> getOArtifact(String group, String artifact, String version,
                                                                   Path pathToMainArtifact) {
         return getOArtifact(String.format("%s:%s:%s", group, artifact, version), pathToMainArtifact);
@@ -146,7 +123,7 @@ public class MavenResolver {
         Optional<OArtifactReference> mainArtifact = pathToJar != null ?
                 getArtifactReference(groupArtifactVersion, pathToJar) : resolveAndGetArtifactReference(groupArtifactVersion);
         if (!mainArtifact.isPresent()) return Optional.absent();
-        List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion, pathToJar);
+        List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion);
 
         OArtifact moduleMetadata = new OArtifact();
         moduleMetadata.setLoad(false)
@@ -155,7 +132,7 @@ public class MavenResolver {
         return Optional.of(moduleMetadata);
     }
 
-    private List<Artifact> resolveDependenciesInArtifacts(String groupArtifactVersion, Path pathToJar) {
+    private List<Artifact> resolveDependenciesInArtifacts(String groupArtifactVersion) {
         List<ArtifactResult> results;
         List<Artifact> artifacts = null;
         try {
@@ -167,30 +144,9 @@ public class MavenResolver {
         return artifacts != null ? artifacts : Lists.<Artifact>newArrayList();
     }
 
-    private List<ArtifactResult> resolve(Artifact mainDependency) throws ODependenciesNotResolvedException {
-        List<ArtifactResult> dependencies;
-        try {
-            dependencies =  resolveDependencies(
-                    mainDependency.getGroupId(), mainDependency.getArtifactId(), mainDependency.getVersion());
-        } catch (DependencyCollectionException | DependencyResolutionException | ArtifactDescriptorException e) {
-            if (LOG.isDebugEnabled()) e.printStackTrace();
-            throw new ODependenciesNotResolvedException(
-                    "Cannot resolved dependencies by automatic downloading their from maven repositories");
-        }
-        return dependencies;
-    }
-
     private List<ArtifactResult> resolveDependenciesFromPomXml(Path pomXml) {
         Set<Artifact> dependencies = OrienteerClassLoaderUtil.readDependencies(pomXml);
         return resolveDependencies(dependencies);
-    }
-
-    private List<ArtifactResult> resolveDependencies(String group, String artifact, String version)
-            throws ArtifactDescriptorException, DependencyCollectionException, DependencyResolutionException {
-        if (Strings.isNullOrEmpty(group) || Strings.isNullOrEmpty(artifact) || Strings.isNullOrEmpty(version)) {
-            return Lists.newArrayList();
-        }
-        return resolveDependencies(String.format("%s:%s:%s", group, artifact, version));
     }
 
     private List<ArtifactResult> resolveDependencies(String groupArtifactVersion) throws ArtifactDescriptorException,

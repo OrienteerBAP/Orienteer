@@ -123,7 +123,7 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
     private IOArtifactsUpdater getUpdater(final List<IOArtifactsUpdateListener> listeners) {
         return new IOArtifactsUpdater() {
             @Override
-            public void notifyAboutNewModules() {
+            public void notifyAboutNewArtifacts() {
                 for (IOArtifactsUpdateListener listener : listeners) {
                     listener.updateOArtifacts();
                 }

@@ -4,6 +4,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.Args;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @author Vitaliy Gonchar
  * Class for download xml file with Orienteer modules description from github
  */
 class HttpDownloader {
@@ -25,13 +25,26 @@ class HttpDownloader {
 
     private static final Logger LOG = LoggerFactory.getLogger(HttpDownloader.class);
 
+    /**
+     * Constructor of {@link HttpDownloader}
+     * @param url - url for downloading modules.xml
+     * @param pathToTargetFolder - {@link Path} for target folder in which will downloaded modules.xml
+     * @throws IllegalArgumentException if url is null
+     */
     HttpDownloader(String url, Path pathToTargetFolder) {
-        if (url == null) throw new IllegalStateException("Url to Orienteer modules cannot be null!");
+        Args.notNull(url, "url");
         this.url = url;
         this.pathToTargetFolder = pathToTargetFolder != null ? pathToTargetFolder : Paths.get(System.getProperty("user.dir"));
     }
 
+    /**
+     * Download modules.xml from url
+     * @param fileName name of created file in file system
+     * @return {@link Path} for downloaded file
+     * @throws IllegalArgumentException if fileName is null
+     */
     Path download(String fileName) {
+        Args.notNull(fileName, "fileName");
         HttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         Path result = null;
@@ -47,6 +60,12 @@ class HttpDownloader {
         return result;
     }
 
+    /**
+     * Write from {@link InputStream} to file with name fileName
+     * @param fileName name of file
+     * @param in {@link InputStream} from url
+     * @return {@link Path} to file
+     */
     private Path writeToFile(String fileName, InputStream in) {
         Path file = pathToTargetFolder.resolve(fileName);
         byte [] buff = new byte[1024];

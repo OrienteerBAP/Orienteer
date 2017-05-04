@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
+ * Provider for Orienteer modules in system.
  */
 public abstract class AbstractOArtifactsProvider extends SortableDataProvider<OArtifact, String> implements IOArtifactsUpdateListener {
 

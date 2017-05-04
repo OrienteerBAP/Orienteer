@@ -1,7 +1,6 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.collect.Lists;
-
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.orienteer.core.OrienteerWebApplication;
@@ -17,8 +16,8 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * @author Vitaliy Gonchar
- * Class for initialization resources for load outside Orienteer modules.
+ * Utility class for initialization resources for load outside Orienteer modules.
+ * Contains all information for starting Orienteer loader micro-framework.
  */
 class InitUtils {
     private final static Logger LOG = LoggerFactory.getLogger(InitUtils.class);
@@ -40,22 +39,34 @@ class InitUtils {
     private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
 
+    /**
+     * @return maven local repository
+     */
     public String getMavenLocalRepository() {
         String path = PROPERTIES.getProperty(MAVEN_LOCAL_REPOSITORY);
         return path == null ? DEFAULT_MAVEN_LOCAL_REPOSITORY : path;
     }
 
+    /**
+     * @return recursively resolving dependencies property
+     */
     public boolean resolvingDependenciesRecursively() {
         if (PROPERTIES == null)
             return Boolean.FALSE;
         return Boolean.valueOf(PROPERTIES.getProperty(RECURSIVELY_RESOLVING_DEPS));
     }
 
+    /**
+     * @return {@link Path} of file metadata.xml
+     */
     public Path getMetadataPath() {
         Path modulesFolder = getPathToModulesFolder();
         return modulesFolder.resolve(METADATA_FILE);
     }
 
+    /**
+     * @return {@link Path} of modules folder
+     */
     public Path getPathToModulesFolder() {
         if (PROPERTIES == null)
             return createDirectory(Paths.get(DEFAULT_LIBS_FOLDER));
@@ -64,6 +75,11 @@ class InitUtils {
         return createDirectory(pathToModules);
     }
 
+    /**
+     * Create directory with path pathToDir
+     * @param pathToDir {@link Path} of creating directory
+     * @return {@link Path} of created directory
+     */
     private Path createDirectory(Path pathToDir) {
         try {
             if (!Files.exists(pathToDir))
@@ -75,6 +91,10 @@ class InitUtils {
         return pathToDir;
     }
 
+    /**
+     * Search or create list with default Orienteer remote repositories.
+     * @return list of {@link RemoteRepository}
+     */
     public List<RemoteRepository> getRemoteRepositories() {
         if (PROPERTIES == null)
             return getDefaultRepositories();
@@ -112,6 +132,9 @@ class InitUtils {
         return repositories;
     }
 
+    /**
+     * @return url to modules.xml which contains descriptions of Orienteer modules in cloud
+     */
     public String getOrienteerModulesUrl() {
         return PROPERTIES.getProperty(ORIENTEER_MODULES_URL);
     }
@@ -124,6 +147,9 @@ class InitUtils {
         return PROPERTIES.getProperty(ORIENTEER_ARTIFACT_ID);
     }
 
+    /**
+     * @return current Orienteer version
+     */
     public String getOrienteerVersion() {
         String version = PROPERTIES.getProperty(ORIENTEER_VERSION);
         return Strings.isEmpty(version)?OrienteerWebApplication.class.getPackage().getImplementationVersion():version;

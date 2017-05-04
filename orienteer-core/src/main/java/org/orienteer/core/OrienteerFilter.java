@@ -78,7 +78,7 @@ public final class OrienteerFilter implements Filter {
     
     private ClassLoader initClassLoader(Properties properties) {
         OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
-        OrienteerClassLoader.on();
+        OrienteerClassLoader.enable();
     	return OrienteerClassLoader.getClassLoader();
     }
 
@@ -146,10 +146,18 @@ public final class OrienteerFilter implements Filter {
         return reloading;
     }
 
+    /**
+     * Reload Orienteer with fixed delay=3s and wait=5s
+     */
     public static void reloadOrienteer() {
         reloadOrienteer(3000, 5000);
     }
 
+    /**
+     * Reload Orienteer with delay and wait
+     * @param delay - delay in ms. After delay Orienteer will be reload
+     * @param wait - wait in ms. Wait before {@link OrienteerFilter} starts reload
+     */
     public static void reloadOrienteer(long delay, final long wait) {
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
         executor.schedule(new Runnable() {

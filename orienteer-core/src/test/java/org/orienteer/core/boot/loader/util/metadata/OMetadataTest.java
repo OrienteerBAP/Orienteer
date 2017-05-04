@@ -5,12 +5,11 @@ import org.apache.http.util.Args;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 
 import java.io.File;
 import java.util.List;
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author Vitaliy Gonchar
+ * Test work with metadata.xml
  */
 public class OMetadataTest {
     private static OArtifact metadata;

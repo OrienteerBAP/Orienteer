@@ -24,7 +24,7 @@ public class DeleteOArtifactCommand extends AbstractDeleteCommand<OArtifact> {
     @Override
     protected void performMultiAction(AjaxRequestTarget target, List<OArtifact> objects) {
         super.performMultiAction(target, objects);
-        subject.notifyAboutNewModules();
+        subject.notifyAboutNewArtifacts();
     }
 
     @Override
