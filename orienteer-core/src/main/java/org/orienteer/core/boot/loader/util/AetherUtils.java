@@ -20,22 +20,14 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.orienteer.core.boot.loader.util.aether.ConsoleRepositoryListener;
-import org.orienteer.core.boot.loader.util.aether.ConsoleTransferListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 /**
- * @author Vitaliy Gonchar
  * Utility class for work with Eclipse Aether.
  */
 class AetherUtils {
@@ -43,13 +35,8 @@ class AetherUtils {
     private static final Logger LOG = LoggerFactory.getLogger(AetherUtils.class);
 
     private static final String JAR_EXTENSION     = "jar";
-    private static final String POM_EXTENSION     = "pom";
     private static final String ARTIFACT_TEMPLATE = "%s:%s:%s:%s";
-    private static final String ORIENTEER_GROUP   = "org.orienteer";
-    private static final String ORIENTEER_PARENT  = "orienteer-parent";
-    private static final String ORIENTEER_CORE    = "orienteer-core";
 
-    private static final Set<Artifact> PARENT_DEPENDENCIES = Sets.newHashSet();
     private final RepositorySystem system;
     private final RepositorySystemSession session;
     private final List<RemoteRepository> repositories;
@@ -58,43 +45,17 @@ class AetherUtils {
         this.system = getRepositorySystem();
         this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
         this.repositories = initUtils.getRemoteRepositories();
-        initParentDependencies(initUtils);
-        LOG.info("Orienteer default dependencies: " + PARENT_DEPENDENCIES.size());
     }
 
-    private void initParentDependencies(InitUtils initUtils) {
-        if (needCreateParentDependenciesSet()) {
-            PARENT_DEPENDENCIES.clear();
-            Path localPomXml = FileSystems.getDefault().getPath("pom.xml");
-            Collection<Artifact> availableArtifacts = null;
-            String orienteerVersion = initUtils.getOrienteerVersion();
-            if (orienteerVersion != null) {
-                Artifact parent = downloadArtifact(getOrienteerArtifact(ORIENTEER_PARENT, orienteerVersion)).orNull();
-                Artifact core = downloadArtifact(getOrienteerArtifact(ORIENTEER_CORE, orienteerVersion)).orNull();
-                Args.notNull(parent, "parent");
-                Args.notNull(core, "core");
-                addOrienteerMainDependencies(parent);
-                addOrienteerMainDependencies(core);
-            }
-            if(Files.exists(localPomXml)) {
-                // We run as mvn jetty:run
-                Optional<Artifact> thisArtifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(localPomXml);
-                if(thisArtifact.isPresent()) {
-                    availableArtifacts = OrienteerClassLoaderUtil.readDependencies(localPomXml);
-                }
-            } else {
-                //we run in WAR mode
-                availableArtifacts = OrienteerClassLoaderUtil.getAvailableArtifacts(getClass().getClassLoader());
-            }
-            if(availableArtifacts != null) {
-                for (Artifact artifact : availableArtifacts) {
-                    addOrienteerMainDependencies(artifact);
-                }
-            }
-        }
-    }
 
+    /**
+     * Resolve artifact
+     * @param artifact {@link Artifact} for resolve its dependencies
+     * @return {@link List<ArtifactResult>} of resolved artifact
+     * @throws IllegalArgumentException if artifact is null
+     */
     public List<ArtifactResult> resolveArtifact(Artifact artifact) {
+        Args.notNull(artifact, "artifact");
         ArtifactDescriptorRequest descriptorRequest = createArtifactDescriptionRequest(artifact);
         ArtifactDescriptorResult descriptorResult = null;
         try {
@@ -106,7 +67,14 @@ class AetherUtils {
         return resolveArtifactRequests(requests);
     }
 
+    /**
+     * Resolve artifacts
+     * @param artifacts {@link Set<Artifact>} for resolving its dependencies.
+     * @return {@link List<ArtifactResult>} of resolved artifact
+     * @throws IllegalArgumentException if artifacts is null
+     */
     public List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
+        Args.notNull(artifacts, "artifacts");
         List<ArtifactResult> results = Lists.newArrayList();
         for (Artifact artifact : artifacts) {
             results.addAll(resolveArtifact(artifact));
@@ -114,24 +82,41 @@ class AetherUtils {
         return results;
     }
 
+    /**
+     * Download artifacts
+     * @param artifacts {@link Set<Artifact>} artifacts for download
+     * @return {@link List<ArtifactResult>} of resolved artifact
+     * @throws IllegalArgumentException if artifacts is null
+     */
     public List<ArtifactResult> downloadArtifacts(Set<Artifact> artifacts) {
-        Set<ArtifactRequest> artifactRequests = createArtifactRequests(differenceWithCoreDependencies(artifacts));
+        Args.notNull(artifacts, "artifacts");
+        Set<ArtifactRequest> artifactRequests = createArtifactRequests(artifacts);
         return resolveArtifactRequests(artifactRequests);
     }
 
+    /**
+     * Download artifacts
+     * @param artifact {@link Artifact} artifact for download
+     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent() if can't download artifact
+     * @throws IllegalArgumentException if artifact is null
+     */
     public Optional<Artifact> downloadArtifact(Artifact artifact) {
-        if (containsIn(PARENT_DEPENDENCIES, artifact)) {
-            return getArtifactFromSet(PARENT_DEPENDENCIES, artifact);
-        }
+        Args.notNull(artifact, "artifact");
         ArtifactRequest artifactRequest = createArtifactRequest(artifact);
         ArtifactResult result = resolveArtifactRequest(artifactRequest);
         return result != null ? Optional.of(result.getArtifact()) : Optional.<Artifact>absent();
     }
 
+    /**
+     * Download artifact from repository
+     * @param artifact {@link Artifact} for download
+     * @param repository repository for download artifact
+     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
+     * @throws IllegalArgumentException if artifact or repository is null.
+     */
     public Optional<Artifact> downloadArtifact(Artifact artifact, String repository) {
-        if (containsIn(PARENT_DEPENDENCIES, artifact)) {
-            return getArtifactFromSet(PARENT_DEPENDENCIES, artifact);
-        }
+        Args.notNull(artifact, "artifact");
+        Args.notEmpty(repository, "repository");
         ArtifactRequest artifactRequest = createArtifactRequest(artifact, newUserRemoteRepository(repository));
         ArtifactResult result = resolveArtifactRequest(artifactRequest);
         return result != null ? Optional.of(result.getArtifact()) : Optional.<Artifact>absent();
@@ -176,9 +161,6 @@ class AetherUtils {
         for (Dependency dependency : unchagedDeps) {
             Artifact artifact = dependency.getArtifact();
             String extension = artifact.getExtension();
-            if (containsIn(PARENT_DEPENDENCIES, artifact))
-                continue;
-
             if (!extension.equals(JAR_EXTENSION)) {
                 dependency = getChangedDependency(artifact);
                 changedDeps.add(dependency);
@@ -208,47 +190,6 @@ class AetherUtils {
         return artifactResults;
     }
 
-    private boolean containsIn(Collection<Artifact> dependencies, Artifact dependency) {
-        if (dependencies == null) return false;
-        for (Artifact d : dependencies) {
-            boolean contains = artifactsEquals(d, dependency);
-            if (contains) return contains;
-        }
-        return false;
-    }
-
-    private boolean artifactsEquals(Artifact artifact1, Artifact artifact2) {
-        if (artifact1.getGroupId().equals(artifact2.getGroupId())
-                && artifact1.getArtifactId().equals(artifact2.getArtifactId())
-                && artifact1.getVersion().equals(artifact2.getVersion())) {
-            return true;
-        } else if (artifact1.getGroupId().equals(artifact2.getGroupId())
-                && artifact1.getArtifactId().equals(artifact2.getArtifactId())) {
-            String versionInCoreDeps = artifact2.getVersion();
-            String versionInDependency = artifact2.getVersion();
-            return versionInCoreDeps.compareTo(versionInDependency) > 0 || versionInCoreDeps.compareTo(versionInCoreDeps) == 0;
-        }
-        return false;
-    }
-
-    private Optional<Artifact> getArtifactFromSet(Set<Artifact> set, Artifact artifact) {
-        Iterator<Artifact> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            Artifact next = iterator.next();
-            if (artifactsEquals(next, artifact)) return Optional.of(next);
-        }
-        return Optional.absent();
-    }
-
-    private Set<Artifact> differenceWithCoreDependencies(Set<Artifact> dependencies) {
-        Set<Artifact> artifacts = Sets.newHashSet();
-        for (Artifact d : dependencies) {
-           if (!containsIn(PARENT_DEPENDENCIES, d)) {
-               artifacts.add(d);
-           }
-        }
-        return artifacts;
-    }
 
     private RepositorySystem getRepositorySystem() {
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
@@ -273,10 +214,6 @@ class AetherUtils {
         LocalRepository localRepo = new LocalRepository(localRepositoryPath);
         session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepo));
 
-        if (LOG.isDebugEnabled()) {
-            session.setTransferListener(new ConsoleTransferListener());
-            session.setRepositoryListener(new ConsoleRepositoryListener());
-        }
         return session;
     }
 
@@ -291,10 +228,7 @@ class AetherUtils {
 
         return dependency;
     }
-    
-    private ArtifactDescriptorResult getArtifactDescription(Artifact artifact) {
-    	return getArtifactDescription(new ArtifactDescriptorRequest().setArtifact(artifact));
-    }
+
 
     private ArtifactDescriptorResult getArtifactDescription(ArtifactDescriptorRequest request) {
         ArtifactDescriptorResult descriptorResult = null;
@@ -307,21 +241,6 @@ class AetherUtils {
         return descriptorResult;
     }
 
-    private void addOrienteerMainDependencies(Artifact artifactToDownload) {
-        Optional<Artifact> artifactOptional = downloadArtifact(artifactToDownload);
-        if (artifactOptional.isPresent()) {
-            Artifact artifact = artifactOptional.get();
-            PARENT_DEPENDENCIES.add(artifact);
-            List<ArtifactResult> artifactResults = resolveArtifact(artifact);
-            for (ArtifactResult result : artifactResults) {
-                Artifact res = result.getArtifact();
-                if (res != null && res.getFile() != null) {
-                    PARENT_DEPENDENCIES.add(res);
-                }
-            }
-        } else LOG.warn("Can't download Orienteer artifact pom.xml! artifact: {}", artifactToDownload);
-    }
-
     private Set<Artifact> getArtifactFromDependencies(Collection<Dependency> dependencies) {
         Set<Artifact> result = Sets.newHashSet();
         for (Dependency dependency : dependencies) {
@@ -330,10 +249,6 @@ class AetherUtils {
         return result;
     }
 
-    private Artifact getOrienteerArtifact(String artifact, String version) {
-        return new DefaultArtifact(
-                String.format(ARTIFACT_TEMPLATE, ORIENTEER_GROUP, artifact, POM_EXTENSION, version));
-    }
 
     private RemoteRepository newUserRemoteRepository(String repository) {
         return new RemoteRepository.Builder("user-" + repositories.size() + 1, "default", repository).build();
@@ -343,14 +258,4 @@ class AetherUtils {
         repositories.add(newUserRemoteRepository(repository));
     }
 
-    private boolean needCreateParentDependenciesSet() {
-        if (PARENT_DEPENDENCIES.size() == 0) return true;
-        for (Artifact artifact: PARENT_DEPENDENCIES) {
-            File jar = artifact.getFile();
-            if (!jar.exists()) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
