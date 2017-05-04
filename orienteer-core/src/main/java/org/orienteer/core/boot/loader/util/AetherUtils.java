@@ -62,7 +62,6 @@ class AetherUtils {
         	// We run as mvn jetty:run
         	Optional<Artifact> thisArtifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(localPomXml);
         	if(thisArtifact.isPresent()) {
-//        		addOrienteerMainDependencies(thisArtifact.get());
         		availableArtifacts = OrienteerClassLoaderUtil.readDependencies(localPomXml);
         	}
         } else {
@@ -74,11 +73,6 @@ class AetherUtils {
 				addOrienteerMainDependencies(artifact);
 			}
         }
-//        Artifact currentArtifact = OrienteerClassLoaderUtil.getOrienteerCurrentArtifact();
-//        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_PARENT, initUtils.getOrienteerVersion()));
-//        addOrienteerMainDependencies(currentArtifact);
-//        addOrienteerMainDependencies(getOrienteerArtifact(ORIENTEER_CORE, initUtils.getOrienteerVersion()));
-        LOG.info("Orienteer default dependencies: " + parentDependencies.size());
     }
 
     public List<ArtifactResult> resolveArtifact(Artifact artifact) {
@@ -180,7 +174,7 @@ class AetherUtils {
         try {
             result = system.resolveArtifact(session, request);
         } catch (ArtifactResolutionException e) {
-            LOG.error("Cannot resolve artifact: " + request.getArtifact());
+            LOG.warn("Cannot resolve artifact: " + request.getArtifact());
             if (LOG.isDebugEnabled()) e.printStackTrace();
         }
         return result;
@@ -306,10 +300,6 @@ class AetherUtils {
 	            			parentDependencies.add(dependency.getArtifact());
 				}
             }
-//            Artifact pomArtifact = new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), "pom", artifact.getVersion());
-//            Optional<Artifact> downloadedPom = downloadArtifact(pomArtifact);
-//            parentDependencies.addAll(OrienteerClassLoaderUtil.readDependencies(downloadedPom.get().getFile().toPath()));
-//            OrienteerClassLoaderUtil.addOrienteerVersions(downloadedPom.get().getFile().toPath());
         } else LOG.warn("Cannot download Orienteer artifact pom.xml! artifact: {}", artifactToDownload);
     }
 

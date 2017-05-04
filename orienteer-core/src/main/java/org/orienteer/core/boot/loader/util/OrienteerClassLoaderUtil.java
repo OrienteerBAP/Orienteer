@@ -185,7 +185,6 @@ public abstract class OrienteerClassLoaderUtil {
 			Enumeration<URL> urls = classLoader.getResources("META-INF/MANIFEST.MF");
 			while (urls.hasMoreElements()) {
 				URL url = (URL) urls.nextElement();
-				LOG.info("URL: "+url);
 				try(InputStream is = url.openStream()) {
 					Manifest manifest = new Manifest(is);
 					Attributes attrs = manifest.getMainAttributes();
@@ -194,7 +193,6 @@ public abstract class OrienteerClassLoaderUtil {
 					String version = attrs.getValue(Name.IMPLEMENTATION_VERSION);
 					if(!Strings.isEmpty(groupId) && !Strings.isEmpty(artifactId) && !Strings.isEmpty(version)) {
 						try {
-							LOG.info("AVAILABLE ARTIFACT: "+String.format("%s:%s:pom:%s", groupId, artifactId, version));
 							ret.add(new DefaultArtifact(String.format("%s:%s:pom:%s", groupId, artifactId, version)));
 						} catch (IllegalArgumentException e) { /*NOP*/
 						}
@@ -207,20 +205,6 @@ public abstract class OrienteerClassLoaderUtil {
 			LOG.error("Can't list available artifacts", e);
 		}
     	return ret;
-    }
-
-    static Artifact getOrienteerCurrentArtifact() {
-        String version    = initUtils.getOrienteerVersion();
-        String artifactId = initUtils.getCurrentOrienteerArtifactId();
-        String groupId    = initUtils.getCurrentOrienteerGroupId();
-        if (version == null || artifactId == null || groupId == null) {
-            version    = OrienteerClassLoaderUtil.class.getPackage().getImplementationVersion();
-            artifactId = OrienteerClassLoaderUtil.class.getPackage().getImplementationTitle();
-            groupId    = "org.orienteer";
-        }
-        if (version == null || artifactId == null)
-            throw new IllegalStateException("Cannot initialize current Orienteer artifact! ");
-        return new DefaultArtifact(String.format("%s:%s:pom:%s", groupId, artifactId, version));
     }
 
     static void addOrienteerVersions(Path pathToPomXml) {
