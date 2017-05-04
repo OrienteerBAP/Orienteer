@@ -10,10 +10,9 @@ mkdir -p /app/runtime/ && \
 mv orienteer-war/target/orienteer.war /app/ && \
 mv target/jetty-runner.jar /app/ && \
 cp orienteer.properties /app/ && \
-cp orienteer.properties /app/runtime/ && \
 rm -rf /tmp/src/ && \
 ln -s /app/orienteer.war /app/active.war
 
 WORKDIR /app/runtime/
 VOLUME ["/app/runtime/"]
-CMD ["java",  "-server", "-Dorienteer.loader.repository.local=/root/.m2/repository", "-jar", "../jetty-runner.jar", "../active.war"]
+CMD ["java",  "-server", "-DORIENTDB_HOME=/app/runtime", "-Dorientdb.url=plocal:databases/Orienteer", "-Dorienteer.loader.repository.local=/root/.m2/repository", "-jar", "../jetty-runner.jar", "../active.war"]

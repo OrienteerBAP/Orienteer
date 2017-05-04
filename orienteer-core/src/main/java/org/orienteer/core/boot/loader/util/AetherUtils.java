@@ -91,7 +91,6 @@ class AetherUtils {
                     addOrienteerMainDependencies(artifact);
                 }
             }
-
         }
     }
 
@@ -194,7 +193,7 @@ class AetherUtils {
         try {
             result = system.resolveArtifact(session, request);
         } catch (ArtifactResolutionException e) {
-            LOG.warn("Can't resolve artifact: {}", request.getArtifact());
+            LOG.warn("Cannot resolve artifact: " + request.getArtifact());
             if (LOG.isDebugEnabled()) e.printStackTrace();
         }
         return result;
