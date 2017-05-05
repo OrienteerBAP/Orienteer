@@ -32,7 +32,7 @@ public final class OrienteerFilter implements Filter {
 
     private static final int HTTP_CODE_SERVER_UNAVAILABLE = 503;
 
-    private static final String RELOAD_HTML = "org/orienteer/core/web/ReloadOrienteerPage.html";
+    private static final String RELOAD_HTML = "org/orienteer/core/web/OrienteerReloadPage.html";
 
     private static OrienteerFilter instance;
     private static boolean useUnTrusted = true;
