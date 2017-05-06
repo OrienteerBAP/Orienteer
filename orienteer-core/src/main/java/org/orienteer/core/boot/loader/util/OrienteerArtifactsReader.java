@@ -68,7 +68,7 @@ class OrienteerArtifactsReader extends AbstractXmlUtil {
         String version = versionElement != null ? versionElement.getTextContent() : null;
         String description = descriptionElement != null ? descriptionElement.getTextContent() : null;
         OArtifact module = new OArtifact();
-        return module.setArtifact(new OArtifactReference(groupId, artifactId, version, description));
+        return module.setArtifactReference(new OArtifactReference(groupId, artifactId, version, description));
     }
 
 }

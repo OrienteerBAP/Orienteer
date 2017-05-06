@@ -83,9 +83,6 @@ public class MavenResolver {
     public Optional<OArtifact> getOArtifact(Path file) {
         Optional<Path> pomXml = getPomXml(file);
         if (!pomXml.isPresent()) return Optional.absent();
-        if (!file.toString().endsWith(".jar")) {
-            file = null;
-        }
 
         Optional<Artifact> dependencyOptional = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml.get());
         if (!dependencyOptional.isPresent()) return Optional.absent();
@@ -106,7 +103,7 @@ public class MavenResolver {
             if (jar == null || !jar.exists()) {
                 Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(module.getArtifactReference().toAetherArtifact());
                 if (artifactOptional.isPresent()) {
-                    module.setArtifact(OArtifactReference.valueOf(artifactOptional.get()));
+                    module.setArtifactReference(OArtifactReference.valueOf(artifactOptional.get()));
                 } else {
                     module.setLoad(false);
                 }
@@ -127,7 +124,7 @@ public class MavenResolver {
 
         OArtifact moduleMetadata = new OArtifact();
         moduleMetadata.setLoad(false)
-                .setArtifact(mainArtifact.get())
+                .setArtifactReference(mainArtifact.get())
                 .setDependencies(toOArtifactDependencies(artifacts));
         return Optional.of(moduleMetadata);
     }
@@ -200,7 +197,8 @@ public class MavenResolver {
 
     private Optional<OArtifactReference> getArtifactReference(String groupArtifactVersion, Path pathToArtifact) {
         if (groupArtifactVersion == null || pathToArtifact == null) return Optional.absent();
-        if (!pathToArtifact.toString().endsWith(".jar")) return Optional.absent();
+        if (!pathToArtifact.toString().endsWith(".jar"))
+            return Optional.absent();
         DefaultArtifact defaultArtifact = new DefaultArtifact(groupArtifactVersion);
         return Optional.of(OArtifactReference.valueOf(defaultArtifact.setFile(pathToArtifact.toFile())));
     }

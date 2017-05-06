@@ -3,29 +3,32 @@ package org.orienteer.core.component.command;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.widget.loader.IOArtifactsUpdater;
+import org.orienteer.core.component.widget.loader.OArtifactsModalWindowPage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author Vitaliy Gonchar
- * Add Orienteers module command
+ * Add Orienteers module command. Show modal window and behavior of closing modal window.
  */
 public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
 
     private final OrienteerDataTable<OArtifact, ?> table;
-    private final WebPage modalWindowPage;
+    private final OArtifactsModalWindowPage modalWindowPage;
 
     private final IOArtifactsUpdater updater;
 
     private static final String ADD_BUT            = "command.add";
     private static final String MODAL_WINDOW_TITLE = "widget.artifacts.modal.window.title";
 
-    public AddOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, WebPage page, IOArtifactsUpdater updater) {
+    private static final Logger LOG = LoggerFactory.getLogger(AddOArtifactCommand.class);
+
+    public AddOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, OArtifactsModalWindowPage page, IOArtifactsUpdater updater) {
         super(new ResourceModel(ADD_BUT), table);
         this.modalWindowPage = page;
         this.table = table;
@@ -56,6 +59,7 @@ public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
         modal.setAutoSize(true);
         modal.setMinimalWidth(800);
         modal.setMinimalHeight(600);
+        modalWindowPage.setModalWindow(modal);
     }
 
     @Override

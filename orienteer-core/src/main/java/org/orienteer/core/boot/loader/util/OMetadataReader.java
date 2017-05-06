@@ -102,7 +102,7 @@ class OMetadataReader extends AbstractXmlUtil {
                         module.setTrusted(Boolean.valueOf(element.getTextContent()));
                         break;
                     case DEPENDENCY:
-                        module.setArtifact(getMavenDependency(element));
+                        module.setArtifactReference(getMavenDependency(element));
                         break;
                 }
             }

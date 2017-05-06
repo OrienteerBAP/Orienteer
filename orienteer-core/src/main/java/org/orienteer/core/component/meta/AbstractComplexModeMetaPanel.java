@@ -1,5 +1,6 @@
 package org.orienteer.core.component.meta;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 
@@ -50,4 +51,11 @@ public abstract class AbstractComplexModeMetaPanel<T, K, C, V> extends AbstractM
 	protected abstract V getValue(T entity, C critery);
 	protected abstract void setValue(T entity, C critery, V value);
 
+	/**
+	 * Override for add ajax update behavior for panel
+	 * @param target - ajax target
+	 */
+	public void onAjaxUpdate(AjaxRequestTarget target) {
+
+	}
 }

@@ -21,8 +21,6 @@ import java.util.jar.JarFile;
  */
 class JarUtils {
     private static final Logger LOG = LoggerFactory.getLogger(JarUtils.class);
-    private static final String POM_FOLDER_NAME = "pom/";
-    private Path pomFolder;
     private final Path modulesFolder;
 
     JarUtils(InitUtils initUtils) {
@@ -81,14 +79,7 @@ class JarUtils {
 
         int pointer = jarEntry.getName().lastIndexOf("/") + 1;
         String fileName = jarEntry.getName().substring(pointer);
-        pointer = jarFile.getName().lastIndexOf("/") + 1;
-        if (pomFolder == null) {
-            String folder = jarFile.getName().substring(0, pointer);
-            pomFolder = Paths.get(folder + POM_FOLDER_NAME);
-        }
-        if (!Files.exists(pomFolder))
-            Files.createDirectory(pomFolder);
-        Path path = pomFolder.resolve(jarFile.getName().substring(pointer).replace("jar", fileName));
+        Path path = File.createTempFile(fileName, ".xml").toPath();
 
         try (BufferedInputStream in = new BufferedInputStream(jarFile.getInputStream(jarEntry));
              BufferedOutputStream out = new BufferedOutputStream(Files.newOutputStream(path))){

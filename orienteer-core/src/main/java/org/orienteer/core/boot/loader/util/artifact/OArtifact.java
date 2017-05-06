@@ -36,7 +36,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
         return new OArtifact(artifact);
     }
 
-    public OArtifact setArtifact(OArtifactReference artifact) {
+    public OArtifact setArtifactReference(OArtifactReference artifact) {
         this.artifact = artifact;
         this.previousArtifact = new OArtifactReference(this.artifact.getGroupId(), this.artifact.getArtifactId(),
                 this.getArtifactReference().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());

@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
@@ -27,6 +28,7 @@ import java.util.List;
 public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
 
     private static final String SHOW_USER_ARTIFACT_ADD_BUT = "widget.artifacts.modal.window.button.user.artifact";
+    private static final String BACK_BUT      = "command.back";
 
     public OrienteerCloudOModulesConfigurationsPanel(String id, final OArtifactsModalWindowPage windowPage, AbstractOArtifactsProvider provider) {
         super(id);
@@ -38,8 +40,7 @@ public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         List<IColumn<OArtifact, String>> columns = getColumns(modeModel);
         OrienteerDataTable<OArtifact, String> table = new OrienteerDataTable<>("availableModules", columns, provider, 10);
-        table.addCommand(new DownloadOModuleCommand(table, feedback));
-        table.addCommand(new AjaxCommand<OArtifact>(new ResourceModel(SHOW_USER_ARTIFACT_ADD_BUT), table) {
+        table.addCommand(new AjaxCommand<OArtifact>(new ResourceModel(BACK_BUT), table) {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 windowPage.showOrienteerModulesPanel(false);
@@ -49,11 +50,25 @@ public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
             @Override
             protected void onInstantiation() {
                 super.onInstantiation();
-                setIcon(FAIconType.user_plus);
+                setIcon(FAIconType.angle_left);
                 setBootstrapType(BootstrapType.PRIMARY);
-                setChangingDisplayMode(true);
+                setAutoNotify(false);
             }
         });
+        table.addCommand(new AjaxCommand<OArtifact>(Model.of("OK"), table) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                windowPage.closeModalWindow(target);
+            }
+            @Override
+            protected void onInstantiation() {
+                super.onInstantiation();
+                setIcon(FAIconType.check);
+                setBootstrapType(BootstrapType.PRIMARY);
+                setAutoNotify(false);
+            }
+        });
+        table.addCommand(new DownloadOModuleCommand(table, feedback));
         orienteerModulesForm.add(table);
         orienteerModulesForm.add(feedback);
         add(orienteerModulesForm);
