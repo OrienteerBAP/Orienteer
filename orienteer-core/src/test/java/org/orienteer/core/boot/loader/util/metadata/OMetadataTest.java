@@ -29,7 +29,7 @@ public class OMetadataTest {
         Artifact artifact = new DefaultArtifact("org.company:artifact:1.0");
         artifact = artifact.setFile(new File("module.jar"));
         metadata = new OArtifact();
-        metadata.setArtifact(OArtifactReference.valueOf(artifact));
+        metadata.setArtifactReference(OArtifactReference.valueOf(artifact));
         metadata.setLoad(true);
         metadata.setTrusted(true);
         OrienteerClassLoaderUtil.createOArtifactsMetadata(Lists.newArrayList(metadata));
@@ -57,14 +57,14 @@ public class OMetadataTest {
         Artifact artifact1 = new DefaultArtifact("org.orienteer:orienteer-core:1.3-SNAPSHOT");
         artifact1 = artifact1.setFile(new File("orienteer-core.jar"));
         OArtifact oArtifact1 = new OArtifact();
-        oArtifact1.setArtifact(OArtifactReference.valueOf(artifact1));
+        oArtifact1.setArtifactReference(OArtifactReference.valueOf(artifact1));
         oArtifact1.setLoad(true);
         oArtifact1.setTrusted(true);
 
         Artifact artifact2 = new DefaultArtifact("org.orienteer:devutils:1.3-SNAPSHOT");
         artifact2 = artifact2.setFile(new File("orienteer-devutils.jar"));
         OArtifact oArtifact2 = new OArtifact();
-        oArtifact2.setArtifact(OArtifactReference.valueOf(artifact2));
+        oArtifact2.setArtifactReference(OArtifactReference.valueOf(artifact2));
         oArtifact2.setLoad(true);
         oArtifact2.setTrusted(true);
         List<OArtifact> list = Lists.newArrayList(metadata, oArtifact1, oArtifact2);
