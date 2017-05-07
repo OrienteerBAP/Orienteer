@@ -20,7 +20,7 @@ import java.util.Map;
 import static com.github.raymanrt.orientqb.query.Projection.projection;
 
 /**
- * @author Vitaliy Gonchar
+ * Build query for filter values in table
  * @param <K> The provider object type
  */
 public class ODefaultQueryBuilder<K> implements IQueryBuilder<K> {
@@ -33,6 +33,7 @@ public class ODefaultQueryBuilder<K> implements IQueryBuilder<K> {
         this.className = className;
     }
 
+    @Override
     public OQueryModel<K> build(Map<IModel<OProperty>, IModel<?>> filteredValues) {
         String sql = "select from " + className;
         if (needGenerateNewSql(filteredValues.values())) {
