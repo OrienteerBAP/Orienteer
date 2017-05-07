@@ -22,7 +22,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.OArtifactColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.web.ReloadOrienteerPage;
+import org.orienteer.core.web.OrienteerReloadPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 
@@ -62,14 +62,13 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
         final OrienteerDataTable<OArtifact, String> modulesTable =
                 new OrienteerDataTable<>("oArtifactsTable", columns, installedModulesProvider, 20);
         modulesTable.addCommand(new AddOArtifactCommand(modulesTable, new OArtifactsModalWindowPage(availableModulesProvider), updater));
-
         modulesTable.addCommand(new EditCommand<>(modulesTable, modeModel));
         modulesTable.addCommand(new SaveOArtifactCommand(modulesTable, updater, modeModel, feedback));
         modulesTable.addCommand(new DeleteOArtifactCommand(modulesTable, updater));
         modulesTable.addCommand(new AjaxCommand<OArtifact>("reloadOrienteer", new ResourceModel(RELOAD_ORIENTEER)) {
         	@Override
         	public void onClick(AjaxRequestTarget target) {
-        	    setResponsePage(new ReloadOrienteerPage());
+        	    setResponsePage(new OrienteerReloadPage());
                 OrienteerClassLoader.useDefaultClassLoaderProperties();
         		OrienteerFilter.reloadOrienteer();
         	}

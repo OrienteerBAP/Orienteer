@@ -1,10 +1,10 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.http.util.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -243,15 +243,14 @@ public abstract class OrienteerClassLoaderUtil {
      * Delete artifact jar file
      * @param oArtifact {@link OArtifact} artifact which jar file will be delete
      * @throws IllegalArgumentException if oArtifact is null
-     * @throws IllegalStateException if jar file of oArtifact is null
      */
     public static void deleteOArtifactArtifactFile(OArtifact oArtifact) {
         Args.notNull(oArtifact, "oArtifact");
         try {
             File file = oArtifact.getArtifactReference().getFile();
-            if (file == null)
-                throw new IllegalStateException("Jar file is null! OArtifact: " + oArtifact);
-            Files.deleteIfExists(file.toPath());
+            if (file != null) {
+                Files.deleteIfExists(file.toPath());
+            }
         } catch (IOException e) {
             LOG.error("Cannot delete artifact of module: {}", oArtifact, e);
         }
@@ -342,7 +341,7 @@ public abstract class OrienteerClassLoaderUtil {
 					String groupId = attrs.getValue(Name.IMPLEMENTATION_VENDOR_ID);
 					String artifactId = attrs.getValue(Name.IMPLEMENTATION_TITLE);
 					String version = attrs.getValue(Name.IMPLEMENTATION_VERSION);
-					if(!Strings.isEmpty(groupId) && !Strings.isEmpty(artifactId) && !Strings.isEmpty(version)) {
+					if(!Strings.isNullOrEmpty(groupId) && !Strings.isNullOrEmpty(artifactId) && !Strings.isNullOrEmpty(version)) {
 						try {
 							ret.add(new DefaultArtifact(String.format("%s:%s:pom:%s", groupId, artifactId, version)));
 						} catch (IllegalArgumentException e) { /*NOP*/
@@ -361,27 +360,48 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * @return {@link Path} of modules folder
      */
-    static Path getModulesFolder() {
+    static Path getArtifactsFolder() {
         return initUtils.getPathToModulesFolder();
     }
 
 
     /**
-     * Add artifact jar file to artifacts folder
+     * Add artifact jar file to temp folder
      * @param artifactName artifact name
      * @param fileUpload {@link FileUpload} of artifact's jar
      * @return {@link Optional<File>} of artifact's jar file or Optional.absent() if can't add artifact's jar file to folder
      * @throws IllegalArgumentException if artifactName is null or empty. Or when fileUpload is null.
      */
-    public static Optional<File> addArtifactToArtifactsFolder(String artifactName, FileUpload fileUpload) {
+    public static Optional<File> createJarTempFile(String artifactName, FileUpload fileUpload) {
         Args.notEmpty(artifactName, "artifactName");
         Args.notNull(fileUpload, "fileUpload");
-        File file = getModulesFolder().resolve(artifactName).toFile();
+        String fileName = fileUpload.getClientFileName();
         try {
+            File file = File.createTempFile(fileName.replaceAll("\\.jar", ""), ".jar");
             fileUpload.writeTo(file);
             return Optional.of(file);
         } catch (Exception e) {
-            LOG.error("Cannot upload file: {}", file.getAbsolutePath(), e);
+            LOG.error("Cannot upload file: {}", fileName, e);
+        }
+        return Optional.absent();
+    }
+
+    /**
+     * Move file to artifact's folder
+     * @param path - {@link Path} of file to move
+     * @param newFileName - new name of file. If newFileName is null or empty uses {@link Path} file name.
+     * @throws IllegalArgumentException if file is null
+     */
+    public static Optional<Path> moveJarFileToArtifactsFolder(Path path, String newFileName) {
+        Args.notNull(path, "file");
+        Path artifactsFolder = getArtifactsFolder();
+        Path newFilePath = Strings.isNullOrEmpty(newFileName) ? artifactsFolder.resolve(path.getFileName())
+                : artifactsFolder.resolve(newFileName);
+        try {
+            return Optional.of(Files.move(path, newFilePath));
+        } catch (IOException e) {
+            LOG.error("Can't move file! Old path: {} \n new path: {}",
+                    path.toAbsolutePath(), newFilePath.toAbsolutePath(), e);
         }
         return Optional.absent();
     }

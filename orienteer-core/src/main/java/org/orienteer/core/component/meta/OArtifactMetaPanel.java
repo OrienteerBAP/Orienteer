@@ -1,28 +1,27 @@
 package org.orienteer.core.component.meta;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
+import org.orienteer.core.component.property.AbstractFileUploadPanel;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Meta panel for {@link OArtifact}
  * @param <V> type of value
  */
 public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifact, DisplayMode, OArtifactField, V> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(OArtifactMetaPanel.class);
 
     private static final String GROUP       = "widget.artifacts.group";
     private static final String ARTIFACT    = "widget.artifacts.artifact";
@@ -33,9 +32,12 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
     private static final String LOAD        = "widget.artifacts.load";
     private static final String TRUSTED     = "widget.artifacts.trusted";
 
+    private Component componentForUpdate;
+
     public OArtifactMetaPanel(String id, IModel<DisplayMode> modeModel,
                                          IModel<OArtifact> entityModel, IModel<OArtifactField> criteryModel) {
         super(id, modeModel, entityModel, criteryModel);
+        setOutputMarkupId(true);
     }
 
 
@@ -71,6 +73,9 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
 
     @Override
     protected void setValue(OArtifact oArtifact, OArtifactField critery, V value) {
+
+        if (oArtifact.isDownloaded())
+            return;
         switch (critery) {
             case GROUP:
                 oArtifact.getArtifactReference().setGroupId((String) value);
@@ -95,6 +100,7 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
                 break;
         }
     }
+
 
     @Override
     @SuppressWarnings("unchecked")
@@ -127,6 +133,13 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
                 case TRUSTED:
                     result = new BooleanEditPanel(id, (IModel<Boolean>) model);
                     break;
+                case FILE:
+                    result = new AbstractFileUploadPanel(id) {
+                        @Override
+                        protected void configureFileUploadField(FileUploadField uploadField) {
+                            configureJarFileUploadField(uploadField);
+                        }
+                    };
             }
         } else {
             switch (critery) {
@@ -156,6 +169,10 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
                     break;
             }
         }
+        if (result != null) {
+            result.setOutputMarkupId(true);
+            componentForUpdate = result;
+        }
         return result;
     }
 
@@ -178,16 +195,61 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
             case DESCRIPTION:
                 label = new ResourceModel(DESCRIPTION);
                 break;
-            case FILE:
-                label = new ResourceModel(FILE);
-                break;
             case LOAD:
                 label = new ResourceModel(LOAD);
                 break;
             case TRUSTED:
                 label = new ResourceModel(TRUSTED);
                 break;
+            case FILE:
+                label = new ResourceModel(FILE);
+                break;
         }
         return label;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void onAjaxUpdate(AjaxRequestTarget target) {
+        OArtifactField criteria = getPropertyObject();
+        if (DisplayMode.EDIT.equals(getModeObject()) && componentForUpdate != null && criteria != OArtifactField.FILE) {
+            OArtifact oArtifact = getEntityObject();
+            switch (criteria) {
+                case GROUP:
+                    componentForUpdate.setDefaultModelObject(oArtifact.getArtifactReference().getGroupId());
+                    break;
+                case ARTIFACT:
+                    componentForUpdate.setDefaultModelObject(oArtifact.getArtifactReference().getArtifactId());
+                    break;
+                case VERSION:
+                    componentForUpdate.setDefaultModelObject(oArtifact.getArtifactReference().getVersion());
+                    break;
+                case REPOSITORY:
+                    componentForUpdate.setDefaultModelObject(oArtifact.getArtifactReference().getRepository());
+                    break;
+                case DESCRIPTION:
+                    componentForUpdate.setDefaultModelObject(oArtifact.getArtifactReference().getDescription());
+                    break;
+                case DOWNLOADED:
+                    componentForUpdate.setDefaultModelObject(Boolean.valueOf(oArtifact.isDownloaded()));
+                    break;
+                case LOAD:
+                    componentForUpdate.setDefaultModelObject(Boolean.valueOf(oArtifact.isLoad()));
+                    break;
+                case TRUSTED:
+                    componentForUpdate.setDefaultModelObject(Boolean.valueOf(oArtifact.isTrusted()));
+                    break;
+            }
+
+            target.add(componentForUpdate);
+        }
+    }
+
+    /**
+     * Config jar file upload field if its need
+     * @param uploadField - jar file upload field
+     */
+    protected void configureJarFileUploadField(final FileUploadField uploadField) {
+
     }
 }

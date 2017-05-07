@@ -1,47 +1,37 @@
 package org.orienteer.core.component.widget.loader;
 
+import org.apache.http.util.Args;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.web.BasePage;
 
 /**
- * ModalWindow for add Orienteer modules.
+ * ModalWindow page for add Orienteer modules.
  */
 public class OArtifactsModalWindowPage extends BasePage<OArtifact> {
 
+    private ModalWindow modalWindow;
+
     private final Panel orienteerModulesPanel;
-    private final Panel userModulePanel;
-    private final Panel userJarUploadPanel;
+    private final GenericPanel<OArtifact> userModulePanel;
 
     private boolean showOrienteerModulesPanel = false;
-    private boolean showUserJarUploadPanel = false;
-
-    private IModel<OArtifact> userModule = Model.of(OArtifact.getEmptyModule());
 
     public OArtifactsModalWindowPage(AbstractOArtifactsProvider provider) {
-        super();
         setOutputMarkupPlaceholderTag(true);
         orienteerModulesPanel = new OrienteerCloudOModulesConfigurationsPanel("orienteerModulesPanel", this, provider);
-        userModulePanel = new UserOArtifactPanel("userModulePanel", userModule,this);
-        userJarUploadPanel = new UserJarUploadPanel("userJarUploadPanel", this);
+        userModulePanel = new UserOArtifactPanel("userModulePanel",this);
 
         add(orienteerModulesPanel);
         add(userModulePanel);
-        add(userJarUploadPanel);
     }
+
 
     public void showOrienteerModulesPanel(boolean show) {
         showOrienteerModulesPanel = show;
-    }
-
-    public void showUserJarUploadPanel(boolean show) {
-        showUserJarUploadPanel = show;
-    }
-
-    public void setUserModule(OArtifact module) {
-        userModule.setObject(module);
     }
 
     @Override
@@ -50,15 +40,20 @@ public class OArtifactsModalWindowPage extends BasePage<OArtifact> {
         if (showOrienteerModulesPanel) {
             orienteerModulesPanel.setVisible(true);
             userModulePanel.setVisible(false);
-            userJarUploadPanel.setVisible(false);
-        } else if (showUserJarUploadPanel) {
-            userJarUploadPanel.setVisible(true);
-            orienteerModulesPanel.setVisible(false);
-            userModulePanel.setVisible(false);
         } else {
             userModulePanel.setVisible(true);
             orienteerModulesPanel.setVisible(false);
-            userJarUploadPanel.setVisible(false);
+        }
+    }
+
+    public void setModalWindow(ModalWindow modalWindow) {
+        Args.notNull(modalWindow, "modalWindow");
+        this.modalWindow = modalWindow;
+    }
+
+    public void closeModalWindow(AjaxRequestTarget target) {
+        if (modalWindow != null) {
+            modalWindow.close(target);
         }
     }
 }

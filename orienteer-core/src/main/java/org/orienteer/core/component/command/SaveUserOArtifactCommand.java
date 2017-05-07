@@ -8,13 +8,16 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 
+import java.io.File;
+import java.nio.file.Path;
+
 /**
- * @author Vitaliy Gonchar
+ * Save user configure of {@link OArtifact}
  */
 public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
 
@@ -29,27 +32,35 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
             sendErrorFeedback(target, new ResourceModel(ERROR));
             return;
         }
-        OArtifact module = model.getObject();
-        if (isUserArtifactValid(target, module)) {
-            if (module.getArtifactReference().getFile() != null) {
-                OrienteerClassLoaderUtil.updateOArtifactInMetadata(module);
-                sendSuccessFeedback(target);
-            } else resolveUserArtifact(target, module);
+        OArtifact artifact = model.getObject();
+        File artifactFile = artifact.getArtifactReference().getFile();
+        if (artifactFile != null) {
+            if (isUserArtifactValid(target, artifact)) {
+                Optional<Path> pathOptional = OrienteerClassLoaderUtil
+                        .moveJarFileToArtifactsFolder(artifactFile.toPath(), artifactFile.getName());
+                if (pathOptional.isPresent()) {
+                    artifact.getArtifactReference().setFile(pathOptional.get().toFile());
+                    OrienteerClassLoaderUtil.updateOArtifactInMetadata(artifact);
+                    artifact.setDownloaded(true);
+                }
+            } else OrienteerClassLoaderUtil.deleteOArtifactArtifactFile(artifact);
+        } else if (isUserArtifactValid(target, artifact)) {
+            resolveUserArtifact(target, artifact);
         }
     }
 
-    private void resolveUserArtifact(AjaxRequestTarget target, OArtifact module) {
-        String repository = module.getArtifactReference().getRepository();
-        OArtifactReference artifact = module.getArtifactReference();
+    private void resolveUserArtifact(AjaxRequestTarget target, OArtifact artifact) {
+        String repository = artifact.getArtifactReference().getRepository();
+        OArtifactReference artifactReference = artifact.getArtifactReference();
         Optional<Artifact> artifactOptional;
         if (!Strings.isNullOrEmpty(repository)) {
-            artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact.toAetherArtifact(), repository);
-        } else artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact.toAetherArtifact());
+            artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact(), repository);
+        } else artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact());
 
         if (artifactOptional.isPresent()) {
-            artifact.setFile(artifactOptional.get().getFile());
-            OrienteerClassLoaderUtil.updateOArtifactInMetadata(module);
-            sendSuccessFeedback(target);
+            artifactReference.setFile(artifactOptional.get().getFile());
+            OrienteerClassLoaderUtil.updateOArtifactInMetadata(artifact);
+            artifact.setDownloaded(true);
         } else {
             sendErrorFeedback(target, new ResourceModel(DOWNLOAD_ERROR));
         }

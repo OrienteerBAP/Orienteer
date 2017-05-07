@@ -4,7 +4,6 @@ import com.google.common.base.Optional;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 
@@ -13,7 +12,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@Ignore
+
 public class DependencyTest {
 
     @Test
