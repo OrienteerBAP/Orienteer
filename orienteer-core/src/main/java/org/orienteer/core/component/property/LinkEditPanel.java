@@ -5,6 +5,9 @@ import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.util.List;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -19,7 +22,10 @@ import org.orienteer.core.model.ODocumentNameModel;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
-import java.util.List;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link FormComponentPanel} to edit LINK properties

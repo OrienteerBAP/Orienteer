@@ -22,56 +22,59 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-core</artifactId>
-		</dependency>
-
-		<!--  WICKET DEPENDENCIES -->
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-datetime</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-extensions</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-guice</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wicketstuff</groupId>
-			<artifactId>wicketstuff-select2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-core</artifactId>
-			<type>bundle</type>
-		</dependency>
-		<dependency>
-			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-server</artifactId>
-			<version>${orientdb.version}</version>
-			<!--<type>bundle</type>-->
-		</dependency>
-		<dependency>
-			<groupId>com.orientechnologies</groupId>
-			<artifactId>orientdb-client</artifactId>
-			<type>bundle</type>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject</groupId>
-			<artifactId>guice</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-servlet</artifactId>
-		</dependency>
+	    <dependency>
+		    <groupId>org.apache.wicket</groupId>
+		    <artifactId>wicket-core</artifactId>
+	    </dependency>
+	    <!--  WICKET DEPENDENCIES -->
+	    <dependency>
+		<groupId>org.apache.wicket</groupId>
+		<artifactId>wicket-datetime</artifactId>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.apache.wicket</groupId>
+		    <artifactId>wicket-extensions</artifactId>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.apache.wicket</groupId>
+		    <artifactId>wicket-guice</artifactId>
+	    </dependency>
+	    <dependency>
+	            <groupId>org.wicketstuff</groupId>
+	            <artifactId>wicketstuff-select2</artifactId>
+	    </dependency>
+	    <dependency>
+		    <groupId>com.orientechnologies</groupId>
+		    <artifactId>orientdb-core</artifactId>
+		    <type>bundle</type>
+	    </dependency>
+	    <dependency>
+		    <groupId>com.orientechnologies</groupId>
+		    <artifactId>orientdb-server</artifactId>
+		    <version>${orientdb.version}</version>
+	    </dependency>
+	    <dependency>
+		    <groupId>com.orientechnologies</groupId>
+		    <artifactId>orientdb-client</artifactId>
+		    <type>bundle</type>
+	    </dependency>
+	    <dependency>
+		    <groupId>com.google.inject</groupId>
+		    <artifactId>guice</artifactId>
+	    </dependency>
+	    <dependency>
+		    <groupId>com.google.inject.extensions</groupId>
+		    <artifactId>guice-servlet</artifactId>
+	    </dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
 			<version>1.13</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.reflections</groupId>
+ 			<artifactId>reflections</artifactId>
+    		<version>0.9.10</version>
 		</dependency>
 		<!-- WEB JARS -->
 		<dependency>
@@ -179,6 +182,34 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+		<!-- ORIENTDB SQL GENERATOR DEPENDENCY-->
+		<dependency>
+			<groupId>com.github.raymanrt</groupId>
+			<artifactId>orientqb</artifactId>
+			<version>0.2.0</version>
+		</dependency>
+
+	    <!--  JUNIT DEPENDENCY FOR TESTING -->
+	    <dependency>
+		    <groupId>junit</groupId>
+		    <artifactId>junit</artifactId>
+		    <scope>test</scope>
+	    </dependency>
+	    <dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>javax.servlet-api</artifactId>
+	    </dependency>
+        <!-- MARKDOWN DEPENDENCY -->
+        <!--<dependency>
+            <groupId>org.pegdown</groupId>
+            <artifactId>pegdown</artifactId>
+            <version>1.4.2</version>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.1</version>
+        </dependency>-->
 	</dependencies>
 
 	<build>

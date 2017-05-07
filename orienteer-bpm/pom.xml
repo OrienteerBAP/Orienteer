@@ -71,11 +71,6 @@
 			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.github.raymanrt</groupId>
-			<artifactId>orientqb</artifactId>
-			<version>0.2.0</version>
-		</dependency>
-		<dependency>
 			<groupId>org.orienteer.wicket-bpmn-io</groupId>
 			<artifactId>wicket-bpmn-io</artifactId>
 			<version>1.0</version>

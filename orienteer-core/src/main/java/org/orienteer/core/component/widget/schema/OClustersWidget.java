@@ -2,10 +2,8 @@ package org.orienteer.core.component.widget.schema;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.storage.OCluster;
-
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
@@ -16,9 +14,9 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OClusterColumn;
 import org.orienteer.core.component.table.OClusterMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-
 import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClustersDataProvider;
 
@@ -41,7 +39,7 @@ public class OClustersWidget extends AbstractWidget<Void> {
     public OClustersWidget(String id, IModel<Void> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
 
-        Form<?> form = new Form<Object>("form");
+
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         List<IColumn<OCluster, String>> columns = new ArrayList<IColumn<OCluster,String>>();
         columns.add(new OClusterColumn(NAME, modeModel));
@@ -50,11 +48,10 @@ public class OClustersWidget extends AbstractWidget<Void> {
 
         AbstractJavaSortableDataProvider<OCluster, String> provider =  new OClustersDataProvider();
         provider.setSort(NAME, SortOrder.ASCENDING);
-
-        OrienteerDataTable<OCluster, String> table = new OrienteerDataTable<OCluster, String>("clusters", columns, provider ,20);
+        GenericTablePanel<OCluster> tablePanel = new GenericTablePanel<OCluster>("tablePanel", columns, provider ,20);
+        OrienteerDataTable<OCluster, String> table = tablePanel.getDataTable();
         addTableCommands(table, modeModel);
-        form.add(table);
-        add(form);
+        add(tablePanel);
     }
 
     private void addTableCommands(OrienteerDataTable<OCluster, String> table, IModel<DisplayMode> modeModel) {

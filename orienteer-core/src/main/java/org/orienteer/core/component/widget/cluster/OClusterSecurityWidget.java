@@ -11,7 +11,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.model.AbstractCheckBoxModel;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -24,6 +23,7 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.LinkViewPanel;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -93,9 +93,7 @@ public class OClusterSecurityWidget extends AbstractWidget<OCluster> {
 	public OClusterSecurityWidget(String id, IModel<OCluster> model,
                                   IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		Form<OCluster> sForm = new Form<OCluster>("form");
-		OSecurityHelper.secureComponent(sForm, OSecurityHelper.requireOClass("ORole", Component.ENABLE, OrientPermission.UPDATE));
-		
+
 		List<IColumn<ORole, String>> sColumns = new ArrayList<IColumn<ORole,String>>();
 		OClass oRoleClass = OrientDbWebSession.get().getDatabase().getMetadata().getSchema().getClass("ORole");
 		sColumns.add(new AbstractColumn<ORole, String>(new OClassNamingModel(oRoleClass), "name") {
@@ -113,12 +111,14 @@ public class OClusterSecurityWidget extends AbstractWidget<OCluster> {
 		
 		OQueryDataProvider<ORole> sProvider = new OQueryDataProvider<ORole>("select from ORole", ORole.class);
 		sProvider.setSort("name", SortOrder.ASCENDING);
-		OrienteerDataTable<ORole, String> sTable = new OrienteerDataTable<ORole, String>("security", sColumns, sProvider ,20);
+		GenericTablePanel<ORole> tablePanel = new GenericTablePanel<ORole>("tablePanel", sColumns, sProvider ,20);
+		OSecurityHelper.secureComponent(tablePanel, OSecurityHelper.requireOClass("ORole", Component.ENABLE, OrientPermission.UPDATE));
+
+		OrienteerDataTable<ORole, String> sTable = tablePanel.getDataTable();
 		Command<ORole> saveCommand = new AbstractSaveCommand<ORole>(sTable, null);
 		sTable.addCommand(saveCommand);
 		sTable.setCaptionModel(new ResourceModel("cluster.security"));
-		sForm.add(sTable);
-		add(sForm);
+		add(tablePanel);
 		add(DisableIfPrototypeBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 

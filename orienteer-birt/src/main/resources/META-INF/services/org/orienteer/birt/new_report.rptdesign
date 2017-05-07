@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.6.0.v201606072122</property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/first_report.gif</property>
+    <property name="cheatSheet">org.eclipse.birt.report.designer.ui.cheatsheet.firstreport</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <template-parameter-definitions>
+        <template-parameter-definition name="NewTemplateParameterDefinition" id="28">
+            <property name="allowedType">Table</property>
+            <text-property name="description">Customer Listing</text-property>
+            <default>
+                <table id="29">
+                    <property name="width">100%</property>
+                    <property name="pageBreakInterval">50</property>
+                    <column id="49"/>
+                    <column id="50"/>
+                    <column id="51"/>
+                    <column id="52"/>
+                    <header>
+                        <row id="30">
+                            <cell id="31">
+                                <label id="32">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Contact</text-property>
+                                </label>
+                            </cell>
+                            <cell id="33">
+                                <label id="34">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">First</text-property>
+                                </label>
+                            </cell>
+                            <cell id="35">
+                                <label id="36">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Last</text-property>
+                                </label>
+                            </cell>
+                            <cell id="37">
+                                <label id="38">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Phone</text-property>
+                                </label>
+                            </cell>
+                        </row>
+                    </header>
+                    <detail>
+                        <row id="39">
+                            <cell id="40"/>
+                            <cell id="41"/>
+                            <cell id="42"/>
+                            <cell id="43"/>
+                        </row>
+                    </detail>
+                    <footer>
+                        <row id="44">
+                            <cell id="45"/>
+                            <cell id="46"/>
+                            <cell id="47"/>
+                            <cell id="48"/>
+                        </row>
+                    </footer>
+                </table>
+            </default>
+        </template-parameter-definition>
+        <template-parameter-definition name="NewTemplateParameterDefinition1" id="78">
+            <property name="allowedType">Table</property>
+            <text-property name="description">Customer Listing Table</text-property>
+            <default>
+                <table id="79">
+                    <property name="width">100%</property>
+                    <property name="refTemplateParameter">NewTemplateParameterDefinition</property>
+                    <property name="pageBreakInterval">50</property>
+                    <column id="99"/>
+                    <column id="100"/>
+                    <column id="101"/>
+                    <column id="102"/>
+                    <header>
+                        <row id="80">
+                            <cell id="81">
+                                <label id="82">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Contact</text-property>
+                                </label>
+                            </cell>
+                            <cell id="83">
+                                <label id="84">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">First</text-property>
+                                </label>
+                            </cell>
+                            <cell id="85">
+                                <label id="86">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Last</text-property>
+                                </label>
+                            </cell>
+                            <cell id="87">
+                                <label id="88">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Phone</text-property>
+                                </label>
+                            </cell>
+                        </row>
+                    </header>
+                    <detail>
+                        <row id="89">
+                            <cell id="90"/>
+                            <cell id="91"/>
+                            <cell id="92"/>
+                            <cell id="93"/>
+                        </row>
+                    </detail>
+                    <footer>
+                        <row id="94">
+                            <cell id="95"/>
+                            <cell id="96"/>
+                            <cell id="97"/>
+                            <cell id="98"/>
+                        </row>
+                    </footer>
+                </table>
+            </default>
+        </template-parameter-definition>
+        <template-parameter-definition name="NewTemplateParameterDefinition2" id="132">
+            <property name="allowedType">Table</property>
+            <text-property name="description">Customer Listing Table</text-property>
+            <default>
+                <table id="133">
+                    <property name="width">100%</property>
+                    <property name="refTemplateParameter">NewTemplateParameterDefinition1</property>
+                    <property name="pageBreakInterval">50</property>
+                    <column id="157"/>
+                    <column id="158"/>
+                    <column id="159"/>
+                    <column id="160"/>
+                    <header>
+                        <row id="134">
+                            <cell id="135">
+                                <label id="136">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Contact</text-property>
+                                </label>
+                            </cell>
+                            <cell id="137">
+                                <label id="138">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">First</text-property>
+                                </label>
+                            </cell>
+                            <cell id="139">
+                                <label id="140">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Last</text-property>
+                                </label>
+                            </cell>
+                            <cell id="141">
+                                <label id="142">
+                                    <property name="fontFamily">sans-serif</property>
+                                    <property name="fontWeight">bold</property>
+                                    <text-property name="text">Phone</text-property>
+                                </label>
+                            </cell>
+                        </row>
+                    </header>
+                    <detail>
+                        <row id="143">
+                            <cell id="144">
+                                <data id="145"/>
+                            </cell>
+                            <cell id="146">
+                                <data id="147"/>
+                            </cell>
+                            <cell id="148">
+                                <data id="149"/>
+                            </cell>
+                            <cell id="150">
+                                <data id="151"/>
+                            </cell>
+                        </row>
+                    </detail>
+                    <footer>
+                        <row id="152">
+                            <cell id="153"/>
+                            <cell id="154"/>
+                            <cell id="155"/>
+                            <cell id="156"/>
+                        </row>
+                    </footer>
+                </table>
+            </default>
+        </template-parameter-definition>
+    </template-parameter-definitions>
+    <parameters>
+        <scalar-parameter name="NewParameter1" id="254">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant"></value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="UserName" id="257">
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">reader</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
+    <data-sources>
+        <script-data-source name="Data Source" id="251"/>
+        <oda-data-source extensionID="org.orienteer.birt.orientdb.driver" name="Data Source1" id="256">
+            <property name="uri">remote:localhost/Orienteer</property>
+            <property name="user">admin</property>
+            <property name="password">admin</property>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <script-data-set name="Data Set" id="252">
+            <list-property name="resultSetHints">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">name</property>
+                    <property name="dataType">date</property>
+                </structure>
+            </list-property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">name</property>
+                    <text-property name="displayName">name</text-property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">name</property>
+                        <property name="dataType">date</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source</property>
+            <method name="open"><![CDATA[importPackage(Packages.requester);
+
+function httpGet(theUrl,login,password)
+{
+
+//    var xmlHttp = new XMLHttpRequest();
+//    xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+//    xmlHttp.send( null );
+//    return xmlHttp.responseText;
+	return '{"result":[{"@type":"d","@rid":"#5:0","@version":4,"@class":"OUser","name":"admin","password":"{SHA-256}8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918","status":"ACTIVE","roles":["#4:0"],"online":true,"lastSessionId":"153mrdmz0vdjj1swmwsshvc7ue","@fieldTypes":"roles=n"}, {"@type":"d","@rid":"#5:1","@version":1,"@class":"OUser","name":"reader","password":"{SHA-256}3D0941964AA3EBDCB00CCEF58B1BB399F9F898465E9886D5AEC7F31090A0FB30","status":"ACTIVE","roles":["#4:1"],"@fieldTypes":"roles=n"}, {"@type":"d","@rid":"#5:2","@version":1,"@class":"OUser","name":"writer","password":"{SHA-256}B93006774CBDD4B299389A03AC3D88C3A76B460D538795BC12718011A909FBA5","status":"ACTIVE","roles":["#4:2"],"@fieldTypes":"roles=n"}]}';
+}
+
+re = ApacheRequester();
+//var host="http://localhost:2480/command/Orienteer/sql/";//https://telebot.orienteer.org/orientdb/command/db/sql/ 
+var host="https://telebot.orienteer.org/orientdb/command/db/sql/";//https://telebot.orienteer.org/orientdb/command/db/sql/ 
+var query="select from OTaskSession"; 
+var setData = re.send(host+query);
+setJSON = eval('('+setData+')');
+setJSON = setJSON["result"];
+
+currentrow = 0;
+totalrows = setJSON.length; ]]></method>
+            <method name="fetch"><![CDATA[if (currentrow>=totalrows){
+	return( false );
+}
+
+var tmprow = setJSON[currentrow];
+
+row["name"] = tmprow["startTimestamp"];
+
+currentrow = currentrow + 1;
+return( true );]]></method>
+            <method name="close"><![CDATA[setJSON = null ;]]></method>
+        </script-data-set>
+        <oda-data-set extensionID="org.orienteer.birt.orientdb.driver.dataSet" name="Data Set1" id="258">
+            <property name="nullsOrdering">nulls lowest</property>
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">emptyResult</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">emptyResult</text-property>
+                    <text-property name="heading">emptyResult</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters">
+                <structure>
+                    <property name="name">uname</property>
+                    <property name="paramName">UserName</property>
+                    <property name="dataType">string</property>
+                    <property name="position">1</property>
+                    <property name="isInput">true</property>
+                    <property name="isOutput">false</property>
+                </structure>
+            </list-property>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">emptyResult</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">Data Source1</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">emptyResult</property>
+                    <property name="nativeName">emptyResult</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[select from ouser where name like :uname]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>2.0</Version>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>1</design:name>
+              <design:position>1</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>4</design:nativeDataTypeCode>
+            <design:precision>-1</design:precision>
+            <design:scale>-1</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>1</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>1</design:label>
+            <design:formattingHints>
+              <design:displaySize>8</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="110">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <label id="245">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">x-large</property>
+            <property name="fontWeight">bold</property>
+            <property name="textAlign">center</property>
+            <text-property name="text">Customer Listing</text-property>
+        </label>
+        <table id="163">
+            <property name="width">100%</property>
+            <property name="dataSet">Data Set</property>
+            <property name="refTemplateParameter">NewTemplateParameterDefinition2</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">name</property>
+                    <text-property name="displayName">name</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["name"]</expression>
+                    <property name="dataType">date</property>
+                    <property name="allowExport">true</property>
+                </structure>
+            </list-property>
+            <property name="pageBreakInterval">50</property>
+            <column id="187"/>
+            <column id="188"/>
+            <column id="189"/>
+            <column id="190"/>
+            <header>
+                <row id="164">
+                    <cell id="165">
+                        <label id="166">
+                            <property name="fontFamily">sans-serif</property>
+                            <property name="fontWeight">bold</property>
+                            <text-property name="text">Customer</text-property>
+                        </label>
+                    </cell>
+                    <cell id="167">
+                        <label id="168">
+                            <property name="fontFamily">sans-serif</property>
+                            <property name="fontWeight">bold</property>
+                            <text-property name="text">First</text-property>
+                        </label>
+                    </cell>
+                    <cell id="169">
+                        <label id="170">
+                            <property name="fontFamily">sans-serif</property>
+                            <property name="fontWeight">bold</property>
+                            <text-property name="text">Last</text-property>
+                        </label>
+                    </cell>
+                    <cell id="171">
+                        <label id="172">
+                            <property name="fontFamily">sans-serif</property>
+                            <property name="fontWeight">bold</property>
+                            <text-property name="text">Phone</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="173">
+                    <cell id="174">
+                        <data id="253">
+                            <property name="resultSetColumn">name</property>
+                        </data>
+                    </cell>
+                    <cell id="176"/>
+                    <cell id="178"/>
+                    <cell id="180"/>
+                </row>
+            </detail>
+            <footer>
+                <row id="182">
+                    <cell id="183"/>
+                    <cell id="184"/>
+                    <cell id="185"/>
+                    <cell id="186"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

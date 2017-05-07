@@ -1,11 +1,9 @@
 package org.orienteer.core.component.widget;
 
-import java.util.List;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
@@ -17,14 +15,12 @@ import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
-
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+
+import java.util.List;
 
 /**
  * Widget for calculated document
@@ -37,41 +33,34 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
     @Inject
     protected OClassIntrospector oClassIntrospector;
 
+    @SuppressWarnings("unchecked")
 	public AbstractCalculatedDocumentsWidget(String id, IModel<T> model,
                                     IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-        Form<ODocument> form = new Form<ODocument>("form");
         final String sql = getSql();
-        
+	    GenericTablePanel<ODocument> tablePanel;
         if(!Strings.isEmpty(sql)) {
         	OQueryDataProvider<ODocument> provider = newDataProvider(sql);
         	OClass expectedClass = getExpectedClass(provider);
         	if(expectedClass!=null) {
 	        	oClassIntrospector.defineDefaultSorting(provider, expectedClass);
-	        	List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(expectedClass, true, modeModel);
-	        	OrienteerDataTable<ODocument, String> table =
-	        			new OrienteerDataTable<ODocument, String>("table", columns, provider, 20);
+		        List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(expectedClass, true, modeModel);
+	        	tablePanel = new GenericTablePanel<>("tablePanel", columns, provider, 20);
+		        OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
 	        	
 	        	table.addCommand(new EditODocumentsCommand(table, modeModel, expectedClass));
 	        	table.addCommand(new SaveODocumentsCommand(table, modeModel));
 	        	table.addCommand(new DeleteODocumentCommand(table, expectedClass));
 	        	table.addCommand(new ExportCommand<>(table, getTitleModel()));
-	        	form.add(table);
-	        	add(new EmptyPanel("error").setVisible(false));
         	} else {
-        		form.add(new EmptyPanel("table").setVisible(false));
-            	form.setVisible(false);
-            	add(new Label("error", new ResourceModel("error.class.not.defined")));
+        		tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.class.not.defined"));
         	}
         } else {
-        	form.add(new EmptyPanel("table").setVisible(false));
-        	form.setVisible(false);
-        	add(new Label("error", new ResourceModel("error.query.not.defined")));
+	        tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.query.not.defined"));
         }
-        
-        add(form);
+        add(tablePanel);
 	}
 	
 	protected String getSql() {
@@ -88,7 +77,7 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 	}
 	
 	protected OQueryDataProvider<ODocument> newDataProvider(String sql) {
-		return new OQueryDataProvider<ODocument>(sql);
+		return new OQueryDataProvider<>(sql);
 	}
 	
 	@Override

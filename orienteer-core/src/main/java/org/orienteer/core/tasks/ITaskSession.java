@@ -51,7 +51,7 @@ public interface ITaskSession {
 	public Status getStatus();
 	
 	public OTaskSessionRuntime getOTaskSessionRuntime();
-	public OTaskSessionPersisted getOTaskSessionPersisted();
+	public OTaskSession getOTaskSessionPersisted();
 	
 	public ITaskSession setCallback(ITaskSessionCallback callback);
 	public ITaskSessionCallback getCallback();

@@ -5,25 +5,25 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import org.apache.wicket.Application;
-import org.apache.wicket.Session;
-import org.apache.wicket.ThreadContext;
-import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.method.ClassOMethod;
+import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.filters.PlaceFilter;
+import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.ITaskSessionCallback;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
-import org.orienteer.core.tasks.OTask.Field;
-import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
 
-import com.google.common.base.Throwables;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * OTask class for system console commands
  *
  */
 public class OConsoleTask extends OTask {
+	private static final long serialVersionUID = 1L;
 	public static final String TASK_CLASS = "OConsoleTask";
 	/**
 	 * data fields
@@ -35,7 +35,19 @@ public class OConsoleTask extends OTask {
 		public String fieldName(){ return fieldName;}
 		private Field(String fieldName){	this.fieldName = fieldName;}
 	}
-	
+	///////////////////////////////////////////////////////////////////////////////////
+	//OMethods
+	@ClassOMethod(
+			icon = FAIconType.play, bootstrap=BootstrapType.SUCCESS,titleKey="task.command.start",
+			filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
+					@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),		
+			},
+			behaviors={}
+		)
+	public void startNewSession( IMethodEnvironmentData data){
+		startNewSession();
+	}
+	///////////////////////////////////////////////////////////////////////////////////
 	
 	public OConsoleTask(ODocument oTask) {
 		super(oTask);

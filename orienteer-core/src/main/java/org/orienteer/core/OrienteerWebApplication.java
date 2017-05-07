@@ -1,6 +1,5 @@
 package org.orienteer.core;
 
-
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Inject;
@@ -13,6 +12,22 @@ import com.orientechnologies.orient.core.metadata.security.OUser;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 import org.apache.wicket.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
+import org.apache.wicket.Application;
+import org.apache.wicket.Component;
+import org.apache.wicket.IApplicationListener;
+import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.RuntimeConfigurationType;
+import org.apache.wicket.ThreadContext;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
@@ -29,6 +44,7 @@ import org.apache.wicket.settings.RequestCycleSettings;
 import org.apache.wicket.util.string.Strings;
 import org.joda.time.DateTimeZone;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
+import org.joda.time.DateTimeZone;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
@@ -50,6 +66,26 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.io.IOException;
 import java.util.*;
 
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
+import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+
+import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
+import ru.ydn.wicket.wicketorientdb.OrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications

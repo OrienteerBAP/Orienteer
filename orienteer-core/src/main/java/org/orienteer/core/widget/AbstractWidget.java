@@ -11,12 +11,13 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
+import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.core.widget.command.FullScreenCommand;
@@ -27,7 +28,6 @@ import ru.ydn.wicket.wicketorientdb.model.NvlModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -41,9 +41,13 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private boolean hidden=false;
 	
+	private int loadedWidgetVersion=-1;
+	
 	private RepeatingView commands;
 	
 	private IModel<ODocument> widgetDocumentModel;
+
+	private MethodsView methods;
 	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
@@ -51,6 +55,9 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
 		add(commands = new RepeatingView("commands"));
+		methods = new MethodsView(commands, model,MethodPlace.ACTIONS,null);
+		methods.overrideBootstrapType(null);
+
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override
@@ -163,6 +170,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		if(doc==null) return;
 		hidden = MoreObjects.firstNonNull((Boolean)doc.field(OPROPERTY_HIDDEN), false);
 		getDashboardPanel().getDashboardSupport().loadSettings(this, doc);
+		loadedWidgetVersion = doc.getVersion();
 	}
 	
 	public void saveSettings() {
@@ -179,6 +187,17 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		add(new Label("title", getTitleModel()));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
+		methods.loadMethods();
+	}
+	
+	@Override
+	protected void onBeforeRender() {
+		// Reload settings of widget if they were changed
+		ODocument doc = getWidgetDocument();
+		if(doc!=null && doc.getVersion()!=loadedWidgetVersion) {
+			loadSettings();
+		}
+		super.onBeforeRender();
 	}
 	
 	@Override
@@ -203,7 +222,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	}
 	
 	public void onActionPerformed(ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
-		
+		//for soft overriding
 	}
 	
 	protected ODatabaseDocument getDatabase() {
