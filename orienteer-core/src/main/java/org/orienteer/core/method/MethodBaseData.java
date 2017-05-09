@@ -19,14 +19,16 @@ public class MethodBaseData implements Serializable,IMethodEnvironmentData{
 	private AbstractWidget<?> widget;
 	private String widgetType;
 	private MethodPlace place;
+	private Object tableObject;
 	
-	public MethodBaseData(IModel<?> objModel,AbstractWidget<?> widget,MethodPlace place) {
+	public MethodBaseData(IModel<?> objModel,AbstractWidget<?> widget,MethodPlace place,Object tableObject) {
 		this.objModel = objModel;
 		this.widget = widget;
 		if (widget!=null){
 			this.widgetType = widget.getWidgetDocument().field(OWidgetsModule.OPROPERTY_TYPE_ID);
 		}
 		this.place = place;
+		this.tableObject = tableObject;
 	}
 
 	@Override
@@ -47,6 +49,11 @@ public class MethodBaseData implements Serializable,IMethodEnvironmentData{
 	@Override
 	public MethodPlace getPlace() {
 		return place;
+	}
+
+	@Override
+	public Object getTableObject() {
+		return tableObject;
 	}
 
 

@@ -26,19 +26,21 @@ public class MethodsView implements Serializable{
 	private MethodPlace place;
 	private RepeatingView externalList;
 	private IModel<?> displayObjectModel;
+	private Object table;
 
 	private BootstrapType bootstrapType;
 	private boolean bootstrapTypeOverriden = false;
 	
-	public MethodsView(RepeatingView externalList, IModel<?> displayObjectModel,MethodPlace place) {
+	public MethodsView(RepeatingView externalList, IModel<?> displayObjectModel,MethodPlace place,Object table) {
 		this.externalList = externalList;
 		this.displayObjectModel = displayObjectModel;
 		this.place = place;
+		this.table = table;
 	}
 	
 	public void loadMethods(){
 		AbstractWidget<?> widget = externalList.findParent(AbstractWidget.class);
-		methods = MethodManager.get().getMethods(new MethodBaseData(displayObjectModel,widget,place));
+		methods = MethodManager.get().getMethods(new MethodBaseData(displayObjectModel,widget,place,table));
 		for ( IMethod method : methods) {
 			Component component = method.getDisplayComponent(); 
 			if (component !=null){

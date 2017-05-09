@@ -32,4 +32,10 @@ public class MethodEmptyData implements IMethodEnvironmentData{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Object getTableObject() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
