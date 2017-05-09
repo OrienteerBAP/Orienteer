@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author Vitaliy Gonchar
+ * Test class for creating and manage test OClass in OrientDB
  */
 class TestOClassManager {
     private static final Logger LOG = LoggerFactory.getLogger(TestOClassManager.class);
@@ -105,6 +105,11 @@ class TestOClassManager {
                 successStringFilters.add("%" + nameEnd);
                 for (int i = 0; i < documentsNumber; i++) {
                     createDocumentForTestClass(testClass, i, primitives, embedded, link, embeddedClass, linkClass);
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
                 db.commit();
                 return testClass;
@@ -136,6 +141,12 @@ class TestOClassManager {
     }
 
     private void buildDocumentWithPrimitives(ODocument document, OClass testClass, int id) {
+        int numberValue = id + 1;
+        Date date = new Date();
+        String str = nameStart + "%s" + nameEnd;
+        successNumberFilters.add(numberValue);
+        successDateFilters.add(date);
+        successStringFilters.add(String.format(str, "%"));
         for (OProperty property : testClass.properties()) {
             OType type = property.getType();
             String name = property.getName();
@@ -150,27 +161,17 @@ class TestOClassManager {
                 case DECIMAL:
                 case FLOAT:
                 case DOUBLE:
-                    document.field(name, id);
-                    successNumberFilters.add(id);
+                    document.field(name, numberValue);
                     break;
                 case DATE:
-                    Date date = new Date();
-                    document.field(name, new SimpleDateFormat(OrienteerDefaultQueryBuilderTest.dateFormat).format(date));
+                    String d = new SimpleDateFormat(OrienteerDefaultQueryBuilderTest.dateFormat).format(date);
+                    document.field(name, d);
                     break;
                 case DATETIME:
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    Date dateTime = new Date();
-                    document.field(name, new SimpleDateFormat(OrienteerDefaultQueryBuilderTest.dateTimeFormat).format(dateTime));
-                    successDateFilters.add(dateTime);
+                    document.field(name, new SimpleDateFormat(OrienteerDefaultQueryBuilderTest.dateTimeFormat).format(date));
                     break;
                 case STRING:
-                    String str = nameStart + "%s" + nameEnd;
                     document.field(name, String.format(str, id));
-                    successStringFilters.add(String.format(str, "%"));
                     break;
                 case BINARY:
                     StringBuilder testString = new StringBuilder(testClass.getName() + id + "-tesfntktgrkngjk");
