@@ -56,7 +56,8 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 			}
 			
 			private OClass getFirstBusinessDomainOClass(OClass oClass) {
-				if(oClass==null && OClassDomain.BUSINESS.equals(CustomAttribute.DOMAIN.getValue(oClass))) return oClass;
+				if(oClass==null) return null;
+				if(OClassDomain.BUSINESS.equals(CustomAttribute.DOMAIN.getValue(oClass))) return oClass;
 				List<OClass> superClasses = oClass.getSuperClasses();
 				for (OClass supClass : superClasses) {
 					if(OClassDomain.BUSINESS.equals(CustomAttribute.DOMAIN.getValue(supClass))) return supClass;

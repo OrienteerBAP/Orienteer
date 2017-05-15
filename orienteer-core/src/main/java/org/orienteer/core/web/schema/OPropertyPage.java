@@ -59,7 +59,7 @@ public class OPropertyPage extends AbstractWidgetDisplayModeAwarePage<OProperty>
 	
 	@Override
 	public IModel<String> getTitleModel() {
-		return new PropertyModel<String>(getModel(), "name");
+		return new PropertyModel<String>(getModel(), "fullName");
 	}
 	
 	@Override
