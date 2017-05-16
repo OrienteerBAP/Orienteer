@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
@@ -54,6 +55,7 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		table.addCommand(new ExportCommand<>(table, new PropertyModel<String>(model, "name")));
 
 		add(tablePanel);
+		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
 	}
 
 	@Override

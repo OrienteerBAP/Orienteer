@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.method.IMethodEnvironmentData;
@@ -61,7 +60,7 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 		return displayComponent;
 	}
 
-	private void invoke(ODocument doc){
+	protected void invoke(ODocument doc){
 		
 		try {
 			Constructor<?> constructor = Class.forName(javaClassName).getConstructor(ODocument.class);
