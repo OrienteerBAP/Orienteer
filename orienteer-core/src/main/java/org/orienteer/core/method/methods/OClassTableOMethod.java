@@ -61,7 +61,7 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 		return displayComponent;
 	}
 
-	private void invoke(ODocument doc){
+	protected void invoke(ODocument doc){
 		
 		try {
 			Constructor<?> constructor = Class.forName(javaClassName).getConstructor(ODocument.class);

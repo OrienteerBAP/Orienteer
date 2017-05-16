@@ -1,0 +1,12 @@
+<wicket:panel>
+<div class="container">
+<form wicket:id="uploadForm" role="form">
+<div class="form-group">
+    <label wicket:for="inputFile"><wicket:message key="select.file">Select File</wicket:message></label>
+    <input type="file" wicket:id="inputFile">
+    <p class="help-block"><wicket:message key="select.file.help">Please select local file</wicket:message></p>
+  </div>
+  <input type="submit" wicket:id="loadFile" class="btn btn-primary" />
+</form>
+</div>
+</wicket:panel>

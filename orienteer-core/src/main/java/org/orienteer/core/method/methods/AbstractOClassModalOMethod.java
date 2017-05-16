@@ -1,26 +1,20 @@
 package org.orienteer.core.method.methods;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.method.IMethodEnvironmentData;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.component.command.AbstractModalWindowCommand;
+import org.orienteer.core.component.command.Command;
 
 /**
  * 
- * OMethod for display and use OClass methods as buttons in single view
+ * Modal windows support
  *
  */
-public class OClassOMethod extends AbstractOClassOMethod{
-
-	private Component displayComponent;
+public abstract class AbstractOClassModalOMethod extends AbstractOClassOMethod{
+	
+	private AbstractModalWindowCommand<Object> displayComponent;
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("unchecked")
@@ -28,7 +22,10 @@ public class OClassOMethod extends AbstractOClassOMethod{
 	public Component getDisplayComponent() {
 		if (displayComponent==null){
 			IModel<Object> model = (IModel<Object>) envData.getDisplayObjectModel();
-			displayComponent = new AjaxCommand<Object>(id, getTitleModel(),model) {
+
+			displayComponent = new AbstractModalWindowCommand<Object>(id, getTitleModel(),model) {
+				
+
 				private static final long serialVersionUID = 1L;
 				@Override
 				protected void onInitialize() {
@@ -37,12 +34,20 @@ public class OClassOMethod extends AbstractOClassOMethod{
 					setBootstrapType(annotation.bootstrap());
 					setChangingDisplayMode(annotation.changingDisplayMode());	
 					setChandingModel(annotation.changingModel());
+
 				}
 				@Override
-				public void onClick(AjaxRequestTarget target) {
-					invoke();
+				protected void initializeContent(ModalWindow modal) {
+					modal.setTitle(getTitleModel());
+					
+					modal.setContent(getModalContent(modal.getContentId(),modal,this));		
+				}
+				@Override
+				public void onWindowClose() {
+					sendActionPerformed();					
 				}
 			};
+			
 			if (annotation.behaviors().length>0){
 				for ( Class<? extends Behavior> behavior : annotation.behaviors()) {
 					try {
@@ -56,4 +61,11 @@ public class OClassOMethod extends AbstractOClassOMethod{
 		}
 		return displayComponent;
 	}
+	/**
+	 * Should call {@link AbstractOClassOMethod.invoke} somewhere inside
+	 * @param componentId
+	 * @param modal
+	 * @return
+	 */
+	public abstract Component getModalContent(String componentId,ModalWindow modal,AbstractModalWindowCommand<?> command);
 }

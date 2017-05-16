@@ -66,4 +66,8 @@ public abstract class AbstractModalWindowCommand<T> extends AjaxCommand<T>
 		modal.show(target);
 	}
 	
+	public void onWindowClose(){
+		//can be called on close modal window if necessary
+	};
+	
 }
