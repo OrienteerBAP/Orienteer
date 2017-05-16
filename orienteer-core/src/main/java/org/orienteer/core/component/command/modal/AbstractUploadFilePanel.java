@@ -43,6 +43,6 @@ public abstract class AbstractUploadFilePanel extends Panel{
 	public abstract void onLoadFile(FileUpload file);
 	
 	public void onModalClose(AjaxRequestTarget target){
-		
+		//may be empty
 	};
 }

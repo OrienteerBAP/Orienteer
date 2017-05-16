@@ -1,17 +1,10 @@
 package org.orienteer.core.method.methods;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.AjaxCommand;
-import org.orienteer.core.method.IMethodEnvironmentData;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 

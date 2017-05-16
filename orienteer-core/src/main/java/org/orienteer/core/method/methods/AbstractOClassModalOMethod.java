@@ -5,7 +5,6 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
-import org.orienteer.core.component.command.Command;
 
 /**
  * 
