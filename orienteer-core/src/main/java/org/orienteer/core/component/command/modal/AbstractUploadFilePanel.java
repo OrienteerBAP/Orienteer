@@ -30,10 +30,12 @@ public abstract class AbstractUploadFilePanel extends Panel{
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
 				FileUpload file = inputFile.getFileUpload();
-				onLoadFile(file);
-//				error(getLocalizer().getString("errors.load.file.error", this));
-				modal.close(target);
-				onModalClose(target);
+				if (file!=null){
+					onLoadFile(file);
+	//				error(getLocalizer().getString("errors.load.file.error", this));
+					modal.close(target);
+					onModalClose(target);
+				}
 			}
 			
 		});
