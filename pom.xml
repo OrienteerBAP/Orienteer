@@ -60,8 +60,8 @@
 		</license>
 	</licenses>
 	<properties>
-		<wicket.version>7.6.0</wicket.version>
-		<wicketstuff.version>7.6.0</wicketstuff.version>
+		<wicket.version>7.7.0</wicket.version>
+		<wicketstuff.version>7.7.0</wicketstuff.version>
 		<orientdb.version>2.2.20</orientdb.version>
 		<wicket.orientdb.version>1.3future-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.2.11.v20150529</jetty.version>
