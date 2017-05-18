@@ -44,7 +44,7 @@ public class SourceMethodDefinition implements IMethodDefinition{
 			filters.add(new SelectorFilter().setFilterData(methodAnnotation.selector()));
 		}
 		order = methodAnnotation.order();
-		methodId = methodClass.getName();
+		methodId = methodClass.getSimpleName();
 	}
 
 	@Override
