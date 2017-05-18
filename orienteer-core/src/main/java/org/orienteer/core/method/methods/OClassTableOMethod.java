@@ -27,22 +27,22 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 	@Override
 	public Component getDisplayComponent() {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
-		if (displayComponent == null && envData.getTableObject()!=null && envData.getTableObject() instanceof OrienteerDataTable){
-			String titleKey = annotation.titleKey();
+		if (displayComponent == null && getEnvData().getTableObject()!=null && getEnvData().getTableObject() instanceof OrienteerDataTable){
+			String titleKey = getAnnotation().titleKey();
 			if (titleKey.isEmpty()){
-				titleKey = id;
+				titleKey = getId();
 			}			
-			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) envData.getTableObject();
+			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getEnvData().getTableObject();
 			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(getTitleModel(),table){
 				private static final long serialVersionUID = 1L;
 				
 				@Override
 				protected void onInitialize() {
 					super.onInitialize();
-					setIcon(annotation.icon());
-					setBootstrapType(annotation.bootstrap());
-					setChangingDisplayMode(annotation.changingDisplayMode());	
-					setChandingModel(annotation.changingModel());
+					setIcon(getAnnotation().icon());
+					setBootstrapType(getAnnotation().bootstrap());
+					setChangingDisplayMode(getAnnotation().changingDisplayMode());	
+					setChandingModel(getAnnotation().changingModel());
 				}
 
 				@Override
@@ -50,7 +50,7 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 					for (ODocument curDoc : objects) {
 						invoke(curDoc);
 					}
-					if (annotation.resetSelection()){
+					if (getAnnotation().resetSelection()){
 						resetSelection();
 					}
 				}
@@ -63,11 +63,11 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 	protected void invoke(ODocument doc){
 		
 		try {
-			Constructor<?> constructor = Class.forName(javaClassName).getConstructor(ODocument.class);
+			Constructor<?> constructor = Class.forName(getJavaClassName()).getConstructor(ODocument.class);
 			
-			Method javaMethod = Class.forName(javaClassName).getMethod(javaMethodName, IMethodEnvironmentData.class);
+			Method javaMethod = Class.forName(getJavaClassName()).getMethod(getJavaMethodName(), IMethodEnvironmentData.class);
 			Object newInstance = constructor.newInstance(doc);
-			javaMethod.invoke(newInstance,envData);
+			javaMethod.invoke(newInstance,getEnvData());
 			
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
 			// TODO Auto-generated catch block

@@ -20,24 +20,24 @@ public class OClassOMethod extends AbstractOClassOMethod{
 	@Override
 	public Component getDisplayComponent() {
 		if (displayComponent==null){
-			IModel<Object> model = (IModel<Object>) envData.getDisplayObjectModel();
-			displayComponent = new AjaxCommand<Object>(id, getTitleModel(),model) {
+			IModel<Object> model = (IModel<Object>) getEnvData().getDisplayObjectModel();
+			displayComponent = new AjaxCommand<Object>(getId(), getTitleModel(),model) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				protected void onInitialize() {
 					super.onInitialize();
-					setIcon(annotation.icon());
-					setBootstrapType(annotation.bootstrap());
-					setChangingDisplayMode(annotation.changingDisplayMode());	
-					setChandingModel(annotation.changingModel());
+					setIcon(getAnnotation().icon());
+					setBootstrapType(getAnnotation().bootstrap());
+					setChangingDisplayMode(getAnnotation().changingDisplayMode());	
+					setChandingModel(getAnnotation().changingModel());
 				}
 				@Override
 				public void onClick(AjaxRequestTarget target) {
 					invoke();
 				}
 			};
-			if (annotation.behaviors().length>0){
-				for ( Class<? extends Behavior> behavior : annotation.behaviors()) {
+			if (getAnnotation().behaviors().length>0){
+				for ( Class<? extends Behavior> behavior : getAnnotation().behaviors()) {
 					try {
 						displayComponent.add(behavior.newInstance());
 					} catch (InstantiationException | IllegalAccessException e) {
