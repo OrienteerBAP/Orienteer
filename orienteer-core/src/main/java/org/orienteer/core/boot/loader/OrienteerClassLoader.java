@@ -42,8 +42,6 @@ public class OrienteerClassLoader extends URLClassLoader {
     private static boolean useOrienteerClassLoader = false;
     private static boolean orienteerClassLoaderOn = false;
 
-    private static final List<Class<? extends IOrienteerModule>> ORIENTEER_MODULES = Lists.newArrayList();
-
     /**
      * Create trusted and untrusted OrienteerClassLoader
      * @param parent - classloader for delegate loading classes
@@ -101,26 +99,6 @@ public class OrienteerClassLoader extends URLClassLoader {
     public static void disable() {
         if (orienteerClassLoaderOn)
             orienteerClassLoaderOn = false;
-    }
-
-    /**
-     * Clear {@link OrienteerClassLoader#ORIENTEER_MODULES} and remove Orienteer modules classes from {@link MethodManager}
-     * Calls before {@link org.orienteer.core.OrienteerFilter} will destroyed.
-     */
-    public static void clear() {
-        MethodManager methodManager = MethodManager.get();
-        for (Class<? extends IOrienteerModule> orienteerModule : ORIENTEER_MODULES) {
-            methodManager.removeModule(orienteerModule);
-        }
-        ORIENTEER_MODULES.clear();
-    }
-
-    /**
-     * Reload {@link MethodManager}.
-     * Calls after all add Orienteer modules to classpath.
-     */
-    public static void reindex() {
-        MethodManager.get().reload();
     }
 
     /**
@@ -201,67 +179,10 @@ public class OrienteerClassLoader extends URLClassLoader {
                 for (OArtifactReference artifact : metadata.getDependencies()) {
                     addURL(artifact.getFile().toURI().toURL());
                 }
-                addOrienteerModule(metadata.getArtifactReference().getFile().toPath());
             } catch (MalformedURLException e) {
                 LOG.error("Can't load dependency", e);
             }
         }
-    }
-
-    /**
-     * Add Orienteer module class to {@link OrienteerClassLoader#ORIENTEER_MODULES} and to {@link MethodManager}
-     * @param pathToJar - path to module jar file
-     */
-    @SuppressWarnings("unchecked")
-    private void addOrienteerModule(Path pathToJar) {
-        List<String> classNamesFromJar = OrienteerClassLoaderUtil.getClassNamesFromJar(pathToJar);
-        for (String className : classNamesFromJar) {
-            try {
-                Class<?> aClass = loadClass(className);
-                if (isClassOrienteerModule(aClass)) {
-                    Class<? extends IOrienteerModule> orienteerModule = (Class<? extends IOrienteerModule>) aClass;
-                    MethodManager.get().addModule(orienteerModule);
-                    ORIENTEER_MODULES.add(orienteerModule);
-                }
-            } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                LOG.warn("Can't load class with name: {}", className);
-                if (LOG.isDebugEnabled()) e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Checks if aClass is Orienteer module.
-     * @param aClass - class for check.
-     * @return true if aClass is Orienteer module class.
-     */
-    private boolean isClassOrienteerModule(Class<?> aClass) {
-        if (aClass.isInterface()) {
-            return false;
-        }
-        Class<?> superclass = aClass.getSuperclass();
-        Class<?>[] interfaces = aClass.getInterfaces();
-        if (superclass == null)
-            return false;
-        if (superclass.isAssignableFrom(AbstractOrienteerModule.class))
-            return true;
-        if (containsIOrienteerModule(interfaces))
-            return true;
-
-        return isClassOrienteerModule(superclass);
-    }
-
-    /**
-     * Checks if array contains {@link IOrienteerModule}
-     * @param interfaces - array for check
-     * @return true if interfaces contains {@link IOrienteerModule}
-     */
-    private boolean containsIOrienteerModule(Class<?>[] interfaces) {
-        for (Class<?> inter : interfaces) {
-            if (inter.isAssignableFrom(IOrienteerModule.class))
-                return true;
-        }
-        return false;
     }
 
     /**
