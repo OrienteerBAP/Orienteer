@@ -31,9 +31,9 @@ public class DependencyTest {
             Artifact resArtifact = res.getArtifact();
             assertNotNull("Result artifact", resArtifact);
             assertNotNull("Result jar file can't be null", resArtifact.getFile());
-            Files.deleteIfExists(resArtifact.getFile().toPath());
+//            Files.deleteIfExists(resArtifact.getFile().toPath());
         }
-        Files.deleteIfExists(artifactOptional.get().getFile().toPath());
+//        Files.deleteIfExists(artifactOptional.get().getFile().toPath());
     }
 
 
