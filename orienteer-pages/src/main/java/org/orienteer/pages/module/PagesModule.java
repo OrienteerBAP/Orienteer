@@ -1,15 +1,13 @@
 package org.orienteer.pages.module;
 
 import com.google.inject.Singleton;
-
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.pages.PagesCompoundRequestMapper;
-
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link AbstractOrienteerModule} to provide extentions for Orienteer Pages

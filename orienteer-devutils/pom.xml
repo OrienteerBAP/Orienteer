@@ -140,6 +140,12 @@
 			<artifactId>jetty-maven-plugin</artifactId>
 			<version>${jetty.version}</version>
 			<configuration>
+			<systemProperties>
+				<systemProperty>
+					<name>orienteer.loader.repository.local</name>
+					<value>${settings.localRepository}</value>
+				</systemProperty>
+			</systemProperties>
 			<webApp>
 			    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
 			    <resourceBase>src/main/resources</resourceBase>

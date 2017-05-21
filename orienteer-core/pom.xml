@@ -10,17 +10,17 @@
 	<artifactId>orienteer-core</artifactId>
 	<packaging>jar</packaging>
 	<name>orienteer-core</name>
+
 	<dependencies>
-	    <dependency>
-		    <groupId>ru.ydn.wicket.wicket-orientdb</groupId>
-		    <artifactId>wicket-orientdb</artifactId>
-			<version>${wicket.orientdb.version}</version>
-	    </dependency>
-	    <dependency>
+		<dependency>
 			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>
-		    <artifactId>wicket-orientdb</artifactId>
+			<artifactId>wicket-orientdb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ru.ydn.wicket.wicket-orientdb</groupId>
+			<artifactId>wicket-orientdb</artifactId>
 			<type>test-jar</type>
-      		<scope>test</scope>
+			<scope>test</scope>
 		</dependency>
 	    <dependency>
 		    <groupId>org.apache.wicket</groupId>
@@ -77,40 +77,111 @@
     		<version>0.9.10</version>
 		</dependency>
 		<!-- WEB JARS -->
-	    <dependency>
-		    <groupId>de.agilecoders.wicket.webjars</groupId>
-		    <artifactId>wicket-webjars</artifactId>
-	    </dependency>
-	    <dependency>
+		<dependency>
+			<groupId>de.agilecoders.wicket.webjars</groupId>
+			<artifactId>wicket-webjars</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>font-awesome</artifactId>
-	    </dependency>
-	    <dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
-	    </dependency>
-	    <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>gridster.js</artifactId>
-        </dependency>
-        <dependency>
-		    <groupId>org.webjars</groupId>
-		    <artifactId>jquery-ui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>gridster.js</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>jquery-ui</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>metisMenu</artifactId>
 		</dependency>
-	    <!-- LOGGING DEPENDENCIES - LOG4J -->
-	    <dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>slf4j-log4j12</artifactId>
-	    </dependency>
-	    <dependency>
-		    <groupId>log4j</groupId>
-		    <artifactId>log4j</artifactId>
-	    </dependency>
 
+		<!-- ECLIPSE AETHER -->
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-aether-provider</artifactId>
+			<version>3.3.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-component-api</artifactId>
+			<version>1.0-alpha-33</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-api</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-connector-basic</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-impl</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-spi</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-file</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-util</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.aether</groupId>
+			<artifactId>aether-transport-http</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<version>3.0.24</version>
+		</dependency>
+
+        <!-- NEED FOR LOAD TELEGRAM BOT-->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+
+
+		<!-- LOGGING DEPENDENCIES - LOG4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+
+		<!--  JUNIT DEPENDENCY FOR TESTING -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
 		<!-- ORIENTDB SQL GENERATOR DEPENDENCY-->
 		<dependency>
 			<groupId>com.github.raymanrt</groupId>
@@ -140,12 +211,26 @@
             <version>3.1</version>
         </dependency>-->
 	</dependencies>
+
 	<build>
 		<finalName>orienteer</finalName>
 		<resources>
 			<resource>
 				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>orienteer-default.properties</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>orienteer-default.properties</include>
+				</includes>
 			</resource>
 			<resource>
 				<filtering>false</filtering>
@@ -176,51 +261,52 @@
 		</testResources>
 		<plugins>
 			<plugin>
-		       <groupId>org.apache.maven.plugins</groupId>
-		       <artifactId>maven-jar-plugin</artifactId>
-		       <version>3.0.0</version>
-		       <configuration>
-		        <archive>
-		          <manifest>
-		            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-		            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-		          </manifest>
-		        </archive>
-		      </configuration>
-		       <executions>
-		         <execution>
-		           <goals>
-		             <goal>test-jar</goal>
-		           </goals>
-		         </execution>
-		       </executions>
-     		</plugin>	
-		    <plugin>
-			    <groupId>org.eclipse.jetty</groupId>
-			    <artifactId>jetty-maven-plugin</artifactId>
-			    <version>${jetty.version}</version>
-			    <configuration>
-			    <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
-				<webApp>
-				    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-				    <resourceBase>src/main/resources</resourceBase>
-				    <contextPath>/</contextPath>
-				</webApp>
-				<connectors>
-					<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-						<port>8080</port>
-						<maxIdleTime>3600000</maxIdleTime>
-					</connector>
-				</connectors>
-			    </configuration>
-			    <dependencies>
-				<dependency>
-					<groupId>org.eclipse.jetty.aggregate</groupId>
-					<artifactId>jetty-all</artifactId>
-					<version>${jetty.version}</version>
-				</dependency>
-			    </dependencies>
-		    </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
+					<systemProperties>
+						<systemProperty>
+							<name>orienteer.loader.repository.local</name>
+							<value>${settings.localRepository}</value>
+						</systemProperty>
+					</systemProperties>
+					<webApp>
+						<descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+						<resourceBase>src/main/resources</resourceBase>
+						<contextPath>/</contextPath>
+						<containerIncludeJarPattern>^$</containerIncludeJarPattern>
+						<webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+					</webApp>
+					<connectors>
+						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+							<port>8080</port>
+							<maxIdleTime>3600000</maxIdleTime>
+						</connector>
+					</connectors>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.jetty.aggregate</groupId>
+						<artifactId>jetty-all</artifactId>
+						<version>${jetty.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
+
+
 </project>

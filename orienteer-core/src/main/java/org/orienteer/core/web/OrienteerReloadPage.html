@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Orienteer now reloads</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    body {
+      padding: 10px;
+      background-color: #f8f8f8;
+    }
+
+    #progressbar {
+      width: 100%;
+      height: 15px;
+      background-color: #eee;
+      padding: 2px;
+      margin: .6em 0;
+      border: 1px #000 double;
+      clear: both;
+    }
+
+    #progress {
+      background: #A1C969; /*-- Color of the bar --*/
+      height: 15px;
+      width: 0%;
+      max-width: 100%;
+      float: left;
+      -webkit-animation: progress 0s 1 forwards;
+      -moz-animation: progress 0s 1 forwards;
+      -ms-animation: progress 0s 1 forwards;
+      animation: progress 0s 1 forwards;
+    }
+
+    #pbaranim {
+      height: 15px;
+      width: 100%;
+      overflow: hidden;
+      background: url('data:image/gif;base64,R0lGODlhkAAUAIABAPPz8wAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCgAB\
+      ACwAAAAAkAAUAEAC74yPBsu9CYObICbqLMJNH854Clh9pCidIll6LPquKoTB\
+      sxa7t5Xje9QB/mjDS3FzNIFsSyWH+ZQ1dVNflZeE1qRRatf6xV6F41HZeEam\
+      nVtvG/xWh8lz4tpcR+flcf1ESwH4x9Vnt8cWSBiiOOiW6NgI9ygZKbZImcGY\
+      CbmJGcT56XlJV+g3aVnKd0q6apiacgd7iPdK22payZqruovbiXrL+6s77Bos\
+      W4t8bNsrHArcjBjdA13s+0yMbRzNbC2tfT1aDe4snm2+7f39oEm+jh7ODgpf\
+      Li8qqN7trk//bj/ejx++fcq4Fcx3kCA1XQUAACH5BAkKAAEALAAAAACQABQA\
+      QALvBIKpaO29Ynj0SFXfxRlu1hkfmEWhOJ7Wp47T6bYpvIQxzeKbnNuzn+t1\
+      bsCd7sIzFpG6JHMpcUaPU6iJ6uJYa1juVjv8hYWl6lh5fqbNZXKFuCbFvXNw\
+      G31X59lvPgW+d/WVICVYR9hl5+H2JxZI96jYyKjhCNhH6XA5iYfZyakHahiJ\
+      OChHeuoZKjqqCunayvoqK1mZufhp66e7yrur6Qg76xtLXHqYSnuM+mLajPxM\
+      WjgMfItivZJbrY1bvN37/dstfs1dDj5OfU6ejb7una7+Lt8uvmlcGw4/nx/f\
+      z78MX0BlyQQW1EfvHkI7BQAAIfkECQoAAQAsAAAAAJAAFABAAu+EEamb589i\
+      eBTJVeFV2W3eGV9TXaE4ntanjtPptikMhjHN4puc27Pv6nVuwJ3OdJTwjMUl\
+      svgc/qTCDJHKQFVLU2uXu6VcveFD2fMVpzVn8xrd1maTEaeSPofe9XW8vc+X\
+      hxVFxjS4d4iRKFhICGbYiBgJuKjoFrcC+eiohjm2Kcmm2TkqymkaSnoKV3q5\
+      6voqF5s5+6maimpZWbNLEqg7yQhKGezb+/LLW6w8LHxL3Gy8LB3N/Oyci81a\
+      2wqLu/3tDX0NXE1Njnz8py3OLhv+Pp5tDS5f704Ln2/fXo5+3o/ePX/zBAYE\
+      ONBgvDwFAAAh+QQJCgABACwAAAAAkAAUAEAC7YQfqZvnz2J4FEhW4VXZbd4Z\
+      X6NdoTieVnqOU8uGrrrQcTfDn73rGy9B9WS3TI44xBUrRybGZ4IGpRFgFPmT\
+      epaUppFbymKvyuTW7ER3wWdx2f1Vh2vU53h6r9bpefub/4cXqNcHGAeXhrhG\
+      OOh3SPYoGMk46ZgI6XUpqUnJabmoOLfZBulpaApSmNp4ClpKOira6RoLOyv7\
+      idtqu8vbi8AGLOe7WvkrVCscSkyi2sxajPps/OJcDT0tfU2dTXtLbJWM/Kob\
+      7Z3LvI0a/q1Mns6O7i6+8j7fPk6feX5cv3x/bF+5bgPV8TNXMF6NAgAh+QQJ\
+      CgABACwAAAAAkAAUAEAC8YRvocuKf5oMEM5W32UZ7dVFHyV+YTKewEiGrPqe\
+      sQvKqW3iG3zTuY8p7XQX3q8zQ/aUR8/EOAQWiU+qBDoFWpaZZJdb8YbB26Yw\
+      y4ym0V9zWd2Ga+Rv9tg9xzv156q09ndlFRRIuOZ3KFiIhRhnV9d4R5c3uRe5\
+      Qkb5qHnJqZho6NiJwkda2fcpmiq5admKWQp7avpKO4oaynorBrnam/vLMShc\
+      SKxqfIys6+sJ3KwcDAjqMCydbL3s7Hpry7wN/YwdTV0sHk4+bf6tjgu+7t7O\
+      3q0dj37N6F3fkm6fDT//T1Y+gPIEcjM4ECE9gv3GFQAAIfkECQoAAQAsAAAA\
+      AJAAFABAAvCEj6HLin+aDBDOVt9lOW3XGR8ojmH5ncBInaz6umYnwXMY4ze9\
+      ZznP0fQqP9/QchSmZEvPxdYEbqBTZlUXNRqzxKTzKn1axVjwlxyeUNFbc5eL\
+      hK+8ETrKHccr9Wf1eLHmV8b2xlcn11fzR5KmOCjYiLEo+egYGRlUSYkJOJnJ\
+      ydhGmLgpCmlqiVpaOLrXevd6aAh7ylqbF0ub6nrLu4vbS/qpOmz7K5s7h4gc\
+      zHws3KlZ7DtNXQ0darwK/Oy8bd0iHQ0aTh7YrfsNfa7ufe0+Thyv/Z6ezd1u\
+      P49frzzrn2yZvnvgCGIrJ88gPIX2CgAAIfkECQoAAQAsAAAAAJAAFABAAu+E\
+      jxbLvQmBmyEm6izCTR/OeApYfaQonSJZeiz6riqEwbMWu7eV43vUAf5ow0tx\
+      czSBbEslh/mUNXVTX5WXhNakUWrX+sVeheNR2XhGpp1bbxv8VofJc+LaXEfn\
+      5XH9REsB+MfVZ7fHFkgYojjolujYCPcoGSm2SJnBmAm5iRnE+el5SVfoN2lZ\
+      yndKumqYmnIHe4j3SttqWsmaq7qL24l6y/urO+waLFuLfGzbKxwK3IwY3QNd\
+      7PtMjG0czWwtrX09Wg3uLJ5tvu39/aBJvo4ezg4KXy4vKqje7a5P/24/3o8f\
+      vn3KuBXMd5AgNV0FAAAh+QQJCgABACwAAAAAkAAUAEAC70yAqWjtvSJ49EhV\
+      38UZbtYZH5hFoTie1qeO0+m2KbyEMc3im5zbs5/rdW7Ane7CMxaRuiRzKXFG\
+      j1OoieriWGtY7lY7/IWFpepYeX6mzWVyhbgmxb1zcBt9V+fZbz4Fvnf1lSAl\
+      WEfYZefh9icWSPeo2Mio4QjYR+lwOYmH2cmpB2oYiTgoR3rqGSo6qgrp2sr6\
+      KitZmbn4aeunu8q7q+kIO+sbS1x6mEp7jPpi2oz8TFo4DHyLYr2SW62NW7zd\
+      +/3bLX7NXQ4+Tn1Ono2+7p2u/i7fLr5pXBsOP58f38+/DF9AZckEFtRH7x5C\
+      OwUAACH5BAkKAAEALAAAAACQABQAQALvjAOpm+fPIngUyVXhVdlt3hlfU12h\
+      OJ7Wp47T6bYpDIYxzeKbnNuz7+p1bsCdznSU8IzFJbL4HP6kwgyRykBVS1Nr\
+      l7ulXL3hQ9nzFac1Z/Ma3dZmkxGnkj6H3vV1vL3Pl4cVRcY0uHeIkShYSAhm\
+      2IgYCbio6Ba3AvnoqIY5tinJptk5KsppGkp6Cld6uer6KhebOfupmopqWVmz\
+      SxKoO8kIShns2/vyy1usPCx8S9xsvCwdzfzsnIvNWtsKi7v97Q19DVxNTY58\
+      /Kctzi4b/j6ebQ0uX+9OC59v316Oft6P3j1/8wQGBDjQYLw8BQAAIfkECQoA\
+      AQAsAAAAAJAAFABAAu2MD6mb588ieDRIVuFV2W3eGV+jXaE4nlZ6jlPLhq66\
+      0HE3w5+96xsvQfVkt0yOOMQVK0cmxmeCBqURYBT5k3qWlKaRW8pir8rk1uxE\
+      d8Fncdn9VYdr1Od4eq/W6Xn7m/+HF6jXBxgHl4a4Rjjod0j2KBjJOOmYCOl1\
+      KalJyWm5qDi32QbpaWgKUpjaeApaSjoq2ukaCzsr+4nbarvL24vABiznu1r5\
+      K1QrHEpMotrMWoz6bPziXA09LX1NnU17S2yVjPyqG+2dy7yNGv6tTJ7Oju4u\
+      vvI+3z5On3l+XL98f2xfuW4D1fEzVzBejQIAIfkECQoAAQAsAAAAAJAAFABA\
+      AvGMb6DLin+aBBDOVt9lGe3VRR8lfmEynsFIhqz6nrELyqlt4ht807mPKe10\
+      F96vM0P2lEfPxDgEFolPqgQ6BVqWmWSXW/GGwdumMMuMptFfc1ndhmvkb/bY\
+      Pcc79eeqtPZ3ZRUUSLjmdyhYiIUYZ1fXeEeXN7kXuUJG+ah5yamYaOjYicJH\
+      Wtn3KZoquWnZilkKe2r6SjuKGsp6Kwa52pv7yzEoXEisanyMrOvrCdysHAwI\
+      6jAsnWy97Ox6a8u8Df2MHU1dLB5OPm3+rY4Lvu7ezt6tHY9+zehd35Junw0/\
+      /09WPoDyBHIzOBAhPYL9xhUAACH5BAUKAAEALAAAAACQABQAQALwjI+gy4p/\
+      mgQQzlbfZTlt1xkfKI5h+Z3BSJ2s+rpmJ8FzGOM3vWc5z9H0Kj/f0HIUpmRL\
+      z8XWBG6gU2ZVFzUas8Sk8yp9WsVY8JccnlDRW3OXi4SvvBE6yh3HK/Vn9Xix\
+      5lfG9sZXJ9dX80eSpjgo2IixKPnoGBkZVEmJCTiZycnYRpi4KQppaolaWji6\
+      13r3emgIe8pamxdLm+p6y7uL20v6qTps+yubO4eIHMx8LNypWew7TV0NHWq8\
+      CvzsvG3dIh0NGk4e2K37DX2u7n3tPk4cr/2ens3dbj+PX688659smb574Ahi\
+      KyfPIDyF9goAADs=') repeat-x;
+      -moz-opacity: 0.25;
+      -khtml-opacity: 0.25;
+      opacity: 0.25;
+      -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=25);
+      filter: progid:DXImageTransform.Microsoft.Alpha(opacity=25);
+      filter: alpha(opacity=25);
+    }
+
+    @-webkit-keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+
+    @-moz-keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+
+    @-ms-keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+
+    @keyframes progress {
+      from { }
+
+      to { width: 100% }
+    }
+  </style>
+</head>
+<body>
+<script>
+    window.onload = function () {
+        'use strict';
+        var id = setTimeout(function () {
+            const HTTP_AVAILABLE = 200;
+            var url = '/';
+            clearTimeout(id);
+            var request = function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url);
+                xhr.timeout = 5000;
+                xhr.addEventListener('loadend', function () {
+                    if (xhr.status === HTTP_AVAILABLE) {
+                        window.location.href = url;
+                    }
+                });
+                xhr.send();
+            };
+            var changeStateRun = function () {
+                request();
+                setTimeout(changeStateRun, 1000);
+            };
+            changeStateRun();
+        }, 4000);
+    };
+</script>
+<h1 style="text-align: center; color: red; font-family: 'Arial';">Orienteer now reloads. Please wait...</h1>
+<div id="progressbar">
+  <div id="progress" >
+    <div id="pbaranim"></div>
+  </div>
+</div>
+</body>
+</html>

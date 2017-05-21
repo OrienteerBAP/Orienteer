@@ -58,7 +58,11 @@ public class EmbeddedDocumentPanel extends FormComponentPanel<ODocument> {
 	@Override
 	protected void onBeforeRender() {
 		ODocument currentDocument = getModelObject();
-		if(currentDocument==null) currentDocument = new ODocument(classModel.getObject());
+		if(currentDocument==null) {
+			//TODO: Simplify when https://github.com/orientechnologies/orientdb/issues/7150 will be fixed
+			OClass linkedClass = classModel.getObject();
+			currentDocument = linkedClass!=null?new ODocument(linkedClass):new ODocument();
+		}
 		inputDocumentModel.setObject(currentDocument); 
 		super.onBeforeRender();
 	}

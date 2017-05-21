@@ -31,6 +31,11 @@
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.orienteer.camel.component</groupId>
+			<artifactId>camel-orientdb</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-jdbc</artifactId>
 			<version>${camel.version}</version>
@@ -184,6 +189,12 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>${jetty.version}</version>
 				<configuration>
+					<systemProperties>
+						<systemProperty>
+							<name>orienteer.loader.repository.local</name>
+							<value>${settings.localRepository}</value>
+						</systemProperty>
+					</systemProperties>
 					<webApp>
 						<descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
 						<resourceBase>src/main/resources</resourceBase>

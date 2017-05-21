@@ -1,5 +1,17 @@
 package org.orienteer.core;
 
+import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.name.Named;
+import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+import org.apache.wicket.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,6 +41,9 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
+import org.apache.wicket.util.string.Strings;
+import org.joda.time.DateTimeZone;
+import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.joda.time.DateTimeZone;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
@@ -45,6 +60,11 @@ import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.*;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import java.io.IOException;
+import java.util.*;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -98,8 +118,12 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
-
 	
+	@Inject
+	@Named("orienteer.version")
+	private String version;
+
+
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
 		setConfigurationType(production?RuntimeConfigurationType.DEPLOYMENT:RuntimeConfigurationType.DEVELOPMENT);
@@ -155,7 +179,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 						db = db.create();
 						onDbCreated(db, settings);
 					}
-					if(db.isClosed()) db.open(settings.getAdminUserName(), settings.getAdminPassword());
+					if(db.isClosed())
+						db.open(settings.getAdminUserName(), settings.getAdminPassword());
 					db.getMetadata().load();
 					db.close();
 				}
@@ -173,7 +198,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 						reader.setPassword(settings.getGuestPassword());
 						reader.save();
 					}
-					
 				}
 				
 			});
@@ -228,6 +252,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 	}
+
 
 	@Override
 	protected Class<? extends WebPage> getSignInPageClass() {
@@ -286,6 +311,15 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registeredModulesSorted = false;
 		return module;
 	}
+
+	public synchronized <M extends IOrienteerModule> M unregisterModule(Class<M> moduleClass) {
+		M module = getServiceInstance(moduleClass);
+		if (registeredModules.containsKey(module.getName())) {
+			registeredModules.remove(module.getName());
+			return module;
+		} else LOG.info("Orienteer application does not already registered module: " + module.getName());
+		return null;
+	}
 	
 	public IOrienteerModule getModuleByName(String name)
 	{
@@ -303,7 +337,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	}
 	
 	public void mountPages(String packageName) {
-		mountPages(packageName, OrienteerWebApplication.class.getClassLoader());
+		mountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
 	public void mountPages(String packageName, ClassLoader classLoader) {
@@ -311,7 +345,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	}
 
 	public void unmountPages(String packageName) {
-		unmountPages(packageName, OrienteerWebApplication.class.getClassLoader());
+		unmountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
 	public void unmountPages(String packageName, ClassLoader classLoader) {
@@ -360,7 +394,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		IWidgetTypesRegistry registry = getServiceInstance(IWidgetTypesRegistry.class);
 		registry.unregister(packageName);
 	}
-	
+
 	@Override
 	public void restartResponseAtSignInPage() {
 		//This is required because home page is dynamic and depends on assigned perspective.
@@ -372,5 +406,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Override
 	protected void onUnauthorizedPage(Component page) {
 		throw new RestartResponseException(UnauthorizedPage.class);
+	}
+	
+	public String getVersion() {
+		return Strings.isEmpty(version)?OrienteerWebApplication.class.getPackage().getImplementationVersion():version;
 	}
 }

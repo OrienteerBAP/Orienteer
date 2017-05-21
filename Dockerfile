@@ -1,20 +1,18 @@
-FROM maven:latest
+FROM maven:3.5.0-jdk-7-alpine
 EXPOSE 8080
 MAINTAINER Ilia Naryzhny (phantom@ydn.ru)
 
-RUN mkdir -p /tmp/src/
 WORKDIR /tmp/src/
 ADD . /tmp/src/
-RUN mvn -P dockerbuild -pl !orienteer-archetype-war,!orienteer-archetype-jar,!orienteer-standalone,!orienteer-bpm clean install
 
-RUN mkdir -p /orienteer/
-RUN mv orienteer-war/target/orienteer.war /orienteer/
-RUN mv target/jetty-runner.jar /orienteer/
-RUN cp orienteer.properties /orienteer/
+RUN mvn -P dockerbuild -s /usr/share/maven/ref/settings-docker.xml -pl !orienteer-archetype-war,!orienteer-archetype-jar,!orienteer-standalone,!orienteer-bpm clean install && \
+mkdir -p /app/runtime/ && \
+mv orienteer-war/target/orienteer.war /app/ && \
+mv target/jetty-runner.jar /app/ && \
+cp orienteer.properties /app/ && \
+rm -rf /tmp/src/ && \
+ln -s /app/orienteer.war /app/active.war
 
-WORKDIR /orienteer/
-RUN rm -rf /tmp/src/
-
-RUN ln -s orienteer.war active.war
-VOLUME ["/orienteer/Orienteer/"]
-CMD ["java", "-jar", "jetty-runner.jar", "active.war"]
+WORKDIR /app/runtime/
+VOLUME ["/app/runtime/"]
+CMD ["java",  "-server", "-DORIENTDB_HOME=/app/runtime", "-Dorientdb.url=plocal:databases/Orienteer", "-Dorienteer.loader.repository.local=/root/.m2/repository", "-jar", "../jetty-runner.jar", "../active.war"]
