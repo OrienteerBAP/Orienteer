@@ -20,7 +20,7 @@ import java.util.Map;
 import static com.github.raymanrt.orientqb.query.Projection.projection;
 
 /**
- * @author Vitaliy Gonchar
+ * Build query for filter values in table
  * @param <K> The provider object type
  */
 public class ODefaultQueryBuilder<K> implements IQueryBuilder<K> {
@@ -33,6 +33,7 @@ public class ODefaultQueryBuilder<K> implements IQueryBuilder<K> {
         this.className = className;
     }
 
+    @Override
     public OQueryModel<K> build(Map<IModel<OProperty>, IModel<?>> filteredValues) {
         String sql = "select from " + className;
         if (needGenerateNewSql(filteredValues.values())) {
@@ -72,7 +73,7 @@ public class ODefaultQueryBuilder<K> implements IQueryBuilder<K> {
                     String dateFormat = getDateFormat(property.getType());
                     SimpleDateFormat df = new SimpleDateFormat(dateFormat);
                     Date date = (Date) fieldsForQuery.get(propertyModel).getObject();
-                    query.where(projection(property.getName()).eq(df.format(date)));
+                    query.where(projection(property.getName()).like(df.format(date)));
                     break;
                 default:
                     Object object = fieldsForQuery.get(propertyModel).getObject();

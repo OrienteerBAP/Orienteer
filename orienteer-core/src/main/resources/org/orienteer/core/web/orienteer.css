@@ -216,3 +216,20 @@ li.fullscreen div.panel.panel-default div.panel-body{
 	padding: 0 5px;
 	
 }
+
+.loader-user-jar-label {
+	display: block;
+	text-align: center;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-weight: bold;
+}
+
+.loader-user-label {
+	font-weight: bold;
+	display: inline-block;
+}
+
+.form-control {
+	width: auto;
+	display: inline-block;
+}

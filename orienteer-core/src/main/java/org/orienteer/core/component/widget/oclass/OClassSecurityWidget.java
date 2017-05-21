@@ -106,6 +106,7 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 				cellItem.add(new LinkViewPanel(componentId, new PropertyModel<ODocument>(rowModel, "document")));
 			}
 		});
+		sColumns.add(new SecurityRightsColumn(OrientPermission.EXECUTE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.CREATE));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.READ));
 		sColumns.add(new SecurityRightsColumn(OrientPermission.UPDATE));

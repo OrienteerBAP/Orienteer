@@ -1,29 +1,29 @@
 package org.orienteer.core.method.methods;
 
-import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.orienteer.core.method.ClassOMethod;
 import org.orienteer.core.method.IClassMethod;
-import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 
-import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 
- * @author Asm
+ * Base class for OMethods linked to OClass.
+ * Using {@link ClassOMethod} annotation
  *
  */
 
-public abstract class AbstractOClassOMethod implements Serializable,IMethod,IClassMethod{
+public abstract class AbstractOClassOMethod extends AbstractOMethod implements IClassMethod{
 
 	private static final long serialVersionUID = 1L;
-	protected IMethodEnvironmentData envData;
-	protected String id;
-	protected String javaMethodName;
-	protected String javaClassName;
-	protected ClassOMethod annotation;
+
+	private String javaMethodName;
+	private String javaClassName;
+	private ClassOMethod annotation;
 
 	@Override
 	public void initOClassMethod(Method javaMethod) {
@@ -33,17 +33,52 @@ public abstract class AbstractOClassOMethod implements Serializable,IMethod,ICla
 		
 	}
 
-	@Override
-	public void methodInit(String id,IMethodEnvironmentData envData) {
-		this.envData = envData;
-		this.id = id;
+	protected void invoke(){
+		invoke(null);
 	}
 	
-	protected SimpleNamingModel<String> getTitleModel(){
-		if (annotation.titleKey().isEmpty()){
-			return new SimpleNamingModel<String>(annotation.titleKey());			
+	protected void invoke(ODocument doc){
+		
+		try {
+			Constructor<?> constructor=null;
+			try {
+				constructor = Class.forName(javaClassName).getConstructor(ODocument.class);
+			} catch (NoSuchMethodException e1) {
+				// TODO it is correct catch block with muffling
+			}
+			
+			Method javaMethod = Class.forName(javaClassName).getMethod(javaMethodName, IMethodEnvironmentData.class);
+			Object inputDoc = doc!=null?doc:getEnvData().getDisplayObjectModel().getObject();
+			if (constructor!=null && inputDoc instanceof ODocument){
+				Object newInstance = constructor.newInstance(inputDoc);
+				javaMethod.invoke(newInstance,getEnvData());
+			}else{
+				javaMethod.invoke(null,getEnvData());
+			}
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return new SimpleNamingModel<String>(id);
 	}
 
+	@Override
+	protected String getTitleKey() {
+		return annotation.titleKey();
+	}
+	
+	protected String getJavaMethodName() {
+		return javaMethodName;
+	}
+
+	protected String getJavaClassName() {
+		return javaClassName;
+	}
+
+	protected ClassOMethod getAnnotation() {
+		return annotation;
+	}
+	
 }

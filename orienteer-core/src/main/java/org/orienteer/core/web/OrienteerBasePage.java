@@ -27,8 +27,6 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
-import java.util.List;
-
 /**
  * Root page for pages which require Orienteers highlevel UI: top navigation bar and left menu
  *
@@ -91,7 +89,6 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
-
 		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
 		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
 		

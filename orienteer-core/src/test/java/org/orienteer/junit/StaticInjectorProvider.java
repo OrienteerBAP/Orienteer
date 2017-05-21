@@ -1,21 +1,19 @@
 package org.orienteer.junit;
 
 import org.apache.wicket.util.tester.WicketTester;
-import org.orienteer.core.service.OrienteerModule;
-import org.orienteer.core.service.OrienteerServletContextListener;
 import org.orienteer.core.service.OrienteerInitModule;
+import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
-import com.google.inject.util.Modules;
 
 public class StaticInjectorProvider implements Provider<Injector>
 {
 	static {
-		System.setProperty(OrienteerInitModule.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "orienteer-test");
+		System.setProperty(StartupPropertiesLoader.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "orienteer-test");
 	}
 	
 	private static final Logger LOG = LoggerFactory.getLogger(StaticInjectorProvider.class);
@@ -25,8 +23,7 @@ public class StaticInjectorProvider implements Provider<Injector>
 	static
 	{
 		LOG.info("Using embedded mode");
-		STATIC_INJECTOR = Guice.createInjector(new OrienteerInitModule());
-		OrienteerServletContextListener.predefinedInjector = STATIC_INJECTOR;
+		STATIC_INJECTOR = Guice.createInjector(new OrienteerInitModule(StartupPropertiesLoader.retrieveProperties()));
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
 			@Override

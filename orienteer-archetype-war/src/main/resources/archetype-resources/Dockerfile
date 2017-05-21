@@ -1,14 +1,11 @@
 FROM orienteer/orienteer:latest
 
-RUN mkdir -p /tmp/src/
 WORKDIR /tmp/src/
 ADD . /tmp/src/
-RUN mvn clean install
+RUN mvn -s /usr/share/maven/ref/settings-docker.xml clean install && \
+    mv target/${artifactId}.war /app/ && \
+    cp orienteer.properties /app/ && \
+    rm -rf /tmp/src/
+    ln -s -f /app/${artifactId}.war /app/active.war
 
-RUN mv target/${artifactId}.war /orienteer/
-RUN cp orienteer.properties /orienteer/
-
-
-WORKDIR /orienteer/
-RUN rm -rf /tmp/src/
-RUN ln -s -f ${artifactId}.war active.war
+WORKDIR /app/runtime

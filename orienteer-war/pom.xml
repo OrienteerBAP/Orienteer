@@ -104,9 +104,17 @@
 		</testResources>
 		<plugins>
 		    <plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-war-plugin</artifactId>
-			<version>2.6</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.1.0</version>
+			    <configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
 		    </plugin>
 		    <plugin>
 			<groupId>org.apache.maven.plugins</groupId>
@@ -121,6 +129,12 @@
 			    <artifactId>jetty-maven-plugin</artifactId>
 			    <version>${jetty.version}</version>
 			    <configuration>
+			    	<systemProperties>
+						<systemProperty>
+							<name>orienteer.loader.repository.local</name>
+							<value>${settings.localRepository}</value>
+						</systemProperty>
+					</systemProperties>
 				    <connectors>
 					    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
 						    <port>8080</port>
