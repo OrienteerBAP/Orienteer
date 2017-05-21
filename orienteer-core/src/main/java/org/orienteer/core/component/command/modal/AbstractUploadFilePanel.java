@@ -7,6 +7,8 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.orienteer.core.component.command.AbstractModalWindowCommand;
+
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 /**
@@ -17,9 +19,10 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 public abstract class AbstractUploadFilePanel extends Panel{
 	private static final long serialVersionUID = 1L;
 
-	public AbstractUploadFilePanel(String id, final ModalWindow modal) {
+	public AbstractUploadFilePanel(String id, final ModalWindow modal,final AbstractModalWindowCommand<?> command) {
 		super(id);
 		modal.setMinimalHeight(300);
+		modal.showUnloadConfirmation(false);
 		Form<?> uploadForm = new Form<Object>("uploadForm");
 		final FileUploadField inputFile = new FileUploadField("inputFile");
 		uploadForm.add(inputFile);
@@ -32,9 +35,8 @@ public abstract class AbstractUploadFilePanel extends Panel{
 				FileUpload file = inputFile.getFileUpload();
 				if (file!=null){
 					onLoadFile(file);
-	//				error(getLocalizer().getString("errors.load.file.error", this));
+					command.onAfterModalSubmit();
 					modal.close(target);
-					onModalClose(target);
 				}
 			}
 			
@@ -44,7 +46,4 @@ public abstract class AbstractUploadFilePanel extends Panel{
 	public abstract SimpleNamingModel<String> getLoadButtonTitle();
 	public abstract void onLoadFile(FileUpload file);
 	
-	public void onModalClose(AjaxRequestTarget target){
-		//may be empty
-	};
 }
