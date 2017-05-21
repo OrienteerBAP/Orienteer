@@ -79,6 +79,7 @@ public final class OrienteerFilter implements Filter {
     private ClassLoader initClassLoader(Properties properties) {
         OrienteerClassLoader.create(OrienteerFilter.class.getClassLoader());
         OrienteerClassLoader.enable();
+        OrienteerClassLoader.reindex();
     	return OrienteerClassLoader.getClassLoader();
     }
 
@@ -109,6 +110,7 @@ public final class OrienteerFilter implements Filter {
     @Override
     public void destroy() {
         LOG.info("Destroy doOrienteerFilter - " + this.getClass().getName());
+        OrienteerClassLoader.clear();
         filter.destroy();
         filter = null;
     }

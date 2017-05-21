@@ -224,4 +224,30 @@ class JarUtils {
         }
         return fullClassName;
     }
+
+    /**
+     * Read and get class names from jar file.
+     * @param pathToJar - path to jar file
+     * @return {@link List<String>} with class names in jar file.
+     * @throws IllegalArgumentException if pathToJar is null
+     */
+    public List<String> getClassNamesFromJar(Path pathToJar) {
+        Args.notNull(pathToJar, "pathToJar");
+        List<String> classNames = Lists.newArrayList();
+        try {
+            JarFile jarFile = new JarFile(pathToJar.toFile());
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry jarEntry = entries.nextElement();
+                String name = jarEntry.getName();
+                if (name != null && name.endsWith(".class")) {
+                    classNames.add(name.replaceAll("/", ".").substring(0, name.indexOf(".class")));
+                }
+            }
+        } catch (IOException e) {
+            LOG.error("Can't read class names from: {}", pathToJar.toAbsolutePath());
+            if (LOG.isDebugEnabled()) e.printStackTrace();
+        }
+        return classNames;
+    }
 }

@@ -72,6 +72,16 @@ public abstract class OrienteerClassLoaderUtil {
     }
 
     /**
+     * Read and get class names from jar file.
+     * @param pathToJar - path to jar file
+     * @return {@link List<String>} with class names in jar file.
+     * @throws IllegalArgumentException if pathToJar is null
+     */
+    public static List<String> getClassNamesFromJar(Path pathToJar) {
+        return jarUtils.getClassNamesFromJar(pathToJar);
+    }
+
+    /**
      * Resolve artifact. Download its dependencies
      * @param artifact - {@link Artifact} for resolve
      * @return {@link List<ArtifactResult>} - dependencies of artifact
