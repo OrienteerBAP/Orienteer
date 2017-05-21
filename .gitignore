@@ -12,9 +12,7 @@ release.properties
 build.cmd
 databases/
 /Orienteer/
-/OrienteerFuture/
 /*/Orienteer/
-/*/OrienteerFuture/
 /*/libs/
 .idea/
 *.iml
