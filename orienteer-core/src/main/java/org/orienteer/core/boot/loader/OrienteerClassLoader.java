@@ -7,9 +7,6 @@ import org.orienteer.core.boot.loader.util.MavenResolver;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.method.MethodManager;
-import org.orienteer.core.module.AbstractOrienteerModule;
-import org.orienteer.core.module.IOrienteerModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
