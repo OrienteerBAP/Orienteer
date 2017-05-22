@@ -40,7 +40,7 @@ public class LinkEditPanel extends FormComponentPanel<OIdentifiable> implements 
 		super(id, new DynamicPropertyValueModel<OIdentifiable>(documentModel, propertyModel));
 		setOutputMarkupPlaceholderTag(true);
 		setRenderBodyOnly(false);
-		inputDocument = new ODocumentModel((ORID) getModelObject());
+		inputDocument = new ODocumentModel(getModelObject());
 		add(new ODocumentPageLink("link", inputDocument).setDocumentNameAsBody(true));
 		
 		
