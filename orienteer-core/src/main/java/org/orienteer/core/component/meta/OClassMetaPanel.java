@@ -254,7 +254,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
  				{
 					Select2MultiChoice choice = new Select2MultiChoice<OClass>(id, (IModel<Collection<OClass>>)getModel(), OClassTextChoiceProvider.INSTANCE);
 					choice.add(new RefreshMetaContextOnChangeBehaviour());
-					choice.getSettings().setCloseOnSelect(true).setTheme(BOOTSTRAP_SELECT2_THEME);
+					choice.getSettings()
+								.setWidth("100%")
+								.setCloseOnSelect(true)
+								.setTheme(BOOTSTRAP_SELECT2_THEME);
 					return choice;
 				}
 				else if(OClassPrototyper.CLUSTER_SELECTION.equals(critery))
