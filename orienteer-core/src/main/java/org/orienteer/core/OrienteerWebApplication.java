@@ -59,6 +59,7 @@ import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.*;
@@ -166,6 +167,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void init()
 	{
 		super.init();
+		Reflections.log = null; // Disable logging in reflections lib everywhere
 		if(embedded)
 		{
 			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
