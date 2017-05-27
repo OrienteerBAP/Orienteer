@@ -1,12 +1,16 @@
 package org.orienteer.core.web.schema;
 
 import com.orientechnologies.orient.core.storage.OCluster;
+
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.MountPath;
+import org.orienteer.core.component.SchemaPageHeader;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
 import ru.ydn.wicket.wicketorientdb.model.OClusterModel;
@@ -57,4 +61,11 @@ public class OClusterPage extends AbstractWidgetDisplayModeAwarePage<OCluster> {
     public IModel<String> getTitleModel() {
         return new PropertyModel<String>(getModel(), "name");
     }
+    
+    @Override
+	protected Component newPageHeaderComponent(String componentId) {
+		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId);
+		pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
+		return pageHeader;
+	}
 }

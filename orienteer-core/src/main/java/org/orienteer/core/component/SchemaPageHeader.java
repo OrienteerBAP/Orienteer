@@ -51,6 +51,10 @@ public class SchemaPageHeader extends GenericPanel<OClass> {
 			return breadCrumbs;
 		}
 	};
+	
+	public SchemaPageHeader(String id) {
+		this(id, null);
+	}
 
 	public SchemaPageHeader(String id, IModel<OClass> oClassModel) {
 		super(id, oClassModel);

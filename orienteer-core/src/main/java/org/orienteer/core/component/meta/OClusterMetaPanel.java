@@ -38,7 +38,7 @@ public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster,
 {
     public static final List<String> OCLUSTER_ATTRS = new ArrayList<String>(Arrays.asList(OClustersWidget.NAME,
             OClustersWidget.CONFLICT_STRATEGY, OClustersWidget.COUNT, OClustersWidget.COMPRESSION,
-            OClustersWidget.RECORD_GROW_FACTOR, OClustersWidget.RECORD_OVERFLOW_GROW_FACTOR, OClustersWidget.USE_WAL));
+            OClustersWidget.RECORD_GROW_FACTOR, OClustersWidget.RECORD_OVERFLOW_GROW_FACTOR));
 
     public static final List<String> COMPRESSIONS = new ArrayList<String>();
 
@@ -86,9 +86,6 @@ public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster,
             else if(OClustersWidget.RECORD_OVERFLOW_GROW_FACTOR.equals(critery)) {
                 entity.set(OCluster.ATTRIBUTES.RECORD_OVERFLOW_GROW_FACTOR, value);
             }
-            else if(OClustersWidget.USE_WAL.equals(critery)) {
-                entity.set(OCluster.ATTRIBUTES.USE_WAL, value);
-            }
             else if(OClustersWidget.CONFLICT_STRATEGY.equals(critery)) {
                 entity.set(OCluster.ATTRIBUTES.CONFLICTSTRATEGY, value);
             }
@@ -115,17 +112,11 @@ public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster,
         }
         if(DisplayMode.VIEW.equals(mode))
         {
-            if(OClustersWidget.USE_WAL.equals(critery)) {
-                return new BooleanViewPanel(id, (IModel<Boolean>)getModel()).setDefaultValue(false);
-            }
             return new Label(id, getModel());
         }
         else if(DisplayMode.EDIT.equals(mode)) {
             if (OClustersWidget.COMPRESSION.equals(critery)) {
                 return new DropDownChoice<String>(id, (IModel<String>)getModel(), COMPRESSIONS);
-            }
-            else if (OClustersWidget.USE_WAL.equals(critery)) {
-                return new BooleanEditPanel(id, (IModel<Boolean>)getModel());
             }
             else if(OClustersWidget.COUNT.equals(critery)){
                 return resolveComponent(id, DisplayMode.VIEW, critery);

@@ -31,7 +31,6 @@ public class OClustersWidget extends AbstractWidget<Void> {
     public static final String NAME = "name";
     public static final String COUNT = "recordsSize";
     public static final String CONFLICT_STRATEGY = "recordConflictStrategy";
-    public static final String USE_WAL = "useWal";
     public static final String RECORD_GROW_FACTOR = "recordGrowFactor";
     public static final String RECORD_OVERFLOW_GROW_FACTOR = "recordOverflowGrowFactor";
     public static final String COMPRESSION = "compression";
