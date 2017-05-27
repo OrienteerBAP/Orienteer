@@ -73,26 +73,8 @@ import java.util.regex.Pattern;
  */
 public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, DisplayMode, String, V> implements IDisplayModeAware
 {
-	public static final ISelect2Theme BOOTSTRAP_SELECT2_THEME = new FixedSelect2BootstrapTheme();
+	public static final ISelect2Theme BOOTSTRAP_SELECT2_THEME = new Select2BootstrapTheme(false);
 	
-	/**
-	 * Reimplementation of {@link Select2BootstrapTheme} just to have it {@link Serializable}
-	 */
-	public static class FixedSelect2BootstrapTheme implements  ISelect2Theme, IClusterable {
-		private static final ResourceReference CSS = new CssResourceReference(Select2BootstrapTheme.class, "/res/bootstrap/select2-bootstrap.css");
-		public FixedSelect2BootstrapTheme() {
-		}
-
-		@Override
-		public void renderHead(Component component, IHeaderResponse response) {
-			response.render(CssHeaderItem.forReference(CSS));
-		}
-
-		@Override
-		public String name() {
-			return "bootstrap";
-		}
-	};
 	public static final List<String> OCLASS_ATTRS = new ArrayList<String>(OClassPrototyper.OCLASS_ATTRS);
 	static
 	{

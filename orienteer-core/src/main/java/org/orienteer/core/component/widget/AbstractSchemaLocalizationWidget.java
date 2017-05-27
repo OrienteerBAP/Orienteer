@@ -56,9 +56,9 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
         columns.add(new OPropertyValueColumn(oLocalizationClass.getProperty(OrienteerLocalizationModule.OPROPERTY_VALUE), getModeModel()));
         OProperty langProperty = oLocalizationClass.getProperty(OrienteerLocalizationModule.OPROPERTY_LANG);
         columns.add(new OPropertyValueComboBoxColumn<String>(langProperty, LanguagesChoiceProvider.INSTANCE, getModeModel()));
+        columns.add(new DeleteRowCommandColumn(langProperty, getModeModel()));
         GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<ODocument>("localizations", columns, provider, 20);
         table = tablePanel.getDataTable();
-        columns.add(new DeleteRowCommandColumn(langProperty, table, getModeModel()));
 
         table.addCommand(new EditODocumentsCommand(table, getModeModel(), new OClassModel(OrienteerLocalizationModule.OCLASS_LOCALIZATION)));
         table.addCommand(new SaveOLocalizationsCommand(table, getModeModel()));

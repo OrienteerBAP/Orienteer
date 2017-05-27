@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.BootstrapSize;
@@ -20,11 +21,8 @@ import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
  */
 public class DeleteRowCommandColumn extends AbstractModeMetaColumn<ODocument, DisplayMode, OProperty, String> {
 
-    private Component parent;
-
-    public DeleteRowCommandColumn(OProperty property, Component parent, IModel<DisplayMode> modeModel) {
+    public DeleteRowCommandColumn(OProperty property, IModel<DisplayMode> modeModel) {
         super(new OPropertyModel(property), modeModel);
-        this.parent = parent;
     }
 
     @Override
@@ -43,7 +41,8 @@ public class DeleteRowCommandColumn extends AbstractModeMetaColumn<ODocument, Di
                         public void onClick(AjaxRequestTarget target) {
                             super.onClick(target);
                             rowModel.getObject().delete();
-                            target.add(parent);
+                            DataTable<?, ?> table = findParent(DataTable.class);
+                            target.add(table);
                         }
 
                         @Override
