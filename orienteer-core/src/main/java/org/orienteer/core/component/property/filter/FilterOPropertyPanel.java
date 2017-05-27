@@ -8,7 +8,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.orienteer.core.service.IMarkupProvider;
 
 /**
- * @author Vitaliy Gonchar
+ * Filter panel
  */
 public class FilterOPropertyPanel extends Panel {
 

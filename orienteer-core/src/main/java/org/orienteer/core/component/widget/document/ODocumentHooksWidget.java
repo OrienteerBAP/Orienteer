@@ -49,7 +49,6 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 /**
- * @author Asm
  * Widget for document-linked hooks
  *
  */

@@ -20,7 +20,7 @@ import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
+ * Panel for table placing
  * @param <K> - type value in table
  */
 public class GenericTablePanel<K> extends Panel {

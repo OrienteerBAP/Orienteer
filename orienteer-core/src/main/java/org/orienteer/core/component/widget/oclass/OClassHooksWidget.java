@@ -79,7 +79,6 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 
 /**
- * @author Asm
  * Widget for class-linked hooks
  * Instead storing function names, we store their rid-s in trigger fields
  */

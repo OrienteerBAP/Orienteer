@@ -9,7 +9,6 @@ import org.orienteer.core.component.widget.loader.IOArtifactsUpdater;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
  * Delete Orienteer module
  */
 public class DeleteOArtifactCommand extends AbstractDeleteCommand<OArtifact> {
