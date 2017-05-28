@@ -80,18 +80,19 @@
        </repository>
      </repositories>
 	<modules>
-		<module>orienteer-core</module>
-		<module>orienteer-war</module>
-		<module>orienteer-standalone</module>
-		<module>orienteer-archetype-war</module>
-		<module>orienteer-archetype-jar</module>
-		<module>orienteer-graph</module>
-		<module>orienteer-pages</module>
-		<module>orienteer-pivottable</module>
-		<module>orienteer-devutils</module>
-		<module>orienteer-logger-server</module>
+		<module>orienteer-birt</module>
 		<module>orienteer-bpm</module>
 		<module>orienteer-camel</module>
+		<module>orienteer-core</module>
+		<module>orienteer-devutils</module>
+		<module>orienteer-graph</module>
+		<module>orienteer-logger-server</module>
+		<module>orienteer-pages</module>
+		<module>orienteer-pivottable</module>
+		<module>orienteer-standalone</module>
+		<module>orienteer-war</module>
+		<module>orienteer-archetype-jar</module>
+		<module>orienteer-archetype-war</module>
     </modules>
 	<dependencyManagement>
 	    <dependencies>
