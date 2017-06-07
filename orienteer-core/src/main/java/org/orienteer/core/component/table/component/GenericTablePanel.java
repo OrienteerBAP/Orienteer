@@ -50,7 +50,7 @@ public class GenericTablePanel<K> extends Panel {
                 @Override
                 protected void onSubmit() {
                     AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
-                    target.add(dataTable);
+                    if(target!=null) target.add(dataTable);
                 }
             };
             filterForm.setOutputMarkupPlaceholderTag(true);
