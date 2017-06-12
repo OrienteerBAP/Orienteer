@@ -1,4 +1,4 @@
-package org.orienteer.orienteerEtl;
+package org.orienteer.etl;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
