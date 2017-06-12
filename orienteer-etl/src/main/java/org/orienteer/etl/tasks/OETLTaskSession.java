@@ -1,4 +1,4 @@
-package org.orienteer.orienteerEtl.tasks;
+package org.orienteer.etl.tasks;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.tasks.ITaskSession;
@@ -6,9 +6,13 @@ import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * 
+ * Task session for {@link OETLConfig}
+ *
+ */
 public class OETLTaskSession extends OTaskSessionRuntime{
 	public static final String TASK_SESSION_CLASS = "OETLTaskSession";
 
@@ -42,8 +46,8 @@ public class OETLTaskSession extends OTaskSessionRuntime{
 	}
 	
 	public OETLTaskSession appendOut(String out){
-		out = getOTaskSessionPersisted().getDocument().field(Field.OUTPUT.fieldName())+out+"\n";
-		getOTaskSessionPersisted().persist(Field.OUTPUT.fieldName(), out);
+		String curOut = getOTaskSessionPersisted().getDocument().field(Field.OUTPUT.fieldName())+out+"\n";
+		getOTaskSessionPersisted().persist(Field.OUTPUT.fieldName(), curOut);
 		return this;
 	}
 }

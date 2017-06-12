@@ -1,17 +1,13 @@
-package org.orienteer.orienteerEtl;
+package org.orienteer.etl;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.orienteerEtl.component.OrienteerETLProcessor;
-import org.orienteer.orienteerEtl.tasks.OETLTaskSession;
+import org.orienteer.etl.tasks.OETLTaskSession;
 
-import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.db.OExecutionThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.etl.OETLProcessor;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
@@ -26,7 +22,6 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInstall(app, db);
-		OSchemaHelper helper = OSchemaHelper.bind(db);
 		//Install data model
 		//Return null of default OModule is enough
 		return null;
@@ -35,13 +30,13 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		app.mountPages("org.orienteer.orienteerEtl.web");
+		app.mountPages("org.orienteer.etl.web");
 		makeSchema(app, db);
 	}
 	
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
-		app.unmountPages("org.orienteer.orienteerEtl.web");
+		app.unmountPages("org.orienteer.etl.web");
 	}
 	
 	public void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){

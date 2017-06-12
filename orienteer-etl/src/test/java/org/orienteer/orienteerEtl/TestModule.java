@@ -2,7 +2,7 @@ package org.orienteer.orienteerEtl;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
-
+import org.orienteer.etl.Module;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 

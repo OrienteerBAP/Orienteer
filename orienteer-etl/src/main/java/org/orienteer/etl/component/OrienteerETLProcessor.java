@@ -1,6 +1,6 @@
-package org.orienteer.orienteerEtl.component;
+package org.orienteer.etl.component;
 
-import org.orienteer.orienteerEtl.tasks.OETLTaskSession;
+import org.orienteer.etl.tasks.OETLTaskSession;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.record.impl.ODocument;

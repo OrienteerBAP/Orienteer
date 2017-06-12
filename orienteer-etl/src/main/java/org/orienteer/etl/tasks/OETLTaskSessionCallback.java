@@ -1,8 +1,13 @@
-package org.orienteer.orienteerEtl.tasks;
+package org.orienteer.etl.tasks;
 
 import org.orienteer.core.tasks.ITaskSessionCallback;
-import org.orienteer.orienteerEtl.component.OrienteerETLProcessor;
+import org.orienteer.etl.component.OrienteerETLProcessor;
 
+/**
+ * 
+ * Task session callback for {@link OETLConfig}
+ *
+ */
 public class OETLTaskSessionCallback implements ITaskSessionCallback {
 	private OrienteerETLProcessor processor;
 	private Thread initialThread;

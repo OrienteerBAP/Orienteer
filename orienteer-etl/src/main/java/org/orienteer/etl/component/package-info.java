@@ -1,4 +1,4 @@
 /**
  * Package contains required components
  */
-package org.orienteer.orienteerEtl.component;
+package org.orienteer.etl.component;

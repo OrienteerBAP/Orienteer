@@ -1,4 +1,4 @@
-package org.orienteer.orienteerEtl.component;
+package org.orienteer.etl.component;
 
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
@@ -12,13 +12,17 @@ import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
 import org.orienteer.core.web.ODocumentPage;
-import org.orienteer.orienteerEtl.tasks.OETLTaskSession;
-import org.orienteer.orienteerEtl.tasks.OETLTaskSessionCallback;
+import org.orienteer.etl.tasks.OETLTaskSession;
+import org.orienteer.etl.tasks.OETLTaskSessionCallback;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-
+/**
+ * 
+ * OrientDB ETL config object
+ *
+ */
 public class OETLConfig extends OTask {
 	private static final long serialVersionUID = 1L;
 	private static final String ETL_CONFIG_FIELD="config";

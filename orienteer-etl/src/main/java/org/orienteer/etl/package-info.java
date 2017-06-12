@@ -1,4 +1,4 @@
 /**
  * Main package for 'orienteer-etl' module
  */
-package org.orienteer.orienteerEtl;
+package org.orienteer.etl;
