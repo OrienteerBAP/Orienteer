@@ -29,7 +29,7 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 	private String javaMethodName;
 	private String javaClassName;
 
-	public OClassOMethodConfig(ClassOMethod oMethod,java.lang.reflect.Method javaMethod){
+	public OClassOMethodConfig(ClassOMethod oMethod,Method javaMethod){
 		this.oMethod = oMethod;
 		behaviors = Arrays.asList(oMethod.behaviors());
 		this.javaMethodName = javaMethod.getName();
