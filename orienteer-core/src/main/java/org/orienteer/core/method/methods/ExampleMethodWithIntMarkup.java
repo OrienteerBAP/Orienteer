@@ -5,6 +5,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.IMethod;
+import org.orienteer.core.method.IMethodConfig;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.DisallowFilter;
@@ -34,7 +35,7 @@ public class ExampleMethodWithIntMarkup extends Panel implements IMethod{
 	}
 
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData) {
+	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
 		setMarkupId(id);
 	}
 

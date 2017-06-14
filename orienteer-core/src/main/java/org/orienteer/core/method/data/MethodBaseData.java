@@ -1,8 +1,10 @@
-package org.orienteer.core.method;
+package org.orienteer.core.method.data;
 
 import java.io.Serializable;
 
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 
@@ -55,6 +57,4 @@ public class MethodBaseData implements Serializable,IMethodEnvironmentData{
 	public Object getTableObject() {
 		return tableObject;
 	}
-
-
 }

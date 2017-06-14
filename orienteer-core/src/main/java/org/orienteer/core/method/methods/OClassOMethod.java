@@ -2,7 +2,6 @@ package org.orienteer.core.method.methods;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.AjaxCommand;
 
@@ -11,7 +10,7 @@ import org.orienteer.core.component.command.AjaxCommand;
  * OMethod for display and use OClass methods as buttons in single view
  *
  */
-public class OClassOMethod extends AbstractOClassOMethod{
+public class OClassOMethod extends AbstractOMethod{
 
 	private Component displayComponent;
 	private static final long serialVersionUID = 1L;
@@ -26,26 +25,14 @@ public class OClassOMethod extends AbstractOClassOMethod{
 				@Override
 				protected void onInitialize() {
 					super.onInitialize();
-					setIcon(getAnnotation().icon());
-					setBootstrapType(getAnnotation().bootstrap());
-					setChangingDisplayMode(getAnnotation().changingDisplayMode());	
-					setChandingModel(getAnnotation().changingModel());
+					applyVisualSettings(this);
 				}
 				@Override
 				public void onClick(AjaxRequestTarget target) {
 					invoke();
 				}
 			};
-			if (getAnnotation().behaviors().length>0){
-				for ( Class<? extends Behavior> behavior : getAnnotation().behaviors()) {
-					try {
-						displayComponent.add(behavior.newInstance());
-					} catch (InstantiationException | IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
+			applyBehaviors(displayComponent);
 		}
 		return displayComponent;
 	}

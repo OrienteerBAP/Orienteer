@@ -8,6 +8,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.IBootstrapAware;
+import org.orienteer.core.method.data.MethodBaseData;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**

@@ -6,7 +6,7 @@ package org.orienteer.core.method;
  *
  */
 
-public interface IMethodFilter {
+public interface IMethodFilter{
 	/**
 	 * Init data from filter definition
 	 * Example for {@link SourceMethodDefinition} :
