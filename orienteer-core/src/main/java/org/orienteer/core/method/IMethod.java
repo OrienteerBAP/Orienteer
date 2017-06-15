@@ -10,12 +10,12 @@ import org.apache.wicket.Component;
  */
 public interface IMethod {
 	/**
-	 * Init method instance by environment data
-	 * Called only once per creation 
+	 * Init method instance by environment data and individual config
+	 * Called only once per creation in linked {@link IMethodDefinition}
 	 * 
 	 * @param envData
 	 */
-	public void methodInit(String id,IMethodEnvironmentData envData);
+	public void methodInit(String id,IMethodEnvironmentData envData,IMethodConfig config);
 	
 	/**
 	 * Return display {@link Component} with assigned id

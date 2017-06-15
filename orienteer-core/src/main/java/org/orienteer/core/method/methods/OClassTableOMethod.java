@@ -1,15 +1,12 @@
 package org.orienteer.core.method.methods;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.configs.OClassOMethodConfig;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
@@ -17,7 +14,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * OMethod for display and use OClass methods as buttons in packet view
  *
  */
-public class OClassTableOMethod extends AbstractOClassOMethod{
+public class OClassTableOMethod extends AbstractOMethod{
 
 
 	private static final long serialVersionUID = 1L;
@@ -28,7 +25,7 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 	public Component getDisplayComponent() {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
 		if (displayComponent == null && getEnvData().getTableObject()!=null && getEnvData().getTableObject() instanceof OrienteerDataTable){
-			String titleKey = getAnnotation().titleKey();
+			String titleKey = getConfig().titleKey();
 			if (titleKey.isEmpty()){
 				titleKey = getId();
 			}			
@@ -39,10 +36,7 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 				@Override
 				protected void onInitialize() {
 					super.onInitialize();
-					setIcon(getAnnotation().icon());
-					setBootstrapType(getAnnotation().bootstrap());
-					setChangingDisplayMode(getAnnotation().changingDisplayMode());	
-					setChandingModel(getAnnotation().changingModel());
+					applyVisualSettings(this);
 				}
 
 				@Override
@@ -50,31 +44,18 @@ public class OClassTableOMethod extends AbstractOClassOMethod{
 					for (ODocument curDoc : objects) {
 						invoke(curDoc);
 					}
-					if (getAnnotation().resetSelection()){
+					if (getConfig().resetSelection()){
 						resetSelection();
 					}
 				}
 			};
+			applyBehaviors(displayComponent);
 		}
 		
 		return displayComponent;
 	}
-
-	protected void invoke(ODocument doc){
-		
-		try {
-			Constructor<?> constructor = Class.forName(getJavaClassName()).getConstructor(ODocument.class);
-			
-			Method javaMethod = Class.forName(getJavaClassName()).getMethod(getJavaMethodName(), IMethodEnvironmentData.class);
-			Object newInstance = constructor.newInstance(doc);
-			javaMethod.invoke(newInstance,getEnvData());
-			
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}	
+	
+	protected OClassOMethodConfig getConfig(){
+		return (OClassOMethodConfig) this.getConfigInterface();
+	}
 }

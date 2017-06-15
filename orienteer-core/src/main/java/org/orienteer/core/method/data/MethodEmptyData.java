@@ -1,6 +1,8 @@
-package org.orienteer.core.method;
+package org.orienteer.core.method.data;
 
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**

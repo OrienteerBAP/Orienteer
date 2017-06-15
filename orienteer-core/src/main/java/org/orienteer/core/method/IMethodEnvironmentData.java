@@ -1,6 +1,7 @@
 package org.orienteer.core.method;
 
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.method.data.MethodBaseData;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**
@@ -37,4 +38,5 @@ public interface IMethodEnvironmentData {
 	 * @return
 	 */
 	public Object getTableObject();
+	
 }
