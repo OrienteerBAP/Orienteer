@@ -90,10 +90,11 @@
 		<module>orienteer-pages</module>
 		<module>orienteer-pivottable</module>
 		<module>orienteer-standalone</module>
+		<module>orienteer-etl</module>
 		<module>orienteer-war</module>
 		<module>orienteer-archetype-jar</module>
 		<module>orienteer-archetype-war</module>
-    </modules>
+	</modules>
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->
