@@ -33,6 +33,7 @@ public class OETLConfig extends OTask {
 	
 	@ClassOMethod(
 		order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
+		permission="EXECUTE",
 		filters={
 				@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
 				@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),
