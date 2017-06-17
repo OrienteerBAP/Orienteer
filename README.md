@@ -1,6 +1,8 @@
-[![Build Status](https://travis-ci.org/OrienteerBAP/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerBAP/Orienteer) [![Coverage Status](https://coveralls.io/repos/github/OrienteerBAP/Orienteer/badge.svg?branch=master)](https://coveralls.io/github/OrienteerBAP/Orienteer?branch=master) [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/OrienteerBAP/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d/badge.svg?style=flat)](https://www.versioneye.com/user/projects/572bd228a0ca350034be6f9d)
+[![Build Status](https://travis-ci.org/OrienteerBAP/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerBAP/Orienteer) [![Coverage Status](https://coveralls.io/repos/github/OrienteerBAP/Orienteer/badge.svg)](https://coveralls.io/github/OrienteerBAP/Orienteer) [![Gitter](https://badges.gitter.im/OrienteerBAP/Orienteer.svg)](https://gitter.im/OrienteerBAP/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/5897a42427d3c30044303569/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5897a42427d3c30044303569) [![Docker Pulls](https://img.shields.io/docker/pulls/orienteer/orienteer.svg)](https://hub.docker.com/r/orienteer/orienteer/)
 
 ## Orienteer
+
+![Orienteer Wordcloud](http://orienteer.org/images/wordcloud.png)
 
 ### What is Orienteer 
 
@@ -13,18 +15,28 @@
 * Developers friendly
 * Scalling and cloud ready (support of Docker)
 
-[Orienteer Guidebook](https://orienteer.gitbooks.io/orienteer/content/)
-
-### Demo
-
-- [Master Demo Server](http://demo.orienteer.org)
+## [User Guide](https://orienteer.gitbooks.io/orienteer/content/)
+## [Demo Site](http://demo.orienteer.org)
 
 ### Orienteer installation
 
-There are two options for Orienteer installation:
+There are 3 options for Orienteer installation:
 
+- Docker
 - Embedded (on application server)
 - Standalone (no need in application server)
+
+#### Docker
+
+Run new container by command docker `run -p 8080:8080 orienteer/orienteer`. Adjust this command if needed:
+
+`-v <runtime>:/app/runtime` - mount runtime directory with databases, dynamically installed modules and etc.
+
+`-v <maven>:/root/m2` - mount your local maven repository
+
+`ORIENTDB_ADMIN_PASSWORD=<password>` - specify admin password by default
+
+`ORIENTDB_GUEST_PASSWORD=<password>` - specify reader password by default
 
 #### Embedded
 
