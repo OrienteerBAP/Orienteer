@@ -1,5 +1,7 @@
 package org.orienteer.devutils.component.widget;
 
+import java.util.Map;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
@@ -7,8 +9,13 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 
+import com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper;
+import com.orientechnologies.orient.core.command.script.OScriptOrientWrapper;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketconsole.IScriptContext;
 import ru.ydn.wicket.wicketconsole.WicketConsolePanel;
 
 /**
@@ -19,7 +26,18 @@ public class WicketConsoleWidget extends AbstractWidget<Void> {
 
 	public WicketConsoleWidget(String id, IModel<Void> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		add(new WicketConsolePanel("console"));
+		add(new WicketConsolePanel("console",new IScriptContext() {
+			
+			@Override
+			public Map<String, Object> getBindings() {
+				Map<String, Object> bindings = new HashMap<String, Object>();
+				ODatabaseDocument db = getDatabase();
+				bindings.put("db", new OScriptDocumentDatabaseWrapper(db));
+				bindings.put("orient", new OScriptOrientWrapper(db));
+				bindings.put("util", new OFunctionUtilWrapper());
+				return bindings;
+			}
+		}));
 	}
 
 	@Override
