@@ -4,6 +4,10 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
+import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.BootstrapSize;
@@ -18,54 +22,37 @@ import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 /**
  * {@link OrienteerDataTable} Column with 'delete' button.
  */
-public class DeleteRowCommandColumn extends AbstractModeMetaColumn<ODocument, DisplayMode, OProperty, String> {
+public class DeleteRowCommandColumn extends AbstractColumn<ODocument, String> {
 
-    private Component parent;
-
-    public DeleteRowCommandColumn(OProperty property, Component parent, IModel<DisplayMode> modeModel) {
-        super(new OPropertyModel(property), modeModel);
-        this.parent = parent;
+	private IModel<DisplayMode> modeModel;
+	
+    public DeleteRowCommandColumn(IModel<DisplayMode> modeModel) {
+    	super(Model.of(""));
+    	this.modeModel = modeModel;
     }
 
-    @Override
-    protected <V> AbstractMetaPanel<ODocument, OProperty, V> newMetaPanel(String componentId, IModel<OProperty> criteryModel, final IModel<ODocument> rowModel) {
-        return new AbstractMetaPanel<ODocument, OProperty, V>(componentId, rowModel, criteryModel) {
+	@Override
+	public void populateItem(Item<ICellPopulator<ODocument>> cellItem, String componentId, final IModel<ODocument> rowModel) {
+		cellItem.add(new AjaxFormCommand(componentId, "command.remove") {
+
             @Override
-            protected IModel<String> newLabelModel() {
-                return new OPropertyNamingModel(getCriteryModel());
+            public void onClick(AjaxRequestTarget target) {
+                super.onClick(target);
+                rowModel.getObject().delete();
+                DataTable<?, ?> table = findParent(DataTable.class);
+                if(table!=null) target.add(table);
             }
 
             @Override
-            protected Component resolveComponent(String id, OProperty critery) {
-                    return new AjaxFormCommand(id, "command.remove") {
-
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            super.onClick(target);
-                            rowModel.getObject().delete();
-                            target.add(parent);
-                        }
-
-                        @Override
-                        protected void onConfigure() {
-                            super.onConfigure();
-                            setVisibilityAllowed(getModeModel().getObject().equals(DisplayMode.EDIT));
-                        }
-
-                    }.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
-                            .setBootstrapType(BootstrapType.DANGER)
-                            .setIcon((String) null);
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisibilityAllowed(modeModel.getObject().equals(DisplayMode.EDIT));
             }
 
-            @Override
-            protected IModel<V> resolveValueModel() {
-                return new DynamicPropertyValueModel<V>(getEntityModel(), getPropertyModel());
-            }
-        };
-    }
+        }.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+                .setBootstrapType(BootstrapType.DANGER)
+                .setIcon((String) null));
+	}
 
-    @Override
-    protected IModel<String> newLabelModel() {
-        return new Model<String>("");
-    }
+    
 }

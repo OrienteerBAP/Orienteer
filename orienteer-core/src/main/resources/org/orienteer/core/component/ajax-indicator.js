@@ -7,7 +7,7 @@ function showAjaxIndicator() {
 	needShow = true;
     timeoutID = window.setTimeout(function () {
         if (needShow) $('#${componentId}').show();
-    }, 100);
+    }, 300);
 }
 
 function hideAjaxIndicator() {

@@ -230,6 +230,11 @@ li.fullscreen div.panel.panel-default div.panel-body{
 }
 
 .form-control {
-	width: auto;
+	/* width: auto; */
 	display: inline-block;
+}
+
+table.structure-table label.required:after {
+	color: red;
+	content: "*";
 }

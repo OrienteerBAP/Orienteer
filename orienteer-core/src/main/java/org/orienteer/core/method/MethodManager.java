@@ -86,7 +86,6 @@ public class MethodManager {
 		for (IMethodDefinition iMethodDefinition : sortlist) {
 			IMethod newMethod = iMethodDefinition.getMethod(dataObject);
 			if (newMethod!=null){
-				newMethod.methodInit(iMethodDefinition.getMethodId(),dataObject);
 				result.add(newMethod);
 			}
 		}

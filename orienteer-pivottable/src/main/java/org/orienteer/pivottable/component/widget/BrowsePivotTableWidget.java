@@ -38,25 +38,25 @@ public class BrowsePivotTableWidget extends AbstractPivotTableWidget<OClass> {
 		Collection<OProperty> properties = oClass.properties();
 		for(OProperty property: properties) {
 			OType type = property.getType();
-			if(Comparable.class.isAssignableFrom(type.getDefaultJavaType())) {
-				sb.append(property.getName()).append(", ");
-			} else if(OType.LINK.equals(type)) {
+			if(OType.LINK.equals(type)) {
 				OClass linkedClass = property.getLinkedClass();
 				OProperty nameProperty = oClassIntrospector.getNameProperty(linkedClass);
 				if(nameProperty!=null) {
 					OType linkedClassType = nameProperty.getType();
 					String map = property.getName()+'.'+nameProperty.getName();
-					if(Comparable.class.isAssignableFrom(linkedClassType.getDefaultJavaType())) {
-						sb.append(map).append(", ");
-					} else if (OType.EMBEDDEDMAP.equals(linkedClassType)) {
+					if (OType.EMBEDDEDMAP.equals(linkedClassType)) {
 						sb.append("coalesce(").append(map).append('[').append(thisLang).append("], ");
 						if(!thisLang.equals(systemLang)) {
 							sb.append(map).append('[').append(systemLang).append("], ");
 						}
 						sb.append("first(").append(map).append(")) as ").append(property.getName()).append(", ");
+					}else if(Comparable.class.isAssignableFrom(linkedClassType.getDefaultJavaType())) {
+						sb.append(map).append(", ");
 					}
 				}
-			}
+			}else if(Comparable.class.isAssignableFrom(type.getDefaultJavaType())) {
+				sb.append(property.getName()).append(", ");
+			} 
 		}
 		if(sb.length()>0) sb.setLength(sb.length()-2);
 		sb.insert(0, "SELECT ");

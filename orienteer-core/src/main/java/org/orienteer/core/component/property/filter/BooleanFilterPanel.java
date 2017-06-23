@@ -10,7 +10,7 @@ import org.apache.wicket.model.IModel;
 import java.util.List;
 
 /**
- * @author Vitaliy Gonchar
+ * Filter panel for boolean properties
  */
 public class BooleanFilterPanel extends GenericPanel<Boolean> {
 

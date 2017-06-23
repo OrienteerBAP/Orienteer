@@ -10,7 +10,6 @@ import org.orienteer.core.component.meta.OArtifactMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 
 /**
- * @author Vitaliy Gonchar
  * Column for {@link OArtifact}
  */
 public class OArtifactColumn extends AbstractModeMetaColumn<OArtifact, DisplayMode, OArtifactField, String> {

@@ -6,6 +6,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
@@ -59,7 +60,7 @@ public class OPropertyPage extends AbstractWidgetDisplayModeAwarePage<OProperty>
 	
 	@Override
 	public IModel<String> getTitleModel() {
-		return new PropertyModel<String>(getModel(), "fullName");
+		return new StringResourceModel("property.title.format", getModel());
 	}
 	
 	@Override
@@ -67,7 +68,7 @@ public class OPropertyPage extends AbstractWidgetDisplayModeAwarePage<OProperty>
 		PropertyModel<OClass> oClassModel = new PropertyModel<OClass>(getModel(), "ownerClass");
 		SchemaPageHeader pageHeader = new SchemaPageHeader(componentId, oClassModel);
 		pageHeader.addChild(new OClassViewPanel(pageHeader.newChildId(), oClassModel));
-		pageHeader.addChild(new Label(pageHeader.newChildId(), getTitleModel()));
+		pageHeader.addChild(new Label(pageHeader.newChildId(), new PropertyModel<String>(getModel(), "name")));
 		return pageHeader;
 	}
 

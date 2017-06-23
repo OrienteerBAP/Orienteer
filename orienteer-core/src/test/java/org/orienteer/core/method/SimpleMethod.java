@@ -11,7 +11,7 @@ import org.apache.wicket.Component;
 public class SimpleMethod implements IMethod {
 
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData) {
+	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
 		// TODO Auto-generated method stub
 		
 	}

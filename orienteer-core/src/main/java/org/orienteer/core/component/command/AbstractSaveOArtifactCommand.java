@@ -13,7 +13,7 @@ import org.orienteer.core.component.property.DisplayMode;
 
 
 /**
- * @author Vitaliy Gonchar
+ * Command to save user's artifact
  */
 public abstract class AbstractSaveOArtifactCommand extends AbstractSaveCommand<OArtifact> {
 

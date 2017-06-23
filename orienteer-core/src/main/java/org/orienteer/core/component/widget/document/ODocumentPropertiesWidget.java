@@ -3,6 +3,7 @@ package org.orienteer.core.component.widget.document;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
@@ -53,12 +54,26 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 			}
 		};
 		propertiesStructureTable = new OrienteerStructureTable<ODocument, OProperty>("properties", getModel(), propertiesModel){
+			
+			@Override
+			protected Component getLabelComponent(String id, final IModel<OProperty> rowModel, IModel<?> labelModel) {
+				Component ret = super.getLabelComponent(id, rowModel, labelModel);
+				ret.add(new AttributeAppender("class", "required"){
 
 					@Override
-					protected Component getValueComponent(String id,
-							IModel<OProperty> rowModel) {
-						return new ODocumentMetaPanel<Object>(id, getModeModel(), ODocumentPropertiesWidget.this.getModel(), rowModel);
+					public boolean isEnabled(Component component) {
+						return DisplayMode.EDIT.equals(getModeObject()) && rowModel.getObject().isNotNull();
 					}
+					
+				});
+				return ret;
+			}
+
+			@Override
+			protected Component getValueComponent(String id,
+					IModel<OProperty> rowModel) {
+				return new ODocumentMetaPanel<Object>(id, getModeModel(), ODocumentPropertiesWidget.this.getModel(), rowModel);
+			}
 		};
 		form.add(propertiesStructureTable);
 		add(form);

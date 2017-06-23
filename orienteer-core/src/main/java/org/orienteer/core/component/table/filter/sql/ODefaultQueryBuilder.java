@@ -73,7 +73,7 @@ public class ODefaultQueryBuilder<K> implements IQueryBuilder<K> {
                     String dateFormat = getDateFormat(property.getType());
                     SimpleDateFormat df = new SimpleDateFormat(dateFormat);
                     Date date = (Date) fieldsForQuery.get(propertyModel).getObject();
-                    query.where(projection(property.getName()).like(df.format(date)));
+                    query.where(projection(property.getName()).eq(df.format(date)));
                     break;
                 default:
                     Object object = fieldsForQuery.get(propertyModel).getObject();

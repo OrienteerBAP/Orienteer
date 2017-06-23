@@ -1,18 +1,14 @@
 package org.orienteer.core.method.definitions;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.orienteer.core.method.ClassOMethod;
-import org.orienteer.core.method.OFilter;
-import org.orienteer.core.method.IClassMethod;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.MethodPlace;
+import org.orienteer.core.method.configs.OClassOMethodConfig;
 import org.orienteer.core.method.filters.OEntityFilter;
+import org.orienteer.core.method.filters.PermissionFilter;
 
 /**
  * 
@@ -26,9 +22,8 @@ public class ClassMethodDefinition implements IMethodDefinition{
 	private Class<? extends IMethod> methodClass;
 	private Class<? extends IMethod> groupMethodClass;
 	private String oClassName;
-	private List<IMethodFilter> filters;
-	private Method javaMethod;
-
+	private OClassOMethodConfig config;
+	
 	public ClassMethodDefinition(java.lang.reflect.Method javaMethod) throws InstantiationException, IllegalAccessException {
 		ClassOMethod methodAnnotation = javaMethod.getAnnotation(ClassOMethod.class);
 		order = methodAnnotation.order();
@@ -36,19 +31,15 @@ public class ClassMethodDefinition implements IMethodDefinition{
 		methodClass = methodAnnotation.methodClass();
 		groupMethodClass = methodAnnotation.oClassTableMethodClass();
 		oClassName = javaMethod.getDeclaringClass().getSimpleName();
-		filters = new ArrayList<IMethodFilter>();
-		this.javaMethod = javaMethod;
 		
-		if (methodAnnotation.filters().length>0){
-			filters = new ArrayList<IMethodFilter>();
-			for (OFilter iMethodFilter : methodAnnotation.filters()) {
-				IMethodFilter newFilter = iMethodFilter.fClass().newInstance();
-				newFilter.setFilterData(iMethodFilter.fData());
-				filters.add(newFilter);
-			}
-		}
-		filters.add(new OEntityFilter().setFilterData(oClassName));
+		config = new OClassOMethodConfig(methodAnnotation,javaMethod);
+		
 
+		config.filters().add(new OEntityFilter().setFilterData(oClassName));
+		
+		if (!methodAnnotation.permission().isEmpty()){
+			config.filters().add(new PermissionFilter().setFilterData(methodAnnotation.permission()));
+		}
 	}
 
 	@Override
@@ -59,18 +50,15 @@ public class ClassMethodDefinition implements IMethodDefinition{
 	@Override
 	public IMethod getMethod(IMethodEnvironmentData dataObject) {
 		try {
+			IMethod newMethod=null;
 			if(MethodPlace.DATA_TABLE.equals(dataObject.getPlace())){
-				if (IClassMethod.class.isAssignableFrom(groupMethodClass)){
-					IMethod newMethod = groupMethodClass.newInstance();
-					((IClassMethod)newMethod).initOClassMethod(javaMethod);
-					return newMethod;
-				}
+				newMethod = groupMethodClass.newInstance();
 			}else{
-				if (IClassMethod.class.isAssignableFrom(methodClass)){
-					IMethod newMethod = methodClass.newInstance();
-					((IClassMethod)newMethod).initOClassMethod(javaMethod);
-					return newMethod;
-				}
+				newMethod = methodClass.newInstance();
+			}
+			if (newMethod!=null){
+				newMethod.methodInit(getMethodId(), dataObject, config);
+				return newMethod;
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -86,8 +74,8 @@ public class ClassMethodDefinition implements IMethodDefinition{
 
 	@Override
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
-		if (filters!=null){
-			for (IMethodFilter iMethodFilter : filters) {
+		if (config.filters()!=null){
+			for (IMethodFilter iMethodFilter : config.filters()) {
 				if (!iMethodFilter.isSupportedMethod(dataObject)){
 					return false;
 				}

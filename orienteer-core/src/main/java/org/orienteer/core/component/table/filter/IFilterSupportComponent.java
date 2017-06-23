@@ -4,7 +4,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
 
 /**
- * @author Vitaliy Gonchar
+ * Interface to mark components which supports filtering
  * @param <T> type of values in table
  * @param <S> type of sort
  */

@@ -42,7 +42,7 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 		@Override
 		protected boolean match(Component component, ActionPerformedEvent<?> event,
 				IEvent<?> wicketEvent) {
-			return !shouldBeChanging && event.getCommand().isChangingModel();
+			return !shouldBeChanging || event.getCommand().isChangingModel();
 		}
 	}
 	

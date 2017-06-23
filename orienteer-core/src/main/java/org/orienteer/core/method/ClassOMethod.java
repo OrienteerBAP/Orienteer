@@ -56,6 +56,11 @@ public @interface ClassOMethod {
 	public boolean changingModel() default true;
 	
 	public int order() default 0;
+
+	/**
+	 * CREATE, READ, UPDATE, DELETE, EXECUTE
+	 */
+	public String permission() default ""; // hardcode link to PermissionFilter
 	OFilter[] filters() default {};
 	
 	public Class<? extends Behavior>[] behaviors() default {};

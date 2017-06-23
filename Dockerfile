@@ -5,7 +5,7 @@ MAINTAINER Ilia Naryzhny (phantom@ydn.ru)
 WORKDIR /tmp/src/
 ADD . /tmp/src/
 
-RUN mvn -P dockerbuild -s /usr/share/maven/ref/settings-docker.xml -pl !orienteer-archetype-war,!orienteer-archetype-jar,!orienteer-standalone,!orienteer-bpm clean install && \
+RUN mvn -P dockerbuild -s /usr/share/maven/ref/settings-docker.xml -pl !orienteer-archetype-war,!orienteer-archetype-jar,!orienteer-standalone,!orienteer-birt,!orienteer-bpm,!orienteer-camel,!orienteer-etl clean install && \
 mkdir -p /app/runtime/ && \
 mv orienteer-war/target/orienteer.war /app/ && \
 mv target/jetty-runner.jar /app/ && \

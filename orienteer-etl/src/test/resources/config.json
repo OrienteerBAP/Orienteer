@@ -1,0 +1,15 @@
+{
+  "source": { "file": { "path": "D:/work/git/Orienteer/orienteer-etl/src/test/resources/source.csv" } },
+  "extractor": { "csv": {} },
+  "transformers": [
+    { "vertex": { "class": "test1" } }
+  ],
+  "loader": {
+    "orientdb": {
+       "dbURL":"plocal:Orienteer",
+        "classes": [
+         {"name": "test1", "extends": "V"}
+       ]
+    }
+  }
+}

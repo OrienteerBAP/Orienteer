@@ -3,6 +3,7 @@ package org.orienteer.core.method;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -24,22 +25,18 @@ public class MethodStorage {
 	
 	public MethodStorage() {
 		paths = new HashSet<String>();
+		paths.add(CORE_PATH);
 		reload();
 	}
 	
 	public void reload(){
-		Reflections reflections = new Reflections(CORE_PATH,new TypeElementsScanner(),new MethodAnnotationsScanner(),new SubTypesScanner());
-		for (String path : paths) {
-			reflections.merge(new Reflections(path,new TypeElementsScanner(),new MethodAnnotationsScanner(),new SubTypesScanner()));
-		}
-		try {
-			methodFields = reflections.getMethodsAnnotatedWith(ClassOMethod.class);
-			methodClasses = reflections.getSubTypesOf(IMethod.class);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		Reflections reflections = new Reflections(paths,
+												  OrienteerClassLoader.getClassLoader(),
+												  new TypeElementsScanner(),
+												  new MethodAnnotationsScanner(),
+												  new SubTypesScanner());
+		methodFields = reflections.getMethodsAnnotatedWith(ClassOMethod.class);
+		methodClasses = reflections.getSubTypesOf(IMethod.class);
 	}
 	
 	public void addPath(String path) {

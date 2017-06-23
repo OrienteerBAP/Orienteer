@@ -38,8 +38,10 @@ public class OPropertyValueComboBoxColumn<T> extends AbstractModeMetaColumn<ODoc
             @Override
             protected Component resolveComponent(String id, OProperty critery) {
             	Select2Choice<T> comp =  new Select2Choice<T>(id, (IModel<T>)getValueModel(), choiceProvider);
-            	comp.getSettings().setCloseOnSelect(true).setTheme(OClassMetaPanel.BOOTSTRAP_SELECT2_THEME);
-            	comp.add(new AttributeModifier("style", "width:100%;"));
+            	comp.getSettings()
+            				.setCloseOnSelect(true)
+            				.setTheme(OClassMetaPanel.BOOTSTRAP_SELECT2_THEME)
+            				.setWidth("100%");
             	return comp;
             }
 
