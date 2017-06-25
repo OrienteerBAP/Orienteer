@@ -33,13 +33,13 @@ public class OMetadataTest {
         metadata.setLoad(true);
         metadata.setTrusted(true);
         OrienteerClassLoaderUtil.createOArtifactsMetadata(Lists.newArrayList(metadata));
-        OArtifact oArtifact = OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList().get(0);
+        OArtifact oArtifact = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList().get(0);
         testArtifact(metadata, oArtifact);
     }
 
     @Test
     public void readMetadata() {
-        List<OArtifact> list = OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList();
+        List<OArtifact> list = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
         assertTrue("list.size > 0", list.size() > 0);
     }
 
@@ -48,7 +48,7 @@ public class OMetadataTest {
         metadata.setLoad(false);
         metadata.setTrusted(true);
         OrienteerClassLoaderUtil.updateOArtifactInMetadata(metadata);
-        OArtifact oArtifact = OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList().get(0);
+        OArtifact oArtifact = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList().get(0);
         testArtifact(metadata, oArtifact);
     }
 
@@ -69,14 +69,14 @@ public class OMetadataTest {
         oArtifact2.setTrusted(true);
         List<OArtifact> list = Lists.newArrayList(metadata, oArtifact1, oArtifact2);
         OrienteerClassLoaderUtil.updateOArtifactsJarsInMetadata(list);
-        List<OArtifact> result = OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList();
+        List<OArtifact> result = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
 
         testArtifact(metadata, result.get(0));
         testArtifact(oArtifact1, result.get(1));
         testArtifact(oArtifact2, result.get(2));
 
         OrienteerClassLoaderUtil.deleteOArtifactsFromMetadata(Lists.newArrayList(oArtifact1, oArtifact2));
-        List<OArtifact> metadataAsList = OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList();
+        List<OArtifact> metadataAsList = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
 
         assertTrue("metadata size must be 1", metadataAsList.size() == 1);
     }
@@ -84,7 +84,7 @@ public class OMetadataTest {
     @AfterClass
     public static void delete() throws Exception {
         OrienteerClassLoaderUtil.deleteOArtifactFromMetadata(metadata);
-        List<OArtifact> list = OrienteerClassLoaderUtil.getOoArtifactsMetadataAsList();
+        List<OArtifact> list = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
         assertTrue("metadata must be empty", list.size() == 0);
     }
 

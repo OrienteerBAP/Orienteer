@@ -13,9 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -50,14 +54,23 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * Download Orienteer artifacts from server.
      * @return list of {@link OArtifact} from server
+     * @throws IOException 
      */
-    public static List<OArtifact> getOrienteerArtifactsFromServer() {
-        HttpDownloader downloader = new HttpDownloader(initUtils.getOrienteerModulesUrl(), initUtils.getPathToModulesFolder());
-        Path download = downloader.download(MODULES);
-        if (download == null) return Lists.newArrayList();
-        OrienteerArtifactsReader reader = new OrienteerArtifactsReader(download);
+    public static List<OArtifact> getOrienteerArtifactsFromServer() throws IOException  {
+    	
+    	URL website = new URL(initUtils.getOrienteerModulesUrl());
+    	File localFile = new File(initUtils.getPathToModulesFolder().toFile(), "modules.xml");
+    	ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+    	FileOutputStream fos = new FileOutputStream(localFile);
+    	try {
+    		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+    	} finally {
+			fos.close();
+		}
+    	
+        OrienteerArtifactsReader reader = new OrienteerArtifactsReader(localFile.toPath());
         List<OArtifact> ooArtifacts = reader.readArtifacts();
-        List<OArtifact> metadataModules = getOoArtifactsMetadataAsList();
+        List<OArtifact> metadataModules = getOArtifactsMetadataAsList();
         for (OArtifact metadataModule : metadataModules) {
             for (OArtifact module : ooArtifacts) {
                 OArtifactReference metadataArtifact = metadataModule.getArtifactReference();
@@ -317,7 +330,7 @@ public abstract class OrienteerClassLoaderUtil {
      * Read and get artifacts from metadata.xml
      * @return {@link List<OArtifact>} artifacts from metadata.xml
      */
-    public static List<OArtifact> getOoArtifactsMetadataAsList() {
+    public static List<OArtifact> getOArtifactsMetadataAsList() {
         return metadataUtil.readOArtifactsAsList();
     }
 

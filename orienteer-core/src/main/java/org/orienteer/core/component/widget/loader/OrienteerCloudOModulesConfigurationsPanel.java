@@ -1,8 +1,12 @@
 package org.orienteer.core.component.widget.loader;
 
 import com.google.common.collect.Lists;
+
+import ru.ydn.wicket.wicketorientdb.converter.IdentityConverter;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -30,7 +34,7 @@ public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
     private static final String SHOW_USER_ARTIFACT_ADD_BUT = "widget.artifacts.modal.window.button.user.artifact";
     private static final String BACK_BUT      = "command.back";
 
-    public OrienteerCloudOModulesConfigurationsPanel(String id, final OArtifactsModalWindowPage windowPage, AbstractOArtifactsProvider provider) {
+    public OrienteerCloudOModulesConfigurationsPanel(String id, final OArtifactsModalWindowPage windowPage, ISortableDataProvider<OArtifact, String> provider) {
         super(id);
         setOutputMarkupPlaceholderTag(true);
         Form orienteerModulesForm = new Form("orienteerCloudOModulesConfigsForm");
@@ -76,7 +80,7 @@ public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
 
     private List<IColumn<OArtifact, String>> getColumns(IModel<DisplayMode> modeModel) {
         List<IColumn<OArtifact, String>> columns = Lists.newArrayList();
-        columns.add(new CheckBoxColumn<OArtifact, OArtifact, String>(new OrienteerArtifactsManagerWidget.OArtifactsConverter()));
+        columns.add(new CheckBoxColumn<OArtifact, OArtifact, String>(new IdentityConverter<OArtifact>()));
         columns.add(new OArtifactColumn(OArtifactField.GROUP.asModel(), modeModel));
         columns.add(new OArtifactColumn(OArtifactField.ARTIFACT.asModel(), modeModel));
         columns.add(new OArtifactColumn(OArtifactField.VERSION.asModel(), modeModel));

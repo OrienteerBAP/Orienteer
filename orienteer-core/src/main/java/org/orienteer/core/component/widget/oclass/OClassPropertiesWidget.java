@@ -23,8 +23,8 @@ import org.orienteer.core.model.ExtendedOPropertiesDataProvider;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
+import ru.ydn.wicket.wicketorientdb.converter.OPropertyFullNameConverter;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
-import ru.ydn.wicket.wicketorientdb.utils.OPropertyFullNameConverter;
 
 import java.util.ArrayList;
 import java.util.List;

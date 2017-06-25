@@ -8,7 +8,6 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.component.widget.loader.IOArtifactsUpdater;
 import org.orienteer.core.component.widget.loader.OArtifactsModalWindowPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +20,15 @@ public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
     private final OrienteerDataTable<OArtifact, ?> table;
     private final OArtifactsModalWindowPage modalWindowPage;
 
-    private final IOArtifactsUpdater updater;
-
     private static final String ADD_BUT            = "command.add";
     private static final String MODAL_WINDOW_TITLE = "widget.artifacts.modal.window.title";
 
     private static final Logger LOG = LoggerFactory.getLogger(AddOArtifactCommand.class);
 
-    public AddOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, OArtifactsModalWindowPage page, IOArtifactsUpdater updater) {
+    public AddOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, OArtifactsModalWindowPage page) {
         super(new ResourceModel(ADD_BUT), table);
         this.modalWindowPage = page;
         this.table = table;
-        this.updater = updater;
     }
 
     @SuppressWarnings("unchecked")
@@ -51,7 +47,6 @@ public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
         modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
             @Override
             public void onClose(AjaxRequestTarget target) {
-                updater.notifyAboutNewArtifacts();
                 target.add(table);
             }
         });

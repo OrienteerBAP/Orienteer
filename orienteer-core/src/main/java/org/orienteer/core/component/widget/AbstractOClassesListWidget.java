@@ -22,9 +22,10 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.widget.AbstractWidget;
+
+import ru.ydn.wicket.wicketorientdb.converter.OClassClassNameConverter;
 import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
-import ru.ydn.wicket.wicketorientdb.utils.OClassClassNameConverter;
 
 import java.util.ArrayList;
 import java.util.List;

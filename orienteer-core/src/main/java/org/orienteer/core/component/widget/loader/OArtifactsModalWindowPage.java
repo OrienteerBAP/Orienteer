@@ -3,6 +3,7 @@ package org.orienteer.core.component.widget.loader;
 import org.apache.http.util.Args;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
@@ -20,7 +21,7 @@ public class OArtifactsModalWindowPage extends BasePage<OArtifact> {
 
     private boolean showOrienteerModulesPanel = false;
 
-    public OArtifactsModalWindowPage(AbstractOArtifactsProvider provider) {
+    public OArtifactsModalWindowPage(ISortableDataProvider<OArtifact, String> provider) {
         setOutputMarkupPlaceholderTag(true);
         orienteerModulesPanel = new OrienteerCloudOModulesConfigurationsPanel("orienteerModulesPanel", this, provider);
         userModulePanel = new UserOArtifactPanel("userModulePanel",this);

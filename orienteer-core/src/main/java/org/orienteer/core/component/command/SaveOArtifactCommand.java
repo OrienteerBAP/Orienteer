@@ -11,7 +11,6 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.OrienteerDataTable.MetaContextItem;
-import org.orienteer.core.component.widget.loader.IOArtifactsUpdater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,13 +23,11 @@ public class SaveOArtifactCommand extends AbstractSaveOArtifactCommand {
 
     private OrienteerDataTable<OArtifact, ?> table;
 
-    private final IOArtifactsUpdater subject;
 
-    public SaveOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, IOArtifactsUpdater subject,
+    public SaveOArtifactCommand(OrienteerDataTable<OArtifact, ?> table, 
                                            IModel<DisplayMode> modeModel, Label feedback) {
         super(table, modeModel, feedback);
         this.table = table;
-        this.subject = subject;
     }
 
     @Override

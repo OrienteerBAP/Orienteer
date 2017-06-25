@@ -20,9 +20,9 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
+import ru.ydn.wicket.wicketorientdb.converter.OIndexNameConverter;
 import ru.ydn.wicket.wicketorientdb.model.OIndexesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
-import ru.ydn.wicket.wicketorientdb.utils.OIndexNameConverter;
 
 import java.util.ArrayList;
 import java.util.List;

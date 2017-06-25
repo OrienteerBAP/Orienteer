@@ -6,11 +6,11 @@ import org.apache.wicket.util.string.Strings;
 import org.wicketstuff.select2.Response;
 import org.wicketstuff.select2.ChoiceProvider;
 
-import ru.ydn.wicket.wicketorientdb.utils.OClassClassNameConverter;
-
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+
+import ru.ydn.wicket.wicketorientdb.converter.OClassClassNameConverter;
 
 /**
  * {@link ChoiceProvider} for {@link OClass}es

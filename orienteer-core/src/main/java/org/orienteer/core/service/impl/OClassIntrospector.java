@@ -43,11 +43,11 @@ import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.ydn.wicket.wicketorientdb.converter.ODocumentORIDConverter;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
-import ru.ydn.wicket.wicketorientdb.utils.ODocumentORIDConverter;
 
 import java.util.*;
 

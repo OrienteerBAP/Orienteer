@@ -133,23 +133,13 @@ public class OrienteerClassLoader extends URLClassLoader {
 		super(new URL[0], parent);
     }
 
-    /**
-     * Constructor for  untrusted Orienteer classloader.
-     * @param unTrustedModules - untrusted modules for load in untrusted classloader
-     * @param parent - parent classloader
-     */
-    private OrienteerClassLoader(List<OArtifact> unTrustedModules, ClassLoader parent) {
-	    super(new URL[0], parent);
-	    addModulesToClassLoaderResources(unTrustedModules);
-    }
-
 
     /**
      * Add Orienteer modules to classloader resources.
      * @param modules - list which contains modules for add
      * @throws NullPointerException if jar file of module is null
      */
-    private void addModulesToClassLoaderResources(List<OArtifact> modules) {
+    public void addOArtifactsToClassLoaderResources(List<OArtifact> modules) {
         for(OArtifact metadata : modules) {
         	addOArtifactToClassLoaderResources(metadata);
         }
@@ -160,7 +150,7 @@ public class OrienteerClassLoader extends URLClassLoader {
      * @param metadata - metadata of artifact to add
      * @throws NullPointerException if jar file of module is null
      */
-    private void addOArtifactToClassLoaderResources(OArtifact metadata) {
+    public void addOArtifactToClassLoaderResources(OArtifact metadata) {
         try {
             addURL(metadata.getArtifactReference().getFile().toURI().toURL());
             for (OArtifactReference artifact : metadata.getDependencies()) {
@@ -186,125 +176,6 @@ public class OrienteerClassLoader extends URLClassLoader {
 	        return modules;
 		} else return new ArrayList<>();
     }
-
-    /**
-     * Search new modules and update metadata.xml if it's need.
-     * @param oArtifacts -  modules which read from metadata.xml
-     * @return modules for load
-     */
-    private List<OArtifact> getUpdateModules(Map<Path, OArtifact> oArtifacts) {
-        resolveModulesWithoutMainJar(oArtifacts);
-	    List<Path> jars = getJarsInArtifactsFolder();
-	    List<OArtifact> modulesForWrite = getModulesForAddToMetadata(jars, oArtifacts);
-
-	    if (modulesForWrite.size() > 0) {
-            updateOArtifactsInMetadata(modulesForWrite);
-        }
-
-        oArtifacts = getOArtifactsMetadataForLoadInMap();
-
-        return getModulesForLoad(oArtifacts.values());
-    }
-
-    /**
-     * Search artifacts for add to metadata.xml
-     * @param jars - jars in artifacts folder
-     * @param oArtifacts - artifacts in metadata.xml
-     * @return list with resolved artifact for add to metadata
-     */
-    private List<OArtifact> getModulesForAddToMetadata(List<Path> jars, Map<Path, OArtifact> oArtifacts) {
-        List<Path> modulesForWrite = Lists.newArrayList();
-        Set<Path> jarsInMetadata = oArtifacts.keySet();
-        for (Path pathToJar : jars) {
-            if (!jarsInMetadata.contains(pathToJar)) {
-                modulesForWrite.add(pathToJar);
-            }
-        }
-        return MavenResolver.get().getResolvedOArtifacts(modulesForWrite);
-    }
-
-    /**
-     * Search modules for load
-     * @param modules collection with modules
-     * @return modules fir load
-     */
-    private List<OArtifact> getModulesForLoad(Collection<OArtifact> modules) {
-        List<OArtifact> modulesForLoad = Lists.newArrayList();
-        for (OArtifact metadata : modules) {
-            if (metadata.isLoad()) modulesForLoad.add(metadata);
-        }
-        return modulesForLoad;
-    }
-
-    /**
-     * Download jars for modules. Search modules which {@link Path} contains {@value OrienteerClassLoaderUtil#WITHOUT_JAR} and
-     * create new {@link OArtifact} for that modules.
-     * @param modules modules which must resolved
-     *                {@link Path} - path to jar file
-     *                {@link OArtifact} - module for resolve
-     */
-    private void resolveModulesWithoutMainJar(Map<Path, OArtifact> modules) {
-        List<OArtifact> modulesWithoutMainJar = getModulesWithoutMainJar(modules.values());
-        if (modulesWithoutMainJar.size() > 0) {
-        	MavenResolver.get().downloadOArtifacts(modulesWithoutMainJar);
-            List<Path> keysForDelete = Lists.newArrayList();
-            for (Path key : modules.keySet()) {
-                if (key.toString().contains(WITHOUT_JAR)) {
-                    keysForDelete.add(key);
-                }
-            }
-            for (Path key : keysForDelete) {
-                modules.remove(key);
-            }
-            for (OArtifact module : modulesWithoutMainJar) {
-                modules.put(module.getArtifactReference().getFile().toPath(), module);
-            }
-            updateOArtifactsJarsInMetadata(modulesWithoutMainJar);
-        }
-    }
-
-    /**
-     * Search modules without correctly jar file.
-     * @param modules - collection which contains modules
-     * @return list of modules which does not contains correctly jar file
-     */
-    private List<OArtifact> getModulesWithoutMainJar(Collection<OArtifact> modules) {
-        List<OArtifact> result = Lists.newArrayList();
-        for (OArtifact module : modules) {
-            File jar = module.getArtifactReference().getFile();
-            if (jar == null || !jar.exists()) {
-                result.add(module);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Search trusted modules in input list
-     * @param modules list with trusted and untrusted modules
-     * @return list with trusted modules
-     */
-    private List<OArtifact> getTrustedModules(List<OArtifact> modules) {
-	    List<OArtifact> trustedModules = Lists.newArrayList();
-	    for (OArtifact module : modules) {
-	        if (module.isTrusted()) trustedModules.add(module);
-        }
-	    return trustedModules;
-    }
-
-    /**
-     * Search untrusted modules in input list
-     * @param modules list with trusted and untrusted modules
-     * @return list with untrusted modules
-     */
-    private List<OArtifact> getUnTrustedModules(List<OArtifact> modules) {
-        List<OArtifact> unTrustedModules = Lists.newArrayList();
-        for (OArtifact module : modules) {
-            if (!module.isTrusted()) unTrustedModules.add(module);
-        }
-        return unTrustedModules;
-    }
-
 
     @Override
     public String toString() {
