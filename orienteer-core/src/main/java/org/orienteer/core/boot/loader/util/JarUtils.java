@@ -1,6 +1,5 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.http.util.Args;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ class JarUtils {
      * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present
      * @throws IllegalArgumentException if path is null
      */
-    public Optional<Path> getPomFromJar(String path) {
+    public Path getPomFromJar(String path) {
         Args.notNull(path, "path");
         return getPomFromJar(Paths.get(path));
     }
@@ -44,9 +43,9 @@ class JarUtils {
      * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present
      * @throws IllegalArgumentException if path is null
      */
-    public Optional<Path> getPomFromJar(Path path) {
+    public Path getPomFromJar(Path path) {
         Args.notNull(path, "path");
-        Optional<Path> result = Optional.absent();
+        Path result = null;
         try {
             JarFile jarFile = new JarFile(path.toFile());
             Enumeration<JarEntry> entries = jarFile.entries();
@@ -60,8 +59,7 @@ class JarUtils {
             jarFile.close();
         } catch (IOException e) {
             if (LOG.isDebugEnabled()) {
-                LOG.error("Cannot open file to read. File: " + path.toAbsolutePath());
-                e.printStackTrace();
+                LOG.error("Cannot open file to read. File: " + path.toAbsolutePath(), e);
             }
         }
         return result;
@@ -74,8 +72,8 @@ class JarUtils {
      * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present
      * @throws IOException
      */
-    private Optional<Path> unarchivePomFile(JarFile jarFile, JarEntry jarEntry) throws IOException {
-        Optional<Path> resultOptional = Optional.absent();
+    private Path unarchivePomFile(JarFile jarFile, JarEntry jarEntry) throws IOException {
+        Path result = null;
 
         int pointer = jarEntry.getName().lastIndexOf("/") + 1;
         String fileName = jarEntry.getName().substring(pointer);
@@ -88,7 +86,7 @@ class JarUtils {
             while ((readBytes = in.read(buff)) != -1) {
                 out.write(buff, 0, readBytes);
             }
-            resultOptional = Optional.of(path);
+            result = path;
         } catch (IOException e) {
             Files.deleteIfExists(path);
             if (LOG.isDebugEnabled()) {
@@ -96,7 +94,7 @@ class JarUtils {
                 e.printStackTrace();
             }
         }
-        return resultOptional;
+        return result;
     }
 
     /**
@@ -194,11 +192,11 @@ class JarUtils {
      *                                 if {@link org.apache.wicket.IInitializer} is not present in jar file.
      * @throws IllegalArgumentException if pathToJar is null
      */
-    public Optional<String> searchOrienteerInitModule(Path pathToJar) {
+    public String searchOrienteerInitModule(Path pathToJar) {
         Args.notNull(pathToJar, "pathToJar");
-        Optional<String> fullClassName = Optional.absent();
-        if (!pathToJar.toString().endsWith(".jar")) return fullClassName;
+        if (!pathToJar.toString().endsWith(".jar")) return null;
 
+        String ret = null;
         final String initModuleStart = "org.orienteer";
         final String initModuleEnd   = "Initializer.class";
         JarFile jarFile = null;
@@ -213,7 +211,7 @@ class JarUtils {
                     continue;
                 entryName = entryName.substring(entryName.indexOf("org."));
                 if (entryName.startsWith(initModuleStart) && entryName.endsWith(initModuleEnd)) {
-                    fullClassName = Optional.of(entryName.substring(0, entryName.indexOf(".class")));
+                    ret = entryName.substring(0, entryName.indexOf(".class"));
                     break;
                 }
             }
@@ -222,7 +220,7 @@ class JarUtils {
             LOG.error("Cannot read jar file: " + pathToJar.toAbsolutePath());
             if (LOG.isDebugEnabled()) e.printStackTrace();
         }
-        return fullClassName;
+        return ret;
     }
 
 }

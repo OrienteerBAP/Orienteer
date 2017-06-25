@@ -1,6 +1,5 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.base.Optional;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -21,10 +20,10 @@ public class DependencyTest {
         String artifactId = "orienteer-devutils";
         String version = "1.3-SNAPSHOT";
         Artifact artifact = new DefaultArtifact(gav(groupId, artifactId, version, "jar"));
-        Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact);
-        assertTrue("Artifact must present", artifactOptional.isPresent());
-        assertNotNull("Jar file of artifact can't be null", artifactOptional.get().getFile());
-        List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifactOptional.get());
+        artifact = OrienteerClassLoaderUtil.downloadArtifact(artifact);
+        assertNotNull("Artifact must present", artifact);
+        assertNotNull("Jar file of artifact can't be null", artifact.getFile());
+        List<ArtifactResult> resolvedArtifact = OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
         assertEquals("Size of resolved dependencies", true, resolvedArtifact.size() > 0);
 
         for (ArtifactResult res : resolvedArtifact) {
@@ -43,10 +42,10 @@ public class DependencyTest {
         String artifactId = "orienteer-parent";
         String version = "1.2";
         Artifact artifact = new DefaultArtifact(gav(groupId, artifactId, version, "pom"));
-        Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifact);
-        assertTrue("Parent artifact must present", artifactOptional.isPresent());
-        assertNotNull("File can't be null", artifactOptional.get().getFile());
-        Files.deleteIfExists(artifactOptional.get().getFile().toPath());
+        artifact = OrienteerClassLoaderUtil.downloadArtifact(artifact);
+        assertNotNull("Parent artifact must present", artifact);
+        assertNotNull("File can't be null", artifact.getFile());
+        Files.deleteIfExists(artifact.getFile().toPath());
     }
 
     @Test

@@ -1,6 +1,5 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.http.util.Args;
@@ -100,11 +99,11 @@ class AetherUtils {
      * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent() if can't download artifact
      * @throws IllegalArgumentException if artifact is null
      */
-    public Optional<Artifact> downloadArtifact(Artifact artifact) {
+    public Artifact downloadArtifact(Artifact artifact) {
         Args.notNull(artifact, "artifact");
         ArtifactRequest artifactRequest = createArtifactRequest(artifact);
         ArtifactResult result = resolveArtifactRequest(artifactRequest);
-        return result != null ? Optional.of(result.getArtifact()) : Optional.<Artifact>absent();
+        return result != null ? result.getArtifact() : null;
     }
 
     /**
@@ -114,12 +113,12 @@ class AetherUtils {
      * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
      * @throws IllegalArgumentException if artifact or repository is null.
      */
-    public Optional<Artifact> downloadArtifact(Artifact artifact, String repository) {
+    public Artifact downloadArtifact(Artifact artifact, String repository) {
         Args.notNull(artifact, "artifact");
         Args.notEmpty(repository, "repository");
         ArtifactRequest artifactRequest = createArtifactRequest(artifact, newUserRemoteRepository(repository));
         ArtifactResult result = resolveArtifactRequest(artifactRequest);
-        return result != null ? Optional.of(result.getArtifact()) : Optional.<Artifact>absent();
+        return result != null ? result.getArtifact() : null;
     }
 
     private Set<ArtifactRequest> createArtifactRequests(ArtifactDescriptorResult descriptorResult) {

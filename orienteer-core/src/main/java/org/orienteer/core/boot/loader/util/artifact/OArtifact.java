@@ -111,7 +111,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
 
     @Override
     public String toString() {
-        return "OoArtifact{" +
+        return "OArtifact{" +
                 "artifact=" + artifact +
                 ", dependencies=" + dependencies +
                 ", load=" + load +

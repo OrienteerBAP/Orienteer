@@ -9,7 +9,7 @@ public class OrienteerClassLoaderTest {
 
     @Test
     public void testResolvingModules() throws Exception {
-        OrienteerClassLoader.create(this.getClass().getClassLoader());
+        OrienteerClassLoader.initOrienteerClassLoaders(this.getClass().getClassLoader());
         ClassLoader loader = OrienteerClassLoader.getClassLoader();
     }
 }

@@ -44,7 +44,7 @@ public class SaveOArtifactCommand extends AbstractSaveOArtifactCommand {
                     OArtifact moduleForUpdate = new OArtifact(module.getPreviousArtifactRefence());
                     moduleForUpdate.setLoad(module.isLoad())
                             .setTrusted(module.isTrusted());
-                    OrienteerClassLoaderUtil.updateOoArtifactInMetadata(moduleForUpdate, module);
+                    OrienteerClassLoaderUtil.updateOArtifactInMetadata(moduleForUpdate, module);
                 } else failed.setObject(Boolean.TRUE);
                 visit.dontGoDeeper();
             }

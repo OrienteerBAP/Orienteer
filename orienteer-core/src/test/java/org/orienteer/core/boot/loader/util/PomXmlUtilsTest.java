@@ -1,6 +1,5 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.base.Optional;
 import org.eclipse.aether.artifact.Artifact;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 
@@ -24,8 +23,8 @@ public class PomXmlUtilsTest {
 
     @Test
     public void readGroupArtifactVersionInPomXml() throws Exception {
-        Optional<Artifact> artifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml);
-        assertEquals("Artifact from pom.xml", true, artifact.isPresent());
+        Artifact artifact = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml);
+        assertNotNull("Artifact from pom.xml", artifact);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package org.orienteer.core.component.widget.loader;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
@@ -101,14 +100,14 @@ public class UserOArtifactPanel extends GenericPanel<OArtifact> {
                         uploadField.add(new AjaxFormSubmitBehavior("change") {
                             @Override
                             protected void onSubmit(AjaxRequestTarget target) {
-                                Optional<File> jarFile = getJarFile(uploadField);
-                                if (!jarFile.isPresent()) {
+                                File jarFile = getJarFile(uploadField);
+                                if (jarFile == null) {
                                     errorFeedback();
                                 } else {
-                                    Optional<OArtifact> module = OrienteerClassLoaderUtil.getOArtifactFromJar(jarFile.get().toPath());
-                                    if (module.isPresent()) {
-                                        getEntityModel().setObject(module.get());
-                                        structureTable.getModel().setObject(module.get());
+                                    OArtifact module = OrienteerClassLoaderUtil.getOArtifactFromJar(jarFile.toPath());
+                                    if (module != null) {
+                                        getEntityModel().setObject(module);
+                                        structureTable.getModel().setObject(module);
                                         feedback.setDefaultModel(Model.of());
                                         feedback.setVisible(false);
                                     } else {
@@ -153,11 +152,11 @@ public class UserOArtifactPanel extends GenericPanel<OArtifact> {
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<File> getJarFile(FileUploadField fileUploadField) {
+    private File getJarFile(FileUploadField fileUploadField) {
         FileUpload fileUpload = fileUploadField.getFileUpload();
-        if (fileUpload == null) return Optional.absent();
+        if (fileUpload == null) return null;
         String clientFileName = fileUpload.getClientFileName();
-        if (!fileUpload.getClientFileName().endsWith(".jar")) return Optional.absent();
+        if (!fileUpload.getClientFileName().endsWith(".jar")) return null;
         return OrienteerClassLoaderUtil.createJarTempFile(clientFileName, fileUpload);
     }
 

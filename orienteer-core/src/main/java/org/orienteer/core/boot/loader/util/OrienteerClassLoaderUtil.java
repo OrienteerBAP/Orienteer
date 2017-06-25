@@ -1,6 +1,5 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.http.util.Args;
@@ -110,7 +109,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
      * @throws IllegalArgumentException if artifact is null
      */
-    public static Optional<Artifact> downloadArtifact(Artifact artifact) {
+    public static Artifact downloadArtifact(Artifact artifact) {
         Args.notNull(artifact, "artifact");
         return aetherUtils.downloadArtifact(artifact);
     }
@@ -122,7 +121,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
      * @throws IllegalArgumentException if artifact or repository is null.
      */
-    public static Optional<Artifact> downloadArtifact(Artifact artifact, String repository) {
+    public static Artifact downloadArtifact(Artifact artifact, String repository) {
         Args.notNull(artifact, "artifact");
         Args.notNull(repository, "repository");
         return aetherUtils.downloadArtifact(artifact, repository);
@@ -134,7 +133,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Optional<Artifact>} or Optional.absent() if GAV is not present in pom.xml
      * @throws IllegalArgumentException if pomXml is null
      */
-    public static Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
+    public static Artifact readGroupArtifactVersionInPomXml(Path pomXml) {
         Args.notNull(pomXml, "pomXml");
         return pomXmlUtils.readGroupArtifactVersionInPomXml(pomXml);
     }
@@ -158,7 +157,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Optional<String>} of class name or Optional.absent() if {@link org.apache.wicket.IInitializer} is not present in jar file
      * @throws IllegalArgumentException if pathToJar is null
      */
-    public static Optional<String> searchOrienteerInitModule(Path pathToJar) {
+    public static String searchOrienteerInitModule(Path pathToJar) {
         Args.notNull(pathToJar, "pathToJar");
         return jarUtils.searchOrienteerInitModule(pathToJar);
     }
@@ -169,7 +168,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present in jar file
      * @throws IllegalArgumentException if pathToJar is null
      */
-    public static Optional<Path> getPomFromJar(Path pathToJar) {
+    public static Path getPomFromJar(Path pathToJar) {
         Args.notNull(pathToJar, "pathToJar");
         return jarUtils.getPomFromJar(pathToJar);
     }
@@ -180,7 +179,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Optional<OArtifact>} of artifact or Optional.absent() if artifact is not present in jar file
      * @throws IllegalArgumentException if pathToJar is null
      */
-    public static Optional<OArtifact> getOArtifactFromJar(Path pathToJar) {
+    public static OArtifact getOArtifactFromJar(Path pathToJar) {
         Args.notNull(pathToJar, "pathToJar");
         return MavenResolver.get().getOArtifact(pathToJar);
     }
@@ -192,7 +191,16 @@ public abstract class OrienteerClassLoaderUtil {
     public static List<Path> getJarsInArtifactsFolder() {
         return jarUtils.searchJarsInArtifactsFolder();
     }
-
+    
+    /**
+     * Checks if metadata.xml exists
+     * @return true - if metadata.xml exists
+     *         false - if metadata.xml does not exists
+     */
+    public static boolean metadataExists() {
+    	return metadataUtil.metadataExists();
+    }
+    
     /**
      * Read artifacts in metadata.xml as map
      * @return {@link Map<Path, OArtifact>} of artifacts in metadata.xml
@@ -270,7 +278,7 @@ public abstract class OrienteerClassLoaderUtil {
      */
     public static void updateOArtifactsJarsInMetadata(List<OArtifact> oArtifacts) {
         Args.notNull(oArtifacts, "oArtifacts");
-        metadataUtil.updateJarsInOoArtifactsMetadata(oArtifacts);
+        metadataUtil.updateJarsInOArtifactsMetadata(oArtifacts);
     }
 
     /**
@@ -280,7 +288,7 @@ public abstract class OrienteerClassLoaderUtil {
      */
     public static void updateOArtifactInMetadata(OArtifact oArtifact) {
         Args.notNull(oArtifact, "oArtifact");
-        metadataUtil.updateOoArtifactMetadata(oArtifact);
+        metadataUtil.updateOArtifactMetadata(oArtifact);
     }
 
     /**
@@ -289,10 +297,10 @@ public abstract class OrienteerClassLoaderUtil {
      * @param newArtifact {@link OArtifact} for replace
      * @throws IllegalArgumentException if artifactForUpdate or newArtifact is null
      */
-    public static void updateOoArtifactInMetadata(OArtifact artifactForUpdate, OArtifact newArtifact) {
+    public static void updateOArtifactInMetadata(OArtifact artifactForUpdate, OArtifact newArtifact) {
         Args.notNull(artifactForUpdate, "artifactForUpdate");
         Args.notNull(newArtifact, "newArtifact");
-        metadataUtil.updateOoArtifactMetadata(artifactForUpdate, newArtifact);
+        metadataUtil.updateOArtifactMetadata(artifactForUpdate, newArtifact);
     }
 
     /**
@@ -300,9 +308,9 @@ public abstract class OrienteerClassLoaderUtil {
      * @param oArtifacts {@link List<OArtifact>} for update or create in metadata.xml
      * @throws IllegalArgumentException if oArtifacts is null
      */
-    public static void updateOoArtifactsInMetadata(List<OArtifact> oArtifacts) {
+    public static void updateOArtifactsInMetadata(List<OArtifact> oArtifacts) {
         Args.notNull(oArtifacts, "oArtifacts");
-        metadataUtil.updateOoArtifactsMetadata(oArtifacts);
+        metadataUtil.updateOArtifactsMetadata(oArtifacts);
     }
 
     /**
@@ -310,7 +318,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link List<OArtifact>} artifacts from metadata.xml
      */
     public static List<OArtifact> getOoArtifactsMetadataAsList() {
-        return metadataUtil.readOoArtifactsAsList();
+        return metadataUtil.readOArtifactsAsList();
     }
 
     /**
@@ -318,7 +326,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link List<OArtifact>} artifacts for load from metadata.xml
      */
     public static List<OArtifact> getOoArtifactsMetadataForLoadAsList() {
-        return metadataUtil.readOoArtifactsForLoadAsList();
+        return metadataUtil.readOArtifactsForLoadAsList();
     }
 
     /**
@@ -372,18 +380,18 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Optional<File>} of artifact's jar file or Optional.absent() if can't add artifact's jar file to folder
      * @throws IllegalArgumentException if artifactName is null or empty. Or when fileUpload is null.
      */
-    public static Optional<File> createJarTempFile(String artifactName, FileUpload fileUpload) {
+    public static File createJarTempFile(String artifactName, FileUpload fileUpload) {
         Args.notEmpty(artifactName, "artifactName");
         Args.notNull(fileUpload, "fileUpload");
         String fileName = fileUpload.getClientFileName();
         try {
             File file = File.createTempFile(fileName.replaceAll("\\.jar", ""), ".jar");
             fileUpload.writeTo(file);
-            return Optional.of(file);
+            return file;
         } catch (Exception e) {
             LOG.error("Cannot upload file: {}", fileName, e);
         }
-        return Optional.absent();
+        return null;
     }
 
     /**
@@ -392,17 +400,17 @@ public abstract class OrienteerClassLoaderUtil {
      * @param newFileName - new name of file. If newFileName is null or empty uses {@link Path} file name.
      * @throws IllegalArgumentException if file is null
      */
-    public static Optional<Path> moveJarFileToArtifactsFolder(Path path, String newFileName) {
+    public static Path moveJarFileToArtifactsFolder(Path path, String newFileName) {
         Args.notNull(path, "file");
         Path artifactsFolder = getArtifactsFolder();
         Path newFilePath = Strings.isNullOrEmpty(newFileName) ? artifactsFolder.resolve(path.getFileName())
                 : artifactsFolder.resolve(newFileName);
         try {
-            return Optional.of(Files.move(path, newFilePath));
+            return Files.move(path, newFilePath);
         } catch (IOException e) {
             LOG.error("Can't move file! Old path: {} \n new path: {}",
                     path.toAbsolutePath(), newFilePath.toAbsolutePath(), e);
         }
-        return Optional.absent();
+        return null;
     }
 }

@@ -1,6 +1,5 @@
 package org.orienteer.core.component.command;
 
-import com.google.common.base.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -48,11 +47,11 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArti
         int success = 0;
         int failed = 0;
         for (OArtifact availableArtifact : availableArtifacts) {
-            Optional<Artifact> artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(
+            Artifact artifact = OrienteerClassLoaderUtil.downloadArtifact(
                     availableArtifact.getArtifactReference().toAetherArtifact());
-            if (artifactOptional.isPresent()) {
+            if (artifact!=null) {
                 availableArtifact.setDownloaded(true);
-                saveOArtifact(artifactOptional.get(), availableArtifact.getArtifactReference());
+                saveOArtifact(artifact, availableArtifact.getArtifactReference());
                 success++;
             } else {
                 failed++;

@@ -1,10 +1,11 @@
 package org.orienteer.core.boot.loader;
 
-import com.google.common.base.Optional;
+import com.google.common.base.Optional;import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.MavenResolver;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
+import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.*;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
@@ -15,7 +16,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,13 +31,11 @@ import java.util.Set;
  */
 public class OrienteerClassLoader extends URLClassLoader {
 	
-	private final MavenResolver resolver = MavenResolver.get();
-
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoader.class);
 
-    private static ClassLoader orienteerClassLoader;
-    private static OrienteerClassLoader trustedClassLoader;
-    private static OrienteerClassLoader untrustedClassLoader;
+    private static ClassLoader parentClassLoader;
+    private static OrienteerClassLoader trustedOrienteerClassLoader;
+    private static OrienteerClassLoader untrustedOrienteerClassLoader;
     private static boolean useUnTrusted = true;
     private static boolean useOrienteerClassLoader = false;
     private static boolean orienteerClassLoaderOn = false;
@@ -43,8 +44,23 @@ public class OrienteerClassLoader extends URLClassLoader {
      * Create trusted and untrusted OrienteerClassLoader
      * @param parent - classloader for delegate loading classes
      */
-    public static void create(ClassLoader parent) {
-        trustedClassLoader = new OrienteerClassLoader(parent);
+    public static void initOrienteerClassLoaders(ClassLoader parent) {
+    	parentClassLoader = parent;
+        Map<Path, OArtifact> oArtifacts = getOArtifactsMetadataInMap();
+        List<Path> jars = getJarsInArtifactsFolder();
+
+        List<OArtifact> modulesForLoad = new ArrayList<>();
+        
+        modulesForLoad.addAll(updateMetadataFromJars(jars));
+        modulesForLoad.addAll(oArtifacts.values());
+        MavenResolver.get().setDependencies(modulesForLoad);
+        
+        trustedOrienteerClassLoader = new OrienteerClassLoader(parent);
+        untrustedOrienteerClassLoader = new OrienteerClassLoader(trustedOrienteerClassLoader);
+        for (OArtifact oArtifact : modulesForLoad) {
+			if(oArtifact.isTrusted()) trustedOrienteerClassLoader.addOArtifactToClassLoaderResources(oArtifact);
+			else untrustedOrienteerClassLoader.addOArtifactToClassLoaderResources(oArtifact);
+		}
     }
 
     /**
@@ -54,7 +70,7 @@ public class OrienteerClassLoader extends URLClassLoader {
     public static ClassLoader getClassLoader() {
         if (!isOrienteerClassLoaderEnable())
             return OrienteerWebApplication.class.getClassLoader();
-        return useUnTrusted ? untrustedClassLoader : (useOrienteerClassLoader ? orienteerClassLoader : trustedClassLoader);
+        return useUnTrusted ? untrustedOrienteerClassLoader : (useOrienteerClassLoader ? parentClassLoader : trustedOrienteerClassLoader);
     }
 
     /**
@@ -115,20 +131,6 @@ public class OrienteerClassLoader extends URLClassLoader {
      */
 	private OrienteerClassLoader(ClassLoader parent) {
 		super(new URL[0], parent);
-        orienteerClassLoader = parent;
-        Map<Path, OArtifact> oArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataInMap();
-        List<Path> jars = OrienteerClassLoaderUtil.getJarsInArtifactsFolder();
-
-        List<OArtifact> modulesForLoad;
-        if (oArtifacts.isEmpty()) {
-            modulesForLoad = createModules(jars);
-        } else {
-            modulesForLoad = getUpdateModules(oArtifacts);
-            resolver.setDependencies(modulesForLoad);
-        }
-        modulesForLoad = searchTrustyModules(modulesForLoad, parent);
-        addModulesToClassLoaderResources(getTrustedModules(modulesForLoad));
-        untrustedClassLoader = new OrienteerClassLoader(getUnTrustedModules(modulesForLoad), this);
     }
 
     /**
@@ -141,28 +143,6 @@ public class OrienteerClassLoader extends URLClassLoader {
 	    addModulesToClassLoaderResources(unTrustedModules);
     }
 
-    /**
-     * Test Orienteer modules - load it together.
-     * @param unTrustedModules - untrusted modules
-     * @param parent - parent classloader
-     * @return list with tested Orienteer modules
-     */
-    private List<OArtifact> searchTrustyModules(List<OArtifact> unTrustedModules,
-                                                           ClassLoader parent) {
-        List<OArtifact> trustyModules = Lists.newArrayList();
-        OrienteerSandboxClassLoader sandboxClassLoader = new OrienteerSandboxClassLoader(parent);
-        for (OArtifact module : unTrustedModules) {
-            boolean isTrusted = sandboxClassLoader.test(module);
-            if (isTrusted) {
-                trustyModules.add(module);
-            } else {
-                sandboxClassLoader = new OrienteerSandboxClassLoader(parent);
-                sandboxClassLoader.loadResourcesInClassLoader(trustyModules);
-            }
-        }
-        return trustyModules;
-    }
-
 
     /**
      * Add Orienteer modules to classloader resources.
@@ -171,29 +151,40 @@ public class OrienteerClassLoader extends URLClassLoader {
      */
     private void addModulesToClassLoaderResources(List<OArtifact> modules) {
         for(OArtifact metadata : modules) {
-            try {
-                addURL(metadata.getArtifactReference().getFile().toURI().toURL());
-                for (OArtifactReference artifact : metadata.getDependencies()) {
-                    addURL(artifact.getFile().toURI().toURL());
-                }
-            } catch (MalformedURLException e) {
-                LOG.error("Can't load dependency", e);
+        	addOArtifactToClassLoaderResources(metadata);
+        }
+    }
+    
+    /**
+     * Add Orienteer module to classloader resources.
+     * @param metadata - metadata of artifact to add
+     * @throws NullPointerException if jar file of module is null
+     */
+    private void addOArtifactToClassLoaderResources(OArtifact metadata) {
+        try {
+            addURL(metadata.getArtifactReference().getFile().toURI().toURL());
+            for (OArtifactReference artifact : metadata.getDependencies()) {
+                addURL(artifact.getFile().toURI().toURL());
             }
+        } catch (MalformedURLException e) {
+            LOG.error("Can't load dependency", e);
         }
     }
 
     /**
-     * Create modules list from modules folder.
+     * Update modules list from modules folder.
      * @param jars jars in modules folder
      * @return list which contains Orienteer modules
      */
-	private List<OArtifact> createModules(List<Path> jars) {
-        List<OArtifact> modules = resolver.getResolvedoArtifacts(jars);
-        if (modules.size() > 0) {
-            OrienteerClassLoaderUtil.createOArtifactsMetadata(modules);
-        } else OrienteerClassLoaderUtil.deleteMetadataFile();
-
-        return modules;
+	private static List<OArtifact> updateMetadataFromJars(List<Path> jars) {
+		if(jars!=null && !jars.isEmpty()) {
+	        List<OArtifact> modules = MavenResolver.get().getResolvedOArtifacts(jars);
+	        if (modules.size() > 0) {
+	            updateOArtifactsInMetadata(modules);
+	        } else deleteMetadataFile();
+	
+	        return modules;
+		} else return new ArrayList<>();
     }
 
     /**
@@ -203,14 +194,14 @@ public class OrienteerClassLoader extends URLClassLoader {
      */
     private List<OArtifact> getUpdateModules(Map<Path, OArtifact> oArtifacts) {
         resolveModulesWithoutMainJar(oArtifacts);
-	    List<Path> jars = OrienteerClassLoaderUtil.getJarsInArtifactsFolder();
+	    List<Path> jars = getJarsInArtifactsFolder();
 	    List<OArtifact> modulesForWrite = getModulesForAddToMetadata(jars, oArtifacts);
 
 	    if (modulesForWrite.size() > 0) {
-            OrienteerClassLoaderUtil.updateOoArtifactsInMetadata(modulesForWrite);
+            updateOArtifactsInMetadata(modulesForWrite);
         }
 
-        oArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataForLoadInMap();
+        oArtifacts = getOArtifactsMetadataForLoadInMap();
 
         return getModulesForLoad(oArtifacts.values());
     }
@@ -229,7 +220,7 @@ public class OrienteerClassLoader extends URLClassLoader {
                 modulesForWrite.add(pathToJar);
             }
         }
-        return resolver.getResolvedoArtifacts(modulesForWrite);
+        return MavenResolver.get().getResolvedOArtifacts(modulesForWrite);
     }
 
     /**
@@ -255,10 +246,10 @@ public class OrienteerClassLoader extends URLClassLoader {
     private void resolveModulesWithoutMainJar(Map<Path, OArtifact> modules) {
         List<OArtifact> modulesWithoutMainJar = getModulesWithoutMainJar(modules.values());
         if (modulesWithoutMainJar.size() > 0) {
-            resolver.downloadOArtifacts(modulesWithoutMainJar);
+        	MavenResolver.get().downloadOArtifacts(modulesWithoutMainJar);
             List<Path> keysForDelete = Lists.newArrayList();
             for (Path key : modules.keySet()) {
-                if (key.toString().contains(OrienteerClassLoaderUtil.WITHOUT_JAR)) {
+                if (key.toString().contains(WITHOUT_JAR)) {
                     keysForDelete.add(key);
                 }
             }
@@ -268,7 +259,7 @@ public class OrienteerClassLoader extends URLClassLoader {
             for (OArtifact module : modulesWithoutMainJar) {
                 modules.put(module.getArtifactReference().getFile().toPath(), module);
             }
-            OrienteerClassLoaderUtil.updateOArtifactsJarsInMetadata(modulesWithoutMainJar);
+            updateOArtifactsJarsInMetadata(modulesWithoutMainJar);
         }
     }
 
@@ -314,63 +305,6 @@ public class OrienteerClassLoader extends URLClassLoader {
         return unTrustedModules;
     }
 
-    /**
-     * Sandbox classloader for testing Orienteer modules before their loading
-     */
-    private static class OrienteerSandboxClassLoader extends URLClassLoader {
-
-        public OrienteerSandboxClassLoader(ClassLoader parent) {
-            super(new URL[]{}, parent);
-        }
-
-        /**
-         * Test loading resources in classloader
-         * @param modules - list of modules for load
-         */
-        public void loadResourcesInClassLoader(List<OArtifact> modules) {
-            for (OArtifact module : modules) {
-                loadResourceInClassLoader(module);
-            }
-        }
-
-        /**
-         * Load module and resources of module in classloader
-         * @param module - {@link OArtifact} for load in classloader
-         */
-        private void loadResourceInClassLoader(OArtifact module) {
-            try {
-                addURL(module.getArtifactReference().getFile().toURI().toURL());
-                for (OArtifactReference artifact : module.getDependencies()) {
-                    addURL(artifact.getFile().toURI().toURL());
-                }
-            } catch (MalformedURLException e) {
-                LOG.error("Cannot load dependency.", e);
-            }
-        }
-
-        /**
-         * Testing module. Search and load Wicket init class {@link org.apache.wicket.IInitializer}.
-         * @param module - {@link OArtifact} for testing
-         * @return true - if loading is success (loading without {@link ClassNotFoundException})
-         *         false - if loading is failed (loading with {@link ClassNotFoundException})
-         */
-        public boolean test(OArtifact module) {
-            boolean trusted = false;
-            try {
-                loadResourceInClassLoader(module);
-                Path pathToJar = module.getArtifactReference().getFile().toPath();
-                Optional<String> className = OrienteerClassLoaderUtil.searchOrienteerInitModule(pathToJar);
-                if (className.isPresent()) {
-                    loadClass(className.get());
-                    trusted = true;
-                }
-            } catch (ClassNotFoundException e) {
-                LOG.warn("Cannot search and load init class for module: {}", module);
-                if (LOG.isDebugEnabled()) e.printStackTrace();
-            }
-            return trusted;
-        }
-    }
 
     @Override
     public String toString() {

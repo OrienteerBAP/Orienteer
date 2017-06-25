@@ -1,6 +1,5 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.http.util.Args;
@@ -36,7 +35,7 @@ class PomXmlUtils extends AbstractXmlUtil {
      * @param pomXml pom.xml for read
      * @return {@link Artifact} with parent's group, artifact, version
      */
-    Optional<Artifact> readParentGAVInPomXml(Path pomXml) {
+    Artifact readParentGAVInPomXml(Path pomXml) {
         Args.notNull(pomXml, "pomXml");
         Document doc = readDocumentFromFile(pomXml);
         String expression = String.format("/%s/%s", PROJECT, PARENT);
@@ -47,10 +46,10 @@ class PomXmlUtils extends AbstractXmlUtil {
             String artifactId = element.getElementsByTagName(ARTIFACT).item(0).getTextContent();
             String version = element.getElementsByTagName(VERSION).item(0).getTextContent();
             if (groupId != null && artifactId != null && version != null)
-                return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version)));
+                return (Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version));
         }
 
-        return Optional.absent();
+        return null;
     }
 
     /**
@@ -60,7 +59,7 @@ class PomXmlUtils extends AbstractXmlUtil {
      * @param pomXml pom.xml for read
      * @return {@link Artifact} with group, artifact, version
      */
-    Optional<Artifact> readGroupArtifactVersionInPomXml(Path pomXml) {
+    Artifact readGroupArtifactVersionInPomXml(Path pomXml) {
         String groupExpression    = String.format("/%s/%s", PROJECT, GROUP);
         String artifactExpression = String.format("/%s/%s", PROJECT, ARTIFACT);
         String versionExpression  = String.format("/%s/%s", PROJECT, VERSION);
@@ -69,15 +68,15 @@ class PomXmlUtils extends AbstractXmlUtil {
         NodeList artifact = executeExpression(artifactExpression, doc);
         NodeList version = executeExpression(versionExpression, doc);
 
-        Artifact parent = readParentGAVInPomXml(pomXml).orNull();
+        Artifact parent = readParentGAVInPomXml(pomXml);
         String groupId = (group != null && group.getLength() > 0) ? group.item(0).getTextContent() : (parent != null ? parent.getGroupId() : null);
         String artifactId = (artifact != null && artifact.getLength() > 0) ? artifact.item(0).getTextContent() : null;
         String versionId = (version != null && version.getLength() > 0) ? version.item(0).getTextContent() : (parent != null ? parent.getVersion() : null);
 
-        if (groupId != null && artifactId != null && versionId != null)
-            return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, versionId)));
-
-        return Optional.absent();
+        
+        return (groupId != null && artifactId != null && versionId != null) 
+            ? (Artifact) new DefaultArtifact(getGAV(groupId, artifactId, versionId))
+            : null;
     }
 
     /**
@@ -101,8 +100,8 @@ class PomXmlUtils extends AbstractXmlUtil {
                 Node node = dependenciesNode.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
-                    Optional<Artifact> artifactOptional = parseDependency(element, versions);
-                    if (artifactOptional.isPresent()) dependencies.add(artifactOptional.get());
+                    Artifact artifact = parseDependency(element, versions);
+                    if (artifact!=null) dependencies.add(artifact);
                 }
             }
         }
@@ -173,7 +172,7 @@ class PomXmlUtils extends AbstractXmlUtil {
      * @return {@link Optional<Artifact>} - if parse is success
      *         Optional.absent() - if parse is failed
      */
-    private Optional<Artifact> parseDependency(Element element, Map<String, String> versions) {
+    private Artifact parseDependency(Element element, Map<String, String> versions) {
         Element groupElement = (Element) element.getElementsByTagName(GROUP).item(0);
         Element artifactElement = (Element) element.getElementsByTagName(ARTIFACT).item(0);
         Element versionElement = (Element) element.getElementsByTagName(VERSION).item(0);
@@ -184,10 +183,9 @@ class PomXmlUtils extends AbstractXmlUtil {
             version = versions.get(version);
         }
 
-        if (groupId != null && artifactId != null && version != null)
-            return Optional.of((Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version)));
-
-        return Optional.absent();
+        return (groupId != null && artifactId != null && version != null)
+            ? (Artifact) new DefaultArtifact(getGAV(groupId, artifactId, version))
+            : null;
     }
 
     /**

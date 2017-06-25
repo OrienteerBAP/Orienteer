@@ -1,6 +1,5 @@
 package org.orienteer.core.component.command;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -36,10 +35,10 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
         File artifactFile = artifact.getArtifactReference().getFile();
         if (artifactFile != null) {
             if (isUserArtifactValid(target, artifact)) {
-                Optional<Path> pathOptional = OrienteerClassLoaderUtil
+                Path path = OrienteerClassLoaderUtil
                         .moveJarFileToArtifactsFolder(artifactFile.toPath(), artifactFile.getName());
-                if (pathOptional.isPresent()) {
-                    artifact.getArtifactReference().setFile(pathOptional.get().toFile());
+                if (path!=null) {
+                    artifact.getArtifactReference().setFile(path.toFile());
                     OrienteerClassLoaderUtil.updateOArtifactInMetadata(artifact);
                     artifact.setDownloaded(true);
                 }
@@ -49,18 +48,18 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
         }
     }
 
-    private void resolveUserArtifact(AjaxRequestTarget target, OArtifact artifact) {
-        String repository = artifact.getArtifactReference().getRepository();
-        OArtifactReference artifactReference = artifact.getArtifactReference();
-        Optional<Artifact> artifactOptional;
+    private void resolveUserArtifact(AjaxRequestTarget target, OArtifact oArtifact) {
+        String repository = oArtifact.getArtifactReference().getRepository();
+        OArtifactReference artifactReference = oArtifact.getArtifactReference();
+        Artifact artifact;
         if (!Strings.isNullOrEmpty(repository)) {
-            artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact(), repository);
-        } else artifactOptional = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact());
+            artifact = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact(), repository);
+        } else artifact = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact());
 
-        if (artifactOptional.isPresent()) {
-            artifactReference.setFile(artifactOptional.get().getFile());
-            OrienteerClassLoaderUtil.updateOArtifactInMetadata(artifact);
-            artifact.setDownloaded(true);
+        if (artifact!=null) {
+            artifactReference.setFile(artifact.getFile());
+            OrienteerClassLoaderUtil.updateOArtifactInMetadata(oArtifact);
+            oArtifact.setDownloaded(true);
         } else {
             sendErrorFeedback(target, new ResourceModel(DOWNLOAD_ERROR));
         }
