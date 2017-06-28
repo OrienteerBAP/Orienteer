@@ -7,6 +7,7 @@ import org.apache.http.util.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
@@ -71,15 +72,16 @@ public abstract class OrienteerClassLoaderUtil {
         return ooArtifacts;
     }
 
+
     /**
-     * Resolve artifact. Download its dependencies
-     * @param artifact - {@link Artifact} for resolve
-     * @return {@link List<ArtifactResult>} - dependencies of artifact
+     * Resolve dependency (artifact). Download its dependencies
+     * @param dependency - {@link Dependency} for resolve
+     * @return {@link List<Dependency>} - dependencies of artifact
      * @throws IllegalArgumentException if artifact is null
      */
-    public static List<ArtifactResult> getResolvedArtifact(Artifact artifact) {
-        Args.notNull(artifact, "artifact");
-        return aetherUtils.resolveArtifact(artifact);
+    public static List<Artifact> getResolvedDependency(Dependency dependency) {
+        Args.notNull(dependency, "dependency");
+        return aetherUtils.resolveDependency(dependency);
     }
 
     /**
@@ -99,7 +101,7 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link List<ArtifactResult>} resolved dependencies of artifacts
      * @throws IllegalArgumentException if artifacts is null
      */
-    public static List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
+    public static List<Artifact> resolveArtifacts(Set<Artifact> artifacts) {
         Args.notNull(artifacts, "artifacts");
         return aetherUtils.resolveArtifacts(artifacts);
     }

@@ -82,6 +82,14 @@ public class OrienteerClassLoader extends URLClassLoader {
     }
 
 
+    public static boolean isUseUnTrusted() {
+        return useUnTrusted;
+    }
+
+    public static boolean isUseOrienteerClassLoader() {
+        return useOrienteerClassLoader;
+    }
+
     /**
      * Enable OrienteerClassLoader. It's possible to run Orienteer with modules
      */
@@ -120,7 +128,7 @@ public class OrienteerClassLoader extends URLClassLoader {
         List<Path> jars = OrienteerClassLoaderUtil.getJarsInArtifactsFolder();
 
         List<OArtifact> modulesForLoad;
-        if (oArtifacts.isEmpty()) {
+        if (oArtifacts.isEmpty() && jars.size() > 0) {
             modulesForLoad = createModules(jars);
         } else {
             modulesForLoad = getUpdateModules(oArtifacts);
@@ -128,7 +136,9 @@ public class OrienteerClassLoader extends URLClassLoader {
         }
         modulesForLoad = searchTrustyModules(modulesForLoad, parent);
         addModulesToClassLoaderResources(getTrustedModules(modulesForLoad));
-        untrustedClassLoader = new OrienteerClassLoader(getUnTrustedModules(modulesForLoad), this);
+        if (useUnTrusted) {
+            untrustedClassLoader = new OrienteerClassLoader(getUnTrustedModules(modulesForLoad), this);
+        } else untrustedClassLoader = null;
     }
 
     /**

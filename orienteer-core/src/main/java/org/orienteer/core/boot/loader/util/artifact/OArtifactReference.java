@@ -122,6 +122,10 @@ public class OArtifactReference implements Serializable {
         return version;
     }
 
+    public String getGAV() {
+        return String.format("%s:%s:%s", groupId, artifactId, version);
+    }
+
     public File getFile() {
         return file;
     }
