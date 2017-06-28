@@ -95,6 +95,7 @@
 		<module>orienteer-archetype-jar</module>
 		<module>orienteer-archetype-war</module>
 	</modules>
+
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->
