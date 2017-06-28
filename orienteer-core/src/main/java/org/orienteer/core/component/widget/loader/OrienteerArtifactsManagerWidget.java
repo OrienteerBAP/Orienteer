@@ -1,13 +1,7 @@
 package org.orienteer.core.component.widget.loader;
 
-import com.google.common.base.Converter;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import ru.ydn.wicket.wicketorientdb.converter.IdentityConverter;
-import ru.ydn.wicket.wicketorientdb.model.AbstractListModel;
-import ru.ydn.wicket.wicketorientdb.model.JavaSortableDataProvider;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
@@ -33,9 +27,11 @@ import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.converter.IdentityConverter;
+import ru.ydn.wicket.wicketorientdb.model.AbstractListModel;
+import ru.ydn.wicket.wicketorientdb.model.JavaSortableDataProvider;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 

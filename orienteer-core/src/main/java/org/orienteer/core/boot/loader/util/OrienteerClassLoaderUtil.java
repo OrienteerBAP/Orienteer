@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.util.io.IOUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
@@ -81,6 +82,17 @@ public abstract class OrienteerClassLoaderUtil {
             }
         }
         return ooArtifacts;
+    }
+
+    /**
+     * Resolve dependency (artifact). Download its dependencies
+     * @param dependency - {@link Dependency} for resolve
+     * @return {@link List<Dependency>} - dependencies of artifact
+     * @throws IllegalArgumentException if artifact is null
+     */
+    public static List<Artifact> getResolvedDependency(Dependency dependency) {
+        Args.notNull(dependency, "dependency");
+        return aetherUtils.resolveDependency(dependency);
     }
 
     /**

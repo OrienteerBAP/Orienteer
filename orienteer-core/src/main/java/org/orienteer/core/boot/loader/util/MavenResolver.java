@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.resolution.ArtifactDescriptorException;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResolutionException;
@@ -44,21 +45,19 @@ public class MavenResolver {
 
     /**
      * Set dependency fot Orienteer modules
-     * @param modulesConfigs - modules configurations without dependencies
+     * @param oArtifacts - modules configurations without dependencies
      * @return modules with dependencies
      */
-    public List<OArtifact> setDependencies(List<OArtifact> modulesConfigs) {
-        for (OArtifact module : modulesConfigs) {
-            OArtifactReference artifact = module.getArtifactReference();
-            File moduleJar = artifact.getFile();
-            Path pomFromJar = OrienteerClassLoaderUtil.getPomFromJar(moduleJar.toPath());
-            if (pomFromJar != null) {
-                List<Artifact> dependencies = getArtifactsFromArtifactResult(resolveDependenciesFromPomXml(pomFromJar));
-                module.setDependencies(toOArtifactDependencies(dependencies));
-            }
+    public List<OArtifact> setDependencies(List<OArtifact> oArtifacts) {
+        for (OArtifact artifact : oArtifacts) {
+            OArtifactReference artifactReference = artifact.getArtifactReference();
+            List<Artifact> dependencies = OrienteerClassLoaderUtil.getResolvedDependency(
+                    new Dependency(artifactReference.toAetherArtifact(), "compile"));
+            artifact.setDependencies(toOArtifactDependencies(dependencies));
         }
-        return modulesConfigs;
+        return oArtifacts;
     }
+
 
     /**
      * @param jars paths to unresolved modules in jar files
@@ -111,6 +110,7 @@ public class MavenResolver {
 
     private OArtifact getOArtifact(String group, String artifact, String version,
                                                                   Path pathToMainArtifact) {
+
         return getOArtifact(String.format("%s:%s:%s", group, artifact, version), pathToMainArtifact);
     }
 
