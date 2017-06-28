@@ -1,7 +1,6 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.http.util.Args;
@@ -13,7 +12,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -92,19 +90,15 @@ class PomXmlUtils extends AbstractXmlUtil {
         String dependenciesExp          = String.format("/%s/%s/*", PROJECT, DEPENDENCIES);
         String dependenciesManagmentExp = String.format("/%s/%s/%s/*", PROJECT, DEPENDENCIES_MANAGMENT, DEPENDENCIES);
         Document doc = readDocumentFromFile(pomXml);
-        List<NodeList> nodes = Lists.newArrayList();
-        nodes.add(executeExpression(dependenciesExp, doc));
-        nodes.add(executeExpression(dependenciesManagmentExp, doc));
-
+        NodeList dependenciesNode = executeExpression(dependenciesExp, doc);
+        if (dependenciesNode == null || dependenciesNode.getLength() == 0) {
+            dependenciesNode = executeExpression(dependenciesManagmentExp, doc);
+        }
         Set<Artifact> dependencies =  Sets.newHashSet();
-        Map<String, String> versions = getPropertiesVersionsFromPomXml(pomXml);
-
-        for (NodeList nodeList : nodes) {
-            if (nodeList == null)
-                continue;
-
-            for (int i = 0; i < nodeList.getLength(); i++) {
-                Node node = nodeList.item(i);
+        if (dependenciesNode != null && dependenciesNode.getLength() != 0) {
+            Map<String, String> versions = getPropertiesVersionsFromPomXml(pomXml);
+            for (int i = 0; i < dependenciesNode.getLength(); i++) {
+                Node node = dependenciesNode.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
                     Optional<Artifact> artifactOptional = parseDependency(element, versions);
@@ -115,7 +109,6 @@ class PomXmlUtils extends AbstractXmlUtil {
 
         return dependencies;
     }
-
 
     /**
      * Search versions which are in xml node <properties></properties>

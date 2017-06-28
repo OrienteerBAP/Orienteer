@@ -35,6 +35,7 @@ public final class OrienteerFilter implements Filter {
     private static final String RELOAD_HTML = "org/orienteer/core/web/OrienteerReloadPage.html";
 
     private static OrienteerFilter instance;
+    private static boolean useUnTrusted = true;
 
     private Filter filter;
     private Injector injector;
@@ -63,14 +64,14 @@ public final class OrienteerFilter implements Filter {
         try {
             filter.init(filterConfig);
         } catch (Throwable t) {
-            if (OrienteerClassLoader.isUseUnTrusted()) {
+            if (useUnTrusted) {
+                LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);
                 useTrustedClassLoader();
-                LOG.warn("Can't run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);
+                useUnTrusted = false;
             } else {
+                LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.", t);
                 useOrienteerClassLoader();
-                LOG.warn("Can't run Orienteer with trusted classloader. Orienteer runs with custom classloader.", t);
             }
-            reloading = false;
             instance.reload(1000);
         }
     }
@@ -123,11 +124,10 @@ public final class OrienteerFilter implements Filter {
 				/*NOP*/
 			}
             OrienteerClassLoaderUtil.reindex();
-
-            init(filterConfig);
-            WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
-            reloading = false;
-        }
+	        init(filterConfig);
+	        WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
+	        reloading = false;
+    	}
     }
 
     private void useTrustedClassLoader() {
@@ -171,15 +171,5 @@ public final class OrienteerFilter implements Filter {
 				}
 			}
 		}, delay, TimeUnit.MILLISECONDS);
-    }
-
-    private static class ReloadOrienteerException extends RuntimeException {
-        public ReloadOrienteerException(String s, Throwable throwable) {
-            super(s, throwable);
-        }
-
-        public ReloadOrienteerException(String s) {
-            super(s);
-        }
     }
 }
