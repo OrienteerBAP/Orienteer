@@ -10,11 +10,8 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -23,7 +20,6 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,41 +49,22 @@ class AetherUtils {
 
 
     /**
-     * Resolve dependency
-     * @param dependency {@link Dependency} for resolve its dependencies
-     * @return {@link List<Artifact>} of resolved artifact
-     * @throws IllegalArgumentException if dependency is null
+     * Resolve artifact
+     * @param artifact {@link Artifact} for resolve its dependencies
+     * @return {@link List<ArtifactResult>} of resolved artifact
+     * @throws IllegalArgumentException if artifact is null
      */
-    public List<Artifact> resolveDependency(Dependency dependency) {
-        Args.notNull(dependency, "dependency");
-        CollectRequest collectRequest = new CollectRequest();
-        collectRequest.setRoot(dependency);
-        collectRequest.setRepositories(repositories);
-        List<Artifact> result = Lists.newArrayList();
-
-        DependencyNode node = null;
+    public List<ArtifactResult> resolveArtifact(Artifact artifact) {
+        Args.notNull(artifact, "artifact");
+        ArtifactDescriptorRequest descriptorRequest = createArtifactDescriptionRequest(artifact);
+        ArtifactDescriptorResult descriptorResult = null;
         try {
-            node = system.collectDependencies(session, collectRequest).getRoot();
-        } catch (DependencyCollectionException e) {
-            if (LOG.isDebugEnabled()) {
-                LOG.warn("Can't collect dependencies for: {}", dependency, e);
-            }
+            descriptorResult = system.readArtifactDescriptor(session, descriptorRequest);
+        } catch (ArtifactDescriptorException e) {
+            if (LOG.isDebugEnabled()) e.printStackTrace();
         }
-        if (node != null) {
-            DependencyRequest dependencyRequest = new DependencyRequest();
-            dependencyRequest.setRoot(node);
-            try {
-                system.resolveDependencies(session, dependencyRequest);
-            } catch (DependencyResolutionException e) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.warn("Can't resolve dependencies for: {}", dependency, e);
-                }
-            }
-            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-            node.accept(nlg);
-            result = nlg.getArtifacts(false);
-        }
-        return result;
+        Set<ArtifactRequest> requests = createArtifactRequests(descriptorResult);
+        return resolveArtifactRequests(requests);
     }
 
     /**
@@ -96,11 +73,11 @@ class AetherUtils {
      * @return {@link List<ArtifactResult>} of resolved artifact
      * @throws IllegalArgumentException if artifacts is null
      */
-    public List<Artifact> resolveArtifacts(Set<Artifact> artifacts) {
+    public List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
         Args.notNull(artifacts, "artifacts");
-        List<Artifact> results = Lists.newArrayList();
+        List<ArtifactResult> results = Lists.newArrayList();
         for (Artifact artifact : artifacts) {
-            results.addAll(resolveDependency(new Dependency(artifact, "compile")));
+            results.addAll(resolveArtifact(artifact));
         }
         return results;
     }

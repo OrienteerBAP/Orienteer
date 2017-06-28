@@ -7,7 +7,6 @@ import com.google.common.collect.Sets;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyCollectionException;
-import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.resolution.ArtifactDescriptorException;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResolutionException;
@@ -16,7 +15,6 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -47,17 +45,20 @@ public class MavenResolver {
 
     /**
      * Set dependency fot Orienteer modules
-     * @param oArtifacts - modules configurations without dependencies
+     * @param modulesConfigs - modules configurations without dependencies
      * @return modules with dependencies
      */
-    public List<OArtifact> setDependencies(List<OArtifact> oArtifacts) {
-        for (OArtifact artifact : oArtifacts) {
-            OArtifactReference artifactReference = artifact.getArtifactReference();
-            List<Artifact> dependencies = OrienteerClassLoaderUtil.getResolvedDependency(
-                    new Dependency(artifactReference.toAetherArtifact(), "compile"));
-            artifact.setDependencies(toOArtifactDependencies(dependencies));
+    public List<OArtifact> setDependencies(List<OArtifact> modulesConfigs) {
+        for (OArtifact module : modulesConfigs) {
+            OArtifactReference artifact = module.getArtifactReference();
+            File moduleJar = artifact.getFile();
+            Optional<Path> pomFromJar = OrienteerClassLoaderUtil.getPomFromJar(moduleJar.toPath());
+            if (pomFromJar.isPresent()) {
+                List<Artifact> dependencies = getArtifactsFromArtifactResult(resolveDependenciesFromPomXml(pomFromJar.get()));
+                module.setDependencies(toOArtifactDependencies(dependencies));
+            }
         }
-        return oArtifacts;
+        return modulesConfigs;
     }
 
     /**
@@ -85,22 +86,11 @@ public class MavenResolver {
 
         Optional<Artifact> dependencyOptional = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml.get());
         if (!dependencyOptional.isPresent()) return Optional.absent();
-        Artifact artifact = dependencyOptional.get();
-        List<Artifact> dependencies = OrienteerClassLoaderUtil.getResolvedDependency(new Dependency(artifact, "compile"));
-        OArtifactReference artifactReference = OArtifactReference.valueOf(artifact.setFile(file.toFile()));
-        OArtifact oArtifact = new OArtifact(artifactReference);
-        Iterator<Artifact> iterator = dependencies.iterator();
-        while (iterator.hasNext()){
-            Artifact art = iterator.next();
-            if (art.getGroupId().equals(artifact.getGroupId())
-                    && art.getArtifactId().equals(artifact.getArtifactId())
-                    && art.getVersion().equals(artifact.getVersion())) {
-                iterator.remove();
-                break;
-            }
-        }
-        oArtifact.setDependencies(toOArtifactDependencies(dependencies));
-        return Optional.of(oArtifact);
+        Artifact dependency = dependencyOptional.get();
+
+        return getOArtifact(
+                dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
+                file);
     }
 
     /**
@@ -121,54 +111,57 @@ public class MavenResolver {
         }
     }
 
+    private Optional<OArtifact> getOArtifact(String group, String artifact, String version,
+                                                                  Path pathToMainArtifact) {
+        return getOArtifact(String.format("%s:%s:%s", group, artifact, version), pathToMainArtifact);
+    }
 
-//
-//    private Optional<OArtifact> getOArtifact(String groupArtifactVersion, Path pathToJar) {
-//        Optional<OArtifactReference> mainArtifact = pathToJar != null ?
-//                getArtifactReference(groupArtifactVersion, pathToJar) : resolveAndGetArtifactReference(groupArtifactVersion);
-//        if (!mainArtifact.isPresent()) return Optional.absent();
-//        List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion);
-//
-//        OArtifact moduleMetadata = new OArtifact();
-//        moduleMetadata.setLoad(false)
-//                .setArtifactReference(mainArtifact.get())
-//                .setDependencies(toOArtifactDependencies(artifacts));
-//        return Optional.of(moduleMetadata);
-//    }
+    private Optional<OArtifact> getOArtifact(String groupArtifactVersion, Path pathToJar) {
+        Optional<OArtifactReference> mainArtifact = pathToJar != null ?
+                getArtifactReference(groupArtifactVersion, pathToJar) : resolveAndGetArtifactReference(groupArtifactVersion);
+        if (!mainArtifact.isPresent()) return Optional.absent();
+        List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion);
 
-//    private List<Artifact> resolveDependenciesInArtifacts(String groupArtifactVersion) {
-//        List<ArtifactResult> results;
-//        List<Artifact> artifacts = null;
-//        try {
-//            results = resolveDependencies(groupArtifactVersion);
-//            artifacts = getArtifactsFromArtifactResult(results);
-//        } catch (ArtifactDescriptorException | DependencyCollectionException | DependencyResolutionException e) {
-//            e.printStackTrace();
-//        }
-//        return artifacts != null ? artifacts : Lists.<Artifact>newArrayList();
-//    }
+        OArtifact moduleMetadata = new OArtifact();
+        moduleMetadata.setLoad(false)
+                .setArtifactReference(mainArtifact.get())
+                .setDependencies(toOArtifactDependencies(artifacts));
+        return Optional.of(moduleMetadata);
+    }
 
-//    private List<ArtifactResult> resolveDependenciesFromPomXml(Path pomXml) {
-//        Set<Artifact> dependencies = OrienteerClassLoaderUtil.readDependencies(pomXml);
-//        return resolveDependencies(dependencies);
-//    }
+    private List<Artifact> resolveDependenciesInArtifacts(String groupArtifactVersion) {
+        List<ArtifactResult> results;
+        List<Artifact> artifacts = null;
+        try {
+            results = resolveDependencies(groupArtifactVersion);
+            artifacts = getArtifactsFromArtifactResult(results);
+        } catch (ArtifactDescriptorException | DependencyCollectionException | DependencyResolutionException e) {
+            e.printStackTrace();
+        }
+        return artifacts != null ? artifacts : Lists.<Artifact>newArrayList();
+    }
 
-    private List<Artifact> resolveDependencies(String groupArtifactVersion) throws ArtifactDescriptorException,
+    private List<ArtifactResult> resolveDependenciesFromPomXml(Path pomXml) {
+        Set<Artifact> dependencies = OrienteerClassLoaderUtil.readDependencies(pomXml);
+        return resolveDependencies(dependencies);
+    }
+
+    private List<ArtifactResult> resolveDependencies(String groupArtifactVersion) throws ArtifactDescriptorException,
             DependencyCollectionException, DependencyResolutionException {
         if (Strings.isNullOrEmpty(groupArtifactVersion)) return Lists.newArrayList();
 
         Artifact artifact = new DefaultArtifact(groupArtifactVersion);
-        return OrienteerClassLoaderUtil.getResolvedDependency(new Dependency(artifact, "compile"));
+        return OrienteerClassLoaderUtil.getResolvedArtifact(artifact);
     }
 
-//    private List<Artifact> resolveDependencies(Set<Artifact> dependencies) {
-//        if (dependencies == null) return Lists.newArrayList();
-//        List<Artifact> results = Lists.newArrayList();
-//        results.addAll(getArtifacts(OrienteerClassLoaderUtil.downloadArtifacts(dependencies)));
-//        if (resolvingRecursively)
-//            results.addAll(OrienteerClassLoaderUtil.resolveArtifacts(results));
-//        return results;
-//    }
+    private List<ArtifactResult> resolveDependencies(Set<Artifact> dependencies) {
+        if (dependencies == null) return Lists.newArrayList();
+        List<ArtifactResult> results = Lists.newArrayList();
+        results.addAll(OrienteerClassLoaderUtil.downloadArtifacts(dependencies));
+        if (resolvingRecursively)
+            results.addAll(OrienteerClassLoaderUtil.resolveArtifacts(getArtifacts(results)));
+        return results;
+    }
 
     private Set<Artifact> getArtifacts(List<ArtifactResult> results) {
         Set<Artifact> artifacts = Sets.newHashSet();
