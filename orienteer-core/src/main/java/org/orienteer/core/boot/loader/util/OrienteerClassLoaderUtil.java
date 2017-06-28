@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.http.util.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
+import org.apache.wicket.util.io.IOUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.resolution.ArtifactResult;
@@ -60,10 +61,9 @@ public abstract class OrienteerClassLoaderUtil {
     	
     	URL website = new URL(initUtils.getOrienteerModulesUrl());
     	File localFile = new File(initUtils.getPathToModulesFolder().toFile(), "modules.xml");
-    	ReadableByteChannel rbc = Channels.newChannel(website.openStream());
     	FileOutputStream fos = new FileOutputStream(localFile);
     	try {
-    		fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+    		IOUtils.copy(website.openStream(), fos);
     	} finally {
 			fos.close();
 		}

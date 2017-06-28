@@ -13,6 +13,7 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
 import com.orientechnologies.orient.core.sql.query.OResultSet;
 
+import ru.ydn.wicket.wicketconsole.IScriptContext;
 import ru.ydn.wicket.wicketconsole.IScriptEngine;
 import ru.ydn.wicket.wicketconsole.ScriptResult;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -32,7 +33,7 @@ public class ODBScriptEngine implements IScriptEngine {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ScriptResult eval(String command) {
+	public ScriptResult eval(String command, IScriptContext ctx) {
 		ScriptResult result = new ScriptResult(ODBScriptEngineFactory.ENGINE_NAME, command);
 		if(!Strings.isEmpty(command)) {
 			command = command.trim();

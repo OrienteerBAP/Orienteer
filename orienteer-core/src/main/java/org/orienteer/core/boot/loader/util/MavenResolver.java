@@ -117,7 +117,7 @@ public class MavenResolver {
     private OArtifact getOArtifact(String groupArtifactVersion, Path pathToJar) {
         OArtifactReference mainArtifact = pathToJar != null ?
                 getArtifactReference(groupArtifactVersion, pathToJar) : resolveAndGetArtifactReference(groupArtifactVersion);
-        if (mainArtifact == null) return null;;
+        if (mainArtifact == null) return null;
         List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion);
 
         OArtifact moduleMetadata = new OArtifact();

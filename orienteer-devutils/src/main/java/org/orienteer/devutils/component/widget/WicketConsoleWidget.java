@@ -1,5 +1,6 @@
 package org.orienteer.devutils.component.widget;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.model.IModel;
@@ -12,6 +13,7 @@ import org.orienteer.core.widget.Widget;
 import com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper;
 import com.orientechnologies.orient.core.command.script.OScriptOrientWrapper;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -31,7 +33,7 @@ public class WicketConsoleWidget extends AbstractWidget<Void> {
 			@Override
 			public Map<String, Object> getBindings() {
 				Map<String, Object> bindings = new HashMap<String, Object>();
-				ODatabaseDocument db = getDatabase();
+				ODatabaseDocumentTx db = (ODatabaseDocumentTx) getDatabase();
 				bindings.put("db", new OScriptDocumentDatabaseWrapper(db));
 				bindings.put("orient", new OScriptOrientWrapper(db));
 				bindings.put("util", new OFunctionUtilWrapper());
