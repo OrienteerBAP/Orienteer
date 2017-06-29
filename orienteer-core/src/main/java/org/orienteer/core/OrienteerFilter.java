@@ -35,7 +35,6 @@ public final class OrienteerFilter implements Filter {
     private static final String RELOAD_HTML = "org/orienteer/core/web/OrienteerReloadPage.html";
 
     private static OrienteerFilter instance;
-    private static boolean useUnTrusted = true;
 
     private Filter filter;
     private Injector injector;
@@ -64,15 +63,15 @@ public final class OrienteerFilter implements Filter {
         try {
             filter.init(filterConfig);
         } catch (Throwable t) {
-            if (useUnTrusted) {
+            if (OrienteerClassLoader.isUseUnTrusted()) {
                 LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);
                 useTrustedClassLoader();
-                useUnTrusted = false;
             } else {
                 LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.", t);
                 useOrienteerClassLoader();
             }
-            instance.reload(1000);
+            reloading = false;
+            instance.reload(3000);
         }
     }
     

@@ -63,7 +63,7 @@ public class OArtifactReference implements Serializable {
         return new OArtifactReference(groupId, artifactId, version, file);
     }
 
-    public static OArtifactReference getEmptyArtifact() {
+    public static OArtifactReference getEmptyOArtifactReference() {
         return new OArtifactReference("", "", "").setRepository("");
     }
 

@@ -36,7 +36,7 @@ public class UserOArtifactPanel extends GenericPanel<OArtifact> {
     private static final String ERROR_JAR_MSG = "widget.artifacts.modal.window.user.artifact.feedback.failed.jar";
 
     public UserOArtifactPanel(String id, final OArtifactsModalWindowPage page) {
-        super(id, Model.of(OArtifact.getEmptyModule()));
+        super(id, Model.of(OArtifact.getEmptyOArtifact()));
         setOutputMarkupPlaceholderTag(true);
         final Label feedback = new Label("feedback");
         feedback.setOutputMarkupPlaceholderTag(true);
@@ -119,7 +119,7 @@ public class UserOArtifactPanel extends GenericPanel<OArtifact> {
                             }
 
                             private void errorFeedback() {
-                                getEntityModel().setObject(OArtifact.getEmptyModule());
+                                getEntityModel().setObject(OArtifact.getEmptyOArtifact());
                                 feedback.setDefaultModel(new ResourceModel(ERROR_JAR_MSG));
                                 feedback.setVisible(true);
                                 feedback.add(AttributeModifier.append("style", "color:red; font-weight:bold;"));

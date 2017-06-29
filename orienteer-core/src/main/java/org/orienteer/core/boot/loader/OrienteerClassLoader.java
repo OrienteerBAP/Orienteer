@@ -1,27 +1,24 @@
 package org.orienteer.core.boot.loader;
 
-import com.google.common.base.Optional;import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.MavenResolver;
-import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.*;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.*;
 
 /**
  * Orienteer's classloader loads modules.
@@ -47,20 +44,35 @@ public class OrienteerClassLoader extends URLClassLoader {
     public static void initOrienteerClassLoaders(ClassLoader parent) {
     	parentClassLoader = parent;
         Map<Path, OArtifact> oArtifacts = getOArtifactsMetadataInMap();
-        List<Path> jars = getJarsInArtifactsFolder();
+        Set<Path> jars = getJarsInArtifactsFolder();
 
         List<OArtifact> modulesForLoad = new ArrayList<>();
-        
-        modulesForLoad.addAll(updateMetadataFromJars(jars));
+        Set<Path> paths = oArtifacts.keySet();
+        modulesForLoad.addAll(updateMetadataFromJars(Lists.newArrayList(Sets.difference(jars, paths))));
         modulesForLoad.addAll(oArtifacts.values());
+        modulesForLoad = getFilteredModules(modulesForLoad);
         MavenResolver.get().setDependencies(modulesForLoad);
         
         trustedOrienteerClassLoader = new OrienteerClassLoader(parent);
-        untrustedOrienteerClassLoader = new OrienteerClassLoader(trustedOrienteerClassLoader);
+        if (useUnTrusted) {
+            untrustedOrienteerClassLoader = new OrienteerClassLoader(trustedOrienteerClassLoader);
+        } else untrustedOrienteerClassLoader = null;
         for (OArtifact oArtifact : modulesForLoad) {
-			if(oArtifact.isTrusted()) trustedOrienteerClassLoader.addOArtifactToClassLoaderResources(oArtifact);
-			else untrustedOrienteerClassLoader.addOArtifactToClassLoaderResources(oArtifact);
+			if(oArtifact.isTrusted())
+			    trustedOrienteerClassLoader.addOArtifactToClassLoaderResources(oArtifact);
+			else if (useUnTrusted)
+			    untrustedOrienteerClassLoader.addOArtifactToClassLoaderResources(oArtifact);
 		}
+    }
+
+    private static List<OArtifact> getFilteredModules(List<OArtifact> modules) {
+        List<OArtifact> result = Lists.newArrayList();
+        for (OArtifact module : modules) {
+            if (module.isLoad() && (useUnTrusted || module.isTrusted())) {
+                result.add(module);
+            }
+        }
+        return result;
     }
 
     /**
@@ -124,6 +136,20 @@ public class OrienteerClassLoader extends URLClassLoader {
     }
 
     /**
+     * @return true if use untrusted classloader false in otherwise.
+     */
+    public static boolean isUseUnTrusted() {
+        return useUnTrusted;
+    }
+
+    /**
+     * @return true if use custom Orienteer (container) classloader.
+     */
+    public static boolean isUseOrienteerClassLoader() {
+        return useOrienteerClassLoader;
+    }
+
+    /**
      * Constructor for trusted Orienteer classloader.
      * Test modules and resolve modules dependencies.
      * Create untrusted Orienteer classloader.
@@ -171,11 +197,12 @@ public class OrienteerClassLoader extends URLClassLoader {
 	        List<OArtifact> modules = MavenResolver.get().getResolvedOArtifacts(jars);
 	        if (modules.size() > 0) {
 	            updateOArtifactsInMetadata(modules);
-	        } else deleteMetadataFile();
+	        }
 	
 	        return modules;
 		} else return new ArrayList<>();
     }
+
 
     @Override
     public String toString() {

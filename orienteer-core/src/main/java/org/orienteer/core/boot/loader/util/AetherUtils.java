@@ -9,8 +9,11 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -19,6 +22,7 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
+import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +50,43 @@ class AetherUtils {
         this.repositories = initUtils.getRemoteRepositories();
     }
 
+    /**
+     * Resolve dependency
+     * @param dependency {@link Dependency} for resolve its dependencies
+     * @return {@link List<Artifact>} of resolved artifact
+     * @throws IllegalArgumentException if dependency is null
+     */
+    public List<Artifact> resolveDependency(Dependency dependency) {
+        Args.notNull(dependency, "dependency");
+        CollectRequest collectRequest = new CollectRequest();
+        collectRequest.setRoot(dependency);
+        collectRequest.setRepositories(repositories);
+        List<Artifact> result = Lists.newArrayList();
+
+        DependencyNode node = null;
+        try {
+            node = system.collectDependencies(session, collectRequest).getRoot();
+        } catch (DependencyCollectionException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.warn("Can't collect dependencies for: {}", dependency, e);
+            }
+        }
+        if (node != null) {
+            DependencyRequest dependencyRequest = new DependencyRequest();
+            dependencyRequest.setRoot(node);
+            try {
+                system.resolveDependencies(session, dependencyRequest);
+            } catch (DependencyResolutionException e) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.warn("Can't resolve dependencies for: {}", dependency, e);
+                }
+            }
+            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
+            node.accept(nlg);
+            result = nlg.getArtifacts(false);
+        }
+        return result;
+    }
 
     /**
      * Resolve artifact
@@ -96,7 +137,7 @@ class AetherUtils {
     /**
      * Download artifacts
      * @param artifact {@link Artifact} artifact for download
-     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent() if can't download artifact
+     * @return {@link Artifact} of downloaded artifact or Optional.absent() if can't download artifact
      * @throws IllegalArgumentException if artifact is null
      */
     public Artifact downloadArtifact(Artifact artifact) {
@@ -110,7 +151,7 @@ class AetherUtils {
      * Download artifact from repository
      * @param artifact {@link Artifact} for download
      * @param repository repository for download artifact
-     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
+     * @return {@link Artifact} of downloaded artifact or Optional.absent if can't download artifact
      * @throws IllegalArgumentException if artifact or repository is null.
      */
     public Artifact downloadArtifact(Artifact artifact, String repository) {
