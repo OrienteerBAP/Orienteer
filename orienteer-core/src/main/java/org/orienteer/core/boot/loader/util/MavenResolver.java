@@ -14,6 +14,7 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,10 @@ public class MavenResolver {
 
     private static MavenResolver resolver;
     private final boolean resolvingRecursively;
+
+    private static final String UNKNOWN_GROUP_ID    = "UNKNOWN_GROUP_ID_";
+    private static final String UNKNOWN_ARTIFACT_ID = "UNKNOWN_ARTIFACT_ID_";
+    private static final String UNKNOWN_VERSION     = "UNKNOWN_VERSION_";
 
     private MavenResolver(boolean resolvingRecursively) {
         this.resolvingRecursively = resolvingRecursively;
@@ -80,14 +85,25 @@ public class MavenResolver {
      */
     public OArtifact getOArtifact(Path file) {
         Path pomXml = getPomXml(file);
-        if (pomXml == null) return null;
+        if (pomXml == null) return getNoNameOArtifact(file);
 
         Artifact dependency = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml);
-        if (dependency == null) return null;
+        if (dependency == null) return getNoNameOArtifact(file);
 
         return getOArtifact(
                 dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(),
                 file);
+    }
+
+    private OArtifact getNoNameOArtifact(Path file) {
+        if (!Files.exists(file))
+            return null;
+        OArtifactReference artifactReference = OArtifactReference.getEmptyOArtifactReference();
+        artifactReference.setGroupId(UNKNOWN_GROUP_ID + file.getFileName());
+        artifactReference.setArtifactId(UNKNOWN_ARTIFACT_ID + file.getFileName());
+        artifactReference.setVersion(UNKNOWN_VERSION + file.getFileName());
+        artifactReference.setFile(file.toFile());
+        return new OArtifact(artifactReference).setLoad(true);
     }
 
     /**
@@ -121,7 +137,7 @@ public class MavenResolver {
         List<Artifact> artifacts = resolveDependenciesInArtifacts(groupArtifactVersion);
 
         OArtifact moduleMetadata = new OArtifact();
-        moduleMetadata.setLoad(false)
+        moduleMetadata.setLoad(true)
                 .setArtifactReference(mainArtifact)
                 .setDependencies(toOArtifactDependencies(artifacts));
         return moduleMetadata;

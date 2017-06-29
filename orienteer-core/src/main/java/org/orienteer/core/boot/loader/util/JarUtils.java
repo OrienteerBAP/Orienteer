@@ -29,7 +29,7 @@ class JarUtils {
     /**
      * Search pom.xml if jar file
      * @param path {@link Path} of jar file
-     * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present
+     * @return {@link Path} of pom.xml or Optional.absent() if pom.xml is not present
      * @throws IllegalArgumentException if path is null
      */
     public Path getPomFromJar(String path) {
@@ -40,7 +40,7 @@ class JarUtils {
     /**
      * Search pom.xml if jar file
      * @param path {@link Path} of jar file
-     * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present
+     * @return {@link Path} of pom.xml or Optional.absent() if pom.xml is not present
      * @throws IllegalArgumentException if path is null
      */
     public Path getPomFromJar(Path path) {
@@ -69,7 +69,7 @@ class JarUtils {
      * Unarchive pom.xml from jar file
      * @param jarFile  jar file which contains pom.xml
      * @param jarEntry {@link JarEntry} of pom.xml
-     * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present
+     * @return {@link Path} of pom.xml or Optional.absent() if pom.xml is not present
      * @throws IOException
      */
     private Path unarchivePomFile(JarFile jarFile, JarEntry jarEntry) throws IOException {
@@ -188,7 +188,7 @@ class JarUtils {
     /**
      * Search class name of {@link org.apache.wicket.IInitializer} in jar file
      * @param pathToJar jar file
-     * @return {@link Optional<String>} of class name or Optional.absent()
+     * @return {@link String} of class name or Optional.absent()
      *                                 if {@link org.apache.wicket.IInitializer} is not present in jar file.
      * @throws IllegalArgumentException if pathToJar is null
      */

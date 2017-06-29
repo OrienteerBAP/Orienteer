@@ -31,7 +31,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
                 this.getArtifactReference().getVersion(), this.artifact.getRepository(), this.artifact.getDescription(), this.artifact.getFile());
     }
 
-    public static OArtifact getEmptyModule() {
+    public static OArtifact getEmptyOArtifact() {
         OArtifactReference artifact = new OArtifactReference("", "", "");
         return new OArtifact(artifact);
     }

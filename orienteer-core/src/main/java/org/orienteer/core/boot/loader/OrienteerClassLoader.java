@@ -1,6 +1,7 @@
 package org.orienteer.core.boot.loader;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.MavenResolver;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
@@ -15,6 +16,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.*;
 
@@ -42,11 +44,11 @@ public class OrienteerClassLoader extends URLClassLoader {
     public static void initOrienteerClassLoaders(ClassLoader parent) {
     	parentClassLoader = parent;
         Map<Path, OArtifact> oArtifacts = getOArtifactsMetadataInMap();
-        List<Path> jars = getJarsInArtifactsFolder();
+        Set<Path> jars = getJarsInArtifactsFolder();
 
         List<OArtifact> modulesForLoad = new ArrayList<>();
-        
-        modulesForLoad.addAll(updateMetadataFromJars(jars));
+        Set<Path> paths = oArtifacts.keySet();
+        modulesForLoad.addAll(updateMetadataFromJars(Lists.newArrayList(Sets.difference(jars, paths))));
         modulesForLoad.addAll(oArtifacts.values());
         modulesForLoad = getFilteredModules(modulesForLoad);
         MavenResolver.get().setDependencies(modulesForLoad);
@@ -195,7 +197,7 @@ public class OrienteerClassLoader extends URLClassLoader {
 	        List<OArtifact> modules = MavenResolver.get().getResolvedOArtifacts(jars);
 	        if (modules.size() > 0) {
 	            updateOArtifactsInMetadata(modules);
-	        } else deleteMetadataFile();
+	        }
 	
 	        return modules;
 		} else return new ArrayList<>();

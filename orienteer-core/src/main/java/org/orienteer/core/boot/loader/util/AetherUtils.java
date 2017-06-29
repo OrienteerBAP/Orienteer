@@ -137,7 +137,7 @@ class AetherUtils {
     /**
      * Download artifacts
      * @param artifact {@link Artifact} artifact for download
-     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent() if can't download artifact
+     * @return {@link Artifact} of downloaded artifact or Optional.absent() if can't download artifact
      * @throws IllegalArgumentException if artifact is null
      */
     public Artifact downloadArtifact(Artifact artifact) {
@@ -151,7 +151,7 @@ class AetherUtils {
      * Download artifact from repository
      * @param artifact {@link Artifact} for download
      * @param repository repository for download artifact
-     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
+     * @return {@link Artifact} of downloaded artifact or Optional.absent if can't download artifact
      * @throws IllegalArgumentException if artifact or repository is null.
      */
     public Artifact downloadArtifact(Artifact artifact, String repository) {

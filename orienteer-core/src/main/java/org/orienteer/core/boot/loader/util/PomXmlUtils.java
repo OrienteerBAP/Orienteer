@@ -169,7 +169,7 @@ class PomXmlUtils extends AbstractXmlUtil {
      * Parse element for getting {@link Artifact} from it
      * @param element - {@link Element} for parse
      * @param versions - versions which are in <properties></properties> of pom.xml
-     * @return {@link Optional<Artifact>} - if parse is success
+     * @return {@link Artifact} - if parse is success
      *         Optional.absent() - if parse is failed
      */
     private Artifact parseDependency(Element element, Map<String, String> versions) {

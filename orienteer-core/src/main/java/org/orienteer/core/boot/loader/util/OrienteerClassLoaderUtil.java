@@ -1,7 +1,7 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.http.util.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.util.io.IOUtils;
@@ -18,10 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -131,7 +128,7 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * Download artifact
      * @param artifact {@link Artifact} for download
-     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
+     * @return {@link Artifact} of downloaded artifact or Optional.absent if can't download artifact
      * @throws IllegalArgumentException if artifact is null
      */
     public static Artifact downloadArtifact(Artifact artifact) {
@@ -143,7 +140,7 @@ public abstract class OrienteerClassLoaderUtil {
      * Download artifact from repository
      * @param artifact {@link Artifact} for download
      * @param repository repository for download artifact
-     * @return {@link Optional<Artifact>} of downloaded artifact or Optional.absent if can't download artifact
+     * @return {@link Artifact} of downloaded artifact or Optional.absent if can't download artifact
      * @throws IllegalArgumentException if artifact or repository is null.
      */
     public static Artifact downloadArtifact(Artifact artifact, String repository) {
@@ -155,7 +152,7 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * Read group, artifact, version from pom.xml
      * @param pomXml {@link Path} of pom.xml
-     * @return {@link Optional<Artifact>} or Optional.absent() if GAV is not present in pom.xml
+     * @return {@link Artifact} or Optional.absent() if GAV is not present in pom.xml
      * @throws IllegalArgumentException if pomXml is null
      */
     public static Artifact readGroupArtifactVersionInPomXml(Path pomXml) {
@@ -179,7 +176,7 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * Search {@link org.apache.wicket.IInitializer} in jar file
      * @param pathToJar {@link Path} of jar file
-     * @return {@link Optional<String>} of class name or Optional.absent() if {@link org.apache.wicket.IInitializer} is not present in jar file
+     * @return {@link String} of class name or Optional.absent() if {@link org.apache.wicket.IInitializer} is not present in jar file
      * @throws IllegalArgumentException if pathToJar is null
      */
     public static String searchOrienteerInitModule(Path pathToJar) {
@@ -190,7 +187,7 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * Search pom.xml in jar file
      * @param pathToJar {@link Path} of jar file
-     * @return {@link Optional<Path>} of pom.xml or Optional.absent() if pom.xml is not present in jar file
+     * @return {@link Path} of pom.xml or Optional.absent() if pom.xml is not present in jar file
      * @throws IllegalArgumentException if pathToJar is null
      */
     public static Path getPomFromJar(Path pathToJar) {
@@ -201,7 +198,7 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * Create {@link OArtifact} from jar file
      * @param pathToJar {@link Path} of jar file
-     * @return {@link Optional<OArtifact>} of artifact or Optional.absent() if artifact is not present in jar file
+     * @return {@link OArtifact} of artifact or Optional.absent() if artifact is not present in jar file
      * @throws IllegalArgumentException if pathToJar is null
      */
     public static OArtifact getOArtifactFromJar(Path pathToJar) {
@@ -211,10 +208,10 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Search jar files in artifact folder
-     * @return {@link List<Path>} of jar files in artifacts folder
+     * @return {@link Set<Path>} of jar files in artifacts folder
      */
-    public static List<Path> getJarsInArtifactsFolder() {
-        return jarUtils.searchJarsInArtifactsFolder();
+    public static Set<Path> getJarsInArtifactsFolder() {
+        return Sets.newHashSet(jarUtils.searchJarsInArtifactsFolder());
     }
     
     /**
@@ -228,7 +225,7 @@ public abstract class OrienteerClassLoaderUtil {
     
     /**
      * Read artifacts in metadata.xml as map
-     * @return {@link Map<Path, OArtifact>} of artifacts in metadata.xml
+     * @return {@link Map<Path,OArtifact>} of artifacts in metadata.xml
      */
     public static Map<Path, OArtifact> getOArtifactsMetadataInMap() {
         return metadataUtil.readOArtifactsAsMap();
@@ -402,7 +399,7 @@ public abstract class OrienteerClassLoaderUtil {
      * Add artifact jar file to temp folder
      * @param artifactName artifact name
      * @param fileUpload {@link FileUpload} of artifact's jar
-     * @return {@link Optional<File>} of artifact's jar file or Optional.absent() if can't add artifact's jar file to folder
+     * @return {@link File} of artifact's jar file or Optional.absent() if can't add artifact's jar file to folder
      * @throws IllegalArgumentException if artifactName is null or empty. Or when fileUpload is null.
      */
     public static File createJarTempFile(String artifactName, FileUpload fileUpload) {
