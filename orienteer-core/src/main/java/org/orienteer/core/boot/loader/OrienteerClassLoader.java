@@ -13,10 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.*;
 
@@ -46,17 +43,23 @@ public class OrienteerClassLoader extends URLClassLoader {
         Map<Path, OArtifact> oArtifacts = getOArtifactsMetadataInMap();
         Set<Path> jars = getJarsInArtifactsFolder();
 
-        List<OArtifact> modulesForLoad = new ArrayList<>();
+        List<OArtifact> modulesForLoad = Lists.newArrayList();
         Set<Path> paths = oArtifacts.keySet();
         modulesForLoad.addAll(updateMetadataFromJars(Lists.newArrayList(Sets.difference(jars, paths))));
         modulesForLoad.addAll(oArtifacts.values());
-        modulesForLoad = getFilteredModules(modulesForLoad);
+        modulesForLoad = filterModules(modulesForLoad);
+
+        if (modulesForLoad.size() != 0)
+            LOG.info("Resolving dependencies for {} module(s). Please wait...", modulesForLoad.size());
         MavenResolver.get().setDependencies(modulesForLoad);
         
         trustedOrienteerClassLoader = new OrienteerClassLoader(parent);
         if (useUnTrusted) {
             untrustedOrienteerClassLoader = new OrienteerClassLoader(trustedOrienteerClassLoader);
-        } else untrustedOrienteerClassLoader = null;
+        } else {
+            untrustedOrienteerClassLoader = null;
+        }
+
         for (OArtifact oArtifact : modulesForLoad) {
 			if(oArtifact.isTrusted())
 			    trustedOrienteerClassLoader.addOArtifactToClassLoaderResources(oArtifact);
@@ -65,15 +68,26 @@ public class OrienteerClassLoader extends URLClassLoader {
 		}
     }
 
-    private static List<OArtifact> getFilteredModules(List<OArtifact> modules) {
+    /**
+     * Filter modules and disable untrusted modules if {@link OrienteerClassLoader#useUnTrusted} is false.
+     * @param modules {@link List<OArtifact>} trusted and untrusted modules.
+     * @return filtered modules. If {@link OrienteerClassLoader#useUnTrusted} is true - return all modules.
+     * If {@link OrienteerClassLoader#useUnTrusted} is false return only trusted modules and
+     * untrusted modules disable in metadata.xml
+     */
+    private static List<OArtifact> filterModules(List<OArtifact> modules) {
         List<OArtifact> result = Lists.newArrayList();
         for (OArtifact module : modules) {
             if (module.isLoad() && (useUnTrusted || module.isTrusted())) {
                 result.add(module);
+            } else if (!useUnTrusted && module.isLoad()) {
+                module.setLoad(false);
+                updateOArtifactInMetadata(module);
             }
         }
         return result;
     }
+
 
     /**
      * Get Orienteer classloader.
@@ -202,7 +216,6 @@ public class OrienteerClassLoader extends URLClassLoader {
 	        return modules;
 		} else return new ArrayList<>();
     }
-
 
     @Override
     public String toString() {

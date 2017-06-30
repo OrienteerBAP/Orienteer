@@ -107,31 +107,22 @@ class AetherUtils {
         return resolveArtifactRequests(requests);
     }
 
-    /**
-     * Resolve artifacts
-     * @param artifacts {@link Set<Artifact>} for resolving its dependencies.
-     * @return {@link List<ArtifactResult>} of resolved artifact
-     * @throws IllegalArgumentException if artifacts is null
-     */
-    public List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
-        Args.notNull(artifacts, "artifacts");
-        List<ArtifactResult> results = Lists.newArrayList();
-        for (Artifact artifact : artifacts) {
-            results.addAll(resolveArtifact(artifact));
-        }
-        return results;
-    }
 
     /**
      * Download artifacts
      * @param artifacts {@link Set<Artifact>} artifacts for download
-     * @return {@link List<ArtifactResult>} of resolved artifact
+     * @return {@link List<Artifact>} of resolved artifact
      * @throws IllegalArgumentException if artifacts is null
      */
-    public List<ArtifactResult> downloadArtifacts(Set<Artifact> artifacts) {
+    public List<Artifact> downloadArtifacts(Set<Artifact> artifacts) {
         Args.notNull(artifacts, "artifacts");
         Set<ArtifactRequest> artifactRequests = createArtifactRequests(artifacts);
-        return resolveArtifactRequests(artifactRequests);
+        List<ArtifactResult> artifactResults = resolveArtifactRequests(artifactRequests);
+        List<Artifact> result = Lists.newArrayList();
+        for (ArtifactResult res : artifactResults) {
+            result.add(res.getArtifact());
+        }
+        return result;
     }
 
     /**

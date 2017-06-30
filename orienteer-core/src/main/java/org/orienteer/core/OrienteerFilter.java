@@ -64,14 +64,14 @@ public final class OrienteerFilter implements Filter {
             filter.init(filterConfig);
         } catch (Throwable t) {
             if (OrienteerClassLoader.isUseUnTrusted()) {
-                LOG.warn("Cannot run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);
+                LOG.warn("Can't run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);
                 useTrustedClassLoader();
             } else {
-                LOG.warn("Cannot run Orienteer with trusted classloader. Orienteer runs with custom classloader.", t);
+                LOG.warn("Can't run Orienteer with trusted classloader. Orienteer runs with custom classloader.", t);
                 useOrienteerClassLoader();
             }
             reloading = false;
-            instance.reload(3000);
+            instance.reload(1000);
         }
     }
     

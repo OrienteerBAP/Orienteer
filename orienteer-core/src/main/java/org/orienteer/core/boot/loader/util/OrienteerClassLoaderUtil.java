@@ -1,7 +1,9 @@
 package org.orienteer.core.boot.loader.util;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.util.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.util.io.IOUtils;
@@ -83,46 +85,13 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Resolve dependency (artifact). Download its dependencies
-     * @param dependency - {@link Dependency} for resolve
+     * @param artifact - {@link Artifact} for resolve
      * @return {@link List<Dependency>} - dependencies of artifact
      * @throws IllegalArgumentException if artifact is null
      */
-    public static List<Artifact> getResolvedDependency(Dependency dependency) {
-        Args.notNull(dependency, "dependency");
-        return aetherUtils.resolveDependency(dependency);
-    }
-
-    /**
-     * Resolve artifact. Download its dependencies
-     * @param artifact - {@link Artifact} for resolve
-     * @return {@link List<ArtifactResult>} - dependencies of artifact
-     * @throws IllegalArgumentException if artifact is null
-     */
-    public static List<ArtifactResult> getResolvedArtifact(Artifact artifact) {
+    public static List<Artifact> resolveAndGetArtifactDependencies(Artifact artifact) {
         Args.notNull(artifact, "artifact");
-        return aetherUtils.resolveArtifact(artifact);
-    }
-
-    /**
-     * Download artifacts
-     * @param artifacts {@link Set<Artifact>} for download
-     * @return {@link List<ArtifactResult>} of downloaded artifacts
-     * @throws IllegalArgumentException if artifacts is null
-     */
-    public static List<ArtifactResult> downloadArtifacts(Set<Artifact> artifacts) {
-        Args.notNull(artifacts, "artifacts");
-        return aetherUtils.downloadArtifacts(artifacts);
-    }
-
-    /**
-     * Resolve artifacts. Download its dependencies
-     * @param artifacts {@link Set<Artifact>} for resolve
-     * @return {@link List<ArtifactResult>} resolved dependencies of artifacts
-     * @throws IllegalArgumentException if artifacts is null
-     */
-    public static List<ArtifactResult> resolveArtifacts(Set<Artifact> artifacts) {
-        Args.notNull(artifacts, "artifacts");
-        return aetherUtils.resolveArtifacts(artifacts);
+        return aetherUtils.resolveDependency(new Dependency(artifact, "compile"));
     }
 
     /**
@@ -135,6 +104,33 @@ public abstract class OrienteerClassLoaderUtil {
         Args.notNull(artifact, "artifact");
         return aetherUtils.downloadArtifact(artifact);
     }
+
+    /**
+     * Download artifacts
+     * @param artifacts {@link Set<Artifact>} for download
+     * @return {@link List<ArtifactResult>} of downloaded artifacts
+     * @throws IllegalArgumentException if artifacts is null
+     */
+    public static List<Artifact> downloadArtifacts(Set<Artifact> artifacts) {
+        Args.notNull(artifacts, "artifacts");
+        return aetherUtils.downloadArtifacts(artifacts);
+    }
+
+    /**
+     * Resolve artifacts. Download its dependencies
+     * @param artifacts {@link Set<Artifact>} for resolve
+     * @return {@link List<ArtifactResult>} resolved dependencies of artifacts
+     * @throws IllegalArgumentException if artifacts is null
+     */
+    public static List<Artifact> resolveArtifacts(List<Artifact> artifacts) {
+        Args.notNull(artifacts, "artifacts");
+        List<Artifact> result = Lists.newArrayList();
+        for (Artifact artifact : artifacts) {
+            result.addAll(resolveAndGetArtifactDependencies(artifact));
+        }
+        return result;
+    }
+
 
     /**
      * Download artifact from repository
@@ -213,7 +209,7 @@ public abstract class OrienteerClassLoaderUtil {
     public static Set<Path> getJarsInArtifactsFolder() {
         return Sets.newHashSet(jarUtils.searchJarsInArtifactsFolder());
     }
-    
+
     /**
      * Checks if metadata.xml exists
      * @return true - if metadata.xml exists
@@ -222,7 +218,7 @@ public abstract class OrienteerClassLoaderUtil {
     public static boolean metadataExists() {
     	return metadataUtil.metadataExists();
     }
-    
+
     /**
      * Read artifacts in metadata.xml as map
      * @return {@link Map<Path,OArtifact>} of artifacts in metadata.xml
@@ -274,16 +270,57 @@ public abstract class OrienteerClassLoaderUtil {
      * @param oArtifact {@link OArtifact} artifact which jar file will be delete
      * @throws IllegalArgumentException if oArtifact is null
      */
-    public static void deleteOArtifactArtifactFile(OArtifact oArtifact) {
+    public static boolean deleteOArtifactFile(OArtifact oArtifact) {
         Args.notNull(oArtifact, "oArtifact");
+        boolean deleted = false;
         try {
             File file = oArtifact.getArtifactReference().getFile();
-            if (file != null) {
-                Files.deleteIfExists(file.toPath());
+            if (file != null && file.exists()) {
+                File artifactMavenDir = getOArtifactMavenDir(oArtifact);
+                if (artifactMavenDir != null) {
+                    FileUtils.deleteDirectory(artifactMavenDir);
+                    deleted = true;
+                    LOG.info("Delete directory in maven repository: {}", artifactMavenDir);
+                } else {
+                    Files.delete(file.toPath());
+                    deleted = true;
+                    LOG.info("Delete jar file: {}", file);
+                }
             }
         } catch (IOException e) {
-            LOG.error("Cannot delete artifact of module: {}", oArtifact, e);
+            LOG.error("Can't delete jar file of Orienteer module: {}", oArtifact, e);
         }
+        return deleted;
+    }
+
+    /**
+     * Parsing directories where oArtifact jar file located.
+     * If jar file located in maven repository, path: {$random.path}/com.group/artifact/version/file.jar
+     * directory with this artifact returns. (Returns {$random.path}/com.group/artifact)
+     * @param oArtifact {@link OArtifact} oArtifact for search maven dir
+     * @return {@link File} of maven directory with oArtifact jar file or null
+     */
+    private static File getOArtifactMavenDir(OArtifact oArtifact) {
+        OArtifactReference reference = oArtifact.getArtifactReference();
+        File versionFolder = reference.getFile().getParentFile();
+        String file = versionFolder.toString().replaceAll("/", ".");
+        File result = null;
+        try {
+            if (file.contains(reference.getGroupId()) && file.contains(reference.getArtifactId()) && file.contains(reference.getVersion())) {
+                String gav = file.substring(file.indexOf(reference.getGroupId()));
+                String groupId = gav.substring(gav.indexOf(reference.getGroupId()), gav.indexOf(reference.getArtifactId()) - 1);
+                String artifactId = gav.substring(gav.indexOf(reference.getArtifactId()), gav.indexOf(reference.getVersion()) - 1);
+                String version = gav.substring(gav.indexOf(reference.getVersion()));
+                if (groupId.equals(reference.getGroupId()) && artifactId.equals(reference.getArtifactId())
+                        && version.equals(reference.getVersion())) {
+                    result = versionFolder.getParentFile();
+                }
+
+            }
+        } catch (StringIndexOutOfBoundsException ex) {
+            /* StringIndexOutOfBoundsException throws if jar file is not located in maven repository */
+        }
+        return result;
     }
 
     /**
