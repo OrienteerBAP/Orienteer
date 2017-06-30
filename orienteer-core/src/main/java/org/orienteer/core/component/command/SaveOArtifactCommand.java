@@ -13,13 +13,15 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.OrienteerDataTable.MetaContextItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 /**
  * Command to save user's artifact
  */
+@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.EXECUTE)
 public class SaveOArtifactCommand extends AbstractSaveOArtifactCommand {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SaveOArtifactCommand.class);
 
     private OrienteerDataTable<OArtifact, ?> table;
 

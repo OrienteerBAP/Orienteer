@@ -2,19 +2,15 @@ package org.orienteer.core.component.widget.loader;
 
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.OrienteerFilter;
-import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
-import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
@@ -22,7 +18,6 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.CheckBoxColumn;
 import org.orienteer.core.component.table.OArtifactColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.web.OrienteerReloadPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -83,20 +78,10 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
         final OrienteerDataTable<OArtifact, String> modulesTable =
                 new OrienteerDataTable<>("oArtifactsTable", columns, installedModulesProvider, 20);
         modulesTable.addCommand(new AddOArtifactCommand(modulesTable, new OArtifactsModalWindowPage(availableModulesProvider)));
-        modulesTable.addCommand(new EditCommand<>(modulesTable, modeModel));
+        modulesTable.addCommand(new EditOArtifactsCommand(modulesTable, modeModel));
         modulesTable.addCommand(new SaveOArtifactCommand(modulesTable, modeModel, feedback));
         modulesTable.addCommand(new DeleteOArtifactCommand(modulesTable));
-        modulesTable.addCommand(new AjaxCommand<OArtifact>("reloadOrienteer", new ResourceModel(RELOAD_ORIENTEER)) {
-        	@Override
-        	public void onClick(AjaxRequestTarget target) {
-        	    setResponsePage(new OrienteerReloadPage());
-                OrienteerClassLoader.useDefaultClassLoaderProperties();
-        		OrienteerFilter.reloadOrienteer();
-        	}
-        }.setIcon(FAIconType.refresh)
-         .setBootstrapType(BootstrapType.PRIMARY)
-         .setBootstrapType(BootstrapType.WARNING)
-         .setChangingDisplayMode(true));
+        modulesTable.addCommand(new ReloadOrienteerCommand(modulesTable, new ResourceModel(RELOAD_ORIENTEER)));
         form.add(modulesTable);
         form.add(feedback);
         add(form);

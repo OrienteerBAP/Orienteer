@@ -42,7 +42,7 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
                     OrienteerClassLoaderUtil.updateOArtifactInMetadata(artifact);
                     artifact.setDownloaded(true);
                 }
-            } else OrienteerClassLoaderUtil.deleteOArtifactArtifactFile(artifact);
+            } else OrienteerClassLoaderUtil.deleteOArtifactFile(artifact);
         } else if (isUserArtifactValid(target, artifact)) {
             resolveUserArtifact(target, artifact);
         }
