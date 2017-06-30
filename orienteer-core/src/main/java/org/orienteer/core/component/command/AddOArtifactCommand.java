@@ -11,10 +11,14 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.widget.loader.OArtifactsModalWindowPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 /**
  * Add Orienteers module command. Show modal window and behavior of closing modal window.
  */
+@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.EXECUTE)
 public class AddOArtifactCommand extends AbstractModalWindowCommand<OArtifact> {
 
     private final OrienteerDataTable<OArtifact, ?> table;
