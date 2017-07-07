@@ -55,4 +55,10 @@
         <version>1.3-SNAPSHOT</version>
         <description>Support of OrientDB ETL</description>
     </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+	<artifactId>orienteer-taucharts</artifactId>
+        <version>1.3-SNAPSHOT</version>
+        <description>Integration of Orienteer and Taucharts</description>
+    </module>
 </metadata>
