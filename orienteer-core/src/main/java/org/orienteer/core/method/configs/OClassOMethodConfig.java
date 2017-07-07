@@ -27,13 +27,13 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 	private transient List<IMethodFilter> filters;
 	private List<Class<? extends Behavior>> behaviors;
 	private String javaMethodName;
-	private String javaClassName;
+	private Class<?> javaClass;
 
 	public OClassOMethodConfig(ClassOMethod oMethod,Method javaMethod){
 		this.oMethod = oMethod;
 		behaviors = Arrays.asList(oMethod.behaviors());
 		this.javaMethodName = javaMethod.getName();
-		this.javaClassName = javaMethod.getDeclaringClass().getName();
+		this.javaClass = javaMethod.getDeclaringClass();
 	}
 	
 	@Override
@@ -81,12 +81,12 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 		try {
 			Constructor<?> constructor=null;
 			try {
-				constructor = Class.forName(javaClassName).getConstructor(ODocument.class);
+				constructor = javaClass.getConstructor(ODocument.class);
 			} catch (NoSuchMethodException e1) {
 				// TODO it is correct catch block with muffling
 			}
 			
-			Method javaMethod = Class.forName(javaClassName).getMethod(javaMethodName, IMethodEnvironmentData.class);
+			Method javaMethod = javaClass.getMethod(javaMethodName, IMethodEnvironmentData.class);
 			Object inputDoc = doc!=null?doc:dataObject.getDisplayObjectModel().getObject();
 			if (constructor!=null && inputDoc instanceof ODocument){
 				Object newInstance = constructor.newInstance(inputDoc);
@@ -94,7 +94,7 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 			}else{
 				javaMethod.invoke(null,dataObject);
 			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException e) {
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -107,8 +107,8 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 		return javaMethodName;
 	}
 
-	public String getJavaClassName() {
-		return javaClassName;
+	public Class<?> getJavaClass() {
+		return javaClass;
 	}
 
 
