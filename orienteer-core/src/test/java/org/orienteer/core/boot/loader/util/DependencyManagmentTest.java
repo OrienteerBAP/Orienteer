@@ -70,10 +70,10 @@ public class DependencyManagmentTest {
     @Test
     public void loadAndDeleteOrienteerModules() throws IOException {
         List<OArtifact> modules;
-        for (int i = 0; i < 100; i++) {
+        //for (int i = 0; i < 100; i++) {
            modules = downloadAllOrienteerModulesFromServer();
            deleteOArtifacts(modules);
-        }
+        //}
     }
 
     private List<OArtifact> downloadAllOrienteerModulesFromServer() throws IOException {
