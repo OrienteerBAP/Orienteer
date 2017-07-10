@@ -24,9 +24,10 @@ public class TauchartsConfig implements Serializable{
 	private String colorBy;
 	private List<String> plugins;
 	private String query;
+	private boolean usingRest;
 	
 
-	public TauchartsConfig(String type ,String x,String y,String colorBy,List<String> plugins,String query,String xLabel,String yLabel) {
+	public TauchartsConfig(String type ,String x,String y,String colorBy,List<String> plugins,String query,String xLabel,String yLabel,Boolean usingRest) {
 		this.type = type;
 		this.x=x;
 		this.y=y;
@@ -39,6 +40,7 @@ public class TauchartsConfig implements Serializable{
 			this.plugins=plugins;
 		}
 		this.query=query;	
+		this.usingRest = usingRest!=null?usingRest:false;
 	}
 
 
@@ -79,5 +81,10 @@ public class TauchartsConfig implements Serializable{
 
 	public String getQuery() {
 		return query;
+	}
+
+
+	public boolean isUsingRest() {
+		return usingRest;
 	}			
 }

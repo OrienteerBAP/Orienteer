@@ -43,7 +43,8 @@ public class TauchartsDocumentWidget extends AbstractTauchartsWidget<ODocument>{
 					plugins,
 					(String)getWidgetDocument().field(QUERY_PROPERTY_NAME),
 					(String) getWidgetDocument().field(X_LABEL_PROPERTY_NAME),
-					(String) getWidgetDocument().field(Y_LABEL_PROPERTY_NAME)
+					(String) getWidgetDocument().field(Y_LABEL_PROPERTY_NAME),
+					(Boolean) getWidgetDocument().field(USING_REST_PROPERTY_NAME)
 				)
 		));		
 	}
