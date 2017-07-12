@@ -1,0 +1,25 @@
+<wicket:panel xmlns="http://wicket.apache.org" xmlns:wicket="http://www.w3.org/1999/xhtml">
+  <a wicket:id="showFilters"><i class="fa fa-filter" aria-hidden="true"></i></a>
+  <div wicket:id="container" class="panel panel-default filter-bubble ui-widget-content">
+
+      <div class="panel-heading">
+        <div class="panel-title" wicket:id="panelTitle">[Panel title]</div>
+      </div>
+
+      <div class="filter-bubble-content">
+        <ul id="filter-tabs" class="nav nav-tabs">
+          <li id="tab" wicket:id="panelSwitches">
+            <a wicket:id="switch"></a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div wicket:id="filterPanels">
+            <div wicket:id="panel"></div>
+          </div>
+        </div>
+        <div wicket:id="clearButton" class="filter-clear-button"></div>
+        <div wicket:id="okButton" class="filter-ok-button"></div>
+      </div>
+
+  </div>
+</wicket:panel>
