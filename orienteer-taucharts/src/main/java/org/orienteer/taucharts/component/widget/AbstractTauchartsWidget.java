@@ -30,10 +30,12 @@ public abstract class AbstractTauchartsWidget<T> extends AbstractWidget<T> {
 	public static final String COLOR_PROPERTY_NAME = "chartColorBy";
 	public static final String PLUGINS_PROPERTY_NAME = "chartPlugins";
 	public static final String QUERY_PROPERTY_NAME = "chartQuery";
+	public static final String USING_REST_PROPERTY_NAME = "chartUsingRest";
 	
 	public static final String TYPE_OCLASS = "TauchartsType";
 	
-	@SuppressWarnings("unchecked")
+	public static final String PLUGINS_OCLASS = "TauchartsPlugin";
+	
 	public AbstractTauchartsWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		if (getWidgetDocument().field(QUERY_PROPERTY_NAME)!=null && getWidgetDocument().field(TYPE_PROPERTY_NAME)!=null){

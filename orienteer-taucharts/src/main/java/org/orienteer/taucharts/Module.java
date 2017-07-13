@@ -47,21 +47,16 @@ public class Module extends AbstractOrienteerModule{
 	
 	public void makeSchema(ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		/*		params.put("type", "line");
-		params.put("x", "date");
-		params.put("y", "count");
-		params.put("colorBy", "type");
-		params.put("plugins", "[tauCharts.api.plugins.get('tooltip')()]");
-		 * */
+
 		helper.oClass(AbstractTauchartsWidget.TYPE_OCLASS).domain(OClassDomain.SYSTEM)
 			.oProperty("name", OType.STRING, 10).markAsDocumentName()
 			.oProperty("alias", OType.STRING, 20).oIndex(INDEX_TYPE.UNIQUE);
 
-		helper.oClass("TauchartsPlugin").domain(OClassDomain.SYSTEM)
+		helper.oClass(AbstractTauchartsWidget.PLUGINS_OCLASS).domain(OClassDomain.SYSTEM)
 			.oProperty("name", OType.STRING, 10).markAsDocumentName()
 			.oProperty("alias", OType.STRING, 20).oIndex(INDEX_TYPE.UNIQUE);
 
-		helper.oClass(AbstractTauchartsWidget.WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET)
+		helper.oClass(AbstractTauchartsWidget.WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET).domain(OClassDomain.SYSTEM)
 			.oProperty(AbstractTauchartsWidget.QUERY_PROPERTY_NAME, OType.STRING, 100).assignVisualization("textarea")
 			.oProperty(AbstractTauchartsWidget.TYPE_PROPERTY_NAME, OType.LINK, 110).linkedClass(AbstractTauchartsWidget.TYPE_OCLASS).assignVisualization("listbox")
 			.oProperty(AbstractTauchartsWidget.X_PROPERTY_NAME, OType.STRING, 120)
@@ -69,7 +64,8 @@ public class Module extends AbstractOrienteerModule{
 			.oProperty(AbstractTauchartsWidget.Y_PROPERTY_NAME, OType.STRING, 130)
 			.oProperty(AbstractTauchartsWidget.Y_LABEL_PROPERTY_NAME, OType.STRING, 135)
 			.oProperty(AbstractTauchartsWidget.COLOR_PROPERTY_NAME, OType.STRING, 140)
-			.oProperty(AbstractTauchartsWidget.PLUGINS_PROPERTY_NAME, OType.LINKSET, 150).linkedClass("TauchartsPlugin").assignVisualization("listbox");
+			.oProperty(AbstractTauchartsWidget.PLUGINS_PROPERTY_NAME, OType.LINKSET, 150).linkedClass("TauchartsPlugin").assignVisualization("listbox")
+			.oProperty(AbstractTauchartsWidget.USING_REST_PROPERTY_NAME, OType.BOOLEAN, 160);
 		
 		makeData(db);
 	}
@@ -83,8 +79,11 @@ public class Module extends AbstractOrienteerModule{
 		makeDataItem(AbstractTauchartsWidget.TYPE_OCLASS,"Horizontal stacked bar","horizontal-stacked-bar");
 		makeDataItem(AbstractTauchartsWidget.TYPE_OCLASS,"Stacked area","stacked-area");
 		
-		makeDataItem("TauchartsPlugin","Tooltip","tooltip");
-		makeDataItem("TauchartsPlugin","Legend","legend");
+		makeDataItem(AbstractTauchartsWidget.PLUGINS_OCLASS,"Tooltip","tooltip");
+		makeDataItem(AbstractTauchartsWidget.PLUGINS_OCLASS,"Legend","legend");
+		makeDataItem(AbstractTauchartsWidget.PLUGINS_OCLASS,"Quick filter","quick-filter");
+		makeDataItem(AbstractTauchartsWidget.PLUGINS_OCLASS,"Floating axes","floating-axes");
+		makeDataItem(AbstractTauchartsWidget.PLUGINS_OCLASS,"Trendline","trendline");
 	} 
 
 	private void makeDataItem(String oClass, String name, String alias){

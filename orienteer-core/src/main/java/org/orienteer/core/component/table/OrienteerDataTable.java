@@ -5,11 +5,13 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackHeadersToolbar;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.*;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDataProvider;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.NoRecordsToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilteredColumn;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
@@ -23,7 +25,7 @@ import org.orienteer.core.component.meta.IMetaContext;
 import org.orienteer.core.component.table.filter.IFilterSupportComponent;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
 import org.orienteer.core.event.ActionPerformedEvent;
-import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 import java.util.List;
 
@@ -35,7 +37,7 @@ import java.util.List;
  * @param <S>
  *            the type of the sorting parameter
  */
-public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>, IFilterSupportComponent<T, S>
+public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>, IFilterSupportComponent<T>
 {
 	/**
 	 * {@link Item} that allows every row to be an {@link IMetaContext}
@@ -62,14 +64,19 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 				C critery) {
 			return AbstractMetaPanel.getMetaComponent(this, critery);
 		}
-		
+
+		@Override
+		protected void onComponentTag(ComponentTag tag) {
+			super.onComponentTag(tag);
+
+		}
 	}
 	private static final long serialVersionUID = 1L;
+
 	protected DataTableCommandsToolbar<T> commandsToolbar;
-	protected AjaxFallbackHeadersToolbar<S> headersToolbar;
+	protected OrienteerHeadersToolbar<T, S> headersToolbar;
 	protected OrienteerNavigationToolbar navigationToolbar;
 	protected NoRecordsToolbar noRecordsToolbar;
-	protected FilterToolbar filterToolbar;
 
 	private IModel<String> captionModel;
 	
@@ -78,7 +85,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	{
 		super(id, columns, dataProvider, rowsPerPage);
 		addTopToolbar(commandsToolbar= new DataTableCommandsToolbar<T>(this));
-		addTopToolbar(headersToolbar = new AjaxFallbackHeadersToolbar<S>(this, dataProvider));
+		addTopToolbar(headersToolbar = new OrienteerHeadersToolbar<>(this, dataProvider));
 		addBottomToolbar(navigationToolbar = new OrienteerNavigationToolbar(this));
 		addBottomToolbar(noRecordsToolbar = new NoRecordsToolbar(this));
 		setOutputMarkupPlaceholderTag(true);
@@ -87,16 +94,14 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	}
 
 	@Override
-	public void addFilterForm(FilterForm<IODataFilter<T, S>> filterForm) {
+	public void addFilterForm(FilterForm<OQueryModel<T>> filterForm) {
 		Args.notNull(filterForm, "filterForm");
 		if (needAddFilterToolbar(filterForm)) {
-			addTopToolbar(filterToolbar = new FilterToolbar(this, filterForm));
+			headersToolbar.setFilterForm(filterForm);
 		}
 	}
 
-	private boolean needAddFilterToolbar(FilterForm<IODataFilter<T, S>> filterForm) {
-		if (filterToolbar != null)
-			return false;
+	private boolean needAddFilterToolbar(FilterForm<OQueryModel<T>> filterForm) {
 		final String filterId = "filter";
 		for (IColumn<T, S> column : getColumns()) {
 			if (column instanceof IFilteredColumn) {
@@ -113,7 +118,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 		return commandsToolbar;
 	}
 	
-	public HeadersToolbar<S> getHeadersToolbar() {
+	public OrienteerHeadersToolbar<T, S> getHeadersToolbar() {
 		return headersToolbar;
 	}
 	
@@ -191,5 +196,16 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	protected Item<T> newRowItem(final String id, final int index, final IModel<T> model)
 	{
 		return new MetaContextItem<T, Object>(id, index, model);
+	}
+
+	@Override
+	protected Item<IColumn<T, S>> newCellItem(String id, int index, final IModel<IColumn<T, S>> model) {
+		return new Item<IColumn<T, S>>(id, index, model) {
+			@Override
+			protected void onComponentTag(ComponentTag tag) {
+				super.onComponentTag(tag);
+				headersToolbar.changeColorForFilteredColumn(tag, model.getObject().getSortProperty());
+			}
+		};
 	}
 }

@@ -13,13 +13,9 @@ import org.orienteer.core.component.command.*;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
-import org.orienteer.core.component.table.filter.sql.ODefaultQueryBuilder;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import ru.ydn.wicket.wicketorientdb.filter.AbstractFilteredDataProvider;
-import ru.ydn.wicket.wicketorientdb.filter.IQueryBuilder;
-import ru.ydn.wicket.wicketorientdb.filter.impl.DefaultDataFilter;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
@@ -38,9 +34,7 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		String className = getModelObject().getName();
 		String sql = "select from " + className;
-		IQueryBuilder<ODocument> builder = new ODefaultQueryBuilder<>(className);
-		AbstractFilteredDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
-		provider.setFilterState(new DefaultDataFilter<>(getModel(), builder));
+		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
 		oClassIntrospector.defineDefaultSorting(provider, getModelObject());
 		GenericTablePanel<ODocument> tablePanel =
 				new GenericTablePanel<>("tablePanel", oClassIntrospector.getColumnsFor(getModelObject(), true, modeModel), provider, 20);

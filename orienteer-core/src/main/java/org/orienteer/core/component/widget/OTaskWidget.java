@@ -17,7 +17,6 @@ import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import ru.ydn.wicket.wicketorientdb.filter.AbstractFilteredDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 /**
@@ -39,7 +38,7 @@ public class OTaskWidget extends AbstractWidget<ODocument>{
 
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		OClass taskSessionClass = getModelObject().getDatabase().getMetadata().getSchema().getClass(OTaskSessionRuntime.TASK_SESSION_CLASS);
-		AbstractFilteredDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+ITaskSession.TASK_SESSION_CLASS+" where "+
+		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from "+ITaskSession.TASK_SESSION_CLASS+" where "+
 				ITaskSession.Field.TASK_LINK.fieldName()+"="+getModelObject().getIdentity());
 		oClassIntrospector.defineDefaultSorting(provider, taskSessionClass);
 		GenericTablePanel<ODocument> tablePanel =

@@ -7,21 +7,24 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.yui.calendar.DateField;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.*;
-import org.orienteer.core.component.property.filter.BooleanFilterPanel;
-import org.orienteer.core.component.property.filter.FilterOPropertyPanel;
+import org.orienteer.core.component.property.filter.*;
 import org.orienteer.core.service.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
+import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaManager;
+import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
 import java.io.Serializable;
 import java.util.*;
@@ -130,29 +133,71 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V> Component getFilterComponent(String id, IModel<OProperty> propertyModel, final Form form, IModel<V> valueModel) {
-		final Component component;
+	public <V> Component getFilterComponent(final String id, final IModel<OProperty> propertyModel,
+											final FilterForm<OQueryModel<?>> filterForm) {
+		final IFilterCriteriaManager manager = getManager(propertyModel, filterForm);
+		Component component;
 		OProperty property = propertyModel.getObject();
-		switch (property.getType()) {
-			case BOOLEAN:
-				component = new BooleanFilterPanel(id, form, (IModel<Boolean>) valueModel);
-				break;
+		OType type = property.getType();
+		switch (type) {
 			case EMBEDDED:
-			case EMBEDDEDLIST:
 			case EMBEDDEDMAP:
+			case EMBEDDEDLIST:
 			case EMBEDDEDSET:
 			case LINK:
 			case LINKBAG:
 			case LINKLIST:
 			case LINKMAP:
 			case LINKSET:
-			case CUSTOM:
+			case TRANSIENT:
 			case BINARY:
+			case ANY:
 				component = null;
 				break;
+			case STRING:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
+								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new ListFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
+								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
+				break;
+			case BOOLEAN:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
+								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
+				break;
 			default:
-				component = createComponent(id, DisplayMode.EDIT, null, propertyModel, valueModel);
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
+								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new ListFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
+								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new RangeFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
+								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
 		}
-		return component != null ? new FilterOPropertyPanel(id, component) : null;
+		return component;
+	}
+
+
+	private IFilterCriteriaManager getManager(IModel<OProperty> propertyModel, FilterForm<OQueryModel<?>> filterForm) {
+		OQueryModel<?> queryModel = filterForm.getStateLocator().getFilterState();
+		IFilterCriteriaManager criteriaManager = queryModel.getFilterCriteriaManager(propertyModel.getObject().getName());
+		if (criteriaManager == null) {
+			criteriaManager = new FilterCriteriaManager(propertyModel);
+			queryModel.addFilterCriteriaManager(propertyModel.getObject().getName(), criteriaManager);
+		}
+		return criteriaManager;
 	}
 }

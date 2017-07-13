@@ -14,8 +14,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import ru.ydn.wicket.wicketorientdb.filter.AbstractFilteredDataProvider;
-import ru.ydn.wicket.wicketorientdb.filter.IODataFilter;
+import org.orienteer.core.component.table.OrienteerHeadersToolbar;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
+import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
 import java.util.List;
 
@@ -29,12 +31,12 @@ public class GenericTablePanel<K> extends Panel {
 
 
 
-    public GenericTablePanel(String id, List<? extends IColumn<K, String>> columns, AbstractFilteredDataProvider<K> provider, int rowsPerRange) {
+    public GenericTablePanel(String id, List<? extends IColumn<K, String>> columns, OQueryDataProvider<K> provider, int rowsPerRange) {
        this(id, columns, provider, rowsPerRange, true);
     }
 
     public GenericTablePanel(String id, List<? extends IColumn<K, String>> columns, ISortableDataProvider<K, String> provider, int rowsPerRange) {
-        this(id, columns, provider, rowsPerRange, provider instanceof AbstractFilteredDataProvider);
+        this(id, columns, provider, rowsPerRange, provider instanceof OQueryDataProvider);
     }
 
     @SuppressWarnings("unchecked")
@@ -46,11 +48,23 @@ public class GenericTablePanel<K> extends Panel {
         setOutputMarkupPlaceholderTag(true);
         dataTable = new OrienteerDataTable<>("table", columns, provider, rowsPerRange);
         if (filtered) {
-            FilterForm<IODataFilter<K, String>> filterForm = new FilterForm<IODataFilter<K, String>>("form", (IFilterStateLocator<IODataFilter<K, String>>) provider) {
+            final FilterForm<OQueryModel<K>> filterForm = new FilterForm<OQueryModel<K>>("form",
+                    (IFilterStateLocator<OQueryModel<K>>) provider) {
                 @Override
                 protected void onSubmit() {
                     AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
-                    if(target!=null) target.add(dataTable);
+                    if(target!=null) {
+                        OQueryModel<K> filterState = getStateLocator().getFilterState();
+                        OrienteerHeadersToolbar<K, String> headersToolbar = dataTable.getHeadersToolbar();
+                        headersToolbar.clearFilteredColumns();
+                        for (IColumn<K, String> column : GenericTablePanel.this.getDataTable().getColumns()) {
+                            IFilterCriteriaManager manager = filterState.getFilterCriteriaManager(column.getSortProperty());
+                            if (manager != null && manager.isFilterApply()) {
+                                headersToolbar.addFilteredColumn(column.getSortProperty());
+                            }
+                        }
+                        target.add(dataTable);
+                    }
                 }
             };
             filterForm.setOutputMarkupPlaceholderTag(true);

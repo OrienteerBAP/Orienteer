@@ -1,5 +1,6 @@
 package org.orienteer.taucharts.component;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.resource.UrlResourceReference;
+import org.apache.wicket.util.encoding.UrlEncoder;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -50,18 +52,29 @@ public class TauchartsPanel extends Panel{
 	  response.render(JavaScriptReferenceHeaderItem.forReference(TAUCHARTS_JS));
 	  response.render(CssReferenceHeaderItem.forReference(TAUCHARTS_CSS));
 	  
-		TextTemplate template = new PackageTextTemplate(TauchartsPanel.class, "taucharts.impl.js");
+		String jsonData=null;
+		String jsImpl = null;
+		String restUrl=null;
+		if (config.isUsingRest()){
+			jsImpl = "taucharts.rest.impl.js";
+			restUrl = "/orientdb/query/db/sql/"+UrlEncoder.PATH_INSTANCE.encode(config.getQuery(), "UTF-8")+"/-1?rnd="+Math.random();
+		}else{
+			jsImpl = "taucharts.impl.js";
+			List<ODocument> testData = new OSQLSynchQuery<ODocument>(config.getQuery()).run(getDefaultModelObject()!=null?((ODocument)getDefaultModelObject()).toMap():null) ;
+			jsonData = "[";
+			for ( ODocument object : testData) {
+				jsonData+=object.toJSON()+",";	
+			}
+			jsonData+="]";
+		}
+
+	  	TextTemplate template = new PackageTextTemplate(TauchartsPanel.class, jsImpl);
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("componentId", getMarkupId());
 		
-		List<ODocument> testData = new OSQLSynchQuery<ODocument>(config.getQuery()).run(getDefaultModelObject()!=null?((ODocument)getDefaultModelObject()).toMap():null) ;
-		String jsonData = "[";
-		for ( ODocument object : testData) {
-			jsonData+=object.toJSON()+",";	
-		}
-		jsonData+="]";
-		
 		params.put("data",jsonData);
+		params.put("url",restUrl);
+		
 
 		params.put("type", config.getType());
 		params.put("x", config.getX());
@@ -77,5 +90,11 @@ public class TauchartsPanel extends Panel{
 		params.put("plugins", pluginStr);
 		template.interpolate(params);
 		response.render(OnDomReadyHeaderItem.forScript(template.asString()));
+		try {
+			template.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
