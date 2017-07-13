@@ -3,6 +3,7 @@ package org.orienteer.core.boot.loader.util;
 import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
@@ -52,6 +53,7 @@ public class DependencyManagmentTest {
     }
 
     @Test
+    @Ignore // Unsafe for regular use
     public void deleteOArtifactFromLocalMavenRepository() throws Exception {
         String groupId    = "org.orienteer";
         String artifactId = "orienteer-birt";
@@ -68,12 +70,13 @@ public class DependencyManagmentTest {
 
 
     @Test
+    @Ignore // Unsafe for regular use
     public void loadAndDeleteOrienteerModules() throws IOException {
         List<OArtifact> modules;
-        for (int i = 0; i < 100; i++) {
+        //for (int i = 0; i < 100; i++) {
            modules = downloadAllOrienteerModulesFromServer();
            deleteOArtifacts(modules);
-        }
+        //}
     }
 
     private List<OArtifact> downloadAllOrienteerModulesFromServer() throws IOException {
