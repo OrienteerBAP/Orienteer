@@ -5,12 +5,10 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.IMarkupFragment;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
@@ -19,39 +17,54 @@ import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
  * Panel for equals filter.
  * SELECT FROM aClass WHERE a = 'value'
  */
-public class EqualsFilterPanel extends AbstractFilterPanel {
+public class EqualsFilterPanel extends AbstractFilterPanel<IModel<?>> {
 
-    private final String filterId;
-
-    private final IModel<?> currentModel;
+    private final Form form;
 
     @SuppressWarnings("unchecked")
-    public EqualsFilterPanel(String id, Form form, final String filterId,
-                             final IModel<OProperty> propertyModel,
-                             final IVisualizer visualizer,
+    public EqualsFilterPanel(String id, Form form, String filterId, IModel<OProperty> propertyModel,
+                             IVisualizer visualizer,
                              IFilterCriteriaManager manager) {
-        super(id, Model.of(true));
-        this.filterId = filterId;
-        currentModel = Model.of();
-        manager.setFilterCriteria(FilterCriteriaType.EQUALS,
-                manager.createEqualsFilterCriteria(currentModel, getJoinModel()));
-        OProperty property = propertyModel.getObject();
-        Component component;
-        if (property.getType() != OType.BOOLEAN){
-            component = visualizer.createComponent(filterId, DisplayMode.EDIT,
-                    null, propertyModel, currentModel);
-        } else component = new BooleanFilterPanel(filterId, form, (IModel<Boolean>) currentModel);
-        add(component);
-        add(new Label("title", new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()))));
-        setOutputMarkupPlaceholderTag(true);
+        super(id, filterId, propertyModel, visualizer, manager, Model.of(true));
+        this.form = form;
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        add(createFilterComponent(getFilterModel()));
     }
 
     @Override
     public IMarkupFragment getMarkup(Component child) {
-        if (child != null && (child.getId().equals(filterId)))
+        if (child != null && (child.getId().equals(getFilterId())))
             return markupProvider.provideMarkup(child);
         return super.getMarkup(child);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected Component createFilterComponent(IModel<?> model) {
+        if (getPropertyModel().getObject().getType() == OType.BOOLEAN) {
+            return new BooleanFilterPanel(getFilterId(), form, (IModel<Boolean>) model);
+        }
+        return super.createFilterComponent(model);
+    }
+
+    @Override
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<?> filterModel) {
+        manager.setFilterCriteria(type, manager.createEqualsFilterCriteria(filterModel, getJoinModel()));
+    }
+
+    @Override
+    protected IModel<?> createFilterModel() {
+        return Model.of();
+    }
+
+    @Override
+    protected IModel<String> getTitle() {
+        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
+                getFilterCriteriaType().getName()));
     }
 
     @Override
@@ -61,7 +74,7 @@ public class EqualsFilterPanel extends AbstractFilterPanel {
 
     @Override
     public void clearInputs(AjaxRequestTarget target) {
-        currentModel.setObject(null);
+        getFilterModel().setObject(null);
         getJoinModel().setObject(true);
         target.add(this);
     }
