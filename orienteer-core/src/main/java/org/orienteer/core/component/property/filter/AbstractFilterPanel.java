@@ -30,6 +30,7 @@ public abstract class AbstractFilterPanel<T> extends Panel {
     private final IVisualizer visualizer;
     private final IModel<OProperty> propertyModel;
     private final String filterId;
+    private final IFilterCriteriaManager manager;
     private final IModel<Boolean> join;
 
     public AbstractFilterPanel(String id, String filterId,
@@ -41,13 +42,19 @@ public abstract class AbstractFilterPanel<T> extends Panel {
         this.propertyModel = propertyModel;
         this.visualizer = visualizer;
         this.join = join;
+        this.manager = manager;
         filterModel = createFilterModel();
         setOutputMarkupPlaceholderTag(true);
-        setFilterCriteria(manager, getFilterCriteriaType(), getFilterModel());
         add(new Label("title", getTitle()));
         add(new CheckBox("join", join).setOutputMarkupPlaceholderTag(true));
         add(new Label("joinTitle", new ResourceModel("widget.document.filter.join"))
                 .setOutputMarkupPlaceholderTag(true));
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        setFilterCriteria(manager, getFilterCriteriaType(), getFilterModel());
     }
 
     protected Component createFilterComponent(IModel<?> model) {

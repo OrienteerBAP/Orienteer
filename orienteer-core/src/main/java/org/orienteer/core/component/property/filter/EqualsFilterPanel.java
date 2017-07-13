@@ -13,11 +13,14 @@ import org.orienteer.core.component.visualizer.IVisualizer;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
+import java.io.Serializable;
+
 /**
  * Panel for equals filter.
  * SELECT FROM aClass WHERE a = 'value'
+ * @param <T> type of value
  */
-public class EqualsFilterPanel extends AbstractFilterPanel<IModel<?>> {
+public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPanel<IModel<T>> {
 
     private final Form form;
 
@@ -52,12 +55,12 @@ public class EqualsFilterPanel extends AbstractFilterPanel<IModel<?>> {
     }
 
     @Override
-    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<?> filterModel) {
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<T> filterModel) {
         manager.setFilterCriteria(type, manager.createEqualsFilterCriteria(filterModel, getJoinModel()));
     }
 
     @Override
-    protected IModel<?> createFilterModel() {
+    protected IModel<T> createFilterModel() {
         return Model.of();
     }
 
