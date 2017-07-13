@@ -4,10 +4,11 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.io.IClusterable;
 import org.orienteer.core.component.property.DisplayMode;
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 import java.util.Collection;
 
@@ -21,6 +22,5 @@ public interface IVisualizer extends IClusterable
 	public boolean isExtended();
 	public Collection<OType> getSupportedTypes();
 	public <V> Component createComponent(String id, DisplayMode mode, IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<V> valueModel);
-	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, Form form, IModel<V> valueModel);
-
+	public <V> Component createFilterComponent(String id, IModel<OProperty> propertyModel, FilterForm<OQueryModel<?>> filterForm);
 }

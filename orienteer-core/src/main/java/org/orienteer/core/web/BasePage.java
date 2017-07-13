@@ -1,15 +1,11 @@
 package org.orienteer.core.web;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
-import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxClientInfoBehavior;
 import org.apache.wicket.markup.head.*;
@@ -31,7 +27,6 @@ import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.AjaxIndicator;
 import org.orienteer.core.module.PerspectivesModule;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
@@ -129,7 +124,6 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 				forReference(javaScriptSettings.getJQueryReference())));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
-
 		// enabling metisMenu for secondary level menus
 		response.render(OnDomReadyHeaderItem.forScript("$(\".metismenu\").metisMenu({toggle: true});"));
 	}
