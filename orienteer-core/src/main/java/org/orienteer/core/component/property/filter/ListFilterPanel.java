@@ -8,7 +8,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
@@ -16,7 +15,6 @@ import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -31,28 +29,21 @@ import java.util.List;
  * SELECT FROM aClass WHERE a IN ['value1', 'value2', ..., 'valueN']
  * @param <T> serializable value
  */
-public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel {
+public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel<List<IModel<T>>> {
 
     @Inject
     private IMarkupProvider markupProvider;
 
-    private final List<IModel<T>> models;
     private final List<ListFilterInput> filterComponents;
 
     public ListFilterPanel(String id, String filterId, IModel<OProperty> propertyModel,
                                                     IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, Model.of(true));
+        super(id, filterId, propertyModel, visualizer, manager, Model.of(true));
         setOutputMarkupPlaceholderTag(true);
-        models = Lists.newArrayList();
-        models.add(Model.<T>of());
-        manager.setFilterCriteria(FilterCriteriaType.LIST, manager.createListFilterCriteria(models, getJoinModel()));
         filterComponents = Lists.newArrayList();
-        filterComponents.add(new ListFilterInput("container", filterId,
-                visualizer, propertyModel, filterComponents, models));
+        filterComponents.add(new ListFilterInput("container", filterComponents));
         createAndAddFiltersList(filterComponents);
         setOutputMarkupPlaceholderTag(true);
-        add(new Label("title", new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()))));
     }
 
     private void createAndAddFiltersList(final List<ListFilterInput> filterComponents) {
@@ -76,6 +67,25 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
         add(filters);
     }
 
+
+    @Override
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<T>> models) {
+        manager.setFilterCriteria(type, manager.createListFilterCriteria(models, getJoinModel()));
+    }
+
+    @Override
+    protected List<IModel<T>> createFilterModel() {
+        List<IModel<T>> models = Lists.newArrayList();
+        models.add(Model.<T>of());
+        return models;
+    }
+
+    @Override
+    protected IModel<String> getTitle() {
+        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
+                getFilterCriteriaType().getName()));
+    }
+
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
         return FilterCriteriaType.LIST;
@@ -83,7 +93,7 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
 
     @Override
     public void clearInputs(AjaxRequestTarget target) {
-        models.clear();
+        getFilterModel().clear();
         getJoinModel().setObject(true);
         Iterator<ListFilterInput> iterator = filterComponents.iterator();
         ListFilterInput component = filterComponents.get(filterComponents.size() - 1);
@@ -98,28 +108,20 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
         IModel<T> model = component.getModel();
         if (model != null) {
             model.setObject(null);
-            models.add(model);
+            getFilterModel().add(model);
         }
         target.add(this);
     }
 
     private class ListFilterInput extends WebMarkupContainer {
-
-        private final String filterId;
         private final AjaxFallbackLink<Void> removeButton;
         private final AjaxFallbackLink<Void> addButton;
 
         private final Component inputComponent;
 
-        public ListFilterInput(final String id, final String filterId,
-                                                        final IVisualizer visualizer,
-                                                        final IModel<OProperty> property,
-                                                        final List<ListFilterInput> components,
-                                                        final List<IModel<T>> models) {
+        public ListFilterInput(final String id, final List<ListFilterInput> components) {
             super(id);
-            this.filterId = filterId;
-            inputComponent = visualizer.createComponent(filterId, DisplayMode.EDIT,
-                    null, property, models.get(models.size() - 1));
+            inputComponent = createFilterComponent(getFilterModel().get(getFilterModel().size() - 1));
             removeButton = new AjaxFallbackLink<Void>("removeButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
@@ -129,7 +131,7 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
                         Component next = iterator.next();
                         if (next.equals(ListFilterInput.this)) {
                             iterator.remove();
-                            models.remove(counter);
+                            getFilterModel().remove(counter);
                             break;
                         }
                         counter++;
@@ -149,8 +151,8 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
             addButton = new AjaxFallbackLink<Void>("addButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    models.add(Model.<T>of());
-                    components.add(new ListFilterInput(id, filterId, visualizer, property, components, models));
+                    getFilterModel().add(Model.<T>of());
+                    components.add(new ListFilterInput(id, components));
                     for (ListFilterInput input : components) {
                         input.getRemoveButton().setVisible(true);
                     }
@@ -172,7 +174,7 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
 
         @Override
         public IMarkupFragment getMarkup(Component child) {
-            if (child != null && child.getId().equals(filterId))
+            if (child != null && child.getId().equals(getFilterId()))
                 return markupProvider.provideMarkup(child);
             return super.getMarkup(child);
         }

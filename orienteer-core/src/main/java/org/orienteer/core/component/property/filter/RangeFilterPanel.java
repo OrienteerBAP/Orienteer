@@ -14,7 +14,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -29,28 +28,24 @@ import java.util.List;
  * SELECT FROM aClass WHERE a BETWEEN value1 AND value2
  * @param <T> serializable value
  */
-public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPanel {
+public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPanel<List<IModel<T>>> {
 
     @Inject
     private IMarkupProvider markupProvider;
 
-    private final List<IModel<T>> models;
-
-    public RangeFilterPanel(String id, final String filterId,
-                                                     final IModel<OProperty> propertyModel,
-                                                     final IVisualizer visualizer,
+    public RangeFilterPanel(String id, String filterId, IModel<OProperty> propertyModel, IVisualizer visualizer,
                                                      IFilterCriteriaManager manager) {
-        super(id, Model.of(true));
-        models = getListOfModels();
+        super(id, filterId, propertyModel, visualizer, manager, Model.of(true));
+    }
 
-        Component first = visualizer.createComponent(filterId, DisplayMode.EDIT, null,
-                propertyModel, models.get(0));
-        Component second = visualizer.createComponent(filterId, DisplayMode.EDIT, null,
-                propertyModel, models.get(1));
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        Component first = createFilterComponent(getFilterModel().get(0));
+        Component second = createFilterComponent(getFilterModel().get(1));
         List<Component> rangeContainers = Lists.newArrayList();
-        rangeContainers.add(getRangeContainer(first, filterId, true));
-        rangeContainers.add(getRangeContainer(second, filterId, false));
-        manager.setFilterCriteria(FilterCriteriaType.RANGE, manager.createRangeFilterCriteria(models, getJoinModel()));
+        rangeContainers.add(getRangeContainer(first, getFilterId(), true));
+        rangeContainers.add(getRangeContainer(second, getFilterId(), false));
 
         ListView<Component> listView = new ListView<Component>("rangeFilters", rangeContainers) {
             @Override
@@ -58,17 +53,7 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
                 item.add(item.getModelObject());
             }
         };
-        add(new Label("title", new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()))));
         add(listView);
-        setOutputMarkupPlaceholderTag(true);
-    }
-
-    private List<IModel<T>> getListOfModels() {
-        List<IModel<T>> list = Lists.newArrayList();
-        list.add(Model.<T>of());
-        list.add(Model.<T>of());
-        return Collections.unmodifiableList(list);
     }
 
     private WebMarkupContainer getRangeContainer(final Component component, final String filterId, boolean first) {
@@ -88,6 +73,26 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
         return container;
     }
 
+
+    @Override
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<T>> models) {
+        manager.setFilterCriteria(type, manager.createRangeFilterCriteria(models, getJoinModel()));
+    }
+
+    @Override
+    protected List<IModel<T>> createFilterModel() {
+        List<IModel<T>> models = Lists.newArrayList();
+        models.add(Model.<T>of());
+        models.add(Model.<T>of());
+        return Collections.unmodifiableList(models);
+    }
+
+    @Override
+    protected IModel<String> getTitle() {
+        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
+                getFilterCriteriaType().getName()));
+    }
+
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
         return FilterCriteriaType.RANGE;
@@ -95,8 +100,8 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
 
     @Override
     public void clearInputs(AjaxRequestTarget target) {
-        models.get(0).setObject(null);
-        models.get(1).setObject(null);
+        getFilterModel().get(0).setObject(null);
+        getFilterModel().get(1).setObject(null);
         getJoinModel().setObject(true);
         target.add(this);
     }

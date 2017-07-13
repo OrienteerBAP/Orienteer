@@ -39,6 +39,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
     private static final String ACTIVE            = "active";
     private static final String TAB_PANE          = "tab-pane";
     private static final String TAB_PANE_ACTIVE   = "tab-pane active";
+    private static final String FILTER_WIDTH      = "filter-width";
     private static final String TAB_NAME_TEMPLATE = "widget.document.filter.tab.%s";
     static final String TAB_FILTER_TEMPLATE       = "widget.document.filter.%s";
     public static final String PANEL_ID           = "panel";
@@ -130,6 +131,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                     first = false;
                     item.add(AttributeModifier.append("class", TAB_PANE_ACTIVE));
                 } else item.add(AttributeModifier.append("class", TAB_PANE));
+                item.add(AttributeModifier.append("class", FILTER_WIDTH));
                 AbstractFilterPanel panel = item.getModelObject();
                 for (FilterTab tab : tabs) {
                     if (tab.getType() == panel.getFilterCriteriaType()) {

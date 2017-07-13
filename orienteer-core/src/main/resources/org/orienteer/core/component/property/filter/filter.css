@@ -40,14 +40,20 @@
 .filter-ok-button {
     display: inline-block;
     position: relative;
+    margin-left: 5px;
     margin-bottom: 10px;
     float: right;
 }
 
 .filter-clear-button {
     float: left;
+    margin-right: 5px;
 }
 
 .filtered-column {
     background-color: #ffebee;
+}
+
+.filter-width {
+    width: 300px;
 }

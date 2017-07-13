@@ -19,4 +19,10 @@ function enableDraggable(id) {
             draggable.css("z-index", currentZindex);
         }
     });
+    var currentPosition = $(window).width() - draggable.width();
+    if (!(currentPosition > draggable.offset().left)) {
+        draggable.offset({
+            left: currentPosition - 15
+        });
+    }
 }
