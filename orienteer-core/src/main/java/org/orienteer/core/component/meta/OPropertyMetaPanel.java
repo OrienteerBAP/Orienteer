@@ -256,7 +256,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 			}
 			else if(OPropertyPrototyper.LINKED_CLASS.equals(critery))
 			{
-				return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListOClassesModel(), OClassChoiceRenderer.INSTANCE)
+				return new DropDownChoice<OClass>(id, (IModel<OClass>)getModel(), new ListOClassesModel(), OClassChoiceRenderer.INSTANCE_NO_LOCALIZATION)
 																.setNullValid(true).add(new RefreshMetaContextOnChangeBehaviour());
 			}
 			else if(OPropertyPrototyper.COLLATE.equals(critery))
