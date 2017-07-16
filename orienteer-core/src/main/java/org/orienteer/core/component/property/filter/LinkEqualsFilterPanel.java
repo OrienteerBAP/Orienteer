@@ -79,7 +79,7 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<IModel<ODocument>
 
     @Override
     protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<ODocument> filterModel) {
-        manager.setFilterCriteria(type, manager.createEqualsFilterCriteria(filterModel, getJoinModel()));
+        manager.setFilterCriteria(type, manager.createEqualsFilterCriteria(filterModel, true, getJoinModel()));
     }
 
     @Override
