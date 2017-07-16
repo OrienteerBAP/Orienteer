@@ -121,21 +121,20 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 		GenericTablePanel<ODocument> tablePanel
 				= new GenericTablePanel<ODocument>("results", oClassIntrospector.getColumnsFor(oClass, true, DisplayMode.VIEW.asModel()), provider, 20);
 		OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
-		table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.select"), table)
-				{
+		table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.select"), table) {
 					
-					{
-						setBootstrapType(BootstrapType.SUCCESS);
-						setIcon(FAIconType.hand_o_right);
-						setAutoNotify(false);
-					}
+			{
+				setBootstrapType(BootstrapType.SUCCESS);
+				setIcon(FAIconType.hand_o_right);
+				setAutoNotify(false);
+			}
 
-					@Override
-					protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
-						if(onSelect(target, objects, false)) modal.close(target);
-					}
+			@Override
+			protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
+				if(onSelect(target, objects, false)) modal.close(target);
+			}
 
-				});
+		});
 
 		if (isMultiValue) {
 			table.addCommand(new AbstractCheckBoxEnabledCommand<ODocument>(new ResourceModel("command.selectAndSearchMode"), table) {

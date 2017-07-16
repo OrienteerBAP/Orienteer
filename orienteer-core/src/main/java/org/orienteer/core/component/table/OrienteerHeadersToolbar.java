@@ -2,6 +2,7 @@ package org.orienteer.core.component.table;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -66,7 +67,7 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
                         super.onComponentTag(tag);
-                        changeColorForFilteredColumn(tag, item.getModelObject().getSortProperty());
+                        changeColorForFilteredColumn(tag, item.getModelObject());
                     }
                 };
                 WebMarkupContainer header;
@@ -174,14 +175,13 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
     /**
      * Change color for filtered column
      * @param tag html tag of current column
-     * @param sortProperty sort property of current column
+     * @param column {@link IColumn<T, S>} column for change color
      */
-    public void changeColorForFilteredColumn(ComponentTag tag, S sortProperty) {
+    public void changeColorForFilteredColumn(ComponentTag tag, IColumn<T, S> column) {
         if (filteredColumnClass == null)
             return;
-        boolean filter = filteredColumns.contains(sortProperty);
         String aClass = tag.getAttribute("class");
-        if (filter) {
+        if (needChangeColor(column)) {
             aClass = aClass != null ? aClass + " " + filteredColumnClass : filteredColumnClass;
         } else {
             if (aClass != null && aClass.contains(filteredColumnClass)) {
@@ -191,6 +191,18 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
         if (!Strings.isNullOrEmpty(aClass)) {
             tag.put("class", aClass);
         } else tag.put("class", "");
+    }
+
+    private boolean needChangeColor(IColumn<T, S> column) {
+        boolean filter = false;
+        if (column instanceof OPropertyValueColumn) {
+            OPropertyValueColumn valueColumn = (OPropertyValueColumn) column;
+            OProperty property = valueColumn.getCriteryModel().getObject();
+            if (property != null) {
+                filter = filteredColumns.contains(property.getName());
+            }
+        } else filteredColumns.contains(column.getSortProperty());
+        return filter;
     }
 
     public OrienteerHeadersToolbar<T, S> setFilterForm(FilterForm<?> filterForm) {

@@ -144,15 +144,33 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 			case EMBEDDEDMAP:
 			case EMBEDDEDLIST:
 			case EMBEDDEDSET:
-			case LINK:
 			case LINKBAG:
-			case LINKLIST:
 			case LINKMAP:
-			case LINKSET:
 			case TRANSIENT:
 			case BINARY:
 			case ANY:
 				component = null;
+				break;
+			case LINK:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new LinkEqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
+								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
+								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
+				break;
+			case LINKLIST:
+			case LINKSET:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
+								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
 				break;
 			case STRING:
 				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
@@ -160,8 +178,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
 						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
 								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new ListFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
-								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new CollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
+								id, filterForm, propertyModel, DefaultVisualizer.this, manager));
 					}
 				};
 				break;
@@ -180,10 +198,10 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
 						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
 								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new ListFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
-								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new CollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
+								id, filterForm, propertyModel, DefaultVisualizer.this, manager));
 						filterPanels.add(new RangeFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
-								id, propertyModel, DefaultVisualizer.this, manager));
+								id, filterForm, propertyModel, DefaultVisualizer.this, manager));
 					}
 				};
 		}

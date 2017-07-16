@@ -8,13 +8,13 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -25,20 +25,20 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Panel for list filter
+ * Panel for collection filter
  * SELECT FROM aClass WHERE a IN ['value1', 'value2', ..., 'valueN']
  * @param <T> serializable value
  */
-public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel<List<IModel<T>>> {
+public class CollectionFilterPanel<T extends Serializable> extends AbstractFilterPanel<List<IModel<T>>> {
 
     @Inject
     private IMarkupProvider markupProvider;
 
     private final List<ListFilterInput> filterComponents;
 
-    public ListFilterPanel(String id, String filterId, IModel<OProperty> propertyModel,
-                                                    IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, filterId, propertyModel, visualizer, manager, Model.of(true));
+    public CollectionFilterPanel(String id, String filterId, Form form, IModel<OProperty> propertyModel,
+                                 IVisualizer visualizer, IFilterCriteriaManager manager) {
+        super(id, filterId, form, propertyModel, visualizer, manager, Model.of(true));
         setOutputMarkupPlaceholderTag(true);
         filterComponents = Lists.newArrayList();
         filterComponents.add(new ListFilterInput("container", filterComponents));
@@ -70,7 +70,7 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
 
     @Override
     protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<T>> models) {
-        manager.setFilterCriteria(type, manager.createListFilterCriteria(models, getJoinModel()));
+        manager.setFilterCriteria(type, manager.createCollectionFilterCriteria(models, getJoinModel()));
     }
 
     @Override
@@ -80,11 +80,6 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
         return models;
     }
 
-    @Override
-    protected IModel<String> getTitle() {
-        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()));
-    }
 
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
@@ -92,7 +87,7 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
     }
 
     @Override
-    public void clearInputs(AjaxRequestTarget target) {
+    protected void clearInputs() {
         getFilterModel().clear();
         getJoinModel().setObject(true);
         Iterator<ListFilterInput> iterator = filterComponents.iterator();
@@ -110,7 +105,6 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
             model.setObject(null);
             getFilterModel().add(model);
         }
-        target.add(this);
     }
 
     private class ListFilterInput extends WebMarkupContainer {
@@ -138,7 +132,7 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
                     }
                     components.get(components.size() - 1).getAddButton().setVisible(true);
                     if (components.size() - 1 == 0) components.get(0).getRemoveButton().setVisible(false);
-                    target.add(ListFilterPanel.this);
+                    target.add(CollectionFilterPanel.this);
                 }
 
                 @Override
@@ -157,7 +151,7 @@ public class ListFilterPanel<T extends Serializable> extends AbstractFilterPanel
                         input.getRemoveButton().setVisible(true);
                     }
                     setVisible(false);
-                    target.add(ListFilterPanel.this);
+                    target.add(CollectionFilterPanel.this);
                 }
 
                 @Override

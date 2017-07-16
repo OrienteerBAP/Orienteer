@@ -3,12 +3,10 @@ package org.orienteer.core.component.property.filter;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
@@ -22,14 +20,12 @@ import java.io.Serializable;
  */
 public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPanel<IModel<T>> {
 
-    private final Form form;
 
     @SuppressWarnings("unchecked")
     public EqualsFilterPanel(String id, Form form, String filterId, IModel<OProperty> propertyModel,
                              IVisualizer visualizer,
                              IFilterCriteriaManager manager) {
-        super(id, filterId, propertyModel, visualizer, manager, Model.of(true));
-        this.form = form;
+        super(id, filterId, form, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override
@@ -49,7 +45,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     @SuppressWarnings("unchecked")
     protected Component createFilterComponent(IModel<?> model) {
         if (getPropertyModel().getObject().getType() == OType.BOOLEAN) {
-            return new BooleanFilterPanel(getFilterId(), form, (IModel<Boolean>) model);
+            return new BooleanFilterPanel(getFilterId(), getForm(), (IModel<Boolean>) model);
         }
         return super.createFilterComponent(model);
     }
@@ -64,11 +60,6 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
         return Model.of();
     }
 
-    @Override
-    protected IModel<String> getTitle() {
-        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()));
-    }
 
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
@@ -76,10 +67,9 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     }
 
     @Override
-    public void clearInputs(AjaxRequestTarget target) {
+    protected void clearInputs() {
         getFilterModel().setObject(null);
         getJoinModel().setObject(true);
-        target.add(this);
     }
 
 }

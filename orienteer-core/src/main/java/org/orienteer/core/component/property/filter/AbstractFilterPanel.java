@@ -4,9 +4,11 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
+import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -32,13 +34,15 @@ public abstract class AbstractFilterPanel<T> extends Panel {
     private final String filterId;
     private final IFilterCriteriaManager manager;
     private final IModel<Boolean> join;
+    private final Form form;
 
-    public AbstractFilterPanel(String id, String filterId,
+    public AbstractFilterPanel(String id, String filterId, Form form,
                                IModel<OProperty> propertyModel,
                                IVisualizer visualizer,
                                IFilterCriteriaManager manager, IModel<Boolean> join) {
         super(id);
         this.filterId = filterId;
+        this.form = form;
         this.propertyModel = propertyModel;
         this.visualizer = visualizer;
         this.join = join;
@@ -46,7 +50,10 @@ public abstract class AbstractFilterPanel<T> extends Panel {
         filterModel = createFilterModel();
         setOutputMarkupPlaceholderTag(true);
         add(new Label("title", getTitle()));
-        add(new CheckBox("join", join).setOutputMarkupPlaceholderTag(true));
+        CheckBox checkBox = new CheckBox("join", join);
+        checkBox.add(new AjaxFormSubmitBehavior(form, "change") {});
+        checkBox.setOutputMarkupId(true);
+        add(checkBox);
         add(new Label("joinTitle", new ResourceModel("widget.document.filter.join"))
                 .setOutputMarkupPlaceholderTag(true));
     }
@@ -61,9 +68,18 @@ public abstract class AbstractFilterPanel<T> extends Panel {
         return visualizer.createComponent(filterId, DisplayMode.EDIT, null, propertyModel, model);
     }
 
+    protected IModel<String> getTitle() {
+        return new ResourceModel(java.lang.String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
+                getFilterCriteriaType().getName()));
+    }
+
     protected abstract void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, T filterModel);
 
     protected abstract T createFilterModel();
+
+    protected Form getForm() {
+        return form;
+    }
 
     protected T getFilterModel() {
         return filterModel;
@@ -85,11 +101,17 @@ public abstract class AbstractFilterPanel<T> extends Panel {
         return join;
     }
 
-    protected abstract IModel<String> getTitle();
 
     public abstract FilterCriteriaType getFilterCriteriaType();
 
-    public abstract void clearInputs(AjaxRequestTarget target);
+
+    public void clearInputs(AjaxRequestTarget target) {
+        join.setObject(null);
+        clearInputs();
+        target.add(this);
+    }
+
+    protected abstract void clearInputs();
 
     @Override
     public IMarkupFragment getMarkup(Component child) {
