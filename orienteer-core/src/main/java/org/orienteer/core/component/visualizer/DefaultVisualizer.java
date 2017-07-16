@@ -176,6 +176,8 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
 					@Override
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new ContainsStringFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
+								id, propertyModel, DefaultVisualizer.this, manager));
 						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
 								id, propertyModel, DefaultVisualizer.this, manager));
 						filterPanels.add(new CollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
