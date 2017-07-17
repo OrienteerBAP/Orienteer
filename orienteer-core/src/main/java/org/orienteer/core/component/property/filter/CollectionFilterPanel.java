@@ -15,21 +15,20 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Panel for collection filter
  * SELECT FROM aClass WHERE a IN ['value1', 'value2', ..., 'valueN']
- * @param <T> serializable value
  */
-public class CollectionFilterPanel<T extends Serializable> extends AbstractFilterPanel<List<IModel<T>>> {
+public class CollectionFilterPanel extends AbstractFilterPanel<List<IModel<?>>> {
 
     @Inject
     private IMarkupProvider markupProvider;
@@ -69,27 +68,26 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
 
 
     @Override
-    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<T>> models) {
-        manager.setFilterCriteria(type, manager.createCollectionFilterCriteria(models, getJoinModel()));
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<?>> models) {
+        manager.addFilterCriteria(manager.createCollectionFilterCriteria(new CollectionModel<>(models), getJoinModel()));
     }
 
     @Override
-    protected List<IModel<T>> createFilterModel() {
-        List<IModel<T>> models = Lists.newArrayList();
-        models.add(Model.<T>of());
+    protected List<IModel<?>> createFilterModel() {
+        List<IModel<?>> models = Lists.newArrayList();
+        models.add(Model.of());
         return models;
     }
 
 
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
-        return FilterCriteriaType.LIST;
+        return FilterCriteriaType.COLLECTION;
     }
 
     @Override
     protected void clearInputs() {
         getFilterModel().clear();
-        getJoinModel().setObject(true);
         Iterator<ListFilterInput> iterator = filterComponents.iterator();
         ListFilterInput component = filterComponents.get(filterComponents.size() - 1);
         while (iterator.hasNext()) {
@@ -100,7 +98,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
         component.getRemoveButton().setVisible(false);
         component.getAddButton().setVisible(true);
         component.clearInputComponent();
-        IModel<T> model = component.getModel();
+        IModel<?> model = component.getModel();
         if (model != null) {
             model.setObject(null);
             getFilterModel().add(model);
@@ -145,7 +143,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             addButton = new AjaxFallbackLink<Void>("addButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    getFilterModel().add(Model.<T>of());
+                    getFilterModel().add(Model.of());
                     components.add(new ListFilterInput(id, components));
                     for (ListFilterInput input : components) {
                         input.getRemoveButton().setVisible(true);
@@ -173,9 +171,8 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             return super.getMarkup(child);
         }
 
-        @SuppressWarnings("unchecked")
-        public IModel<T> getModel() {
-            return (IModel<T>) inputComponent.getDefaultModel();
+        public IModel<?> getModel() {
+            return inputComponent.getDefaultModel();
         }
 
         public void clearInputComponent() {

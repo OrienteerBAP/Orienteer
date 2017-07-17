@@ -106,7 +106,7 @@ public abstract class AbstractFilterPanel<T> extends Panel {
 
 
     public void clearInputs(AjaxRequestTarget target) {
-        join.setObject(null);
+        join.setObject(true);
         clearInputs();
         target.add(this);
     }

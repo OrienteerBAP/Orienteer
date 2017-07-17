@@ -14,21 +14,20 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * Panel for range filter
  * SELECT FROM aClass WHERE a BETWEEN value1 AND value2
- * @param <T> serializable value
  */
-public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPanel<List<IModel<T>>> {
+public class RangeFilterPanel extends AbstractFilterPanel<List<IModel<?>>> {
 
     @Inject
     private IMarkupProvider markupProvider;
@@ -75,15 +74,15 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
 
 
     @Override
-    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<T>> models) {
-        manager.setFilterCriteria(type, manager.createRangeFilterCriteria(models, getJoinModel()));
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<?>> models) {
+        manager.addFilterCriteria(manager.createRangeFilterCriteria(new CollectionModel<>(models), getJoinModel()));
     }
 
     @Override
-    protected List<IModel<T>> createFilterModel() {
-        List<IModel<T>> models = Lists.newArrayList();
-        models.add(Model.<T>of());
-        models.add(Model.<T>of());
+    protected List<IModel<?>> createFilterModel() {
+        List<IModel<?>> models = Lists.newArrayList();
+        models.add(Model.of());
+        models.add(Model.of());
         return Collections.unmodifiableList(models);
     }
 
@@ -96,6 +95,5 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
     protected void clearInputs() {
         getFilterModel().get(0).setObject(null);
         getFilterModel().get(1).setObject(null);
-        getJoinModel().setObject(true);
     }
 }

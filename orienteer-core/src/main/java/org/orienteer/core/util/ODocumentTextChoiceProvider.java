@@ -13,7 +13,6 @@ import org.wicketstuff.select2.Response;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaManager;
-import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
 import java.util.ArrayList;
@@ -55,8 +54,7 @@ public class ODocumentTextChoiceProvider extends ChoiceProvider<ODocument> {
                     String nameProperty = getOClassIntrospector().getNameProperty(oClass).getName();
                     IFilterCriteriaManager manager = new FilterCriteriaManager(
                             new OPropertyModel(getOClassIntrospector().getNameProperty(oClass)));
-                    manager.setFilterCriteria(FilterCriteriaType.CONTAINS_TEXT,
-                            manager.createContainsStringFilterCriteria(Model.of(term), Model.of(true)));
+                    manager.addFilterCriteria(manager.createContainsStringFilterCriteria(Model.of(term), Model.of(true)));
                     queryModel.addFilterCriteriaManager(nameProperty, manager);
                     response.addAll(queryModel.getObject());
                 }

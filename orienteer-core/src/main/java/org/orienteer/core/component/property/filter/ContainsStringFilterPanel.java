@@ -19,7 +19,7 @@ public class ContainsStringFilterPanel extends EqualsFilterPanel<String> {
 
     @Override
     protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<String> filterModel) {
-        manager.setFilterCriteria(type, manager.createContainsStringFilterCriteria(filterModel, getJoinModel()));
+        manager.addFilterCriteria(manager.createContainsStringFilterCriteria(filterModel, getJoinModel()));
     }
 
     @Override

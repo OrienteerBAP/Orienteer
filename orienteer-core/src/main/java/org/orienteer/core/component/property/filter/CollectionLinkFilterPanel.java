@@ -63,7 +63,8 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<IModel<Collec
 
     @Override
     protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<Collection<ODocument>> filterModel) {
-        manager.setFilterCriteria(type, manager.createLinkCollectionFilterCriteria(filterModel, getJoinModel()));
+        manager.addFilterCriteria(manager.createLinkCollectionFilterCriteria(
+                filterModel, type.equals(FilterCriteriaType.LINKLIST), getJoinModel()));
     }
 
     @Override

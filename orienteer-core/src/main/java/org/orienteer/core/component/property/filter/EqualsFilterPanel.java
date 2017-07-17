@@ -52,7 +52,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
 
     @Override
     protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<T> filterModel) {
-        manager.setFilterCriteria(type, manager.createEqualsFilterCriteria(filterModel, false, getJoinModel()));
+        manager.addFilterCriteria(manager.createEqualsFilterCriteria(filterModel, getJoinModel()));
     }
 
     @Override
@@ -69,7 +69,6 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     @Override
     protected void clearInputs() {
         getFilterModel().setObject(null);
-        getJoinModel().setObject(true);
     }
 
 }
