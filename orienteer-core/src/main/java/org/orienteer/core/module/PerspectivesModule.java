@@ -10,7 +10,9 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OIdentity;
 import com.orientechnologies.orient.core.metadata.security.ORole;
+import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
+import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -192,16 +194,16 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		}
 	}
 	
-	public ODocument getDefaultPerspective(ODatabaseDocument db, OUser user)
+	public ODocument getDefaultPerspective(ODatabaseDocument db, OSecurityUser user)
 	{
 		if(user!=null)
 		{
 			Object perspectiveObj = user.getDocument().field("perspective");
 			if(perspectiveObj!=null && perspectiveObj instanceof OIdentifiable) 
 				return (ODocument)((OIdentifiable)perspectiveObj).getRecord();
-			Set<ORole> roles = user.getRoles();
+			Set<? extends OSecurityRole> roles = user.getRoles();
 			ODocument perspective = null;
-			for (ORole oRole : roles)
+			for (OSecurityRole oRole : roles)
 			{
 				perspective = getPerspectiveForORole(oRole);
 				if(perspective!=null) return perspective;
@@ -215,7 +217,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		return perspective;
 	}
 	
-	private ODocument getPerspectiveForORole(ORole role)
+	private ODocument getPerspectiveForORole(OSecurityRole role)
 	{
 		if(role==null) return null;
 		Object perspectiveObj = role.getDocument().field("perspective");
@@ -223,7 +225,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 			return (ODocument)((OIdentifiable)perspectiveObj).getRecord();
 		else
 		{
-			ORole parentRole = role.getParentRole();
+			OSecurityRole parentRole = role.getParentRole();
 			if(parentRole!=null && !parentRole.equals(role))
 			{
 				return getPerspectiveForORole(parentRole);

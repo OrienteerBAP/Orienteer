@@ -11,6 +11,9 @@ import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.metadata.security.ORole;
+import com.orientechnologies.orient.core.metadata.security.OSecurity;
+import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -28,7 +31,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	
 	public UpdateDefaultSchemaModule()
 	{
-		super(NAME, 1);
+		super(NAME, 2);
 	}
 
 	@Override
@@ -45,6 +48,11 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 		{
 			case 1:
 				onUpdateToFirstVesion(app, db);
+				break;
+			case 2:
+				//Required for explicit update of rights due to changes in OrientDB 2.2.23
+				//Related issue: https://github.com/orientechnologies/orientdb/issues/7549
+				app.fixOrientDBRights(db);
 				break;
 			default:
 				break;
