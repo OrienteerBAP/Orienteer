@@ -3,6 +3,7 @@ package org.orienteer.core.module;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -67,11 +68,12 @@ public class UserOnlineModule extends AbstractOrienteerModule {
         });
     }
 
-    public ODocument updateOnlineUser(final OUser user, final boolean online) {
+    public ODocument updateOnlineUser(final OSecurityUser user, final boolean online) {
         return new DBClosure<ODocument>() {
             @Override
             protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
-            	final ODocument document = user.reload().getDocument();
+            	ODocument document = user.getDocument();
+            	document = (ODocument) document.reload();
                 document.field(ONLINE_FIELD, online);
                 document.save();
                 return document;
@@ -79,12 +81,13 @@ public class UserOnlineModule extends AbstractOrienteerModule {
         }.execute();
     }
 
-    public void updateSessionUser(final OUser user, final String sessionId) {
+    public void updateSessionUser(final OSecurityUser user, final String sessionId) {
     	if(user!=null) { 
 	        new DBClosure<ODocument>() {
 	            @Override
 	            protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
-	            	final ODocument document = user.reload().getDocument();
+	            	ODocument document = user.getDocument();
+	            	document = (ODocument) document.reload();
 	                document.field(LAST_SESSION_FIELD, sessionId);
 	                document.save();
 	                return document;
