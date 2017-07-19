@@ -189,6 +189,11 @@
 				<artifactId>bootstrap</artifactId>
 				<version>3.3.6</version>
 		    </dependency>
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>bootstrap-datepicker</artifactId>
+				<version>1.6.4</version>
+			</dependency>
 		    <dependency>
 			    <groupId>org.webjars</groupId>
 			    <artifactId>gridster.js</artifactId>

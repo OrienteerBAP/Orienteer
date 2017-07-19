@@ -50,7 +50,11 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
 	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
 
-	@Inject
+    public static final CssResourceReference BOOTSTRAP_DATE_PICKER_CSS       = new WebjarsCssResourceReference("bootstrap-datepicker/current/css/bootstrap-datepicker3.min.css");
+    public static final JavaScriptResourceReference BOOTSTRAP_DATE_PICKER_JS = new WebjarsJavaScriptResourceReference("bootstrap-datepicker/current/js/bootstrap-datepicker.min.js");
+    public static final String BOOTSTRAP_DATEPICKER_LOCALE                   = "bootstrap-datepicker/current/locales/bootstrap-datepicker.%s.min.js";
+
+    @Inject
 	private PerspectivesModule perspectivesModule;
 	
 	private RepeatingView uiPlugins;
@@ -117,6 +121,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
 		response.render(CssHeaderItem.forReference(METISMENU_CSS));
 		response.render(CssHeaderItem.forReference(ORIENTEER_CSS));
+		response.render(CssHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_CSS));
 		super.renderHead(response);
 		JavaScriptLibrarySettings javaScriptSettings =          
 				getApplication().getJavaScriptLibrarySettings();
@@ -124,6 +129,9 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 				forReference(javaScriptSettings.getJQueryReference())));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
+		response.render(JavaScriptHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_JS));
+        response.render(JavaScriptHeaderItem.forReference(new WebjarsJavaScriptResourceReference(
+                String.format(BOOTSTRAP_DATEPICKER_LOCALE, getLocale().getLanguage()))));
 		// enabling metisMenu for secondary level menus
 		response.render(OnDomReadyHeaderItem.forScript("$(\".metismenu\").metisMenu({toggle: true});"));
 	}

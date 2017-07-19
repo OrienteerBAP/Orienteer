@@ -9,7 +9,8 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.form.FormComponent;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.property.DisplayMode;
@@ -22,12 +23,10 @@ import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
  * Abstract panel for filters
  * @param <T> type of filtered model
  */
-public abstract class AbstractFilterPanel<T> extends Panel {
+public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
 
     @Inject
     protected IMarkupProvider markupProvider;
-
-    private final T filterModel;
 
     private final IVisualizer visualizer;
     private final IModel<OProperty> propertyModel;
@@ -36,22 +35,21 @@ public abstract class AbstractFilterPanel<T> extends Panel {
     private final IModel<Boolean> join;
     private final Form form;
 
-    public AbstractFilterPanel(String id, String filterId, Form form,
+    public AbstractFilterPanel(String id, IModel<T> model, Form form, String filterId,
                                IModel<OProperty> propertyModel,
                                IVisualizer visualizer,
                                IFilterCriteriaManager manager, IModel<Boolean> join) {
-        super(id);
-        this.filterId = filterId;
+        super(id, model);
         this.form = form;
+        this.filterId = filterId;
         this.propertyModel = propertyModel;
         this.visualizer = visualizer;
         this.join = join;
         this.manager = manager;
-        filterModel = createFilterModel();
         setOutputMarkupPlaceholderTag(true);
         add(new Label("title", getTitle()));
         CheckBox checkBox = new CheckBox("join", join);
-        checkBox.add(new AjaxFormSubmitBehavior(form, "change") {});
+        checkBox.add(new AjaxFormSubmitBehavior(getForm(), "change") {});
         checkBox.setOutputMarkupId(true);
         add(checkBox);
         add(new Label("joinTitle", new ResourceModel("widget.document.filter.join"))
@@ -61,11 +59,25 @@ public abstract class AbstractFilterPanel<T> extends Panel {
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        setFilterCriteria(manager, getFilterCriteriaType(), getFilterModel());
+        setFilterCriteria(manager, getFilterCriteriaType(), getModel());
     }
 
-    protected Component createFilterComponent(IModel<?> model) {
-        return visualizer.createComponent(filterId, DisplayMode.EDIT, null, propertyModel, model);
+    @Override
+    public void convertInput() {
+        setConvertedInput(getFilterInput());
+    }
+
+    /**
+     * Override for return filter input
+     * @return filter input
+     */
+    protected T getFilterInput() {
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected FormComponent<?> createFilterComponent(IModel<?> model) {
+        return (FormComponent<?>) visualizer.createComponent(filterId, DisplayMode.EDIT, null, propertyModel, model);
     }
 
     protected IModel<String> getTitle() {
@@ -73,17 +85,10 @@ public abstract class AbstractFilterPanel<T> extends Panel {
                 getFilterCriteriaType().getName()));
     }
 
-    protected abstract void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, T filterModel);
+    public abstract FilterCriteriaType getFilterCriteriaType();
+    protected abstract void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<T> model);
+    protected abstract void clearInputs();
 
-    protected abstract T createFilterModel();
-
-    protected Form getForm() {
-        return form;
-    }
-
-    protected T getFilterModel() {
-        return filterModel;
-    }
 
     protected IVisualizer getVisualizer() {
         return visualizer;
@@ -102,8 +107,6 @@ public abstract class AbstractFilterPanel<T> extends Panel {
     }
 
 
-    public abstract FilterCriteriaType getFilterCriteriaType();
-
 
     public void clearInputs(AjaxRequestTarget target) {
         join.setObject(true);
@@ -111,7 +114,11 @@ public abstract class AbstractFilterPanel<T> extends Panel {
         target.add(this);
     }
 
-    protected abstract void clearInputs();
+
+    @Override
+    public Form<?> getForm() {
+        return form;
+    }
 
     @Override
     public IMarkupFragment getMarkup(Component child) {

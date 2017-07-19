@@ -11,6 +11,7 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -29,13 +30,15 @@ import static org.orienteer.core.component.meta.OClassMetaPanel.BOOTSTRAP_SELECT
 /**
  * SELECT FROM Class WHERE link IN [#21:0, #22:0]
  */
-public class CollectionLinkFilterPanel extends AbstractFilterPanel<IModel<Collection<ODocument>>> {
+public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<ODocument>> {
 
-    private IModel<Collection<String>> classNamesModel;
 
-    public CollectionLinkFilterPanel(String id, Form form, String filterId, IModel<OProperty> propertyModel,
+    private FormComponent<Collection<String>> classesFormComponent;
+    private FormComponent<Collection<ODocument>> docsFormComponent;
+
+    public CollectionLinkFilterPanel(String id, IModel<Collection<ODocument>> model, Form form, String filterId, IModel<OProperty> propertyModel,
                                      IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, filterId, form, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override
@@ -49,15 +52,16 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<IModel<Collec
                 return super.getMarkup(child);
             }
         };
-
+        IModel<Collection<String>> classNamesModel = new CollectionModel<>();
         Label classLabel = new Label("classLabel", new ResourceModel("widget.document.filter.linkCollection.class"));
         classLabel.add(AttributeModifier.append("style", "display: block"));
         Label documentLabel = new Label("documentLabel", new ResourceModel("widget.document.filter.linkCollection.document"));
         documentLabel.add(AttributeModifier.append("style", "display: block"));
+
+        container.add(classesFormComponent = createClassChooseComponent("classes", classNamesModel));
+        container.add(docsFormComponent = createODocumentChooseComponent("documents", classNamesModel, getModel()));
         container.add(classLabel);
-        container.add(createClassChooseComponent("classes"));
         container.add(documentLabel);
-        container.add(createODocumentChooseComponent("documents", getFilterModel()));
         add(container);
     }
 
@@ -68,12 +72,11 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<IModel<Collec
     }
 
     @Override
-    protected IModel<Collection<ODocument>> createFilterModel() {
-        classNamesModel = new CollectionModel<>(Lists.<String>newArrayList());
-        return new CollectionModel<>(Lists.<ODocument>newArrayList());
+    protected Collection<ODocument> getFilterInput() {
+        return docsFormComponent.getConvertedInput();
     }
 
-    private Component createClassChooseComponent(String id) {
+    private Select2MultiChoice<String> createClassChooseComponent(String id, IModel<Collection<String>> classNamesModel) {
         Select2MultiChoice<String> choice = new Select2MultiChoice<>(id, classNamesModel,
                 OClassCollectionTextChoiceProvider.INSTANCE);
         choice.getSettings()
@@ -85,7 +88,8 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<IModel<Collec
         return choice;
     }
 
-    private Component createODocumentChooseComponent(String id, IModel<Collection<ODocument>> documentsModel) {
+    private Select2MultiChoice<ODocument> createODocumentChooseComponent(String id, IModel<Collection<String>> classNamesModel,
+                                                                         IModel<Collection<ODocument>> documentsModel) {
         Select2MultiChoice<ODocument> choice = new Select2MultiChoice<>(id, documentsModel,
                 new ODocumentTextChoiceProvider(classNamesModel));
         choice.getSettings()
@@ -109,7 +113,7 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<IModel<Collec
 
     @Override
     protected void clearInputs() {
-        classNamesModel.getObject().clear();
-        getFilterModel().getObject().clear();
+        classesFormComponent.setModelObject(Lists.<String>newArrayList());
+        docsFormComponent.setModelObject(Lists.<ODocument>newArrayList());
     }
 }

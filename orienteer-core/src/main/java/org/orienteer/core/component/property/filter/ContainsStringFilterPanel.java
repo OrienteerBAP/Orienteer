@@ -12,9 +12,10 @@ import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
  * SELECT FROM Class WHERE name CONTAINSTEXT 'abc'
  */
 public class ContainsStringFilterPanel extends EqualsFilterPanel<String> {
-    public ContainsStringFilterPanel(String id, Form form, String filterId,
+    public ContainsStringFilterPanel(String id, IModel<String> model, Form form, String filterId,
                                      IModel<OProperty> propertyModel, IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, form, filterId, propertyModel, visualizer, manager);
+        super(id, model, form, filterId, propertyModel, visualizer, manager);
+
     }
 
     @Override

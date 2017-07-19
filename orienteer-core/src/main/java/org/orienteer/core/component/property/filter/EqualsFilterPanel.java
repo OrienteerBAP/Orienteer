@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.visualizer.IVisualizer;
@@ -18,21 +19,24 @@ import java.io.Serializable;
  * SELECT FROM aClass WHERE a = 'value'
  * @param <T> type of value
  */
-public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPanel<IModel<T>> {
+public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPanel<T> {
 
+    private FormComponent<T> formComponent;
 
     @SuppressWarnings("unchecked")
-    public EqualsFilterPanel(String id, Form form, String filterId, IModel<OProperty> propertyModel,
+    public EqualsFilterPanel(String id, IModel<T> model, Form form, String filterId, IModel<OProperty> propertyModel,
                              IVisualizer visualizer,
                              IFilterCriteriaManager manager) {
-        super(id, filterId, form, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onInitialize() {
         super.onInitialize();
-        add(createFilterComponent(getFilterModel()));
+        add(formComponent = (FormComponent<T>) createFilterComponent(getModel()));
     }
+
 
     @Override
     public IMarkupFragment getMarkup(Component child) {
@@ -43,7 +47,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Component createFilterComponent(IModel<?> model) {
+    protected FormComponent<?> createFilterComponent(IModel<?> model) {
         if (getPropertyModel().getObject().getType() == OType.BOOLEAN) {
             return new BooleanFilterPanel(getFilterId(), getForm(), (IModel<Boolean>) model);
         }
@@ -56,10 +60,9 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     }
 
     @Override
-    protected IModel<T> createFilterModel() {
-        return Model.of();
+    protected T getFilterInput() {
+        return formComponent.getConvertedInput();
     }
-
 
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
@@ -68,7 +71,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
 
     @Override
     protected void clearInputs() {
-        getFilterModel().setObject(null);
+        formComponent.setModelObject(null);
     }
 
 }

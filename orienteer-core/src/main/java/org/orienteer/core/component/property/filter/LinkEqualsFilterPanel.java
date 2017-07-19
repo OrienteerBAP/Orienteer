@@ -9,6 +9,7 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -17,7 +18,6 @@ import org.orienteer.core.model.OClassTextChoiceProvider;
 import org.orienteer.core.util.ODocumentChoiceProvider;
 import org.wicketstuff.select2.Select2Choice;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
@@ -27,14 +27,14 @@ import static org.orienteer.core.component.meta.OClassMetaPanel.BOOTSTRAP_SELECT
  * Panel for search documents which contains equals links with value
  * SELECT FROM Class WHERE link = '#21:00'
  */
-public class LinkEqualsFilterPanel extends AbstractFilterPanel<IModel<ODocument>> {
+public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
 
-    private final IModel<OClass> classModel;
+    private FormComponent<OClass> classFormComponent;
+    private FormComponent<ODocument> docFormComponent;
 
-    public LinkEqualsFilterPanel(String id, Form form, String filterId, IModel<OProperty> propertyModel,
+    public LinkEqualsFilterPanel(String id, IModel<ODocument> model, Form form, String filterId, IModel<OProperty> propertyModel,
                                  IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, filterId, form, propertyModel, visualizer, manager, Model.of(true));
-        this.classModel = new OClassModel(Model.<String>of());
+        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override
@@ -48,14 +48,15 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<IModel<ODocument>
                 return super.getMarkup(child);
             }
         };
+        IModel<OClass> classModel = new OClassModel(Model.<String>of());
+        container.add(classFormComponent = createClassChoiceComponent("class", classModel));
+        container.add(docFormComponent = createDocumentChoiceComponent("document", classModel));
         container.add(new Label("classLabel", new ResourceModel("widget.document.filter.link.class")));
-        container.add(createClassChoiceComponent("class"));
         container.add(new Label("documentLabel", new ResourceModel("widget.document.filter.link.document")));
-        container.add(createDocumentChoiceComponent("document"));
         add(container);
     }
 
-    private Component createClassChoiceComponent(String id) {
+    private Select2Choice<OClass> createClassChoiceComponent(String id, IModel<OClass> classModel) {
         Select2Choice<OClass> choice = new Select2Choice<>(id, classModel, new OClassTextChoiceProvider());
         choice.getSettings()
                 .setWidth("100%")
@@ -66,8 +67,8 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<IModel<ODocument>
         return choice;
     }
 
-    private Component createDocumentChoiceComponent(String id) {
-        Select2Choice<ODocument> choice = new Select2Choice<>(id, getFilterModel(), new ODocumentChoiceProvider(classModel));
+    private Select2Choice<ODocument> createDocumentChoiceComponent(String id, IModel<OClass> classModel) {
+        Select2Choice<ODocument> choice = new Select2Choice<>(id, getModel(), new ODocumentChoiceProvider(classModel));
         choice.getSettings()
                 .setWidth("100%")
                 .setCloseOnSelect(true)
@@ -83,8 +84,8 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<IModel<ODocument>
     }
 
     @Override
-    protected IModel<ODocument> createFilterModel() {
-        return new ODocumentModel();
+    protected ODocument getFilterInput() {
+        return docFormComponent.getConvertedInput();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<IModel<ODocument>
 
     @Override
     protected void clearInputs() {
-        getFilterModel().setObject(null);
-        classModel.setObject(null);
+        classFormComponent.setModelObject(null);
+        docFormComponent.setModelObject(null);
     }
 }

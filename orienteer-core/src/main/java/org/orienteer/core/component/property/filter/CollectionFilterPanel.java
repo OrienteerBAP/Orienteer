@@ -15,34 +15,49 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Panel for collection filter
  * SELECT FROM aClass WHERE a IN ['value1', 'value2', ..., 'valueN']
+ * @param <T> type of value
  */
-public class CollectionFilterPanel extends AbstractFilterPanel<List<IModel<?>>> {
+public class CollectionFilterPanel<T extends Serializable> extends AbstractFilterPanel<Collection<T>> {
 
     @Inject
     private IMarkupProvider markupProvider;
 
-    private final List<ListFilterInput> filterComponents;
+    private List<ListFilterInput> filterComponents;
 
-    public CollectionFilterPanel(String id, String filterId, Form form, IModel<OProperty> propertyModel,
+    public CollectionFilterPanel(String id, IModel<Collection<T>> model, Form form, String filterId, IModel<OProperty> propertyModel,
                                  IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, filterId, form, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
         setOutputMarkupPlaceholderTag(true);
         filterComponents = Lists.newArrayList();
         filterComponents.add(new ListFilterInput("container", filterComponents));
         createAndAddFiltersList(filterComponents);
-        setOutputMarkupPlaceholderTag(true);
+    }
+
+    @Override
+    public void convertInput() {
+        List<T> collection = Lists.newArrayList();
+        for (ListFilterInput input : filterComponents) {
+            collection.add(input.getConvertedInput());
+        }
+        setConvertedInput(collection);
     }
 
     private void createAndAddFiltersList(final List<ListFilterInput> filterComponents) {
@@ -68,17 +83,9 @@ public class CollectionFilterPanel extends AbstractFilterPanel<List<IModel<?>>> 
 
 
     @Override
-    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<?>> models) {
-        manager.addFilterCriteria(manager.createCollectionFilterCriteria(new CollectionModel<>(models), getJoinModel()));
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<Collection<T>> models) {
+        manager.addFilterCriteria(manager.createCollectionFilterCriteria(models, getJoinModel()));
     }
-
-    @Override
-    protected List<IModel<?>> createFilterModel() {
-        List<IModel<?>> models = Lists.newArrayList();
-        models.add(Model.of());
-        return models;
-    }
-
 
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
@@ -87,7 +94,7 @@ public class CollectionFilterPanel extends AbstractFilterPanel<List<IModel<?>>> 
 
     @Override
     protected void clearInputs() {
-        getFilterModel().clear();
+        getModel().getObject().clear();
         Iterator<ListFilterInput> iterator = filterComponents.iterator();
         ListFilterInput component = filterComponents.get(filterComponents.size() - 1);
         while (iterator.hasNext()) {
@@ -98,35 +105,28 @@ public class CollectionFilterPanel extends AbstractFilterPanel<List<IModel<?>>> 
         component.getRemoveButton().setVisible(false);
         component.getAddButton().setVisible(true);
         component.clearInputComponent();
-        IModel<?> model = component.getModel();
-        if (model != null) {
-            model.setObject(null);
-            getFilterModel().add(model);
-        }
     }
 
     private class ListFilterInput extends WebMarkupContainer {
         private final AjaxFallbackLink<Void> removeButton;
         private final AjaxFallbackLink<Void> addButton;
 
-        private final Component inputComponent;
+        private final FormComponent<T> inputComponent;
 
+        @SuppressWarnings("unchecked")
         public ListFilterInput(final String id, final List<ListFilterInput> components) {
             super(id);
-            inputComponent = createFilterComponent(getFilterModel().get(getFilterModel().size() - 1));
+            inputComponent = (FormComponent<T>) createFilterComponent(Model.of());
             removeButton = new AjaxFallbackLink<Void>("removeButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
                     Iterator<ListFilterInput> iterator = components.iterator();
-                    int counter = 0;
                     while (iterator.hasNext()) {
                         Component next = iterator.next();
                         if (next.equals(ListFilterInput.this)) {
                             iterator.remove();
-                            getFilterModel().remove(counter);
                             break;
                         }
-                        counter++;
                     }
                     components.get(components.size() - 1).getAddButton().setVisible(true);
                     if (components.size() - 1 == 0) components.get(0).getRemoveButton().setVisible(false);
@@ -143,7 +143,6 @@ public class CollectionFilterPanel extends AbstractFilterPanel<List<IModel<?>>> 
             addButton = new AjaxFallbackLink<Void>("addButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    getFilterModel().add(Model.of());
                     components.add(new ListFilterInput(id, components));
                     for (ListFilterInput input : components) {
                         input.getRemoveButton().setVisible(true);
@@ -171,15 +170,12 @@ public class CollectionFilterPanel extends AbstractFilterPanel<List<IModel<?>>> 
             return super.getMarkup(child);
         }
 
-        public IModel<?> getModel() {
-            return inputComponent.getDefaultModel();
+        public T getConvertedInput() {
+            return inputComponent.getConvertedInput();
         }
 
         public void clearInputComponent() {
-            if (inputComponent instanceof FormComponent) {
-                FormComponent formComponent = (FormComponent) inputComponent;
-                formComponent.clearInput();
-            }
+            inputComponent.setModelObject(null);
         }
 
         public AjaxFallbackLink<Void> getRemoveButton() {
