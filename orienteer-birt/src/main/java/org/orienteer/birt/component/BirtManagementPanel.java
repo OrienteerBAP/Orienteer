@@ -54,11 +54,8 @@ public class BirtManagementPanel extends Panel{
 		add(new ResourceLink<>("PDF", new PDFBirtResource(reportPanel)));
 		add(new ResourceLink<>("Excel", new ExcelBirtResource(reportPanel)));
 		
-		//parameters = reportPanel.getParameter(name)
-		
 		add(new ParamsListView("params",reportPanel.getParametersDefenitions(),reportPanel,pager));
 		add(new ParamsListView("hiddenParams",reportPanel.getHiddenParametersDefinitions(),reportPanel,pager));
-		//add(new ResourceLink<>("parameter", new ExcelBirtResource(reportPanel)));
 		
 	}
 	////////////////////////////////////////////////////////////////////////	

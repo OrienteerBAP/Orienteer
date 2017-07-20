@@ -17,4 +17,6 @@ public interface IBirtReportConfig extends Serializable {
 	public boolean isUseLocalDB();
 
 	public Set<Object> getVisibleParameters();
+	
+	public String getOutName();
 }

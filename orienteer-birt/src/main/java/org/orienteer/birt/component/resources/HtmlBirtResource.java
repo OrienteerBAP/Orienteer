@@ -35,6 +35,7 @@ public class HtmlBirtResource extends AbstractBirtResource{
 	protected void setResourceData(ResourceResponse resourceResponse) {
 	    resourceResponse.setContentType("text/html");
 	    resourceResponse.setTextEncoding("utf-8");
+		resourceResponse.setFileName(getReportData().getOutName()+".html");
 	}
 
 

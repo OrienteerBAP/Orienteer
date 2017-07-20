@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.wicket.model.IModel;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.orienteer.birt.component.widget.AbstractBirtWidget;
+import org.orienteer.core.component.property.BinaryEditPanel;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -66,6 +67,15 @@ public class BirtReportODocumentConfig implements IBirtReportConfig{
 
 	public Set<Object> getVisibleParameters() {
 		return visibleParameters;
+	}
+
+	@Override
+	public String getOutName() {
+    	ODocument modelObject = configDocModel.getObject();
+		String filename = modelObject.field(AbstractBirtWidget.REPORT_FIELD_NAME+BinaryEditPanel.FILENAME_SUFFIX);
+		filename=filename.replaceFirst("\\.[^\\.]*$", "");
+
+		return filename;
 	}
 	
 	
