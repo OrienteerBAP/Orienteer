@@ -29,10 +29,12 @@ public class TauchartsPanel extends Panel{
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final WebjarsJavaScriptResourceReference TAUCHARTS_JS = new WebjarsJavaScriptResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.js");
+	private static final WebjarsJavaScriptResourceReference TAUCHARTS_JS = 
+			new WebjarsJavaScriptResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.js");
 	private static final WebjarsJavaScriptResourceReference D3_JS = new WebjarsJavaScriptResourceReference("/webjars/d3/current/d3.min.js");
 	
-	private static final WebjarsCssResourceReference TAUCHARTS_CSS = new WebjarsCssResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.css");
+	private static final WebjarsCssResourceReference TAUCHARTS_CSS =
+			new WebjarsCssResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.css");
 
 	private TauchartsConfig config;
 	
