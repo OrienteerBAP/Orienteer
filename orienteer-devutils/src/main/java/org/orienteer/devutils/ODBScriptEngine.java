@@ -46,7 +46,7 @@ public class ODBScriptEngine implements IScriptEngine {
 					ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 					OCommandSQL comm = new OCommandSQL(command);
 					Object resultObject = db.command(comm).execute();
-					if(resultObject instanceof OResultSet) {
+					/*if(resultObject instanceof OResultSet) {
 						StringBuilder sb = new StringBuilder("[");
 						boolean first = true;
 						for(ODocument doc : ((OResultSet<ODocument>)resultObject)) {
@@ -56,7 +56,7 @@ public class ODBScriptEngine implements IScriptEngine {
 						}
 						sb.append("]");
 						resultObject = sb.toString();
-					}
+					}*/
 					result.setResult(resultObject);
 				}
 			} catch (Exception e) {

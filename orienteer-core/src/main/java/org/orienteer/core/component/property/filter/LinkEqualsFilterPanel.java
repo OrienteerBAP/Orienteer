@@ -32,9 +32,9 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
     private FormComponent<OClass> classFormComponent;
     private FormComponent<ODocument> docFormComponent;
 
-    public LinkEqualsFilterPanel(String id, IModel<ODocument> model, Form form, String filterId, IModel<OProperty> propertyModel,
+    public LinkEqualsFilterPanel(String id, IModel<ODocument> model, String filterId, IModel<OProperty> propertyModel,
                                  IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override

@@ -36,9 +36,9 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
     private FormComponent<Collection<String>> classesFormComponent;
     private FormComponent<Collection<ODocument>> docsFormComponent;
 
-    public CollectionLinkFilterPanel(String id, IModel<Collection<ODocument>> model, Form form, String filterId, IModel<OProperty> propertyModel,
+    public CollectionLinkFilterPanel(String id, IModel<Collection<ODocument>> model, String filterId, IModel<OProperty> propertyModel,
                                      IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override

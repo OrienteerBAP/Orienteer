@@ -32,24 +32,22 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     private final IModel<OProperty> propertyModel;
     private final String filterId;
     private final IFilterCriteriaManager manager;
-    private final IModel<Boolean> join;
-    private final Form form;
+    private final IModel<Boolean> joinModel;
 
-    public AbstractFilterPanel(String id, IModel<T> model, Form form, String filterId,
+    public AbstractFilterPanel(String id, IModel<T> model, String filterId,
                                IModel<OProperty> propertyModel,
                                IVisualizer visualizer,
                                IFilterCriteriaManager manager, IModel<Boolean> join) {
         super(id, model);
-        this.form = form;
         this.filterId = filterId;
         this.propertyModel = propertyModel;
         this.visualizer = visualizer;
-        this.join = join;
+        this.joinModel = join;
         this.manager = manager;
         setOutputMarkupPlaceholderTag(true);
         add(new Label("title", getTitle()));
         CheckBox checkBox = new CheckBox("join", join);
-        checkBox.add(new AjaxFormSubmitBehavior(getForm(), "change") {});
+        checkBox.add(new AjaxFormSubmitBehavior("change") {});
         checkBox.setOutputMarkupId(true);
         add(checkBox);
         add(new Label("joinTitle", new ResourceModel("widget.document.filter.join"))
@@ -103,21 +101,15 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     }
 
     protected IModel<Boolean> getJoinModel() {
-        return join;
+        return joinModel;
     }
 
 
 
     public void clearInputs(AjaxRequestTarget target) {
-        join.setObject(true);
+        joinModel.setObject(true);
         clearInputs();
         target.add(this);
-    }
-
-
-    @Override
-    public Form<?> getForm() {
-        return form;
     }
 
     @Override
@@ -125,5 +117,12 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
         if (child != null && child.getId().equals("join"))
             return markupProvider.provideMarkup(child);
         return super.getMarkup(child);
+    }
+    
+    @Override
+    public void detachModels() {
+    	super.detachModels();
+    	if(propertyModel!=null) propertyModel.detach();
+    	if(joinModel!=null) joinModel.detach();
     }
 }

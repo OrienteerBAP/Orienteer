@@ -36,9 +36,9 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
     private FormComponent<T> startComponent;
     private FormComponent<T> endComponent;
 
-    public RangeFilterPanel(String id, IModel<Collection<T>> model, Form form, String filterId, IModel<OProperty> propertyModel,
+    public RangeFilterPanel(String id, IModel<Collection<T>> model, String filterId, IModel<OProperty> propertyModel,
                             IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override

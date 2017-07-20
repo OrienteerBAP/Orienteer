@@ -24,10 +24,10 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     private FormComponent<T> formComponent;
 
     @SuppressWarnings("unchecked")
-    public EqualsFilterPanel(String id, IModel<T> model, Form form, String filterId, IModel<OProperty> propertyModel,
+    public EqualsFilterPanel(String id, IModel<T> model, String filterId, IModel<OProperty> propertyModel,
                              IVisualizer visualizer,
                              IFilterCriteriaManager manager) {
-        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override

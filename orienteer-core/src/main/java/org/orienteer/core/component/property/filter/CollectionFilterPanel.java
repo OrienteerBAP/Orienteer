@@ -37,9 +37,9 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
 
     private List<ListFilterInput> filterComponents;
 
-    public CollectionFilterPanel(String id, IModel<Collection<T>> model, Form form, String filterId, IModel<OProperty> propertyModel,
+    public CollectionFilterPanel(String id, IModel<Collection<T>> model, String filterId, IModel<OProperty> propertyModel,
                                  IVisualizer visualizer, IFilterCriteriaManager manager) {
-        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
+        super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override
