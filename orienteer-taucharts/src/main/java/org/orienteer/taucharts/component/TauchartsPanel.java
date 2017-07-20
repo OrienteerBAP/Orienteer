@@ -11,13 +11,14 @@ import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.Url;
-import org.apache.wicket.request.resource.UrlResourceReference;
 import org.apache.wicket.util.encoding.UrlEncoder;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+
+import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
+import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
 /**
  * 
@@ -28,10 +29,12 @@ public class TauchartsPanel extends Panel{
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final UrlResourceReference TAUCHARTS_JS = new UrlResourceReference(Url.parse("http://cdn.jsdelivr.net/taucharts/latest/tauCharts.min.js"));
-	private static final UrlResourceReference D3_JS = new UrlResourceReference(Url.parse("http://cdn.jsdelivr.net/d3js/3.5.17/d3.min.js"));
+	private static final WebjarsJavaScriptResourceReference TAUCHARTS_JS = 
+			new WebjarsJavaScriptResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.js");
+	private static final WebjarsJavaScriptResourceReference D3_JS = new WebjarsJavaScriptResourceReference("/webjars/d3/current/d3.min.js");
 	
-	private static final UrlResourceReference TAUCHARTS_CSS = new UrlResourceReference(Url.parse("http://cdn.jsdelivr.net/taucharts/latest/tauCharts.min.css"));
+	private static final WebjarsCssResourceReference TAUCHARTS_CSS =
+			new WebjarsCssResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.css");
 
 	private TauchartsConfig config;
 	
