@@ -76,6 +76,11 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		
 	}
 	
+	@Override
+	public String getOutName(){
+		return config.getOutName();
+	}
+	
 	public Component getReportComponent() {
 		return get(REPORT_COMPONENT_NAME);
 	}

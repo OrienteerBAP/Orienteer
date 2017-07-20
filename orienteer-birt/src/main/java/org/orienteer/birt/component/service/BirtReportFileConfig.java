@@ -69,5 +69,13 @@ public class BirtReportFileConfig implements IBirtReportConfig {
 	public Set<Object> getVisibleParameters() {
 		return visibleParameters;
 	}
+	
+	@Override
+	public String getOutName() {
+		File file = new File(reportFileName);
+		String filename = file.getName();
+		filename=filename.replaceFirst("\\.[^\\.]*$", "");
 
+		return filename;
+	}
 }

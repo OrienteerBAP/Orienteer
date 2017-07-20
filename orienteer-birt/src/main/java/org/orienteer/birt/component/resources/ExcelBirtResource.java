@@ -33,6 +33,7 @@ public class ExcelBirtResource extends AbstractBirtResource{
 	@Override
 	protected void setResourceData(ResourceResponse resourceResponse) {
 	    resourceResponse.setContentType("application/vnd.ms-excel");
+		resourceResponse.setFileName(getReportData().getOutName()+".xlsx");
 	}
 
 }

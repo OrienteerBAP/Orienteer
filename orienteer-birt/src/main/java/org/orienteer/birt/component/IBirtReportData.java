@@ -11,4 +11,5 @@ import org.eclipse.birt.report.engine.api.IReportEngine;
 public interface IBirtReportData {
 	public IReportDocument getReportCache() throws EngineException;
 	public IReportEngine getReportEngine();
+	public String getOutName();
 }

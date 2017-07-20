@@ -34,6 +34,7 @@ public class PDFBirtResource extends AbstractBirtResource {
 	@Override
 	protected void setResourceData(ResourceResponse resourceResponse) {
 	    resourceResponse.setContentType("application/pdf");
+		resourceResponse.setFileName(getReportData().getOutName()+".pdf");
 		
 	}
 

@@ -59,4 +59,8 @@ public abstract class AbstractBirtResource extends AbstractResource {
 	
 	abstract protected void setResourceData(ResourceResponse resourceResponse);
 
+	public IBirtReportData getReportData() {
+		return reportData;
+	}
+
 }
