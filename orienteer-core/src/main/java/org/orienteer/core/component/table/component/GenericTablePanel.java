@@ -1,5 +1,6 @@
 package org.orienteer.core.component.table.component;
 
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -13,6 +14,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.lang.Args;
+import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.OrienteerHeadersToolbar;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -58,9 +60,15 @@ public class GenericTablePanel<K> extends Panel {
                         OrienteerHeadersToolbar<K, String> headersToolbar = dataTable.getHeadersToolbar();
                         headersToolbar.clearFilteredColumns();
                         for (IColumn<K, String> column : GenericTablePanel.this.getDataTable().getColumns()) {
-                            IFilterCriteriaManager manager = filterState.getFilterCriteriaManager(column.getSortProperty());
-                            if (manager != null && manager.isFilterApply()) {
-                                headersToolbar.addFilteredColumn(column.getSortProperty());
+                            if (column instanceof OPropertyValueColumn) {
+                                OPropertyValueColumn propertyValueColumn = (OPropertyValueColumn) column;
+                                OProperty property = propertyValueColumn.getCriteryModel().getObject();
+                                if (property != null) {
+                                    IFilterCriteriaManager manager = filterState.getFilterCriteriaManager(property.getName());
+                                    if (manager != null && manager.isFilterApply()) {
+                                        headersToolbar.addFilteredColumn(property.getName());
+                                    }
+                                }
                             }
                         }
                         target.add(dataTable);

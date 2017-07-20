@@ -3,12 +3,11 @@ package org.orienteer.core.component.property.filter;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
@@ -20,23 +19,24 @@ import java.io.Serializable;
  * SELECT FROM aClass WHERE a = 'value'
  * @param <T> type of value
  */
-public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPanel<IModel<T>> {
+public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPanel<T> {
 
-    private final Form form;
+    private FormComponent<T> formComponent;
 
     @SuppressWarnings("unchecked")
-    public EqualsFilterPanel(String id, Form form, String filterId, IModel<OProperty> propertyModel,
+    public EqualsFilterPanel(String id, IModel<T> model, Form form, String filterId, IModel<OProperty> propertyModel,
                              IVisualizer visualizer,
                              IFilterCriteriaManager manager) {
-        super(id, filterId, propertyModel, visualizer, manager, Model.of(true));
-        this.form = form;
+        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onInitialize() {
         super.onInitialize();
-        add(createFilterComponent(getFilterModel()));
+        add(formComponent = (FormComponent<T>) createFilterComponent(getModel()));
     }
+
 
     @Override
     public IMarkupFragment getMarkup(Component child) {
@@ -47,27 +47,21 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Component createFilterComponent(IModel<?> model) {
+    protected FormComponent<?> createFilterComponent(IModel<?> model) {
         if (getPropertyModel().getObject().getType() == OType.BOOLEAN) {
-            return new BooleanFilterPanel(getFilterId(), form, (IModel<Boolean>) model);
+            return new BooleanFilterPanel(getFilterId(), getForm(), (IModel<Boolean>) model);
         }
         return super.createFilterComponent(model);
     }
 
     @Override
     protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<T> filterModel) {
-        manager.setFilterCriteria(type, manager.createEqualsFilterCriteria(filterModel, getJoinModel()));
+        manager.addFilterCriteria(manager.createEqualsFilterCriteria(filterModel, getJoinModel()));
     }
 
     @Override
-    protected IModel<T> createFilterModel() {
-        return Model.of();
-    }
-
-    @Override
-    protected IModel<String> getTitle() {
-        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()));
+    protected T getFilterInput() {
+        return formComponent.getConvertedInput();
     }
 
     @Override
@@ -76,10 +70,8 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     }
 
     @Override
-    public void clearInputs(AjaxRequestTarget target) {
-        getFilterModel().setObject(null);
-        getJoinModel().setObject(true);
-        target.add(this);
+    protected void clearInputs() {
+        formComponent.setModelObject(null);
     }
 
 }

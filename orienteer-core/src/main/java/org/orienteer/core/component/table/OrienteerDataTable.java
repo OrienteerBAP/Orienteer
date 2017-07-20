@@ -204,7 +204,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 			@Override
 			protected void onComponentTag(ComponentTag tag) {
 				super.onComponentTag(tag);
-				headersToolbar.changeColorForFilteredColumn(tag, model.getObject().getSortProperty());
+				headersToolbar.changeColorForFilteredColumn(tag, model.getObject());
 			}
 		};
 	}

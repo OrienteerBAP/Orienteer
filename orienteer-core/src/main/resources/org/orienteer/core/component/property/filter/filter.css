@@ -57,3 +57,13 @@
 .filter-width {
     width: 300px;
 }
+
+.link-filter-class-choice {
+    width: 280px;
+    margin-bottom: 5px;
+}
+
+.link-filter-document-choice {
+    width: 280px;
+    margin-top: 5px;
+}

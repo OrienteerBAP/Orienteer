@@ -8,13 +8,14 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.yui.calendar.DateField;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.component.property.filter.*;
@@ -48,6 +49,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 		return createComponent(id, mode, documentModel, propertyModel, propertyModel.getObject().getType(), valueModel);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <V> Component createComponent(String id, DisplayMode mode,
 			final IModel<ODocument> documentModel,final  IModel<OProperty> propertyModel, OType oType, IModel<V> valueModel) {
 		OProperty property = propertyModel.getObject();
@@ -92,13 +94,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				case LINKSET:
 					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
                 case DATE:
-                    return new DateField(id, (IModel<Date>) valueModel) {
-                    	@Override
-                    	protected TimeZone getClientTimeZone() {
-                    		// We should not convert timezones when working with just dates.
-                    		return null;
-                    	}
-                    };
+					return new DatePanel(id, (IModel<Date>) valueModel);
                 case DATETIME:
                     return new DateTimeField(id, (IModel<Date>) valueModel);
                 case EMBEDDED:
@@ -144,24 +140,44 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 			case EMBEDDEDMAP:
 			case EMBEDDEDLIST:
 			case EMBEDDEDSET:
-			case LINK:
 			case LINKBAG:
-			case LINKLIST:
 			case LINKMAP:
-			case LINKSET:
 			case TRANSIENT:
 			case BINARY:
 			case ANY:
 				component = null;
 				break;
+			case LINK:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new LinkEqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<ODocument>of(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<ODocument>(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
+				break;
+			case LINKLIST:
+			case LINKSET:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<ODocument>(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
+				break;
 			case STRING:
 				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
 					@Override
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new ListFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
-								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new ContainsStringFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<String>of(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<String>of(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new CollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<String>(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
 					}
 				};
 				break;
@@ -169,21 +185,25 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
 					@Override
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
-								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<Boolean>of(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
 					}
 				};
+				break;
+			case DATE:
+			case DATETIME:
+				component = null;
 				break;
 			default:
 				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
 					@Override
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, filterForm,
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new ListFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new RangeFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID,
-								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new CollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<>(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new RangeFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<>(),
+								filterForm, id, propertyModel, DefaultVisualizer.this, manager));
 					}
 				};
 		}

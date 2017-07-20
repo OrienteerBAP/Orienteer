@@ -5,10 +5,11 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
@@ -19,33 +20,36 @@ import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
-import java.io.Serializable;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Panel for range filter
  * SELECT FROM aClass WHERE a BETWEEN value1 AND value2
- * @param <T> serializable value
+ * @param <T> type of value
  */
-public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPanel<List<IModel<T>>> {
+public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
 
     @Inject
     private IMarkupProvider markupProvider;
 
-    public RangeFilterPanel(String id, String filterId, IModel<OProperty> propertyModel, IVisualizer visualizer,
-                                                     IFilterCriteriaManager manager) {
-        super(id, filterId, propertyModel, visualizer, manager, Model.of(true));
+    private FormComponent<T> startComponent;
+    private FormComponent<T> endComponent;
+
+    public RangeFilterPanel(String id, IModel<Collection<T>> model, Form form, String filterId, IModel<OProperty> propertyModel,
+                            IVisualizer visualizer, IFilterCriteriaManager manager) {
+        super(id, model, form, filterId, propertyModel, visualizer, manager, Model.of(true));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onInitialize() {
         super.onInitialize();
-        Component first = createFilterComponent(getFilterModel().get(0));
-        Component second = createFilterComponent(getFilterModel().get(1));
+        startComponent = (FormComponent<T>) createFilterComponent(Model.of());
+        endComponent = (FormComponent<T>) createFilterComponent(Model.of());
         List<Component> rangeContainers = Lists.newArrayList();
-        rangeContainers.add(getRangeContainer(first, getFilterId(), true));
-        rangeContainers.add(getRangeContainer(second, getFilterId(), false));
+        rangeContainers.add(getRangeContainer(startComponent, getFilterId(), true));
+        rangeContainers.add(getRangeContainer(endComponent, getFilterId(), false));
 
         ListView<Component> listView = new ListView<Component>("rangeFilters", rangeContainers) {
             @Override
@@ -54,6 +58,14 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
             }
         };
         add(listView);
+    }
+
+    @Override
+    public void convertInput() {
+        Collection<T> collection = Lists.newArrayList();
+        collection.add(startComponent.getConvertedInput());
+        collection.add(endComponent.getConvertedInput());
+        setConvertedInput(collection);
     }
 
     private WebMarkupContainer getRangeContainer(final Component component, final String filterId, boolean first) {
@@ -75,22 +87,8 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
 
 
     @Override
-    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, List<IModel<T>> models) {
-        manager.setFilterCriteria(type, manager.createRangeFilterCriteria(models, getJoinModel()));
-    }
-
-    @Override
-    protected List<IModel<T>> createFilterModel() {
-        List<IModel<T>> models = Lists.newArrayList();
-        models.add(Model.<T>of());
-        models.add(Model.<T>of());
-        return Collections.unmodifiableList(models);
-    }
-
-    @Override
-    protected IModel<String> getTitle() {
-        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()));
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<Collection<T>> models) {
+        manager.addFilterCriteria(manager.createRangeFilterCriteria(models, getJoinModel()));
     }
 
     @Override
@@ -99,10 +97,8 @@ public class RangeFilterPanel<T extends Serializable> extends AbstractFilterPane
     }
 
     @Override
-    public void clearInputs(AjaxRequestTarget target) {
-        getFilterModel().get(0).setObject(null);
-        getFilterModel().get(1).setObject(null);
-        getJoinModel().setObject(true);
-        target.add(this);
+    protected void clearInputs() {
+        startComponent.setModelObject(null);
+        endComponent.setModelObject(null);
     }
 }

@@ -2,18 +2,17 @@ package org.orienteer.core.util;
 
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Response;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
+import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaManager;
+import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,9 +25,21 @@ public class ODocumentChoiceProvider extends ChoiceProvider<ODocument> {
     private String className;
     private String propertyName;
 
+    private IModel<OClass> classModel;
+
     private transient IOClassIntrospector oClassIntrospector;
 
     public ODocumentChoiceProvider(OClass oClass) {
+        initOClass(oClass);
+    }
+
+    public ODocumentChoiceProvider(IModel<OClass> classModel) {
+        this.classModel = classModel;
+        if (classModel.getObject() != null)
+            initOClass(classModel.getObject());
+    }
+
+    private void initOClass(OClass oClass) {
         this.className =  oClass.getName();
         this.propertyName = getOClassIntrospector().getNameProperty(oClass).getName();
     }
@@ -52,16 +63,15 @@ public class ODocumentChoiceProvider extends ChoiceProvider<ODocument> {
 
     @Override
     public void query(String query, int i, Response<ODocument> response) {
-        StringBuilder sql = new StringBuilder("SELECT FROM ").append(className);
-        if (!Strings.isEmpty(query)) {
-            sql.append(" WHERE ")
-                    .append(propertyName)
-                    .append(" CONTAINSTEXT :query");
+        if (classModel.getObject() != null || (className != null && propertyName != null)) {
+            if (classModel.getObject() != null) initOClass(classModel.getObject());
+            OQueryModel<ODocument> queryModel = new OQueryModel<>("SELECT FROM " + className);
+            IFilterCriteriaManager manager = new FilterCriteriaManager(
+                    new OPropertyModel(getOClassIntrospector().getNameProperty(classModel.getObject())));
+            manager.addFilterCriteria(manager.createContainsStringFilterCriteria(Model.of(query), Model.of(true)));
+            queryModel.addFilterCriteriaManager(propertyName, manager);
+            response.addAll(queryModel.getObject());
         }
-        sql.append(" LIMIT 20");
-        OQueryModel<ODocument> choicesModel = new OQueryModel<ODocument>(sql.toString());
-        choicesModel.setParameter("query", new Model<String>(query));
-        response.addAll(choicesModel.getObject());
     }
 
     @Override

@@ -387,9 +387,9 @@ public class OClassIntrospector implements IOClassIntrospector
 				LOG.error("Unrecognized search sql: "+searchSql);
 			}
 		}
-		
+
 		if(sql==null) sql = "select from "+oClass.getName()+" where any() containstext :query";
-		
+
 		return new OQueryDataProvider<ODocument>(sql).setParameter("query", queryModel);
 	}
 
