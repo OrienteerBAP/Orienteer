@@ -10,7 +10,6 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -23,6 +22,7 @@ import org.wicketstuff.select2.Select2MultiChoice;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import static org.orienteer.core.component.meta.OClassMetaPanel.BOOTSTRAP_SELECT2_THEME;
@@ -77,8 +77,18 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
     }
 
     private Select2MultiChoice<String> createClassChooseComponent(String id, IModel<Collection<String>> classNamesModel) {
-        Select2MultiChoice<String> choice = new Select2MultiChoice<>(id, classNamesModel,
-                OClassCollectionTextChoiceProvider.INSTANCE);
+        Select2MultiChoice<String> choice = new Select2MultiChoice<String>(id, classNamesModel,
+                OClassCollectionTextChoiceProvider.INSTANCE) {
+            @Override
+            protected void onInitialize() {
+                super.onInitialize();
+                OProperty property = CollectionLinkFilterPanel.this.getPropertyModel().getObject();
+                if (property != null && property.getLinkedClass() != null) {
+                    setModelObject(Arrays.asList(property.getLinkedClass().getName()));
+                    setEnabled(false);
+                }
+            }
+        };
         choice.getSettings()
                 .setWidth("100%")
                 .setCloseOnSelect(true)
@@ -106,14 +116,14 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
         OProperty property = getPropertyModel().getObject();
         if (property != null) {
             OType type = property.getType();
-            return type == OType.LINKSET ? FilterCriteriaType.LINKSET : FilterCriteriaType.LINKLIST;
+            return type.equals(OType.LINKSET) ? FilterCriteriaType.LINKSET : FilterCriteriaType.LINKLIST;
         }
         return FilterCriteriaType.LINKLIST;
     }
 
     @Override
     protected void clearInputs() {
-        classesFormComponent.setModelObject(Lists.<String>newArrayList());
+        if (classesFormComponent.isEnabled()) classesFormComponent.setModelObject(Lists.<String>newArrayList());
         docsFormComponent.setModelObject(Lists.<ODocument>newArrayList());
     }
 }

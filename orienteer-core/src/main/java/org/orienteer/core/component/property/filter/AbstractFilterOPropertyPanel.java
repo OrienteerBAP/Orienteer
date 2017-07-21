@@ -134,7 +134,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                 item.add(AttributeModifier.append("class", FILTER_WIDTH));
                 AbstractFilterPanel panel = item.getModelObject();
                 for (FilterTab tab : tabs) {
-                    if (tab.getType() == panel.getFilterCriteriaType()) {
+                    if (tab.getType().equals(panel.getFilterCriteriaType())) {
                         tab.setTabId(item.getMarkupId());
                         break;
                     }
@@ -212,6 +212,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         public FilterTab(String id, FilterCriteriaType type) {
             super(id);
             this.type = type;
+            setOutputMarkupId(true);
         }
 
         @Override

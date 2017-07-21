@@ -8,7 +8,6 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -16,6 +15,8 @@ import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.model.OClassTextChoiceProvider;
 import org.orienteer.core.util.ODocumentChoiceProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wicketstuff.select2.Select2Choice;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -28,6 +29,8 @@ import static org.orienteer.core.component.meta.OClassMetaPanel.BOOTSTRAP_SELECT
  * SELECT FROM Class WHERE link = '#21:00'
  */
 public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(LinkEqualsFilterPanel.class);
 
     private FormComponent<OClass> classFormComponent;
     private FormComponent<ODocument> docFormComponent;
@@ -57,7 +60,18 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
     }
 
     private Select2Choice<OClass> createClassChoiceComponent(String id, IModel<OClass> classModel) {
-        Select2Choice<OClass> choice = new Select2Choice<>(id, classModel, new OClassTextChoiceProvider());
+        Select2Choice<OClass> choice = new Select2Choice<OClass>(id, classModel, new OClassTextChoiceProvider()) {
+
+            @Override
+            protected void onInitialize() {
+                super.onInitialize();
+                OProperty property = LinkEqualsFilterPanel.this.getPropertyModel().getObject();
+                if (property != null && property.getLinkedClass() != null) {
+                    setModelObject(property.getLinkedClass());
+                    setEnabled(false);
+                }
+            }
+        };
         choice.getSettings()
                 .setWidth("100%")
                 .setCloseOnSelect(true)
@@ -95,7 +109,7 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
 
     @Override
     protected void clearInputs() {
-        classFormComponent.setModelObject(null);
+        if (classFormComponent.isEnabled()) classFormComponent.setModelObject(null);
         docFormComponent.setModelObject(null);
     }
 }
