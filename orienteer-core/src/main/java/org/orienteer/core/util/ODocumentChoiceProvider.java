@@ -1,5 +1,7 @@
 package org.orienteer.core.util;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -16,6 +18,7 @@ import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Choice provider for Select2 control
@@ -63,15 +66,30 @@ public class ODocumentChoiceProvider extends ChoiceProvider<ODocument> {
 
     @Override
     public void query(String query, int i, Response<ODocument> response) {
-        if (classModel.getObject() != null || (className != null && propertyName != null)) {
-            if (classModel.getObject() != null) initOClass(classModel.getObject());
-            OQueryModel<ODocument> queryModel = new OQueryModel<>("SELECT FROM " + className);
-            IFilterCriteriaManager manager = new FilterCriteriaManager(
-                    new OPropertyModel(getOClassIntrospector().getNameProperty(classModel.getObject())));
-            manager.addFilterCriteria(manager.createContainsStringFilterCriteria(Model.of(query), Model.of(true)));
-            queryModel.addFilterCriteriaManager(propertyName, manager);
-            response.addAll(queryModel.getObject());
+        if (classModel != null) {
+            response.addAll(queryToOClassModel(query));
+        } else if (!Strings.isNullOrEmpty(className)) {
+            response.addAll(queryToClassName(query));
         }
+    }
+
+    private List<ODocument> queryToOClassModel(String query) {
+        List<ODocument> result = Lists.newArrayList();
+        if (classModel.getObject() != null || (className != null && propertyName != null)) {
+            if (classModel.getObject() != null)
+                initOClass(classModel.getObject());
+            result = queryToClassName(query);
+        }
+        return result;
+    }
+
+    private List<ODocument> queryToClassName(String query) {
+        OQueryModel<ODocument> queryModel = new OQueryModel<>("SELECT FROM " + className);
+        IFilterCriteriaManager manager = new FilterCriteriaManager(
+                new OPropertyModel(getOClassIntrospector().getNameProperty(classModel.getObject())));
+        manager.addFilterCriteria(manager.createContainsStringFilterCriteria(Model.of(query), Model.of(true)));
+        queryModel.addFilterCriteriaManager(propertyName, manager);
+        return queryModel.getObject();
     }
 
     @Override
