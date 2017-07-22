@@ -1,7 +1,15 @@
 package org.orienteer.core.module;
 
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
@@ -16,17 +24,7 @@ import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLQuery;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import java.util.List;
 
 /**
  * {@link IOrienteerModule} to install widget specific things
@@ -140,8 +138,8 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	protected void installWidgetsSchemaV2(ODatabaseDocument db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
-				.oProperty("html", OType.STRING, 10).assignVisualization("textarea")
-				.oProperty("script", OType.STRING, 20).assignVisualization("textarea")
+				.oProperty("html", OType.STRING, 10).assignVisualization("html")
+				.oProperty("script", OType.STRING, 20).assignVisualization("javascript")
 				.oProperty("resources", OType.EMBEDDEDLIST, 30).linkedType(OType.STRING);
 		if(!helper.getOClass().existsProperty("title")) helper.oProperty("title", OType.STRING, 0);
 
