@@ -10,6 +10,8 @@ import org.orienteer.core.component.property.DisplayMode;
 
 import java.util.Map;
 
+import static org.orienteer.core.component.editor.IEditorOptions.*;
+
 /**
  * Implementation of {@link CodeEditorPanel} for create HTML, CSS, JavaScript code editor.
  */
@@ -26,12 +28,13 @@ public class HtmlCssJsEditorPanel extends CodeEditorPanel {
 
     @Override
     protected void configureEditorParams(Map<String, String> params) {
-        params.put("name", "'htmlmixed'");
-        params.put("mode", "'htmlmixed'");
-        params.put("matchTags", "true");
-        params.put("matchBrackets", "true");
-        params.put("autoCloseBrackets", "true");
-        params.put("autoCloseTags", "true");
+        params.put(NAME, "'htmlEditor'");
+        params.put(MODE, "'htmlmixed'");
+        params.put(MATCH_TAGS, "true");
+        params.put(MATCH_BRACKETS, "true");
+        params.put(AUTOCLOSE_BRACKETS, "true");
+        params.put(AUTOCLOSE_TAGS, "true");
+        params.put(THEME, "'eclipse'");
     }
 
     @Override
@@ -47,6 +50,7 @@ public class HtmlCssJsEditorPanel extends CodeEditorPanel {
         addMatchBrackets(response);
         addAutoCloseBrackets(response);
         addHtmlCssJsAutocomplete(response);
+        addEditorTheme(response);
     }
 
     private void addHtmlMixedMode(IHeaderResponse response) {
@@ -80,5 +84,9 @@ public class HtmlCssJsEditorPanel extends CodeEditorPanel {
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.HTML_HINT_ADDON.getResourceReference()));
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.CSS_HINT_ADDON.getResourceReference()));
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.JS_HINT_ADDON.getResourceReference()));
+    }
+
+    private void addEditorTheme(IHeaderResponse response) {
+        response.render(CssHeaderItem.forReference(CodeMirrorCss.ECLIPSE_THEME.getResourceReference()));
     }
 }

@@ -36,6 +36,8 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new LocalizationVisualizer());
 		registerUIComponentFactory(new ImageVisualizer());
 		registerUIComponentFactory(new TagsVisualizer());
+		registerUIComponentFactory(new CodeVisualizer());
+		registerUIComponentFactory(new JavaScriptCodeVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()

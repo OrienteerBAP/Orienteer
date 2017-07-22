@@ -17,6 +17,8 @@ import org.orienteer.core.component.property.DisplayMode;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.orienteer.core.component.editor.IEditorOptions.*;
+
 /**
  * Editor panel which uses <a href="http://codemirror.net">CodeMirror framework</a>  for creating code editor.
  * For configure editor params see {@link CodeEditorPanel#configureEditorParams(Map<String, String>)}
@@ -31,8 +33,6 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
     public CodeEditorPanel(String id, IModel<String> model, IModel<DisplayMode> displayModel) {
         super(id, model);
         this.displayModel = displayModel;
-        if (displayModel.getObject() == null)
-            displayModel.setObject(DisplayMode.VIEW);
     }
 
     private void setNewConvertedInput(String input) {
@@ -54,8 +54,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
                 return createMarkup(displayModel.getObject());
             }
         };
-        container.add(displayModel.getObject() == DisplayMode.EDIT ? createTextArea("editor")
-                : new WebMarkupContainer("editor"));
+        container.add(createTextArea("editor"));
         add(container);
     }
 
@@ -70,7 +69,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
                 configureCustomEditorKeysBinding(keysMap);
                 configureEditorParams(params);
                 configureEditorKeysBinding(keysMap);
-                params.put("extraKeys", keysMap.toString());
+                if (displayModel.getObject() == DisplayMode.EDIT) params.put(EXTRAKEYS, keysMap.toString());
                 response.render(OnLoadHeaderItem.forScript(String.format(";editorInit('%s', %s);", getMarkupId(),
                         params.toString())));
             }
@@ -90,12 +89,11 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      */
     protected void configureCustomEditorParams(Map<String, String> params) {
         boolean edit = displayModel.getObject() == DisplayMode.EDIT;
-        params.put("edit", Boolean.toString(edit));
-        params.put("readOnly", Boolean.toString(!edit));
-        params.put("nocursor", Boolean.toString(!edit));
-        params.put("lineNumbers", "true");
-        params.put("styleActiveLine", "true");
-        params.put("scrollbarStyle", "'overlay'");
+        params.put(READ_ONLY, Boolean.toString(!edit));
+        params.put(CURSOR_BLINK_RATE, edit ? Integer.toString(530) : Integer.toString(-1));
+        params.put(LINE_NUMBERS, "true");
+        params.put(STYLE_ACTIVE_LINE, Boolean.toString(edit));
+        params.put(SCROLLBAR_STYLE, "'overlay'");
     }
 
     /**
@@ -103,13 +101,8 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      * @param keysMap {@link Map<String, String>} keysMap which contains keys and function (fields of JavaScript object)
      */
     protected void configureCustomEditorKeysBinding(Map<String, String> keysMap) {
-        keysMap.put("'F11'", "function(cm) {" +
-                "var show = !cm.getOption('fullScreen');\n" +
-                "cm.setOption('fullScreen', show);\n" +
-                "$('.metismenu').metisMenu({toggle: show});}");
-        keysMap.put("'Esc'", "function(cm) {" +
-                "$('.metismenu').metisMenu({toggle: true});\n" +
-                "cm.setOption('fullScreen', false);}");
+        keysMap.put("'F11'", "function(cm) {switchFullScreen(cm);}");
+        keysMap.put("'Esc'", "function(cm) {disableFullscreen(cm);}");
     }
 
     /**
@@ -161,7 +154,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
 
     protected void setCustomEditorDependencies(IHeaderResponse response) {
         response.render(JavaScriptHeaderItem.forReference(
-                new JavaScriptResourceReference(getClass(), "editor.js")));
+                new JavaScriptResourceReference(CodeEditorPanel.class, "editor.js")));
         response.render(CssHeaderItem.forReference(CodeMirrorCss.CORE.getResourceReference()));
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.CORE.getResourceReference()));
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.ACTIVELINE_ADDON.getResourceReference()));
