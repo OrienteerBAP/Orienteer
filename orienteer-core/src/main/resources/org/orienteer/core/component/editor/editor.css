@@ -1,0 +1,24 @@
+
+.handle {
+    background: #f7f7f7;
+    height: 20px;
+    user-select: none;
+    cursor: row-resize;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.handle:before {
+    content: '\2261'; /* https://en.wikipedia.org/wiki/Triple_bar */
+    color: #999;
+    position: relative;
+    left: 50%;
+}
+
+.handle:hover {
+    background: #f0f0f0;
+}
+
+.handle:hover:before {
+    color: #000;
+}

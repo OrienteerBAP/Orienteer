@@ -1,5 +1,5 @@
 
-function editorInit(id, config) {
+function editorInit(id, handleId, config) {
     var textArea = $('#' + id).get(0);
     var cm = CodeMirror.fromTextArea(textArea, config);
     if (!config.readOnly) {
@@ -7,6 +7,31 @@ function editorInit(id, config) {
             codeMirror.save();
         });
     }
+    enableChangeHeight(handleId, cm);
+}
+
+function enableChangeHeight(handleId, cm) {
+    const MIN_HEIGHT = 200;
+    var handle = $('#' + handleId);
+
+    var mouseStartY;
+    var cmCurrentHeight;
+
+    var onDrag = function (e) {
+        cm.setSize(null, Math.max(MIN_HEIGHT, cmCurrentHeight + e.pageY - mouseStartY));
+    };
+
+    var onRelease = function (e) {
+        $(document).off('mousemove', onDrag);
+        $(window).off('mouseup', onRelease);
+    };
+
+    handle.on('mousedown', function (e) {
+        mouseStartY = e.pageY;
+        cmCurrentHeight = cm.getWrapperElement().offsetHeight;
+        $(document).on('mousemove', onDrag);
+        $(window).on('mouseup', onRelease);
+    });
 }
 
 function switchFullScreen(cm) {
