@@ -3,6 +3,7 @@ package org.orienteer.core.component.editor;
 import com.google.common.base.Strings;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
+import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -11,6 +12,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.orienteer.core.component.property.DisplayMode;
 
@@ -48,17 +50,28 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
     protected void onInitialize() {
         super.onInitialize();
         setOutputMarkupPlaceholderTag(true);
+        final WebMarkupContainer handle = new WebMarkupContainer("handle");
+//        {
+//            @Override
+//            public boolean isVisible() {
+//                return displayModel.getObject() == DisplayMode.EDIT;
+//            }
+//        };
+        handle.setOutputMarkupId(true);
         WebMarkupContainer container = new WebMarkupContainer("container") {
             @Override
             public IMarkupFragment getMarkup(Component child) {
+                if (child != null && child.getId().equals(handle.getId()))
+                    return super.getMarkup(child);
                 return createMarkup(displayModel.getObject());
             }
         };
-        container.add(createTextArea("editor"));
+        container.add(handle);
+        container.add(createTextArea("editor", handle.getMarkupId()));
         add(container);
     }
 
-    private Component createTextArea(String id) {
+    private Component createTextArea(String id, final String handleId) {
         TextArea<String> textArea = new TextArea<String>(id, getModel()) {
             @Override
             public void renderHead(IHeaderResponse response) {
@@ -70,8 +83,8 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
                 configureEditorParams(params);
                 configureEditorKeysBinding(keysMap);
                 if (displayModel.getObject() == DisplayMode.EDIT) params.put(EXTRAKEYS, keysMap.toString());
-                response.render(OnLoadHeaderItem.forScript(String.format(";editorInit('%s', %s);", getMarkupId(),
-                        params.toString())));
+                response.render(OnLoadHeaderItem.forScript(String.format(";editorInit('%s', '%s', %s);",
+                        getMarkupId(), handleId, params.toString())));
             }
 
             @Override
@@ -87,22 +100,26 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      * Create custom params for editor
      * @param params {@link Map<String, String>} params which contains fields of JavaScript object
      */
-    protected void configureCustomEditorParams(Map<String, String> params) {
+    private void configureCustomEditorParams(Map<String, String> params) {
         boolean edit = displayModel.getObject() == DisplayMode.EDIT;
         params.put(READ_ONLY, Boolean.toString(!edit));
         params.put(CURSOR_BLINK_RATE, edit ? Integer.toString(530) : Integer.toString(-1));
         params.put(LINE_NUMBERS, "true");
         params.put(STYLE_ACTIVE_LINE, Boolean.toString(edit));
         params.put(SCROLLBAR_STYLE, "'overlay'");
+        params.put(MATCH_BRACKETS, "true");
+        params.put(AUTOCLOSE_BRACKETS, "true");
+        params.put(THEME, "'eclipse'");
     }
 
     /**
      * Create custom keys binding for editor
      * @param keysMap {@link Map<String, String>} keysMap which contains keys and function (fields of JavaScript object)
      */
-    protected void configureCustomEditorKeysBinding(Map<String, String> keysMap) {
+    private void configureCustomEditorKeysBinding(Map<String, String> keysMap) {
         keysMap.put("'F11'", "function(cm) {switchFullScreen(cm);}");
         keysMap.put("'Esc'", "function(cm) {disableFullscreen(cm);}");
+        keysMap.put("'Ctrl-Space'", "'autocomplete'");
     }
 
     /**
@@ -111,7 +128,9 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      *                                if {@link DisplayMode#VIEW} editor configs for view code
      * @return new {@link IMarkupFragment} for display correctly state of {@link CodeEditorPanel}
      */
-    protected abstract IMarkupFragment createMarkup(DisplayMode mode);
+    protected IMarkupFragment createMarkup(DisplayMode mode) {
+        return Markup.of("<textarea wicket:id='editor' class='form-control'></textarea>");
+    }
 
     /**
      * Set editor dependencies.
@@ -119,7 +138,9 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      * Orienteer's CodeMirror dependencies defines in classes {@link CodeMirrorJs} and {@link CodeMirrorCss}
      * @param response {@link IHeaderResponse} for add dependencies
      */
-    protected abstract void setEditorDependencies(IHeaderResponse response);
+    protected void setEditorDependencies(IHeaderResponse response) {
+
+    }
 
     /**
      * Configure editor params. See <a href="http://codemirror.net">CodeMirror</a> for additional information.
@@ -133,7 +154,9 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      * params.put("matchTags", "true") - in JavaScript object it's will be like this: {matchTags: true}
      * @param params {@link Map<String, String>} which contains fields and values of JavaScript object
      */
-    protected abstract void configureEditorParams(Map<String, String> params);
+    protected void configureEditorParams(Map<String, String> params) {
+
+    }
 
     /**
      * Configure editor keys binding. See <a href="http://codemirror.net">CodeMirror</a> for additional information.
@@ -142,7 +165,9 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      * Use '' for put JavaScript object field in this case.
      * @param keysMap {@link Map<String, String>} which contains fields and values of JavaScript object
      */
-    protected abstract void configureEditorKeysBinding(Map<String, String> keysMap);
+    protected void configureEditorKeysBinding(Map<String, String> keysMap) {
+
+    }
 
 
     @Override
@@ -152,15 +177,26 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
         setEditorDependencies(response);
     }
 
-    protected void setCustomEditorDependencies(IHeaderResponse response) {
+    private void setCustomEditorDependencies(IHeaderResponse response) {
         response.render(JavaScriptHeaderItem.forReference(
                 new JavaScriptResourceReference(CodeEditorPanel.class, "editor.js")));
+        response.render(CssHeaderItem.forReference(
+                new CssResourceReference(CodeEditorPanel.class, "editor.css")));
         response.render(CssHeaderItem.forReference(CodeMirrorCss.CORE.getResourceReference()));
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.CORE.getResourceReference()));
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.ACTIVELINE_ADDON.getResourceReference()));
+        addShowHintAddon(response);
         addActiveLine(response);
         addScrollbar(response);
         addFullscreenMode(response);
+        addMatchBrackets(response);
+        addAutoCloseBrackets(response);
+        addEditorTheme(response);
+    }
+
+    private void addShowHintAddon(IHeaderResponse response) {
+        response.render(CssHeaderItem.forReference(CodeMirrorCss.SHOW_HINT_ADDON.getResourceReference()));
+        response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.SHOW_HINT_ADDON.getResourceReference()));
     }
 
     private void addActiveLine(IHeaderResponse response) {
@@ -175,6 +211,19 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
     private void addFullscreenMode(IHeaderResponse response) {
         response.render(CssHeaderItem.forReference(CodeMirrorCss.FULLSCREEN_ADDON.getResourceReference()));
         response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.FULLSCREEN_ADDON.getResourceReference()));
+    }
+
+    private void addMatchBrackets(IHeaderResponse response) {
+        response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.MATCH_BRACKETS_ADDON.getResourceReference()));
+    }
+
+    private void addAutoCloseBrackets(IHeaderResponse response) {
+        response.render(JavaScriptHeaderItem.forReference(CodeMirrorJs.AUTOCLOSE_BRACKETS_ADDON.getResourceReference()));
+    }
+
+
+    protected void addEditorTheme(IHeaderResponse response) {
+        response.render(CssHeaderItem.forReference(CodeMirrorCss.ECLIPSE_THEME.getResourceReference()));
     }
 
     @Override

@@ -7,59 +7,44 @@ import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalancedClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ORoundRobinClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.core.util.lang.PropertyResolverConverter;
-import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
-import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.TextArea;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.resource.CssResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.validator.PatternValidator;
-import org.orienteer.core.OClassDomain;
 import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
+import org.orienteer.core.component.editor.SqlEditorPanel;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.model.OClassTextChoiceProvider;
 import org.orienteer.core.model.OnCreateFieldsTextChoiceProvider;
 import org.wicketstuff.select2.ISelect2Theme;
 import org.wicketstuff.select2.Select2BootstrapTheme;
 import org.wicketstuff.select2.Select2MultiChoice;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.EnumNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
-import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
-import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.utils.ResourceChoiceRenderer;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -210,6 +195,10 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 			{
 				return new Label(id, new EnumNamingModel<OClassDomain>((IModel<OClassDomain>)getModel()));
 			}
+			else if(CustomAttribute.match(critery, CustomAttribute.SEARCH_QUERY))
+			{
+				return new SqlEditorPanel(id, (IModel<String>) getModel(), Model.of(mode));
+			}
 			else
 			{
 				return new Label(id, getModel());
@@ -275,8 +264,8 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
                 }
                 else if(CustomAttribute.match(critery, CustomAttribute.SEARCH_QUERY))
                 {
-                    return new TextArea<String>(id, (IModel<String>)getModel())
-                    		.add(new PatternValidator("^(select|where)\\s.*", Pattern.CASE_INSENSITIVE));
+					return new SqlEditorPanel(id, (IModel<String>) getModel(), Model.of(mode))
+							.add(new PatternValidator("^(select|where)\\s.*", Pattern.CASE_INSENSITIVE));
                 }
                 else if (CustomAttribute.match(critery,CustomAttribute.TAB))
                 {
