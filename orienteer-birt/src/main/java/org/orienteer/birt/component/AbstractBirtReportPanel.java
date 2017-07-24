@@ -193,7 +193,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	
 	public String getReportCachePath() {
 		OrientDbWebSession session = OrientDbWebSession.get();
-		String path = CACHE_FOLDER+session.getUsername()+"/"+session.getId()+"/"+reportHash+CACHE_EXTENCION;
+		String path = CACHE_FOLDER+"/"+session.getUsername()+"/"+session.getId()+"/"+reportHash+CACHE_EXTENCION;
 		return path;
 	}
 	
