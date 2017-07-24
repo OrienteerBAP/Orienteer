@@ -8,7 +8,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.TextField;
@@ -18,6 +17,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.*;
+import org.orienteer.core.component.property.date.DateBootstrapField;
+import org.orienteer.core.component.property.date.DateTimeBootstrapField;
 import org.orienteer.core.component.property.filter.*;
 import org.orienteer.core.service.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
@@ -94,9 +95,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				case LINKSET:
 					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
                 case DATE:
-					return new DatePanel(id, (IModel<Date>) valueModel);
+					return new DateBootstrapField(id, (IModel<Date>) valueModel);
                 case DATETIME:
-                    return new DateTimeField(id, (IModel<Date>) valueModel);
+                    return new DateTimeBootstrapField(id, (IModel<Date>) valueModel);
                 case EMBEDDED:
                 	return new EmbeddedDocumentPanel(id, (IModel<ODocument>)valueModel, new PropertyModel<OClass>(propertyModel, "linkedClass"), mode.asModel());
                 case EMBEDDEDLIST:
