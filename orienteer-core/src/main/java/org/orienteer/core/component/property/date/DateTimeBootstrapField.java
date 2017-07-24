@@ -82,7 +82,7 @@ public class DateTimeBootstrapField extends DateTimeField {
             @Override
             public void afterRender(Component component) {
                 Response response = component.getResponse();
-                response.write("<a href='#' class='input-group-addon'>" +
+                response.write("<a href='#' class='input-group-addon date-btn'>" +
                         "<span class='glyphicon glyphicon-th'></span></a>");
                 response.write("</div>");
             }
