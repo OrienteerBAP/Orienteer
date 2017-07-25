@@ -1,6 +1,8 @@
 package org.orienteer.core.component.property.date;
 
+import com.google.common.base.Strings;
 import org.apache.wicket.Component;
+import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.extensions.yui.calendar.DatePicker;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
@@ -17,11 +19,16 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Bootstrap enabled date time field
  */
 public class DateTimeBootstrapField extends DateTimeField {
+
+    private static final Pattern YEAR_FORMAT = Pattern.compile("^[^y]*yyyy[^y]*$");
 
     public DateTimeBootstrapField(String id) {
         super(id);
@@ -39,7 +46,7 @@ public class DateTimeBootstrapField extends DateTimeField {
 
     @Override
     protected DateTextField newDateTextField(String id, PropertyModel<Date> model) {
-        DateTextField dateTextField = DateTextField.forDatePattern(id, model, "yyyy-MM-dd");
+        DateTextField dateTextField = DateTextField.forDatePattern(id, model, createJavaDateFormat());
         dateTextField.setOutputMarkupId(true);
         return dateTextField;
     }
@@ -74,24 +81,27 @@ public class DateTimeBootstrapField extends DateTimeField {
     protected DatePicker newDatePicker() {
         return new DatePicker() {
 
+            private final String datePickerId = getDateTextField().getMarkupId() + "-datepicker";
+
             @Override
             public void beforeRender(Component component) {
                 Response response = component.getResponse();
-                response.write("<div class='input-group date' data-provide='datepicker'>");
+                response.write(String.format(
+                        "<div id='%s' class='input-group date' data-provide='datepicker'>", datePickerId));
             }
 
             @Override
             public void afterRender(Component component) {
                 Response response = component.getResponse();
-                response.write("<a href='#' class='input-group-addon date-btn'>" +
-                        "<span class='glyphicon glyphicon-th'></span></a>");
+                response.write("<span class='input-group-addon date-btn'>" +
+                        "<span class='glyphicon glyphicon-th'></span></span>");
                 response.write("</div>");
             }
 
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
-                String jqueryInit = String.format("; initJQDatepicker('%s', '%s', '%s');", getDateTextField().getMarkupId(),
-                        getLocale().getLanguage(), getDateFormat());
+                String jqueryInit = String.format("; initJQDatepicker('%s', %s);", datePickerId,
+                        getDatePickerParams().toString());
                 response.render(OnDomReadyHeaderItem.forScript(jqueryInit));
             }
         };
@@ -107,10 +117,66 @@ public class DateTimeBootstrapField extends DateTimeField {
         response.render(OnDomReadyHeaderItem.forScript(String.format("; initDateMarkup('%s')", getMarkupId())));
     }
 
+    private Map<String, String> getDatePickerParams() {
+        Map<String, String> params = createParamsMap();
+        params.put("autoclose", Boolean.toString(true));
+        params.put("language", "'" + getLocale().getLanguage() + "'");
+        params.put("orientation", "'bottom'");
+        params.put("weekStart", Integer.toString(1));
+        params.put("format", "'" + getDatepickerDateFormat() + "'");
+        configureDatapickerParams(params);
+        return params;
+    }
+
+    /**
+     * Configure Bootstrap data picker
+     * @param params {@link Map<String, String>} which contains data picker params.
+     */
+    protected void configureDatapickerParams(Map<String, String> params) {
+
+    }
+
+    /**
+     * @return Java date format as String
+     */
+    private String createJavaDateFormat() {
+        StyleDateConverter converter = new StyleDateConverter(false);
+        String format = converter.getDatePattern(getLocale());
+        if (!YEAR_FORMAT.matcher(format).matches()) {
+            format = format.replaceAll("(y+)", "yyyy");
+        }
+        return format;
+    }
+
     /**
      * @return date format for Bootstrap datepicker
      */
-    private String getDateFormat() {
+    private String getDatepickerDateFormat() {
         return getDateTextField().getTextFormat().toLowerCase();
+    }
+
+    /**
+     * @return {@link Map<String, String>} with override toString() method which returns JavaScript object
+     */
+    protected final Map<String, String> createParamsMap() {
+        return new HashMap<String, String>() {
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder();
+                int counter = 0;
+                sb.append("{");
+                for (String key : keySet()) {
+                    String value = get(key);
+                    if (!Strings.isNullOrEmpty(value)) {
+                        if (counter > 0) sb.append(",");
+                        sb.append(key).append(":")
+                                .append(value);
+                        counter++;
+                    }
+                }
+                sb.append("}");
+                return sb.toString();
+            }
+        };
     }
 }
