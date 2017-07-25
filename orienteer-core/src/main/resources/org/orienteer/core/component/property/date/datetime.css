@@ -11,6 +11,12 @@
     max-width: 45px;
 }
 
+.am-or-pm-choice {
+    min-width: 70px;
+    max-width: 70px;
+    margin-left: 10px;
+}
+
 .time-separator {
     display: inline-flex;
     flex-direction: column;

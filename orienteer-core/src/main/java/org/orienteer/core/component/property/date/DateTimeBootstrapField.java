@@ -6,13 +6,15 @@ import org.apache.wicket.extensions.yui.calendar.DatePicker;
 import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.Markup;
-import org.apache.wicket.markup.head.*;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.orienteer.core.OrienteerWebApplication;
 
 import java.util.Date;
 
@@ -36,12 +38,11 @@ public class DateTimeBootstrapField extends DateTimeField {
     }
 
     @Override
-    protected DateTextField newDateTextField(String id, PropertyModel<Date> dateFieldModel) {
-        DateTextField dateTextField = new DateTextField(id, dateFieldModel, OrienteerWebApplication.DATE_CONVERTER);
+    protected DateTextField newDateTextField(String id, PropertyModel<Date> model) {
+        DateTextField dateTextField = DateTextField.forDatePattern(id, model, "yyyy-MM-dd");
         dateTextField.setOutputMarkupId(true);
         return dateTextField;
     }
-
 
     @Override
     public IMarkupFragment getMarkup(Component child) {
@@ -54,7 +55,7 @@ public class DateTimeBootstrapField extends DateTimeField {
                 case MINUTES:
                     return Markup.of(getMarkupForTime(MINUTES, "minutes"));
                 case AM_OR_PM_CHOICE:
-                    return Markup.of("<select wicket:id='amOrPmChoice' class='form-control'></select>");
+                    return Markup.of("<select wicket:id='amOrPmChoice' class='form-control am-or-pm-choice'></select>");
                 case "hoursSeparator":
                     return Markup.of("<span wicket:id='hoursSeparator' class='time-separator'>" +
                             "<i class='fa fa-square top-square' aria-hidden='true'></i>" +
@@ -90,18 +91,26 @@ public class DateTimeBootstrapField extends DateTimeField {
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
                 String jqueryInit = String.format("; initJQDatepicker('%s', '%s', '%s');", getDateTextField().getMarkupId(),
-                        getLocale().getLanguage(), OrienteerWebApplication.DATE_CONVERTER.getDatePattern(getLocale()));
-                response.render(OnLoadHeaderItem.forScript(jqueryInit));
+                        getLocale().getLanguage(), getDateFormat());
+                response.render(OnDomReadyHeaderItem.forScript(jqueryInit));
             }
         };
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
+
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(DateTimeBootstrapField.class, "datetime.js")));
         response.render(CssHeaderItem.forReference(new CssResourceReference(DateTimeBootstrapField.class, "datetime.css")));
-
         super.renderHead(response);
+
         response.render(OnDomReadyHeaderItem.forScript(String.format("; initDateMarkup('%s')", getMarkupId())));
+    }
+
+    /**
+     * @return date format for Bootstrap datepicker
+     */
+    private String getDateFormat() {
+        return getDateTextField().getTextFormat().toLowerCase();
     }
 }

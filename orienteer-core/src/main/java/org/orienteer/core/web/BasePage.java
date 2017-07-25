@@ -31,6 +31,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Root {@link WebPage} for Orienteer enabled pages.
@@ -50,11 +51,13 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
 	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
 
-    public static final CssResourceReference BOOTSTRAP_DATE_PICKER_CSS       = new WebjarsCssResourceReference("bootstrap-datepicker/current/css/bootstrap-datepicker3.min.css");
-    public static final JavaScriptResourceReference BOOTSTRAP_DATE_PICKER_JS = new WebjarsJavaScriptResourceReference("bootstrap-datepicker/current/js/bootstrap-datepicker.min.js");
-    public static final String BOOTSTRAP_DATEPICKER_LOCALE                   = "bootstrap-datepicker/current/locales/bootstrap-datepicker.%s.min.js";
 
-    @Inject
+	protected static final CssResourceReference BOOTSTRAP_DATE_PICKER_CSS       = new WebjarsCssResourceReference("bootstrap-datepicker/current/css/bootstrap-datepicker3.min.css");
+	protected static final JavaScriptResourceReference BOOTSTRAP_DATE_PICKER_JS = new WebjarsJavaScriptResourceReference("bootstrap-datepicker/current/js/bootstrap-datepicker.min.js");
+	protected static final String BOOTSTRAP_DATEPICKER_LOCALE                   = "bootstrap-datepicker/current/locales/bootstrap-datepicker.%s.min.js";
+
+
+	@Inject
 	private PerspectivesModule perspectivesModule;
 	
 	private RepeatingView uiPlugins;
@@ -121,19 +124,26 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
 		response.render(CssHeaderItem.forReference(METISMENU_CSS));
 		response.render(CssHeaderItem.forReference(ORIENTEER_CSS));
-		response.render(CssHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_CSS));
 		super.renderHead(response);
+		addBootstrapDatepicker(response);
 		JavaScriptLibrarySettings javaScriptSettings =          
 				getApplication().getJavaScriptLibrarySettings();
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.
 				forReference(javaScriptSettings.getJQueryReference())));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
-		response.render(JavaScriptHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_JS));
-        response.render(JavaScriptHeaderItem.forReference(new WebjarsJavaScriptResourceReference(
-                String.format(BOOTSTRAP_DATEPICKER_LOCALE, getLocale().getLanguage()))));
 		// enabling metisMenu for secondary level menus
 		response.render(OnDomReadyHeaderItem.forScript("$(\".metismenu\").metisMenu({toggle: true});"));
+	}
+
+	private void addBootstrapDatepicker(IHeaderResponse response) {
+		response.render(CssHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_CSS));
+		response.render(JavaScriptHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_JS));
+		String language = getLocale().getLanguage();
+		if (!language.equals(Locale.ENGLISH.getLanguage())) {
+			response.render(JavaScriptHeaderItem.forReference(new WebjarsJavaScriptResourceReference(
+					String.format(BOOTSTRAP_DATEPICKER_LOCALE, language))));
+		}
 	}
 
 	public ODatabaseDocument getDatabase()

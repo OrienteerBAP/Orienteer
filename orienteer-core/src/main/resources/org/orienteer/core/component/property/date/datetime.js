@@ -1,9 +1,9 @@
 function initJQDatepicker(inputId, language, dateFormat) {
-    $.fn.datepicker.defaults.format = dateFormat;
     $.fn.datepicker.defaults.autoclose = true;
     $.fn.datepicker.defaults.language = language;
     $.fn.datepicker.defaults.orientation = 'bottom';
     $.fn.datepicker.weekStart = 1;
+    $.fn.datepicker.dates[language].format = dateFormat;
     var datepicker = $('#' + inputId).datepicker();
     var zIndex;
     datepicker.on('show', function () {
