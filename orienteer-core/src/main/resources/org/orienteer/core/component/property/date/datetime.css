@@ -1,0 +1,41 @@
+.hours {
+    margin-left: 10px;
+    margin-right: 5px;
+    min-width: 45px;
+    max-width: 45px;
+}
+
+.minutes {
+    margin-left: 5px;
+    min-width: 45px;
+    max-width: 45px;
+}
+
+.am-or-pm-choice {
+    min-width: 70px;
+    max-width: 70px;
+    margin-left: 10px;
+}
+
+.time-separator {
+    display: inline-flex;
+    flex-direction: column;
+    font-size: 5px;
+    margin-top: 10px;
+}
+
+.top-square {
+    margin-bottom: 2px;
+}
+
+.bottom-square {
+    margin-top: 2px;
+}
+
+.input-group-addon.date-btn {
+    text-decoration: none;
+}
+
+.input-group-addon.date-btn:hover {
+    background-color: #2BBBAD;
+}
