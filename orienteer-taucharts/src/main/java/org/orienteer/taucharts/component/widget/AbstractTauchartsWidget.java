@@ -1,10 +1,12 @@
 package org.orienteer.taucharts.component.widget;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.taucharts.component.TauchartsPanel;
 
@@ -39,13 +41,21 @@ public abstract class AbstractTauchartsWidget<T> extends AbstractWidget<T> {
 	public AbstractTauchartsWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		if (getWidgetDocument().field(QUERY_PROPERTY_NAME)!=null && getWidgetDocument().field(TYPE_PROPERTY_NAME)!=null){
-			makeChartPanel();
+			TauchartsPanel panel = makeChartPanel();
+			Object width = getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_X);
+			Object height = getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_Y);
+			if (width!=null){
+				panel.add(AttributeModifier.append("style", "width:"+(Integer)width+"px;"));
+			}
+			if (height!=null){
+				panel.add(AttributeModifier.append("style", "height:"+(Integer)height+"px;"));
+			}
 		}else{
 			add(new Label("tauchart","Configure widget first"));
 		}
 	}
 
-	protected abstract void makeChartPanel();
+	protected abstract TauchartsPanel makeChartPanel();
 	
 	@Override
 	protected FAIcon newIcon(String id) {
