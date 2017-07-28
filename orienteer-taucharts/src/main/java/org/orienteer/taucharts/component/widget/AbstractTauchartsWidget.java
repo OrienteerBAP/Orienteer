@@ -41,15 +41,7 @@ public abstract class AbstractTauchartsWidget<T> extends AbstractWidget<T> {
 	public AbstractTauchartsWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		if (getWidgetDocument().field(QUERY_PROPERTY_NAME)!=null && getWidgetDocument().field(TYPE_PROPERTY_NAME)!=null){
-			TauchartsPanel panel = makeChartPanel();
-			Object width = getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_X);
-			Object height = getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_Y);
-			if (width!=null){
-				panel.add(AttributeModifier.append("style", "width:"+(Integer)width+"px;"));
-			}
-			if (height!=null){
-				panel.add(AttributeModifier.append("style", "height:"+(Integer)height+"px;"));
-			}
+			makeChartPanel();
 		}else{
 			add(new Label("tauchart","Configure widget first"));
 		}
