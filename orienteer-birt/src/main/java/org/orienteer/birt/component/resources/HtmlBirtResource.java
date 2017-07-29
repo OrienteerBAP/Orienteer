@@ -28,6 +28,7 @@ public class HtmlBirtResource extends AbstractBirtResource{
 		options.setEmbeddable(false);
 		options.setHtmlPagination(false);
 		options.setOutputStream(output);
+		options.setImageHandler(getReportData().getIHTMLImageHandler());
 		return options;
 	}
 

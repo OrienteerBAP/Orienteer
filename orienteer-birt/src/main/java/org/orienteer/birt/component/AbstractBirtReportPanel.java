@@ -111,6 +111,11 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 			}
 		}
 	}
+	
+	@Override
+	public IHTMLImageHandler getIHTMLImageHandler() {
+		return imageHandler;
+	}
 
 	@Override
 	public String getOutName(){
