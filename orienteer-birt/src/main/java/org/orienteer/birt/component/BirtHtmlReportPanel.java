@@ -26,6 +26,7 @@ public class BirtHtmlReportPanel  extends AbstractBirtReportPanel{
 		options.setOutputFormat("html");
 		options.setHtmlPagination(true);
 		options.setEmbeddable(true);
+		options.setEnableInlineStyle(true);
 		return options;
 	}
 	

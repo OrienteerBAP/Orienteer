@@ -10,12 +10,22 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.IResourceListener;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.navigation.paging.IPageable;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.IResource.Attributes;
 import org.eclipse.birt.data.engine.executor.cache.Md5Util;
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.eclipse.birt.report.engine.api.HTMLServerImageHandler;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
+import org.eclipse.birt.report.engine.api.IHTMLImageHandler;
+import org.eclipse.birt.report.engine.api.IImage;
 import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderTask;
@@ -28,6 +38,8 @@ import org.eclipse.birt.report.model.api.OdaDataSourceHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.SlotHandle;
 import org.eclipse.birt.report.model.api.activity.SemanticException;
+import org.orienteer.birt.AbstractBirtHTMLImageHandler;
+import org.orienteer.birt.BirtImage;
 import org.orienteer.birt.Module;
 import org.orienteer.birt.component.service.BirtReportParameterDefinition;
 import org.orienteer.birt.component.service.IBirtReportConfig;
@@ -42,13 +54,14 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 /**
  *	Base panel for other BIRT reports panels
  */
-public abstract class AbstractBirtReportPanel extends Panel implements IPageable,IBirtReportData {
+public abstract class AbstractBirtReportPanel extends Panel implements IPageable, IBirtReportData, IResourceListener {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	protected static final String REPORT_COMPONENT_NAME = "report";
+	protected static final String RESOURCE_IMAGE_ID = "imageId";
 
 	protected static final String CACHE_EXTENCION = ".rptdocument";
 	protected static final String CACHE_FOLDER = System.getProperty("java.io.tmpdir")+"/birt_cache";//"temp/";
@@ -60,6 +73,14 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	private String reportHash;
 	private List<BirtReportParameterDefinition> paramDefinitions;
 	private List<BirtReportParameterDefinition> hiddenParamDefinitions;
+	
+	private AbstractBirtHTMLImageHandler imageHandler = new AbstractBirtHTMLImageHandler() {
+		
+		@Override
+		protected String urlFor(String id, BirtImage image) {
+			return AbstractBirtReportPanel.this.urlFor(IResourceListener.INTERFACE, new PageParameters().add(RESOURCE_IMAGE_ID, id)).toString();
+		}
+	};
 	
 	public AbstractBirtReportPanel(String id,IBirtReportConfig config) throws EngineException{
 		super(id);
@@ -76,6 +97,21 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		
 	}
 	
+	
+	
+	@Override
+	public void onResourceRequested() {
+		RequestCycle requestCycle = RequestCycle.get();
+		IRequestParameters params = requestCycle.getRequest().getRequestParameters();
+		String imageId = params.getParameterValue(RESOURCE_IMAGE_ID).toOptionalString();
+		if(imageId!=null) {
+			IResource resource = imageHandler.getBirtImageAsResource(imageId);
+			if(resource!=null) {
+				resource.respond(new Attributes(requestCycle.getRequest(), requestCycle.getResponse(), null));
+			}
+		}
+	}
+
 	@Override
 	public String getOutName(){
 		return config.getOutName();
@@ -209,11 +245,13 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		
 
 		IRenderOption options = makeRenderOption();
+		options.setOutputStream(buf);
+		options.setImageHandler(imageHandler);
+		
 		renderTask.setRenderOption(options);
 		//renderTask.setPageRange("1-5");
 		renderTask.setPageNumber(currentPage+1);
 		
-		options.setOutputStream(buf);
 		//run the report
 		renderTask.render();
 		cache.close();
