@@ -24,7 +24,7 @@ public class TauchartsDocumentWidget extends AbstractTauchartsWidget<ODocument>{
 	}
 	
 	@Override
-	protected void makeChartPanel(){
+	protected TauchartsPanel makeChartPanel(){
 		List<String> plugins = new ArrayList<String>();
 		Set<ODocument> pluginsLinks = getWidgetDocument().field(PLUGINS_PROPERTY_NAME);
 		if (pluginsLinks!=null){
@@ -32,7 +32,8 @@ public class TauchartsDocumentWidget extends AbstractTauchartsWidget<ODocument>{
 				plugins.add((String) oDocument.field("alias"));
 			}
 		}
-		add(new TauchartsPanel(
+		TauchartsPanel panel;
+		add(panel = new TauchartsPanel(
 				"tauchart",
 				getModel(),
 				new TauchartsConfig(
@@ -46,6 +47,7 @@ public class TauchartsDocumentWidget extends AbstractTauchartsWidget<ODocument>{
 					(String) getWidgetDocument().field(Y_LABEL_PROPERTY_NAME),
 					(Boolean) getWidgetDocument().field(USING_REST_PROPERTY_NAME)
 				)
-		));		
+		));
+		return panel;
 	}
 }

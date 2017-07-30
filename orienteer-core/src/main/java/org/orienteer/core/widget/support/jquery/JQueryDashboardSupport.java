@@ -1,7 +1,9 @@
 package org.orienteer.core.widget.support.jquery;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.request.resource.CssResourceReference;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.support.IDashboardSupport;
@@ -48,7 +50,14 @@ public class JQueryDashboardSupport implements IDashboardSupport {
 
 	@Override
 	public void loadSettings(AbstractWidget<?> widget, ODocument doc) {
-		//NOP
+		Object width = widget.getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_X);
+		Object height = widget.getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_Y);
+		if (width!=null){
+			widget.add(AttributeModifier.append("style", "width:"+(Integer)width+"px;"));
+		}
+		if (height!=null){
+			widget.add(AttributeModifier.append("style", "height:"+(Integer)height+"px;"));
+		}
 	}
 
 }

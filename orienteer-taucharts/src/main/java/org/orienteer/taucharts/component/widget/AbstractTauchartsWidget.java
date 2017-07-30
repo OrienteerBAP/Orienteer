@@ -1,10 +1,12 @@
 package org.orienteer.taucharts.component.widget;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.taucharts.component.TauchartsPanel;
 
@@ -45,7 +47,7 @@ public abstract class AbstractTauchartsWidget<T> extends AbstractWidget<T> {
 		}
 	}
 
-	protected abstract void makeChartPanel();
+	protected abstract TauchartsPanel makeChartPanel();
 	
 	@Override
 	protected FAIcon newIcon(String id) {
