@@ -93,26 +93,31 @@ public abstract class AbstractBirtHTMLImageHandler implements IHTMLImageHandler,
 	}
 	
 	@Override
+	@SuppressWarnings("deprecation")
 	public String onDesignImage(IImage image, Object context) {
 		throw new UnsupportedOperationException("Method onDesignImage(IImage image, Object context) is not supported");
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public String onDocImage(IImage image, Object context) {
 		throw new UnsupportedOperationException("Method onDocImage(IImage image, Object context) is not supported");
 	}
 	
 	@Override
+	@SuppressWarnings("deprecation")
 	public String onFileImage(IImage image, Object context) {
 		throw new UnsupportedOperationException("Method onFileImage(IImage image, Object context) is not supported");
 	}
 	
 	@Override
+	@SuppressWarnings("deprecation")
 	public String onURLImage(IImage image, Object context) {
 		throw new UnsupportedOperationException("Method onURLImage(IImage image, Object context) is not supported");
 	}
 	
 	@Override
+	@SuppressWarnings("deprecation")
 	public String onCustomImage(IImage image, Object context) {
 		throw new UnsupportedOperationException("Method onCustomImage(IImage image, Object context) is not supported");
 	}

@@ -27,6 +27,9 @@ import org.eclipse.birt.report.engine.util.FileUtil;
  */
 public class BirtImage extends CachedImage implements IClusterable {
 	
+	/**
+	 * Serializable implementation of ImageSize. Required for wicket storing, 
+	 */
 	public static class BirtImageSize extends ImageSize implements IClusterable {
 
 		public BirtImageSize(String u, float w, float h) {
