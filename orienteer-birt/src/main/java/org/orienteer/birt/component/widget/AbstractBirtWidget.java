@@ -42,7 +42,7 @@ public class AbstractBirtWidget<T> extends AbstractWidget<T>{
 		 * report byte[]
 		 * */
 		
-		AjaxLazyLoadPanel panel = new AjaxLazyLoadPanel("report")
+		AjaxLazyLoadPanel panel = new AjaxLazyLoadPanel("reportHolder")
 		{
 		  /**
 			 * 

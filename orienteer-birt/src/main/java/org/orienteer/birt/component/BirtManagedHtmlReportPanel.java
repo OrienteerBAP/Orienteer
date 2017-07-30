@@ -20,12 +20,11 @@ public class BirtManagedHtmlReportPanel extends Panel{
 	
 	public BirtManagedHtmlReportPanel(String id,IBirtReportConfig config) throws EngineException {
 		super(id);
+		setOutputMarkupPlaceholderTag(true);
 		final BirtHtmlReportPanel birtPanel = new BirtHtmlReportPanel(REPORT_PANEL_NAME,config);
 		birtPanel.setOutputMarkupId(true);
-		add(birtPanel);
-		
-		BirtManagementPanel managementPanel = new BirtManagementPanel(MANAGEMENT_PANEL_NAME,birtPanel);
-		add(managementPanel);
+		add(birtPanel,
+			new BirtManagementPanel(MANAGEMENT_PANEL_NAME,birtPanel));
 	}
 
 }

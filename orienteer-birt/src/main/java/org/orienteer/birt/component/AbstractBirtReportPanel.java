@@ -60,7 +60,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	protected static final String REPORT_COMPONENT_NAME = "report";
+	protected static final String REPORT_COMPONENT_NAME = "reportContent";
 	protected static final String RESOURCE_IMAGE_ID = "imageId";
 
 	protected static final String CACHE_EXTENCION = ".rptdocument";
