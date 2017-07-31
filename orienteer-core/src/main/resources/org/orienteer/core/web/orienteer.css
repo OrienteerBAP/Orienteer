@@ -190,7 +190,7 @@ div.ajax-indicator {
 	overflow: hidden;
 }
 
-div.panel.panel-default{
+div.panel.widget{
 	height: 100%;
 	width: 100%;
 }
