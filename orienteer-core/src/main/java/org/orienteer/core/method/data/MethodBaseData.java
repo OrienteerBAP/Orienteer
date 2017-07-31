@@ -8,6 +8,8 @@ import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 /**
  * Base OMethod environment data.
  * Any input parameters may be null.
@@ -27,7 +29,8 @@ public class MethodBaseData implements Serializable,IMethodEnvironmentData{
 		this.objModel = objModel;
 		this.widget = widget;
 		if (widget!=null){
-			this.widgetType = widget.getWidgetDocument().field(OWidgetsModule.OPROPERTY_TYPE_ID);
+			ODocument widgetDoc = widget.getWidgetDocument();
+			if(widgetDoc!=null) this.widgetType = widgetDoc.field(OWidgetsModule.OPROPERTY_TYPE_ID);
 		}
 		this.place = place;
 		this.tableObject = tableObject;

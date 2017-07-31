@@ -1,6 +1,7 @@
 package org.orienteer.taucharts.component.widget;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -38,14 +39,15 @@ public class TauchartsBrowseWidget extends AbstractTauchartsWidget<OClass>{
 				"tauchart",
 				new TauchartsConfig(
 					(String)(((ODocument) getWidgetDocument().field(TYPE_PROPERTY_NAME)).field("alias")),
-					(String)getWidgetDocument().field(X_PROPERTY_NAME),
-					(String)getWidgetDocument().field(Y_PROPERTY_NAME),
+					(Collection<String>)getWidgetDocument().field(X_PROPERTY_NAME),
+					(Collection<String>)getWidgetDocument().field(Y_PROPERTY_NAME),
 					(String)getWidgetDocument().field(COLOR_PROPERTY_NAME),
 					plugins,
 					(String)getWidgetDocument().field(QUERY_PROPERTY_NAME),
 					(String) getWidgetDocument().field(X_LABEL_PROPERTY_NAME),
 					(String) getWidgetDocument().field(Y_LABEL_PROPERTY_NAME),
-					(Boolean) getWidgetDocument().field(USING_REST_PROPERTY_NAME)
+					(Boolean) getWidgetDocument().field(USING_REST_PROPERTY_NAME),
+					(String) getWidgetDocument().field(CONFIG_PROPERTY_NAME)
 				)
 		));		
 		return panel;

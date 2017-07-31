@@ -131,8 +131,11 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		{
 			dashboardDocumentModel.setObject(doc);
 			List<ODocument> widgets = doc.field(OPROPERTY_WIDGETS);
-			for (ODocument widgetDoc : widgets) {
-				addWidget(createWidgetFromDocument(widgetDoc));
+			if(widgets!=null) {
+				widgets.remove(null); //To avoid deleted widgets
+				for (ODocument widgetDoc : widgets) {
+					addWidget(createWidgetFromDocument(widgetDoc));
+				}
 			}
 		}
 		else

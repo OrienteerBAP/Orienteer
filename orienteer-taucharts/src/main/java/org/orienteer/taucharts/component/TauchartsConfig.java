@@ -2,6 +2,7 @@ package org.orienteer.taucharts.component;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.wicket.model.IModel;
@@ -17,22 +18,23 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 public class TauchartsConfig implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String type;
-	private String x;
+	private Collection<String> x;
 	private IModel<String> xLabel;
-	private String y;
+	private Collection<String> y;
 	private IModel<String> yLabel;
 	private String colorBy;
 	private List<String> plugins;
 	private String query;
 	private boolean usingRest;
+	private String config;
 	
 
-	public TauchartsConfig(String type ,String x,String y,String colorBy,List<String> plugins,String query,String xLabel,String yLabel,Boolean usingRest) {
+	public TauchartsConfig(String type, Collection<String> x, Collection<String> y, String colorBy,List<String> plugins,String query,String xLabel,String yLabel,Boolean usingRest, String config) {
 		this.type = type;
 		this.x=x;
 		this.y=y;
-		this.xLabel=new SimpleNamingModel<String>(Strings.isEmpty(xLabel)?(x):xLabel);
-		this.yLabel=new SimpleNamingModel<String>(Strings.isEmpty(yLabel)?(y):yLabel);
+		this.xLabel=new SimpleNamingModel<String>(Strings.isEmpty(xLabel)?(x!=null && !x.isEmpty() ? x.iterator().next():"x"):xLabel);
+		this.yLabel=new SimpleNamingModel<String>(Strings.isEmpty(yLabel)?(y!=null && !y.isEmpty() ? y.iterator().next():"y"):yLabel);
 		this.colorBy=colorBy;
 		if (plugins==null){
 			this.plugins = new ArrayList<String>();
@@ -41,6 +43,7 @@ public class TauchartsConfig implements Serializable{
 		}
 		this.query=query;	
 		this.usingRest = usingRest!=null?usingRest:false;
+		this.config = config;
 	}
 
 
@@ -49,7 +52,7 @@ public class TauchartsConfig implements Serializable{
 	}
 
 
-	public String getX() {
+	public Collection<String> getX() {
 		return x;
 	}
 
@@ -59,7 +62,7 @@ public class TauchartsConfig implements Serializable{
 	}
 
 
-	public String getY() {
+	public Collection<String> getY() {
 		return y;
 	}
 
@@ -87,4 +90,8 @@ public class TauchartsConfig implements Serializable{
 	public boolean isUsingRest() {
 		return usingRest;
 	}			
+	
+	public String getConfig() {
+		return config;
+	}
 }

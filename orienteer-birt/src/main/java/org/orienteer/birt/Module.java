@@ -103,7 +103,7 @@ public class Module extends AbstractOrienteerModule{
 		app.unregisterWidgets("org.orienteer.birt.component.widget");
 		try
 		{
-		    engine.destroy();
+		    if(engine!=null) engine.destroy();
 		    Platform.shutdown();
 		    RegistryProviderFactory.releaseDefault();
 		}catch ( Exception e1 ){
