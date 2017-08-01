@@ -1,6 +1,7 @@
 package org.orienteer.birt.component;
 
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.eclipse.birt.report.engine.api.IHTMLImageHandler;
 import org.eclipse.birt.report.engine.api.IReportDocument;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 
@@ -11,5 +12,6 @@ import org.eclipse.birt.report.engine.api.IReportEngine;
 public interface IBirtReportData {
 	public IReportDocument getReportCache() throws EngineException;
 	public IReportEngine getReportEngine();
+	public IHTMLImageHandler getIHTMLImageHandler();
 	public String getOutName();
 }

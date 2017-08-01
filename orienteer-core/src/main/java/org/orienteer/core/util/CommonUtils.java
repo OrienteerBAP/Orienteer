@@ -60,4 +60,13 @@ public class CommonUtils {
 			return content;
 		}
 	}
+	
+	public static final CharSequence escapeStringForJSON(CharSequence content) {
+		if(content==null) return "";
+		else {
+			content = Strings.replaceAll(content, "\"", "\\\"");
+			content = Strings.replaceAll(content, "\n", "\" + \n\"");
+			return content;
+		}
+	}
 }

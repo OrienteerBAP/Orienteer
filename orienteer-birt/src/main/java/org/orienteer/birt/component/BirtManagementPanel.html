@@ -1,21 +1,23 @@
 <wicket:panel>
-	<div><a wicket:id="HTML">HTML</a> <a wicket:id="PDF">PDF</a> <a wicket:id="Excel">Excel</a></div>
+	<div>
+		<a wicket:id="HTML" class="btn btn-primary">HTML</a>
+		<a wicket:id="PDF" class="btn btn-primary">PDF</a>
+		<a wicket:id="Excel" class="btn btn-primary">Excel</a>
+	</div>
                  <div wicket:id="params">
                    <div wicket:id="parameterName" ></div>
 					<input wicket:id="parameterInput"/>
                  </div>
-                <li class="dropdown">
+                <div class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-caret-down"><wicket:message key="birt.parameters">Parameters</wicket:message></i>
                     </a>
                     <ul class="dropdown-menu">
-                    <div wicket:id="hiddenParams">
-                        <li>	
+                        <li wicket:id="hiddenParams">	
                         		<div wicket:id="parameterName" ></div>
 								<input wicket:id="parameterInput"/>
                         </li>
-                    </div>
                     </ul>
-                </li>
+                </div>
 	<div wicket:id="paginator"></div>
 </wicket:panel>

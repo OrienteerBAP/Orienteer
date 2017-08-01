@@ -47,7 +47,6 @@ public class BirtManagementPanel extends Panel{
 		        target.add(this);
 		    }
 		};
-		pager.setOutputMarkupId(true);
 
 		add(pager);
 		add(new ResourceLink<>("HTML", new HtmlBirtResource(reportPanel)));

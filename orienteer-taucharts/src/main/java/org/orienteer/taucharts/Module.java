@@ -59,13 +59,14 @@ public class Module extends AbstractOrienteerModule{
 		helper.oClass(AbstractTauchartsWidget.WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET).domain(OClassDomain.SYSTEM)
 			.oProperty(AbstractTauchartsWidget.QUERY_PROPERTY_NAME, OType.STRING, 100).assignVisualization("textarea")
 			.oProperty(AbstractTauchartsWidget.TYPE_PROPERTY_NAME, OType.LINK, 110).linkedClass(AbstractTauchartsWidget.TYPE_OCLASS).assignVisualization("listbox")
-			.oProperty(AbstractTauchartsWidget.X_PROPERTY_NAME, OType.STRING, 120)
+			.oProperty(AbstractTauchartsWidget.X_PROPERTY_NAME, OType.EMBEDDEDLIST, 120).linkedType(OType.STRING)
 			.oProperty(AbstractTauchartsWidget.X_LABEL_PROPERTY_NAME, OType.STRING, 125)
-			.oProperty(AbstractTauchartsWidget.Y_PROPERTY_NAME, OType.STRING, 130)
+			.oProperty(AbstractTauchartsWidget.Y_PROPERTY_NAME, OType.EMBEDDEDLIST, 130).linkedType(OType.STRING)
 			.oProperty(AbstractTauchartsWidget.Y_LABEL_PROPERTY_NAME, OType.STRING, 135)
 			.oProperty(AbstractTauchartsWidget.COLOR_PROPERTY_NAME, OType.STRING, 140)
 			.oProperty(AbstractTauchartsWidget.PLUGINS_PROPERTY_NAME, OType.LINKSET, 150).linkedClass("TauchartsPlugin").assignVisualization("listbox")
-			.oProperty(AbstractTauchartsWidget.USING_REST_PROPERTY_NAME, OType.BOOLEAN, 160);
+			.oProperty(AbstractTauchartsWidget.USING_REST_PROPERTY_NAME, OType.BOOLEAN, 160)
+			.oProperty(AbstractTauchartsWidget.CONFIG_PROPERTY_NAME, OType.STRING, 170).assignVisualization("textarea");
 		
 		makeData(db);
 	}
