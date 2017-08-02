@@ -59,6 +59,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     private static final CssResourceReference MXGRAPH_CSS    = new WebjarsCssResourceReference("mxgraph/current/javascript/src/css/common.css");
     private static final CssResourceReference OARCHITECT_CSS = new CssResourceReference(OArchitectEditorWidget.class, "css/architect.css");
 
+    private WebMarkupContainer container;
     private WebMarkupContainer editor;
     private WebMarkupContainer toolbar;
     private WebMarkupContainer sidebar;
@@ -71,13 +72,20 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        add(editor = new WebMarkupContainer("editor"));
-        add(toolbar = new WebMarkupContainer("toolbar"));
-        add(sidebar = new WebMarkupContainer("sidebar"));
+        container = newContainer("container");
+        container.add(editor = newContainer("editor"));
+        container.add(toolbar = newContainer("toolbar"));
+        container.add(sidebar = newContainer("sidebar"));
+        add(container);
         add(createConfigBehavior());
         add(createApplyEditorChangesBehavior());
     }
 
+    private WebMarkupContainer newContainer(String id) {
+        WebMarkupContainer container = new WebMarkupContainer(id);
+        container.setOutputMarkupId(true);
+        return container;
+    }
 
     private Behavior createConfigBehavior() {
         return new AbstractDefaultAjaxBehavior() {
@@ -185,8 +193,10 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-bar.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/metadata.js")));
-        response.render(OnLoadHeaderItem.forScript(String.format("; init('#%s', '#%s', '#%s');",
-                editor.getMarkupId(), sidebar.getMarkupId(), toolbar.getMarkupId())));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-modal-window.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-popup-menu.js")));
+        response.render(OnLoadHeaderItem.forScript(String.format("; init('%s', '%s', '%s', '%s');",
+                container.getMarkupId(), editor.getMarkupId(), sidebar.getMarkupId(), toolbar.getMarkupId())));
     }
 
     @Override
