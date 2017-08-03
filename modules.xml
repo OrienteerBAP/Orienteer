@@ -61,4 +61,10 @@
         <version>1.3-SNAPSHOT</version>
         <description>Integration of Orienteer and Taucharts</description>
     </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+	<artifactId>orienteer-architect</artifactId>
+        <version>1.3-SNAPSHOT</version>
+        <description>UI for easy and quick data models designing</description>
+    </module>
 </metadata>

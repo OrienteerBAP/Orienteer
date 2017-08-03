@@ -54,8 +54,8 @@ OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
 
 OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new Toolbar(editor, this.getToolbarContainer());
-    toolbar.addAction('Save scheme', SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
-    toolbar.addAction('Apply changes', APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
+    toolbar.addAction('Save Data Model', SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
+    toolbar.addAction('Apply Changes', APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
     toolbar.addAction('To JSON', TO_JSON_ACTION, toJsonAction);
 };
 

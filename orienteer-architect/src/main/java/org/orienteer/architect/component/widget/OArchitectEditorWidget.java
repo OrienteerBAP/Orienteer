@@ -49,7 +49,7 @@ import java.util.List;
 /**
  * Editor widget for OrientDB Schema
  */
-@Widget(id="architect-editor", domain = "document", tab="schemeEditor", selector = OArchitectModule.OARCHITECTOR_CLASS, autoEnable = true)
+@Widget(id="architect-editor", domain = "document", selector = OArchitectModule.ODATA_MODEL_OCLASS, autoEnable = true, order=10)
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.CREATE)
 public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
 
@@ -97,7 +97,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 LOG.debug("Save editor config: {}", params.getParameterValue(var));
                 IModel<ODocument> model = OArchitectEditorWidget.this.getModel();
                 ODocument document = model.getObject();
-                document.field(OArchitectModule.CONFIG, params.getParameterValue(var));
+                document.field(OArchitectModule.CONFIG_OPROPERTY, params.getParameterValue(var));
                 document.save();
             }
 
@@ -106,9 +106,9 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 super.renderHead(component, response);
                 IModel<ODocument> model = OArchitectEditorWidget.this.getModel();
                 ODocument document = model.getObject();
-                String xml = document.field(OArchitectModule.CONFIG);
+                String xml = document.field(OArchitectModule.CONFIG_OPROPERTY);
                 if (Strings.isNullOrEmpty(xml)) xml = "";
-                response.render(OnLoadHeaderItem.forScript(String.format("; app.setSaveEditorConfig(%s, '%s');",
+                response.render(OnLoadHeaderItem.forScript(String.format("app.setSaveEditorConfig(%s, '%s');",
                         getCallbackFunction(CallbackParameter.explicit(var)), xml)));
             }
         };
@@ -137,7 +137,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
                 super.renderHead(component, response);
-                response.render(OnLoadHeaderItem.forScript(String.format("; app.setApplyEditorChanges(%s);",
+                response.render(OnLoadHeaderItem.forScript(String.format("app.setApplyEditorChanges(%s);",
                         getCallbackFunction(CallbackParameter.explicit(var)))));
             }
         };
@@ -207,6 +207,11 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     @Override
     protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("widget.architect.editor.title");
+    }
+    
+    @Override
+    protected String getWidgetStyleClass() {
+    	return "strict";
     }
 
 }

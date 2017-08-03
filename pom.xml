@@ -95,7 +95,7 @@
 		<module>orienteer-war</module>
 		<module>orienteer-archetype-jar</module>
 		<module>orienteer-archetype-war</module>
-        <module>orienteer-architect</module>
+		<module>orienteer-architect</module>
     </modules>
 	<dependencyManagement>
 	    <dependencies>
