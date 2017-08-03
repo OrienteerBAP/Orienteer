@@ -38,11 +38,7 @@ public class OArchitectModule extends AbstractOrienteerModule {
 
     @Override
     public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
-
+        app.unregisterWidgets("org.orienteer.architect.component.widget");
     }
 
-    @Override
-    public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db) {
-
-    }
 }
