@@ -39,8 +39,18 @@
 
 .sidebar-item:hover {
   color: #2E2E2E;
+  text-decoration: none;
 }
 
 .toolbar-item {
   margin: 5px;
+}
+
+.property-name {
+  float: right;
+}
+
+.property-type {
+  float: left;
+  border-right: 2px solid black;
 }

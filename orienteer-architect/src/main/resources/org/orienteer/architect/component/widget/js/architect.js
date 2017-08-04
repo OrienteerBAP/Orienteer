@@ -1,6 +1,8 @@
 
-const ADD_OCLASS_ACTION           = 'addOClass';
-const ADD_OPROPERTY_ACTION        = 'addOProperty';
+const ADD_OCLASS_ACTION      = 'addOClass';
+const ADD_OPROPERTY_ACTION   = 'addOProperty';
+const EDIT_OPROPERTY_ACTION  = 'editOProperty';
+
 const SAVE_EDITOR_CONFIG_ACTION   = 'saveEditorConfig';
 const APPLY_EDITOR_CHANGES_ACTION = 'applyChanges';
 
@@ -8,6 +10,7 @@ const OCLASS_EDITOR_STYLE    = 'oClassName-style';
 const OPROPERTY_EDITOR_STYLE = 'oProperty-style';
 
 const FA_FILE_O = 'fa fa-file-o';
+const FA_ALIGN_JUSTIFY = 'fa fa-align-justify';
 const FA_2X     = 'fa-2x';
 
 const SIDEBAR_ITEM_CLASS = 'sidebar-item';
@@ -27,6 +30,17 @@ const NAME   = 'Name';
 const TYPE   = 'Type';
 const CANCEL = 'Cancel';
 const OK     = 'OK';
+const OPROPERT_ADD_ERR = 'OProperty must add only in OClass';
+const INFO_MSG         = 'Info';
+
+const BUTTON_PRIMARY = 'btn-primary';
+const BUTTON_DANGER  = 'btn-danger';
+
+const OCLASS    = 'OClass';
+const OPROPERTY = 'OProperty';
+
+const CREATE_OPROPERTY_MSG = 'Create OProperty';
+const EDIT_OPROPERTY_MSG   = 'Edit OProperty';
 
 var OArchitectApplication = function (containerId, editorId, sidebarId, toolbarId) {
     this.containerId = containerId;
@@ -44,12 +58,14 @@ OArchitectApplication.prototype.init = function () {
        this.editor.configure(mxUtils.load(CONFIG_PATH).getDocumentElement());
        this.configureEditorSidebar(this.editor);
        this.configureEditorToolbar(this.editor);
+       this.configurePopupMenu(this.editor);
     } else mxUtils.error('Browser is not supported!', 200, false);
 };
 
 OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
     var sidebar = new Sidebar(editor, this.getSidebarContainer());
     sidebar.addAction('OClass', ADD_OCLASS_ACTION, addOClassAction);
+    sidebar.addAction('OProperty', ADD_OPROPERTY_ACTION, addOPropertyAction);
 };
 
 OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
@@ -57,6 +73,10 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     toolbar.addAction('Save scheme', SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
     toolbar.addAction('Apply changes', APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
     toolbar.addAction('To JSON', TO_JSON_ACTION, toJsonAction);
+};
+
+OArchitectApplication.prototype.configurePopupMenu = function (editor) {
+    editor.addAction(EDIT_OPROPERTY_ACTION, editOPropertyAction);
 };
 
 OArchitectApplication.prototype.getEditorContainer = function () {

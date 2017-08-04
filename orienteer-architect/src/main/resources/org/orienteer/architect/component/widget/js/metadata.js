@@ -20,7 +20,11 @@ const OType = {
     },
 
     contains: function (type) {
-        return this.types.indexOf(type.toUpperCase());
+        return this.types.indexOf(type.toUpperCase()) > -1;
+    },
+
+    getIndexByValue: function (value) {
+        return this.types.indexOf(value.toUpperCase());
     },
 
     size: function () {
@@ -95,7 +99,7 @@ OProperty.prototype.setName = function (name) {
 };
 
 OProperty.prototype.setOClassName = function (oClassName) {
-    this.oClassName = oClass;
+    this.oClassName = oClassName;
 };
 
 OProperty.prototype.toString = function () {
