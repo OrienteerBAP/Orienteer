@@ -2,9 +2,6 @@ package org.orienteer.architect.component.widget;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -32,9 +29,9 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
+import org.orienteer.architect.util.JsonUtil;
 import org.orienteer.architect.util.OArchitectOClass;
 import org.orienteer.architect.util.OArchitectOProperty;
-import org.orienteer.architect.util.OClassJsonDeserializer;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.util.CommonUtils;
@@ -47,7 +44,6 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -130,9 +126,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 LOG.debug("Apply editor changes: {}", json);
                 List<OArchitectOClass> classes;
                 try {
-                    Type type = new TypeToken<List<OArchitectOClass>>(){}.getType();
-                    Gson gson = new GsonBuilder().registerTypeAdapter(type, new OClassJsonDeserializer()).create();
-                    classes = gson.fromJson(json, type);
+                    classes = JsonUtil.convertFromJSON(json);
                 } catch (Exception ex) {
                     throw new WicketRuntimeException("Can't parse input json!", ex);
                 }
@@ -158,7 +152,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                     String name = oArchitectOClass.getName();
                     OClass oClass = schema.getOrCreateClass(name);
                     addSuperClassesToOClass(schema, oClass, oArchitectOClass.getSuperClasses());
-                    addPropertiesToOClass(schema, oClass, oArchitectOClass.getProperties());
+                    addPropertiesToOClass(oClass, oArchitectOClass.getProperties());
                     LOG.debug("Create class: {}", oClass);
                 }
                 return null;
@@ -177,8 +171,10 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         }
     }
 
-    private void addPropertiesToOClass(OSchema schema, OClass oClass, List<OArchitectOProperty> properties) {
-
+    private void addPropertiesToOClass(OClass oClass, List<OArchitectOProperty> properties) {
+        for (OArchitectOProperty property : properties) {
+            oClass.createProperty(property.getName(), property.getType());
+        }
     }
 
     @Override

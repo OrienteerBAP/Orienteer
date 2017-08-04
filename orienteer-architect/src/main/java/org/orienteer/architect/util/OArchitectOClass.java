@@ -51,4 +51,14 @@ public class OArchitectOClass implements IClusterable {
     public List<OArchitectOProperty> getProperties() {
         return properties;
     }
+
+
+    @Override
+    public String toString() {
+        return "OArchitectOClass{" +
+                "name='" + name + '\'' +
+                ", superClasses=" + superClasses +
+                ", properties=" + properties +
+                '}';
+    }
 }

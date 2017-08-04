@@ -1,36 +1,53 @@
 package org.orienteer.architect;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.common.base.Strings;
 import org.junit.Test;
+import org.orienteer.architect.util.JsonUtil;
 import org.orienteer.architect.util.OArchitectOClass;
-import org.orienteer.architect.util.OClassJsonDeserializer;
+import org.orienteer.architect.util.OArchitectOProperty;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class OArchitectTest {
 
     @Test
     public void testJsonParse() {
-        String json = "[{\"name\":\"Admin\",\"properties\":[],\"superClasses\":[\"User\",\"Human\"]},{\"name\":\"User\",\"properties\":[],\"superClasses\":[]},{\"name\":\"Human\",\"properties\":[],\"superClasses\":[]}]";
-        Type type = new TypeToken<List<OClassJsonDeserializer>>(){}.getType();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(type, new OClassJsonDeserializer())
-                .create();
-        List<OArchitectOClass> classes = gson.fromJson(json, type);
-        assertTrue(classes.size() > 0);
-        for (OArchitectOClass architectOClass : classes) {
-            assertNotNull(architectOClass.getName());
-            if (architectOClass.getSuperClasses() != null) {
-                for (String superClass : architectOClass.getSuperClasses()) {
-                    assertNotNull(superClass);
-                }
+        String json = "[{\"name\":\"Worker\"," +
+                            "\"properties\":[" +
+                                "{\"oClassName\":\"MyClass\",\"name\":\"name\",\"type\":\"STRING\"}," +
+                                "{\"oClassName\":\"MyClass\",\"name\":\"id\",\"type\":\"INTEGER\"}" +
+                                "]," +
+                             "\"superClasses\":[]}," +
+                        "{\"name\":\"Admin\"," +
+                            "\"properties\":[" +
+                                "{\"oClassName\":\"Admin\",\"name\":\"permission\",\"type\":\"INTEGER\"}]," +
+                            "\"superClasses\":[\"Worker\"]}]";
+        List<OArchitectOClass> classes = JsonUtil.convertFromJSON(json);
+        for (OArchitectOClass oClass : classes) {
+            assertNotNull(oClass);
+            assertFalse(Strings.isNullOrEmpty(oClass.getName()));
+            if (oClass.getProperties() != null && !oClass.getProperties().isEmpty()) {
+                testOClassProperties(oClass.getProperties());
             }
+            if (oClass.getSuperClasses() != null && !oClass.getSuperClasses().isEmpty()) {
+                testOClassSuperClasses(oClass.getSuperClasses());
+            }
+        }
+    }
+
+    private void testOClassProperties(List<OArchitectOProperty> properties) {
+        for (OArchitectOProperty property : properties) {
+            assertFalse(Strings.isNullOrEmpty(property.getName()));
+            assertNotNull(property.getType());
+        }
+    }
+
+    private void testOClassSuperClasses(List<String> superClasses) {
+        for (String superClass : superClasses) {
+            assertFalse(Strings.isNullOrEmpty(superClass));
         }
     }
 }
