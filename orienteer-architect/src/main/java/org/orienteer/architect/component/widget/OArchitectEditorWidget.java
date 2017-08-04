@@ -28,12 +28,16 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.template.PackageTextTemplate;
+import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.util.OArchitectOClass;
 import org.orienteer.architect.util.OArchitectOProperty;
 import org.orienteer.architect.util.OClassJsonDeserializer;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -45,11 +49,12 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Editor widget for OrientDB Schema
  */
-@Widget(id="architect-editor", domain = "document", tab="schemeEditor", selector = OArchitectModule.OARCHITECTOR_CLASS, autoEnable = true)
+@Widget(id="architect-editor", domain = "document", selector = OArchitectModule.ODATA_MODEL_OCLASS, autoEnable = true, order=10)
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.CREATE)
 public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
 
@@ -97,7 +102,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 LOG.debug("Save editor config: {}", params.getParameterValue(var));
                 IModel<ODocument> model = OArchitectEditorWidget.this.getModel();
                 ODocument document = model.getObject();
-                document.field(OArchitectModule.CONFIG, params.getParameterValue(var));
+                document.field(OArchitectModule.CONFIG_OPROPERTY, params.getParameterValue(var));
                 document.save();
             }
 
@@ -106,9 +111,9 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 super.renderHead(component, response);
                 IModel<ODocument> model = OArchitectEditorWidget.this.getModel();
                 ODocument document = model.getObject();
-                String xml = document.field(OArchitectModule.CONFIG);
+                String xml = document.field(OArchitectModule.CONFIG_OPROPERTY);
                 if (Strings.isNullOrEmpty(xml)) xml = "";
-                response.render(OnLoadHeaderItem.forScript(String.format("; app.setSaveEditorConfig(%s, '%s');",
+                response.render(OnLoadHeaderItem.forScript(String.format("app.setSaveEditorConfig(%s, '%s');",
                         getCallbackFunction(CallbackParameter.explicit(var)), xml)));
             }
         };
@@ -137,7 +142,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
                 super.renderHead(component, response);
-                response.render(OnLoadHeaderItem.forScript(String.format("; app.setApplyEditorChanges(%s);",
+                response.render(OnLoadHeaderItem.forScript(String.format("app.setApplyEditorChanges(%s);",
                         getCallbackFunction(CallbackParameter.explicit(var)))));
             }
         };
@@ -185,11 +190,6 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forScript(
                 String.format("; initMxGraph('%s');", "en"), null));
         response.render(JavaScriptHeaderItem.forReference(MXGRAPH_JS));
-        addOArchitectDependencies(response);
-    }
-
-    private void addOArchitectDependencies(IHeaderResponse response) {
-        response.render(CssReferenceHeaderItem.forReference(OARCHITECT_CSS));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-bar.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/metadata.js")));
@@ -198,6 +198,22 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/actions.js")));
         response.render(OnLoadHeaderItem.forScript(String.format("; init('%s', '%s', '%s', '%s');",
                 container.getMarkupId(), editor.getMarkupId(), sidebar.getMarkupId(), toolbar.getMarkupId())));
+
+
+        PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/architect.js");
+        String configUrl = urlFor(configXml, null).toString();
+        String baseUrl = configUrl.substring(0, configUrl.indexOf("js/architect"));
+        
+        TextTemplate configTemplate = new PackageTextTemplate(OArchitectEditorWidget.class, "config.tmpl.xml");
+        Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
+        String config = configTemplate.asString(params);
+        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, '%s', '%s', '%s', '%s');",
+											        		baseUrl,
+											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
+											                container.getMarkupId(),
+											                editor.getMarkupId(),
+											                sidebar.getMarkupId(),
+											                toolbar.getMarkupId())));
     }
 
     @Override
@@ -208,6 +224,11 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     @Override
     protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("widget.architect.editor.title");
+    }
+    
+    @Override
+    protected String getWidgetStyleClass() {
+    	return "strict";
     }
 
 }

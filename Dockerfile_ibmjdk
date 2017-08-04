@@ -1,4 +1,8 @@
-FROM maven:3.5.0-jdk-7-alpine
+FROM maven:3.5.0-ibmjava-8-alpine
+# Temporarily switching to ibm jave due to issue in openjdk-alpine:
+# https://bugs.alpinelinux.org/issues/7372
+# 
+# FROM maven:3.5.0-jdk-7-alpine
 EXPOSE 8080
 MAINTAINER Ilia Naryzhny (phantom@ydn.ru)
 

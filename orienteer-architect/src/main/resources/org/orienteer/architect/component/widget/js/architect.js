@@ -20,9 +20,6 @@ const OCLASS_WIDTH     = 150;
 const OCLASS_HEIGHT    = 60;
 const OPROPERTY_HEIGHT = 20;
 
-const BASE_PATH              = '../../org/orienteer/architect/component/widget';
-const CONNECTOR_IMG_PATH     = BASE_PATH + '/img/arrow.png';
-const CONFIG_PATH = BASE_PATH + '/js/config.xml';
 
 const TO_JSON_ACTION = 'toJsonAction';
 
@@ -42,7 +39,11 @@ const OPROPERTY = 'OProperty';
 const CREATE_OPROPERTY_MSG = 'Create OProperty';
 const EDIT_OPROPERTY_MSG   = 'Edit OProperty';
 
-var OArchitectApplication = function (containerId, editorId, sidebarId, toolbarId) {
+const CONNECTOR_IMG_PATH     = 'img/arrow.png';
+
+var OArchitectApplication = function (basePath, config, containerId, editorId, sidebarId, toolbarId) {
+	this.basePath = basePath;
+	this.config = mxUtils.parseXml(config);
     this.containerId = containerId;
     this.editorId = editorId;
     this.sidebarId = sidebarId;
@@ -55,7 +56,7 @@ var OArchitectApplication = function (containerId, editorId, sidebarId, toolbarI
 OArchitectApplication.prototype.init = function () {
     if (mxClient.isBrowserSupported()) {
        this.editor = new SchemeEditor(this.getEditorContainer());
-       this.editor.configure(mxUtils.load(CONFIG_PATH).getDocumentElement());
+       this.editor.configure(this.config.documentElement);
        this.configureEditorSidebar(this.editor);
        this.configureEditorToolbar(this.editor);
        this.configurePopupMenu(this.editor);
@@ -70,8 +71,8 @@ OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
 
 OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new Toolbar(editor, this.getToolbarContainer());
-    toolbar.addAction('Save scheme', SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
-    toolbar.addAction('Apply changes', APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
+    toolbar.addAction('Save Data Model', SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
+    toolbar.addAction('Apply Changes', APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
     toolbar.addAction('To JSON', TO_JSON_ACTION, toJsonAction);
 };
 
@@ -109,8 +110,8 @@ OArchitectApplication.prototype.applyXmlConfig = function (xml) {
 
 var app;
 
-var init = function (containerId, editorId, sidebarId, toolbarId) {
-    app = new OArchitectApplication(containerId, editorId, sidebarId, toolbarId);
+var init = function (basePath, config, containerId, editorId, sidebarId, toolbarId) {
+    app = new OArchitectApplication(basePath, config, containerId, editorId, sidebarId, toolbarId);
     app.init();
 };
 

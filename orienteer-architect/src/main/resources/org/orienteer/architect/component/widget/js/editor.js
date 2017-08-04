@@ -67,7 +67,7 @@ SchemeEditor.prototype.createVertexStyle = function () {
 };
 
 SchemeEditor.prototype.configureGraph = function () {
-    mxConnectionHandler.prototype.connectImage = new mxImage(CONNECTOR_IMG_PATH, 16, 16);
+    mxConnectionHandler.prototype.connectImage = new mxImage(app.basePath+CONNECTOR_IMG_PATH, 16, 16);
     this.setGraphContainer(this.container);
     this.graph.setConnectable(true);
     // this.graph.setMultigraph(false);
