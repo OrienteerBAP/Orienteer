@@ -118,13 +118,12 @@ OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, selec
 
 OPropertyEditModalWindow.prototype.createValueBlock = function () {
     var div = document.createElement('div');
-    div.style.marginBottom = '5px';
+    div.style.margin = '10px';
     return div;
 };
 
 OPropertyEditModalWindow.prototype.createButtonBlock = function () {
     var div = document.createElement('div');
-    div.style.marginTop = '5px';
     return div;
 };
 
@@ -165,16 +164,20 @@ OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, 
         }
     });
     button.style.float = 'right';
+    button.style.marginRight = '10px';
+    button.style.marginBottom = '10px';
     return button;
 };
 
 OPropertyEditModalWindow.prototype.createCancelButton = function (label) {
     var button = this.newButton(label, BUTTON_DANGER);
-    button.style.float = 'left';
     var modal = this;
     button.addEventListener('click', function () {
         modal.destroy(modal.CANCEL);
     });
+    button.style.float = 'left';
+    button.style.marginLeft = '10px';
+    button.style.marginBottom = '10px';
     return button;
 };
 

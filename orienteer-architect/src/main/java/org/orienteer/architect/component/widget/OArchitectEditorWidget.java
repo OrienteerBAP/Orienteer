@@ -196,10 +196,6 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-modal-window.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-popup-menu.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/actions.js")));
-        response.render(OnLoadHeaderItem.forScript(String.format("; init('%s', '%s', '%s', '%s');",
-                container.getMarkupId(), editor.getMarkupId(), sidebar.getMarkupId(), toolbar.getMarkupId())));
-
-
         PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/architect.js");
         String configUrl = urlFor(configXml, null).toString();
         String baseUrl = configUrl.substring(0, configUrl.indexOf("js/architect"));
