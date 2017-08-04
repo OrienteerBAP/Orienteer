@@ -28,12 +28,16 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.util.template.PackageTextTemplate;
+import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.util.OArchitectOClass;
 import org.orienteer.architect.util.OArchitectOProperty;
 import org.orienteer.architect.util.OClassJsonDeserializer;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.slf4j.Logger;
@@ -45,6 +49,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Editor widget for OrientDB Schema
@@ -185,18 +190,26 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forScript(
                 String.format("; initMxGraph('%s');", "en"), null));
         response.render(JavaScriptHeaderItem.forReference(MXGRAPH_JS));
-        addOArchitectDependencies(response);
-    }
-
-    private void addOArchitectDependencies(IHeaderResponse response) {
-        response.render(CssReferenceHeaderItem.forReference(OARCHITECT_CSS));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-bar.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/metadata.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-modal-window.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-popup-menu.js")));
-        response.render(OnLoadHeaderItem.forScript(String.format("; init('%s', '%s', '%s', '%s');",
-                container.getMarkupId(), editor.getMarkupId(), sidebar.getMarkupId(), toolbar.getMarkupId())));
+
+        PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/architect.js");
+        String configUrl = urlFor(configXml, null).toString();
+        String baseUrl = configUrl.substring(0, configUrl.indexOf("js/architect"));
+        
+        TextTemplate configTemplate = new PackageTextTemplate(OArchitectEditorWidget.class, "config.tmpl.xml");
+        Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
+        String config = configTemplate.asString(params);
+        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, '%s', '%s', '%s', '%s');",
+											        		baseUrl,
+											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
+											                container.getMarkupId(),
+											                editor.getMarkupId(),
+											                sidebar.getMarkupId(),
+											                toolbar.getMarkupId())));
     }
 
     @Override
