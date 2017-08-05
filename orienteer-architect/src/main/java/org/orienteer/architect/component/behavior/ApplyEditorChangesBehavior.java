@@ -3,6 +3,7 @@ package org.orienteer.architect.component.behavior;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -59,8 +60,10 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         if (superClassNames != null && !superClassNames.isEmpty()) {
             List<OClass> superClasses = Lists.newArrayList();
             for (String name : superClassNames) {
-                OClass superClass = schema.getOrCreateClass(name);
-                superClasses.add(superClass);
+                if (!oClass.isSubClassOf(name)) {
+                    OClass superClass = schema.getOrCreateClass(name);
+                    superClasses.add(superClass);
+                }
             }
             oClass.setSuperClasses(superClasses);
         }
@@ -68,7 +71,12 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
 
     private void addPropertiesToOClass(OClass oClass, List<OArchitectOProperty> properties) {
         for (OArchitectOProperty property : properties) {
-            oClass.createProperty(property.getName(), property.getType());
+            OProperty oProperty = oClass.getProperty(property.getName());
+            if (oProperty == null) {
+                oClass.createProperty(property.getName(), property.getType());
+            } else if (oProperty.getType() != property.getType()) {
+                oProperty.setType(property.getType());
+            }
         }
     }
 
