@@ -1,19 +1,8 @@
 package org.orienteer.architect.component.widget;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
-import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.CallbackParameter;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -21,40 +10,35 @@ import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.request.IRequestParameters;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
-import org.orienteer.architect.util.JsonUtil;
-import org.orienteer.architect.util.OArchitectOClass;
-import org.orienteer.architect.util.OArchitectOProperty;
+import org.orienteer.architect.component.behavior.ApplyEditorChangesBehavior;
+import org.orienteer.architect.component.behavior.GetOClassesBehavior;
+import org.orienteer.architect.component.behavior.ManageEditorConfigBehavior;
+import org.orienteer.architect.component.panel.SchemaOClassesPanel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import java.util.List;
 import java.util.Map;
 
 /**
  * Editor widget for OrientDB Schema
  */
 @Widget(id="architect-editor", domain = "document", selector = OArchitectModule.ODATA_MODEL_OCLASS, autoEnable = true, order=10)
-@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.CREATE)
+@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = {
+        OrientPermission.CREATE, OrientPermission.UPDATE, OrientPermission.DELETE, OrientPermission.READ
+})
 public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(OArchitectEditorWidget.class);
 
     private static final JavaScriptResourceReference MXGRAPH_JS = new WebjarsJavaScriptResourceReference("mxgraph/current/javascript/mxClient.min.js");
     private static final CssResourceReference MXGRAPH_CSS    = new WebjarsCssResourceReference("mxgraph/current/javascript/src/css/common.css");
@@ -77,104 +61,18 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         container.add(editor = newContainer("editor"));
         container.add(toolbar = newContainer("toolbar"));
         container.add(sidebar = newContainer("sidebar"));
+        SchemaOClassesPanel panel = new SchemaOClassesPanel("listClasses", "; app.executeCallback('%s');");
+        container.add(panel);
         add(container);
-        add(createConfigBehavior());
-        add(createApplyEditorChangesBehavior());
+        add(new ManageEditorConfigBehavior(getModel()));
+        add(new ApplyEditorChangesBehavior());
+        add(new GetOClassesBehavior(panel));
     }
 
     private WebMarkupContainer newContainer(String id) {
         WebMarkupContainer container = new WebMarkupContainer(id);
         container.setOutputMarkupId(true);
         return container;
-    }
-
-    private Behavior createConfigBehavior() {
-        return new AbstractDefaultAjaxBehavior() {
-            private final String var = "config";
-
-            @Override
-            protected void respond(AjaxRequestTarget target) {
-                IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
-                LOG.debug("Save editor config: {}", params.getParameterValue(var));
-                IModel<ODocument> model = OArchitectEditorWidget.this.getModel();
-                ODocument document = model.getObject();
-                document.field(OArchitectModule.CONFIG_OPROPERTY, params.getParameterValue(var));
-                document.save();
-            }
-
-            @Override
-            public void renderHead(Component component, IHeaderResponse response) {
-                super.renderHead(component, response);
-                IModel<ODocument> model = OArchitectEditorWidget.this.getModel();
-                ODocument document = model.getObject();
-                String xml = document.field(OArchitectModule.CONFIG_OPROPERTY);
-                if (Strings.isNullOrEmpty(xml)) xml = "";
-                response.render(OnLoadHeaderItem.forScript(String.format("app.setSaveEditorConfig(%s, '%s');",
-                        getCallbackFunction(CallbackParameter.explicit(var)), xml)));
-            }
-        };
-    }
-
-    private Behavior createApplyEditorChangesBehavior() {
-        return new AbstractDefaultAjaxBehavior() {
-            private final String var = "json";
-
-            @Override
-            protected void respond(AjaxRequestTarget target) {
-                IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
-                String json = params.getParameterValue(var).toString("");
-                LOG.debug("Apply editor changes: {}", json);
-                List<OArchitectOClass> classes;
-                try {
-                    classes = JsonUtil.convertFromJSON(json);
-                } catch (Exception ex) {
-                    throw new WicketRuntimeException("Can't parse input json!", ex);
-                }
-                writeClassesToSchema(classes);
-            }
-
-            @Override
-            public void renderHead(Component component, IHeaderResponse response) {
-                super.renderHead(component, response);
-                response.render(OnLoadHeaderItem.forScript(String.format("app.setApplyEditorChanges(%s);",
-                        getCallbackFunction(CallbackParameter.explicit(var)))));
-            }
-        };
-    }
-
-    private void writeClassesToSchema(final List<OArchitectOClass> classes) {
-        new DBClosure<Void>() {
-            @Override
-            protected Void execute(ODatabaseDocument db) {
-                db.commit();
-                OSchema schema = db.getMetadata().getSchema();
-                for (OArchitectOClass oArchitectOClass : classes) {
-                    String name = oArchitectOClass.getName();
-                    OClass oClass = schema.getOrCreateClass(name);
-                    addSuperClassesToOClass(schema, oClass, oArchitectOClass.getSuperClasses());
-                    addPropertiesToOClass(oClass, oArchitectOClass.getProperties());
-                    LOG.debug("Create class: {}", oClass);
-                }
-                return null;
-            }
-        }.execute();
-    }
-
-    private void addSuperClassesToOClass(OSchema schema, OClass oClass, List<String> superClassNames) {
-        if (superClassNames != null && !superClassNames.isEmpty()) {
-            List<OClass> superClasses = Lists.newArrayList();
-            for (String name : superClassNames) {
-                OClass superClass = schema.getOrCreateClass(name);
-                superClasses.add(superClass);
-            }
-            oClass.setSuperClasses(superClasses);
-        }
-    }
-
-    private void addPropertiesToOClass(OClass oClass, List<OArchitectOProperty> properties) {
-        for (OArchitectOProperty property : properties) {
-            oClass.createProperty(property.getName(), property.getType());
-        }
     }
 
     @Override
@@ -192,6 +90,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-modal-window.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-popup-menu.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/actions.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util.js")));
         PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/architect.js");
         String configUrl = urlFor(configXml, null).toString();
         String baseUrl = configUrl.substring(0, configUrl.indexOf("js/architect"));

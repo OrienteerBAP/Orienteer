@@ -70,14 +70,13 @@ SchemeEditor.prototype.configureGraph = function () {
     mxConnectionHandler.prototype.connectImage = new mxImage(app.basePath+CONNECTOR_IMG_PATH, 16, 16);
     this.setGraphContainer(this.container);
     this.graph.setConnectable(true);
-    // this.graph.setMultigraph(false);
     this.graph.setCellsDisconnectable(false);
     this.graph.setCellsCloneable(false);
     this.graph.setSwimlaneNesting(false);
     this.graph.setDropEnabled(true);
     this.graph.setAllowDanglingEdges(false);
     this.graph.connectionHandler.factoryMethod = null;
-
+    this.graph.setPanning(true);
     this.configureGraphStyle();
     this.configureGraphBehavior();
     this.configureGraphLabels();
@@ -100,13 +99,6 @@ SchemeEditor.prototype.configureGraphBehavior = function () {
     this.graph.isCellSelectable = function (cell) {
         return this.isSwimlane(cell);
     };
-    
-    // this.graph.setSelectionCell = function (cell) {
-    //     if (!this.isSwimlane(cell)) {
-    //         cell = this.getModel().getParent(cell);
-    //     }
-    //     return mxGraph.prototype.setSelectionCell.call(this, cell);
-    // };
 
     this.graph.convertValueToString = this.createStringConverter();
     this.graph.cellLabelChanged = this.createCellLabelChangedBehavior();
@@ -118,10 +110,25 @@ SchemeEditor.prototype.configureGraphLabels = function () {
     this.graph.setHtmlLabels(true);
     this.graph.getLabel = function (cell) {
         var label = mxGraph.prototype.getLabel.apply(this, arguments);
-        if (cell.value instanceof OProperty) {
-            var type = cell.value.type;
-            var name = cell.value.name;
-            label = mxUtils.htmlEntities(name, false) + ' (' + mxUtils.htmlEntities(type, false) + ')';
+        if (this.model.isVertex(cell)) {
+            var max = parseInt(this.getCellGeometry(cell).width / 8);
+            if (cell.value instanceof OClass) {
+                var oClassName = cell.value.name;
+                var length = oClassName.length;
+                if (length > max) {
+                    oClassName = oClassName.slice(0, max - 3) + '...';
+                }
+                label = mxUtils.htmlEntities(oClassName);
+            } else if (cell.value instanceof OProperty) {
+                var type = cell.value.type;
+                var name = cell.value.name;
+                var typeLength = type.length;
+                var nameLength = name.length;
+                if (typeLength + nameLength > max) {
+                    name = name.slice(0, max - typeLength - 3) + '...';
+                }
+                label = mxUtils.htmlEntities(name, false) + ' (' + mxUtils.htmlEntities(type, false) + ')';
+            }
         }
         return label;
     };

@@ -37,9 +37,27 @@ const OType = {
 };
 
 var OClass = function(name) {
-  this.name = name;
-  this.properties = [];
-  this.superClasses = [];
+    this.name = name;
+    this.properties = [];
+    this.superClasses = [];
+};
+
+OClass.prototype.config = function (source) {
+    this.name = source.name;
+    this.properties = toOProperties(this.name, source.properties);
+    this.superClasses = source.superClasses;
+
+    function toOProperties(name, sourceProperties) {
+        var properties = [];
+        if (sourceProperties !== null && sourceProperties.length > 0) {
+            for (var i = 0; i < sourceProperties.length; i++) {
+                var property = new OProperty(name);
+                property.config(sourceProperties[i]);
+                properties.push(property);
+            }
+        }
+        return properties;
+    }
 };
 
 OClass.prototype.addOProperty = function(oProperty) {
@@ -81,11 +99,15 @@ OClass.prototype.clone = function () {
     return mxUtils.clone(this);
 };
 
-
 var OProperty = function (oClassName, name, type) {
     this.oClassName = oClassName;
     this.name = name;
     this.type = type;
+};
+
+OProperty.prototype.config = function (source) {
+    this.name = source.name;
+    this.type = OType.contains(source.type) ? source.type : null;
 };
 
 OProperty.prototype.setType = function (type) {

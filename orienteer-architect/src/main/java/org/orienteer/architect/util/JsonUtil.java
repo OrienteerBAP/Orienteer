@@ -27,7 +27,7 @@ public abstract class JsonUtil implements IClusterable {
      * @return {@link List<OArchitectOClass>}
      * @throws IllegalArgumentException if json is not JSON array
      */
-    public static List<OArchitectOClass> convertFromJSON(String json) {
+    public static List<OArchitectOClass> fromJSON(String json) {
         Args.isTrue(json.startsWith("["), "Input JSON string is not array! json: " + json);
         List<OArchitectOClass> classes = Lists.newArrayList();
         JSONArray jsonArray = new JSONArray(json);
@@ -38,6 +38,17 @@ public abstract class JsonUtil implements IClusterable {
         return classes;
     }
 
+    /**
+     * Convert {@link List<OArchitectOClass>} to JSON array string
+     * @param classes {@link List<OArchitectOClass>} classes for convert to JSON
+     * @return JSON string which contains JSON array with classes
+     * @throws IllegalArgumentException if classes is null
+     */
+    public static String toJSON(List<OArchitectOClass> classes) {
+        Args.notNull(classes, "classes");
+        JSONArray array = new JSONArray(classes);
+        return array.toString();
+    }
 
     private static OArchitectOClass convertOClassFromJson(JSONObject jsonObject) {
         OArchitectOClass oClass = new OArchitectOClass(jsonObject.getString(NAME));

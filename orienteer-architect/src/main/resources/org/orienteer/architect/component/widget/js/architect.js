@@ -1,45 +1,51 @@
 
-const ADD_OCLASS_ACTION      = 'addOClass';
-const ADD_OPROPERTY_ACTION   = 'addOProperty';
-const EDIT_OPROPERTY_ACTION  = 'editOProperty';
-
+const ADD_OCLASS_ACTION           = 'addOClass';
+const ADD_OPROPERTY_ACTION        = 'addOProperty';
+const ADD_OCLASSES_ACTION         = 'addOClasses';
+const EDIT_OPROPERTY_ACTION       = 'editOProperty';
+const TO_JSON_ACTION              = 'toJsonAction';
 const SAVE_EDITOR_CONFIG_ACTION   = 'saveEditorConfig';
 const APPLY_EDITOR_CHANGES_ACTION = 'applyChanges';
 
 const OCLASS_EDITOR_STYLE    = 'oClassName-style';
 const OPROPERTY_EDITOR_STYLE = 'oProperty-style';
 
-const FA_FILE_O = 'fa fa-file-o';
-const FA_ALIGN_JUSTIFY = 'fa fa-align-justify';
-const FA_2X     = 'fa-2x';
-
-const SIDEBAR_ITEM_CLASS = 'sidebar-item';
-const TOOLBAR_ITEM_CLASS = 'toolbar-item';
+const SIDEBAR_ITEM_CLASS     = 'sidebar-item';
+const TOOLBAR_ITEM_CLASS     = 'toolbar-item';
+const BUTTON_PRIMARY_CLASS   = 'btn-primary';
+const BUTTON_DANGER_CLASS    = 'btn-danger';
+const FA_FILE_O_CLASS        = 'fa fa-file-o';
+const FA_ALIGN_JUSTIFY_CLASS = 'fa fa-align-justify';
+const FA_DATABASE_CLASS      = 'fa fa-database';
+const FA_2X_CLASS            = 'fa-2x';
 
 const OCLASS_WIDTH     = 150;
 const OCLASS_HEIGHT    = 60;
 const OPROPERTY_HEIGHT = 20;
 
 
-const TO_JSON_ACTION = 'toJsonAction';
-
-const NAME   = 'Name';
-const TYPE   = 'Type';
-const CANCEL = 'Cancel';
-const OK     = 'OK';
-const OPROPERT_ADD_ERR = 'OProperty must add only in OClass';
-const INFO_MSG         = 'Info';
-
-const BUTTON_PRIMARY = 'btn-primary';
-const BUTTON_DANGER  = 'btn-danger';
-
-const OCLASS    = 'OClass';
-const OPROPERTY = 'OProperty';
-
+const NAME_MSG             = 'Name';
+const TYPE_MSG             = 'Type';
+const CANCEL_MSG           = 'Cancel';
+const OK_MSG               = 'OK';
+const OPROPERT_ADD_ERR_MSG = 'OProperty must add only in OClass';
+const INFO_MSG             = 'Info';
+const OCLASS_MSG           = 'OClass';
+const OPROPERTY_MSG        = 'OProperty';
+const OCLASSES_MSG         = 'Exists OClasses';
 const CREATE_OPROPERTY_MSG = 'Create OProperty';
 const EDIT_OPROPERTY_MSG   = 'Edit OProperty';
+const SAVE_DATA_MODEL_MSG  = 'Save Data Model';
+const APPLY_CHANGES_MSG    = 'Apply Changes';
+const TO_JSON_MSG          = 'To JSON';
+const CHOOSE_CLASSES_MSG   = 'Choose super classes';
 
 const CONNECTOR_IMG_PATH     = 'img/arrow.png';
+
+const DEFAULT_OCLASS_NAME    = 'OClass';
+const DEFAULT_OPROPERTY_NAME = 'OProperty';
+
+const MAX_LABEL_LENGTH = 20;
 
 var OArchitectApplication = function (basePath, config, containerId, editorId, sidebarId, toolbarId) {
 	this.basePath = basePath;
@@ -50,7 +56,9 @@ var OArchitectApplication = function (basePath, config, containerId, editorId, s
     this.toolbarId = toolbarId;
     this.saveEditorConfig = null;
     this.applyEditorChanges = null;
+    this.getOClassesRequest = null;
     this.editor = null;
+    this.callback = null;
 };
 
 OArchitectApplication.prototype.init = function () {
@@ -65,15 +73,16 @@ OArchitectApplication.prototype.init = function () {
 
 OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
     var sidebar = new Sidebar(editor, this.getSidebarContainer());
-    sidebar.addAction('OClass', ADD_OCLASS_ACTION, addOClassAction);
-    sidebar.addAction('OProperty', ADD_OPROPERTY_ACTION, addOPropertyAction);
+    sidebar.addAction(OCLASS_MSG, ADD_OCLASS_ACTION, addOClassAction);
+    sidebar.addAction(OPROPERTY_MSG, ADD_OPROPERTY_ACTION, addOPropertyAction);
+    sidebar.addAction(OCLASSES_MSG, ADD_OCLASSES_ACTION, addOClassesAction);
 };
 
 OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new Toolbar(editor, this.getToolbarContainer());
-    toolbar.addAction('Save Data Model', SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
-    toolbar.addAction('Apply Changes', APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
-    toolbar.addAction('To JSON', TO_JSON_ACTION, toJsonAction);
+    toolbar.addAction(SAVE_DATA_MODEL_MSG, SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
+    toolbar.addAction(APPLY_CHANGES_MSG, APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
+    toolbar.addAction(TO_JSON_MSG, TO_JSON_ACTION, toJsonAction);
 };
 
 OArchitectApplication.prototype.configurePopupMenu = function (editor) {
@@ -99,6 +108,20 @@ OArchitectApplication.prototype.setSaveEditorConfig = function (func, xml) {
 
 OArchitectApplication.prototype.setApplyEditorChanges = function (func) {
     this.applyEditorChanges = func;
+};
+
+OArchitectApplication.prototype.setGetOClassesRequest = function (func) {
+    this.getOClassesRequest = func;
+};
+
+OArchitectApplication.prototype.requestOClasses = function (existsClasses, callback) {
+    this.callback = callback;
+    this.getOClassesRequest(existsClasses);
+};
+
+OArchitectApplication.prototype.executeCallback = function (json) {
+    this.callback(json);
+    this.callback = null;
 };
 
 OArchitectApplication.prototype.applyXmlConfig = function (xml) {

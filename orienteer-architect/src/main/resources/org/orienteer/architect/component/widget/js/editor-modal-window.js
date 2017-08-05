@@ -2,8 +2,8 @@
 var modalWindowCounter = 0;
 
 var SchemeEditorModalWindow = function (value, containerId) {
-    this.CANCEL = 'CANCEL';
-    this.OK     = 'OK';
+    this.CANCEL = 'CANCEL_MSG';
+    this.OK     = 'OK_MSG';
 
     this.value = value;
     this.containerId = containerId;
@@ -96,21 +96,21 @@ OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) 
 
 OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select) {
     var valueBlock = this.createValueBlock();
-    valueBlock.appendChild(this.createLabel(NAME + ':'));
+    valueBlock.appendChild(this.createLabel(NAME_MSG + ':'));
     valueBlock.appendChild(input);
-    valueBlock.appendChild(this.createLabel(TYPE + ':'));
+    valueBlock.appendChild(this.createLabel(TYPE_MSG + ':'));
     valueBlock.appendChild(select);
     body.appendChild(valueBlock);
 };
 
-OPropertyEditModalWindow.prototype.addHeadBlock = function (head) {
-    head.innerHTML = CREATE_OPROPERTY_MSG;
+OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
+    head.innerHTML = create ? CREATE_OPROPERTY_MSG : EDIT_OPROPERTY_MSG;
 };
 
 OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, select) {
     var buttonBlock = this.createButtonBlock();
-    var okBut = this.createOkButton(OK, input, select);
-    var cancelBut = this.createCancelButton(CANCEL);
+    var okBut = this.createOkButton(OK_MSG, input, select);
+    var cancelBut = this.createCancelButton(CANCEL_MSG);
     buttonBlock.appendChild(cancelBut);
     buttonBlock.appendChild(okBut);
     body.appendChild(buttonBlock);
@@ -154,7 +154,7 @@ OPropertyEditModalWindow.prototype.createNameInput = function (createNewOPropert
 };
 
 OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, typeSelect) {
-    var button = this.newButton(label, BUTTON_PRIMARY);
+    var button = this.newButton(label, BUTTON_PRIMARY_CLASS);
     var modal = this;
     button.addEventListener('click', function () {
         if (nameField.value.length > 0) {
@@ -170,7 +170,7 @@ OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, 
 };
 
 OPropertyEditModalWindow.prototype.createCancelButton = function (label) {
-    var button = this.newButton(label, BUTTON_DANGER);
+    var button = this.newButton(label, BUTTON_DANGER_CLASS);
     var modal = this;
     button.addEventListener('click', function () {
         modal.destroy(modal.CANCEL);
@@ -188,20 +188,34 @@ OPropertyEditModalWindow.prototype.createLabel = function (label) {
 };
 
 
-var createInfoModalWindow = function (msg, containerId) {
-    var modal = new SchemeEditorModalWindow(msg, containerId);
-    modal.createContent = function (panel, head, body) {
-        var content = document.createElement('div');
-        content.style.marginBottom = '5px';
-        content.innerHTML = this.value;
-        var ok = this.newButton('OK', BUTTON_PRIMARY);
-        ok.addEventListener('click', function () {
-           modal.destroy(modal.OK);
-        });
-        ok.style.float = 'right';
-        head.innerHTML = INFO_MSG;
-        body.appendChild(content);
-        body.appendChild(ok);
-    };
-    return modal;
+var InfoModalWindow = function (msg, containerId) {
+    SchemeEditorModalWindow.apply(this, arguments);
+};
+
+InfoModalWindow.prototype = Object.create(SchemeEditorModalWindow.prototype);
+InfoModalWindow.prototype.constructor = InfoModalWindow;
+
+InfoModalWindow.prototype.createContent = function (panel, head, body) {
+    head.innerHTML = INFO_MSG;
+    body.appendChild(this.createMsgContent());
+    body.appendChild(this.createOkButton());
+};
+
+InfoModalWindow.prototype.createMsgContent = function () {
+    var content = document.createElement('div');
+    content.style.margin = '10px';
+    content.innerHTML = this.value;
+    return content;
+};
+
+InfoModalWindow.prototype.createOkButton = function () {
+    var ok = this.newButton(OK_MSG, BUTTON_PRIMARY_CLASS);
+    var modal = this;
+    ok.addEventListener('click', function () {
+        modal.destroy(modal.OK);
+    });
+    ok.style.float = 'right';
+    ok.style.marginRight = '10px';
+    ok.style.marginBottom = '10px';
+    return ok;
 };

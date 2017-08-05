@@ -99,7 +99,6 @@ Sidebar.prototype.makeDraggable = function (element, actionName) {
 };
 
 Sidebar.prototype.getDropTarget = function (actionName) {
-    var bar = this;
     return function (graph, x, y) {
         if (actionName === ADD_OCLASS_ACTION) {
             return null;
@@ -109,6 +108,9 @@ Sidebar.prototype.getDropTarget = function (actionName) {
                 return cell;
             var parent = graph.getModel().getParent(cell);
             return graph.isSwimlane(parent) ? parent : null;
+        } else if (actionName === ADD_OCLASSES_ACTION) {
+            var cell = graph.getCellAt(x, y);
+            return cell === null;
         }
     };
 };
@@ -124,11 +126,13 @@ Sidebar.prototype.createElement = function (label, action) {
 Sidebar.prototype.getIconElementForAction = function (action) {
     var icon = document.createElement('i');
     if (action === ADD_OCLASS_ACTION) {
-        icon.setAttribute('class', FA_FILE_O);
+        icon.setAttribute('class', FA_FILE_O_CLASS);
     } else if (action === ADD_OPROPERTY_ACTION) {
-        icon.setAttribute('class', FA_ALIGN_JUSTIFY);
+        icon.setAttribute('class', FA_ALIGN_JUSTIFY_CLASS);
+    } else if (action === ADD_OCLASSES_ACTION) {
+        icon.setAttribute('class', FA_DATABASE_CLASS);
     }
-    icon.classList.add(FA_2X);
+    icon.classList.add(FA_2X_CLASS);
     icon.style.margin = '5px';
     icon.style.display = 'block';
     return icon;

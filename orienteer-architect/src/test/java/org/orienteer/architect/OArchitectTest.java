@@ -1,6 +1,8 @@
 package org.orienteer.architect;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.junit.Test;
 import org.orienteer.architect.util.JsonUtil;
 import org.orienteer.architect.util.OArchitectOClass;
@@ -14,18 +16,13 @@ import static org.junit.Assert.assertNotNull;
 public class OArchitectTest {
 
     @Test
-    public void testJsonParse() {
-        String json = "[{\"name\":\"Worker\"," +
-                            "\"properties\":[" +
-                                "{\"oClassName\":\"MyClass\",\"name\":\"name\",\"type\":\"STRING\"}," +
-                                "{\"oClassName\":\"MyClass\",\"name\":\"id\",\"type\":\"INTEGER\"}" +
-                                "]," +
-                             "\"superClasses\":[]}," +
-                        "{\"name\":\"Admin\"," +
-                            "\"properties\":[" +
-                                "{\"oClassName\":\"Admin\",\"name\":\"permission\",\"type\":\"INTEGER\"}]," +
-                            "\"superClasses\":[\"Worker\"]}]";
-        List<OArchitectOClass> classes = JsonUtil.convertFromJSON(json);
+    public void testJSON() {
+        String json = createJSON();
+        parseJSON(json);
+    }
+
+    public void parseJSON(String json) {
+        List<OArchitectOClass> classes = JsonUtil.fromJSON(json);
         for (OArchitectOClass oClass : classes) {
             assertNotNull(oClass);
             assertFalse(Strings.isNullOrEmpty(oClass.getName()));
@@ -36,6 +33,12 @@ public class OArchitectTest {
                 testOClassSuperClasses(oClass.getSuperClasses());
             }
         }
+    }
+
+    public String createJSON() {
+        List<OArchitectOClass> classes = createClasses();
+        String json = JsonUtil.toJSON(classes);
+        return json;
     }
 
     private void testOClassProperties(List<OArchitectOProperty> properties) {
@@ -49,5 +52,35 @@ public class OArchitectTest {
         for (String superClass : superClasses) {
             assertFalse(Strings.isNullOrEmpty(superClass));
         }
+    }
+
+    private List<OArchitectOClass> createClasses() {
+        List<OArchitectOClass> classes = Lists.newArrayList();
+        List<OArchitectOProperty> properties = Lists.newArrayList();
+        List<String> superClasses = Lists.newArrayList();
+        OArchitectOClass oClass = new OArchitectOClass("Test");
+
+        properties.add(new OArchitectOProperty("id", OType.INTEGER));
+        properties.add(new OArchitectOProperty("name", OType.STRING));
+        superClasses.add("Test2");
+        superClasses.add("Test3");
+        oClass.setProperties(properties);
+        oClass.setSuperClasses(superClasses);
+        classes.add(oClass);
+
+        superClasses = Lists.newArrayList();
+        properties = Lists.newArrayList();
+
+        oClass = new OArchitectOClass("Worker");
+        properties.add(new OArchitectOProperty("id", OType.INTEGER));
+        properties.add(new OArchitectOProperty("name", OType.STRING));
+        properties.add(new OArchitectOProperty("country", OType.STRING));
+        superClasses.add("Human");
+        superClasses.add("User");
+        oClass.setProperties(properties);
+        oClass.setSuperClasses(superClasses);
+        classes.add(oClass);
+
+        return classes;
     }
 }

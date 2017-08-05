@@ -4,32 +4,8 @@ var addOClassAction = function (editor, cell, evt) {
     var action = function () {
         editor.graph.stopEditing(false);
         var pt = editor.graph.getPointForEvent(evt);
-        var vertex = editor.graph.getModel().cloneCell(createVertex());
-        vertex.geometry.x = pt.x;
-        vertex.geometry.y = pt.y;
+        var vertex = createOClassVertex(new OClass(DEFAULT_OCLASS_NAME), pt.x, pt.y);
         editor.graph.setSelectionCells(editor.graph.importCells([vertex], 0, 0, cell));
-    };
-
-    var createVertex = function () {
-        var vertex = new mxCell(getValue(), new mxGeometry(0, 0, getWidth(), getHeight()), getStyle());
-        vertex.setVertex(true);
-        return vertex;
-    };
-
-    var getValue = function () {
-        return new OClass('MyClass');
-    };
-
-    var getStyle = function () {
-        return OCLASS_EDITOR_STYLE;
-    };
-
-    var getWidth = function () {
-        return OCLASS_WIDTH;
-    };
-
-    var getHeight = function () {
-        return OCLASS_HEIGHT;
     };
 
     action();
@@ -62,7 +38,7 @@ var addOPropertyAction = function (editor, cell, evt) {
             };
             modal.show(pt.x, pt.y);
         } else {
-            var infoModal = createInfoModalWindow(OPROPERT_ADD_ERR, app.editorId);
+            var infoModal = new InfoModalWindow(OPROPERT_ADD_ERR_MSG, app.editorId);
             infoModal.show(pt.x, pt.y);
         }
     };
@@ -75,14 +51,6 @@ var addOPropertyAction = function (editor, cell, evt) {
         return mouseY - graph.getView().getState(cell).y;
     };
 
-    var createOPropertyVertex = function (property) {
-        var vertex = new mxCell(property,
-            new mxGeometry(0, 0, 0, OPROPERTY_HEIGHT), OPROPERTY_EDITOR_STYLE);
-        vertex.setVertex(true);
-        vertex.setConnectable(false);
-        return vertex;
-    };
-
     var getParent = function (graph, cell) {
         if (cell.value instanceof OClass)
             return cell;
@@ -90,6 +58,68 @@ var addOPropertyAction = function (editor, cell, evt) {
     };
 
     action();
+};
+
+var addOClassesAction = function (editor, cell, evt) {
+    var graph = editor.graph;
+    var pt = graph.getPointForEvent(evt);
+
+    var action = function (json) {
+        var classes = toOClasses(json);
+        if (classes.length > 0) {
+            const START_X = pt.x;
+            const START_Y = pt.y;
+            var x = START_X;
+            var counterX = 1;
+            forEach(classes, function (oClass) {
+                var classCell = addOClassToGraph(oClass, x, START_Y);
+                connectOClass(classCell, getOClassSuperClassesCells(graph, classCell.value), connectToSuperClasses);
+                connectOClass(classCell, getOClassSubClassesCells(graph, classCell.value), connectToSubClasses);
+                x = counterX % 3 !== 0 ? x + OCLASS_WIDTH + 10 : START_X;
+                counterX++;
+            });
+        }
+    };
+
+    var addOClassToGraph = function(oClass, x, y) {
+        var classVertex = createOClassVertex(oClass, x, y);
+        graph.getModel().beginUpdate();
+        try {
+            graph.addCell(classVertex, graph.getDefaultParent());
+            var properties = oClass.properties;
+            if (properties !== null && properties.length > 0) {
+                forEach(properties, function (property) {
+                    graph.addCell(createOPropertyVertex(property), classVertex);
+                  });
+            }
+        } finally {
+            graph.getModel().endUpdate();
+        }
+        return classVertex;
+    };
+
+    var connectOClass = function (classCell, cells, func) {
+        if (cells.length > 0) {
+            graph.getModel().beginUpdate();
+            try {
+                forEach(cells, function (cell) {
+                   func(classCell, cell);
+                });
+            } finally {
+                graph.getModel().endUpdate();
+            }
+        }
+    };
+
+    var connectToSuperClasses = function (classCell, superClassCell) {
+        graph.insertEdge(graph.getDefaultParent(), null, '', classCell, superClassCell);
+    };
+
+    var connectToSubClasses = function (classCell, subClassCell) {
+        graph.insertEdge(graph.getDefaultParent(), null, '', subClassCell, classCell);
+    };
+
+    app.requestOClasses(getOClassesAsJSON(editor.graph), action);
 };
 
 var editOPropertyAction = function (editor, cell, evt) {
@@ -117,68 +147,15 @@ var editOPropertyAction = function (editor, cell, evt) {
 };
 
 var saveEditorConfigAction = function (editor) {
-    app.saveEditorConfig(mxUtils.getXml(getEditorXmlNode(editor)));
+    app.saveEditorConfig(mxUtils.getXml(getEditorXmlNode(editor.graph)));
 };
 
 var applyEditorChangesAction = function (editor) {
-    const OCLASS_TAG  = 'OClass';
-    const PARENT_ATTR = 'parent';
-    var node = getEditorXmlNode(editor);
-    var classesXml = node.getElementsByTagName(OCLASS_TAG);
-    var withParents = [];
-    var withoutParents = [];
-    var codec = new mxCodec();
-
-    forEach(classesXml, function (classNode) {
-        var child = false;
-        if (classNode.getAttribute(PARENT_ATTR)) {
-            child = true;
-        }
-        var oClass = codec.decode(classNode);
-        if (child) withParents.push(JSON.stringify(oClass));
-        else withoutParents.push(JSON.stringify(oClass));
-    });
-
     saveEditorConfigAction.apply(this, arguments);
-    app.applyEditorChanges('[' + withoutParents.concat(withParents).join(',') + ']');
-
-    function forEach(arr, func) {
-        for (var i = 0; i < arr.length; i++) {
-            func(arr[i]);
-        }
-    }
-};
-
-var getEditorXmlNode = function (editor) {
-    var encoder = new mxCodec();
-    return encoder.encode(editor.graph.getModel());
+    app.applyEditorChanges(getOClassesAsJSON(editor.graph));
 };
 
 //TODO: delete after development
 var toJsonAction = function (editor) {
-    const OCLASS_TAG  = 'OClass';
-    const PARENT_ATTR = 'parent';
-    var node = getEditorXmlNode(editor);
-    var classesXml = node.getElementsByTagName(OCLASS_TAG);
-    var withParents = [];
-    var withoutParents = [];
-    var codec = new mxCodec();
-
-    forEach(classesXml, function (classNode) {
-        var child = false;
-        if (classNode.getAttribute(PARENT_ATTR)) {
-            child = true;
-        }
-        var oClass = codec.decode(classNode);
-        if (child) withParents.push(JSON.stringify(oClass));
-        else withoutParents.push(JSON.stringify(oClass));
-    });
-
-    console.log('JSON: ' + '[' + withoutParents.concat(withParents).join(',') + ']');
-
-    function forEach(arr, func) {
-        for (var i = 0; i < arr.length; i++) {
-            func(arr[i]);
-        }
-    }
+    console.log('OClasses in JSON: ' + getOClassesAsJSON(editor.graph));
 };
