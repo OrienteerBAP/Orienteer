@@ -38,7 +38,7 @@ var addOPropertyAction = function (editor, cell, evt) {
             };
             modal.show(pt.x, pt.y);
         } else {
-            var infoModal = new InfoModalWindow(OPROPERT_ADD_ERR_MSG, app.editorId);
+            var infoModal = new InfoModalWindow(localizer.addOPropertyError, app.editorId);
             infoModal.show(pt.x, pt.y);
         }
     };
@@ -60,7 +60,7 @@ var addOPropertyAction = function (editor, cell, evt) {
     action();
 };
 
-var addOClassesAction = function (editor, cell, evt) {
+var addExistsOClassesAction = function (editor, cell, evt) {
     var graph = editor.graph;
     var pt = graph.getPointForEvent(evt);
 

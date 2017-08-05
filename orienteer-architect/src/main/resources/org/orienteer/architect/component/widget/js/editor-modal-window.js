@@ -2,8 +2,8 @@
 var modalWindowCounter = 0;
 
 var SchemeEditorModalWindow = function (value, containerId) {
-    this.CANCEL = 'CANCEL_MSG';
-    this.OK     = 'OK_MSG';
+    this.CANCEL = 'CANCEL';
+    this.OK     = 'OK';
 
     this.value = value;
     this.containerId = containerId;
@@ -32,9 +32,7 @@ SchemeEditorModalWindow.prototype.destroy = function (event) {
     } else throw new Error('Can\'t destroy modal window, because it is not show!');
 };
 
-SchemeEditorModalWindow.prototype.onDestroy = function (value, event) {
-
-};
+SchemeEditorModalWindow.prototype.onDestroy = function (value, event) {};
 
 SchemeEditorModalWindow.prototype.createModalElement = function (x, y) {
     var panel = document.createElement('div');
@@ -96,21 +94,21 @@ OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) 
 
 OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select) {
     var valueBlock = this.createValueBlock();
-    valueBlock.appendChild(this.createLabel(NAME_MSG + ':'));
+    valueBlock.appendChild(this.createLabel(localizer.name + ':'));
     valueBlock.appendChild(input);
-    valueBlock.appendChild(this.createLabel(TYPE_MSG + ':'));
+    valueBlock.appendChild(this.createLabel(localizer.type + ':'));
     valueBlock.appendChild(select);
     body.appendChild(valueBlock);
 };
 
 OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
-    head.innerHTML = create ? CREATE_OPROPERTY_MSG : EDIT_OPROPERTY_MSG;
+    head.innerHTML = create ? localizer.createProperty : localizer.editProperty;
 };
 
 OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, select) {
     var buttonBlock = this.createButtonBlock();
-    var okBut = this.createOkButton(OK_MSG, input, select);
-    var cancelBut = this.createCancelButton(CANCEL_MSG);
+    var okBut = this.createOkButton(localizer.ok, input, select);
+    var cancelBut = this.createCancelButton(localizer.cancel);
     buttonBlock.appendChild(cancelBut);
     buttonBlock.appendChild(okBut);
     body.appendChild(buttonBlock);
@@ -209,7 +207,7 @@ InfoModalWindow.prototype.createMsgContent = function () {
 };
 
 InfoModalWindow.prototype.createOkButton = function () {
-    var ok = this.newButton(OK_MSG, BUTTON_PRIMARY_CLASS);
+    var ok = this.newButton(localizer.ok, BUTTON_PRIMARY_CLASS);
     var modal = this;
     ok.addEventListener('click', function () {
         modal.destroy(modal.OK);

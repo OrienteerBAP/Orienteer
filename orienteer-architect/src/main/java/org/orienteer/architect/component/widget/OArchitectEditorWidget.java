@@ -90,7 +90,12 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-modal-window.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-popup-menu.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/actions.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/constants.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util.js")));
+        String locale = getOArchitectEditorLocale();
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class,
+                String.format("js/locale/architect_%s.js", locale))));
+
         PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/architect.js");
         String configUrl = urlFor(configXml, null).toString();
         String baseUrl = configUrl.substring(0, configUrl.indexOf("js/architect"));
@@ -98,13 +103,21 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         TextTemplate configTemplate = new PackageTextTemplate(OArchitectEditorWidget.class, "config.tmpl.xml");
         Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
         String config = configTemplate.asString(params);
-        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, '%s', '%s', '%s', '%s');",
+        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s');",
 											        		baseUrl,
 											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
+											                locale,
 											                container.getMarkupId(),
 											                editor.getMarkupId(),
 											                sidebar.getMarkupId(),
 											                toolbar.getMarkupId())));
+    }
+
+    private String getOArchitectEditorLocale() {
+        String locale = getLocale().getLanguage();
+        if (locale.equals("en") || locale.equals("ru") || locale.equals("uk"))
+            return locale;
+        return "en";
     }
 
     @Override
