@@ -26,8 +26,11 @@ import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 public class OClassesWidget extends AbstractOClassesListWidget<Void> {
 	
 	private IModel<Boolean> showAllClassesModel;
-	
-	private static class FilterClassesPredicate implements Predicate<OClass>, IClusterable {
+
+	/**
+	 * {@link Predicate} for classes filter
+	 */
+	public static class FilterClassesPredicate implements Predicate<OClass>, IClusterable {
 
 		public final IModel<Boolean> showAllClassesModel;
 		
