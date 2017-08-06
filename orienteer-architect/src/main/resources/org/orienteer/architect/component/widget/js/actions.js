@@ -71,16 +71,14 @@ var addExistsOClassesAction = function (editor, cell, evt) {
     var pt = graph.getPointForEvent(evt);
 
     var action = function (json) {
-        var classes = toOClasses(json);
+        var classes = fromJsonToOClasses(json);
         if (classes.length > 0) {
             const START_X = pt.x;
             const START_Y = pt.y;
             var x = START_X;
             var counterX = 1;
             forEach(classes, function (oClass) {
-                var classCell = addOClassToGraph(oClass, x, START_Y);
-                connectOClass(classCell, getOClassSuperClassesCells(graph, classCell.value), connectToSuperClasses);
-                connectOClass(classCell, getOClassSubClassesCells(graph, classCell.value), connectToSubClasses);
+                addOClassToGraph(oClass, x, START_Y);
                 x = counterX % 3 !== 0 ? x + OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
@@ -88,20 +86,46 @@ var addExistsOClassesAction = function (editor, cell, evt) {
     };
 
     var addOClassToGraph = function(oClass, x, y) {
-        var classVertex = createOClassVertex(oClass, x, y);
+        var classCell = createOClassVertex(oClass, x, y);
+        var superClassesCells = getOClassSuperClassesCells(graph, oClass);
+        var subClassesCells = getOClassSubClassesCells(graph, oClass);
+        configSuperClassesProperties(oClass, fromCellsToOClasses(superClassesCells));
+        configSubClassesProperties(oClass, fromCellsToOClasses(subClassesCells));
         graph.getModel().beginUpdate();
         try {
-            graph.addCell(classVertex, graph.getDefaultParent());
+            graph.addCell(classCell, graph.getDefaultParent());
             var properties = oClass.properties;
             if (properties !== null && properties.length > 0) {
                 forEach(properties, function (property) {
-                    graph.addCell(createOPropertyVertex(property), classVertex);
-                  });
+                    graph.addCell(createOPropertyVertex(property), classCell);
+                });
             }
+            connectOClass(classCell, superClassesCells, connectToSuperClasses);
+            connectOClass(classCell, subClassesCells, connectToSubClasses);
         } finally {
             graph.getModel().endUpdate();
         }
-        return classVertex;
+        return classCell;
+    };
+
+    var configSubClassesProperties = function (oClass, subClasses) {
+        forEach(subClasses, function (subClass) {
+             forEach(subClass.properties, function (property) {
+                 if (oClass.containsProperty(property)) {
+                     property.subClassProperty = true;
+                 }
+             });
+        });
+    };
+
+    var configSuperClassesProperties = function (oClass, superClasses) {
+        forEach(superClasses, function (superClass) {
+            forEach(oClass.properties, function (property) {
+                if (superClass.containsProperty(property)) {
+                    property.subClassProperty = true;
+                }
+            });
+        });
     };
 
     var connectOClass = function (classCell, cells, func) {
@@ -160,7 +184,7 @@ var deleteOPropertyAction = function (editor, cell) {
             var oClassCell = searchOClassCell(graph, cell);
             var oClass = oClassCell.value;
             var property = cell.value;
-            oClass.deleteProperty(property);
+            oClass.removeProperty(property);
             graph.getModel().beginUpdate();
             try {
                 graph.removeCells([cell]);

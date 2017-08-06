@@ -39,6 +39,7 @@ const OType = {
 var OClass = function(name) {
     this.name = name;
     this.properties = [];
+    this.propertiesForDelete = [];
     this.superClasses = [];
 };
 
@@ -61,15 +62,21 @@ OClass.prototype.config = function (source) {
 };
 
 OClass.prototype.addOProperty = function (oProperty) {
-    if (this.properties.indexOf(oProperty) === -1) {
+    if (!this.containsProperty(oProperty)) {
         this.properties.push(oProperty);
+        var delIndex = this.propertiesForDelete.indexOf(oProperty);
+        if (delIndex > -1) {
+            this.propertiesForDelete.splice(delIndex, 1);
+        }
     }
 };
 
-OClass.prototype.deleteProperty = function (oProperty) {
-    var index = this.properties.indexOf(oProperty);
+OClass.prototype.removeProperty = function (oProperty) {
+    var index = this.getPropertyIndex(oProperty);
     if (index > -1) {
         this.properties.splice(index, 1);
+        index = this.propertiesForDelete.indexOf(oProperty);
+        if (index === -1) this.propertiesForDelete.push(oProperty);
     }
 };
 
@@ -86,6 +93,25 @@ OClass.prototype.deleteSuperClass = function (superClass) {
     }
 };
 
+OClass.prototype.containsProperty = function (property) {
+    var contains = this.getPropertyIndex(property) > -1;
+    console.log(property + ' contains: ' + contains);
+    return contains;
+};
+
+OClass.prototype.getPropertyIndex = function (property) {
+    var index = -1;
+    if (property !== null && property.name !== null && property.type !== null) {
+        var properties = this.properties;
+        for(var i = 0; i < properties.length; i++) {
+            if (properties[i].name === property.name && properties[i].type === property.type) {
+                index = i;
+            }
+        }
+    }
+    return index;
+};
+
 OClass.prototype.toString = function () {
     return this.name;
 };
@@ -98,6 +124,7 @@ var OProperty = function (oClassName, name, type) {
     this.name = name;
     this.type = type;
     this.oClassName = oClassName;
+    this.subClassProperty = false;
 };
 
 OProperty.prototype.config = function (source) {
@@ -117,6 +144,10 @@ OProperty.prototype.setName = function (name) {
 
 OProperty.prototype.setOClassName = function (oClassName) {
     this.oClassName = oClassName;
+};
+
+OProperty.prototype.isSubClassProperty = function () {
+    return this.subClassProperty;
 };
 
 OProperty.prototype.toString = function () {

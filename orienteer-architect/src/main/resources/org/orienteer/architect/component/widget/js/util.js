@@ -81,7 +81,18 @@ var getOClassSubClassesCells = function (graph, superClass) {
     return subClassesCells;
 };
 
-var toOClasses = function (json) {
+var fromCellsToOClasses = function (cells) {
+    var classes = [];
+    if (cells !== null && cells.length > 0) {
+        forEach(cells, function (cell) {
+            if (cell.value instanceof OClass)
+                classes.push(cell.value);
+        });
+    }
+    return classes;
+};
+
+var fromJsonToOClasses = function (json) {
     var classes = [];
     var jsonClasses = JSON.parse(json);
     if (jsonClasses !== null && jsonClasses.length > 0) {
@@ -105,11 +116,13 @@ var searchOClassCell = function (graph, cell) {
 
 
 var forEach = function (arr, func) {
-    var trigger = {
-        stop: false
-    };
-    for (var i = 0; i < arr.length; i++) {
-        func(arr[i], trigger);
-        if (trigger.stop) break;
+    if (arr !== null && arr.length > 0 && func !== null) {
+        var trigger = {
+            stop: false
+        };
+        for (var i = 0; i < arr.length; i++) {
+            func(arr[i], trigger);
+            if (trigger.stop) break;
+        }
     }
 };

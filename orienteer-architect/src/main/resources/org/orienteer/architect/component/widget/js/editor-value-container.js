@@ -42,29 +42,31 @@ OPropertyContainer.prototype = Object.create(OArchitectDefaultContainer.prototyp
 OPropertyContainer.prototype.constructor = OPropertyContainer;
 
 OPropertyContainer.prototype.createElement = function (maxLength) {
-    var editProperty = this.createEditOPropertyElement();
-    var deleteProperty = this.createDeleteOPropertyElement();
+    var editProperty = !this.value.isSubClassProperty() ? this.createEditOPropertyElement() : null;
+    var deleteProperty = !this.value.isSubClassProperty() ? this.createDeleteOPropertyElement() : null;
     var label = this.createLabel(maxLength);
     return this.createContainer(label, editProperty, deleteProperty);
 };
 
 OPropertyContainer.prototype.createContainer = function (label, editProperty, deleteProperty) {
     var container = document.createElement('div');
-    container.addEventListener('mouseover', function () {
-        editProperty.style.visibility = 'visible';
-        editProperty.style.cursor = 'pointer';
-        deleteProperty.style.visibility = 'visible';
-        deleteProperty.style.cursor = 'pointer';
-    });
-    container.addEventListener('mouseout', function () {
-        editProperty.style.visibility = 'hidden';
-        editProperty.style.cursor = 'default';
-        deleteProperty.style.visibility = 'hidden';
-        deleteProperty.style.cursor = 'default';
-    });
-    container.appendChild(deleteProperty);
+    if (editProperty !== null && deleteProperty !== null) {
+        container.addEventListener('mouseover', function () {
+            editProperty.style.visibility = 'visible';
+            editProperty.style.cursor = 'pointer';
+            deleteProperty.style.visibility = 'visible';
+            deleteProperty.style.cursor = 'pointer';
+        });
+        container.addEventListener('mouseout', function () {
+            editProperty.style.visibility = 'hidden';
+            editProperty.style.cursor = 'default';
+            deleteProperty.style.visibility = 'hidden';
+            deleteProperty.style.cursor = 'default';
+        });
+    }
+    if (deleteProperty !== null) container.appendChild(deleteProperty);
     container.appendChild(label);
-    container.appendChild(editProperty);
+    if (editProperty !== null) container.appendChild(editProperty);
     return container;
 };
 

@@ -175,8 +175,6 @@ OArchitectEditor.prototype.createCellConnectedBehavior = function () {
             var sourceClass = properties.edge.source.value;
             var targetClass = properties.edge.target.value;
             sourceClass.addSuperClass(targetClass.name);
-            console.log('source: ' + sourceClass);
-            console.log('target: ' + targetClass);
         }
     }
 };

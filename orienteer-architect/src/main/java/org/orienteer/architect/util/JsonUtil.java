@@ -14,10 +14,11 @@ import java.util.List;
  */
 public abstract class JsonUtil implements IClusterable {
 
-    public static final String NAME          = "name";
-    public static final String SUPER_CLASSES = "superClasses";
-    public static final String PROPERTIES    = "properties";
-    public static final String TYPE          = "type";
+    public static final String NAME                  = "name";
+    public static final String SUPER_CLASSES         = "superClasses";
+    public static final String PROPERTIES            = "properties";
+    public static final String PROPERTIES_FOR_DELETE = "propertiesForDelete";
+    public static final String TYPE                  = "type";
 
     private JsonUtil() {}
 
@@ -54,6 +55,7 @@ public abstract class JsonUtil implements IClusterable {
         OArchitectOClass oClass = new OArchitectOClass(jsonObject.getString(NAME));
         oClass.setSuperClasses(getStringListFromJson(jsonObject.getJSONArray(SUPER_CLASSES)));
         oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));
+        oClass.setPropertiesForDelete(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES_FOR_DELETE)));
         return oClass;
     }
 

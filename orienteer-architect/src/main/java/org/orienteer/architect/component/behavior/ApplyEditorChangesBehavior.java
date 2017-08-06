@@ -50,6 +50,7 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         for (OArchitectOClass oArchitectOClass : classes) {
             String name = oArchitectOClass.getName();
             OClass oClass = schema.getOrCreateClass(name);
+            removePropertiesFromOClass(oClass, oArchitectOClass.getPropertiesForDelete());
             addSuperClassesToOClass(schema, oClass, oArchitectOClass.getSuperClasses());
             addPropertiesToOClass(oClass, oArchitectOClass.getProperties());
         }
@@ -66,6 +67,15 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
                 }
             }
             oClass.setSuperClasses(superClasses);
+        }
+    }
+
+    private void removePropertiesFromOClass(OClass oClass, List<OArchitectOProperty> propertiesForDelete) {
+        for (OArchitectOProperty property : propertiesForDelete) {
+            OProperty oProperty = oClass.getProperty(property.getName());
+            if (oProperty != null) {
+                oClass.dropProperty(oProperty.getName());
+            }
         }
     }
 
