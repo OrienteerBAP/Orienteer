@@ -61,8 +61,6 @@ public abstract class AbstractOClassesListWidget<T> extends AbstractWidget<T> {
                     public PageParameters getPageParameters() {
                         return BrowseOClassPage.preparePageParameters(rowModel.getObject(), DisplayMode.VIEW);
                     }
-
-                    ;
                 }.setIcon(FAIconType.angle_double_down).setBootstrapType(BootstrapType.INFO));
             }
         });

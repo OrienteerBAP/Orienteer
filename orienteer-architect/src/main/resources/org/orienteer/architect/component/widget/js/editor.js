@@ -6,7 +6,6 @@ var SchemeEditor = function(container) {
     this.container = container;
 
     this.configureGraph();
-    this.configureDefaultActions();
     this.configureLayouts();
 };
 
@@ -34,19 +33,6 @@ SchemeEditor.prototype.createOClassStyle = function () {
 
 SchemeEditor.prototype.createOPropertyStyle = function () {
     var style = {};
-    // style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
-    // style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
-    // style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
-    // style[mxConstants.STYLE_VERTICAL_ALIGN] = mxConstants.ALIGN_TOP;
-    // style[mxConstants.STYLE_GRADIENTCOLOR] = '#41B9F5';
-    // style[mxConstants.STYLE_FILLCOLOR] = '#8CCDF5';
-    // // style[mxConstants.STYLE_SWIMLANE_FILLCOLOR] = '#ffffff';
-    // style[mxConstants.STYLE_FONTCOLOR] = '#000000';
-
-    // // style[mxConstants.STYLE_STARTSIZE] = '28';
-    // style[mxConstants.STYLE_VERTICAL_ALIGN] = 'middle';
-    // style[mxConstants.STYLE_FONTSIZE] = '12';
-    // style[mxConstants.STYLE_FONTSTYLE] = 1;
     style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
     style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
     style[mxConstants.STYLE_ALIGN] = mxConstants.ALIGN_CENTER;
@@ -64,8 +50,6 @@ SchemeEditor.prototype.createEdgeStyle = function () {
     var style = this.graph.stylesheet.getDefaultEdgeStyle();
     style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
     style[mxConstants.STYLE_STROKEWIDTH] = '2';
-    // style[mxConstants.STYLE_ROUNDED] = true;
-    // style[mxConstants.STYLE_EDGE] = mxEdgeStyle.EntityRelation;
     return style;
 };
 
@@ -86,17 +70,16 @@ SchemeEditor.prototype.configureGraph = function () {
     mxConnectionHandler.prototype.connectImage = new mxImage(app.basePath+CONNECTOR_IMG_PATH, 16, 16);
     this.setGraphContainer(this.container);
     this.graph.setConnectable(true);
-    this.graph.setMultigraph(false);
     this.graph.setCellsDisconnectable(false);
     this.graph.setCellsCloneable(false);
     this.graph.setSwimlaneNesting(false);
     this.graph.setDropEnabled(true);
-    this.graph.setHtmlLabels(true);
     this.graph.setAllowDanglingEdges(false);
     this.graph.connectionHandler.factoryMethod = null;
-
+    this.graph.setPanning(true);
     this.configureGraphStyle();
     this.configureGraphBehavior();
+    this.configureGraphLabels();
 };
 
 SchemeEditor.prototype.configureGraphBehavior = function () {
@@ -108,9 +91,12 @@ SchemeEditor.prototype.configureGraphBehavior = function () {
         return this.isSwimlane(cell);
     };
     this.graph.isCellEditable = function (cell) {
-        return cell.value instanceof OClass;
+        return this.isSwimlane(cell);
     };
     this.graph.isValidDropTarget = function(cell) {
+        return this.isSwimlane(cell);
+    };
+    this.graph.isCellSelectable = function (cell) {
         return this.isSwimlane(cell);
     };
 
@@ -118,6 +104,34 @@ SchemeEditor.prototype.configureGraphBehavior = function () {
     this.graph.cellLabelChanged = this.createCellLabelChangedBehavior();
     this.graph.addListener(mxEvent.CELL_CONNECTED, this.createCellConnectedBehavior());
     this.graph.addListener(mxEvent.CELLS_REMOVED, this.createCellRemovedBehavior());
+};
+
+SchemeEditor.prototype.configureGraphLabels = function () {
+    this.graph.setHtmlLabels(true);
+    this.graph.getLabel = function (cell) {
+        var label = mxGraph.prototype.getLabel.apply(this, arguments);
+        if (this.model.isVertex(cell)) {
+            var max = parseInt(this.getCellGeometry(cell).width / 8);
+            if (cell.value instanceof OClass) {
+                var oClassName = cell.value.name;
+                var length = oClassName.length;
+                if (length > max) {
+                    oClassName = oClassName.slice(0, max - 3) + '...';
+                }
+                label = mxUtils.htmlEntities(oClassName);
+            } else if (cell.value instanceof OProperty) {
+                var type = cell.value.type;
+                var name = cell.value.name;
+                var typeLength = type.length;
+                var nameLength = name.length;
+                if (typeLength + nameLength > max) {
+                    name = name.slice(0, max - typeLength - 3) + '...';
+                }
+                label = mxUtils.htmlEntities(name, false) + ' (' + mxUtils.htmlEntities(type, false) + ')';
+            }
+        }
+        return label;
+    };
 };
 
 SchemeEditor.prototype.configureLayouts = function () {
@@ -200,166 +214,6 @@ SchemeEditor.prototype.configureGraphStyle = function() {
     stylesheet.putCellStyle(OPROPERTY_EDITOR_STYLE, this.createOPropertyStyle(graph));
 };
 
-SchemeEditor.prototype.configureDefaultActions = function () {
-    this.addAction(ADD_OPROPERTY_ACTION, addOPropertyAction);
-};
-
 SchemeEditor.prototype.clone = function() {
     return mxUtils.clone(this);
-};
-
-var addOClassAction = function (editor, cell, evt) {
-
-    var action = function () {
-        editor.graph.stopEditing(false);
-        var pt = editor.graph.getPointForEvent(evt);
-        var vertex = editor.graph.getModel().cloneCell(createVertex());
-        vertex.geometry.x = pt.x;
-        vertex.geometry.y = pt.y;
-        editor.graph.setSelectionCells(editor.graph.importCells([vertex], 0, 0, cell));
-    };
-
-    var createVertex = function () {
-        var vertex = new mxCell(getValue(), new mxGeometry(0, 0, getWidth(), getHeight()), getStyle());
-        vertex.setVertex(true);
-        return vertex;
-    };
-
-    var getValue = function () {
-        return new OClass('MyClass');
-    };
-
-    var getStyle = function () {
-        return OCLASS_EDITOR_STYLE;
-    };
-
-    var getWidth = function () {
-        return OCLASS_WIDTH;
-    };
-
-    var getHeight = function () {
-        return OCLASS_HEIGHT;
-    };
-
-    action();
-};
-
-var addOPropertyAction = function (editor, cell, evt) {
-
-    var action = function () {
-        var graph = editor.graph;
-        graph.stopEditing(false);
-        var oClassCell = getParent(graph, cell);
-        var pt = graph.getPointForEvent(evt);
-        var property = new OProperty(oClassCell.value.name);
-        var modal = createOPropertyCreateModalWindow(property, app.editorId);
-        modal.onDestroy = function (property, event) {
-            if (event === this.OK) {
-                var vertex = createOPropertyVertex(property);
-                vertex.geometry.x = getOPropertyX(pt.x, graph, oClassCell);
-                vertex.geometry.y = getOPropertyY(pt.y, graph, oClassCell);
-                graph.getModel().beginUpdate();
-                try {
-                    graph.addCell(vertex, oClassCell);
-                    oClassCell.value.addOProperty(property);
-                } finally {
-                    graph.getModel().endUpdate();
-                }
-                graph.getSelectionCell(vertex);
-            }
-        };
-        modal.show(pt.x, pt.y);
-    };
-
-    var getOPropertyX = function (mouseX, graph, cell) {
-        return mouseX - graph.getView().getState(cell).x;
-    };
-
-    var getOPropertyY = function (mouseY, graph, cell) {
-        return mouseY - graph.getView().getState(cell).y;
-    };
-
-    var createOPropertyVertex = function (property) {
-        var vertex = new mxCell(property,
-            new mxGeometry(0, 0, 0, OPROPERTY_HEIGHT), OPROPERTY_EDITOR_STYLE);
-        vertex.setVertex(true);
-        vertex.setConnectable(false);
-        vertex.setAttribute();
-        return vertex;
-    };
-
-    var getParent = function (graph, cell) {
-        if (cell.value instanceof OClass)
-            return cell;
-        return getParent(graph, graph.getModel().getParent(cell));
-    };
-
-    action();
-};
-
-var saveEditorConfigAction = function (editor) {
-    app.saveEditorConfig(mxUtils.getXml(getEditorXmlNode(editor)));
-};
-
-var applyEditorChangesAction = function (editor) {
-    const OCLASS_TAG  = 'OClass';
-    const PARENT_ATTR = 'parent';
-    var node = getEditorXmlNode(editor);
-    var classesXml = node.getElementsByTagName(OCLASS_TAG);
-    var withParents = [];
-    var withoutParents = [];
-    var codec = new mxCodec();
-
-    forEach(classesXml, function (classNode) {
-        var child = false;
-        if (classNode.getAttribute(PARENT_ATTR)) {
-            child = true;
-        }
-        var oClass = codec.decode(classNode);
-        if (child) withParents.push(JSON.stringify(oClass));
-        else withoutParents.push(JSON.stringify(oClass));
-    });
-
-    saveEditorConfigAction.apply(this, arguments);
-    app.applyEditorChanges('[' + withoutParents.concat(withParents).join(',') + ']');
-
-    function forEach(arr, func) {
-        for (var i = 0; i < arr.length; i++) {
-            func(arr[i]);
-        }
-    }
-};
-
-var getEditorXmlNode = function (editor) {
-    var encoder = new mxCodec();
-    return encoder.encode(editor.graph.getModel());
-};
-
-//TODO: delete after development
-var toJsonAction = function (editor) {
-    const OCLASS_TAG  = 'OClass';
-    const PARENT_ATTR = 'parent';
-    var node = getEditorXmlNode(editor);
-    var classesXml = node.getElementsByTagName(OCLASS_TAG);
-    var withParents = [];
-    var withoutParents = [];
-    var codec = new mxCodec();
-
-    forEach(classesXml, function (classNode) {
-        var child = false;
-        if (classNode.getAttribute(PARENT_ATTR)) {
-            child = true;
-        }
-        var oClass = codec.decode(classNode);
-        if (child) withParents.push(JSON.stringify(oClass));
-        else withoutParents.push(JSON.stringify(oClass));
-    });
-
-    console.log('JSON: ' + '[' + withoutParents.concat(withParents).join(',') + ']');
-
-    function forEach(arr, func) {
-        for (var i = 0; i < arr.length; i++) {
-            func(arr[i]);
-        }
-    }
 };

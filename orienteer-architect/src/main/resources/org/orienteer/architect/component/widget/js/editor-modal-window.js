@@ -13,9 +13,6 @@ var SchemeEditorModalWindow = function (value, containerId) {
 
 SchemeEditorModalWindow.prototype.show = function (x, y) {
     if (!this.isShow) {
-        console.log('modal x: ' + x);
-        console.log('modal y: ' + y);
-        console.log('modal markup id: ' + this.getMarkupId());
         var id = '#' + this.containerId;
         $(id).append(this.createModalElement(x, y));
         $('#' + this.getMarkupId()).draggable({
@@ -35,9 +32,7 @@ SchemeEditorModalWindow.prototype.destroy = function (event) {
     } else throw new Error('Can\'t destroy modal window, because it is not show!');
 };
 
-SchemeEditorModalWindow.prototype.onDestroy = function (value, event) {
-
-};
+SchemeEditorModalWindow.prototype.onDestroy = function (value, event) {};
 
 SchemeEditorModalWindow.prototype.createModalElement = function (x, y) {
     var panel = document.createElement('div');
@@ -71,110 +66,154 @@ SchemeEditorModalWindow.prototype.createContent = function (panel, head, body) {
     body.innerHTML = 'No body content';
 };
 
+SchemeEditorModalWindow.prototype.newButton = function (label, typeCssClass) {
+    var but = document.createElement('a');
+    but.classList.add('btn');
+    but.classList.add(typeCssClass);
+    but.classList.add('btn-sm');
+    but.innerHTML = label;
+    return but;
+};
 
-var createOPropertyCreateModalWindow = function (property, containerId) {
-    var modal = new SchemeEditorModalWindow(property, containerId);
-    modal.createContent = function (panel, head, body) {
-        var select = newSelect();
-        var input = newInput();
-        addValueBlock(body, input, select);
-        addButtonBlock(this, body, input, select);
-        addHead(head);
-    };
 
-    var addValueBlock = function (body, input, select) {
-        var valueBlock = newValueBlock();
-        valueBlock.appendChild(newLabel(NAME + ':'));
-        valueBlock.appendChild(input);
-        valueBlock.appendChild(newLabel(TYPE + ':'));
-        valueBlock.appendChild(select);
-        body.appendChild(valueBlock);
-    };
+var OPropertyEditModalWindow = function (property, containerId, create) {
+    SchemeEditorModalWindow.apply(this, arguments);
+    this.create = create;
+};
 
-    var addButtonBlock = function (modal, body, input, select) {
-        var buttonBlock = newButtonBlock();
-        var okBut = newOkButton(OK, modal, input, select);
-        var cancelBut = newCancelButton(CANCEL, modal);
-        buttonBlock.appendChild(cancelBut);
-        buttonBlock.appendChild(okBut);
-        body.appendChild(buttonBlock);
-    };
+OPropertyEditModalWindow.prototype = Object.create(SchemeEditorModalWindow.prototype);
+OPropertyEditModalWindow.prototype.constructor = OPropertyEditModalWindow;
 
-    var addHead = function (head) {
-        head.innerHTML = 'Create OProperty';
-    };
+OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) {
+    var select = this.createOTypeSelect(this.create);
+    var input = this.createNameInput(this.create);
+    this.addValueBlock(body, input, select);
+    this.addButtonBlock(body, input, select);
+    this.addHeadBlock(head);
+};
 
-    var newButtonBlock = function () {
-        var div = document.createElement('div');
-        div.style.marginTop = '5px';
-        return div;
-    };
+OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select) {
+    var valueBlock = this.createValueBlock();
+    valueBlock.appendChild(this.createLabel(localizer.name + ':'));
+    valueBlock.appendChild(input);
+    valueBlock.appendChild(this.createLabel(localizer.type + ':'));
+    valueBlock.appendChild(select);
+    body.appendChild(valueBlock);
+};
 
-    var newValueBlock = function () {
-        var div = document.createElement('div');
-        div.style.marginBottom = '5px';
-        return div;
-    };
+OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
+    head.innerHTML = create ? localizer.createProperty : localizer.editProperty;
+};
 
-    var newSelect = function () {
-        var select = document.createElement('select');
-        select.classList.add('form-control');
-        for (var i = 0; i < OType.size(); i++) {
-            var option = document.createElement('option');
-            option.setAttribute('value', OType.get(i));
-            option.innerHTML = OType.get(i);
-            select.appendChild(option);
+OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, select) {
+    var buttonBlock = this.createButtonBlock();
+    var okBut = this.createOkButton(localizer.ok, input, select);
+    var cancelBut = this.createCancelButton(localizer.cancel);
+    buttonBlock.appendChild(cancelBut);
+    buttonBlock.appendChild(okBut);
+    body.appendChild(buttonBlock);
+};
+
+OPropertyEditModalWindow.prototype.createValueBlock = function () {
+    var div = document.createElement('div');
+    div.style.margin = '10px';
+    return div;
+};
+
+OPropertyEditModalWindow.prototype.createButtonBlock = function () {
+    var div = document.createElement('div');
+    return div;
+};
+
+OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOProperty) {
+    var select = document.createElement('select');
+    select.classList.add('form-control');
+    for (var i = 0; i < OType.size(); i++) {
+        var option = document.createElement('option');
+        option.setAttribute('value', OType.get(i));
+        option.innerHTML = OType.get(i);
+        select.appendChild(option);
+    }
+    if (!createNewOProperty) {
+        if (OType.contains(this.value.type)) select.selectedIndex = OType.getIndexByValue(this.value.type);
+    }
+    return select;
+};
+
+//TODO: validate user input
+OPropertyEditModalWindow.prototype.createNameInput = function (createNewOProperty) {
+    var input = document.createElement('input');
+    input.classList.add('form-control');
+    input.setAttribute('type', 'text');
+    if (!createNewOProperty) {
+        input.value = this.value.name;
+    }
+    return input;
+};
+
+OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, typeSelect) {
+    var button = this.newButton(label, BUTTON_PRIMARY_CLASS);
+    var modal = this;
+    button.addEventListener('click', function () {
+        if (nameField.value.length > 0) {
+            modal.value.setName(nameField.value);
+            modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
+            modal.destroy(modal.OK);
         }
-        return select;
-    };
+    });
+    button.style.float = 'right';
+    button.style.marginRight = '10px';
+    button.style.marginBottom = '10px';
+    return button;
+};
 
-    //TODO: validate user input
-    var newInput = function () {
-        var input = document.createElement('input');
-        input.classList.add('form-control');
-        input.setAttribute('type', 'text');
-        return input;
-    };
+OPropertyEditModalWindow.prototype.createCancelButton = function (label) {
+    var button = this.newButton(label, BUTTON_DANGER_CLASS);
+    var modal = this;
+    button.addEventListener('click', function () {
+        modal.destroy(modal.CANCEL);
+    });
+    button.style.float = 'left';
+    button.style.marginLeft = '10px';
+    button.style.marginBottom = '10px';
+    return button;
+};
 
-    var newOkButton = function (label, modal, nameField, typeSelect) {
-        var button = newButton(label, 'btn-primary');
-        button.addEventListener('click', function () {
-            console.log('click ok');
-            console.log('field value: ' + nameField.value);
-            console.log('select value: ' + typeSelect.options[typeSelect.selectedIndex].value);
-            if (nameField.value.length > 0) {
-                modal.value.setName(nameField.value);
-                modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
-                modal.destroy(modal.OK);
-            }
-        });
-        button.style.float = 'right';
-        return button;
-    };
+OPropertyEditModalWindow.prototype.createLabel = function (label) {
+    var element = document.createElement('label');
+    element.innerHTML = label;
+    return element;
+};
 
-    var newCancelButton = function (label, modal) {
-       var button = newButton(label, 'btn-danger');
-       button.style.float = 'left';
-       button.addEventListener('click', function () {
-          modal.destroy(modal.CANCEL);
-       });
-       return button;
-    };
 
-    var newButton = function (label, typeCssClass) {
-        var but = document.createElement('a');
-        but.classList.add('btn');
-        but.classList.add(typeCssClass);
-        but.classList.add('btn-sm');
-        but.innerHTML = label;
-        return but;
-    };
+var InfoModalWindow = function (msg, containerId) {
+    SchemeEditorModalWindow.apply(this, arguments);
+};
 
-    var newLabel = function (label) {
-        var element = document.createElement('label');
-        element.innerHTML = label;
-        return element;
-    };
+InfoModalWindow.prototype = Object.create(SchemeEditorModalWindow.prototype);
+InfoModalWindow.prototype.constructor = InfoModalWindow;
 
-    return modal;
+InfoModalWindow.prototype.createContent = function (panel, head, body) {
+    head.innerHTML = INFO_MSG;
+    body.appendChild(this.createMsgContent());
+    body.appendChild(this.createOkButton());
+};
+
+InfoModalWindow.prototype.createMsgContent = function () {
+    var content = document.createElement('div');
+    content.style.margin = '10px';
+    content.innerHTML = this.value;
+    return content;
+};
+
+InfoModalWindow.prototype.createOkButton = function () {
+    var ok = this.newButton(localizer.ok, BUTTON_PRIMARY_CLASS);
+    var modal = this;
+    ok.addEventListener('click', function () {
+        modal.destroy(modal.OK);
+    });
+    ok.style.float = 'right';
+    ok.style.marginRight = '10px';
+    ok.style.marginBottom = '10px';
+    return ok;
 };

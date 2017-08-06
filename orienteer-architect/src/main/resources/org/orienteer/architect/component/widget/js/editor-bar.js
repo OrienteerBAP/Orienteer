@@ -82,17 +82,37 @@ var Sidebar = function (editor, container) {
 Sidebar.prototype = Object.create(AbstractBar.prototype);
 Sidebar.prototype.constructor = Sidebar;
 
-
 Sidebar.prototype.addElementToContainer = function (label, actionName) {
     this.addItem(this, label, actionName);
-    var editor = this.editor;
-    var graph = editor.graph;
     var element = this.createElement(label, actionName);
     this.container.appendChild(element);
+    this.makeDraggable(element, actionName);
+};
 
-    mxUtils.makeDraggable(element, graph, function (graph, evt, cell) {
+Sidebar.prototype.makeDraggable = function (element, actionName) {
+    var editor = this.editor;
+    var graph = editor.graph;
+    var draggable = mxUtils.makeDraggable(element, graph, function (graph, evt, cell) {
         editor.execute(actionName, cell, evt);
     });
+    draggable.getDropTarget = this.getDropTarget(actionName);
+};
+
+Sidebar.prototype.getDropTarget = function (actionName) {
+    return function (graph, x, y) {
+        if (actionName === ADD_OCLASS_ACTION) {
+            return null;
+        } else if (actionName === ADD_OPROPERTY_ACTION) {
+            var cell = graph.getCellAt(x, y);
+            if (graph.isSwimlane(cell))
+                return cell;
+            var parent = graph.getModel().getParent(cell);
+            return graph.isSwimlane(parent) ? parent : null;
+        } else if (actionName === ADD_EXISTS_OCLASSES_ACTION) {
+            var cell = graph.getCellAt(x, y);
+            return cell === null;
+        }
+    };
 };
 
 Sidebar.prototype.createElement = function (label, action) {
@@ -105,8 +125,15 @@ Sidebar.prototype.createElement = function (label, action) {
 
 Sidebar.prototype.getIconElementForAction = function (action) {
     var icon = document.createElement('i');
-    icon.setAttribute('class', FA_FILE_O);
-    icon.classList.add(FA_2X);
+    if (action === ADD_OCLASS_ACTION) {
+        icon.setAttribute('class', FA_FILE_O_CLASS);
+    } else if (action === ADD_OPROPERTY_ACTION) {
+        icon.setAttribute('class', FA_ALIGN_JUSTIFY_CLASS);
+    } else if (action === ADD_EXISTS_OCLASSES_ACTION) {
+        icon.setAttribute('class', FA_DATABASE_CLASS);
+    }
+    icon.classList.add(FA_2X_CLASS);
     icon.style.margin = '5px';
+    icon.style.display = 'block';
     return icon;
 };

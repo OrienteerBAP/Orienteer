@@ -1,9 +1,7 @@
 package org.orienteer.core.component.table;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Converter;
+import com.google.common.collect.Lists;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -18,8 +16,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.orienteer.core.component.property.BooleanEditPanel;
 
-import com.google.common.base.Converter;
-import com.google.common.collect.Lists;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link IColumn} to display checkboxes and aggregate selected options
@@ -28,19 +27,9 @@ import com.google.common.collect.Lists;
  * @param <P> the type of a primary key to be used for aggregation
  * @param <S> the type of the sort property
  */
-public class CheckBoxColumn<T, P extends Serializable, S> extends AbstractColumn<T, S>
-{
+public class CheckBoxColumn<T, P extends Serializable, S> extends AbstractColumn<T, S> {
 	private static final JavaScriptResourceReference SELECT_ALL_JS = new JavaScriptResourceReference(CheckBoxColumn.class, "select-all.js");
-	
-	private class CheckboxPanel extends BooleanEditPanel
-	{
 
-		public CheckboxPanel(String id, IModel<Boolean> model)
-		{
-			super(id, model);
-		}
-
-	}
 	private static final long serialVersionUID = 1L;
 	private List<P> selected = new ArrayList<P>();
 	private Converter<T, P> converterToPK;
@@ -53,7 +42,7 @@ public class CheckBoxColumn<T, P extends Serializable, S> extends AbstractColumn
 	@Override
 	public void populateItem(Item<ICellPopulator<T>> cellItem,
 			String componentId, IModel<T> rowModel) {
-		cellItem.add(new CheckboxPanel(componentId, getCheckBoxModel(rowModel)));
+		cellItem.add(new BooleanEditPanel(componentId, getCheckBoxModel(rowModel)));
 	}
 	
 	@Override

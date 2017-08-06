@@ -3,13 +3,9 @@ package org.orienteer.architect;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import org.apache.wicket.markup.html.IPackageResourceGuard;
-import org.apache.wicket.markup.html.SecurePackageResourceGuard;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
-import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**

@@ -1,63 +1,50 @@
 
-const ADD_OCLASS_ACTION           = 'addOClass';
-const ADD_OPROPERTY_ACTION        = 'addOProperty';
-const SAVE_EDITOR_CONFIG_ACTION   = 'saveEditorConfig';
-const APPLY_EDITOR_CHANGES_ACTION = 'applyChanges';
 
-const OCLASS_EDITOR_STYLE    = 'oClassName-style';
-const OPROPERTY_EDITOR_STYLE = 'oProperty-style';
+var app;
+var localizer;
 
-const FA_FILE_O = 'fa fa-file-o';
-const FA_2X     = 'fa-2x';
-
-const SIDEBAR_ITEM_CLASS = 'sidebar-item';
-const TOOLBAR_ITEM_CLASS = 'toolbar-item';
-
-const OCLASS_WIDTH     = 150;
-const OCLASS_HEIGHT    = 60;
-const OPROPERTY_HEIGHT = 20;
-
-
-const TO_JSON_ACTION = 'toJsonAction';
-
-const NAME   = 'Name';
-const TYPE   = 'Type';
-const CANCEL = 'Cancel';
-const OK     = 'OK';
-
-const CONNECTOR_IMG_PATH     = 'img/arrow.png';
-
-var OArchitectApplication = function (basePath, config, containerId, editorId, sidebarId, toolbarId) {
+var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
 	this.basePath = basePath;
 	this.config = mxUtils.parseXml(config);
+	this.localizer = localizer;
     this.containerId = containerId;
     this.editorId = editorId;
     this.sidebarId = sidebarId;
     this.toolbarId = toolbarId;
     this.saveEditorConfig = null;
     this.applyEditorChanges = null;
+    this.getOClassesRequest = null;
     this.editor = null;
+    this.callback = null;
 };
 
 OArchitectApplication.prototype.init = function () {
     if (mxClient.isBrowserSupported()) {
-       this.editor = new SchemeEditor(this.getEditorContainer());
-       this.editor.configure(this.config.documentElement);
-       this.configureEditorSidebar(this.editor);
-       this.configureEditorToolbar(this.editor);
+        localizer = this.localizer;
+        this.editor = new SchemeEditor(this.getEditorContainer());
+        this.editor.configure(this.config.documentElement);
+        this.configureEditorSidebar(this.editor);
+        this.configureEditorToolbar(this.editor);
+        this.configurePopupMenu(this.editor);
     } else mxUtils.error('Browser is not supported!', 200, false);
 };
 
 OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
     var sidebar = new Sidebar(editor, this.getSidebarContainer());
-    sidebar.addAction('OClass', ADD_OCLASS_ACTION, addOClassAction);
+    sidebar.addAction(localizer.classMsg, ADD_OCLASS_ACTION, addOClassAction);
+    sidebar.addAction(localizer.property, ADD_OPROPERTY_ACTION, addOPropertyAction);
+    sidebar.addAction(localizer.existsClasses, ADD_EXISTS_OCLASSES_ACTION, addExistsOClassesAction);
 };
 
 OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new Toolbar(editor, this.getToolbarContainer());
-    toolbar.addAction('Save Data Model', SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
-    toolbar.addAction('Apply Changes', APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
-    toolbar.addAction('To JSON', TO_JSON_ACTION, toJsonAction);
+    toolbar.addAction(localizer.saveDataModel, SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
+    toolbar.addAction(localizer.applyChanges, APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
+    toolbar.addAction(localizer.toJson, TO_JSON_ACTION, toJsonAction);
+};
+
+OArchitectApplication.prototype.configurePopupMenu = function (editor) {
+    editor.addAction(EDIT_OPROPERTY_ACTION, editOPropertyAction);
 };
 
 OArchitectApplication.prototype.getEditorContainer = function () {
@@ -81,6 +68,20 @@ OArchitectApplication.prototype.setApplyEditorChanges = function (func) {
     this.applyEditorChanges = func;
 };
 
+OArchitectApplication.prototype.setGetOClassesRequest = function (func) {
+    this.getOClassesRequest = func;
+};
+
+OArchitectApplication.prototype.requestOClasses = function (existsClasses, callback) {
+    this.callback = callback;
+    this.getOClassesRequest(existsClasses);
+};
+
+OArchitectApplication.prototype.executeCallback = function (json) {
+    this.callback(json);
+    this.callback = null;
+};
+
 OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     var parser = new DOMParser();
     var node = parser.parseFromString(xml, 'text/xml');
@@ -88,10 +89,8 @@ OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     codec.decode(node.documentElement, this.editor.graph.getModel());
 };
 
-var app;
-
-var init = function (basePath, config, containerId, editorId, sidebarId, toolbarId) {
-    app = new OArchitectApplication(basePath, config, containerId, editorId, sidebarId, toolbarId);
+var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
+    app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId);
     app.init();
 };
 
