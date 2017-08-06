@@ -100,15 +100,15 @@ Sidebar.prototype.makeDraggable = function (element, actionName) {
 
 Sidebar.prototype.getDropTarget = function (actionName) {
     return function (graph, x, y) {
-        if (actionName === ADD_OCLASS_ACTION) {
+        if (actionName === actions.ADD_OCLASS_ACTION) {
             return null;
-        } else if (actionName === ADD_OPROPERTY_ACTION) {
+        } else if (actionName === actions.ADD_OPROPERTY_ACTION) {
             var cell = graph.getCellAt(x, y);
             if (graph.isSwimlane(cell))
                 return cell;
             var parent = graph.getModel().getParent(cell);
             return graph.isSwimlane(parent) ? parent : null;
-        } else if (actionName === ADD_EXISTS_OCLASSES_ACTION) {
+        } else if (actionName === actions.ADD_EXISTS_OCLASSES_ACTION) {
             var cell = graph.getCellAt(x, y);
             return cell === null;
         }
@@ -125,11 +125,11 @@ Sidebar.prototype.createElement = function (label, action) {
 
 Sidebar.prototype.getIconElementForAction = function (action) {
     var icon = document.createElement('i');
-    if (action === ADD_OCLASS_ACTION) {
+    if (action === actions.ADD_OCLASS_ACTION) {
         icon.setAttribute('class', FA_FILE_O_CLASS);
-    } else if (action === ADD_OPROPERTY_ACTION) {
+    } else if (action === actions.ADD_OPROPERTY_ACTION) {
         icon.setAttribute('class', FA_ALIGN_JUSTIFY_CLASS);
-    } else if (action === ADD_EXISTS_OCLASSES_ACTION) {
+    } else if (action === actions.ADD_EXISTS_OCLASSES_ACTION) {
         icon.setAttribute('class', FA_DATABASE_CLASS);
     }
     icon.classList.add(FA_2X_CLASS);

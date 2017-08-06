@@ -21,7 +21,7 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
 OArchitectApplication.prototype.init = function () {
     if (mxClient.isBrowserSupported()) {
         localizer = this.localizer;
-        this.editor = new SchemeEditor(this.getEditorContainer());
+        this.editor = new OArchitectEditor(this.getEditorContainer());
         this.editor.configure(this.config.documentElement);
         this.configureEditorSidebar(this.editor);
         this.configureEditorToolbar(this.editor);
@@ -31,20 +31,20 @@ OArchitectApplication.prototype.init = function () {
 
 OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
     var sidebar = new Sidebar(editor, this.getSidebarContainer());
-    sidebar.addAction(localizer.classMsg, ADD_OCLASS_ACTION, addOClassAction);
-    sidebar.addAction(localizer.property, ADD_OPROPERTY_ACTION, addOPropertyAction);
-    sidebar.addAction(localizer.existsClasses, ADD_EXISTS_OCLASSES_ACTION, addExistsOClassesAction);
+    sidebar.addAction(localizer.classMsg, actions.ADD_OCLASS_ACTION, addOClassAction);
+    sidebar.addAction(localizer.property, actions.ADD_OPROPERTY_ACTION, addOPropertyAction);
+    sidebar.addAction(localizer.existsClasses, actions.ADD_EXISTS_OCLASSES_ACTION, addExistsOClassesAction);
 };
 
 OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new Toolbar(editor, this.getToolbarContainer());
-    toolbar.addAction(localizer.saveDataModel, SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
-    toolbar.addAction(localizer.applyChanges, APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
-    toolbar.addAction(localizer.toJson, TO_JSON_ACTION, toJsonAction);
+    toolbar.addAction(localizer.saveDataModel, actions.SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
+    toolbar.addAction(localizer.applyChanges, actions.APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
+    toolbar.addAction(localizer.toJson, actions.TO_JSON_ACTION, toJsonAction);
 };
 
 OArchitectApplication.prototype.configurePopupMenu = function (editor) {
-    editor.addAction(EDIT_OPROPERTY_ACTION, editOPropertyAction);
+    editor.addAction(actions.EDIT_OPROPERTY_ACTION, editOPropertyAction);
 };
 
 OArchitectApplication.prototype.getEditorContainer = function () {

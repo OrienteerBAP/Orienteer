@@ -1,4 +1,15 @@
 
+const actions = {
+    ADD_OCLASS_ACTION: 'addOClass',
+    ADD_OPROPERTY_ACTION: 'addOProperty',
+    ADD_EXISTS_OCLASSES_ACTION: 'addExistsOClasses',
+    EDIT_OPROPERTY_ACTION: 'editOProperty',
+    DELETE_OPROPERTY_ACTION: 'deleteOProperty',
+    TO_JSON_ACTION: 'toJsonAction',
+    SAVE_EDITOR_CONFIG_ACTION: 'saveEditorConfig',
+    APPLY_EDITOR_CHANGES_ACTION: 'applyChanges'
+};
+
 var addOClassAction = function (editor, cell, evt) {
 
     var action = function () {
@@ -18,7 +29,7 @@ var addOPropertyAction = function (editor, cell, evt) {
         graph.stopEditing(false);
         var pt = graph.getPointForEvent(evt);
         if (cell !== null) {
-            var oClassCell = getParent(graph, cell);
+            var oClassCell = searchOClassCell(graph, cell);
             var property = new OProperty(oClassCell.value.name);
             var modal = new OPropertyEditModalWindow(property, app.editorId, true);
             modal.onDestroy = function (property, event) {
@@ -51,11 +62,6 @@ var addOPropertyAction = function (editor, cell, evt) {
         return mouseY - graph.getView().getState(cell).y;
     };
 
-    var getParent = function (graph, cell) {
-        if (cell.value instanceof OClass)
-            return cell;
-        return getParent(graph, graph.getModel().getParent(cell));
-    };
 
     action();
 };
@@ -124,7 +130,7 @@ var addExistsOClassesAction = function (editor, cell, evt) {
 
 var editOPropertyAction = function (editor, cell, evt) {
     var action = function () {
-        if (cell.value instanceof OProperty) {
+        if (cell !== null && cell.value instanceof OProperty) {
             var graph = editor.graph;
             graph.stopEditing(false);
             var modal = new OPropertyEditModalWindow(cell.value, app.editorId, false);
@@ -139,6 +145,27 @@ var editOPropertyAction = function (editor, cell, evt) {
                         graph.getModel().endUpdate();
                     }
                 }
+            }
+        }
+    };
+
+    action();
+};
+
+var deleteOPropertyAction = function (editor, cell) {
+    var action = function () {
+        if (cell !== null && cell.value instanceof OProperty) {
+            var graph = editor.graph;
+            graph.stopEditing(false);
+            var oClassCell = searchOClassCell(graph, cell);
+            var oClass = oClassCell.value;
+            var property = cell.value;
+            oClass.deleteProperty(property);
+            graph.getModel().beginUpdate();
+            try {
+                graph.removeCells([cell]);
+            } finally {
+                graph.getModel().endUpdate();
             }
         }
     };

@@ -60,22 +60,17 @@ OClass.prototype.config = function (source) {
     }
 };
 
-OClass.prototype.addOProperty = function(oProperty) {
+OClass.prototype.addOProperty = function (oProperty) {
     if (this.properties.indexOf(oProperty) === -1) {
         this.properties.push(oProperty);
     }
 };
 
-OClass.prototype.getProperties = function() {
-    return this.properties;
-};
-
-OClass.prototype.getProperty = function(name) {
-    return this.properties[name];
-};
-
-OClass.prototype.removeProperty = function(name) {
-    delete this.properties[name];
+OClass.prototype.deleteProperty = function (oProperty) {
+    var index = this.properties.indexOf(oProperty);
+    if (index > -1) {
+        this.properties.splice(index, 1);
+    }
 };
 
 OClass.prototype.addSuperClass = function (superClass) {
@@ -84,7 +79,7 @@ OClass.prototype.addSuperClass = function (superClass) {
     }
 };
 
-OClass.prototype.removeSuperClass = function (superClass) {
+OClass.prototype.deleteSuperClass = function (superClass) {
     var index = this.superClasses.indexOf(superClass);
     if (index > -1) {
        this.superClasses.splice(index, 1);
@@ -100,9 +95,9 @@ OClass.prototype.clone = function () {
 };
 
 var OProperty = function (oClassName, name, type) {
-    this.oClassName = oClassName;
     this.name = name;
     this.type = type;
+    this.oClassName = oClassName;
 };
 
 OProperty.prototype.config = function (source) {

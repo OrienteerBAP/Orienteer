@@ -1,18 +1,19 @@
 
-var SchemeEditor = function(container) {
+var OArchitectEditor = function(container) {
     mxEditor.apply(this, arguments);
-    this.sidebar = undefined;
-    this.toolbar = undefined;
+    this.sidebar = null;
+    this.toolbar = null;
     this.container = container;
 
+    this.configureDefaultActions();
     this.configureGraph();
     this.configureLayouts();
 };
 
-SchemeEditor.prototype = Object.create(mxEditor.prototype);
-SchemeEditor.prototype.constructor = SchemeEditor;
+OArchitectEditor.prototype = Object.create(mxEditor.prototype);
+OArchitectEditor.prototype.constructor = OArchitectEditor;
 
-SchemeEditor.prototype.createOClassStyle = function () {
+OArchitectEditor.prototype.createOClassStyle = function () {
     var style = {};
     style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_SWIMLANE;
     style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
@@ -31,7 +32,7 @@ SchemeEditor.prototype.createOClassStyle = function () {
     return style;
 };
 
-SchemeEditor.prototype.createOPropertyStyle = function () {
+OArchitectEditor.prototype.createOPropertyStyle = function () {
     var style = {};
     style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
     style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
@@ -46,14 +47,14 @@ SchemeEditor.prototype.createOPropertyStyle = function () {
     return style;
 };
 
-SchemeEditor.prototype.createEdgeStyle = function () {
+OArchitectEditor.prototype.createEdgeStyle = function () {
     var style = this.graph.stylesheet.getDefaultEdgeStyle();
     style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
     style[mxConstants.STYLE_STROKEWIDTH] = '2';
     return style;
 };
 
-SchemeEditor.prototype.createVertexStyle = function () {
+OArchitectEditor.prototype.createVertexStyle = function () {
     var style = {};
     style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
     style[mxConstants.STYLE_PERIMETER] = mxPerimeter.RectanglePerimeter;
@@ -66,7 +67,7 @@ SchemeEditor.prototype.createVertexStyle = function () {
     return style;
 };
 
-SchemeEditor.prototype.configureGraph = function () {
+OArchitectEditor.prototype.configureGraph = function () {
     mxConnectionHandler.prototype.connectImage = new mxImage(app.basePath+CONNECTOR_IMG_PATH, 16, 16);
     this.setGraphContainer(this.container);
     this.graph.setConnectable(true);
@@ -82,7 +83,7 @@ SchemeEditor.prototype.configureGraph = function () {
     this.configureGraphLabels();
 };
 
-SchemeEditor.prototype.configureGraphBehavior = function () {
+OArchitectEditor.prototype.configureGraphBehavior = function () {
 
     this.graph.isCellResizable = function (cell) {
         return this.isSwimlane(cell);
@@ -106,35 +107,26 @@ SchemeEditor.prototype.configureGraphBehavior = function () {
     this.graph.addListener(mxEvent.CELLS_REMOVED, this.createCellRemovedBehavior());
 };
 
-SchemeEditor.prototype.configureGraphLabels = function () {
+OArchitectEditor.prototype.configureGraphLabels = function () {
     this.graph.setHtmlLabels(true);
+    var editor = this;
     this.graph.getLabel = function (cell) {
         var label = mxGraph.prototype.getLabel.apply(this, arguments);
         if (this.model.isVertex(cell)) {
             var max = parseInt(this.getCellGeometry(cell).width / 8);
+            var container = null;
             if (cell.value instanceof OClass) {
-                var oClassName = cell.value.name;
-                var length = oClassName.length;
-                if (length > max) {
-                    oClassName = oClassName.slice(0, max - 3) + '...';
-                }
-                label = mxUtils.htmlEntities(oClassName);
+                container = new OArchitectDefaultContainer(cell.value.name, editor);
             } else if (cell.value instanceof OProperty) {
-                var type = cell.value.type;
-                var name = cell.value.name;
-                var typeLength = type.length;
-                var nameLength = name.length;
-                if (typeLength + nameLength > max) {
-                    name = name.slice(0, max - typeLength - 3) + '...';
-                }
-                label = mxUtils.htmlEntities(name, false) + ' (' + mxUtils.htmlEntities(type, false) + ')';
+                container = new OPropertyContainer(cell.value, editor, cell);
             }
+            if (container !== null) label = container.createElement(max);
         }
         return label;
     };
 };
 
-SchemeEditor.prototype.configureLayouts = function () {
+OArchitectEditor.prototype.configureLayouts = function () {
     this.layoutSwimlanes = true;
     this.createSwimlaneLayout = function () {
         var layout = new mxStackLayout(this.graph, false);
@@ -149,7 +141,7 @@ SchemeEditor.prototype.configureLayouts = function () {
     };
 };
 
-SchemeEditor.prototype.createStringConverter = function () {
+OArchitectEditor.prototype.createStringConverter = function () {
     var defaultBehavior = this.graph.convertValueToString;
     return function (cell) {
         if (cell.value instanceof OClass) {
@@ -160,7 +152,7 @@ SchemeEditor.prototype.createStringConverter = function () {
     };
 };
 
-SchemeEditor.prototype.createCellLabelChangedBehavior = function () {
+OArchitectEditor.prototype.createCellLabelChangedBehavior = function () {
     var defaultBehavior = this.graph.cellLabelChanged;
     return function (cell, newValue, size) {
         if (cell.value instanceof OClass) {
@@ -176,7 +168,7 @@ SchemeEditor.prototype.createCellLabelChangedBehavior = function () {
     };
 };
 
-SchemeEditor.prototype.createCellConnectedBehavior = function () {
+OArchitectEditor.prototype.createCellConnectedBehavior = function () {
     return function (graph, eventObject) {
         var properties = eventObject.properties;
         if (!properties.source && properties.edge.source.value instanceof OClass) {
@@ -189,7 +181,7 @@ SchemeEditor.prototype.createCellConnectedBehavior = function () {
     }
 };
 
-SchemeEditor.prototype.createCellRemovedBehavior = function () {
+OArchitectEditor.prototype.createCellRemovedBehavior = function () {
     return function (graph, eventObject) {
         var cells = eventObject.properties.cells;
         for (var i = 0; i < cells.length; i++) {
@@ -197,7 +189,7 @@ SchemeEditor.prototype.createCellRemovedBehavior = function () {
             if (cell.value instanceof OClass && cell.edge) {
                 var sourceClass  = cell.source.value;
                 var targetClass  = cell.target.value;
-                sourceClass.removeSuperClass(targetClass.name);
+                sourceClass.deleteSuperClass(targetClass.name);
                 console.log('source: ' + sourceClass);
                 console.log('target: ' + targetClass);
             }
@@ -205,7 +197,7 @@ SchemeEditor.prototype.createCellRemovedBehavior = function () {
     }
 };
 
-SchemeEditor.prototype.configureGraphStyle = function() {
+OArchitectEditor.prototype.configureGraphStyle = function() {
     var graph = this.graph;
     var stylesheet = graph.getStylesheet();
     stylesheet.putDefaultVertexStyle(this.createVertexStyle(graph));
@@ -214,6 +206,11 @@ SchemeEditor.prototype.configureGraphStyle = function() {
     stylesheet.putCellStyle(OPROPERTY_EDITOR_STYLE, this.createOPropertyStyle(graph));
 };
 
-SchemeEditor.prototype.clone = function() {
+OArchitectEditor.prototype.configureDefaultActions = function () {
+    this.addAction(actions.EDIT_OPROPERTY_ACTION, editOPropertyAction);
+    this.addAction(actions.DELETE_OPROPERTY_ACTION, deleteOPropertyAction);
+};
+
+OArchitectEditor.prototype.clone = function() {
     return mxUtils.clone(this);
 };

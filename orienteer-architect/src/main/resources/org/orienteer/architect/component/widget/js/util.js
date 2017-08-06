@@ -15,15 +15,6 @@ var createOPropertyVertex = function (property) {
     return vertex;
 };
 
-var getOClasses = function (graph) {
-    var classes = [];
-    var cells = graph.getChildVertices(graph.getDefaultParent());
-    forEach(cells, function (cell) {
-        classes.push(cell.value);
-    });
-    return classes;
-};
-
 var getOClassesAsJSON = function (graph) {
     const OCLASS_TAG  = 'OClass';
     const PARENT_ATTR = 'parent';
@@ -103,17 +94,13 @@ var toOClasses = function (json) {
     return classes;
 };
 
-var getMaxOClassHeight = function (classes) {
-    var properties = 1;
-    if  (classes !== null && classes.length > 0) {
-        forEach(classes, function (oClass) {
-            if (oClass.properties !== null && oClass.properties.length > properties) {
-                properties = oClass.properties.length;
-            }
-        });
-    }
 
-    return properties * OPROPERTY_HEIGHT;
+var searchOClassCell = function (graph, cell) {
+    if (cell.value instanceof OClass)
+        return cell;
+    if (cell === graph.getDefaultParent())
+        return null;
+    return searchOClassCell(graph, graph.getModel().getParent(cell));
 };
 
 

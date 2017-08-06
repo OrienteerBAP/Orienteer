@@ -194,7 +194,7 @@ InfoModalWindow.prototype = Object.create(SchemeEditorModalWindow.prototype);
 InfoModalWindow.prototype.constructor = InfoModalWindow;
 
 InfoModalWindow.prototype.createContent = function (panel, head, body) {
-    head.innerHTML = INFO_MSG;
+    head.innerHTML = localizer.info;
     body.appendChild(this.createMsgContent());
     body.appendChild(this.createOkButton());
 };
