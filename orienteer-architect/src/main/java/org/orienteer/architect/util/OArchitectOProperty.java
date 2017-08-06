@@ -11,11 +11,19 @@ public class OArchitectOProperty implements IClusterable {
 
     private String name;
     private OType type;
+    private boolean subclassProperty;
 
     public OArchitectOProperty(String name, OType type) {
         Args.notEmpty(name, "name");
         this.name = name;
         this.type = type;
+    }
+
+    public OArchitectOProperty(String name, OType type, boolean subclassProperty) {
+        Args.notEmpty(name, "name");
+        this.name = name;
+        this.type = type;
+        this.subclassProperty = subclassProperty;
     }
 
     public String getName() {
@@ -32,6 +40,14 @@ public class OArchitectOProperty implements IClusterable {
 
     public void setType(OType type) {
         this.type = type;
+    }
+
+    public boolean isSubclassProperty() {
+        return subclassProperty;
+    }
+
+    public void setSubclassProperty(boolean subclassProperty) {
+        this.subclassProperty = subclassProperty;
     }
 
     @Override

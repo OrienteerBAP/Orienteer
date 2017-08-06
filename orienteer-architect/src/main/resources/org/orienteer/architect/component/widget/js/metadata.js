@@ -4,6 +4,7 @@ const OType = {
         'STRING', 'BINARY', 'EMBEDDED', 'EMBEDDEDLIST', 'EMBEDDEDSET', 'EMBEDDEDMAP',
         'LINK', 'LINKLIST', 'LINKSET', 'LINKMAP', 'BYTE', 'TRANSIENT', 'DATE', 'CUSTOM',
         'DECIMAL', 'LINKBAG', 'ANY'],
+    linkTypes: ['LINK', 'LINKLIST', 'LINKSET', 'LINKMAP', 'LINKBAG'],
 
     get: function (index) {
         return this.types[index];
@@ -29,6 +30,10 @@ const OType = {
 
     size: function () {
         return this.types.length;
+    },
+
+    isLink: function (type) {
+        return this.linkTypes.indexOf(type) > -1;
     },
 
     clone: function () {
@@ -94,9 +99,7 @@ OClass.prototype.deleteSuperClass = function (superClass) {
 };
 
 OClass.prototype.containsProperty = function (property) {
-    var contains = this.getPropertyIndex(property) > -1;
-    console.log(property + ' contains: ' + contains);
-    return contains;
+    return this.getPropertyIndex(property) > -1;
 };
 
 OClass.prototype.getPropertyIndex = function (property) {

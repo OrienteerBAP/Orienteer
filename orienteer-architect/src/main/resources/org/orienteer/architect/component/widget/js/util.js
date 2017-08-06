@@ -11,7 +11,6 @@ var createOPropertyVertex = function (property) {
     var vertex = new mxCell(property,
         new mxGeometry(0, 0, 0, OPROPERTY_HEIGHT), OPROPERTY_EDITOR_STYLE);
     vertex.setVertex(true);
-    vertex.setConnectable(false);
     return vertex;
 };
 

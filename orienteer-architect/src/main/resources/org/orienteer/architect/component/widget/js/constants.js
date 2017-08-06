@@ -1,6 +1,8 @@
 
-const OCLASS_EDITOR_STYLE    = 'oClassName-style';
-const OPROPERTY_EDITOR_STYLE = 'oProperty-style';
+const OCLASS_EDITOR_STYLE        = 'oClassStyle';
+const OPROPERTY_EDITOR_STYLE     = 'oPropertyStyle';
+const OCLASS_CONNECTION_STYLE    = 'oClassConnectionStyle';
+const OPROPERTY_CONNECTION_STYLE = 'oPropertyConnectionStyle';
 
 const SIDEBAR_ITEM_CLASS     = 'sidebar-item';
 const TOOLBAR_ITEM_CLASS     = 'toolbar-item';
@@ -18,7 +20,8 @@ const OCLASS_WIDTH     = 150;
 const OCLASS_HEIGHT    = 60;
 const OPROPERTY_HEIGHT = 20;
 
-const CONNECTOR_IMG_PATH     = 'img/arrow.png';
+const CONNECTOR_IMG_PATH = 'img/arrow.png';
+const POINT_IMG_PATH     = 'img/point.gif';
 
 const DEFAULT_OCLASS_NAME    = 'OClass';
 const DEFAULT_OPROPERTY_NAME = 'OProperty';

@@ -81,11 +81,13 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
 
     private void addPropertiesToOClass(OClass oClass, List<OArchitectOProperty> properties) {
         for (OArchitectOProperty property : properties) {
-            OProperty oProperty = oClass.getProperty(property.getName());
-            if (oProperty == null) {
-                oClass.createProperty(property.getName(), property.getType());
-            } else if (oProperty.getType() != property.getType()) {
-                oProperty.setType(property.getType());
+            if (!property.isSubclassProperty()) {
+                OProperty oProperty = oClass.getProperty(property.getName());
+                if (oProperty == null) {
+                    oClass.createProperty(property.getName(), property.getType());
+                } else if (oProperty.getType() != property.getType()) {
+                    oProperty.setType(property.getType());
+                }
             }
         }
     }
