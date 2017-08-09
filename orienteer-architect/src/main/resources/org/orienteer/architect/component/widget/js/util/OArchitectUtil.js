@@ -108,7 +108,7 @@ var OArchitectUtil = {
                 trigger.stop = true;
             }
         });
-        return contains;
+        return propertyCell;
     },
 
     fromCellsToOClasses: function (cells) {
