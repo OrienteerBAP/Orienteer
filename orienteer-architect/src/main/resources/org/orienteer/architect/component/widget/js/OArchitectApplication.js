@@ -27,9 +27,9 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
     this.editorId = editorId;
     this.sidebarId = sidebarId;
     this.toolbarId = toolbarId;
-    this.saveEditorConfig = null;
-    this.applyEditorChanges = null;
-    this.getOClassesRequest = null;
+    this.saveEditorConfigCallbackUrl = null;
+    this.applyEditorChangesCallbackUrl = null;
+    this.getOClassesRequestCallbackUrl = null;
     this.editor = null;
     this.callback = null;
 };
@@ -93,38 +93,72 @@ OArchitectApplication.prototype.getToolbarContainer = function () {
 
 /**
  * Calls from Wicket!
- * @param func
+ * @param callbackUrl
  * @param xml
  */
-OArchitectApplication.prototype.setSaveEditorConfig = function (func, xml) {
-    this.saveEditorConfig = func;
+OArchitectApplication.prototype.setSaveEditorConfig = function (callbackUrl, xml) {
+    this.saveEditorConfigCallbackUrl = callbackUrl;
     if (xml) this.applyXmlConfig(xml);
 };
 
 /**
  * Calls from Wicket!
- * @param func
+ * @param callbackUrl
  */
-OArchitectApplication.prototype.setApplyEditorChanges = function (func) {
-    this.applyEditorChanges = func;
+OArchitectApplication.prototype.setApplyEditorChanges = function (callbackUrl) {
+    this.applyEditorChangesCallbackUrl = callbackUrl;
 };
 
 /**
  * Calls from Wicket!
- * @param func
+ * @param callbackUrl
  */
-OArchitectApplication.prototype.setGetOClassesRequest = function (func) {
-    this.getOClassesRequest = func;
+OArchitectApplication.prototype.setGetOClassesRequest = function (callbackUrl) {
+    this.getOClassesRequestCallbackUrl = callbackUrl;
+};
+
+/**
+ * Save editor config in database
+ * @param xml config which will be saved
+ */
+OArchitectApplication.prototype.saveEditorConfig = function (xml) {
+    this.sendPostRequest(this.saveEditorConfigCallbackUrl, {
+        "config": xml
+    });
+};
+
+/**
+ * Apply editor changes. Save editor classes in database
+ * @param json json string which contains editor classes
+ */
+OArchitectApplication.prototype.applyEditorChanges = function (json) {
+    this.sendPostRequest(this.applyEditorChangesCallbackUrl, {
+       "json": json
+    });
 };
 
 /**
  * Create request for getting exists classes from database
- * @param existsClasses exists classes in editor
+ * @param json exists classes in editor
  * @param callback function which will be execute when get response
  */
-OArchitectApplication.prototype.requestExistsOClasses = function (existsClasses, callback) {
+OArchitectApplication.prototype.requestExistsOClasses = function (json, callback) {
     this.callback = callback;
-    this.getOClassesRequest(existsClasses);
+    this.sendPostRequest(this.getOClassesRequestCallbackUrl, {
+        "existsClasses": json
+    });
+};
+
+/**
+ * Create POST request to Wicket
+ * @param url callback url
+ * @param data data for send contains JavaScript object
+ */
+OArchitectApplication.prototype.sendPostRequest = function (url, data) {
+    Wicket.Ajax.post({
+        "u": url,
+        "ep": data
+    });
 };
 
 /**

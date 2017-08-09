@@ -5,7 +5,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.model.IModel;
@@ -42,8 +41,8 @@ public class ManageEditorConfigBehavior extends AbstractDefaultAjaxBehavior {
         ODocument document = model.getObject();
         String xml = document.field(OArchitectModule.CONFIG_OPROPERTY);
         if (Strings.isNullOrEmpty(xml)) xml = "";
-        response.render(OnLoadHeaderItem.forScript(String.format("app.setSaveEditorConfig(%s, '%s');",
-                getCallbackFunction(CallbackParameter.explicit(CONFIG_VAR)), xml)));
+        response.render(OnLoadHeaderItem.forScript(String.format("app.setSaveEditorConfig('%s', '%s');",
+                getCallbackUrl(), xml)));
     }
 
 }

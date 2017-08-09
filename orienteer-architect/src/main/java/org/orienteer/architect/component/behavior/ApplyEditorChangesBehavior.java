@@ -10,7 +10,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.request.IRequestParameters;
@@ -105,8 +104,8 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
     @Override
     public void renderHead(Component component, IHeaderResponse response) {
         super.renderHead(component, response);
-        response.render(OnLoadHeaderItem.forScript(String.format("app.setApplyEditorChanges(%s);",
-                getCallbackFunction(CallbackParameter.explicit(JSON_VAR)))));
+        response.render(OnLoadHeaderItem.forScript(String.format("app.setApplyEditorChanges('%s');",
+               getCallbackUrl())));
     }
 
 }
