@@ -27,29 +27,7 @@ var OArchitectConnector = {
     connectSubClassCellWithSuperClassCell: function (graph, subClassCell, superClassCell) {
         var subClass = subClassCell.value;
         var superClass = superClassCell.value;
-        var subClassPropertiesCells = OArchitectUtil.getOPropertiesCellsInOClassCell(graph, null, subClassCell);
         subClass.addSuperClassName(superClass.name);
-        graph.getModel().beginUpdate();
-        try {
-            OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
-                var property = superClassProperty.clone();
-                property.subClassProperty = true;
-                property.oClassName = subClass.name;
-                subClass.putOProperty(property);
-                configureSubClassProperty(property);
-            });
-        } finally {
-            graph.getModel().endUpdate();
-        }
-
-        function configureSubClassProperty(property) {
-            var cell = OArchitectUtil.getPropertyCellFromPropertiesCells(subClassPropertiesCells, property);
-            if (cell != null) {
-                cell.value = property;
-            } else {
-                graph.addCell(OArchitectUtil.createOPropertyVertex(property), subClassCell);
-            }
-        }
     },
 
     connectOPropertyCellWithOClassCell: function (graph, propertyCell, classCell) {

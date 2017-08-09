@@ -29,7 +29,7 @@ GraphConfig.prototype.configureGraphBehavior = function () {
         return this.isSwimlane(cell);
     };
     this.graph.isCellEditable = function (cell) {
-        return this.isSwimlane(cell);
+        return false;
     };
     this.graph.isValidDropTarget = function(cell) {
         return this.isSwimlane(cell);
@@ -52,7 +52,7 @@ GraphConfig.prototype.configureGraphLabels = function () {
             var max = parseInt(this.getCellGeometry(cell).width / 8);
             var container = null;
             if (cell.value instanceof OArchitectOClass) {
-                container = new OArchitectValueContainer(cell.value.name, editor);
+                container = new OClassContainer(cell.value.name, editor, cell);
             } else if (cell.value instanceof OArchitectOProperty) {
                 container = new OPropertyContainer(cell.value, editor, cell);
             }
@@ -70,7 +70,7 @@ GraphConfig.prototype.convertValueToString = function (cell) {
     } else return mxGraph.prototype.convertValueToString.apply(this, arguments);
 };
 
-GraphConfig.prototype.cellLabelChanged = function (cell, newValue, size) {
+GraphConfig.prototype.cellLabelChanged = function (cell, newValue) {
     var value = null;
     if (cell.value instanceof OArchitectOClass) {
         value = newValue;

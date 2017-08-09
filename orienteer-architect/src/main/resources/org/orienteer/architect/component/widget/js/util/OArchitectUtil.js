@@ -85,6 +85,83 @@ var OArchitectUtil = {
         return subClassesCells;
     },
 
+    changeAllSubProperties: function (graph, oClass) {
+        if (oClass != null) {
+            if (typeof oClass === 'string') {
+                var cells = graph.getChildVertices(graph.getDefaultParent());
+                var classCell = OArchitectUtil.getCellByClassName(cells, oClass);
+                oClass = classCell.value;
+            }
+            OArchitectUtil.configureSubClassProperties(graph, oClass);
+        }
+    },
+
+    configureSubClassProperties: function (graph, oClass) {
+        var subClassCells = OArchitectUtil.getOClassSubClassesCells(graph, oClass);
+        OArchitectUtil.forEach(subClassCells, function (subClassCell) {
+            OArchitectUtil.configureProperties(graph, oClass, subClassCell);
+        });
+    },
+
+    configureProperties: function (graph, superClass, subClassCell) {
+        graph.getModel().beginUpdate();
+        try {
+            var subClass = subClassCell.value;
+            var subClassPropertiesCells = OArchitectUtil.getOPropertiesCellsInOClassCell(graph, null, subClassCell);
+            saveProperties(subClass, subClassPropertiesCells);
+            removeProperties(subClass, subClassPropertiesCells);
+        } finally {
+            graph.getModel().endUpdate();
+        }
+
+        function saveProperties(subClass, subClassPropertiesCells) {
+            OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
+                var property = savePropertyInClass(subClass, superClassProperty);
+                savePropertyInGraph(subClassPropertiesCells, property, subClassCell);
+            });
+        }
+
+        function removeProperties(subClass, subClassPropertiesCells) {
+            var cellsForRemove = [];
+            OArchitectUtil.forEach(superClass.propertiesForDelete, function (superClassProperty) {
+                var property = subClass.getProperty(superClassProperty.name);
+                if (property != null) {
+                    cellsForRemove.push(OArchitectUtil.getPropertyCellFromPropertiesCells(subClassPropertiesCells, property));
+                    subClass.removeProperty(property);
+                }
+            });
+            graph.removeCells(cellsForRemove, true);
+        }
+
+        function savePropertyInClass(subClass, superClassProperty) {
+            var property = subClass.getProperty(superClassProperty.name);
+            var create = false;
+            if (property == null) property = subClass.getProperty(superClassProperty.previousName);
+            if (property == null) {
+                property = superClassProperty.clone();
+                create = true;
+            }
+            property.subClassProperty = true;
+            property.ownerClass = subClass.name;
+            if (create) {
+                subClass.putProperty(property);
+            } else {
+                property.setName(superClassProperty.name);
+                property.setType(superClassProperty.type);
+            }
+            return property;
+        }
+
+        function savePropertyInGraph(cells, property, subClassCell) {
+            var cell = OArchitectUtil.getPropertyCellFromPropertiesCells(cells, property);
+            if (cell != null) {
+                graph.getModel().setValue(cell, property);
+            } else {
+                graph.addCell(OArchitectUtil.createOPropertyVertex(property), subClassCell);
+            }
+        }
+    },
+
     getOPropertiesCellsInOClassCell: function (graph, properties, classCell) {
         var cells = [];
         var allPropertiesCells = graph.getChildVertices(classCell);

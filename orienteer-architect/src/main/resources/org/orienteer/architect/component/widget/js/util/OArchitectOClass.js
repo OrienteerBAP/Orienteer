@@ -35,39 +35,65 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         var msg = '';
         if (!exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
+                var cells = OArchitectUtil.getOClassSubClassesCells(app.editor.graph, oClass);
+                renameSubClasses(app.editor.graph, oClass.name, name, cells);
                 oClass.name = name;
             } else msg = localizer.classExistsInEditor;
         } else msg = localizer.classExistsInDatabase;
         if (callback != null) callback(oClass, msg);
     });
-};
 
-OArchitectOClass.prototype.addOProperty = function (oProperty) {
-    if (!this.containsProperty(oProperty)) {
-        this.properties.push(oProperty);
-        var delIndex = this.propertiesForDelete.indexOf(oProperty);
-        if (delIndex > -1) {
-            this.propertiesForDelete.splice(delIndex, 1);
+    function renameSubClasses(graph, oldSuperClassName, newSuperClassName, cells) {
+        graph.getModel().beginUpdate();
+        try {
+            OArchitectUtil.forEach(cells, function (cell) {
+                var subClass = cell.value;
+                subClass.removeSuperClassName(oldSuperClassName);
+                subClass.addSuperClassName(newSuperClassName);
+                graph.getModel().setValue(cell, subClass);
+            });
+        } finally {
+            graph.getModel().endUpdate();
         }
     }
 };
 
-OArchitectOClass.prototype.putOProperty = function (oProperty) {
+OArchitectOClass.prototype.createProperty = function (name, type) {
+    var property = this.getProperty(name);
+    if (property != null)
+        throw new Error('OProperty with name: ' + name + ' already exists!');
+    property = new OArchitectOProperty(this.name, name, type);
+    this.properties.push(property);
+    return property;
+};
+
+OArchitectOClass.prototype.putProperty = function (oProperty) {
     var index = this.getPropertyIndex(oProperty);
+    var oCass = this;
     if (index > -1) {
         this.properties[index] = oProperty;
-    } else this.addOProperty(oProperty);
+    } else addProperty(oProperty);
+
+    OArchitectUtil.changeAllSubProperties(app.editor.graph, oCass);
+
+    function addProperty(oProperty) {
+        if (!oCass.containsProperty(oProperty)) {
+            oCass.properties.push(oProperty);
+            var delIndex = oCass.propertiesForDelete.indexOf(oProperty);
+            if (delIndex > -1) {
+                oCass.propertiesForDelete.splice(delIndex, 1);
+            }
+        }
+    }
 };
 
 OArchitectOClass.prototype.removeProperty = function (oProperty) {
     var index = this.getPropertyIndex(oProperty);
     if (index > -1) {
-        var isSubClassProperty = this.properties[index].isSubClassProperty();
         this.properties.splice(index, 1);
-        if (!isSubClassProperty) {
-            index = this.propertiesForDelete.indexOf(oProperty);
-            if (index === -1) this.propertiesForDelete.push(oProperty);
-        }
+        index = this.propertiesForDelete.indexOf(oProperty);
+        if (index === -1) this.propertiesForDelete.push(oProperty);
+        OArchitectUtil.changeAllSubProperties(app.editor.graph, this);
     }
 };
 
@@ -90,6 +116,19 @@ OArchitectOClass.prototype.containsSuperClass = function (superClassName) {
 
 OArchitectOClass.prototype.containsProperty = function (property) {
     return this.getPropertyIndex(property) > -1;
+};
+
+OArchitectOClass.prototype.getProperty = function (name) {
+    var property = null;
+    if (name != null) {
+        for (var i = 0; i < this.properties.length; i++) {
+            if (this.properties[i].name === name) {
+                property = this.properties[i];
+                break;
+            }
+        }
+    }
+    return property;
 };
 
 OArchitectOClass.prototype.getPropertyIndex = function (property) {

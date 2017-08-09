@@ -32,6 +32,46 @@ OArchitectValueContainer.prototype.createIcon = function (cssClass) {
     return icon;
 };
 
+OArchitectValueContainer.prototype.addClickListenerForAction = function (element, action) {
+    var editor = this.editor;
+    var cell = this.cell;
+    element.addEventListener('click', function (event) {
+        editor.execute(action, cell, event);
+    });
+};
+
+var OClassContainer = function (oClass, editor, cell) {
+    OArchitectValueContainer.apply(this, arguments);
+    this.cell = cell;
+};
+
+OClassContainer.prototype = Object.create(OArchitectValueContainer.prototype);
+OClassContainer.prototype.constructor = OClassContainer;
+
+OClassContainer.prototype.createElement = function (maxLength) {
+    return this.createContainer(this.createLabel(maxLength), this.createEditIcon());
+};
+
+OClassContainer.prototype.createContainer = function (label, editElement) {
+    var container = OArchitectValueContainer.prototype.createContainer.apply(this, arguments);
+    container.addEventListener('mouseover', function () {
+        editElement.style.visibility = 'visible';
+        editElement.style.cursor = 'pointer';
+    });
+    container.addEventListener('mouseout', function () {
+        editElement.style.visibility = 'hidden';
+        editElement.style.cursor = 'default';
+    });
+    return container;
+};
+
+OClassContainer.prototype.createEditIcon = function () {
+    var editElement = this.createIcon(OArchitectConstants.FA_EDIT);
+    editElement.style.visibility = 'hidden';
+    editElement.style.marginRight = '5px';
+    this.addClickListenerForAction(editElement, OArchitectActionNames.EDIT_OCLASS_ACTION);
+    return editElement;
+};
 
 var OPropertyContainer = function (property, editor, cell) {
     OArchitectValueContainer.apply(this, arguments);
@@ -87,7 +127,7 @@ OPropertyContainer.prototype.createEditOPropertyElement = function () {
     var editElement = this.createIcon(OArchitectConstants.FA_EDIT);
     editElement.style.visibility = 'hidden';
     editElement.style.marginRight = '5px';
-    this.addListenerForAction(editElement, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
+    this.addClickListenerForAction(editElement, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
     return editElement;
 };
 
@@ -95,16 +135,6 @@ OPropertyContainer.prototype.createDeleteOPropertyElement = function () {
     var deleteElement = this.createIcon(OArchitectConstants.FA_DELETE);
     deleteElement.style.visibility = 'hidden';
     deleteElement.style.marginLeft = '5px';
-    this.addListenerForAction(deleteElement, OArchitectActionNames.DELETE_OPROPERTY_ACTION);
+    this.addClickListenerForAction(deleteElement, OArchitectActionNames.DELETE_OPROPERTY_ACTION);
     return deleteElement;
 };
-
-OPropertyContainer.prototype.addListenerForAction = function (element, action) {
-    var editor = this.editor;
-    var cell = this.cell;
-    element.addEventListener('click', function (event) {
-        editor.execute(action, cell, event);
-    });
-};
-
-

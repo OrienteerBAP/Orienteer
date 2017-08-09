@@ -17,7 +17,7 @@ OClassEditModalWindow.prototype.createContent = function (panel, head, body) {
     var input = this.createNameInput(this.create);
     this.addValueBlock(body, input);
     this.addButtonBlock(body, input);
-    this.addHeadBlock(head);
+    this.addHeadBlock(head, this.create);
 };
 
 OClassEditModalWindow.prototype.createValueBlock = function () {

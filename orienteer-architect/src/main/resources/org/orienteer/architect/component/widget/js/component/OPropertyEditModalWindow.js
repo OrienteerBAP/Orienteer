@@ -18,7 +18,7 @@ OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) 
     var input = this.createNameInput(this.create);
     this.addValueBlock(body, input, select);
     this.addButtonBlock(body, input, select);
-    this.addHeadBlock(head);
+    this.addHeadBlock(head, this.create);
 };
 
 OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select) {
@@ -71,16 +71,20 @@ OPropertyEditModalWindow.prototype.createNameInput = function (createNewOPropert
 
 OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, typeSelect) {
     var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);
+    button.addEventListener('click', this.createOkButtonOnClickBehavior(nameField, typeSelect));
+    button.style.float = 'right';
+    button.style.marginRight = '10px';
+    button.style.marginBottom = '10px';
+    return button;
+};
+
+OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameField, typeSelect) {
     var modal = this;
-    button.addEventListener('click', function () {
+    return function () {
         if (nameField.value.length > 0) {
             modal.value.setName(nameField.value);
             modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
             modal.destroy(modal.OK);
         }
-    });
-    button.style.float = 'right';
-    button.style.marginRight = '10px';
-    button.style.marginBottom = '10px';
-    return button;
+    };
 };

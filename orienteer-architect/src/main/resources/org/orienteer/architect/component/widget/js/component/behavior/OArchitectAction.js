@@ -2,13 +2,14 @@
  * Static class which contains names of {@link OArchitectEditor} actions
  */
 var OArchitectActionNames = {
-    ADD_OCLASS_ACTION: 'addOClass',
-    ADD_OPROPERTY_ACTION: 'addOProperty',
-    ADD_EXISTS_OCLASSES_ACTION: 'addExistsOClasses',
-    EDIT_OPROPERTY_ACTION: 'editOProperty',
-    DELETE_OPROPERTY_ACTION: 'deleteOProperty',
-    TO_JSON_ACTION: 'toJsonAction',
-    SAVE_EDITOR_CONFIG_ACTION: 'saveEditorConfig',
+    ADD_OCLASS_ACTION:           'addOClass',
+    ADD_OPROPERTY_ACTION:        'addOProperty',
+    ADD_EXISTS_OCLASSES_ACTION:  'addExistsOClasses',
+    EDIT_OCLASS_ACTION:          'editOClass',
+    EDIT_OPROPERTY_ACTION:       'editOProperty',
+    DELETE_OPROPERTY_ACTION:     'deleteOProperty',
+    TO_JSON_ACTION:              'toJsonAction',
+    SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
     APPLY_EDITOR_CHANGES_ACTION: 'applyChanges'
 };
 
@@ -65,7 +66,7 @@ var OArchitectAction = {
                         graph.getModel().beginUpdate();
                         try {
                             graph.addCell(vertex, oClassCell);
-                            oClassCell.value.addOProperty(property);
+                            oClassCell.value.putProperty(property);
                         } finally {
                             graph.getModel().endUpdate();
                         }
@@ -155,6 +156,23 @@ var OArchitectAction = {
         };
 
         app.requestExistsOClasses(OArchitectUtil.getOClassesAsJSON(editor.graph), action);
+    },
+
+    /**
+     * Edit {@link OArchitectOClass} action
+     */
+    editOClassAction: function (editor, cell, evt) {
+        var action = function () {
+            if (cell !== null && cell.value instanceof OArchitectOClass) {
+                var graph = editor.graph;
+                graph.stopEditing(false);
+                var pt = graph.getPointForEvent(evt);
+                var modal = new OClassEditModalWindow(cell.value, app.editorId, false);
+                modal.show(pt.x, pt.y);
+            }
+        };
+
+        action();
     },
 
     /**
