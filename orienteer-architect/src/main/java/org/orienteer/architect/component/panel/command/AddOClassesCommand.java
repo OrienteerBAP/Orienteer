@@ -48,20 +48,44 @@ public class AddOClassesCommand extends AbstractCheckBoxEnabledCommand<OClass> {
     private List<OArchitectOClass> toOArchitectOClasses(List<OClass> classes) {
         List<OArchitectOClass> architectOClasses = new ArrayList<>(classes.size());
         for (OClass oClass : classes) {
-            OArchitectOClass architectOClass = new OArchitectOClass(oClass.getName());
-            architectOClass.setProperties(toOArchitectProperties(oClass.properties()));
-            architectOClass.setSuperClasses(toOArchitectSuperClasses(oClass.getSuperClasses()));
-            architectOClasses.add(architectOClass);
+            architectOClasses.add(toOArchitectOClass(oClass));
         }
         return architectOClasses;
     }
 
-    private List<OArchitectOProperty> toOArchitectProperties(Collection<OProperty> properties) {
+    private OArchitectOClass toOArchitectOClass(OClass oClass) {
+        OArchitectOClass architectOClass = new OArchitectOClass(oClass.getName());
+
+        architectOClass.setProperties(toOArchitectProperties(oClass.properties(), oClass.getSuperClasses()));
+        architectOClass.setSuperClassesNames(toOArchitectSuperClasses(oClass.getSuperClasses()));
+        return architectOClass;
+    }
+
+    private List<OArchitectOProperty> toOArchitectProperties(Collection<OProperty> properties, List<OClass> superClasses) {
         List<OArchitectOProperty> architectProperties = new ArrayList<>(properties.size());
         for (OProperty property : properties) {
-            architectProperties.add(new OArchitectOProperty(property.getName(), property.getType()));
+            OArchitectOProperty architectOProperty = new OArchitectOProperty(property.getName(), property.getType());
+            if (property.getLinkedClass() != null) {
+                architectOProperty.setLinkedClassName(property.getLinkedClass().getName());
+            }
+            architectOProperty.setSubClassProperty(isSubClassProperty(property, superClasses));
+            architectProperties.add(architectOProperty);
         }
         return architectProperties;
+    }
+
+    private boolean isSubClassProperty(OProperty property, List<OClass> superClasses) {
+        boolean isSubClass = false;
+        for (OClass oClass : superClasses) {
+            isSubClass = oClass.getProperty(property.getName()) != null;
+            if (!isSubClass) {
+                List<OClass> classes = oClass.getSuperClasses();
+                if (classes != null && !classes.isEmpty()) {
+                    isSubClass = isSubClassProperty(property, classes);
+                }
+            } else break;
+        }
+        return isSubClass;
     }
 
     private List<String> toOArchitectSuperClasses(List<OClass> superClasses) {

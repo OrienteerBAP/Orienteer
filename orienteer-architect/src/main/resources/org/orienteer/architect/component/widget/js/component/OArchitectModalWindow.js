@@ -1,7 +1,7 @@
 
 var modalWindowCounter = 0;
 
-var SchemeEditorModalWindow = function (value, containerId) {
+var OArchitectModalWindow = function (value, containerId) {
     this.CANCEL = 'CANCEL';
     this.OK     = 'OK';
 
@@ -11,7 +11,7 @@ var SchemeEditorModalWindow = function (value, containerId) {
     this.markupId = null;
 };
 
-SchemeEditorModalWindow.prototype.show = function (x, y) {
+OArchitectModalWindow.prototype.show = function (x, y) {
     if (!this.isShow) {
         var id = '#' + this.containerId;
         $(id).append(this.createModalElement(x, y));
@@ -22,7 +22,7 @@ SchemeEditorModalWindow.prototype.show = function (x, y) {
     } else throw new Error('Scheme editor modal window is already show!');
 };
 
-SchemeEditorModalWindow.prototype.destroy = function (event) {
+OArchitectModalWindow.prototype.destroy = function (event) {
     if (this.isShow) {
         modalWindowCounter--;
         this.onDestroy(this.value, event);
@@ -32,9 +32,9 @@ SchemeEditorModalWindow.prototype.destroy = function (event) {
     } else throw new Error('Can\'t destroy modal window, because it is not show!');
 };
 
-SchemeEditorModalWindow.prototype.onDestroy = function (value, event) {};
+OArchitectModalWindow.prototype.onDestroy = function (value, event) {};
 
-SchemeEditorModalWindow.prototype.createModalElement = function (x, y) {
+OArchitectModalWindow.prototype.createModalElement = function (x, y) {
     var panel = document.createElement('div');
     panel.style.width = '300px';
     panel.style.position = 'absolute';
@@ -53,7 +53,7 @@ SchemeEditorModalWindow.prototype.createModalElement = function (x, y) {
     return panel;
 };
 
-SchemeEditorModalWindow.prototype.getMarkupId = function () {
+OArchitectModalWindow.prototype.getMarkupId = function () {
     if (!this.markupId) {
         this.markupId = 'schemeEditorModalWindow' + modalWindowCounter;
         modalWindowCounter++;
@@ -61,12 +61,12 @@ SchemeEditorModalWindow.prototype.getMarkupId = function () {
     return this.markupId;
 };
 
-SchemeEditorModalWindow.prototype.createContent = function (panel, head, body) {
+OArchitectModalWindow.prototype.createContent = function (panel, head, body) {
     head.innerHTML = 'No head content';
     body.innerHTML = 'No body content';
 };
 
-SchemeEditorModalWindow.prototype.newButton = function (label, typeCssClass) {
+OArchitectModalWindow.prototype.newButton = function (label, typeCssClass) {
     var but = document.createElement('a');
     but.classList.add('btn');
     but.classList.add(typeCssClass);
@@ -77,11 +77,11 @@ SchemeEditorModalWindow.prototype.newButton = function (label, typeCssClass) {
 
 
 var OPropertyEditModalWindow = function (property, containerId, create) {
-    SchemeEditorModalWindow.apply(this, arguments);
+    OArchitectModalWindow.apply(this, arguments);
     this.create = create;
 };
 
-OPropertyEditModalWindow.prototype = Object.create(SchemeEditorModalWindow.prototype);
+OPropertyEditModalWindow.prototype = Object.create(OArchitectModalWindow.prototype);
 OPropertyEditModalWindow.prototype.constructor = OPropertyEditModalWindow;
 
 OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) {
@@ -128,14 +128,14 @@ OPropertyEditModalWindow.prototype.createButtonBlock = function () {
 OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOProperty) {
     var select = document.createElement('select');
     select.classList.add('form-control');
-    for (var i = 0; i < OType.size(); i++) {
+    for (var i = 0; i < OArchitectOType.size(); i++) {
         var option = document.createElement('option');
-        option.setAttribute('value', OType.get(i));
-        option.innerHTML = OType.get(i);
+        option.setAttribute('value', OArchitectOType.get(i));
+        option.innerHTML = OArchitectOType.get(i);
         select.appendChild(option);
     }
     if (!createNewOProperty) {
-        if (OType.contains(this.value.type)) select.selectedIndex = OType.getIndexByValue(this.value.type);
+        if (OArchitectOType.contains(this.value.type)) select.selectedIndex = OArchitectOType.getIndexByValue(this.value.type);
     }
     return select;
 };
@@ -152,7 +152,7 @@ OPropertyEditModalWindow.prototype.createNameInput = function (createNewOPropert
 };
 
 OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, typeSelect) {
-    var button = this.newButton(label, BUTTON_PRIMARY_CLASS);
+    var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);
     var modal = this;
     button.addEventListener('click', function () {
         if (nameField.value.length > 0) {
@@ -168,7 +168,7 @@ OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, 
 };
 
 OPropertyEditModalWindow.prototype.createCancelButton = function (label) {
-    var button = this.newButton(label, BUTTON_DANGER_CLASS);
+    var button = this.newButton(label, OArchitectConstants.BUTTON_DANGER_CLASS);
     var modal = this;
     button.addEventListener('click', function () {
         modal.destroy(modal.CANCEL);
@@ -187,10 +187,10 @@ OPropertyEditModalWindow.prototype.createLabel = function (label) {
 
 
 var InfoModalWindow = function (msg, containerId) {
-    SchemeEditorModalWindow.apply(this, arguments);
+    OArchitectModalWindow.apply(this, arguments);
 };
 
-InfoModalWindow.prototype = Object.create(SchemeEditorModalWindow.prototype);
+InfoModalWindow.prototype = Object.create(OArchitectModalWindow.prototype);
 InfoModalWindow.prototype.constructor = InfoModalWindow;
 
 InfoModalWindow.prototype.createContent = function (panel, head, body) {
@@ -207,7 +207,7 @@ InfoModalWindow.prototype.createMsgContent = function () {
 };
 
 InfoModalWindow.prototype.createOkButton = function () {
-    var ok = this.newButton(localizer.ok, BUTTON_PRIMARY_CLASS);
+    var ok = this.newButton(localizer.ok, OArchitectConstants.BUTTON_PRIMARY_CLASS);
     var modal = this;
     ok.addEventListener('click', function () {
         modal.destroy(modal.OK);

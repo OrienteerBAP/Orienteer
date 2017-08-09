@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class OArchitectOClass implements IClusterable {
     private String name;
-    private List<String> superClasses;
+    private List<String> superClassesNames;
     private List<OArchitectOProperty> properties;
     private List<OArchitectOProperty> propertiesForDelete;
 
@@ -18,14 +18,14 @@ public class OArchitectOClass implements IClusterable {
         this(name, null, null);
     }
 
-    public OArchitectOClass(String name, List<String> superClasses) {
-        this(name, superClasses, null);
+    public OArchitectOClass(String name, List<String> superClassesNames) {
+        this(name, superClassesNames, null);
     }
 
-    public OArchitectOClass(String name, List<String> superClasses, List<OArchitectOProperty> properties) {
+    public OArchitectOClass(String name, List<String> superClassesNames, List<OArchitectOProperty> properties) {
         Args.notEmpty(name, "name");
         this.name = name;
-        this.superClasses = superClasses;
+        this.superClassesNames = superClassesNames;
         this.properties = properties;
     }
 
@@ -33,8 +33,8 @@ public class OArchitectOClass implements IClusterable {
         this.name = name;
     }
 
-    public void setSuperClasses(List<String> superClasses) {
-        this.superClasses = superClasses;
+    public void setSuperClassesNames(List<String> superClassesNames) {
+        this.superClassesNames = superClassesNames;
     }
 
     public void setProperties(List<OArchitectOProperty> properties) {
@@ -49,8 +49,8 @@ public class OArchitectOClass implements IClusterable {
         return name;
     }
 
-    public List<String> getSuperClasses() {
-        return superClasses;
+    public List<String> getSuperClassesNames() {
+        return superClassesNames;
     }
 
     public List<OArchitectOProperty> getProperties() {
@@ -61,12 +61,4 @@ public class OArchitectOClass implements IClusterable {
         return propertiesForDelete;
     }
 
-    @Override
-    public String toString() {
-        return "OArchitectOClass{" +
-                "name='" + name + '\'' +
-                ", superClasses=" + superClasses +
-                ", properties=" + properties +
-                '}';
-    }
 }

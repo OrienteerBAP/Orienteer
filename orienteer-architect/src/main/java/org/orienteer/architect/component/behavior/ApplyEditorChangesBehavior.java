@@ -1,5 +1,6 @@
 package org.orienteer.architect.component.behavior;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -40,29 +41,34 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         } catch (Exception ex) {
             throw new WicketRuntimeException("Can't parse input json!", ex);
         }
-        writeClassesToSchema(classes);
+        addClassesToSchema(classes);
     }
 
-    private void writeClassesToSchema(final List<OArchitectOClass> classes) {
+    private void addClassesToSchema(List<OArchitectOClass> classes) {
         ODatabaseDocument db = OrienteerWebApplication.get().getDatabase();
         db.commit();
         OSchema schema = db.getMetadata().getSchema();
-        for (OArchitectOClass oArchitectOClass : classes) {
-            String name = oArchitectOClass.getName();
-            OClass oClass = schema.getOrCreateClass(name);
-            removePropertiesFromOClass(oClass, oArchitectOClass.getPropertiesForDelete());
-            addSuperClassesToOClass(schema, oClass, oArchitectOClass.getSuperClasses());
-            addPropertiesToOClass(oClass, oArchitectOClass.getProperties());
+        for (OArchitectOClass architectOClass : classes) {
+            addClassToSchema(schema, architectOClass);
         }
         db.commit();
+    }
+
+    private OClass addClassToSchema(OSchema schema, OArchitectOClass architectOClass) {
+        String name = architectOClass.getName();
+        OClass oClass = schema.getOrCreateClass(name);
+        removePropertiesFromOClass(oClass, architectOClass.getPropertiesForDelete());
+        addSuperClassesToOClass(schema, oClass, architectOClass.getSuperClassesNames());
+        addPropertiesToOClass(schema, oClass, architectOClass.getProperties());
+        return oClass;
     }
 
     private void addSuperClassesToOClass(OSchema schema, OClass oClass, List<String> superClassNames) {
         if (superClassNames != null && !superClassNames.isEmpty()) {
             List<OClass> superClasses = Lists.newArrayList();
-            for (String name : superClassNames) {
-                if (!oClass.isSubClassOf(name)) {
-                    OClass superClass = schema.getOrCreateClass(name);
+            for (String architectSuperClass : superClassNames) {
+                if (!oClass.isSubClassOf(architectSuperClass) && schema.existsClass(architectSuperClass)) {
+                    OClass superClass = schema.getClass(architectSuperClass);
                     superClasses.add(superClass);
                 }
             }
@@ -79,14 +85,18 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         }
     }
 
-    private void addPropertiesToOClass(OClass oClass, List<OArchitectOProperty> properties) {
+    private void addPropertiesToOClass(OSchema schema, OClass oClass, List<OArchitectOProperty> properties) {
         for (OArchitectOProperty property : properties) {
-            if (!property.isSubclassProperty()) {
+            if (!property.isSubClassProperty()) {
                 OProperty oProperty = oClass.getProperty(property.getName());
                 if (oProperty == null) {
-                    oClass.createProperty(property.getName(), property.getType());
+                    oProperty = oClass.createProperty(property.getName(), property.getType());
                 } else if (oProperty.getType() != property.getType()) {
                     oProperty.setType(property.getType());
+                }
+                if (!Strings.isNullOrEmpty(property.getLinkedClassName())) {
+                    OClass linkedClass = schema.getOrCreateClass(property.getLinkedClassName());
+                    oProperty.setLinkedClass(linkedClass);
                 }
             }
         }

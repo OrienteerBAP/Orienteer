@@ -24,14 +24,7 @@ public class OArchitectTest {
     public void parseJSON(String json) {
         List<OArchitectOClass> classes = JsonUtil.fromJSON(json);
         for (OArchitectOClass oClass : classes) {
-            assertNotNull(oClass);
-            assertFalse(Strings.isNullOrEmpty(oClass.getName()));
-            if (oClass.getProperties() != null && !oClass.getProperties().isEmpty()) {
-                testOClassProperties(oClass.getProperties());
-            }
-            if (oClass.getSuperClasses() != null && !oClass.getSuperClasses().isEmpty()) {
-                testOClassSuperClasses(oClass.getSuperClasses());
-            }
+            testOArchitectClass(oClass);
         }
     }
 
@@ -39,6 +32,17 @@ public class OArchitectTest {
         List<OArchitectOClass> classes = createClasses();
         String json = JsonUtil.toJSON(classes);
         return json;
+    }
+
+    private void testOArchitectClass(OArchitectOClass oClass) {
+        assertNotNull(oClass);
+        assertFalse(Strings.isNullOrEmpty(oClass.getName()));
+        if (oClass.getProperties() != null && !oClass.getProperties().isEmpty()) {
+            testOClassProperties(oClass.getProperties());
+        }
+        if (oClass.getSuperClassesNames() != null && !oClass.getSuperClassesNames().isEmpty()) {
+            testOClassSuperClasses(oClass.getSuperClassesNames());
+        }
     }
 
     private void testOClassProperties(List<OArchitectOProperty> properties) {
@@ -65,7 +69,7 @@ public class OArchitectTest {
         superClasses.add("Test2");
         superClasses.add("Test3");
         oClass.setProperties(properties);
-        oClass.setSuperClasses(superClasses);
+        oClass.setSuperClassesNames(superClasses);
         classes.add(oClass);
 
         superClasses = Lists.newArrayList();
@@ -75,10 +79,10 @@ public class OArchitectTest {
         properties.add(new OArchitectOProperty("id", OType.INTEGER));
         properties.add(new OArchitectOProperty("name", OType.STRING));
         properties.add(new OArchitectOProperty("country", OType.STRING));
-        superClasses.add("Human");
-        superClasses.add("User");
+        superClasses.add("Test3");
+        superClasses.add("Test5");
         oClass.setProperties(properties);
-        oClass.setSuperClasses(superClasses);
+        oClass.setSuperClassesNames(superClasses);
         classes.add(oClass);
 
         return classes;

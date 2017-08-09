@@ -11,19 +11,23 @@ public class OArchitectOProperty implements IClusterable {
 
     private String name;
     private OType type;
-    private boolean subclassProperty;
+    private boolean subClassProperty;
+    private String linkedClassName;
 
     public OArchitectOProperty(String name, OType type) {
-        Args.notEmpty(name, "name");
-        this.name = name;
-        this.type = type;
+        this(name, type, false, null);
     }
 
-    public OArchitectOProperty(String name, OType type, boolean subclassProperty) {
+    public OArchitectOProperty(String name, OType type, boolean subClassProperty) {
+        this(name, type, subClassProperty, null);
+    }
+
+    public OArchitectOProperty(String name, OType type, boolean subClassProperty, String linkedClassName) {
         Args.notEmpty(name, "name");
         this.name = name;
         this.type = type;
-        this.subclassProperty = subclassProperty;
+        this.subClassProperty = subClassProperty;
+        this.linkedClassName = linkedClassName;
     }
 
     public String getName() {
@@ -42,19 +46,20 @@ public class OArchitectOProperty implements IClusterable {
         this.type = type;
     }
 
-    public boolean isSubclassProperty() {
-        return subclassProperty;
+    public boolean isSubClassProperty() {
+        return subClassProperty;
     }
 
-    public void setSubclassProperty(boolean subclassProperty) {
-        this.subclassProperty = subclassProperty;
+    public void setSubClassProperty(boolean subClassProperty) {
+        this.subClassProperty = subClassProperty;
     }
 
-    @Override
-    public String toString() {
-        return "OArchitectOProperty{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                '}';
+    public String getLinkedClassName() {
+        return linkedClassName;
     }
+
+    public void setLinkedClassName(String linkedClassName) {
+        this.linkedClassName = linkedClassName;
+    }
+
 }

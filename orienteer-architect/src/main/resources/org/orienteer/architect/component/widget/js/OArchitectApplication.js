@@ -1,8 +1,24 @@
-
-
+/**
+ * Global access for {@link OArchitectApplication} instance
+ */
 var app;
+
+/**
+ * Global access for {@link OArchitectApplication#localizer} instance. Contains localized strings.
+ */
 var localizer;
 
+/**
+ * Application class for 'orienteer-architect'
+ * @param basePath
+ * @param config
+ * @param localizer
+ * @param containerId
+ * @param editorId
+ * @param sidebarId
+ * @param toolbarId
+ * @constructor
+ */
 var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
 	this.basePath = basePath;
 	this.config = mxUtils.parseXml(config);
@@ -18,6 +34,9 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
     this.callback = null;
 };
 
+/**
+ * Init application. Create editor and config it.
+ */
 OArchitectApplication.prototype.init = function () {
     if (mxClient.isBrowserSupported()) {
         localizer = this.localizer;
@@ -25,58 +44,94 @@ OArchitectApplication.prototype.init = function () {
         this.editor.configure(this.config.documentElement);
         this.configureEditorSidebar(this.editor);
         this.configureEditorToolbar(this.editor);
-        this.configurePopupMenu(this.editor);
     } else mxUtils.error('Browser is not supported!', 200, false);
 };
 
+/**
+ * Config editor sidebar.
+ * Add OArchitectActionNames to editor sidebar.
+ * @param editor {@link OArchitectEditor} for config
+ */
 OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
-    var sidebar = new Sidebar(editor, this.getSidebarContainer());
-    sidebar.addAction(localizer.classMsg, actions.ADD_OCLASS_ACTION, addOClassAction);
-    sidebar.addAction(localizer.property, actions.ADD_OPROPERTY_ACTION, addOPropertyAction);
-    sidebar.addAction(localizer.existsClasses, actions.ADD_EXISTS_OCLASSES_ACTION, addExistsOClassesAction);
+    var sidebar = new OArchitectSidebar(editor, this.getSidebarContainer());
+    sidebar.addAction(localizer.classMsg, OArchitectActionNames.ADD_OCLASS_ACTION, OArchitectAction.addOClassAction);
+    sidebar.addAction(localizer.property, OArchitectActionNames.ADD_OPROPERTY_ACTION, OArchitectAction.addOPropertyAction);
+    sidebar.addAction(localizer.existsClasses, OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION, OArchitectAction.addExistsOClassesAction);
 };
 
+/**
+ * Config editor toolbar
+ * @param editor {@link OArchitectEditor} for config
+ */
 OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
-    var toolbar = new Toolbar(editor, this.getToolbarContainer());
-    toolbar.addAction(localizer.saveDataModel, actions.SAVE_EDITOR_CONFIG_ACTION, saveEditorConfigAction);
-    toolbar.addAction(localizer.applyChanges, actions.APPLY_EDITOR_CHANGES_ACTION, applyEditorChangesAction);
-    toolbar.addAction(localizer.toJson, actions.TO_JSON_ACTION, toJsonAction);
+    var toolbar = new OArchitectToolbar(editor, this.getToolbarContainer());
+    toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
+    toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
+    toolbar.addAction(localizer.toJson, OArchitectActionNames.TO_JSON_ACTION, OArchitectAction.toJsonAction);
 };
 
-OArchitectApplication.prototype.configurePopupMenu = function (editor) {
-    editor.addAction(actions.EDIT_OPROPERTY_ACTION, editOPropertyAction);
-};
-
+/**
+ * @returns editor element
+ */
 OArchitectApplication.prototype.getEditorContainer = function () {
     return $('#' + this.editorId).get(0);
 };
 
+/**
+ * @returns sidebar element
+ */
 OArchitectApplication.prototype.getSidebarContainer = function () {
     return $('#' + this.sidebarId).get(0);
 };
 
+/**
+ * @returns toolbar element
+ */
 OArchitectApplication.prototype.getToolbarContainer = function () {
     return $('#' + this.toolbarId).get(0);
 };
 
+/**
+ * Calls from Wicket!
+ * @param func
+ * @param xml
+ */
 OArchitectApplication.prototype.setSaveEditorConfig = function (func, xml) {
     this.saveEditorConfig = func;
     if (xml) this.applyXmlConfig(xml);
 };
 
+/**
+ * Calls from Wicket!
+ * @param func
+ */
 OArchitectApplication.prototype.setApplyEditorChanges = function (func) {
     this.applyEditorChanges = func;
 };
 
+/**
+ * Calls from Wicket!
+ * @param func
+ */
 OArchitectApplication.prototype.setGetOClassesRequest = function (func) {
     this.getOClassesRequest = func;
 };
 
-OArchitectApplication.prototype.requestOClasses = function (existsClasses, callback) {
+/**
+ * Create request for getting exists classes from database
+ * @param existsClasses exists classes in editor
+ * @param callback function which will be execute when get response
+ */
+OArchitectApplication.prototype.requestExistsOClasses = function (existsClasses, callback) {
     this.callback = callback;
     this.getOClassesRequest(existsClasses);
 };
 
+/**
+ * Calls from Wicket!
+ * Execute callback for getting exists classes from database.
+ * @param json json string which contains exists classes
+ */
 OArchitectApplication.prototype.executeCallback = function (json) {
     this.callback(json);
     this.callback = null;
@@ -89,11 +144,21 @@ OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     codec.decode(node.documentElement, this.editor.graph.getModel());
 };
 
+/**
+ * Calls from Wicket!
+ * Create new instance {@link OArchitectApplication}.
+ */
 var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
     app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId);
     app.init();
 };
 
+/**
+ * @deprecated
+ * Calls from Wicket!
+ * Init {@link mxGraph}
+ * @param locale
+ */
 var initMxGraph = function(locale) {
     mxLanguage = locale;
 };

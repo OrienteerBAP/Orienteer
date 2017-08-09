@@ -1,21 +1,21 @@
 
-var OArchitectDefaultContainer = function (value, editor) {
+var OArchitectValueContainer = function (value, editor) {
     this.value = value;
     this.editor = editor;
 };
 
-OArchitectDefaultContainer.prototype.createElement = function (maxLength, iconCss) {
+OArchitectValueContainer.prototype.createElement = function (maxLength, iconCss) {
     return this.createContainer(this.createLabel(maxLength), this.createIcon(iconCss));
 };
 
-OArchitectDefaultContainer.prototype.createContainer = function (label, icon) {
+OArchitectValueContainer.prototype.createContainer = function (label, icon) {
     var div = document.createElement('div');
     if (icon !== null) div.appendChild(icon);
     div.appendChild(label);
     return div;
 };
 
-OArchitectDefaultContainer.prototype.createLabel = function (maxLength) {
+OArchitectValueContainer.prototype.createLabel = function (maxLength) {
     var label = this.value;
     if (label.length > maxLength) {
         label = label.slice(0, maxLength - 5) + '...';
@@ -25,7 +25,7 @@ OArchitectDefaultContainer.prototype.createLabel = function (maxLength) {
     return span;
 };
 
-OArchitectDefaultContainer.prototype.createIcon = function (cssClass) {
+OArchitectValueContainer.prototype.createIcon = function (cssClass) {
     var icon = document.createElement('i');
     icon.setAttribute('class', cssClass);
     icon.setAttribute('aria-hidden', 'true');
@@ -34,11 +34,11 @@ OArchitectDefaultContainer.prototype.createIcon = function (cssClass) {
 
 
 var OPropertyContainer = function (property, editor, cell) {
-    OArchitectDefaultContainer.apply(this, arguments);
+    OArchitectValueContainer.apply(this, arguments);
     this.cell = cell;
 };
 
-OPropertyContainer.prototype = Object.create(OArchitectDefaultContainer.prototype);
+OPropertyContainer.prototype = Object.create(OArchitectValueContainer.prototype);
 OPropertyContainer.prototype.constructor = OPropertyContainer;
 
 OPropertyContainer.prototype.createElement = function (maxLength) {
@@ -84,18 +84,18 @@ OPropertyContainer.prototype.createLabel = function (maxLength) {
 };
 
 OPropertyContainer.prototype.createEditOPropertyElement = function () {
-    var editElement = this.createIcon(FA_EDIT);
+    var editElement = this.createIcon(OArchitectConstants.FA_EDIT);
     editElement.style.visibility = 'hidden';
     editElement.style.marginLeft = '5px';
-    this.addListenerForAction(editElement, actions.EDIT_OPROPERTY_ACTION);
+    this.addListenerForAction(editElement, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
     return editElement;
 };
 
 OPropertyContainer.prototype.createDeleteOPropertyElement = function () {
-    var deleteElement = this.createIcon(FA_DELETE);
+    var deleteElement = this.createIcon(OArchitectConstants.FA_DELETE);
     deleteElement.style.visibility = 'hidden';
     deleteElement.style.marginRight = '5px';
-    this.addListenerForAction(deleteElement, actions.DELETE_OPROPERTY_ACTION);
+    this.addListenerForAction(deleteElement, OArchitectActionNames.DELETE_OPROPERTY_ACTION);
     return deleteElement;
 };
 

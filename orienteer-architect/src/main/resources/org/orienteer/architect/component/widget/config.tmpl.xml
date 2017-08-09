@@ -1,7 +1,5 @@
 <mxEditor>
     <mxDefaultPopupMenu as="popupHandler">
-        <add as="Add property" action="addOProperty" if="cell"/>
-        <add as="Edit property" action="editOProperty" if="cell"/>
         <add as="Delete" action="delete" icon="${basePath}img/delete.png" if="cell"/>
     </mxDefaultPopupMenu>
     <mxDefaultKeyHandler as="keyHandler">
