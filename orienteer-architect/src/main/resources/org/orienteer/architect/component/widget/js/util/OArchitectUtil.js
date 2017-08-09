@@ -143,6 +143,18 @@ var OArchitectUtil = {
         return this.searchOClassCell(graph, graph.getModel().getParent(cell));
     },
 
+    existsOClassInGraph: function (graph, className) {
+        var exists = false;
+        var cells = graph.getChildVertices(graph.getDefaultParent());
+        OArchitectUtil.forEach(cells, function (cell, trigger) {
+            if (cell.value.name === className) {
+                exists = true;
+                trigger.stop = true;
+            }
+        });
+        return exists;
+    },
+
     propertyContainsInProperties: function (property, properties) {
         var contains = false;
         OArchitectUtil.forEach(properties, function (p, trigger) {

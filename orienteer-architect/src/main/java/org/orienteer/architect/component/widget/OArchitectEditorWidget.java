@@ -17,6 +17,7 @@ import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.ApplyEditorChangesBehavior;
+import org.orienteer.architect.component.behavior.ExistsOClassBehavior;
 import org.orienteer.architect.component.behavior.GetOClassesBehavior;
 import org.orienteer.architect.component.behavior.ManageEditorConfigBehavior;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
@@ -67,6 +68,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         add(new ManageEditorConfigBehavior(getModel()));
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(panel));
+        add(new ExistsOClassBehavior());
     }
 
     private WebMarkupContainer newContainer(String id) {
@@ -88,6 +90,8 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectBar.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectModalWindow.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectValueContainer.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OClassEditModalWindow.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OPropertyEditModalWindow.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/behavior/OArchitectAction.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConfig.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConnectionConfig.js")));

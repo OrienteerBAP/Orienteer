@@ -22,10 +22,26 @@ var OArchitectAction = {
      * Add new {@link OArchitectOClass} to editor action
      */
     addOClassAction: function (editor, cell, evt) {
-        editor.graph.stopEditing(false);
-        var pt = editor.graph.getPointForEvent(evt);
-        var vertex = OArchitectUtil.createOClassVertex(new OArchitectOClass(OArchitectConstants.DEFAULT_OCLASS_NAME), pt.x, pt.y);
-        editor.graph.setSelectionCells(editor.graph.importCells([vertex], 0, 0, cell));
+        var graph = editor.graph;
+        graph.stopEditing(false);
+        var pt = graph.getPointForEvent(evt);
+        var modal = new OClassEditModalWindow(new OArchitectOClass(), app.editorId, true);
+
+        modal.onDestroy = function (oClass, event) {
+            if (event === this.OK) {
+                var vertex = OArchitectUtil.createOClassVertex(oClass);
+                vertex.geometry.x = pt.x;
+                vertex.geometry.y = pt.y;
+                graph.getModel().beginUpdate();
+                try {
+                    graph.addCell(vertex, graph.getDefaultParent());
+                } finally {
+                    graph.getModel().endUpdate();
+                }
+            }
+        };
+        modal.show(pt.x, pt.y);
+
     },
 
     /**

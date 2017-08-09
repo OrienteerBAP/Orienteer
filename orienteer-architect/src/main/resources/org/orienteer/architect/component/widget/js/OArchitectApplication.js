@@ -30,6 +30,7 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
     this.saveEditorConfigCallbackUrl = null;
     this.applyEditorChangesCallbackUrl = null;
     this.getOClassesRequestCallbackUrl = null;
+    this.existsOClassRequestCallbackUrl = null;
     this.editor = null;
     this.callback = null;
 };
@@ -118,6 +119,14 @@ OArchitectApplication.prototype.setGetOClassesRequest = function (callbackUrl) {
 };
 
 /**
+ * Calls from Wicket!
+ * @param callbackUrl
+ */
+OArchitectApplication.prototype.setExistsOClassRequest = function (callbackUrl) {
+    this.existsOClassRequestCallbackUrl = callbackUrl;
+};
+
+/**
  * Save editor config in database
  * @param xml config which will be saved
  */
@@ -150,6 +159,18 @@ OArchitectApplication.prototype.requestExistsOClasses = function (json, callback
 };
 
 /**
+ * Create request for checks if given class name exists in database
+ * @param name class name for check
+ * @param callback function which will be execute when get response
+ */
+OArchitectApplication.prototype.requestIfOClassExists = function (name, callback) {
+    this.callback = callback;
+    this.sendPostRequest(this.existsOClassRequestCallbackUrl, {
+        existsClassName: name
+    });
+};
+
+/**
  * Create POST request to Wicket
  * @param url callback url
  * @param data data for send contains JavaScript object
@@ -163,11 +184,11 @@ OArchitectApplication.prototype.sendPostRequest = function (url, data) {
 
 /**
  * Calls from Wicket!
- * Execute callback for getting exists classes from database.
- * @param json json string which contains exists classes
+ * Execute callback from server
+ * @param response data from server
  */
-OArchitectApplication.prototype.executeCallback = function (json) {
-    this.callback(json);
+OArchitectApplication.prototype.executeCallback = function (response) {
+    this.callback(response);
     this.callback = null;
 };
 

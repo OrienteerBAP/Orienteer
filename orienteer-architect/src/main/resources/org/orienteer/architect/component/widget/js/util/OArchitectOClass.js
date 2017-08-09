@@ -1,9 +1,11 @@
 var OArchitectOClass = function(name) {
-    this.name = name;
+    this.name = null;
     this.properties = [];
     this.propertiesForDelete = [];
     this.superClassesNames = [];
     this.existsInDb = false;
+
+    if (name != null) this.setName(name);
 };
 
 OArchitectOClass.prototype.config = function (source) {
@@ -22,6 +24,22 @@ OArchitectOClass.prototype.config = function (source) {
         }
         return properties;
     }
+};
+
+OArchitectOClass.prototype.setName = function (name, callback) {
+    var jsonObj = {
+        existsClassName: name
+    };
+    var oClass = this;
+    app.requestIfOClassExists(JSON.stringify(jsonObj), function (exists) {
+        var msg = '';
+        if (!exists) {
+            if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
+                oClass.name = name;
+            } else msg = localizer.classExistsInEditor;
+        } else msg = localizer.classExistsInDatabase;
+        if (callback != null) callback(oClass, msg);
+    });
 };
 
 OArchitectOClass.prototype.addOProperty = function (oProperty) {
