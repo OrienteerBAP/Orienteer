@@ -64,9 +64,9 @@ OPropertyContainer.prototype.createContainer = function (label, editProperty, de
             deleteProperty.style.cursor = 'default';
         });
     }
-    if (deleteProperty !== null) container.appendChild(deleteProperty);
-    container.appendChild(label);
     if (editProperty !== null) container.appendChild(editProperty);
+    container.appendChild(label);
+    if (deleteProperty !== null) container.appendChild(deleteProperty);
     return container;
 };
 
@@ -86,7 +86,7 @@ OPropertyContainer.prototype.createLabel = function (maxLength) {
 OPropertyContainer.prototype.createEditOPropertyElement = function () {
     var editElement = this.createIcon(OArchitectConstants.FA_EDIT);
     editElement.style.visibility = 'hidden';
-    editElement.style.marginLeft = '5px';
+    editElement.style.marginRight = '5px';
     this.addListenerForAction(editElement, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
     return editElement;
 };
@@ -94,7 +94,7 @@ OPropertyContainer.prototype.createEditOPropertyElement = function () {
 OPropertyContainer.prototype.createDeleteOPropertyElement = function () {
     var deleteElement = this.createIcon(OArchitectConstants.FA_DELETE);
     deleteElement.style.visibility = 'hidden';
-    deleteElement.style.marginRight = '5px';
+    deleteElement.style.marginLeft = '5px';
     this.addListenerForAction(deleteElement, OArchitectActionNames.DELETE_OPROPERTY_ACTION);
     return deleteElement;
 };
