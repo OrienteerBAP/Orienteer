@@ -24,6 +24,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class BinaryViewPanel<V> extends GenericPanel<V> {
 	
+	private ResourceLink<byte[]> dataLink;
 	private IModel<String> nameModel;
 	
 	@Inject
@@ -59,10 +60,11 @@ public class BinaryViewPanel<V> extends GenericPanel<V> {
 	public BinaryViewPanel(String id, IModel<String> nameModel, IModel<V> valueModel) {
 		super(id, valueModel);
 		this.nameModel = nameModel;
+		initialize();
 	}
 	
 	protected void initialize() {
-		add(new ResourceLink<byte[]>("data", new AbstractResource() {
+		add((dataLink = new ResourceLink<byte[]>("data", new AbstractResource() {
 			
 			@Override
 			protected ResourceResponse newResourceResponse(Attributes attributes) {
@@ -84,7 +86,14 @@ public class BinaryViewPanel<V> extends GenericPanel<V> {
 			     });
 			     return resourceResponse;
 			}
-		}).setBody(nameModel));
+		})).setBody(nameModel));
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		byte[] data = (byte[])getModelObject();
+		dataLink.setVisibilityAllowed(data!=null && data.length>0);
 	}
 	
 	@Override
