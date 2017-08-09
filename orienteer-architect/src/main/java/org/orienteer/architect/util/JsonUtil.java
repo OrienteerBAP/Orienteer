@@ -56,9 +56,15 @@ public abstract class JsonUtil implements IClusterable {
 
     private static OArchitectOClass convertOClassFromJson(JSONObject jsonObject) {
         OArchitectOClass oClass = new OArchitectOClass(jsonObject.getString(NAME));
-        oClass.setSuperClassesNames(getSuperClasses(jsonObject.getJSONArray(SUPER_CLASSES_NAMES)));
-        oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));
-        oClass.setPropertiesForDelete(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES_FOR_DELETE)));
+        if (!jsonObject.isNull(SUPER_CLASSES_NAMES)) {
+            oClass.setSuperClassesNames(getSuperClasses(jsonObject.getJSONArray(SUPER_CLASSES_NAMES)));
+        }
+        if (!jsonObject.isNull(PROPERTIES)) {
+            oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));
+        }
+        if (!jsonObject.isNull(PROPERTIES_FOR_DELETE)) {
+            oClass.setPropertiesForDelete(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES_FOR_DELETE)));
+        }
         return oClass;
     }
 
