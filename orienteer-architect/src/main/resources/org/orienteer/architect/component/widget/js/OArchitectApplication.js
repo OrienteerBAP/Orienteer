@@ -99,6 +99,8 @@ OArchitectApplication.prototype.getToolbarContainer = function () {
  */
 OArchitectApplication.prototype.setSaveEditorConfig = function (callbackUrl, xml) {
     this.saveEditorConfigCallbackUrl = callbackUrl;
+    mxObjectCodec.prototype.writeComplexAttribute = OArchitectUtil.createWriteComplexAttributeFunction();
+    mxCodec.prototype.decode = OArchitectUtil.createDecodeFunction();
     if (xml) this.applyXmlConfig(xml);
 };
 

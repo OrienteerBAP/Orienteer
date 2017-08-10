@@ -63,7 +63,7 @@ var OArchitectAction = {
 
                 function onDestroy(property, event) {
                     if (event === this.OK) {
-                        oClass.createProperty(property.name, property.type, property.cell, false);
+                        oClass.createProperty(property.name, property.type, property.cell);
                     }
                 }
             } else {
@@ -99,8 +99,8 @@ var OArchitectAction = {
 
         var addOClassToGraph = function(oClass, x, y) {
             var classCell = OArchitectUtil.createOClassVertex(oClass, x, y);
-            var superClassesCells = OArchitectUtil.getOClassSuperClassesCells(graph, oClass);
-            var subClassesCells = OArchitectUtil.getOClassSubClassesCells(graph, oClass);
+            var superClassesCells = OArchitectUtil.getSuperClassesCells(graph, oClass);
+            var subClassesCells = OArchitectUtil.getSubClassesCells(graph, oClass);
             graph.getModel().beginUpdate();
             try {
                 graph.addCell(classCell, graph.getDefaultParent());

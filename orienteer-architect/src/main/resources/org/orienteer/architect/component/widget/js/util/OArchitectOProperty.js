@@ -4,8 +4,8 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.type = null;
     this.linkedClass = null;
     this.subClassProperty = false;
-    this.cell = null;
     this.previousName = null;
+    this.cell = null;
 
     if (ownerClass != null) this.setOwnerClassName(ownerClass);
     if (name != null) this.setName(name);
@@ -18,6 +18,11 @@ OArchitectOProperty.prototype.config = function (source) {
     this.type = OArchitectOType.contains(source.type) ? source.type : null;
     this.linkedClass = source.linkedClass;
     this.subClassProperty = source.subClassProperty;
+};
+
+OArchitectOProperty.prototype.configFromEditorConfig = function (propertyCell) {
+    this.ownerClass = OArchitectUtil.getCellByClassName(this.ownerClass).value;
+    this.setCell(propertyCell);
 };
 
 OArchitectOProperty.prototype.setType = function (type) {
@@ -39,7 +44,14 @@ OArchitectOProperty.prototype.setOwnerClassName = function (ownerClass) {
 
 OArchitectOProperty.prototype.setCell = function (cell) {
     if (cell != null) {
-        this.cell = cell;
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        try {
+            this.cell = cell;
+            graph.getModel().setValue(this.cell, this);
+        } finally {
+            graph.getModel().endUpdate();
+        }
     }
 };
 
@@ -84,6 +96,10 @@ OArchitectOProperty.prototype.toJson = function () {
     return JSON.stringify(this, filter);
 };
 
-OArchitectOProperty.prototype.clone = function () {
-    return mxUtils.clone(this);
+OArchitectOProperty.prototype.toEditorConfigObject = function () {
+    var result = new OArchitectOProperty(this.ownerClass.name, this.name, this.type, null);
+    result.linkedClass = this.linkedClass != null ? this.linkedClass.name : null;
+    result.previousName = this.previousName;
+    result.subClassProperty = this.subClassProperty;
+    return result;
 };

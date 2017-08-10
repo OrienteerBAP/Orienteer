@@ -6,6 +6,7 @@ var OArchitectOClass = function(name, cell) {
     this.subClasses = [];
     this.existsInDb = false;
     this.cell = null;
+    this.configuredFromEditorConfig = false;
 
     if (name != null) this.setName(name);
     if (cell != null) this.setCell(cell);
@@ -29,6 +30,47 @@ OArchitectOClass.prototype.config = function (source) {
     }
 };
 
+OArchitectOClass.prototype.configFromEditorConfig = function (classCell) {
+    if (!this.configuredFromEditorConfig) {
+        var currentClass = this;
+        currentClass.configuredFromEditorConfig = true;
+        configure();
+
+        function configure() {
+            var graph = app.editor.graph;
+            var superClassesNames = currentClass.superClasses;
+            var subClassesNames = currentClass.subClasses;
+            currentClass.superClasses = [];
+            currentClass.subClasses = [];
+            currentClass.properties = [];
+            currentClass.setCell(classCell);
+            configureProperties(OArchitectUtil.getClassPropertiesCells(currentClass));
+            configureClasses(graph, OArchitectUtil.getCellsByClassNames(superClassesNames), true);
+            configureClasses(graph, OArchitectUtil.getCellsByClassNames(subClassesNames), false);
+        }
+
+        function configureClasses(graph, classCells, isSuperClasses) {
+            OArchitectUtil.forEach(classCells, function (classCell) {
+                var oClass = classCell.value;
+                oClass.configFromEditorConfig(classCell);
+                if (isSuperClasses) {
+                    OArchitectConnector.connect(graph, currentClass.cell, oClass.cell);
+                } else {
+                    OArchitectConnector.connect(graph, oClass.cell, currentClass.cell);
+                }
+            });
+        }
+
+        function configureProperties(propertiesCells) {
+            OArchitectUtil.forEach(propertiesCells, function (propertyCell) {
+                var property = propertyCell.value;
+                property.configFromEditorConfig(propertyCell);
+                currentClass.properties.push(property);
+            });
+        }
+    }
+};
+
 OArchitectOClass.prototype.setName = function (name, callback) {
     var jsonObj = {
         existsClassName: name
@@ -38,7 +80,7 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         var msg = '';
         if (!exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
-                var cells = OArchitectUtil.getOClassSubClassesCells(app.editor.graph, oClass);
+                var cells = OArchitectUtil.getSubClassesCells(app.editor.graph, oClass);
                 renameSubClasses(app.editor.graph, oClass.name, name, cells);
                 oClass.name = name;
             } else msg = localizer.classExistsInEditor;
@@ -63,7 +105,14 @@ OArchitectOClass.prototype.setName = function (name, callback) {
 
 OArchitectOClass.prototype.setCell = function (cell) {
     if (cell != null) {
-        this.cell = cell;
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        try {
+            this.cell = cell;
+            graph.getModel().setValue(this.cell, this);
+        } finally {
+            graph.getModel().endUpdate();
+        }
     }
 };
 
@@ -266,6 +315,29 @@ OArchitectOClass.prototype.toJson = function () {
     return JSON.stringify(this, jsonFilter);
 };
 
-OArchitectOClass.prototype.clone = function () {
-    return mxUtils.clone(this);
+OArchitectOClass.prototype.toEditorConfigObject = function () {
+    var result = new OArchitectOClass();
+    result.name = this.name;
+    result.properties = toEditorProperties(this.properties);
+    result.propertiesForDelete = toEditorProperties(this.propertiesForDelete);
+    result.superClasses = toEditorClasses(this.superClasses);
+    result.subClasses = toEditorClasses(this.subClasses);
+    result.existsInDb = this.existsInDb;
+
+    function toEditorProperties(properties) {
+        var editorProperties = [];
+        OArchitectUtil.forEach(properties, function (property) {
+            editorProperties.push(property);
+        });
+        return editorProperties;
+    }
+
+    function toEditorClasses(classes) {
+        var editorClasses = [];
+        OArchitectUtil.forEach(classes, function (oClass) {
+            editorClasses.push(oClass.name);
+        });
+        return editorClasses;
+    }
+    return result;
 };

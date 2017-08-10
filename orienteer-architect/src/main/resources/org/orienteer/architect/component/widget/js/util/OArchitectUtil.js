@@ -38,21 +38,49 @@ var OArchitectUtil = {
         return encoder.encode(graph.getModel());
     },
 
-    getOClassSuperClassesCells: function (graph, oClass) {
+    getAllCells: function () {
+        var graph = app.editor.graph;
+        return graph.getChildVertices(graph.getDefaultParent());
+    },
+
+    getSuperClassesCells: function (graph, oClass) {
         var superClasses = oClass.superClasses;
         var superClassesCells = [];
-        if (superClasses !== null) {
-            var cells = graph.getChildVertices(graph.getDefaultParent());
+        if (superClasses != null) {
             OArchitectUtil.forEach(superClasses, function (superClass) {
-                var cell = OArchitectUtil.getCellByClassName(cells, superClass);
-                if (cell !== null) superClassesCells.push(cell);
+                superClassesCells.push(superClass.cell);
             });
         }
         return superClassesCells;
     },
 
-    getCellByClassName: function (cells, className) {
+    getSubClassesCells: function (graph, oClass) {
+        var subClasses = oClass.subClasses;
+        var subClassesCells = [];
+        if (subClasses != null) {
+            OArchitectUtil.forEach(subClasses, function (subClass) {
+                subClassesCells.push(subClass.cell);
+            });
+        }
+        return subClassesCells;
+    },
+
+    getCellsByClassNames: function (classNames) {
+        var result = [];
+        var cells = OArchitectUtil.getAllCells();
+        OArchitectUtil.forEach(cells, function (cell) {
+            var oClass = cell.value;
+            if (oClass != null && classNames.indexOf(oClass.name) > -1) {
+                result.push(cell);
+            }
+        });
+
+        return result;
+    },
+
+    getCellByClassName: function (className) {
         var result = null;
+        var cells = OArchitectUtil.getAllCells();
         OArchitectUtil.forEach(cells, function (cell, trigger) {
             if (cell.value.name === className) {
                 result = cell;
@@ -62,21 +90,11 @@ var OArchitectUtil = {
         return result;
     },
 
-    getOClassSubClassesCells: function (graph, superClass) {
-        var subClassesCells = [];
-        var cells = graph.getChildVertices(graph.getDefaultParent());
-        if (cells !== null && cells.length > 0) {
-            OArchitectUtil.forEach(cells, function (classCell) {
-                var oClass = classCell.value;
-                var superClasses = oClass.superClasses;
-                if (superClasses.indexOf(superClass.name) > -1) {
-                    subClassesCells.push(classCell);
-                }
-            });
-        }
-        return subClassesCells;
+    getClassPropertiesCells: function (oClass) {
+        var graph = app.editor.graph;
+        var result = graph.getChildVertices(oClass.cell);
+        return result != null ? result : [];
     },
-
 
     fromJsonToOClasses: function (json) {
         var classes = [];
@@ -111,7 +129,6 @@ var OArchitectUtil = {
         return exists;
     },
 
-
     forEach: function (arr, func) {
         if (arr != null && arr.length > 0 && func != null) {
             var trigger = {
@@ -121,6 +138,40 @@ var OArchitectUtil = {
                 func(arr[i], trigger);
                 if (trigger.stop) break;
             }
+        }
+    },
+
+    /**
+     * Creates function for save {@link OArchitectOClass} and {@link OArchitectOProperty} to editor xml configFromJson.
+     * Overrides {@link mxObjectCodec#writeComplexAttribute}
+     */
+    createWriteComplexAttributeFunction: function () {
+        var defaultBehavior = mxObjectCodec.prototype.writeComplexAttribute;
+        return function (enc, obj, name, value, node) {
+            if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
+                value = value.toEditorConfigObject();
+            } else if (name === 'cell' || name === 'configuredFromEditorConfig') {
+                value = undefined;
+            }
+
+            defaultBehavior.apply(this, arguments);
+        };
+    },
+    
+    createDecodeFunction: function () {
+        var defaultBehavior = mxCodec.prototype.decode;
+        
+        return function (node, into) {
+            var result = defaultBehavior.apply(this, arguments);
+            if (into instanceof mxGraphModel) {
+                var graph = app.editor.graph;
+                var classCells = graph.getChildVertices(graph.getDefaultParent());
+                OArchitectUtil.forEach(classCells, function (classCell) {
+                    var oClass = classCell.value;
+                    oClass.configFromEditorConfig(classCell);
+                });
+            }
+            return result;
         }
     }
 };
