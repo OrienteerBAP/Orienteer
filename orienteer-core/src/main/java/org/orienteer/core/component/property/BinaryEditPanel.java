@@ -79,8 +79,8 @@ public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 	}
 	
 	@Override
-	public void updateModel() {
-		super.updateModel();
+	protected void onModelChanged() {
+		super.onModelChanged();
 		if(nameModel!=null) nameModel.setObject(tempName);
 	}
 }
