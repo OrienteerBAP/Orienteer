@@ -226,6 +226,6 @@ var OArchitectAction = {
 
     //TODO: delete after development
     toJsonAction: function (editor) {
-        console.warn('OClasses in JSON: ' + OArchitectUtil.getOClassesAsJSON(editor.graph));
+        console.warn('OClasses in JSON: ', OArchitectUtil.getOClassesAsJSON(editor.graph));
     }
 };

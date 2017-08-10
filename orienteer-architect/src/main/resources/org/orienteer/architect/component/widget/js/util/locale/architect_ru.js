@@ -15,6 +15,6 @@ var ru = {
     saveDataModel: 'Сохранить модель данных',
     applyChanges: 'Применить изменения',
     toJson: 'Конвертировать в JSON',
-    classExistsInDatabase: 'Класс уже существует в базу данных',
+    classExistsInDatabase: 'Класс уже существует в базе данных',
     classExistsInEditor: 'Класс уже существует в редакторе'
 };

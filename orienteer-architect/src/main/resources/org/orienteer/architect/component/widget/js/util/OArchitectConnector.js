@@ -3,8 +3,9 @@
  */
 var OArchitectConnector = {
 
-    connect: function(graph, sourceCell, targetCell) {
+    connect: function(sourceCell, targetCell) {
         if (targetCell.value instanceof OArchitectOClass) {
+            var graph = app.editor.graph;
             if (sourceCell.value instanceof OArchitectOClass) {
                 this.connectSubClassCellWithSuperClassCell(graph, sourceCell, targetCell);
             } else if (sourceCell.value instanceof OArchitectOProperty && sourceCell.value.canConnect()) {
@@ -13,8 +14,9 @@ var OArchitectConnector = {
         }
     },
 
-    disconnect: function (graph, sourceCell, targetCell) {
+    disconnect: function (sourceCell, targetCell) {
         if (targetCell.value instanceof OArchitectOClass) {
+            var graph = app.editor.graph;
             if (sourceCell.value instanceof OArchitectOClass) {
                 this.disconnectSubClassCellFromSuperClassCell(graph, sourceCell, targetCell);
             } else if (sourceCell.value instanceof OArchitectOProperty) {

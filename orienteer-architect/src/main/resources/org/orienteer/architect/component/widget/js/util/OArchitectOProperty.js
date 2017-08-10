@@ -21,8 +21,11 @@ OArchitectOProperty.prototype.config = function (source) {
 };
 
 OArchitectOProperty.prototype.configFromEditorConfig = function (propertyCell) {
-    this.ownerClass = OArchitectUtil.getCellByClassName(this.ownerClass).value;
     this.setCell(propertyCell);
+    this.ownerClass = OArchitectUtil.getCellByClassName(this.ownerClass).value;
+    var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
+    this.linkedClass = linkedCell != null ? linkedCell.value : null;
+
 };
 
 OArchitectOProperty.prototype.setType = function (type) {
@@ -70,9 +73,13 @@ OArchitectOProperty.prototype.isLink = function () {
 OArchitectOProperty.prototype.canConnect = function () {
     var result = false;
     if (this.type !== null && OArchitectOType.isLink(this.type)) {
-        result = this.linkedClass == null;
+        result = this.linkedClass == null && !this.subClassProperty;
     }
     return result;
+};
+
+OArchitectOProperty.prototype.canDisconnect = function () {
+    return !this.subClassProperty;
 };
 
 OArchitectOProperty.prototype.setLinkedClass = function (linkClass) {

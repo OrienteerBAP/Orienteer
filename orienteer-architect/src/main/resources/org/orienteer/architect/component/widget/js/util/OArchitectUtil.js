@@ -30,7 +30,7 @@ var OArchitectUtil = {
             else withoutParents.push(oClass.toJson());
         });
 
-        return '[' + withoutParents.concat(withParents).join(',\n') + ']';
+        return '[' + withoutParents.concat(withParents).join(',') + ']';
     },
 
     getEditorXmlNode: function (graph) {

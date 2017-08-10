@@ -12,6 +12,7 @@ GraphConnectionConfig.prototype.config = function () {
     var graph = this.graph;
     graph.isCellConnectable = this.isCellConnectable;
     graph.isValidConnection = this.isValidConnection;
+    graph.isCellLocked = this.isCellLocked;
     graph.getAllConnectionConstraints = this.getAllConnectionConstraints;
     graph.connectionHandler.cursor = 'pointer';
     graph.connectionHandler.factoryMethod = this.connectionHandlerFactoryMethod;
@@ -33,8 +34,16 @@ GraphConnectionConfig.prototype.configEvents = function () {
 
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
     if (cell == null)
-        return null;
+        return false;
     return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
+};
+
+GraphConnectionConfig.prototype.isCellLocked = function (cell) {
+    var locked = false;
+    if (cell.edge) {
+        locked = cell.source.value instanceof OArchitectOProperty && !cell.source.value.canDisconnect();
+    }
+    return locked;
 };
 
 GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
@@ -109,7 +118,7 @@ GraphConnectionConfig.prototype.createCellConnectedBehavior = function () {
     return function (graph, eventObject) {
         var properties = eventObject.properties;
         if (!properties.source) {
-            OArchitectConnector.connect(graph, properties.edge.source, properties.edge.target);
+            OArchitectConnector.connect(properties.edge.source, properties.edge.target);
         }
     }
 };
@@ -120,7 +129,7 @@ GraphConnectionConfig.prototype.createCellRemovedBehavior = function () {
         for (var i = 0; i < cells.length; i++) {
             var cell = cells[i];
             if (cell.edge) {
-                OArchitectConnector.disconnect(graph, cell.source, cell.target);
+                OArchitectConnector.disconnect(cell.source, cell.target);
             }
         }
     }

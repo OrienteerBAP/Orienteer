@@ -45,18 +45,18 @@ OArchitectOClass.prototype.configFromEditorConfig = function (classCell) {
             currentClass.properties = [];
             currentClass.setCell(classCell);
             configureProperties(OArchitectUtil.getClassPropertiesCells(currentClass));
-            configureClasses(graph, OArchitectUtil.getCellsByClassNames(superClassesNames), true);
-            configureClasses(graph, OArchitectUtil.getCellsByClassNames(subClassesNames), false);
+            configureClasses(OArchitectUtil.getCellsByClassNames(superClassesNames), true);
+            configureClasses(OArchitectUtil.getCellsByClassNames(subClassesNames), false);
         }
 
-        function configureClasses(graph, classCells, isSuperClasses) {
+        function configureClasses(classCells, isSuperClasses) {
             OArchitectUtil.forEach(classCells, function (classCell) {
                 var oClass = classCell.value;
                 oClass.configFromEditorConfig(classCell);
                 if (isSuperClasses) {
-                    OArchitectConnector.connect(graph, currentClass.cell, oClass.cell);
+                    OArchitectConnector.connect(currentClass.cell, oClass.cell);
                 } else {
-                    OArchitectConnector.connect(graph, oClass.cell, currentClass.cell);
+                    OArchitectConnector.connect(oClass.cell, currentClass.cell);
                 }
             });
         }
@@ -221,6 +221,7 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
                     property.cell = OArchitectUtil.createOPropertyVertex(property);
                     cellsForUpdate.push(property.cell);
                 }
+                property.linkedClass = changedProperty.linkedClass;
                 property.subClassProperty = isSubClass;
                 propertiesForUpdate.push(property);
             }
@@ -234,14 +235,27 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
             OArchitectUtil.forEach(propertiesForUpdate, function (property) {
                 graph.getModel().setValue(property.cell, property);
             });
+
             if (remove) {
+                configureLinks(graph, propertiesForUpdate);
                 graph.removeCells(cellsForUpdate, true);
             } else {
                 graph.addCells(cellsForUpdate, oClass.cell);
+                configureLinks(graph, propertiesForUpdate);
             }
         } finally {
             graph.getModel().endUpdate();
         }
+    }
+
+    function configureLinks(graph, propertiesForUpdate) {
+
+        OArchitectUtil.forEach(propertiesForUpdate, function (property) {
+            if (property.linkedClass != null) {
+                if (!remove)
+                    graph.connectionHandler.connect(property.cell, property.linkedClass.cell);
+            }
+        });
     }
 
     function addSuperClassCells(cellsForUpdate) {
@@ -303,13 +317,10 @@ OArchitectOClass.prototype.toJson = function () {
                 classes.push(oClass.name);
             });
             value = classes;
-        } else if (key === 'properties' || key === 'propertiesForDelete') {
-            var properties = [];
-            OArchitectUtil.forEach(value, function (property) {
-                properties.push(property.toJson());
-            });
-            value = properties;
+        } else if (key === 'ownerClass' || key === 'linkedClass') {
+            value = value != null ? value.name : null;
         }
+
         return value;
     }
     return JSON.stringify(this, jsonFilter);
