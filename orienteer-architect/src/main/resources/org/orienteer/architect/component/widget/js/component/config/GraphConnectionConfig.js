@@ -32,6 +32,8 @@ GraphConnectionConfig.prototype.configEvents = function () {
 };
 
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
+    if (cell == null)
+        return null;
     return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
 };
 
@@ -40,7 +42,7 @@ GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
     var targetValue = target.value;
     var valid = false;
     if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
-        valid = !sourceValue.containsSuperClass(targetValue.name) && !targetValue.containsSuperClass(sourceValue.name);
+        valid = !sourceValue.containsSuperClass(targetValue) && !targetValue.containsSuperClass(sourceValue);
     } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
         valid = sourceValue.canConnect();
     }

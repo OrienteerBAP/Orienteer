@@ -2,12 +2,14 @@
  * Modal window for create or edit {@link OArchitectOClass}
  * @param oClass {@link OArchitectOClass} for edit
  * @param containerId id of element which contains modal window
+ * @param onDestroy callback function which calls when modal window destroy
  * @param create true if create new class
  * @constructor
  */
-var OClassEditModalWindow = function (oClass, containerId, create) {
+var OClassEditModalWindow = function (oClass, containerId, onDestroy, create) {
     OArchitectModalWindow.apply(this, arguments);
     this.create = create;
+    this.input = null;
 };
 
 OClassEditModalWindow.prototype = Object.create(OArchitectModalWindow.prototype);
@@ -53,13 +55,14 @@ OClassEditModalWindow.prototype.addButtonBlock = function (body, input) {
 
 //TODO: validate user input
 OClassEditModalWindow.prototype.createNameInput = function (createNewOClass) {
-    var input = document.createElement('input');
-    input.classList.add('form-control');
-    input.setAttribute('type', 'text');
+    this.input = document.createElement('input');
+    this.input.classList.add('form-control');
+    this.input.setAttribute('type', 'text');
     if (!createNewOClass) {
-        input.value = this.value.name;
+        this.input.value = this.value.name;
     }
-    return input;
+
+    return this.input;
 };
 
 OClassEditModalWindow.prototype.createOkButton = function (label, nameField) {
@@ -87,6 +90,13 @@ OClassEditModalWindow.prototype.createLabel = function (label) {
     var element = document.createElement('label');
     element.innerHTML = label;
     return element;
+};
+
+OClassEditModalWindow.prototype.internalOnShow = function () {
+    if (this.input != null) {
+        this.input.focus();
+    }
+    OArchitectModalWindow.prototype.internalOnShow.apply(this, arguments);
 };
 
 OClassEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameField) {

@@ -15,12 +15,12 @@ import java.util.List;
 public abstract class JsonUtil implements IClusterable {
 
     private static final String NAME                  = "name";
-    private static final String SUPER_CLASSES_NAMES   = "superClassesNames";
+    private static final String SUPER_CLASSES_NAMES   = "superClasses";
     private static final String PROPERTIES            = "properties";
     private static final String PROPERTIES_FOR_DELETE = "propertiesForDelete";
     private static final String EXISTS_IN_DB          = "existsInDb";
     private static final String SUBCLASS_PROPERTY     = "subClassProperty";
-    private static final String LINKED_CLASS_NAME     = "linkedClassName";
+    private static final String LINKED_CLASS_NAME     = "linkedClass";
     private static final String TYPE                  = "type";
 
     private JsonUtil() {}

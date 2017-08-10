@@ -2,10 +2,11 @@
  * Modal window for edit or create {@link OArchitectOProperty}
  * @param property {@link OArchitectOProperty} for create or edit
  * @param containerId id of element which contains modal window
+ * @param onDestroy callback function which calls when modal window destroy
  * @param create true if create new property
  * @constructor
  */
-var OPropertyEditModalWindow = function (property, containerId, create) {
+var OPropertyEditModalWindow = function (property, containerId, onDestroy, create) {
     OClassEditModalWindow.apply(this, arguments);
     this.create = create;
 };
@@ -60,14 +61,15 @@ OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOPrope
 
 //TODO: validate user input
 OPropertyEditModalWindow.prototype.createNameInput = function (createNewOProperty) {
-    var input = document.createElement('input');
-    input.classList.add('form-control');
-    input.setAttribute('type', 'text');
+    this.input = document.createElement('input');
+    this.input.classList.add('form-control');
+    this.input.setAttribute('type', 'text');
     if (!createNewOProperty) {
-        input.value = this.value.name;
+        this.input.value = this.value.name;
     }
-    return input;
+    return this.input;
 };
+
 
 OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, typeSelect) {
     var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);

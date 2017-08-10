@@ -1,7 +1,14 @@
 
 var modalWindowCounter = 0;
 
-var OArchitectModalWindow = function (value, containerId) {
+/**
+ * Modal window
+ * @param value value which will be store in modal window
+ * @param containerId container id of modal window
+ * @param onDestroy callback function which calls when modal window destroy
+ * @constructor
+ */
+var OArchitectModalWindow = function (value, containerId, onDestroy) {
     this.CANCEL = 'CANCEL';
     this.OK     = 'OK';
 
@@ -9,6 +16,7 @@ var OArchitectModalWindow = function (value, containerId) {
     this.containerId = containerId;
     this.isShow = false;
     this.markupId = null;
+    this.onDestroy = onDestroy;
 };
 
 OArchitectModalWindow.prototype.show = function (x, y) {
@@ -19,20 +27,29 @@ OArchitectModalWindow.prototype.show = function (x, y) {
             containment: id
         });
         this.isShow = true;
+        this.internalOnShow();
     } else throw new Error('Scheme editor modal window is already show!');
 };
 
 OArchitectModalWindow.prototype.destroy = function (event) {
     if (this.isShow) {
         modalWindowCounter--;
-        this.onDestroy(this.value, event);
+        this.internalOnDestroy(this.value, event);
         $('#' + this.getMarkupId()).remove();
         this.markupId = null;
         this.isShow = false;
     } else throw new Error('Can\'t destroy modal window, because it is not show!');
 };
 
-OArchitectModalWindow.prototype.onDestroy = function (value, event) {};
+OArchitectModalWindow.prototype.internalOnDestroy = function (value, event) {
+    app.editor.keyHandler.handler.setEnabled(true);
+    if (this.onDestroy != null) this.onDestroy(value, event);
+};
+
+OArchitectModalWindow.prototype.internalOnShow = function () {
+    app.editor.keyHandler.handler.setEnabled(false);
+};
+
 
 OArchitectModalWindow.prototype.createModalElement = function (x, y) {
     var panel = document.createElement('div');

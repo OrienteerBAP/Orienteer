@@ -5,7 +5,6 @@ var OArchitectConnector = {
 
     connect: function(graph, sourceCell, targetCell) {
         if (targetCell.value instanceof OArchitectOClass) {
-            console.log('connect');
             if (sourceCell.value instanceof OArchitectOClass) {
                 this.connectSubClassCellWithSuperClassCell(graph, sourceCell, targetCell);
             } else if (sourceCell.value instanceof OArchitectOProperty && sourceCell.value.canConnect()) {
@@ -27,38 +26,20 @@ var OArchitectConnector = {
     connectSubClassCellWithSuperClassCell: function (graph, subClassCell, superClassCell) {
         var subClass = subClassCell.value;
         var superClass = superClassCell.value;
-        subClass.addSuperClassName(superClass.name);
+        subClass.addSuperClass(superClass);
     },
 
     connectOPropertyCellWithOClassCell: function (graph, propertyCell, classCell) {
-        propertyCell.value.setLinkedClassName(classCell.value.name);
+        propertyCell.value.setLinkedClass(classCell.value);
     },
 
     disconnectSubClassCellFromSuperClassCell: function (graph, subClassCell, superClassCell) {
         var subClass = subClassCell.value;
         var superClass = superClassCell.value;
-        removeOClassInfo();
-        removeOPropertyCells();
-
-        function removeOClassInfo() {
-            subClass.removeSuperClassName(superClass.name);
-            OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
-                subClass.removeProperty(superClassProperty);
-            });
-        }
-
-        function removeOPropertyCells() {
-            var propertiesForRemove = OArchitectUtil.getOPropertiesCellsInOClassCell(graph, superClass.properties, subClassCell);
-            graph.getModel().beginUpdate();
-            try {
-                graph.removeCells(propertiesForRemove, true);
-            } finally {
-                graph.getModel().endUpdate();
-            }
-        }
+        subClass.removeSuperClass(superClass);
     },
 
     disconnectOPropertyFromOClassCell: function (graph, propertyCell, classCell) {
-        propertyCell.value.linkedClassName = null;
+        propertyCell.value.linkedClass = null;
     }
 };

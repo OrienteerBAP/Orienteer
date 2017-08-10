@@ -20,25 +20,17 @@ var OArchitectUtil = {
     },
 
     getOClassesAsJSON: function (graph) {
-        const OCLASS_TAG  = 'OArchitectOClass';
-        const PARENT_ATTR = 'parent';
-        var node = OArchitectUtil.getEditorXmlNode(graph);
-        var classesXml = node.getElementsByTagName(OCLASS_TAG);
         var withParents = [];
         var withoutParents = [];
-        var codec = new mxCodec();
+        var cells = graph.getChildVertices(graph.getDefaultParent());
 
-        OArchitectUtil.forEach(classesXml, function (classNode) {
-            var child = false;
-            if (classNode.getAttribute(PARENT_ATTR)) {
-                child = true;
-            }
-            var oClass = codec.decode(classNode);
-            if (child) withParents.push(JSON.stringify(oClass));
-            else withoutParents.push(JSON.stringify(oClass));
+        OArchitectUtil.forEach(cells, function (cell) {
+            var oClass = cell.value;
+            if (oClass.isSubClass()) withParents.push(oClass.toJson());
+            else withoutParents.push(oClass.toJson());
         });
 
-        return '[' + withoutParents.concat(withParents).join(',') + ']';
+        return '[' + withoutParents.concat(withParents).join(',\n') + ']';
     },
 
     getEditorXmlNode: function (graph) {
@@ -47,7 +39,7 @@ var OArchitectUtil = {
     },
 
     getOClassSuperClassesCells: function (graph, oClass) {
-        var superClasses = oClass.superClassesNames;
+        var superClasses = oClass.superClasses;
         var superClassesCells = [];
         if (superClasses !== null) {
             var cells = graph.getChildVertices(graph.getDefaultParent());
@@ -76,7 +68,7 @@ var OArchitectUtil = {
         if (cells !== null && cells.length > 0) {
             OArchitectUtil.forEach(cells, function (classCell) {
                 var oClass = classCell.value;
-                var superClasses = oClass.superClassesNames;
+                var superClasses = oClass.superClasses;
                 if (superClasses.indexOf(superClass.name) > -1) {
                     subClassesCells.push(classCell);
                 }
@@ -85,119 +77,6 @@ var OArchitectUtil = {
         return subClassesCells;
     },
 
-    changeAllSubProperties: function (graph, oClass) {
-        if (oClass != null) {
-            if (typeof oClass === 'string') {
-                var cells = graph.getChildVertices(graph.getDefaultParent());
-                var classCell = OArchitectUtil.getCellByClassName(cells, oClass);
-                oClass = classCell.value;
-            }
-            OArchitectUtil.configureSubClassProperties(graph, oClass);
-        }
-    },
-
-    configureSubClassProperties: function (graph, oClass) {
-        var subClassCells = OArchitectUtil.getOClassSubClassesCells(graph, oClass);
-        OArchitectUtil.forEach(subClassCells, function (subClassCell) {
-            OArchitectUtil.configureProperties(graph, oClass, subClassCell);
-        });
-    },
-
-    configureProperties: function (graph, superClass, subClassCell) {
-        graph.getModel().beginUpdate();
-        try {
-            var subClass = subClassCell.value;
-            var subClassPropertiesCells = OArchitectUtil.getOPropertiesCellsInOClassCell(graph, null, subClassCell);
-            saveProperties(subClass, subClassPropertiesCells);
-            removeProperties(subClass, subClassPropertiesCells);
-        } finally {
-            graph.getModel().endUpdate();
-        }
-
-        function saveProperties(subClass, subClassPropertiesCells) {
-            OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
-                var property = savePropertyInClass(subClass, superClassProperty);
-                savePropertyInGraph(subClassPropertiesCells, property, subClassCell);
-            });
-        }
-
-        function removeProperties(subClass, subClassPropertiesCells) {
-            var cellsForRemove = [];
-            OArchitectUtil.forEach(superClass.propertiesForDelete, function (superClassProperty) {
-                var property = subClass.getProperty(superClassProperty.name);
-                if (property != null) {
-                    cellsForRemove.push(OArchitectUtil.getPropertyCellFromPropertiesCells(subClassPropertiesCells, property));
-                    subClass.removeProperty(property);
-                }
-            });
-            graph.removeCells(cellsForRemove, true);
-        }
-
-        function savePropertyInClass(subClass, superClassProperty) {
-            var property = subClass.getProperty(superClassProperty.name);
-            var create = false;
-            if (property == null) property = subClass.getProperty(superClassProperty.previousName);
-            if (property == null) {
-                property = superClassProperty.clone();
-                create = true;
-            }
-            property.subClassProperty = true;
-            property.ownerClass = subClass.name;
-            if (create) {
-                subClass.putProperty(property);
-            } else {
-                property.setName(superClassProperty.name);
-                property.setType(superClassProperty.type);
-            }
-            return property;
-        }
-
-        function savePropertyInGraph(cells, property, subClassCell) {
-            var cell = OArchitectUtil.getPropertyCellFromPropertiesCells(cells, property);
-            if (cell != null) {
-                graph.getModel().setValue(cell, property);
-            } else {
-                graph.addCell(OArchitectUtil.createOPropertyVertex(property), subClassCell);
-            }
-        }
-    },
-
-    getOPropertiesCellsInOClassCell: function (graph, properties, classCell) {
-        var cells = [];
-        var allPropertiesCells = graph.getChildVertices(classCell);
-        if (properties == null) {
-            cells = allPropertiesCells;
-        } else {
-           OArchitectUtil.forEach(allPropertiesCells, function (propertyCell) {
-               if (OArchitectUtil.propertyContainsInProperties(propertyCell.value, properties)) {
-                   cells.push(propertyCell);
-               }
-           });
-        }
-        return cells;
-    },
-
-    getPropertyCellFromPropertiesCells: function (propertiesCells, property) {
-        var propertyCell = null;
-        OArchitectUtil.forEach(propertiesCells, function (cell, trigger) {
-            if (cell.value.name === property.name && cell.value.type === property.type) {
-                propertyCell = cell;
-                trigger.stop = true;
-            }
-        });
-        return propertyCell;
-    },
-
-    fromCellsToOClasses: function (cells) {
-        var classes = [];
-        if (cells !== null && cells.length > 0) {
-            OArchitectUtil.forEach(cells, function (cell) {
-                if (cell.value instanceof OArchitectOClass)
-                    classes.push(cell.value);
-            });
-        }
-        return classes;
-    },
 
     fromJsonToOClasses: function (json) {
         var classes = [];
@@ -212,12 +91,12 @@ var OArchitectUtil = {
         return classes;
     },
 
-    searchOClassCell: function (graph, cell) {
+    getClassByPropertyCell: function (graph, cell) {
         if (cell.value instanceof OArchitectOClass)
             return cell;
         if (cell === graph.getDefaultParent())
             return null;
-        return this.searchOClassCell(graph, graph.getModel().getParent(cell));
+        return this.getClassByPropertyCell(graph, graph.getModel().getParent(cell));
     },
 
     existsOClassInGraph: function (graph, className) {
@@ -232,19 +111,9 @@ var OArchitectUtil = {
         return exists;
     },
 
-    propertyContainsInProperties: function (property, properties) {
-        var contains = false;
-        OArchitectUtil.forEach(properties, function (p, trigger) {
-            if (p.name === property.name && p.type === property.type) {
-                contains = true;
-                trigger.stop = true;
-            }
-        });
-        return contains;
-    },
 
     forEach: function (arr, func) {
-        if (arr !== null && arr.length > 0 && func !== null) {
+        if (arr != null && arr.length > 0 && func != null) {
             var trigger = {
                 stop: false
             };
