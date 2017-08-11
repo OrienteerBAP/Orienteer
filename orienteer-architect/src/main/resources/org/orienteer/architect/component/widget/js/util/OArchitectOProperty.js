@@ -82,8 +82,35 @@ OArchitectOProperty.prototype.canDisconnect = function () {
     return !this.subClassProperty;
 };
 
-OArchitectOProperty.prototype.setLinkedClass = function (linkClass) {
-    this.linkedClass = linkClass;
+OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
+    if (this.linkedClass !== linkedClass) {
+        if (linkedClass == null && this.linkedClass != null) {
+            createConnectionEdge(this.cell, this.linkedClass.cell, false);
+        } else if (linkedClass != null) {
+            createConnectionEdge(this.cell, linkedClass.cell, true);
+        }
+        this.linkedClass = linkedClass;
+        this.ownerClass.changeProperties(this.ownerClass, [this]);
+
+        function createConnectionEdge(propertyCell, linkedClassCell, connect) {
+            var graph = app.editor.graph;
+            var edgesBetween = graph.getEdgesBetween(propertyCell, linkedClassCell);
+            graph.getModel().beginUpdate();
+            try {
+                if (connect) {
+                    if (edgesBetween == null || edgesBetween.length == 0) {
+                        graph.connectionHandler.connect(propertyCell, linkedClassCell);
+                    }
+                } else {
+                    if (edgesBetween != null && edgesBetween.length > 0) {
+                        graph.removeCells(edgesBetween, true);
+                    }
+                }
+            } finally {
+                graph.getModel().endUpdate();
+            }
+        }
+    }
 };
 
 OArchitectOProperty.prototype.toString = function () {

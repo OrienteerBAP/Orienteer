@@ -2,7 +2,7 @@
     <mxDefaultPopupMenu as="popupHandler">
         <add as="Add property" action="addOProperty" if="cell"/>
         <add as="Edit property" action="editOProperty" if="cell"/>
-        <add as="Delete" action="delete" icon="${basePath}img/delete.png" if="cell"/>
+        <add as="Delete" action="deleteCell" icon="${basePath}img/delete.png" if="cell"/>
     </mxDefaultPopupMenu>
     <mxDefaultKeyHandler as="keyHandler">
         <add as="35" action="refresh"/>
@@ -10,7 +10,7 @@
         <add as="38" action="selectParent"/>
         <add as="40" action="selectChild"/>
         <add as="39" action="selectNext"/>
-        <add as="46" action="delete"/>
+        <add as="46" action="deleteCell"/>
         <add as="65" control="1" action="selectAll"/>
         <add as="90" control="1" action="undo"/>
         <add as="89" control="1" action="redo"/>

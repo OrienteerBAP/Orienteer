@@ -221,7 +221,7 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
                     property.cell = OArchitectUtil.createOPropertyVertex(property);
                     cellsForUpdate.push(property.cell);
                 }
-                property.linkedClass = changedProperty.linkedClass;
+                property.setLinkedClass(changedProperty.linkedClass);
                 property.subClassProperty = isSubClass;
                 propertiesForUpdate.push(property);
             }
@@ -235,13 +235,10 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
             OArchitectUtil.forEach(propertiesForUpdate, function (property) {
                 graph.getModel().setValue(property.cell, property);
             });
-
             if (remove) {
-                configureLinks(graph, propertiesForUpdate);
                 graph.removeCells(cellsForUpdate, true);
             } else {
                 graph.addCells(cellsForUpdate, oClass.cell);
-                configureLinks(graph, propertiesForUpdate);
             }
         } finally {
             graph.getModel().endUpdate();
@@ -252,8 +249,16 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
 
         OArchitectUtil.forEach(propertiesForUpdate, function (property) {
             if (property.linkedClass != null) {
-                if (!remove)
-                    graph.connectionHandler.connect(property.cell, property.linkedClass.cell);
+                var edgesBetween = graph.getEdgesBetween(property.cell, property.linkedClass.cell);
+                if (remove) {
+                    if (edgesBetween != null && edgesBetween.length > 0) {
+                        graph.removeCells(edgesBetween, true);
+                    }
+                } else {
+                    if (edgesBetween == null || edgesBetween.length == 0) {
+                        graph.connectionHandler.connect(property.cell, property.linkedClass.cell);
+                    }
+                }
             }
         });
     }
