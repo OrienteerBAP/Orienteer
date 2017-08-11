@@ -58,7 +58,7 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         OClass oClass = schema.getOrCreateClass(name);
         if (architectOClass.isExistsInDatabase())
             removePropertiesFromOClass(oClass, architectOClass.getPropertiesForDelete());
-        addSuperClassesToOClass(schema, oClass, architectOClass.getSuperClassesNames());
+        addSuperClassesToOClass(schema, oClass, architectOClass.getSuperClasses());
         addPropertiesToOClass(schema, oClass, architectOClass.getProperties());
         return oClass;
     }

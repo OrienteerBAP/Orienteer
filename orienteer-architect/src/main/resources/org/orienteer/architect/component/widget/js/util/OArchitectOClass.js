@@ -1,73 +1,21 @@
-var OArchitectOClass = function(name, cell) {
+var OArchitectOClass = function() {
     this.name = null;
     this.properties = [];
     this.propertiesForDelete = [];
     this.superClasses = [];
     this.subClasses = [];
     this.existsInDb = false;
+    this.existsInEditor = true;
     this.cell = null;
     this.configuredFromEditorConfig = false;
-
-    if (name != null) this.setName(name);
-    if (cell != null) this.setCell(cell);
 };
 
-OArchitectOClass.prototype.config = function (source) {
-    this.name = source.name;
-    this.properties = toOProperties(this, source.properties);
-    this.superClasses = source.superClasses;
-
-    function toOProperties(oClass, sourceProperties) {
-        var properties = [];
-        if (sourceProperties !== null && sourceProperties.length > 0) {
-            for (var i = 0; i < sourceProperties.length; i++) {
-                var property = new OArchitectOProperty(oClass.name);
-                property.config(sourceProperties[i]);
-                properties.push(property);
-            }
-        }
-        return properties;
-    }
+OArchitectOClass.prototype.configFromJSON = function (json) {
+    OArchitectOClassConfigurator.configOClassFromJSON(this, json);
 };
 
 OArchitectOClass.prototype.configFromEditorConfig = function (classCell) {
-    if (!this.configuredFromEditorConfig) {
-        var currentClass = this;
-        currentClass.configuredFromEditorConfig = true;
-        configure();
-
-        function configure() {
-            var superClassesNames = currentClass.superClasses;
-            var subClassesNames = currentClass.subClasses;
-            currentClass.superClasses = [];
-            currentClass.subClasses = [];
-            currentClass.properties = [];
-            currentClass.setCell(classCell);
-            configureProperties(OArchitectUtil.getClassPropertiesCells(currentClass));
-            configureClasses(OArchitectUtil.getCellsByClassNames(superClassesNames), true);
-            configureClasses(OArchitectUtil.getCellsByClassNames(subClassesNames), false);
-        }
-
-        function configureClasses(classCells, isSuperClasses) {
-            OArchitectUtil.forEach(classCells, function (classCell) {
-                var oClass = classCell.value;
-                oClass.configFromEditorConfig(classCell);
-                if (isSuperClasses) {
-                    OArchitectConnector.connect(currentClass.cell, oClass.cell);
-                } else {
-                    OArchitectConnector.connect(oClass.cell, currentClass.cell);
-                }
-            });
-        }
-
-        function configureProperties(propertiesCells) {
-            OArchitectUtil.forEach(propertiesCells, function (propertyCell) {
-                var property = propertyCell.value;
-                property.configFromEditorConfig(propertyCell);
-                currentClass.properties.push(property);
-            });
-        }
-    }
+    OArchitectOClassConfigurator.configOClassFromEditorConfig(this, classCell);
 };
 
 OArchitectOClass.prototype.setName = function (name, callback) {
@@ -77,7 +25,7 @@ OArchitectOClass.prototype.setName = function (name, callback) {
     var oClass = this;
     app.requestIfOClassExists(JSON.stringify(jsonObj), function (exists) {
         var msg = '';
-        if (!exists) {
+        if (oClass.existsInDb || !exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
                 oClass.name = name;
             } else if (name !== oClass.name) msg = localizer.classExistsInEditor;
@@ -137,10 +85,37 @@ OArchitectOClass.prototype.removeProperty = function (oProperty, subClass) {
 };
 
 OArchitectOClass.prototype.addSuperClass = function (superClass) {
-    if (this.superClasses.indexOf(superClass) === -1) {
-        this.superClasses.push(superClass);
-        this.changeProperties(this, superClass.properties, true, false);
-        superClass.addSubClass(this);
+    var index = this.getSuperClassIndex(superClass);
+    var classForAdd = index !== -1 ? this.superClasses[index] : null;
+    if (classForAdd != null) {
+        if (!classForAdd.existsInEditor) {
+            this.superClasses.splice(index, 1);
+            classForAdd = superClass;
+        } else classForAdd = null;
+    } else classForAdd = superClass;
+
+    if (classForAdd != null) {
+        this.superClasses.push(classForAdd);
+        this.changeProperties(this, classForAdd.properties, true, false);
+        classForAdd.addSubClass(this);
+        if (this.cell != null && classForAdd.cell != null)
+            OArchitectUtil.manageEdgesBetweenCells(this.cell, classForAdd.cell, true);
+    }
+};
+
+OArchitectOClass.prototype.addSubClass = function (subClass) {
+    var index = this.getSubClassIndex(subClass);
+    var classForAdd = index > -1 ? this.subClasses[index] : null;
+    if (classForAdd != null) {
+        if (!classForAdd.existsInEditor) {
+            this.subClasses.splice(index, 1);
+            classForAdd = subClass;
+        } else classForAdd = null;
+    } else classForAdd = subClass;
+
+    if (classForAdd != null) {
+        this.subClasses.push(classForAdd);
+        classForAdd.addSuperClass(this);
     }
 };
 
@@ -150,13 +125,6 @@ OArchitectOClass.prototype.removeSuperClass = function (superClass) {
         this.superClasses.splice(index, 1);
         this.changeProperties(this, superClass.properties, true, true);
         superClass.removeSubClass(this);
-    }
-};
-
-OArchitectOClass.prototype.addSubClass = function (subClass) {
-    if (this.subClasses.indexOf(subClass) === -1) {
-        this.subClasses.push(subClass);
-        subClass.addSuperClass(this);
     }
 };
 
@@ -174,14 +142,18 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
     if (remove && !isSubClassProperty) {
         addSuperClassCells(cellsForUpdate);
     }
-    applyChanges(oClass, cellsForUpdate, propertiesForUpdate);
-    applyGraphChanges(oClass, cellsForUpdate, propertiesForUpdate);
+    if (oClass.existsInEditor) {
+        applyChanges(oClass, cellsForUpdate, propertiesForUpdate);
+        applyGraphChanges(oClass, cellsForUpdate, propertiesForUpdate);
+    }
 
     function applyChanges(oClass, cellsForUpdate, propertiesForUpdate) {
         changePropertiesForClass(oClass, cellsForUpdate, propertiesForUpdate, isSubClassProperty);
         OArchitectUtil.forEach(oClass.subClasses, function (subClass) {
-            subClass.changeProperties(subClass, changedProperties, true, remove);
-            changePropertiesForClass(subClass, cellsForUpdate, propertiesForUpdate, true);
+            if (subClass.existsInEditor) {
+                subClass.changeProperties(subClass, changedProperties, true, remove);
+                changePropertiesForClass(subClass, cellsForUpdate, propertiesForUpdate, true);
+            }
         });
     }
 
@@ -215,35 +187,17 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         try {
-            OArchitectUtil.forEach(propertiesForUpdate, function (property) {
-                graph.getModel().setValue(property.cell, property);
-            });
             if (remove) {
                 graph.removeCells(cellsForUpdate, true);
             } else {
                 graph.addCells(cellsForUpdate, oClass.cell);
             }
+            OArchitectUtil.forEach(propertiesForUpdate, function (property) {
+                graph.getModel().setValue(property.cell, property);
+            });
         } finally {
             graph.getModel().endUpdate();
         }
-    }
-
-    function configureLinks(graph, propertiesForUpdate) {
-
-        OArchitectUtil.forEach(propertiesForUpdate, function (property) {
-            if (property.linkedClass != null) {
-                var edgesBetween = graph.getEdgesBetween(property.cell, property.linkedClass.cell);
-                if (remove) {
-                    if (edgesBetween != null && edgesBetween.length > 0) {
-                        graph.removeCells(edgesBetween, true);
-                    }
-                } else {
-                    if (edgesBetween == null || edgesBetween.length == 0) {
-                        graph.connectionHandler.connect(property.cell, property.linkedClass.cell);
-                    }
-                }
-            }
-        });
     }
 
     function addSuperClassCells(cellsForUpdate) {
@@ -285,6 +239,27 @@ OArchitectOClass.prototype.getPropertyIndex = function (property) {
         for(var i = 0; i < properties.length; i++) {
             if (properties[i].name === property.name && properties[i].type === property.type) {
                 index = i;
+            }
+        }
+    }
+    return index;
+};
+
+OArchitectOClass.prototype.getSuperClassIndex = function (superClass) {
+    return this.getClassIndex(this.superClasses, superClass);
+};
+
+OArchitectOClass.prototype.getSubClassIndex = function (subClass) {
+    return this.getClassIndex(this.subClasses, subClass);
+};
+
+OArchitectOClass.prototype.getClassIndex = function (classes, searchClass) {
+    var index = -1;
+    if (classes != null && classes.length > 0 && searchClass != null && searchClass.name != null) {
+        for (var i = 0; i < classes.length; i++) {
+            if (classes[i].name === searchClass.name) {
+                index = i;
+                break;
             }
         }
     }

@@ -91,6 +91,25 @@ var OArchitectUtil = {
         return subClassesCells;
     },
 
+    manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
+        var graph = app.editor.graph;
+        var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
+        graph.getModel().beginUpdate();
+        try {
+            if (connect) {
+                if (edgesBetween == null || edgesBetween.length == 0) {
+                    graph.connectionHandler.connect(sourceCell, targetCell);
+                }
+            } else {
+                if (edgesBetween != null && edgesBetween.length > 0) {
+                    graph.removeCells(edgesBetween, true);
+                }
+            }
+        } finally {
+            graph.getModel().endUpdate();
+        }
+    },
+
     getCellsByClassNames: function (classNames) {
         var result = [];
         var cells = OArchitectUtil.getAllCells();
@@ -125,10 +144,10 @@ var OArchitectUtil = {
     fromJsonToOClasses: function (json) {
         var classes = [];
         var jsonClasses = JSON.parse(json);
-        if (jsonClasses !== null && jsonClasses.length > 0) {
+        if (jsonClasses != null && jsonClasses.length > 0) {
             for (var i = 0; i < jsonClasses.length; i++) {
                 var oClass = new OArchitectOClass();
-                oClass.config(jsonClasses[i]);
+                oClass.configFromJSON(jsonClasses[i]);
                 classes.push(oClass);
             }
         }

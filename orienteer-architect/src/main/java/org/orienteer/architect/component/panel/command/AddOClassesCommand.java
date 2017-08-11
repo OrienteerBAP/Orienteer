@@ -55,9 +55,10 @@ public class AddOClassesCommand extends AbstractCheckBoxEnabledCommand<OClass> {
 
     private OArchitectOClass toOArchitectOClass(OClass oClass) {
         OArchitectOClass architectOClass = new OArchitectOClass(oClass.getName());
-
+        architectOClass.setExistsInDatabase(true);
         architectOClass.setProperties(toOArchitectProperties(oClass.properties(), oClass.getSuperClasses()));
-        architectOClass.setSuperClassesNames(toOArchitectSuperClasses(oClass.getSuperClasses()));
+        architectOClass.setSuperClasses(toOArchitectClassNames(oClass.getSuperClasses()));
+        architectOClass.setSubClasses(toOArchitectClassNames(oClass.getSubclasses()));
         return architectOClass;
     }
 
@@ -88,9 +89,9 @@ public class AddOClassesCommand extends AbstractCheckBoxEnabledCommand<OClass> {
         return isSubClass;
     }
 
-    private List<String> toOArchitectSuperClasses(List<OClass> superClasses) {
-        List<String> architectSuperClasses = new ArrayList<>(superClasses.size());
-        for (OClass oClass : superClasses) {
+    private List<String> toOArchitectClassNames(Collection<OClass> classes) {
+        List<String> architectSuperClasses = new ArrayList<>(classes.size());
+        for (OClass oClass : classes) {
             architectSuperClasses.add(oClass.getName());
         }
         return architectSuperClasses;

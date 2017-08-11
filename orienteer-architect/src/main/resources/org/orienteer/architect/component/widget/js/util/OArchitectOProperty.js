@@ -13,19 +13,26 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     if (cell != null) this.setCell(cell);
 };
 
-OArchitectOProperty.prototype.config = function (source) {
-    this.name = source.name;
-    this.type = OArchitectOType.contains(source.type) ? source.type : null;
-    this.linkedClass = source.linkedClass;
-    this.subClassProperty = source.subClassProperty;
+OArchitectOProperty.prototype.configFromJSON = function (oClass, json) {
+    this.setName(json.name);
+    this.setType(json.type);
+    this.subClassProperty = json.subClassProperty;
+    this.ownerClass = oClass;
+    var linkedClassCell = OArchitectUtil.getCellByClassName(json.linkedClass);
+    if (linkedClassCell != null)
+        this.setLinkedClass(linkedClassCell.value);
+    oClass.properties.push(this);
+    oClass.changeProperties(oClass, [this], this.subClassProperty, false);
 };
 
-OArchitectOProperty.prototype.configFromEditorConfig = function (propertyCell) {
-    this.setCell(propertyCell);
-    this.ownerClass = OArchitectUtil.getCellByClassName(this.ownerClass).value;
+OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propertyCell) {
+    this.ownerClass = oClass;
+    this.cell = propertyCell;
     var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
-    this.linkedClass = linkedCell != null ? linkedCell.value : null;
-
+    if (linkedCell != null)
+        this.setLinkedClass(linkedCell.value);
+    oClass.properties.push(this);
+    oClass.changeProperties(oClass, [this], this.subClassProperty, false);
 };
 
 OArchitectOProperty.prototype.setType = function (type) {
@@ -85,31 +92,12 @@ OArchitectOProperty.prototype.canDisconnect = function () {
 OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
     if (this.linkedClass !== linkedClass) {
         if (linkedClass == null && this.linkedClass != null) {
-            createConnectionEdge(this.cell, this.linkedClass.cell, false);
+            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
         } else if (linkedClass != null) {
-            createConnectionEdge(this.cell, linkedClass.cell, true);
+            OArchitectUtil.manageEdgesBetweenCells(this.cell, linkedClass.cell, true);
         }
         this.linkedClass = linkedClass;
         this.ownerClass.changeProperties(this.ownerClass, [this]);
-
-        function createConnectionEdge(propertyCell, linkedClassCell, connect) {
-            var graph = app.editor.graph;
-            var edgesBetween = graph.getEdgesBetween(propertyCell, linkedClassCell);
-            graph.getModel().beginUpdate();
-            try {
-                if (connect) {
-                    if (edgesBetween == null || edgesBetween.length == 0) {
-                        graph.connectionHandler.connect(propertyCell, linkedClassCell);
-                    }
-                } else {
-                    if (edgesBetween != null && edgesBetween.length > 0) {
-                        graph.removeCells(edgesBetween, true);
-                    }
-                }
-            } finally {
-                graph.getModel().endUpdate();
-            }
-        }
     }
 };
 

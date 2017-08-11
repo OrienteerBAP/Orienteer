@@ -15,7 +15,7 @@ import java.util.List;
 public abstract class JsonUtil implements IClusterable {
 
     private static final String NAME                  = "name";
-    private static final String SUPER_CLASSES_NAMES   = "superClasses";
+    private static final String SUPER_CLASSES         = "superClasses";
     private static final String PROPERTIES            = "properties";
     private static final String PROPERTIES_FOR_DELETE = "propertiesForDelete";
     private static final String EXISTS_IN_DB          = "existsInDb";
@@ -56,8 +56,8 @@ public abstract class JsonUtil implements IClusterable {
 
     private static OArchitectOClass convertOClassFromJson(JSONObject jsonObject) {
         OArchitectOClass oClass = new OArchitectOClass(jsonObject.getString(NAME));
-        if (!jsonObject.isNull(SUPER_CLASSES_NAMES)) {
-            oClass.setSuperClassesNames(getSuperClasses(jsonObject.getJSONArray(SUPER_CLASSES_NAMES)));
+        if (!jsonObject.isNull(SUPER_CLASSES)) {
+            oClass.setSuperClasses(getSuperClasses(jsonObject.getJSONArray(SUPER_CLASSES)));
         }
         if (!jsonObject.isNull(EXISTS_IN_DB)) {
             String exists = jsonObject.getString(EXISTS_IN_DB);

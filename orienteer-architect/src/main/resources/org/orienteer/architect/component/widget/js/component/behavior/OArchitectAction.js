@@ -84,61 +84,29 @@ var OArchitectAction = {
         var pt = graph.getPointForEvent(evt);
 
         var action = function (json) {
-            var classes = OArchitectUtil.fromJsonToOClasses(json);
-            if (classes.length > 0) {
-                const START_X = pt.x;
-                const START_Y = pt.y;
-                var x = START_X;
-                var counterX = 1;
-                OArchitectUtil.forEach(classes, function (oClass) {
-                    addOClassToGraph(oClass, x, START_Y);
-                    x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
-                    counterX++;
-                });
-            }
+            const START_X = pt.x;
+            const START_Y = pt.y;
+            var x = START_X;
+            var counterX = 1;
+            var jsonClasses = JSON.parse(json);
+            OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
+                var oClass = new OArchitectOClass();
+                oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
+                oClass.configFromJSON(jsonClass);
+                addOClassCell(oClass.cell);
+                x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
+                counterX++;
+            });
         };
 
-        var addOClassToGraph = function(oClass, x, y) {
-            var classCell = OArchitectUtil.createOClassVertex(oClass, x, y);
-            var superClassesCells = OArchitectUtil.getSuperClassesCells(graph, oClass);
-            var subClassesCells = OArchitectUtil.getSubClassesCells(graph, oClass);
+        function addOClassCell(cell) {
             graph.getModel().beginUpdate();
             try {
-                graph.addCell(classCell, graph.getDefaultParent());
-                var properties = oClass.properties;
-                if (properties !== null && properties.length > 0) {
-                    OArchitectUtil.forEach(properties, function (property) {
-                        graph.addCell(OArchitectUtil.createOPropertyVertex(property), classCell);
-                    });
-                }
-                connectOClass(classCell, superClassesCells, connectToSuperClasses);
-                connectOClass(classCell, subClassesCells, connectToSubClasses);
+                graph.addCell(cell, graph.getDefaultParent());
             } finally {
                 graph.getModel().endUpdate();
             }
-            return classCell;
-        };
-
-        var connectOClass = function (classCell, cells, func) {
-            if (cells.length > 0) {
-                graph.getModel().beginUpdate();
-                try {
-                    OArchitectUtil.forEach(cells, function (cell) {
-                        func(classCell, cell);
-                    });
-                } finally {
-                    graph.getModel().endUpdate();
-                }
-            }
-        };
-
-        var connectToSuperClasses = function (classCell, superClassCell) {
-            graph.connectionHandler.connect(classCell, superClassCell);
-        };
-
-        var connectToSubClasses = function (classCell, subClassCell) {
-            graph.connectionHandler.connect(subClassCell, classCell);
-        };
+        }
 
         app.requestExistsOClasses(OArchitectUtil.getOClassesAsJSON(editor.graph), action);
     },

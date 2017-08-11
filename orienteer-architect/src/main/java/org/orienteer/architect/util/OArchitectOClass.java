@@ -10,7 +10,8 @@ import java.util.List;
  */
 public class OArchitectOClass implements IClusterable {
     private String name;
-    private List<String> superClassesNames;
+    private List<String> superClasses;
+    private List<String> subClasses;
     private List<OArchitectOProperty> properties;
     private List<OArchitectOProperty> propertiesForDelete;
     private boolean existsInDatabase;
@@ -19,14 +20,14 @@ public class OArchitectOClass implements IClusterable {
         this(name, null, null);
     }
 
-    public OArchitectOClass(String name, List<String> superClassesNames) {
-        this(name, superClassesNames, null);
+    public OArchitectOClass(String name, List<String> superClasses) {
+        this(name, superClasses, null);
     }
 
-    public OArchitectOClass(String name, List<String> superClassesNames, List<OArchitectOProperty> properties) {
+    public OArchitectOClass(String name, List<String> superClasses, List<OArchitectOProperty> properties) {
         Args.notEmpty(name, "name");
         this.name = name;
-        this.superClassesNames = superClassesNames;
+        this.superClasses = superClasses;
         this.properties = properties;
     }
 
@@ -34,8 +35,12 @@ public class OArchitectOClass implements IClusterable {
         this.name = name;
     }
 
-    public void setSuperClassesNames(List<String> superClassesNames) {
-        this.superClassesNames = superClassesNames;
+    public void setSuperClasses(List<String> superClasses) {
+        this.superClasses = superClasses;
+    }
+
+    public void setSubClasses(List<String> subClasses) {
+        this.subClasses = subClasses;
     }
 
     public void setProperties(List<OArchitectOProperty> properties) {
@@ -54,8 +59,12 @@ public class OArchitectOClass implements IClusterable {
         return name;
     }
 
-    public List<String> getSuperClassesNames() {
-        return superClassesNames;
+    public List<String> getSuperClasses() {
+        return superClasses;
+    }
+
+    public List<String> getSubClasses() {
+        return subClasses;
     }
 
     public List<OArchitectOProperty> getProperties() {
