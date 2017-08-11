@@ -37,7 +37,6 @@ OArchitectOClass.prototype.configFromEditorConfig = function (classCell) {
         configure();
 
         function configure() {
-            var graph = app.editor.graph;
             var superClassesNames = currentClass.superClasses;
             var subClassesNames = currentClass.subClasses;
             currentClass.superClasses = [];
@@ -80,27 +79,11 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         var msg = '';
         if (!exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
-                var cells = OArchitectUtil.getSubClassesCells(app.editor.graph, oClass);
-                renameSubClasses(app.editor.graph, oClass.name, name, cells);
                 oClass.name = name;
-            } else msg = localizer.classExistsInEditor;
+            } else if (name !== oClass.name) msg = localizer.classExistsInEditor;
         } else msg = localizer.classExistsInDatabase;
         if (callback != null) callback(oClass, msg);
     });
-
-    function renameSubClasses(graph, oldSuperClassName, newSuperClassName, cells) {
-        graph.getModel().beginUpdate();
-        try {
-            OArchitectUtil.forEach(cells, function (cell) {
-                var subClass = cell.value;
-                subClass.removeSuperClass(oldSuperClassName);
-                subClass.addSuperClass(newSuperClassName);
-                graph.getModel().setValue(cell, subClass);
-            });
-        } finally {
-            graph.getModel().endUpdate();
-        }
-    }
 };
 
 OArchitectOClass.prototype.setCell = function (cell) {

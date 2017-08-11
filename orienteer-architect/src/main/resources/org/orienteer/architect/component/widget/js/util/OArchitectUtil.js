@@ -20,9 +20,8 @@ var OArchitectUtil = {
     },
 
     deleteCells: function (cells, withoutChecks) {
-        console.warn('delete cells: ', cells);
-        deleteCells(app.editor.graph, getCellsForRemove(cells));
 
+        deleteCells(app.editor.graph, getCellsForRemove(cells));
 
         function deleteCells(graph, cells) {
             graph.getModel().beginUpdate();
