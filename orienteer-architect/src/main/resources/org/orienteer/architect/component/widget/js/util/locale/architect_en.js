@@ -8,9 +8,13 @@ var en = {
     classMsg: 'Class',
     property: 'Property',
     existsClasses: 'Exists classes',
+    createClass: 'Create class',
+    editClass: 'Edit class',
     createProperty: 'Create property',
     editProperty: 'Edit property',
     saveDataModel: 'Save Data Model',
     applyChanges: 'Apply Changes',
-    toJson: 'To JSON'
+    toJson: 'To JSON',
+    classExistsInDatabase: 'Class already exists in database',
+    classExistsInEditor: 'Class already exists in editor'
 };

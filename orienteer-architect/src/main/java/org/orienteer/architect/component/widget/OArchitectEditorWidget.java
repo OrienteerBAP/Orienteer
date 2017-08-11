@@ -17,6 +17,7 @@ import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.ApplyEditorChangesBehavior;
+import org.orienteer.architect.component.behavior.ExistsOClassBehavior;
 import org.orienteer.architect.component.behavior.GetOClassesBehavior;
 import org.orienteer.architect.component.behavior.ManageEditorConfigBehavior;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
@@ -67,6 +68,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         add(new ManageEditorConfigBehavior(getModel()));
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(panel));
+        add(new ExistsOClassBehavior());
     }
 
     private WebMarkupContainer newContainer(String id) {
@@ -80,25 +82,33 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         super.renderHead(response);
         response.render(CssReferenceHeaderItem.forReference(OARCHITECT_CSS));
         response.render(CssReferenceHeaderItem.forReference(MXGRAPH_CSS));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/architect.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/OArchitectApplication.js")));
         response.render(JavaScriptHeaderItem.forScript(
                 String.format("; initMxGraph('%s');", "en"), null));
         response.render(JavaScriptHeaderItem.forReference(MXGRAPH_JS));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-bar.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/metadata.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-modal-window.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/editor-popup-menu.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/actions.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/constants.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectEditor.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectBar.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectModalWindow.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectValueContainer.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OClassEditModalWindow.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OPropertyEditModalWindow.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/behavior/OArchitectAction.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConfig.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConnectionConfig.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphStyleConfig.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOClass.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOProperty.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOType.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectUtil.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectConstants.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectConnector.js")));
         String locale = getOArchitectEditorLocale();
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class,
-                String.format("js/locale/architect_%s.js", locale))));
+                String.format("js/util/locale/architect_%s.js", locale))));
 
-        PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/architect.js");
+        PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/OArchitectApplication.js");
         String configUrl = urlFor(configXml, null).toString();
-        String baseUrl = configUrl.substring(0, configUrl.indexOf("js/architect"));
+        String baseUrl = configUrl.substring(0, configUrl.indexOf("js/OArchitectApplication"));
         
         TextTemplate configTemplate = new PackageTextTemplate(OArchitectEditorWidget.class, "config.tmpl.xml");
         Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);

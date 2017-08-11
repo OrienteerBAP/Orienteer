@@ -14,10 +14,14 @@ import java.util.List;
  */
 public abstract class JsonUtil implements IClusterable {
 
-    public static final String NAME          = "name";
-    public static final String SUPER_CLASSES = "superClasses";
-    public static final String PROPERTIES    = "properties";
-    public static final String TYPE          = "type";
+    private static final String NAME                  = "name";
+    private static final String SUPER_CLASSES_NAMES   = "superClasses";
+    private static final String PROPERTIES            = "properties";
+    private static final String PROPERTIES_FOR_DELETE = "propertiesForDelete";
+    private static final String EXISTS_IN_DB          = "existsInDb";
+    private static final String SUBCLASS_PROPERTY     = "subClassProperty";
+    private static final String LINKED_CLASS_NAME     = "linkedClass";
+    private static final String TYPE                  = "type";
 
     private JsonUtil() {}
 
@@ -52,12 +56,23 @@ public abstract class JsonUtil implements IClusterable {
 
     private static OArchitectOClass convertOClassFromJson(JSONObject jsonObject) {
         OArchitectOClass oClass = new OArchitectOClass(jsonObject.getString(NAME));
-        oClass.setSuperClasses(getStringListFromJson(jsonObject.getJSONArray(SUPER_CLASSES)));
-        oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));
+        if (!jsonObject.isNull(SUPER_CLASSES_NAMES)) {
+            oClass.setSuperClassesNames(getSuperClasses(jsonObject.getJSONArray(SUPER_CLASSES_NAMES)));
+        }
+        if (!jsonObject.isNull(EXISTS_IN_DB)) {
+            String exists = jsonObject.getString(EXISTS_IN_DB);
+            oClass.setExistsInDatabase(exists.equals("1") || exists.equals("true"));
+        }
+        if (!jsonObject.isNull(PROPERTIES)) {
+            oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));
+        }
+        if (!jsonObject.isNull(PROPERTIES_FOR_DELETE)) {
+            oClass.setPropertiesForDelete(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES_FOR_DELETE)));
+        }
         return oClass;
     }
 
-    private static List<String> getStringListFromJson(JSONArray jsonArray) {
+    private static List<String> getSuperClasses(JSONArray jsonArray) {
         List<String> stringList = Lists.newArrayList();
         for (int i = 0; i < jsonArray.length(); i++) {
             stringList.add(jsonArray.getString(i));
@@ -76,6 +91,15 @@ public abstract class JsonUtil implements IClusterable {
     private static OArchitectOProperty convertOPropertyFromJson(JSONObject jsonObject) {
         String name = jsonObject.getString(NAME);
         OType type = OType.valueOf(jsonObject.getString(TYPE));
-        return new OArchitectOProperty(name, type);
+        OArchitectOProperty property = new OArchitectOProperty(name, type);
+        if (!jsonObject.isNull(SUBCLASS_PROPERTY)) {
+            String subClassProperty = jsonObject.getString(SUBCLASS_PROPERTY);
+            property.setSubClassProperty(subClassProperty.equals("1") || subClassProperty.equals("true"));
+        }
+        if (!jsonObject.isNull(LINKED_CLASS_NAME)) {
+            String linkedClass = jsonObject.getString(LINKED_CLASS_NAME);
+            property.setLinkedClassName(linkedClass);
+        }
+        return property;
     }
 }

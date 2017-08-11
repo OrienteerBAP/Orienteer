@@ -6,25 +6,27 @@ import org.apache.wicket.util.io.IClusterable;
 import java.util.List;
 
 /**
- *
+ * Utility class which represents {@link com.orientechnologies.orient.core.metadata.schema.OClass} from JSON
  */
 public class OArchitectOClass implements IClusterable {
     private String name;
-    private List<String> superClasses;
+    private List<String> superClassesNames;
     private List<OArchitectOProperty> properties;
+    private List<OArchitectOProperty> propertiesForDelete;
+    private boolean existsInDatabase;
 
     public OArchitectOClass(String name) {
         this(name, null, null);
     }
 
-    public OArchitectOClass(String name, List<String> superClasses) {
-        this(name, superClasses, null);
+    public OArchitectOClass(String name, List<String> superClassesNames) {
+        this(name, superClassesNames, null);
     }
 
-    public OArchitectOClass(String name, List<String> superClasses, List<OArchitectOProperty> properties) {
+    public OArchitectOClass(String name, List<String> superClassesNames, List<OArchitectOProperty> properties) {
         Args.notEmpty(name, "name");
         this.name = name;
-        this.superClasses = superClasses;
+        this.superClassesNames = superClassesNames;
         this.properties = properties;
     }
 
@@ -32,33 +34,40 @@ public class OArchitectOClass implements IClusterable {
         this.name = name;
     }
 
-    public void setSuperClasses(List<String> superClasses) {
-        this.superClasses = superClasses;
+    public void setSuperClassesNames(List<String> superClassesNames) {
+        this.superClassesNames = superClassesNames;
     }
 
     public void setProperties(List<OArchitectOProperty> properties) {
         this.properties = properties;
     }
 
+    public void setPropertiesForDelete(List<OArchitectOProperty> propertiesForDelete) {
+        this.propertiesForDelete = propertiesForDelete;
+    }
+
+    public void setExistsInDatabase(boolean exists) {
+        this.existsInDatabase = exists;
+    }
+
     public String getName() {
         return name;
     }
 
-    public List<String> getSuperClasses() {
-        return superClasses;
+    public List<String> getSuperClassesNames() {
+        return superClassesNames;
     }
 
     public List<OArchitectOProperty> getProperties() {
         return properties;
     }
 
-
-    @Override
-    public String toString() {
-        return "OArchitectOClass{" +
-                "name='" + name + '\'' +
-                ", superClasses=" + superClasses +
-                ", properties=" + properties +
-                '}';
+    public List<OArchitectOProperty> getPropertiesForDelete() {
+        return propertiesForDelete;
     }
+
+    public boolean isExistsInDatabase() {
+        return this.existsInDatabase;
+    }
+
 }

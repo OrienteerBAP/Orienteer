@@ -8,9 +8,13 @@ var uk = {
     classMsg: 'Клас',
     property: 'Властивість',
     existsClasses: 'Існуючі класи',
+    createClass: 'Створити клас',
+    editClass: 'Редагувати клас',
     createProperty: 'Створити властивість',
     editProperty: 'Редагувати властивість',
     saveDataModel: 'Зберегти модель даних',
     applyChanges: 'Застосувати зміни',
-    toJson: 'Конвертувати в JSON'
+    toJson: 'Конвертувати в JSON',
+    classExistsInDatabase: 'Клас вже існує в базі даних',
+    classExistsInEditor: 'Клас вже існує в редакторі'
 };

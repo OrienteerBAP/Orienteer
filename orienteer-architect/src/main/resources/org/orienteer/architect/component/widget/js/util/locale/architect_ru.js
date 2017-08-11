@@ -8,9 +8,13 @@ var ru = {
     classMsg: 'Класс',
     property: 'Свойство',
     existsClasses: 'Существующие классы',
+    createClass: 'Создат класс',
+    editClass: 'Отредактировать класс',
     createProperty: 'Создать свойство',
     editProperty: 'Отредактировать свойство',
     saveDataModel: 'Сохранить модель данных',
     applyChanges: 'Применить изменения',
-    toJson: 'Конвертировать в JSON'
+    toJson: 'Конвертировать в JSON',
+    classExistsInDatabase: 'Класс уже существует в базе данных',
+    classExistsInEditor: 'Класс уже существует в редакторе'
 };

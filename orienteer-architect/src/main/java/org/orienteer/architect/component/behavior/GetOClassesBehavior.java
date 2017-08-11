@@ -3,7 +3,6 @@ package org.orienteer.architect.component.behavior;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.CallbackParameter;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.request.IRequestParameters;
@@ -35,7 +34,7 @@ public class GetOClassesBehavior extends AbstractDefaultAjaxBehavior {
     @Override
     public void renderHead(Component component, IHeaderResponse response) {
         super.renderHead(component, response);
-        response.render(OnLoadHeaderItem.forScript(String.format("; app.setGetOClassesRequest(%s);",
-                getCallbackFunction(CallbackParameter.explicit(EXISTS_CLASSES_VAR)))));
+        response.render(OnLoadHeaderItem.forScript(String.format("; app.setGetOClassesRequest('%s');",
+                getCallbackUrl())));
     }
 }
