@@ -8,6 +8,7 @@ var OArchitectActionNames = {
     EDIT_OCLASS_ACTION:          'editOClass',
     EDIT_OPROPERTY_ACTION:       'editOProperty',
     DELETE_OPROPERTY_ACTION:     'deleteOProperty',
+    DELETE_CELL_ACTION:          'deleteCell',
     TO_JSON_ACTION:              'toJsonAction',
     SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
     APPLY_EDITOR_CHANGES_ACTION: 'applyChanges'
@@ -194,10 +195,17 @@ var OArchitectAction = {
     },
 
     /**
+     * Delete cell from editor action
+     */
+    deleteCellAction: function (editor, cell) {
+        OArchitectUtil.deleteCells(editor.graph.getSelectionCells());
+    },
+
+    /**
      * Delete {@link OArchitectOProperty} from editor action
      */
     deleteOPropertyAction: function (editor, cell) {
-        if (cell !== null && cell.value instanceof OArchitectOProperty) {
+        if (cell != null && cell.value instanceof OArchitectOProperty) {
             var graph = editor.graph;
             graph.stopEditing(false);
             var oClassCell = OArchitectUtil.getClassByPropertyCell(graph, cell);

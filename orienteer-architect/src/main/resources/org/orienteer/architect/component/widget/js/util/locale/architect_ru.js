@@ -8,7 +8,7 @@ var ru = {
     classMsg: 'Класс',
     property: 'Свойство',
     existsClasses: 'Существующие классы',
-    createClass: 'Создат класс',
+    createClass: 'Создать класс',
     editClass: 'Отредактировать класс',
     createProperty: 'Создать свойство',
     editProperty: 'Отредактировать свойство',

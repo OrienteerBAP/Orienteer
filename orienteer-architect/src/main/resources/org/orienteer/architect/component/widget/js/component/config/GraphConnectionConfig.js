@@ -12,7 +12,7 @@ GraphConnectionConfig.prototype.config = function () {
     var graph = this.graph;
     graph.isCellConnectable = this.isCellConnectable;
     graph.isValidConnection = this.isValidConnection;
-    graph.isCellLocked = this.isCellLocked;
+    graph.isCellDisconnectable = this.isCellDisconnectable;
     graph.getAllConnectionConstraints = this.getAllConnectionConstraints;
     graph.connectionHandler.cursor = 'pointer';
     graph.connectionHandler.factoryMethod = this.connectionHandlerFactoryMethod;
@@ -38,12 +38,11 @@ GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
     return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
 };
 
-GraphConnectionConfig.prototype.isCellLocked = function (cell) {
-    var locked = false;
-    if (cell.edge) {
-        locked = cell.source.value instanceof OArchitectOProperty && !cell.source.value.canDisconnect();
-    }
-    return locked;
+GraphConnectionConfig.prototype.isCellDisconnectable = function (cell) {
+    if (cell.edge && cell.source.value instanceof OArchitectOProperty)
+        return cell.source.value.canDisconnect();
+
+    return true;
 };
 
 GraphConnectionConfig.prototype.isValidConnection = function (source, target) {

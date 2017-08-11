@@ -19,6 +19,32 @@ var OArchitectUtil = {
         return vertex;
     },
 
+    deleteCells: function (cells, withoutChecks) {
+
+        deleteCells(app.editor.graph, getCellsForRemove(cells));
+
+        function deleteCells(graph, cells) {
+            graph.getModel().beginUpdate();
+            try {
+                graph.removeCells(cells, true);
+            } finally {
+                graph.getModel().endUpdate();
+            }
+        }
+
+        function getCellsForRemove(cells) {
+            var result = [];
+            OArchitectUtil.forEach(cells, function (cell) {
+                if (cell.edge) {
+                    if (cell.source.value instanceof OArchitectOProperty) {
+                        if (cell.source.value.canDisconnect() || withoutChecks) result.push(cell);
+                    } else result.push(cell);
+                } else result.push(cell);
+            });
+            return result;
+        }
+    },
+
     getOClassesAsJSON: function (graph) {
         var withParents = [];
         var withoutParents = [];

@@ -37,7 +37,6 @@ OArchitectOClass.prototype.configFromEditorConfig = function (classCell) {
         configure();
 
         function configure() {
-            var graph = app.editor.graph;
             var superClassesNames = currentClass.superClasses;
             var subClassesNames = currentClass.subClasses;
             currentClass.superClasses = [];
@@ -80,27 +79,11 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         var msg = '';
         if (!exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
-                var cells = OArchitectUtil.getSubClassesCells(app.editor.graph, oClass);
-                renameSubClasses(app.editor.graph, oClass.name, name, cells);
                 oClass.name = name;
-            } else msg = localizer.classExistsInEditor;
+            } else if (name !== oClass.name) msg = localizer.classExistsInEditor;
         } else msg = localizer.classExistsInDatabase;
         if (callback != null) callback(oClass, msg);
     });
-
-    function renameSubClasses(graph, oldSuperClassName, newSuperClassName, cells) {
-        graph.getModel().beginUpdate();
-        try {
-            OArchitectUtil.forEach(cells, function (cell) {
-                var subClass = cell.value;
-                subClass.removeSuperClass(oldSuperClassName);
-                subClass.addSuperClass(newSuperClassName);
-                graph.getModel().setValue(cell, subClass);
-            });
-        } finally {
-            graph.getModel().endUpdate();
-        }
-    }
 };
 
 OArchitectOClass.prototype.setCell = function (cell) {
@@ -221,7 +204,7 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
                     property.cell = OArchitectUtil.createOPropertyVertex(property);
                     cellsForUpdate.push(property.cell);
                 }
-                property.linkedClass = changedProperty.linkedClass;
+                property.setLinkedClass(changedProperty.linkedClass);
                 property.subClassProperty = isSubClass;
                 propertiesForUpdate.push(property);
             }
@@ -235,13 +218,10 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
             OArchitectUtil.forEach(propertiesForUpdate, function (property) {
                 graph.getModel().setValue(property.cell, property);
             });
-
             if (remove) {
-                configureLinks(graph, propertiesForUpdate);
                 graph.removeCells(cellsForUpdate, true);
             } else {
                 graph.addCells(cellsForUpdate, oClass.cell);
-                configureLinks(graph, propertiesForUpdate);
             }
         } finally {
             graph.getModel().endUpdate();
@@ -252,8 +232,16 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
 
         OArchitectUtil.forEach(propertiesForUpdate, function (property) {
             if (property.linkedClass != null) {
-                if (!remove)
-                    graph.connectionHandler.connect(property.cell, property.linkedClass.cell);
+                var edgesBetween = graph.getEdgesBetween(property.cell, property.linkedClass.cell);
+                if (remove) {
+                    if (edgesBetween != null && edgesBetween.length > 0) {
+                        graph.removeCells(edgesBetween, true);
+                    }
+                } else {
+                    if (edgesBetween == null || edgesBetween.length == 0) {
+                        graph.connectionHandler.connect(property.cell, property.linkedClass.cell);
+                    }
+                }
             }
         });
     }

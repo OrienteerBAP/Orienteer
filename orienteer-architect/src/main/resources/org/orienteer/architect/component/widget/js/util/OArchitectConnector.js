@@ -42,6 +42,6 @@ var OArchitectConnector = {
     },
 
     disconnectOPropertyFromOClassCell: function (graph, propertyCell, classCell) {
-        propertyCell.value.linkedClass = null;
+        propertyCell.value.setLinkedClass(null);
     }
 };
