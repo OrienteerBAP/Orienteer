@@ -92,7 +92,7 @@ var OArchitectAction = {
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
-                oClass.configFromJSON(jsonClass);
+                oClass.configFromDatabase(jsonClass);
                 addOClassCell(oClass.cell);
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;

@@ -3,6 +3,12 @@
  */
 var OArchitectConnector = {
 
+    /**
+     * Create connection between sourceCell and targetCell
+     * Function don't remove edge between sourceCell and targetCell!
+     * @param sourceCell {@link mxCell}
+     * @param targetCell {@link mxCell}
+     */
     connect: function(sourceCell, targetCell) {
         if (targetCell.value instanceof OArchitectOClass) {
             var graph = app.editor.graph;
@@ -14,6 +20,12 @@ var OArchitectConnector = {
         }
     },
 
+    /**
+     * Remove connection between sourceCell and targetCell
+     * Function don't remove edge between sourceCell and targetCell!
+     * @param sourceCell {@link mxCell}
+     * @param targetCell {@link mxCell}
+     */
     disconnect: function (sourceCell, targetCell) {
         if (targetCell.value instanceof OArchitectOClass) {
             var graph = app.editor.graph;

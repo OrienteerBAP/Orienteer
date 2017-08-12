@@ -1,3 +1,7 @@
+/**
+ * Utility class which represents OClass from OrientDB in {@link OArchitectEditor}
+ * @constructor
+ */
 var OArchitectOClass = function() {
     this.name = null;
     this.properties = [];
@@ -10,14 +14,30 @@ var OArchitectOClass = function() {
     this.configuredFromEditorConfig = false;
 };
 
-OArchitectOClass.prototype.configFromJSON = function (json) {
-    OArchitectOClassConfigurator.configOClassFromJSON(this, json);
+/**
+ * Config this instance from json which is respond from database
+ * @param json - string which contains json data
+ */
+OArchitectOClass.prototype.configFromDatabase = function (json) {
+    OArchitectOClassConfigurator.configOClassFromDatabase(this, json);
 };
 
+/**
+ * INTERNAL FUNCTION. DON'T CALL IT.
+ * Config this class from cell which is saved in xml config.
+ * @param classCell - {@link mxCell} which will be used to config
+ */
 OArchitectOClass.prototype.configFromEditorConfig = function (classCell) {
     OArchitectOClassConfigurator.configOClassFromEditorConfig(this, classCell);
 };
 
+/**
+ * Set name of this class.
+ * Checks if class with current name exists in database or exists in editor.
+ * @param name - sting which contains new name
+ * @param callback - function which will be call after all checks
+ *                 - params of function this class and optional message
+ */
 OArchitectOClass.prototype.setName = function (name, callback) {
     var jsonObj = {
         existsClassName: name
@@ -34,6 +54,10 @@ OArchitectOClass.prototype.setName = function (name, callback) {
     });
 };
 
+/**
+ * Set and create new cell for this class.
+ * @param cell {@link mxCell}
+ */
 OArchitectOClass.prototype.setCell = function (cell) {
     if (cell != null) {
         var graph = app.editor.graph;
@@ -47,6 +71,15 @@ OArchitectOClass.prototype.setCell = function (cell) {
     }
 };
 
+/**
+ * Create new {@link OArchitectOProperty} for this class and save it in this class
+ * @param name - string name of property
+ * @param type - string type of property
+ * @param cell - {@link mxCell} which contains property
+ * @param subClass - boolean true if creates subclass property
+ * @returns {@link OArchitectOProperty}
+ * @throws {@link Error} if property with given name already exists
+ */
 OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass) {
     var property = null;
     if (name != null && type != null) {
@@ -60,17 +93,11 @@ OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass
     return property;
 };
 
-OArchitectOClass.prototype.getOrCreateProperty = function (name, type, cell) {
-    var property = null;
-    if (name != null && type != null) {
-        property = this.getProperty(name);
-        if (property == null) {
-            property = this.createProperty(name, type, cell);
-        }
-    }
-    return property;
-};
-
+/**
+ * Remove {@link OArchitectOProperty} from this class.
+ * @param oProperty - {@link OArchitectOProperty} for remove
+ * @param subClass - true if subclass property
+ */
 OArchitectOClass.prototype.removeProperty = function (oProperty, subClass) {
     var index = this.getPropertyIndex(oProperty);
     if (index > -1) {
@@ -84,6 +111,11 @@ OArchitectOClass.prototype.removeProperty = function (oProperty, subClass) {
     }
 };
 
+/**
+ * Add new superclass for this class.
+ * Creates new connection between this class and new superclass
+ * @param superClass {@link OArchitectOClass}
+ */
 OArchitectOClass.prototype.addSuperClass = function (superClass) {
     var index = this.getSuperClassIndex(superClass);
     var classForAdd = index !== -1 ? this.superClasses[index] : null;
@@ -103,6 +135,11 @@ OArchitectOClass.prototype.addSuperClass = function (superClass) {
     }
 };
 
+/**
+ * Add new subclass for this class.
+ * Creates new connection between this class and new subclass
+ * @param subClass {@link OArchitectOClass}
+ */
 OArchitectOClass.prototype.addSubClass = function (subClass) {
     var index = this.getSubClassIndex(subClass);
     var classForAdd = index > -1 ? this.subClasses[index] : null;
@@ -116,9 +153,15 @@ OArchitectOClass.prototype.addSubClass = function (subClass) {
     if (classForAdd != null) {
         this.subClasses.push(classForAdd);
         classForAdd.addSuperClass(this);
+        if (this.cell != null && classForAdd.cell != null)
+            OArchitectUtil.manageEdgesBetweenCells(classForAdd.cell, this.cell, true);
     }
 };
 
+/**
+ * Remove superclass from this class
+ * @param superClass {@link OArchitectOClass}
+ */
 OArchitectOClass.prototype.removeSuperClass = function (superClass) {
     var index = this.superClasses.indexOf(superClass);
     if (index > -1) {
@@ -128,6 +171,10 @@ OArchitectOClass.prototype.removeSuperClass = function (superClass) {
     }
 };
 
+/**
+ * Remove subclass from this class
+ * @param subClass {@link OArchitectOClass}
+ */
 OArchitectOClass.prototype.removeSubClass = function (subClass) {
     var index = this.subClasses.indexOf(subClass);
     if (index > -1) {
@@ -136,6 +183,13 @@ OArchitectOClass.prototype.removeSubClass = function (subClass) {
     }
 };
 
+/**
+ * Change properties for this class and recursively changed properties from subclasses
+ * @param oClass - {@link OArchitectOClass} which properties need for changes
+ * @param changedProperties - array with {@link OArchitectOProperty} for changes
+ * @param isSubClassProperty - true if changedProperties is subclass properties
+ * @param remove - true if need to remove changedProperties from oClass
+ */
 OArchitectOClass.prototype.changeProperties = function (oClass, changedProperties, isSubClassProperty, remove) {
     var cellsForUpdate = [];
     var propertiesForUpdate = [];
@@ -207,18 +261,25 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
     }
 };
 
+/**
+ * @returns boolean - true if thic class is subclass
+ */
 OArchitectOClass.prototype.isSubClass = function () {
     return this.superClasses.length > 0;
 };
 
+/**
+ * @param superClass - {@link OArchitectOClass}
+ * @returns boolean - true if this class contains in superClasses superClass
+ */
 OArchitectOClass.prototype.containsSuperClass = function (superClass) {
     return this.superClasses.indexOf(superClass) > -1;
 };
 
-OArchitectOClass.prototype.containsProperty = function (property) {
-    return this.getPropertyIndex(property) > -1;
-};
-
+/**
+ * @param name - string name of property
+ * @returns {@link OArchitectOProperty} with given name or null
+ */
 OArchitectOClass.prototype.getProperty = function (name) {
     var property = null;
     if (name != null) {
@@ -232,6 +293,10 @@ OArchitectOClass.prototype.getProperty = function (name) {
     return property;
 };
 
+/**
+ * @param property - {@link OArchitectOProperty} which will be search
+ * @returns number - index of property in properties array of this class
+ */
 OArchitectOClass.prototype.getPropertyIndex = function (property) {
     var index = -1;
     if (property !== null && property.name != null && property.type != null) {
@@ -245,14 +310,27 @@ OArchitectOClass.prototype.getPropertyIndex = function (property) {
     return index;
 };
 
+/**
+ * @param superClass - {@link OArchitectOClass} for search
+ * @returns number - index of class in superclasses array of this class
+ */
 OArchitectOClass.prototype.getSuperClassIndex = function (superClass) {
     return this.getClassIndex(this.superClasses, superClass);
 };
 
+/**
+ * @param subClass - {@link OArchitectOClass} for search
+ * @returns number - index of class in subclasses array of this class
+ */
 OArchitectOClass.prototype.getSubClassIndex = function (subClass) {
     return this.getClassIndex(this.subClasses, subClass);
 };
 
+/**
+ * @param classes - array of {@link OArchitectOClass}
+ * @param searchClass - {@link OArchitectOClass}
+ * @returns number - index of searchClass in classes
+ */
 OArchitectOClass.prototype.getClassIndex = function (classes, searchClass) {
     var index = -1;
     if (classes != null && classes.length > 0 && searchClass != null && searchClass.name != null) {
@@ -270,6 +348,10 @@ OArchitectOClass.prototype.toString = function () {
     return this.name;
 };
 
+/**
+ * Convert current class to json string
+ * @returns json string
+ */
 OArchitectOClass.prototype.toJson = function () {
     function jsonFilter(key, value) {
         if (key === 'cell') {
@@ -289,6 +371,9 @@ OArchitectOClass.prototype.toJson = function () {
     return JSON.stringify(this, jsonFilter);
 };
 
+/**
+ * @returns {@link OArchitectOClass} instance of this class which can be converted to editor xml config
+ */
 OArchitectOClass.prototype.toEditorConfigObject = function () {
     var result = new OArchitectOClass();
     result.name = this.name;

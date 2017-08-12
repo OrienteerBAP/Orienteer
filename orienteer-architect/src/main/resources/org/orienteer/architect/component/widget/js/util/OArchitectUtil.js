@@ -69,26 +69,13 @@ var OArchitectUtil = {
         return graph.getChildVertices(graph.getDefaultParent());
     },
 
-    getSuperClassesCells: function (graph, oClass) {
-        var superClasses = oClass.superClasses;
-        var superClassesCells = [];
-        if (superClasses != null) {
-            OArchitectUtil.forEach(superClasses, function (superClass) {
-                superClassesCells.push(superClass.cell);
-            });
-        }
-        return superClassesCells;
-    },
-
-    getSubClassesCells: function (graph, oClass) {
-        var subClasses = oClass.subClasses;
-        var subClassesCells = [];
-        if (subClasses != null) {
-            OArchitectUtil.forEach(subClasses, function (subClass) {
-                subClassesCells.push(subClass.cell);
-            });
-        }
-        return subClassesCells;
+    getAllClasses: function () {
+        var cells = OArchitectUtil.getAllCells();
+        var classes = [];
+        OArchitectUtil.forEach(cells, function (cell) {
+            classes.push(cell.value);
+        });
+        return classes;
     },
 
     manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
@@ -141,19 +128,6 @@ var OArchitectUtil = {
         return result != null ? result : [];
     },
 
-    fromJsonToOClasses: function (json) {
-        var classes = [];
-        var jsonClasses = JSON.parse(json);
-        if (jsonClasses != null && jsonClasses.length > 0) {
-            for (var i = 0; i < jsonClasses.length; i++) {
-                var oClass = new OArchitectOClass();
-                oClass.configFromJSON(jsonClasses[i]);
-                classes.push(oClass);
-            }
-        }
-        return classes;
-    },
-
     getClassByPropertyCell: function (graph, cell) {
         if (cell.value instanceof OArchitectOClass)
             return cell;
@@ -187,22 +161,28 @@ var OArchitectUtil = {
     },
 
     /**
-     * Creates function for save {@link OArchitectOClass} and {@link OArchitectOProperty} to editor xml configFromJson.
+     * Creates function for save {@link OArchitectOClass} and {@link OArchitectOProperty} to editor xml config.
      * Overrides {@link mxObjectCodec#writeComplexAttribute}
+     * @returns Function
      */
     createWriteComplexAttributeFunction: function () {
         var defaultBehavior = mxObjectCodec.prototype.writeComplexAttribute;
         return function (enc, obj, name, value, node) {
             if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
                 value = value.toEditorConfigObject();
-            } else if (name === 'cell' || name === 'configuredFromEditorConfig') {
+            } else if (name === 'cell' || name === 'configuredFromEditorConfig' || name === 'existsInEditor') {
                 value = undefined;
             }
 
             defaultBehavior.apply(this, arguments);
         };
     },
-    
+
+    /**
+     * Create function for decode {@link OArchitectOClass} and {@link OArchitectOProperty} from editor xml config.
+     * Overrides {@link mxCodec#decode}
+     * @returns Function
+     */
     createDecodeFunction: function () {
         var defaultBehavior = mxCodec.prototype.decode;
         
