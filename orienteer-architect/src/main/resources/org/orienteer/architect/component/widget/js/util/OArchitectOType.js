@@ -1,4 +1,6 @@
-
+/**
+ * Utility class which represents OType from OrientDB in {@link OArchitectEditor}
+ */
 var OArchitectOType = {
     types: ['BOOLEAN', 'INTEGER', 'SHORT', 'LONG', 'FLOAT', 'DOUBLE', 'DATETIME',
         'STRING', 'BINARY', 'EMBEDDED', 'EMBEDDEDLIST', 'EMBEDDEDSET', 'EMBEDDEDMAP',

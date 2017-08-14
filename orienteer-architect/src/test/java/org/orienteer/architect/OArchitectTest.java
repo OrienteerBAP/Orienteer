@@ -40,8 +40,8 @@ public class OArchitectTest {
         if (oClass.getProperties() != null && !oClass.getProperties().isEmpty()) {
             testOClassProperties(oClass.getProperties());
         }
-        if (oClass.getSuperClassesNames() != null && !oClass.getSuperClassesNames().isEmpty()) {
-            testOClassSuperClasses(oClass.getSuperClassesNames());
+        if (oClass.getSuperClasses() != null && !oClass.getSuperClasses().isEmpty()) {
+            testOClassSuperClasses(oClass.getSuperClasses());
         }
     }
 
@@ -69,7 +69,7 @@ public class OArchitectTest {
         superClasses.add("Test2");
         superClasses.add("Test3");
         oClass.setProperties(properties);
-        oClass.setSuperClassesNames(superClasses);
+        oClass.setSuperClasses(superClasses);
         classes.add(oClass);
 
         superClasses = Lists.newArrayList();
@@ -82,7 +82,7 @@ public class OArchitectTest {
         superClasses.add("Test3");
         superClasses.add("Test5");
         oClass.setProperties(properties);
-        oClass.setSuperClassesNames(superClasses);
+        oClass.setSuperClasses(superClasses);
         classes.add(oClass);
 
         return classes;

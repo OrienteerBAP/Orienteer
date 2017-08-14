@@ -13,23 +13,25 @@ GraphConnectionConfig.prototype.config = function () {
     graph.isCellConnectable = this.isCellConnectable;
     graph.isValidConnection = this.isValidConnection;
     graph.isCellDisconnectable = this.isCellDisconnectable;
-    graph.getAllConnectionConstraints = this.getAllConnectionConstraints;
     graph.connectionHandler.cursor = 'pointer';
+    graph.connectionHandler.connectImage = new mxImage(app.basePath + OArchitectConstants.CONNECTOR_IMG_PATH, OArchitectConstants.ICON_SIZE, OArchitectConstants.ICON_SIZE);
     graph.connectionHandler.factoryMethod = this.connectionHandlerFactoryMethod;
     graph.connectionHandler.createEdgeState = this.connectionHandlerCreateEdgeState;
-    graph.connectionHandler.isConnectableCell = this.connectionHandlerIsConnectableCell;
+    graph.connectionHandler.isConnectableCell = this.isCellConnectable;
 
-    mxEdgeHandler.prototype.isConnectableCell = function(cell) {
-        return false;
-    };
-    mxConstraintHandler.prototype.pointImage =  new mxImage(app.basePath + OArchitectConstants.CONNECTOR_IMG_PATH, 16, 16);
+    graph.connectionHandler.createLinkOnConnection = false;
+    graph.connectionHandler.linkConnection = false;
+
+    graph.connectionHandler.createEdge = this.connectionHandlerCreateEdge;
+    graph.connectionHandler.createIcons = this.connectionHandlerCreateIcons;
+    graph.connectionHandler.redrawIcons = this.connectionHandlerRedrawIcons;
 
     this.configEvents();
 };
 
 GraphConnectionConfig.prototype.configEvents = function () {
-    this.graph.addListener(mxEvent.CELL_CONNECTED, this.createCellConnectedBehavior());
     this.graph.addListener(mxEvent.CELLS_REMOVED, this.createCellRemovedBehavior());
+    this.graph.addListener(mxEvent.CELL_CONNECTED, this.createCellConnectedBehavior());
 };
 
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
@@ -52,29 +54,9 @@ GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
     if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
         valid = !sourceValue.containsSuperClass(targetValue) && !targetValue.containsSuperClass(sourceValue);
     } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
-        valid = sourceValue.canConnect();
+        valid = sourceValue.canConnect() && sourceValue.ownerClass !== targetValue;
     }
     return valid && mxGraph.prototype.isValidConnection.apply(this, arguments);;
-};
-
-GraphConnectionConfig.prototype.getAllConnectionConstraints = function (terminal, source) {
-    var constraints = null;
-    var show = terminal !== null && this.model.isVertex(terminal.cell) && this.isCellConnectable(terminal.cell);
-    show = show && !source ? terminal.cell.value instanceof OArchitectOClass : true;
-    if (show) {
-        var value = terminal.cell.value;
-        if (value instanceof OArchitectOClass) {
-            constraints = [new mxConnectionConstraint(new mxPoint(0.5, 0)),
-                new mxConnectionConstraint(new mxPoint(1, 0.5)),
-                new mxConnectionConstraint(new mxPoint(0.5, 1)),
-                new mxConnectionConstraint(new mxPoint(0, 0.5))];
-        } else if (value instanceof OArchitectOProperty && OArchitectOType.isLink(value.type)) {
-            constraints = [new mxConnectionConstraint(new mxPoint(0, 0.5)),
-                new mxConnectionConstraint(new mxPoint(1, 0.5))];
-        }
-    }
-
-    return constraints;
 };
 
 GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (source) {
@@ -88,14 +70,12 @@ GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (sourc
         }
         return style;
     };
-
     var edge = new mxCell('');
     edge.setEdge(true);
     edge.setStyle(getEdgeStyle(source));
     var geo = new mxGeometry();
     geo.relative = true;
     edge.setGeometry(geo);
-
     return edge;
 };
 
@@ -109,16 +89,82 @@ GraphConnectionConfig.prototype.connectionHandlerCreateEdgeState = function(me) 
     return mxConnectionHandler.prototype.createEdge.apply(this, arguments);
 };
 
-GraphConnectionConfig.prototype.connectionHandlerIsConnectableCell = function (cell) {
-    return false;
+GraphConnectionConfig.prototype.connectionHandlerCreateIcons = function (state) {
+    var createLinkIcon = state.cell != null && state.cell.value instanceof OArchitectOClass;
+    var propertyIcon =  state.cell != null && state.cell.value instanceof OArchitectOProperty;
+    var icons = propertyIcon ? [] : mxConnectionHandler.prototype.createIcons.apply(this, arguments);
+    if (createLinkIcon || propertyIcon) {
+        var image = new mxImage(app.basePath + OArchitectConstants.LINK_IMG_PATH, OArchitectConstants.ICON_SIZE, OArchitectConstants.ICON_SIZE);
+        var bounds = new mxRectangle(0, 0, image.width, image.height);
+        var icon = new mxImageShape(bounds, image.src, null, null, 0);
+        icon.preserveImageAspect = false;
+        icon.init(this.graph.getView().getOverlayPane());
+        icon.node.style.cursor = mxConstants.CURSOR_CONNECT;
+
+
+        var getState = mxUtils.bind(this, function () {
+            return (this.currentState != null) ? this.currentState : state;
+        });
+
+
+        var mouseDown = mxUtils.bind(this, function (evt) {
+            if (!mxEvent.isConsumed(evt)) {
+                this.icon = icon;
+                this.createLinkOnConnection = true;
+                this.graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState()));
+            }
+        });
+
+        mxEvent.redirectMouseEvents(icon.node, this.graph, getState, mouseDown);
+        icons.push(icon);
+        this.redrawIcons(icons, state);
+    }
+    return icons.length > 0 ? icons : null;
+};
+
+GraphConnectionConfig.prototype.connectionHandlerRedrawIcons = function (icons, state) {
+    if (icons != null && icons[0] != null && state != null) {
+        var withLinkIcon = icons.length === 2;
+        var pos = this.getIconPosition(icons[0], state);
+        if (withLinkIcon) {
+            initIcon(icons[0], pos.y, OArchitectConstants.ICON_SIZE * 4);
+            initIcon(icons[1], pos.y, OArchitectConstants.ICON_SIZE * 2);
+        } else initIcon(icons[0], pos.y, OArchitectConstants.ICON_SIZE * 2);
+
+    }
+
+    function initIcon(icon, y, xStep) {
+        var bounds = state.cellBounds;
+        var currentClassWidth = bounds.width;
+        icon.bounds.x = bounds.x + currentClassWidth - xStep;
+        icon.bounds.y = y;
+        icon.redraw();
+    }
+};
+
+GraphConnectionConfig.prototype.connectionHandlerCreateEdge = function (value, source, target) {
+    var edge = null;
+    if (!this.createLinkOnConnection) {
+        edge = mxConnectionHandler.prototype.createEdge.apply(this, arguments);
+    } else {
+        this.createLinkOnConnection = false;
+        this.linkConnection = true;
+        OArchitectConnector.connect(source, target, true);
+    }
+
+    return edge;
 };
 
 GraphConnectionConfig.prototype.createCellConnectedBehavior = function () {
     return function (graph, eventObject) {
-        var properties = eventObject.properties;
-        if (!properties.source) {
-            OArchitectConnector.connect(properties.edge.source, properties.edge.target);
-        }
+        if (!graph.connectionHandler.linkConnection) {
+            var properties = eventObject.properties;
+            if (properties.edge != null) {
+                var source = properties.edge.source;
+                var target = properties.edge.target;
+                OArchitectConnector.connect(source, target);
+            }
+        } else graph.connectionHandler.linkConnection = false;
     }
 };
 

@@ -30,6 +30,7 @@ var OArchitectConstants = {
     FA_ALIGN_JUSTIFY_CLASS: 'fa fa-align-justify',
     FA_DATABASE_CLASS: 'fa fa-database',
     FA_EDIT: 'fa fa-pencil-square-o',
+    FA_LINK: 'fa fa-link',
     FA_DELETE: 'fa fa-times-circle',
     FA_2X_CLASS: 'fa-2x',
 
@@ -41,21 +42,8 @@ var OArchitectConstants = {
     OPROPERTY_HEIGHT: 20,
 
 
-    /**
-     * @deprecated
-     * Will be remove in next development iteration
-     */
+
     CONNECTOR_IMG_PATH: 'img/arrow.png',
-
-    /**
-     * @deprecated
-     * Will be remove in next development iteration
-     */
-    DEFAULT_OCLASS_NAME: 'OClass',
-
-    /**
-     * @deprecated
-     * Will be remove in next development iteration
-     */
-    DEFAULT_OPROPERTY_NAME: 'OProperty'
+    LINK_IMG_PATH: 'img/link.png',
+    ICON_SIZE: 16
 };

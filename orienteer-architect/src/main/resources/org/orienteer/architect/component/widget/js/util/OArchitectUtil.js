@@ -69,26 +69,42 @@ var OArchitectUtil = {
         return graph.getChildVertices(graph.getDefaultParent());
     },
 
-    getSuperClassesCells: function (graph, oClass) {
-        var superClasses = oClass.superClasses;
-        var superClassesCells = [];
-        if (superClasses != null) {
-            OArchitectUtil.forEach(superClasses, function (superClass) {
-                superClassesCells.push(superClass.cell);
-            });
-        }
-        return superClassesCells;
+    getAllClasses: function () {
+        var cells = OArchitectUtil.getAllCells();
+        var classes = [];
+        OArchitectUtil.forEach(cells, function (cell) {
+            classes.push(cell.value);
+        });
+        return classes;
     },
 
-    getSubClassesCells: function (graph, oClass) {
-        var subClasses = oClass.subClasses;
-        var subClassesCells = [];
-        if (subClasses != null) {
-            OArchitectUtil.forEach(subClasses, function (subClass) {
-                subClassesCells.push(subClass.cell);
-            });
+    manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
+        var graph = app.editor.graph;
+        var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
+        graph.getModel().beginUpdate();
+        try {
+            if (connect) {
+                if (edgesBetween == null || edgesBetween.length == 0) {
+                    graph.connectionHandler.connect(sourceCell, targetCell);
+                }
+            } else {
+                if (edgesBetween != null && edgesBetween.length > 0) {
+                    graph.removeCells(edgesBetween, true);
+                }
+            }
+        } finally {
+            graph.getModel().endUpdate();
         }
-        return subClassesCells;
+    },
+
+    removeCell: function (cell, includeEdges) {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        try {
+            graph.removeCells(cell, includeEdges);
+        } finally {
+            graph.getModel().endUpdate();
+        }
     },
 
     getCellsByClassNames: function (classNames) {
@@ -120,19 +136,6 @@ var OArchitectUtil = {
         var graph = app.editor.graph;
         var result = graph.getChildVertices(oClass.cell);
         return result != null ? result : [];
-    },
-
-    fromJsonToOClasses: function (json) {
-        var classes = [];
-        var jsonClasses = JSON.parse(json);
-        if (jsonClasses !== null && jsonClasses.length > 0) {
-            for (var i = 0; i < jsonClasses.length; i++) {
-                var oClass = new OArchitectOClass();
-                oClass.config(jsonClasses[i]);
-                classes.push(oClass);
-            }
-        }
-        return classes;
     },
 
     getClassByPropertyCell: function (graph, cell) {
@@ -168,22 +171,28 @@ var OArchitectUtil = {
     },
 
     /**
-     * Creates function for save {@link OArchitectOClass} and {@link OArchitectOProperty} to editor xml configFromJson.
+     * Creates function for save {@link OArchitectOClass} and {@link OArchitectOProperty} to editor xml config.
      * Overrides {@link mxObjectCodec#writeComplexAttribute}
+     * @returns Function
      */
     createWriteComplexAttributeFunction: function () {
         var defaultBehavior = mxObjectCodec.prototype.writeComplexAttribute;
         return function (enc, obj, name, value, node) {
             if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
                 value = value.toEditorConfigObject();
-            } else if (name === 'cell' || name === 'configuredFromEditorConfig') {
+            } else if (name === 'cell' || name === 'configuredFromEditorConfig' || name === 'existsInEditor') {
                 value = undefined;
             }
 
             defaultBehavior.apply(this, arguments);
         };
     },
-    
+
+    /**
+     * Create function for decode {@link OArchitectOClass} and {@link OArchitectOProperty} from editor xml config.
+     * Overrides {@link mxCodec#decode}
+     * @returns Function
+     */
     createDecodeFunction: function () {
         var defaultBehavior = mxCodec.prototype.decode;
         

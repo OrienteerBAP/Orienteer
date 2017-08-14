@@ -26,6 +26,7 @@ OArchitectEditor.prototype.configureGraph = function (configs) {
 };
 
 OArchitectEditor.prototype.configureLayouts = function () {
+    var graph = this.graph;
     this.layoutSwimlanes = true;
     this.createSwimlaneLayout = function () {
         var layout = new mxStackLayout(this.graph, false);
@@ -35,7 +36,6 @@ OArchitectEditor.prototype.configureLayouts = function () {
         layout.isVertexMovable = function(cell) {
             return true;
         };
-
         return layout;
     };
 };

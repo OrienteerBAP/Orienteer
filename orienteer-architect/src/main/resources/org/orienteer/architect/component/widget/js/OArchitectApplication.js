@@ -195,10 +195,9 @@ OArchitectApplication.prototype.executeCallback = function (response) {
 };
 
 OArchitectApplication.prototype.applyXmlConfig = function (xml) {
-    var parser = new DOMParser();
-    var node = parser.parseFromString(xml, 'text/xml');
-    var codec = new mxCodec();
-    codec.decode(node.documentElement, this.editor.graph.getModel());
+    var doc = mxUtils.parseXml(xml);
+    var codec = new mxCodec(doc);
+    codec.decode(doc.documentElement, this.editor.graph.getModel());
 };
 
 /**
