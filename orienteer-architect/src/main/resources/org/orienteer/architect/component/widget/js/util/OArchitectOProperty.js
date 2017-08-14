@@ -27,6 +27,7 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
  * @param json - json string which contains config for this property
  */
 OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
+    oClass.properties.push(this);
     this.setName(json.name);
     this.setType(json.type);
     this.subClassProperty = json.subClassProperty;
@@ -34,7 +35,6 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
     var linkedClassCell = OArchitectUtil.getCellByClassName(json.linkedClass);
     if (linkedClassCell != null)
         this.setLinkedClass(linkedClassCell.value);
-    oClass.properties.push(this);
     oClass.changeProperties(oClass, [this], this.subClassProperty, false);
 };
 
@@ -45,13 +45,13 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
  * @param propertyCell - {@link mxCell} which contains this property
  */
 OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propertyCell) {
+    oClass.properties.push(this);
     this.ownerClass = oClass;
     this.cell = propertyCell;
     var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
     if (linkedCell != null)
         this.setLinkedClass(linkedCell.value);
     this.cell.parent = oClass.cell;
-    oClass.properties.push(this);
     oClass.changeProperties(oClass, [this], this.subClassProperty, false);
 };
 

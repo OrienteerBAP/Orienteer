@@ -14,6 +14,8 @@ var OPropertyEditModalWindow = function (property, containerId, onDestroy, creat
 OPropertyEditModalWindow.prototype = Object.create(OClassEditModalWindow.prototype);
 OPropertyEditModalWindow.prototype.constructor = OPropertyEditModalWindow;
 
+OPropertyEditModalWindow.prototype.orientDbTypes = OArchitectOType.types;
+
 OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) {
     var select = this.createOTypeSelect(this.create);
     var input = this.createNameInput(this.create);
@@ -47,14 +49,17 @@ OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, selec
 OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOProperty) {
     var select = document.createElement('select');
     select.classList.add('form-control');
-    for (var i = 0; i < OArchitectOType.size(); i++) {
+    var types = this.orientDbTypes;
+    for (var i = 0; i < types.length; i++) {
         var option = document.createElement('option');
-        option.setAttribute('value', OArchitectOType.get(i));
-        option.innerHTML = OArchitectOType.get(i);
+        option.setAttribute('value', types[i]);
+        option.innerHTML = types[i];
         select.appendChild(option);
     }
-    if (!createNewOProperty) {
-        if (OArchitectOType.contains(this.value.type)) select.selectedIndex = OArchitectOType.getIndexByValue(this.value.type);
+    if (!createNewOProperty && this.value.type != null) {
+        var index = types.indexOf(this.value.type.toUpperCase());
+        if (index > -1)
+            select.selectedIndex = index;
     }
     return select;
 };

@@ -97,6 +97,16 @@ var OArchitectUtil = {
         }
     },
 
+    removeCell: function (cell, includeEdges) {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        try {
+            graph.removeCells(cell, includeEdges);
+        } finally {
+            graph.getModel().endUpdate();
+        }
+    },
+
     getCellsByClassNames: function (classNames) {
         var result = [];
         var cells = OArchitectUtil.getAllCells();
