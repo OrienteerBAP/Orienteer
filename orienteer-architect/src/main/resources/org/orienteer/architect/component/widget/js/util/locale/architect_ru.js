@@ -3,6 +3,7 @@ var ru = {
     type: 'Тип',
     cancel: 'Отмена',
     ok: 'OK',
+    more: 'Больше...',
     addOPropertyError: 'Свойство может быть добавлено только в класс',
     info: 'Информация',
     classMsg: 'Класс',

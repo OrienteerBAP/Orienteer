@@ -14,7 +14,7 @@ public class OArchitectOClass implements IClusterable {
     private List<String> subClasses;
     private List<OArchitectOProperty> properties;
     private List<OArchitectOProperty> propertiesForDelete;
-    private boolean existsInDatabase;
+    private boolean existsInDb;
 
     public OArchitectOClass(String name) {
         this(name, null, null);
@@ -51,8 +51,8 @@ public class OArchitectOClass implements IClusterable {
         this.propertiesForDelete = propertiesForDelete;
     }
 
-    public void setExistsInDatabase(boolean exists) {
-        this.existsInDatabase = exists;
+    public void setExistsInDb(boolean exists) {
+        this.existsInDb = exists;
     }
 
     public String getName() {
@@ -75,8 +75,8 @@ public class OArchitectOClass implements IClusterable {
         return propertiesForDelete;
     }
 
-    public boolean isExistsInDatabase() {
-        return this.existsInDatabase;
+    public boolean isExistsInDb() {
+        return this.existsInDb;
     }
 
 }

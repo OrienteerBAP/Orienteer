@@ -10,6 +10,7 @@ var OArchitectOClassConfigurator = {
      */
     configOClassFromDatabase: function (oClass, json) {
         oClass.name = json.name;
+        oClass.existsInDb = json.existsInDb;
         OArchitectOClassConfigurator.configProperties(oClass, json.properties, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.subClasses, false, true);

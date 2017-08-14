@@ -16,6 +16,7 @@ GraphConfig.prototype.config = function () {
     this.graph.setDropEnabled(true);
     this.graph.setAllowDanglingEdges(false);
     this.graph.setPanning(true);
+    this.graph.foldingEnabled = false;
     this.configureGraphBehavior();
     this.configureGraphLabels();
 };

@@ -3,6 +3,7 @@ var uk = {
     type: 'Тип',
     cancel: 'Скасувати',
     ok: 'OK',
+    more: 'Більше...',
     addOPropertyError: 'Властивість може бути додана лише в клас',
     info: 'Інформація',
     classMsg: 'Клас',

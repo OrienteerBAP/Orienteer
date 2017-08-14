@@ -61,7 +61,7 @@ public abstract class JsonUtil implements IClusterable {
         }
         if (!jsonObject.isNull(EXISTS_IN_DB)) {
             String exists = jsonObject.getString(EXISTS_IN_DB);
-            oClass.setExistsInDatabase(exists.equals("1") || exists.equals("true"));
+            oClass.setExistsInDb(exists.equals("1") || exists.equals("true"));
         }
         if (!jsonObject.isNull(PROPERTIES)) {
             oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));

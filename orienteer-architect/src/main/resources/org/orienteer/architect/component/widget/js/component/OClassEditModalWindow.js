@@ -48,8 +48,12 @@ OClassEditModalWindow.prototype.addButtonBlock = function (body, input) {
     var buttonBlock = this.createButtonBlock();
     var okBut = this.createOkButton(localizer.ok, input);
     var cancelBut = this.createCancelButton(localizer.cancel);
-    buttonBlock.appendChild(cancelBut);
+    var classPageBut = this.createShowPageButton(localizer.more);
+    console.warn('exists in db: ',this.value.existsInDb);
+    if (this.value.existsInDb) buttonBlock.appendChild(classPageBut);
+
     buttonBlock.appendChild(okBut);
+    buttonBlock.appendChild(cancelBut);
     body.appendChild(buttonBlock);
 };
 
@@ -80,6 +84,26 @@ OClassEditModalWindow.prototype.createCancelButton = function (label) {
     button.addEventListener('click', function () {
         modal.destroy(modal.CANCEL);
     });
+    button.style.float = 'right';
+    button.style.marginRight = '10px';
+    button.style.marginBottom = '10px';
+    return button;
+};
+
+OClassEditModalWindow.prototype.createShowPageButton = function (label) {
+    var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);
+    var className = this.value.name;
+    if (className != null) {
+        app.requestOClassPage(className, function (url) {
+            if (url != null && url.length > 0) {
+                button.setAttribute('target', '_blank');
+                button.setAttribute('href', url);
+            } else {
+                button.setAttribute('target', '');
+                button.setAttribute('href', '');
+            }
+        });
+    }
     button.style.float = 'left';
     button.style.marginLeft = '10px';
     button.style.marginBottom = '10px';

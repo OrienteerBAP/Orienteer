@@ -55,7 +55,7 @@ public class AddOClassesCommand extends AbstractCheckBoxEnabledCommand<OClass> {
 
     private OArchitectOClass toOArchitectOClass(OClass oClass) {
         OArchitectOClass architectOClass = new OArchitectOClass(oClass.getName());
-        architectOClass.setExistsInDatabase(true);
+        architectOClass.setExistsInDb(true);
         architectOClass.setProperties(toOArchitectProperties(oClass.properties(), oClass.getSuperClasses()));
         architectOClass.setSuperClasses(toOArchitectClassNames(oClass.getSuperClasses()));
         architectOClass.setSubClasses(toOArchitectClassNames(oClass.getSubclasses()));

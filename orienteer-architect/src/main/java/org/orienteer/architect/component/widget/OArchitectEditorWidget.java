@@ -16,10 +16,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
-import org.orienteer.architect.component.behavior.ApplyEditorChangesBehavior;
-import org.orienteer.architect.component.behavior.ExistsOClassBehavior;
-import org.orienteer.architect.component.behavior.GetOClassesBehavior;
-import org.orienteer.architect.component.behavior.ManageEditorConfigBehavior;
+import org.orienteer.architect.component.behavior.*;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -69,6 +66,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(panel));
         add(new ExistsOClassBehavior());
+        add(new ShowMoreInformationBehavior());
     }
 
     private WebMarkupContainer newContainer(String id) {

@@ -3,7 +3,7 @@ var en = {
     type: 'Type',
     cancel: 'Cancel',
     ok: 'OK',
-    addOPropertyError: 'Property must add only in class',
+    more: 'More...',
     info: 'Info',
     classMsg: 'Class',
     property: 'Property',
