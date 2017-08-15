@@ -81,8 +81,8 @@ OClassEditModalWindow.prototype.createCancelButton = function (label) {
     button.addEventListener('click', function () {
         modal.destroy(modal.CANCEL);
     });
-    button.style.float = 'right';
-    button.style.marginRight = '10px';
+    button.style.float = 'left';
+    button.style.marginLeft = '10px';
     button.style.marginBottom = '10px';
     return button;
 };

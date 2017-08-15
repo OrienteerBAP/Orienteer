@@ -228,8 +228,11 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
                     property.setType(changedProperty.type);
                 }
                 if (property.cell == null) {
-                    property.cell = OArchitectUtil.createOPropertyVertex(property);
-                    cellsForUpdate.push(property.cell);
+                    property.cell = getPropertyCellByName(classForChanges, property.name);
+                    if (property.cell == null) {
+                        property.cell = OArchitectUtil.createOPropertyVertex(property);
+                        cellsForUpdate.push(property.cell);
+                    }
                 }
                 property.setLinkedClass(changedProperty.linkedClass);
                 property.subClassProperty = isSubClass;
@@ -259,6 +262,21 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
         OArchitectUtil.forEach(changedProperties, function (prop) {
             cellsForUpdate.push(prop.cell);
         });
+    }
+
+    function getPropertyCellByName(oClass, propertyName) {
+        var cell = null;
+        if (oClass.cell != null) {
+            var cells = OArchitectUtil.getClassPropertiesCells(oClass);
+            OArchitectUtil.forEach(cells, function (propertyCell, trigger) {
+                var property = propertyCell.value;
+                if (property != null && property.name === propertyName) {
+                    cell = propertyCell;
+                    trigger.stop = true;
+                }
+            });
+        }
+        return cell;
     }
 };
 

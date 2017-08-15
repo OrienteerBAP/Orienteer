@@ -40,6 +40,46 @@ OArchitectEditor.prototype.configureLayouts = function () {
     };
 };
 
+/**
+ * Install undo handler see {@link mxEditor#installUndoHandler}
+ * @param graph
+ */
+OArchitectEditor.prototype.installUndoHandler = function (graph) {
+    mxEditor.prototype.installUndoHandler.apply(this, arguments);
+    var undoHandler = function(sender, evt) {
+        var changes = evt.getProperty('edit').changes;
+        var cells = graph.getSelectionCellsForChanges(changes);
+        OArchitectUtil.forEach(cells, function (cell) {
+            if (cell.isVertex()) {
+                if (cell.value instanceof OArchitectOProperty) {
+                    var property = cell.value;
+                    var ownerClass = property.ownerClass;
+                    if (ownerClass.getProperty(property.name) == null) {
+                        ownerClass.properties.push(property);
+                        ownerClass.changeProperties(ownerClass, [property], property.subClassProperty);
+                    }
+                }
+            } else if (cell.isEdge()) {
+                var sourceCell = cell.source;
+                var targetCell = cell.target;
+                var sourceValue = sourceCell.value;
+                var targetValue = targetCell.value;
+                if (sourceValue != null && targetValue != null && targetValue instanceof OArchitectOClass) {
+                    if (sourceValue instanceof OArchitectOClass) {
+                        sourceValue.addSuperClass(targetValue);
+                    } else if (sourceValue instanceof OArchitectOProperty) {
+                        sourceValue.setLinkedClass(targetValue);
+                    }
+                }
+            }
+        });
+        graph.setSelectionCells(cells);
+    };
+    this.undoManager.removeListener(mxEvent.UNDO);
+    this.undoManager.removeListener(mxEvent.REDO);
+    this.undoManager.addListener(mxEvent.UNDO, undoHandler);
+    this.undoManager.addListener(mxEvent.REDO, undoHandler);
+};
 
 OArchitectEditor.prototype.configureDefaultActions = function () {
     this.addAction(OArchitectActionNames.EDIT_OCLASS_ACTION, OArchitectAction.editOClassAction);
