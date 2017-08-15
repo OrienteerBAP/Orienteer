@@ -164,6 +164,21 @@ OArchitectOProperty.prototype.toString = function () {
 };
 
 /**
+ * Checks if given json property is equals with current {@link OArchitectOProperty} instance
+ * @param jsonProperty - json property
+ * @returns boolean - true if equals
+ */
+OArchitectOProperty.prototype.equalsWithJsonProperty = function (jsonProperty) {
+    var equals = true;
+    if (this.name !== jsonProperty.name) equals = false;
+    if (equals && this.type !== jsonProperty.type) equals = false;
+    if (equals && this.subClassProperty != jsonProperty.subClassProperty) equals = false;
+    if (equals && this.linkedClass != null && this.linkedClass.name !== jsonProperty.linkedClass) equals = false;
+    if (equals && this.linkedClass == null && jsonProperty.linkedClass != null) equals = false;
+    return equals;
+};
+
+/**
  * Convert this property to json string
  * @returns json string
  */

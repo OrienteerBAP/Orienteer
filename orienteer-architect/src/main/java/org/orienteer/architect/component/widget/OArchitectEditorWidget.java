@@ -62,6 +62,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         SchemaOClassesPanel panel = new SchemaOClassesPanel("listClasses", "; app.executeCallback('%s');");
         container.add(panel);
         add(container);
+        add(new GetNewChangesBehavior());
         add(new ManageEditorConfigBehavior(getModel()));
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(panel));

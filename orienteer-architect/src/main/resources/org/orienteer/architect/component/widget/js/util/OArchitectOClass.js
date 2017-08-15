@@ -349,6 +349,58 @@ OArchitectOClass.prototype.toString = function () {
 };
 
 /**
+ * Checks if given json class is equals with current {@link OArchitectOClass} instance
+ * @param jsonClass - json class
+ * @returns boolean - true if equals
+ */
+OArchitectOClass.prototype.equalsWithJsonClass = function (jsonClass) {
+    var equals = true;
+    if (jsonClass.name !== this.name) equals = false;
+    if (jsonClass.superClasses.length !== this.superClasses.length) equals = false;
+    if (jsonClass.subClasses.length !== this.subClasses.length) equals = false;
+    if (jsonClass.properties.length !== this.properties.length) equals = false;
+    if (equals) {
+        equals = checkProperties(jsonClass.properties, this.properties);
+        if (equals) equals = checkClassNames(jsonClass.superClasses, OArchitectUtil.toClassNames(this.superClasses));
+        if (equals) equals = checkClassNames(jsonClass.subClasses, OArchitectUtil.toClassNames(this.subClasses));
+    }
+
+    function checkClassNames(jsonClassNames, oClassClassesNames) {
+        var equals = true;
+        jsonClassNames.sort();
+        oClassClassesNames.sort();
+        OArchitectUtil.forEach(jsonClassNames, function (jsonClassName, trigger) {
+            if (oClassClassesNames.indexOf(jsonClassName) === -1) {
+                equals = false;
+                trigger.stop = true;
+            }
+        });
+        return equals;
+    }
+
+    function checkProperties(jsonProperties, oClassProperties) {
+        var equals = false;
+        OArchitectUtil.forEach(jsonProperties, function (jsonProperty, trigger) {
+            equals = false;
+            OArchitectUtil.forEach(oClassProperties, function (property, trigger) {
+                if (jsonProperty.name === property.name) {
+                    equals = property.equalsWithJsonProperty(jsonProperty);
+                    trigger.stop = true;
+                }
+            });
+
+            if (equals === false) {
+                trigger.stop = true;
+            }
+        });
+
+        return equals;
+    }
+
+    return equals;
+};
+
+/**
  * Convert current class to json string
  * @returns json string
  */

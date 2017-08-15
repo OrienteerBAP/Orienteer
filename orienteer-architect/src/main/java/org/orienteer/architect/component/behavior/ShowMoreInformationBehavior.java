@@ -37,7 +37,7 @@ public class ShowMoreInformationBehavior extends AbstractDefaultAjaxBehavior {
             } else response = getClassPageUrl(className);
         }
 
-        target.appendJavaScript(String.format("; app.executeCallback('%s')", response));
+        target.appendJavaScript(String.format("; app.executeCallback('%s');", response));
     }
 
     private String getClassPageUrl(String className) {

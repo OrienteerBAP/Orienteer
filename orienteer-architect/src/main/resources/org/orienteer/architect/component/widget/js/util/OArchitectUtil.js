@@ -78,6 +78,18 @@ var OArchitectUtil = {
         return classes;
     },
 
+    toClassNames: function (classes) {
+        var names = [];
+        OArchitectUtil.forEach(classes, function (oClass) {
+            names.push(oClass.name);
+        });
+        return names;
+    },
+
+    getAllClassNames: function () {
+        return OArchitectUtil.toClassNames(OArchitectUtil.getAllClasses());
+    },
+
     manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
         var graph = app.editor.graph;
         var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);

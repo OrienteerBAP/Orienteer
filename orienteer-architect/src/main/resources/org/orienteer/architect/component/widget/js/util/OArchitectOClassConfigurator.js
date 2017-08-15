@@ -79,7 +79,6 @@ var OArchitectOClassConfigurator = {
                 configuredClass = new OArchitectOClass();
                 configuredClass.name = className;
                 configuredClass.existsInEditor = false;
-                if (isJson) configuredClass.existsInDb = true;
             }
             if (isSuperClasses) oClass.addSuperClass(configuredClass);
             else oClass.addSubClass(configuredClass);

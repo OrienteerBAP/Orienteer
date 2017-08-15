@@ -32,6 +32,7 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
     this.getOClassesRequestCallbackUrl = null;
     this.existsOClassRequestCallbackUrl = null;
     this.showMoreInformationCallbackUrl = null;
+    this.checkChangesRequestCallbackUrl = null;
     this.editor = null;
     this.callback = null;
 };
@@ -139,6 +140,15 @@ OArchitectApplication.prototype.setShowMoreInfoRequest = function (callbackUrl) 
 };
 
 /**
+ * Calls from Wicket!
+ * Set url for request changes in classes
+ * @param callbackUrl
+ */
+OArchitectApplication.prototype.setChecksAboutClassesChanges = function (callbackUrl) {
+    this.checkChangesRequestCallbackUrl = callbackUrl;
+};
+
+/**
  * Save editor config in database
  * @param xml config which will be saved
  */
@@ -209,6 +219,18 @@ OArchitectApplication.prototype.requestOPropertyPage = function (className, prop
 };
 
 /**
+ * Create request for getting changes in given classes
+ * @param classesNames - json string which contains class names for checks
+ * @param callback - function which will be execute when get response
+ */
+OArchitectApplication.prototype.requestAboutChangesInClasses = function (classesNames, callback) {
+    this.callback = callback;
+    this.sendPostRequest(this.checkChangesRequestCallbackUrl, {
+        "classesNames": classesNames
+    });
+};
+
+/**
  * Create POST request to Wicket
  * @param url callback url
  * @param data data for send contains JavaScript object
@@ -230,10 +252,41 @@ OArchitectApplication.prototype.executeCallback = function (response) {
     this.callback = null;
 };
 
+/**
+ * Apply editor config and checks about new changes
+ * @param xml - editor config
+ */
 OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     var doc = mxUtils.parseXml(xml);
     var codec = new mxCodec(doc);
     codec.decode(doc.documentElement, this.editor.graph.getModel());
+    this.checksAboutClassesChanges();
+};
+
+/**
+ * Checks about classes changes and update classes and editor config if its need.
+ */
+OArchitectApplication.prototype.checksAboutClassesChanges = function () {
+    function callback(json) {
+        if (json != null && json.length > 0) {
+            var allClasses = OArchitectUtil.getAllClasses();
+            var jsonClasses = JSON.parse(json);
+            var saveNewConfig = false;
+            OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
+                OArchitectUtil.forEach(allClasses, function (oClass, trigger) {
+                    if (jsonClass.name === oClass.name) {
+                        if (!oClass.equalsWithJsonClass(jsonClass)) {
+                            saveNewConfig = true;
+                            oClass.configFromDatabase(jsonClass);
+                        }
+                        trigger.stop = true;
+                    }
+                });
+            });
+            app.editor.execute(OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION);
+        }
+    }
+    this.requestAboutChangesInClasses(JSON.stringify(OArchitectUtil.getAllClassNames()), callback);
 };
 
 /**

@@ -1,8 +1,12 @@
 package org.orienteer.architect.util;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.http.util.Args;
 import org.apache.wicket.util.io.IClusterable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -15,6 +19,51 @@ public class OArchitectOClass implements IClusterable {
     private List<OArchitectOProperty> properties;
     private List<OArchitectOProperty> propertiesForDelete;
     private boolean existsInDb;
+
+    public static OArchitectOClass toArchitectOClass(OClass oClass) {
+        OArchitectOClass architectOClass = new OArchitectOClass(oClass.getName());
+        architectOClass.setExistsInDb(true);
+        architectOClass.setProperties(toOArchitectProperties(oClass.properties(), oClass.getSuperClasses()));
+        architectOClass.setSuperClasses(toOArchitectClassNames(oClass.getSuperClasses()));
+        architectOClass.setSubClasses(toOArchitectClassNames(oClass.getSubclasses()));
+        return architectOClass;
+    }
+
+    private static List<OArchitectOProperty> toOArchitectProperties(Collection<OProperty> properties, List<OClass> superClasses) {
+        List<OArchitectOProperty> architectProperties = new ArrayList<>(properties.size());
+        for (OProperty property : properties) {
+            OArchitectOProperty architectOProperty = new OArchitectOProperty(property.getName(), property.getType());
+            if (property.getLinkedClass() != null) {
+                architectOProperty.setLinkedClassName(property.getLinkedClass().getName());
+            }
+            architectOProperty.setSubClassProperty(isSubClassProperty(property, superClasses));
+            architectProperties.add(architectOProperty);
+        }
+        return architectProperties;
+    }
+
+    private static boolean isSubClassProperty(OProperty property, List<OClass> superClasses) {
+        boolean isSubClass = false;
+        for (OClass oClass : superClasses) {
+            isSubClass = oClass.getProperty(property.getName()) != null;
+            if (!isSubClass) {
+                List<OClass> classes = oClass.getSuperClasses();
+                if (classes != null && !classes.isEmpty()) {
+                    isSubClass = isSubClassProperty(property, classes);
+                }
+            } else break;
+        }
+        return isSubClass;
+    }
+
+    private static List<String> toOArchitectClassNames(Collection<OClass> classes) {
+        List<String> architectSuperClasses = new ArrayList<>(classes.size());
+        for (OClass oClass : classes) {
+            architectSuperClasses.add(oClass.getName());
+        }
+        return architectSuperClasses;
+    }
+
 
     public OArchitectOClass(String name) {
         this(name, null, null);
