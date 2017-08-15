@@ -4,6 +4,8 @@ var en = {
     cancel: 'Cancel',
     ok: 'OK',
     more: 'More...',
+    goToOClassPage: 'Go to class page',
+    goToOPropertyPage: 'Go to property page',
     info: 'Info',
     classMsg: 'Class',
     property: 'Property',

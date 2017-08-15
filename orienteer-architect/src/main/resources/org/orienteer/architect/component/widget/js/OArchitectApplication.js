@@ -31,7 +31,6 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
     this.applyEditorChangesCallbackUrl = null;
     this.getOClassesRequestCallbackUrl = null;
     this.existsOClassRequestCallbackUrl = null;
-    this.showMoreInformationCallbackUrl = null;
     this.checkChangesRequestCallbackUrl = null;
     this.editor = null;
     this.callback = null;
@@ -130,14 +129,6 @@ OArchitectApplication.prototype.setExistsOClassRequest = function (callbackUrl) 
     this.existsOClassRequestCallbackUrl = callbackUrl;
 };
 
-/**
- * Calls from Wicket!
- * Set url for request URL for OClass or OProperty
- * @param callbackUrl
- */
-OArchitectApplication.prototype.setShowMoreInfoRequest = function (callbackUrl) {
-    this.showMoreInformationCallbackUrl = callbackUrl;
-};
 
 /**
  * Calls from Wicket!
@@ -192,31 +183,6 @@ OArchitectApplication.prototype.requestIfOClassExists = function (name, callback
     });
 };
 
-/**
- * Create request for getting URL to OClass with name name
- * @param name class name
- * @param callback function which will be execute when get response
- */
-OArchitectApplication.prototype.requestOClassPage = function (name, callback) {
-    this.callback = callback;
-    this.sendPostRequest(this.showMoreInformationCallbackUrl, {
-        "class": name
-    });
-};
-
-/**
- * Create request for getting URL to OProperty
- * @param className - class name with property
- * @param propertyName - property name
- * @param callback - function which will be execute when get response
- */
-OArchitectApplication.prototype.requestOPropertyPage = function (className, propertyName, callback) {
-    this.callback = callback;
-    this.sendPostRequest(this.showMoreInformationCallbackUrl, {
-        "class": className,
-        "property": propertyName
-    });
-};
 
 /**
  * Create request for getting changes in given classes

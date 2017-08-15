@@ -29,6 +29,7 @@ var OArchitectConstants = {
     FA_FILE_O_CLASS: 'fa fa-file-o',
     FA_ALIGN_JUSTIFY_CLASS: 'fa fa-align-justify',
     FA_DATABASE_CLASS: 'fa fa-database',
+    FA_EXTERNAL_LINK: 'fa fa-external-link',
     FA_EDIT: 'fa fa-pencil-square-o',
     FA_LINK: 'fa fa-link',
     FA_DELETE: 'fa fa-times-circle',

@@ -18,6 +18,7 @@ public class OArchitectOClass implements IClusterable {
     private List<String> subClasses;
     private List<OArchitectOProperty> properties;
     private List<OArchitectOProperty> propertiesForDelete;
+    private String pageUrl;
     private boolean existsInDb;
 
     public static OArchitectOClass toArchitectOClass(OClass oClass) {
@@ -26,16 +27,14 @@ public class OArchitectOClass implements IClusterable {
         architectOClass.setProperties(toOArchitectProperties(oClass.properties(), oClass.getSuperClasses()));
         architectOClass.setSuperClasses(toOArchitectClassNames(oClass.getSuperClasses()));
         architectOClass.setSubClasses(toOArchitectClassNames(oClass.getSubclasses()));
+        architectOClass.setPageUrl("/class/" + oClass.getName());
         return architectOClass;
     }
 
     private static List<OArchitectOProperty> toOArchitectProperties(Collection<OProperty> properties, List<OClass> superClasses) {
         List<OArchitectOProperty> architectProperties = new ArrayList<>(properties.size());
         for (OProperty property : properties) {
-            OArchitectOProperty architectOProperty = new OArchitectOProperty(property.getName(), property.getType());
-            if (property.getLinkedClass() != null) {
-                architectOProperty.setLinkedClassName(property.getLinkedClass().getName());
-            }
+            OArchitectOProperty architectOProperty = OArchitectOProperty.toArchitectOProperty(property);
             architectOProperty.setSubClassProperty(isSubClassProperty(property, superClasses));
             architectProperties.add(architectOProperty);
         }
@@ -104,6 +103,10 @@ public class OArchitectOClass implements IClusterable {
         this.existsInDb = exists;
     }
 
+    public void setPageUrl(String pageUrl) {
+        this.pageUrl = pageUrl;
+    }
+
     public String getName() {
         return name;
     }
@@ -128,4 +131,12 @@ public class OArchitectOClass implements IClusterable {
         return this.existsInDb;
     }
 
+    public String getPageUrl() {
+        return  pageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

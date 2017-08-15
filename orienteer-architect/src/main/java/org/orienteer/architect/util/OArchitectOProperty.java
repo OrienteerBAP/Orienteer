@@ -1,5 +1,6 @@
 package org.orienteer.architect.util;
 
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.http.util.Args;
 import org.apache.wicket.util.io.IClusterable;
@@ -13,6 +14,15 @@ public class OArchitectOProperty implements IClusterable {
     private OType type;
     private boolean subClassProperty;
     private String linkedClassName;
+    private String pageUrl;
+
+    public static OArchitectOProperty toArchitectOProperty(OProperty property) {
+        OArchitectOProperty architectProperty = new OArchitectOProperty(property.getName(), property.getType());
+        if (property.getLinkedClass() != null)
+            architectProperty.setLinkedClassName(property.getLinkedClass().getName());
+        architectProperty.setPageUrl("/property/" + property.getOwnerClass().getName() + "/" + property.getName());
+        return architectProperty;
+    }
 
     public OArchitectOProperty(String name, OType type) {
         this(name, type, false, null);
@@ -62,4 +72,16 @@ public class OArchitectOProperty implements IClusterable {
         this.linkedClassName = linkedClassName;
     }
 
+    public String getPageUrl() {
+        return pageUrl;
+    }
+
+    public void setPageUrl(String pageUrl) {
+        this.pageUrl = pageUrl;
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

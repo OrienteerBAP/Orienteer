@@ -50,6 +50,16 @@
   float: right;
 }
 
+.editor-icon {
+  text-decoration: none;
+  color: #2E2E2E;
+}
+
+.editor-icon:hover {
+  text-decoration: none;
+  color: #2E2E2E;
+}
+
 .property-type {
   float: left;
   border-right: 2px solid black;

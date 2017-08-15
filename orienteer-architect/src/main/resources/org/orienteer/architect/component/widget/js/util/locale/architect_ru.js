@@ -4,6 +4,8 @@ var ru = {
     cancel: 'Отмена',
     ok: 'OK',
     more: 'Больше...',
+    goToOClassPage: 'Перейти на страницу класса',
+    goToOPropertyPage: 'Перейти на страницу свойства',
     addOPropertyError: 'Свойство может быть добавлено только в класс',
     info: 'Информация',
     classMsg: 'Класс',

@@ -4,6 +4,8 @@ var uk = {
     cancel: 'Скасувати',
     ok: 'OK',
     more: 'Більше...',
+    goToOClassPage: 'Перейти на сторінку класу',
+    goToOPropertyPage: 'Перейти на сторінку властивості',
     addOPropertyError: 'Властивість може бути додана лише в клас',
     info: 'Інформація',
     classMsg: 'Клас',

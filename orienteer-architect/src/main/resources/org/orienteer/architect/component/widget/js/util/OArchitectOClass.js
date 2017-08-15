@@ -8,6 +8,7 @@ var OArchitectOClass = function() {
     this.propertiesForDelete = [];
     this.superClasses = [];
     this.subClasses = [];
+    this.pageUrl = null;
     this.existsInDb = false;
     this.existsInEditor = true;
     this.cell = null;
@@ -355,10 +356,11 @@ OArchitectOClass.prototype.toString = function () {
  */
 OArchitectOClass.prototype.equalsWithJsonClass = function (jsonClass) {
     var equals = true;
-    if (jsonClass.name !== this.name) equals = false;
-    if (jsonClass.superClasses.length !== this.superClasses.length) equals = false;
-    if (jsonClass.subClasses.length !== this.subClasses.length) equals = false;
-    if (jsonClass.properties.length !== this.properties.length) equals = false;
+    if (equals && jsonClass.name !== this.name) equals = false;
+    if (equals && jsonClass.superClasses.length !== this.superClasses.length) equals = false;
+    if (equals && jsonClass.subClasses.length !== this.subClasses.length) equals = false;
+    if (equals && jsonClass.properties.length !== this.properties.length) equals = false;
+    if (equals && jsonClass.pageUrl !== this.pageUrl) equals = false;
     if (equals) {
         equals = checkProperties(jsonClass.properties, this.properties);
         if (equals) equals = checkClassNames(jsonClass.superClasses, OArchitectUtil.toClassNames(this.superClasses));

@@ -41,6 +41,7 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
             throw new WicketRuntimeException("Can't parse input json!", ex);
         }
         addClassesToSchema(classes);
+        target.appendJavaScript("; app.checksAboutClassesChanges();");
     }
 
     private void addClassesToSchema(List<OArchitectOClass> classes) {

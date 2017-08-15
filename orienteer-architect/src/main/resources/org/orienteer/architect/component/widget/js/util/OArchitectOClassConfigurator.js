@@ -11,9 +11,11 @@ var OArchitectOClassConfigurator = {
     configOClassFromDatabase: function (oClass, json) {
         oClass.name = json.name;
         oClass.existsInDb = json.existsInDb;
+        oClass.pageUrl = json.pageUrl;
         OArchitectOClassConfigurator.configProperties(oClass, json.properties, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.subClasses, false, true);
+        if (oClass.cell != null) oClass.setCell(oClass.cell);
     },
 
     /**
@@ -50,7 +52,9 @@ var OArchitectOClassConfigurator = {
         OArchitectUtil.forEach(config, function (configElement) {
             var property = null;
             if (isJson) {
-                property = new OArchitectOProperty();
+                var name = configElement.name;
+                property = oClass.getProperty(name);
+                if (property == null) property = new OArchitectOProperty();
                 property.configFromDatabase(oClass, configElement);
             } else {
                 property = configElement.value;

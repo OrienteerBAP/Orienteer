@@ -22,6 +22,7 @@ public abstract class JsonUtil implements IClusterable {
     private static final String SUBCLASS_PROPERTY     = "subClassProperty";
     private static final String LINKED_CLASS_NAME     = "linkedClass";
     private static final String TYPE                  = "type";
+    private static final String PAGE_URL              = "pageUrl";
 
     private JsonUtil() {}
 

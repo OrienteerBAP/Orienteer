@@ -12,7 +12,7 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.type = null;
     this.linkedClass = null;
     this.subClassProperty = false;
-    this.previousName = null;
+    this.pageUrl = null;
     this.cell = null;
 
     if (ownerClass != null) this.setOwnerClassName(ownerClass);
@@ -27,14 +27,16 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
  * @param json - json string which contains config for this property
  */
 OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
-    oClass.properties.push(this);
     this.setName(json.name);
+    if (oClass.getProperty(this.name) == null) oClass.properties.push(this);
     this.setType(json.type);
     this.subClassProperty = json.subClassProperty;
     this.ownerClass = oClass;
+    this.pageUrl = json.pageUrl;
     var linkedClassCell = OArchitectUtil.getCellByClassName(json.linkedClass);
-    if (linkedClassCell != null)
-        this.setLinkedClass(linkedClassCell.value);
+    if (linkedClassCell != null) this.setLinkedClass(linkedClassCell.value);
+    if (this.cell != null) this.setCell(this.cell);
+
     oClass.changeProperties(oClass, [this], this.subClassProperty, false);
 };
 
@@ -172,6 +174,7 @@ OArchitectOProperty.prototype.equalsWithJsonProperty = function (jsonProperty) {
     var equals = true;
     if (this.name !== jsonProperty.name) equals = false;
     if (equals && this.type !== jsonProperty.type) equals = false;
+    if (equals && this.pageUrl !== jsonProperty.pageUrl) equals = false;
     if (equals && this.subClassProperty != jsonProperty.subClassProperty) equals = false;
     if (equals && this.linkedClass != null && this.linkedClass.name !== jsonProperty.linkedClass) equals = false;
     if (equals && this.linkedClass == null && jsonProperty.linkedClass != null) equals = false;

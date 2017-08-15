@@ -67,7 +67,6 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(panel));
         add(new ExistsOClassBehavior());
-        add(new ShowMoreInformationBehavior());
     }
 
     private WebMarkupContainer newContainer(String id) {

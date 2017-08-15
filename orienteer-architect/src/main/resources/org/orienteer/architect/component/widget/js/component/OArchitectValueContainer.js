@@ -32,6 +32,20 @@ OArchitectValueContainer.prototype.createIcon = function (cssClass) {
     return icon;
 };
 
+OArchitectValueContainer.prototype.createExternalLink = function (existsInDb) {
+    var a = document.createElement('a');
+    a.classList.add('editor-icon');
+    a.appendChild(this.createIcon(OArchitectConstants.FA_EXTERNAL_LINK));
+    if (existsInDb) {
+        var url = this.value.pageUrl;
+        if (url != null && url.length > 0) {
+            a.setAttribute('target', '_blank');
+            a.setAttribute('href', url);
+        }
+    }
+    return a;
+};
+
 OArchitectValueContainer.prototype.addClickListenerForAction = function (element, action) {
     var editor = this.editor;
     var cell = this.cell;
@@ -54,24 +68,33 @@ OClassContainer.prototype.createElement = function (maxLength) {
 
 OClassContainer.prototype.createContainer = function (label, editElement) {
     var container = OArchitectValueContainer.prototype.createContainer.apply(this, arguments);
-    container.addEventListener('mouseover', function () {
-        editElement.style.visibility = 'visible';
-        editElement.style.cursor = 'pointer';
-    });
-    container.addEventListener('mouseout', function () {
-        editElement.style.visibility = 'hidden';
-        editElement.style.cursor = 'default';
-    });
+    if (editElement != null) {
+        container.addEventListener('mouseover', function () {
+            editElement.style.visibility = 'visible';
+            editElement.style.cursor = 'pointer';
+        });
+        container.addEventListener('mouseout', function () {
+            editElement.style.visibility = 'hidden';
+            editElement.style.cursor = 'default';
+        });
+    }
     return container;
 };
 
 OClassContainer.prototype.createEditIcon = function () {
-    var editElement = this.createIcon(OArchitectConstants.FA_EDIT);
-    editElement.style.visibility = 'hidden';
-    editElement.style.marginRight = '5px';
-    this.addClickListenerForAction(editElement, OArchitectActionNames.EDIT_OCLASS_ACTION);
-    return editElement;
+    var element = null;
+    if (this.value.existsInDb) {
+        element = this.createExternalLink(this.value.existsInDb);
+        element.setAttribute('title', localizer.goToOClassPage);
+    } else {
+        element = this.createIcon(OArchitectConstants.FA_EDIT);
+        this.addClickListenerForAction(element, OArchitectActionNames.EDIT_OCLASS_ACTION);
+    }
+    element.style.visibility = 'hidden';
+    element.style.marginRight = '5px';
+    return element;
 };
+
 
 var OPropertyContainer = function (property, editor, cell) {
     OArchitectValueContainer.apply(this, arguments);
@@ -90,20 +113,28 @@ OPropertyContainer.prototype.createElement = function (maxLength) {
 
 OPropertyContainer.prototype.createContainer = function (label, editProperty, deleteProperty) {
     var container = document.createElement('div');
-    if (editProperty !== null && deleteProperty !== null) {
-        container.addEventListener('mouseover', function () {
+
+    container.addEventListener('mouseover', function () {
+        if (editProperty != null) {
             editProperty.style.visibility = 'visible';
             editProperty.style.cursor = 'pointer';
+        }
+        if (deleteProperty != null) {
             deleteProperty.style.visibility = 'visible';
             deleteProperty.style.cursor = 'pointer';
-        });
-        container.addEventListener('mouseout', function () {
+        }
+    });
+    container.addEventListener('mouseout', function () {
+        if (editProperty != null) {
             editProperty.style.visibility = 'hidden';
             editProperty.style.cursor = 'default';
+        }
+        if (deleteProperty != null) {
             deleteProperty.style.visibility = 'hidden';
             deleteProperty.style.cursor = 'default';
-        });
-    }
+        }
+    });
+
     if (editProperty !== null) container.appendChild(editProperty);
     container.appendChild(label);
     if (deleteProperty !== null) container.appendChild(deleteProperty);
@@ -124,17 +155,26 @@ OPropertyContainer.prototype.createLabel = function (maxLength) {
 };
 
 OPropertyContainer.prototype.createEditOPropertyElement = function () {
-    var editElement = this.createIcon(OArchitectConstants.FA_EDIT);
-    editElement.style.visibility = 'hidden';
-    editElement.style.marginRight = '5px';
-    this.addClickListenerForAction(editElement, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
-    return editElement;
+    var element = null;
+    if (this.value.ownerClass.existsInDb) {
+        element = this.createExternalLink(this.value.ownerClass.existsInDb);
+        element.setAttribute('title', localizer.goToOPropertyPage);
+    } else {
+        element = this.createIcon(OArchitectConstants.FA_EDIT);
+        this.addClickListenerForAction(element, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
+    }
+    element.style.visibility = 'hidden';
+    element.style.marginRight = '5px';
+    return element;
 };
 
 OPropertyContainer.prototype.createDeleteOPropertyElement = function () {
-    var deleteElement = this.createIcon(OArchitectConstants.FA_DELETE);
-    deleteElement.style.visibility = 'hidden';
-    deleteElement.style.marginLeft = '5px';
-    this.addClickListenerForAction(deleteElement, OArchitectActionNames.DELETE_OPROPERTY_ACTION);
+    var deleteElement = null;
+    if (!this.value.ownerClass.existsInDb) {
+        deleteElement = this.createIcon(OArchitectConstants.FA_DELETE);
+        deleteElement.style.visibility = 'hidden';
+        deleteElement.style.marginLeft = '5px';
+        this.addClickListenerForAction(deleteElement, OArchitectActionNames.DELETE_OPROPERTY_ACTION);
+    }
     return deleteElement;
 };

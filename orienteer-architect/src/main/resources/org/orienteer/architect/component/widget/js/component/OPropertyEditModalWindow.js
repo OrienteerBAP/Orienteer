@@ -41,8 +41,6 @@ OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, selec
     var buttonBlock = this.createButtonBlock();
     var okBut = this.createOkButton(localizer.ok, input, select);
     var cancelBut = this.createCancelButton(localizer.cancel);
-    var showPageButton = this.createShowPageButton(localizer.more);
-    buttonBlock.appendChild(showPageButton);
     buttonBlock.appendChild(okBut);
     buttonBlock.appendChild(cancelBut);
     body.appendChild(buttonBlock);
@@ -64,28 +62,6 @@ OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOPrope
             select.selectedIndex = index;
     }
     return select;
-};
-
-OPropertyEditModalWindow.prototype.createShowPageButton = function (label) {
-    var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);
-    var propertyName = this.value.name;
-    var className = this.value.ownerClass != null ? this.value.ownerClass.name : null;
-    if (propertyName != null && className != null) {
-        app.requestOPropertyPage(className, propertyName, function (url) {
-            if (url != null && url.length > 0) {
-                button.setAttribute('target', '_blank');
-                button.setAttribute('href', url);
-            } else {
-                button.setAttribute('target', '');
-                button.setAttribute('href', '');
-                button.style.visibility = "hidden";
-            }
-        });
-    }
-    button.style.float = 'left';
-    button.style.marginLeft = '10px';
-    button.style.marginBottom = '10px';
-    return button;
 };
 
 //TODO: validate user input

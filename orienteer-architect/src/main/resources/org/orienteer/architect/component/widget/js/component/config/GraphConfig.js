@@ -53,7 +53,7 @@ GraphConfig.prototype.configureGraphLabels = function () {
             var max = parseInt(this.getCellGeometry(cell).width / 8);
             var container = null;
             if (cell.value instanceof OArchitectOClass) {
-                container = new OClassContainer(cell.value.name, editor, cell);
+                container = new OClassContainer(cell.value, editor, cell);
             } else if (cell.value instanceof OArchitectOProperty) {
                 container = new OPropertyContainer(cell.value, editor, cell);
             }
