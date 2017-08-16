@@ -58,7 +58,7 @@ var OArchitectAction = {
             var pt = graph.getPointForEvent(evt);
             if (cell !== null) {
                 var oClass = OArchitectUtil.getClassByPropertyCell(graph, cell).value;
-                var property = new OArchitectOProperty();
+                var property = new OArchitectOProperty(oClass);
                 var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
                 modal.show(pt.x, pt.y);
 

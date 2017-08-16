@@ -16,6 +16,7 @@ var OArchitectModalWindow = function (value, containerId, onDestroy) {
     this.containerId = containerId;
     this.isShow = false;
     this.markupId = null;
+    this.errorFeedback = null;
     this.onDestroy = onDestroy;
 };
 
@@ -24,7 +25,8 @@ OArchitectModalWindow.prototype.show = function (x, y) {
         var id = '#' + this.containerId;
         $(id).append(this.createModalElement(x, y));
         $('#' + this.getMarkupId()).draggable({
-            containment: id
+            containment: id,
+            cursor: 'move'
         });
         this.isShow = true;
         this.internalOnShow();
@@ -65,9 +67,33 @@ OArchitectModalWindow.prototype.createModalElement = function (x, y) {
     var body = document.createElement('div');
     body.classList.add('panel-body');
     panel.appendChild(head);
+    this.errorFeedback = this.createErrorFeedback();
     panel.appendChild(body);
+    panel.appendChild(this.errorFeedback);
     this.createContent(panel, head, body);
     return panel;
+};
+
+OArchitectModalWindow.prototype.createErrorFeedback = function () {
+    var div = document.createElement('div');
+    div.classList.add('alert');
+    div.classList.add('alert-danger');
+    div.style.display = 'none';
+    div.style.margin = '0 10px 10px 10px';
+    return div;
+};
+
+OArchitectModalWindow.prototype.showErrorFeedback = function (msg) {
+    if (this.errorFeedback != null) {
+        this.errorFeedback.innerHTML = msg;
+        this.errorFeedback.style.display = 'block';
+    }
+};
+
+OArchitectModalWindow.prototype.hideErrorFeedback = function () {
+    if (this.errorFeedback != null) {
+        this.errorFeedback.style.display = 'none';
+    }
 };
 
 OArchitectModalWindow.prototype.getMarkupId = function () {

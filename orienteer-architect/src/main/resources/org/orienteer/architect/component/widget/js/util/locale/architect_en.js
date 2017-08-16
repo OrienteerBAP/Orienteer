@@ -18,5 +18,7 @@ var en = {
     applyChanges: 'Apply Changes',
     toJson: 'To JSON',
     classExistsInDatabase: 'Class already exists in database',
-    classExistsInEditor: 'Class already exists in editor'
+    classExistsInEditor: 'Class already exists in editor',
+    propertyExistsInClass: 'Property already exists in class',
+    propertyExistsInSuperClass: 'Property already exists in superclass'
 };

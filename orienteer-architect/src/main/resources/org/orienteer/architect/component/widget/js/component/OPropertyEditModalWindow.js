@@ -89,9 +89,15 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
     var modal = this;
     return function () {
         if (nameField.value.length > 0) {
-            modal.value.setName(nameField.value);
-            modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
-            modal.destroy(modal.OK);
+            var newName = nameField.value;
+            modal.value.setName(newName, function (property, msg) {
+                if (property.name === newName) {
+                    modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
+                    modal.destroy(modal.OK);
+                } else {
+                    modal.showErrorFeedback(msg);
+                }
+            });
         }
     };
 };

@@ -45,7 +45,7 @@ OArchitectOClass.prototype.setName = function (name, callback) {
     };
     var oClass = this;
     app.requestIfOClassExists(JSON.stringify(jsonObj), function (exists) {
-        var msg = '';
+        var msg = null;
         if (oClass.existsInDb || !exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
                 oClass.name = name;

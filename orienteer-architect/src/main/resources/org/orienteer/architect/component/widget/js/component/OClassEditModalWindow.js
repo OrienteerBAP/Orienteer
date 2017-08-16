@@ -108,7 +108,7 @@ OClassEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameFi
             modal.value.setName(newName, function (oClass, msg) {
                 if (oClass.name === newName) {
                     modal.destroy(modal.OK);
-                } else console.warn(msg);
+                } else modal.showErrorFeedback(msg);
             });
 
         }
