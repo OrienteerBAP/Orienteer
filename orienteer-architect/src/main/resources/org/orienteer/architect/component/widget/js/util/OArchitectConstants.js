@@ -16,12 +16,22 @@ var OArchitectConstants = {
      */
     SIDEBAR_ITEM_CLASS: 'sidebar-item',
     TOOLBAR_ITEM_CLASS: 'toolbar-item',
+    EDITOR_CLASS: 'architect-editor',
+    SIDEBAR_CLASS: 'architect-editor-sidebar',
+    TOOLBAR_CLASS: 'architect-editor-toolbar',
+    EDITOR_FULLSCREEN_CLASS: 'architect-editor-fullscreen',
+    SIDEBAR_FULLSCREEN_CLASS: 'architect-editor-sidebar-fullscreen',
+    FULLSCREEN_CLASS: 'fullscreen',
+    MESSAGE_CLASS: 'architect-message',
 
     /**
      * Bootstrap classes
      */
     BUTTON_PRIMARY_CLASS: 'btn-primary',
     BUTTON_DANGER_CLASS: 'btn-danger',
+    ALERT: 'alert',
+    ALERT_INFO: 'alert-info',
+    ALERT_DANGER: 'alert-danger',
 
     /**
      * Font Awesome icons classes

@@ -19,7 +19,7 @@ var localizer;
  * @param toolbarId
  * @constructor
  */
-var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
+var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId) {
 	this.basePath = basePath;
 	this.config = mxUtils.parseXml(config);
 	this.localizer = localizer;
@@ -27,6 +27,7 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
     this.editorId = editorId;
     this.sidebarId = sidebarId;
     this.toolbarId = toolbarId;
+    this.outlineId = outlineId;
     this.saveEditorConfigCallbackUrl = null;
     this.applyEditorChangesCallbackUrl = null;
     this.getOClassesRequestCallbackUrl = null;
@@ -46,6 +47,7 @@ OArchitectApplication.prototype.init = function () {
         this.editor.configure(this.config.documentElement);
         this.configureEditorSidebar(this.editor);
         this.configureEditorToolbar(this.editor);
+        this.configureEditorOutline(this.editor);
     } else mxUtils.error('Browser is not supported!', 200, false);
 };
 
@@ -59,6 +61,7 @@ OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
     sidebar.addAction(localizer.classMsg, OArchitectActionNames.ADD_OCLASS_ACTION, OArchitectAction.addOClassAction);
     sidebar.addAction(localizer.property, OArchitectActionNames.ADD_OPROPERTY_ACTION, OArchitectAction.addOPropertyAction);
     sidebar.addAction(localizer.existsClasses, OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION, OArchitectAction.addExistsOClassesAction);
+    editor.sidebar = sidebar;
 };
 
 /**
@@ -70,6 +73,18 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
     toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
     toolbar.addAction(localizer.toJson, OArchitectActionNames.TO_JSON_ACTION, OArchitectAction.toJsonAction);
+    editor.toolbar = toolbar;
+};
+
+/**
+ * Config outline for editor
+ * @param editor {@link OArchitectEditor} for config
+ */
+OArchitectApplication.prototype.configureEditorOutline = function (editor) {
+    editor.outline = new mxOutline(editor.graph, this.getOutlineContainer());
+    this.getOutlineContainer().style.display = 'none';
+    var msg = new OArchitectMessage(localizer.fullscreenMode);
+    msg.show();
 };
 
 /**
@@ -91,6 +106,20 @@ OArchitectApplication.prototype.getSidebarContainer = function () {
  */
 OArchitectApplication.prototype.getToolbarContainer = function () {
     return $('#' + this.toolbarId).get(0);
+};
+
+/**
+ * @returns outline element
+ */
+OArchitectApplication.prototype.getOutlineContainer = function () {
+    return $('#' + this.outlineId).get(0);
+};
+
+/**
+ * @returns application element
+ */
+OArchitectApplication.prototype.getApplicationContainer = function () {
+    return $('#' + this.containerId).get(0);
 };
 
 /**
@@ -259,8 +288,8 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
  * Calls from Wicket!
  * Create new instance {@link OArchitectApplication}.
  */
-var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
-    app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId);
+var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId) {
+    app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId);
     app.init();
 };
 

@@ -38,6 +38,9 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     this.graph.isCellSelectable = function (cell) {
         return this.isSwimlane(cell) || this.getModel().isEdge(cell);
     };
+    this.graph.getTooltipForCell = function (cell) {
+        return null;
+    };
 
     this.graph.convertValueToString = this.convertValueToString;
     this.graph.cellLabelChanged = this.cellLabelChanged;

@@ -11,7 +11,8 @@ var OArchitectActionNames = {
     DELETE_CELL_ACTION:          'deleteCell',
     TO_JSON_ACTION:              'toJsonAction',
     SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
-    APPLY_EDITOR_CHANGES_ACTION: 'applyChanges'
+    APPLY_EDITOR_CHANGES_ACTION: 'applyChanges',
+    FULL_SCREEN_MODE:            'fullScreenMode'
 };
 
 /**
@@ -203,5 +204,47 @@ var OArchitectAction = {
     //TODO: delete after development
     toJsonAction: function (editor) {
         console.warn('OClasses in JSON: ', OArchitectUtil.getOClassesAsJSON(editor.graph));
+    },
+
+    fullScreenModeAction: function (editor) {
+        editor.fullscreen = !editor.fullscreen;
+        configureOrienteerClasses(editor.fullscreen);
+
+        function configureOrienteerClasses(fullscreen) {
+            if (fullscreen) {
+                $('.metismenu').hide();
+                $('.sidebar-search').hide();
+                $('.navbar.navbar-default.navbar-fixed-top').hide();
+                configureEditorClasses(fullscreen);
+            } else {
+                configureEditorClasses(fullscreen);
+                $('.metismenu').show();
+                $('.sidebar-search').show();
+                $('.navbar.navbar-default.navbar-fixed-top').show();
+            }
+        }
+
+        function configureEditorClasses(fullscreen) {
+            var container = app.getApplicationContainer();
+            var editor = app.editor.container;
+            var sidebar = app.editor.sidebar.container;
+            var outline = app.editor.outline.outline.container;
+            if (fullscreen) {
+                container.classList.add(OArchitectConstants.FULLSCREEN_CLASS);
+                editor.classList.remove(OArchitectConstants.EDITOR_CLASS);
+                sidebar.classList.remove(OArchitectConstants.SIDEBAR_CLASS);
+                editor.classList.add(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
+                sidebar.classList.add(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+                outline.style.display = 'block';
+                app.editor.outline.update();
+            } else {
+                container.classList.remove(OArchitectConstants.FULLSCREEN_CLASS);
+                editor.classList.remove(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
+                sidebar.classList.remove(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+                editor.classList.add(OArchitectConstants.EDITOR_CLASS);
+                sidebar.classList.add(OArchitectConstants.SIDEBAR_CLASS);
+                outline.style.display = 'none';
+            }
+        }
     }
 };

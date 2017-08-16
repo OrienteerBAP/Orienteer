@@ -21,5 +21,6 @@ var uk = {
     classExistsInDatabase: 'Клас вже існує в базі даних',
     classExistsInEditor: 'Клас вже існує в редакторі',
     propertyExistsInClass: 'Властивість вже існує в класі',
-    propertyExistsInSuperClass: 'Властивість вжу існує в суперкласі'
+    propertyExistsInSuperClass: 'Властивість вжу існує в суперкласі',
+    fullscreenMode: 'Для ввімкнення повноекранного режиму натисніть: F11'
 };

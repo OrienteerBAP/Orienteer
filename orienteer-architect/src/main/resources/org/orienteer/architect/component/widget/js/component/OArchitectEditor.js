@@ -7,7 +7,12 @@ var OArchitectEditor = function(container) {
     mxEditor.apply(this, arguments);
     this.sidebar = null;
     this.toolbar = null;
+    this.outline = null;
     this.container = container;
+
+    this.fullscreen = false;
+    this.defaultWidth = $('#' + app.containerId).width();
+    this.defaultHeight = $('#' + app.containerId).height();
 
     this.configureDefaultActions();
     this.configureGraph([new GraphConfig(this), new GraphConnectionConfig(this),
@@ -86,6 +91,7 @@ OArchitectEditor.prototype.configureDefaultActions = function () {
     this.addAction(OArchitectActionNames.EDIT_OPROPERTY_ACTION, OArchitectAction.editOPropertyAction);
     this.addAction(OArchitectActionNames.DELETE_OPROPERTY_ACTION, OArchitectAction.deleteOPropertyAction);
     this.addAction(OArchitectActionNames.DELETE_CELL_ACTION, OArchitectAction.deleteCellAction);
+    this.addAction(OArchitectActionNames.FULL_SCREEN_MODE, OArchitectAction.fullScreenModeAction);
 };
 
 OArchitectEditor.prototype.clone = function() {

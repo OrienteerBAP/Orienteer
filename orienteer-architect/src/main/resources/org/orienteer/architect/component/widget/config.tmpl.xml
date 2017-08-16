@@ -17,5 +17,6 @@
         <add as="113" action="edit"/>
         <add as="107" action="zoomIn"/>
         <add as="109" action="zoomOut"/>
+        <add as="122" action="fullScreenMode" />
     </mxDefaultKeyHandler>
 </mxEditor>

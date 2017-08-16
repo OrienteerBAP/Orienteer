@@ -135,16 +135,14 @@ GraphConnectionConfig.prototype.connectionHandlerRedrawIcons = function (icons, 
         var withLinkIcon = icons.length === 2;
         var pos = this.getIconPosition(icons[0], state);
         if (withLinkIcon) {
-            initIcon(icons[0], pos.y, OArchitectConstants.ICON_SIZE * 4);
-            initIcon(icons[1], pos.y, OArchitectConstants.ICON_SIZE * 2);
-        } else initIcon(icons[0], pos.y, OArchitectConstants.ICON_SIZE * 2);
+            initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 4);
+            initIcon(icons[1], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
+        } else initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
 
     }
 
-    function initIcon(icon, y, xStep) {
-        var bounds = state.cellBounds;
-        var currentClassWidth = bounds.width;
-        icon.bounds.x = bounds.x + currentClassWidth - xStep;
+    function initIcon(icon, y, x, xStep) {
+        icon.bounds.x = x + OArchitectConstants.OCLASS_WIDTH / 2 - xStep;
         icon.bounds.y = y;
         icon.redraw();
     }

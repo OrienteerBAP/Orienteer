@@ -20,5 +20,6 @@ var en = {
     classExistsInDatabase: 'Class already exists in database',
     classExistsInEditor: 'Class already exists in editor',
     propertyExistsInClass: 'Property already exists in class',
-    propertyExistsInSuperClass: 'Property already exists in superclass'
+    propertyExistsInSuperClass: 'Property already exists in superclass',
+    fullscreenMode: 'For enable fullscreen mode press: F11'
 };

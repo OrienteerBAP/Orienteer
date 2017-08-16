@@ -21,5 +21,6 @@ var ru = {
     classExistsInDatabase: 'Класс уже существует в базе данных',
     classExistsInEditor: 'Класс уже существует в редакторе',
     propertyExistsInClass: 'Свойство уже существует в классе',
-    propertyExistsInSuperClass: 'Свойство уже существует в суперклассе'
+    propertyExistsInSuperClass: 'Свойство уже существует в суперклассе',
+    fullscreenMode: 'Для включения полноэкранного режива нажмите: F11'
 };
