@@ -21,5 +21,10 @@ var en = {
     classExistsInEditor: 'Class already exists in editor',
     propertyExistsInClass: 'Property already exists in class',
     propertyExistsInSuperClass: 'Property already exists in superclass',
-    fullscreenMode: 'For enable fullscreen mode press: F11'
+    fullscreenMode: 'For enable fullscreen mode press: F11',
+    addClass: 'Add class',
+    addProperty: 'Add property',
+    undo: 'Undo',
+    redo: 'Redo',
+    deleteAction: 'Delete'
 };

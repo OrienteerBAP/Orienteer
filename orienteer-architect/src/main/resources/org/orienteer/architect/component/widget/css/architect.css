@@ -98,6 +98,24 @@
   background: transparent;
 }
 
+.modal-window-title {
+  margin-left: 5px;
+}
+
+.modal-window-title-icon {
+  margin-right: 5px;
+}
+
+.popup-menu-icon {
+  margin-left: 4px;
+  margin-right: 2px;
+}
+
+.popup-menu-label {
+  margin-left: 2px;
+  margin-right: 4px;
+}
+
 .fullscreen {
   width: 100%;
   height: 100%;

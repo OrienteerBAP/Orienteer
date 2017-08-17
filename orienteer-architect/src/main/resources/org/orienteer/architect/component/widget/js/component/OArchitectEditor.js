@@ -8,6 +8,7 @@ var OArchitectEditor = function(container) {
     this.sidebar = null;
     this.toolbar = null;
     this.outline = null;
+    this.popupMenu = null;
     this.container = container;
 
     this.fullscreen = false;
@@ -18,6 +19,7 @@ var OArchitectEditor = function(container) {
     this.configureGraph([new GraphConfig(this), new GraphConnectionConfig(this),
         new GraphStyleConfig(this)]);
     this.configureLayouts();
+    this.configurePopupMenu();
 };
 
 OArchitectEditor.prototype = Object.create(mxEditor.prototype);
@@ -31,7 +33,6 @@ OArchitectEditor.prototype.configureGraph = function (configs) {
 };
 
 OArchitectEditor.prototype.configureLayouts = function () {
-    var graph = this.graph;
     this.layoutSwimlanes = true;
     this.createSwimlaneLayout = function () {
         var layout = new mxStackLayout(this.graph, false);
@@ -43,6 +44,29 @@ OArchitectEditor.prototype.configureLayouts = function () {
         };
         return layout;
     };
+};
+
+OArchitectEditor.prototype.configurePopupMenu = function () {
+    mxEvent.disableContextMenu(this.container);
+    this.popupHandler.enabled = false;
+    var graph = this.graph;
+    var menu = new OArchitectPopupMenu(this.container, this);
+    var handler = new OArchitectPopupMenuHandler(menu);
+    this.addActionsToPopupMenu(menu);
+    graph.addMouseListener(handler);
+    graph.addListener(mxEvent.ESCAPE, function () {
+        handler.destroy();
+    });
+};
+
+OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
+    var action = new OArchitectPopupMenuAction(localizer.addProperty, OArchitectConstants.FA_ALIGN_JUSTIFY_CLASS, OArchitectActionNames.ADD_OPROPERTY_ACTION, true);
+    action.isValidCell = OArchitectUtil.isValidPropertyTarget;
+    menu.addAction(new OArchitectPopupMenuAction(localizer.undo, OArchitectConstants.FA_UNDO, 'undo'));
+    menu.addAction(new OArchitectPopupMenuAction(localizer.redo, OArchitectConstants.FA_REDO, 'redo'));
+    menu.addAction(new OArchitectPopupMenuAction(localizer.addClass, OArchitectConstants.FA_FILE_O_CLASS, OArchitectActionNames.ADD_OCLASS_ACTION, false, true));
+    menu.addAction(action);
+    menu.addAction(new OArchitectPopupMenuAction(localizer.deleteAction, OArchitectConstants.FA_DELETE, OArchitectActionNames.DELETE_CELL_ACTION, true));
 };
 
 /**

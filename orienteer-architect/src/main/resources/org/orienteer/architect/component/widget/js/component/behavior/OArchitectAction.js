@@ -56,20 +56,20 @@ var OArchitectAction = {
             var graph = editor.graph;
             graph.stopEditing(false);
             var pt = graph.getPointForEvent(evt);
-            if (cell !== null) {
-                var oClass = OArchitectUtil.getClassByPropertyCell(graph, cell).value;
-                var property = new OArchitectOProperty(oClass);
+            var classCell = cell != null ? OArchitectUtil.getClassByPropertyCell(cell) : null;
+            if (classCell !== null) {
+                var property = new OArchitectOProperty(classCell.value);
                 var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
-                modal.show(pt.x, pt.y);
+                modal.show(evt.x, evt.y);
 
                 function onDestroy(property, event) {
                     if (event === this.OK) {
-                        oClass.createProperty(property.name, property.type, property.cell);
+                        classCell.value.createProperty(property.name, property.type, property.cell);
                     }
                 }
             } else {
                 var infoModal = new InfoModalWindow(localizer.addOPropertyError, app.editorId);
-                infoModal.show(pt.x, pt.y);
+                infoModal.show(evt.x, evt.y);
             }
         };
 
@@ -139,9 +139,8 @@ var OArchitectAction = {
             if (cell !== null && cell.value instanceof OArchitectOClass) {
                 var graph = editor.graph;
                 graph.stopEditing(false);
-                var pt = graph.getPointForEvent(evt);
                 var modal = new OClassEditModalWindow(cell.value, app.editorId, onDestroy, false);
-                modal.show(pt.x, pt.y);
+                modal.show(evt.x, evt.y);
 
                 function onDestroy(oClass, event) {
                     if (event === this.OK) {
@@ -168,8 +167,7 @@ var OArchitectAction = {
                 var graph = editor.graph;
                 graph.stopEditing(false);
                 var modal = new OPropertyEditModalWindow(cell.value, app.editorId, onDestroy, false);
-                var pt = graph.getPointForEvent(evt);
-                modal.show(pt.x, pt.y);
+                modal.show(evt.x, evt.y);
 
                 function onDestroy(property, event) {
                     if (event === this.OK) {
@@ -186,7 +184,12 @@ var OArchitectAction = {
      * Delete cell from editor action
      */
     deleteCellAction: function (editor, cell) {
-        OArchitectUtil.deleteCells(editor.graph.getSelectionCells());
+        if (cell != null) {
+            var cellForDelete = cell.value instanceof OArchitectOClass ? cell : OArchitectUtil.getClassByPropertyCell(cell);
+            if (cellForDelete != null) {
+                OArchitectUtil.deleteCells([cellForDelete]);
+            }
+        }
     },
 
     /**
@@ -196,7 +199,7 @@ var OArchitectAction = {
         if (cell != null && cell.value instanceof OArchitectOProperty) {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var oClassCell = OArchitectUtil.getClassByPropertyCell(graph, cell);
+            var oClassCell = OArchitectUtil.getClassByPropertyCell(cell);
             var oClass = oClassCell.value;
             var property = cell.value;
             oClass.removeProperty(property, false);

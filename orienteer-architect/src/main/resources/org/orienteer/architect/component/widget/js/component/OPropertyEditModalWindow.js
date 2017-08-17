@@ -34,7 +34,8 @@ OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select
 };
 
 OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
-    head.innerHTML = create ? localizer.createProperty : localizer.editProperty;
+    this.createHeadBlock(head, create ? localizer.createProperty : localizer.editProperty,
+        OArchitectConstants.FA_ALIGN_JUSTIFY_CLASS);
 };
 
 OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, select) {

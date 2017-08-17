@@ -23,20 +23,26 @@ GraphConfig.prototype.config = function () {
 
 
 GraphConfig.prototype.configureGraphBehavior = function () {
+    this.graph.isClass = function (cell) {
+        return cell != null && cell.value instanceof OArchitectOClass;
+    };
+    this.graph.isValidPropertyTarget = function (cell) {
+        return OArchitectUtil.isValidPropertyTarget(cell);
+    };
     this.graph.isCellResizable = function (cell) {
-        return this.isSwimlane(cell);
+        return this.isClass(cell);
     };
     this.graph.isCellMovable = function(cell) {
-        return this.isSwimlane(cell);
+        return this.isClass(cell);
     };
     this.graph.isCellEditable = function (cell) {
         return false;
     };
     this.graph.isValidDropTarget = function(cell) {
-        return this.isSwimlane(cell);
+        return this.isClass(cell);
     };
     this.graph.isCellSelectable = function (cell) {
-        return this.isSwimlane(cell) || this.getModel().isEdge(cell);
+        return this.isClass(cell) || this.getModel().isEdge(cell);
     };
     this.graph.getTooltipForCell = function (cell) {
         return null;

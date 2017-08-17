@@ -118,6 +118,26 @@ OArchitectModalWindow.prototype.newButton = function (label, typeCssClass) {
     return but;
 };
 
+OArchitectModalWindow.prototype.createHeadBlock = function (headElement, content, faIconCss) {
+    var icon = this.createIcon(faIconCss);
+    var span = this.createSpan(content);
+    icon.classList.add(OArchitectConstants.MODAL_WINDOW_TITLE_ICON);
+    span.classList.add(OArchitectConstants.MODAL_WINDOW_TITLE);
+    headElement.appendChild(icon);
+    headElement.appendChild(span);
+};
+
+OArchitectModalWindow.prototype.createIcon = function (faIconCss) {
+    var icon = document.createElement('i');
+    icon.setAttribute('class', faIconCss);
+    return icon;
+};
+
+OArchitectModalWindow.prototype.createSpan = function (content) {
+    var span = document.createElement('span');
+    span.innerHTML = content;
+    return span;
+};
 
 var InfoModalWindow = function (msg, containerId) {
     OArchitectModalWindow.apply(this, arguments);
@@ -127,7 +147,7 @@ InfoModalWindow.prototype = Object.create(OArchitectModalWindow.prototype);
 InfoModalWindow.prototype.constructor = InfoModalWindow;
 
 InfoModalWindow.prototype.createContent = function (panel, head, body) {
-    head.innerHTML = localizer.info;
+    this.createHeadBlock(head, localizer.info, OArchitectConstants.FA_INFO_CIRCLE);
     body.appendChild(this.createMsgContent());
     body.appendChild(this.createOkButton());
 };

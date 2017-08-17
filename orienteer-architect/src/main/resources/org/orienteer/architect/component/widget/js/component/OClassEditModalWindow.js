@@ -41,7 +41,8 @@ OClassEditModalWindow.prototype.addValueBlock = function (body, input) {
 };
 
 OClassEditModalWindow.prototype.addHeadBlock = function (head, create) {
-    head.innerHTML = create ? localizer.createClass : localizer.editClass;
+    this.createHeadBlock(head, create ? localizer.createClass : localizer.editClass,
+        OArchitectConstants.FA_FILE_O_CLASS);
 };
 
 OClassEditModalWindow.prototype.addButtonBlock = function (body, input) {

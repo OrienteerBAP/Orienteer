@@ -23,6 +23,10 @@ var OArchitectConstants = {
     SIDEBAR_FULLSCREEN_CLASS: 'architect-editor-sidebar-fullscreen',
     FULLSCREEN_CLASS: 'fullscreen',
     MESSAGE_CLASS: 'architect-message',
+    POPUP_MENU_ITEM_ICON: 'popup-menu-icon',
+    POPUP_MENU_ITEM_LABEL: 'popup-menu-label',
+    MODAL_WINDOW_TITLE: 'modal-window-title',
+    MODAL_WINDOW_TITLE_ICON: 'modal-window-title-icon',
 
     /**
      * Bootstrap classes
@@ -32,6 +36,8 @@ var OArchitectConstants = {
     ALERT: 'alert',
     ALERT_INFO: 'alert-info',
     ALERT_DANGER: 'alert-danger',
+    LIST_GROUP: 'list-group',
+    LIST_GROUP_ITEM: 'list-group-item',
 
     /**
      * Font Awesome icons classes
@@ -43,6 +49,10 @@ var OArchitectConstants = {
     FA_EDIT: 'fa fa-pencil-square-o',
     FA_LINK: 'fa fa-link',
     FA_DELETE: 'fa fa-times-circle',
+    FA_UNDO: 'fa fa-undo',
+    FA_REDO: 'fa fa-repeat',
+    FA_PLUS_CIRCLE: 'fa fa-plus-circle',
+    FA_INFO_CIRCLE: 'fa fa-info-circle',
     FA_2X_CLASS: 'fa-2x',
 
     /**

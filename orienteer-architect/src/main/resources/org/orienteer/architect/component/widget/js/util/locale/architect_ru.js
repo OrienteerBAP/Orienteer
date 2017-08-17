@@ -22,5 +22,10 @@ var ru = {
     classExistsInEditor: 'Класс уже существует в редакторе',
     propertyExistsInClass: 'Свойство уже существует в классе',
     propertyExistsInSuperClass: 'Свойство уже существует в суперклассе',
-    fullscreenMode: 'Для включения полноэкранного режива нажмите: F11'
+    fullscreenMode: 'Для включения полноэкранного режива нажмите: F11',
+    addClass: 'Добавить класс',
+    addProperty: 'Добавить свойство',
+    undo: 'Назад',
+    redo: 'Вперед',
+    deleteAction: 'Удалить'
 };

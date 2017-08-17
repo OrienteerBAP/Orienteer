@@ -132,6 +132,18 @@ var OArchitectUtil = {
         return result;
     },
 
+    isValidPropertyTarget: function (cell) {
+        var valid = false;
+
+        if (cell.value instanceof OArchitectOClass) {
+            valid = !cell.value.existsInDb;
+        } else if (cell.value instanceof OArchitectOProperty) {
+            var classCell = OArchitectUtil.getClassByPropertyCell(cell);
+            valid = classCell != null && !classCell.value.existsInDb;
+        }
+        return valid;
+    },
+
     getCellByClassName: function (className) {
         var result = null;
         var cells = OArchitectUtil.getAllClassCells();
@@ -150,12 +162,13 @@ var OArchitectUtil = {
         return result != null ? result : [];
     },
 
-    getClassByPropertyCell: function (graph, cell) {
+    getClassByPropertyCell: function (cell) {
+        var graph = app.editor.graph;
         if (cell.value instanceof OArchitectOClass)
             return cell;
         if (cell === graph.getDefaultParent())
             return null;
-        return this.getClassByPropertyCell(graph, graph.getModel().getParent(cell));
+        return this.getClassByPropertyCell(graph.getModel().getParent(cell));
     },
 
     existsOClassInGraph: function (graph, className) {
