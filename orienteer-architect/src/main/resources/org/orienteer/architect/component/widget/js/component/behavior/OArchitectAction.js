@@ -44,8 +44,7 @@ var OArchitectAction = {
                 }
             }
         };
-        modal.show(pt.x, pt.y);
-
+        modal.show(evt.x, evt.y);
     },
 
     /**
@@ -90,20 +89,40 @@ var OArchitectAction = {
             var x = START_X;
             var counterX = 1;
             var jsonClasses = JSON.parse(json);
+            var cells = [];
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
                 oClass.configFromDatabase(jsonClass);
                 addOClassCell(oClass.cell);
+                cells.push(oClass.cell);
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
+            applyLayout(cells);
         };
+
 
         function addOClassCell(cell) {
             graph.getModel().beginUpdate();
             try {
                 graph.addCell(cell, graph.getDefaultParent());
+            } finally {
+                graph.getModel().endUpdate();
+            }
+        }
+
+        function applyLayout(cells) {
+            graph.getModel().beginUpdate();
+            try {
+                var layout = new mxCircleLayout(graph, 20);
+                layout.disableEdgeStyle = false;
+                layout.isVertexIgnored = function (cell) {
+                    if (cell.edge)
+                        return mxPartitionLayout.prototype.isVertexIgnored.apply(this, arguments);
+                    return cells.indexOf(cell) === -1;
+                };
+                layout.execute(graph.getDefaultParent());
             } finally {
                 graph.getModel().endUpdate();
             }

@@ -41,6 +41,9 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     this.graph.getTooltipForCell = function (cell) {
         return null;
     };
+    this.graph.isCellResizable = function (cell) {
+        return false;
+    };
 
     this.graph.convertValueToString = this.convertValueToString;
     this.graph.cellLabelChanged = this.cellLabelChanged;

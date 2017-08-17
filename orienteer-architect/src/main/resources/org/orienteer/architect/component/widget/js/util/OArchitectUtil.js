@@ -64,13 +64,13 @@ var OArchitectUtil = {
         return encoder.encode(graph.getModel());
     },
 
-    getAllCells: function () {
+    getAllClassCells: function () {
         var graph = app.editor.graph;
         return graph.getChildVertices(graph.getDefaultParent());
     },
 
     getAllClasses: function () {
-        var cells = OArchitectUtil.getAllCells();
+        var cells = OArchitectUtil.getAllClassCells();
         var classes = [];
         OArchitectUtil.forEach(cells, function (cell) {
             classes.push(cell.value);
@@ -121,7 +121,7 @@ var OArchitectUtil = {
 
     getCellsByClassNames: function (classNames) {
         var result = [];
-        var cells = OArchitectUtil.getAllCells();
+        var cells = OArchitectUtil.getAllClassCells();
         OArchitectUtil.forEach(cells, function (cell) {
             var oClass = cell.value;
             if (oClass != null && classNames.indexOf(oClass.name) > -1) {
@@ -134,7 +134,7 @@ var OArchitectUtil = {
 
     getCellByClassName: function (className) {
         var result = null;
-        var cells = OArchitectUtil.getAllCells();
+        var cells = OArchitectUtil.getAllClassCells();
         OArchitectUtil.forEach(cells, function (cell, trigger) {
             if (cell.value.name === className) {
                 result = cell;

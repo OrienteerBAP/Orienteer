@@ -2,6 +2,7 @@ package org.orienteer.architect.component.panel;
 
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -47,6 +48,7 @@ public class SchemaOClassesPanel extends Panel implements IOArchitectOClassesMan
         modal = createModalWindow("modal");
         modal.setContent(createGenericTablePanel(modal.getContentId()));
         add(modal);
+        add(AttributeModifier.append("style", "z-index:10000;"));
     }
 
     private ModalWindow createModalWindow(String id) {

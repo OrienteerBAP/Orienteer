@@ -56,7 +56,7 @@ OArchitectModalWindow.prototype.internalOnShow = function () {
 OArchitectModalWindow.prototype.createModalElement = function (x, y) {
     var panel = document.createElement('div');
     panel.style.width = '300px';
-    panel.style.position = 'absolute';
+    panel.style.position = 'fixed';
     panel.classList.add('panel');
     panel.classList.add('panel-default');
     panel.setAttribute('id', this.getMarkupId());
