@@ -99,7 +99,7 @@ var OArchitectAction = {
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
-            applyLayout(cells);
+            if (cells.length > 1) applyLayout(cells);
         };
 
 
@@ -169,7 +169,7 @@ var OArchitectAction = {
 
             function onDestroy(property, event) {
                 if (event === this.OK) {
-                    property.notifySubClassesPropertiesAboutChanges();
+                    property.ownerClass.notifySubClassesAboutChangesInProperty(property);
                 }
             }
         };
@@ -185,8 +185,21 @@ var OArchitectAction = {
         if (cellsForDelete == null || cellsForDelete.length === 0 && cell != null) {
             cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassByPropertyCell(cell)];
         }
-        if (cellsForDelete != null && cellsForDelete.length > 0) {
-            OArchitectUtil.deleteCells(cellsForDelete);
+        prepareCellsForRemove(cellsForDelete);
+        removeCells(cellsForDelete);
+
+        function removeCells(cells) {
+            if (cells != null && cells.length > 0) {
+                OArchitectUtil.deleteCells(cells);
+            }
+        }
+
+        function prepareCellsForRemove(cells) {
+            OArchitectUtil.forEach(cells, function (cell) {
+                if (cell.value instanceof OArchitectOClass) {
+                    cell.value.removed = true;
+                }
+            });
         }
     },
 

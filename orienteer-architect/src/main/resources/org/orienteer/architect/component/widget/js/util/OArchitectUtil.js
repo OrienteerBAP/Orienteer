@@ -113,7 +113,7 @@ var OArchitectUtil = {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         try {
-            graph.removeCells(cell, includeEdges);
+            graph.removeCells([cell], includeEdges);
         } finally {
             graph.getModel().endUpdate();
         }

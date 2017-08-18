@@ -60,11 +60,12 @@ OArchitectEditor.prototype.configurePopupMenu = function () {
 };
 
 OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
-    var action = new OArchitectPopupMenuAction(localizer.addProperty, OArchitectConstants.FA_ALIGN_JUSTIFY_CLASS, OArchitectActionNames.ADD_OPROPERTY_ACTION, true);
+    var action = new OArchitectPopupMenuAction(localizer.addProperty, OArchitectConstants.FA_ALIGN_JUSTIFY, OArchitectActionNames.ADD_OPROPERTY_ACTION, true);
     action.isValidCell = OArchitectUtil.isValidPropertyTarget;
     menu.addAction(new OArchitectPopupMenuAction(localizer.undo, OArchitectConstants.FA_UNDO, 'undo'));
     menu.addAction(new OArchitectPopupMenuAction(localizer.redo, OArchitectConstants.FA_REDO, 'redo'));
-    menu.addAction(new OArchitectPopupMenuAction(localizer.addClass, OArchitectConstants.FA_FILE_O_CLASS, OArchitectActionNames.ADD_OCLASS_ACTION, false, true));
+    menu.addAction(new OArchitectPopupMenuAction(localizer.addClass, OArchitectConstants.FA_FILE_O, OArchitectActionNames.ADD_OCLASS_ACTION, false, true));
+    menu.addAction(new OArchitectPopupMenuAction(localizer.addExistsClasses, OArchitectConstants.FA_DATABASE, OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION, false, true));
     menu.addAction(action);
     menu.addAction(new OArchitectPopupMenuAction(localizer.deleteAction, OArchitectConstants.FA_DELETE, OArchitectActionNames.DELETE_CELL_ACTION, true));
 };

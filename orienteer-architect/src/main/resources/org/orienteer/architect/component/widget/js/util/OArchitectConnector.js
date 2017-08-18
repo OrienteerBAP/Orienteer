@@ -60,7 +60,7 @@ var OArchitectConnector = {
             if (event === this.OK) {
                 var property = targetClass.createProperty(property.name, property.type);
                 property.setLinkedClass(sourceCell.value);
-            } else console.warn('Can\'t create link property');
+            } else modal.showErrorFeedback(localizer.cannotCreateLink);
         }
     },
 

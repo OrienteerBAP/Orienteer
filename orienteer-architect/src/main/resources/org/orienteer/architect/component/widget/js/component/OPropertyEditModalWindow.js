@@ -35,7 +35,7 @@ OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select
 
 OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
     this.createHeadBlock(head, create ? localizer.createProperty : localizer.editProperty,
-        OArchitectConstants.FA_ALIGN_JUSTIFY_CLASS);
+        OArchitectConstants.FA_ALIGN_JUSTIFY);
 };
 
 OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, select) {
@@ -90,6 +90,7 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
     var modal = this;
     return function () {
         if (nameField.value.length > 0) {
+            console.warn('click');
             var newName = nameField.value;
             modal.value.setName(newName, function (property, msg) {
                 if (property.name === newName) {

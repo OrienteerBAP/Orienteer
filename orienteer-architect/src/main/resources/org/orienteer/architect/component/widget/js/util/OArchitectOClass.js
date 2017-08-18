@@ -16,6 +16,11 @@ var OArchitectOClass = function() {
 };
 
 /**
+ * boolean true if class has been removed from editor
+ */
+OArchitectOClass.prototype.removed = false;
+
+/**
  * Config this instance from json which is respond from database
  * @param json - string which contains json data
  */
@@ -81,15 +86,18 @@ OArchitectOClass.prototype.setCell = function (cell) {
  * @returns {@link OArchitectOProperty}
  * @throws {@link Error} if property with given name already exists
  */
-OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass) {
+OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass, superClassExistsInEditor) {
     var property = null;
     if (name != null && type != null) {
         property = this.getProperty(name);
         if (property != null)
             throw new Error('OProperty with name: ' + name + ' already exists!');
         property = new OArchitectOProperty(this, name, type, cell);
+        property.subClassProperty = subClass;
+        property.superClassExistsInEditor = superClassExistsInEditor;
         this.properties.push(property);
-        this.changeProperties(this, [property], subClass, false);
+        this.createCellForProperty(property);
+        this.notifySubClassesAboutChangesInProperty(property);
     }
     return property;
 };
@@ -97,9 +105,8 @@ OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass
 /**
  * Remove {@link OArchitectOProperty} from this class.
  * @param oProperty - {@link OArchitectOProperty} for remove
- * @param subClass - true if subclass property
  */
-OArchitectOClass.prototype.removeProperty = function (oProperty, subClass) {
+OArchitectOClass.prototype.removeProperty = function (oProperty) {
     var index = this.getPropertyIndex(oProperty);
     if (index > -1) {
         var property = this.properties[index];
@@ -108,7 +115,8 @@ OArchitectOClass.prototype.removeProperty = function (oProperty, subClass) {
             index = this.propertiesForDelete.indexOf(oProperty);
             if (index === -1) this.propertiesForDelete.push(oProperty);
         }
-        this.changeProperties(this, [property], subClass, true);
+        this.removeCellFromProperty(property);
+        this.notifySubClassesAboutChangesInProperty(property, true);
     }
 };
 
@@ -129,7 +137,7 @@ OArchitectOClass.prototype.addSuperClass = function (superClass) {
 
     if (classForAdd != null) {
         this.superClasses.push(classForAdd);
-        this.changeProperties(this, classForAdd.properties, true, false);
+        this.addPropertiesFromSuperClass(classForAdd);
         classForAdd.addSubClass(this);
         if (this.cell != null && classForAdd.cell != null)
             OArchitectUtil.manageEdgesBetweenCells(this.cell, classForAdd.cell, true);
@@ -167,7 +175,7 @@ OArchitectOClass.prototype.removeSuperClass = function (superClass) {
     var index = this.superClasses.indexOf(superClass);
     if (index > -1) {
         this.superClasses.splice(index, 1);
-        this.changeProperties(this, superClass.properties, true, true);
+        this.removeSuperClassProperties(superClass);
         superClass.removeSubClass(this);
     }
 };
@@ -185,99 +193,136 @@ OArchitectOClass.prototype.removeSubClass = function (subClass) {
 };
 
 /**
- * Change properties for this class and recursively changed properties from subclasses
- * @param oClass - {@link OArchitectOClass} which properties need for changes
- * @param changedProperties - array with {@link OArchitectOProperty} for changes
- * @param isSubClassProperty - true if changedProperties is subclass properties
- * @param remove - true if need to remove changedProperties from oClass
+ * Create new {@link mxCell} in current class for given property
+ * @param property {@link OArchitectOProperty}
  */
-OArchitectOClass.prototype.changeProperties = function (oClass, changedProperties, isSubClassProperty, remove) {
-    var cellsForUpdate = [];
-    var propertiesForUpdate = [];
-    if (remove && !isSubClassProperty) {
-        addSuperClassCells(cellsForUpdate);
+OArchitectOClass.prototype.createCellForProperty = function (property) {
+    var graph = app.editor.graph;
+    graph.getModel().beginUpdate();
+    try {
+        property.setCell(OArchitectUtil.createOPropertyVertex(property));
+        graph.addCell(property.cell, this.cell);
+    } finally {
+        graph.getModel().endUpdate();
     }
-    if (oClass.existsInEditor) {
-        applyChanges(oClass, cellsForUpdate, propertiesForUpdate);
-        applyGraphChanges(oClass, cellsForUpdate, propertiesForUpdate);
+};
+
+/**
+ * Remove {@link mxCell} from given property
+ * @param property {@link OArchitectOProperty}
+ */
+OArchitectOClass.prototype.removeCellFromProperty = function (property) {
+    if (property.cell != null) {
+        OArchitectUtil.removeCell(property.cell, true);
     }
+};
 
-    function applyChanges(oClass, cellsForUpdate, propertiesForUpdate) {
-        changePropertiesForClass(oClass, cellsForUpdate, propertiesForUpdate, isSubClassProperty);
-        OArchitectUtil.forEach(oClass.subClasses, function (subClass) {
-            if (subClass.existsInEditor) {
-                subClass.changeProperties(subClass, changedProperties, true, remove);
-                changePropertiesForClass(subClass, cellsForUpdate, propertiesForUpdate, true);
-            }
-        });
-    }
-
-    function changePropertiesForClass(classForChanges, cellsForUpdate, propertiesForUpdate, isSubClass) {
-        OArchitectUtil.forEach(changedProperties, function (changedProperty) {
-            var property = classForChanges.getProperty(changedProperty.previousName);
-            if (property == null) property = classForChanges.getProperty(changedProperty.name);
-
-            if (remove && property != null) {
-                cellsForUpdate.push(property.cell);
-                if (isSubClass) classForChanges.removeProperty(property, isSubClass);
-            } else if (!remove) {
-                if (property == null) {
-                    property = classForChanges.createProperty(changedProperty.name, changedProperty.type, null, isSubClass);
-                } else if (property.name === changedProperty.previousName) {
-                    property.setName(changedProperty.name);
-                    property.setType(changedProperty.type);
-                }
-                if (property.cell == null) {
-                    property.cell = getPropertyCellByName(classForChanges, property.name);
-                    if (property.cell == null) {
-                        property.cell = OArchitectUtil.createOPropertyVertex(property);
-                        cellsForUpdate.push(property.cell);
-                    }
-                }
-                property.setLinkedClass(changedProperty.linkedClass);
-                property.subClassProperty = isSubClass;
-                propertiesForUpdate.push(property);
-            }
-        });
-    }
-
-    function applyGraphChanges(oClass, cellsForUpdate, propertiesForUpdate) {
-        var graph = app.editor.graph;
-        graph.getModel().beginUpdate();
-        try {
-            if (remove) {
-                graph.removeCells(cellsForUpdate, true);
-            } else {
-                graph.addCells(cellsForUpdate, oClass.cell);
-            }
-            OArchitectUtil.forEach(propertiesForUpdate, function (property) {
-                graph.getModel().setValue(property.cell, property);
-            });
-        } finally {
-            graph.getModel().endUpdate();
+/**
+ * Add properties from given superclass to this class and subclasses
+ * @param superClass - {@link OArchitectOClass}
+ */
+OArchitectOClass.prototype.addPropertiesFromSuperClass = function (superClass) {
+    var oClass = this;
+    OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
+        var property = oClass.createSubClassPropertyFromTemplate(superClassProperty);
+        if (property !== null) {
+            oClass.properties.push(property);
+            oClass.notifySubClassesAboutChangesInProperty(property);
         }
-    }
+    });
+};
 
-    function addSuperClassCells(cellsForUpdate) {
-        OArchitectUtil.forEach(changedProperties, function (prop) {
-            cellsForUpdate.push(prop.cell);
-        });
-    }
-
-    function getPropertyCellByName(oClass, propertyName) {
-        var cell = null;
-        if (oClass.cell != null) {
-            var cells = OArchitectUtil.getClassPropertiesCells(oClass);
-            OArchitectUtil.forEach(cells, function (propertyCell, trigger) {
-                var property = propertyCell.value;
-                if (property != null && property.name === propertyName) {
-                    cell = propertyCell;
-                    trigger.stop = true;
-                }
-            });
+/**
+ * Remove superclass properties from this class and subclasses.
+ * If superclass exists in database properties will not be removed from this class and subclasses instead will be
+ * create new cells for this properties in this class
+ * @param superClass - {@link OArchitectOClass}
+ */
+OArchitectOClass.prototype.removeSuperClassProperties = function (superClass) {
+    var oClass = this;
+    OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
+        var index = oClass.removeSuperClassProperty(superClassProperty);
+        if (index > -1) {
+            oClass.notifySubClassesAboutChangesInProperty(superClassProperty, true);
         }
-        return cell;
+    });
+};
+
+/**
+ * Remove superclass property from this class.
+ * If superclass exists in database property will not be removed from this class instead new cell for this property
+ * will be created
+ * @param superClassProperty {@link OArchitectOProperty} superclass property
+ * @returns {number} index of property in properties array or -1 if superClassProperty don't exists in this class
+ */
+OArchitectOClass.prototype.removeSuperClassProperty = function (superClassProperty) {
+    var index = this.getPropertyIndex(superClassProperty);
+    if (index > -1) {
+        var property = this.properties[index];
+        var notRemove = superClassProperty.ownerClass.removed && superClassProperty.ownerClass.existsInDb && property.isSubClassProperty() && property.cell == null;
+        if (notRemove) notRemove = this.existsInDb;
+        if (notRemove) {
+            property.superClassExistsInEditor = false;
+            this.createCellForProperty(property);
+        } else this.properties.splice(index, 1);
     }
+    return index;
+};
+
+/**
+ * Create subclass property from template property. If property with given name already exists in this class it's will be
+ * changed and it's cell will be removed
+ * @param templateProperty - {@link OArchitectOProperty} - template
+ * @returns {@link OArchitectOProperty} if was be created new property or null if property with given name already exists in class
+ */
+OArchitectOClass.prototype.createSubClassPropertyFromTemplate = function (templateProperty) {
+    var property = this.getProperty(templateProperty.name);
+    var needForReturn = true;
+    if (property === null) property = this.getProperty(templateProperty.previousName);
+    if (property !== null) {
+        property.setType(templateProperty.type);
+        needForReturn = false;
+        if (property.cell != null) {
+            OArchitectUtil.removeCell(property.cell, true);
+            property.cell = null;
+        }
+    } else {
+        property = new OArchitectOProperty(this, templateProperty.name, templateProperty.type);
+    }
+    property.subClassProperty = true;
+    property.linkedClass = templateProperty.linkedClass;
+    property.superClassExistsInEditor = templateProperty.ownerClass.cell !== null;
+    return needForReturn ? property : null;
+};
+
+/**
+ * Notify subclasses about changes in property
+ * @param templateProperty - {@link OArchitectOProperty} that was changed
+ * @param remove - boolean true if need to delete templateProperty from subclasses
+ */
+OArchitectOClass.prototype.notifySubClassesAboutChangesInProperty = function (templateProperty, remove) {
+    var action = function (subClass) {
+        console.warn('template property: ', templateProperty);
+        var property = null;
+        if (remove) {
+            subClass.removeSuperClassProperty(templateProperty);
+        } else {
+            property = subClass.createSubClassPropertyFromTemplate(templateProperty);
+            if (property !== null) subClass.properties.push(property);
+        }
+    };
+    this.applyActionToAllSubClasses(action);
+};
+
+/**
+ * Apply action for all subclasses
+ * @param action - Function which will be executed on every subclass
+ */
+OArchitectOClass.prototype.applyActionToAllSubClasses = function (action) {
+    OArchitectUtil.forEach(this.subClasses, function (subClass) {
+        action(subClass);
+        subClass.applyActionToAllSubClasses(action);
+    });
 };
 
 /**

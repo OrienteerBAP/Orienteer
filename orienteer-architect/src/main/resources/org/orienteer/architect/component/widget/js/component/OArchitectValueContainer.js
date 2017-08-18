@@ -65,7 +65,7 @@ OClassContainer.prototype = Object.create(OArchitectValueContainer.prototype);
 OClassContainer.prototype.constructor = OClassContainer;
 
 OClassContainer.prototype.createElement = function (maxLength) {
-    return this.createContainer(this.createLabel(maxLength), this.createEditIcon());
+    return this.createContainer(this.createLabel(maxLength), this.createLinkOrEditOClassElement());
 };
 
 OClassContainer.prototype.createContainer = function (label, editElement) {
@@ -83,7 +83,7 @@ OClassContainer.prototype.createContainer = function (label, editElement) {
     return container;
 };
 
-OClassContainer.prototype.createEditIcon = function () {
+OClassContainer.prototype.createLinkOrEditOClassElement = function () {
     var element = null;
     if (this.value.existsInDb) {
         element = this.createExternalLink(this.value.existsInDb);
@@ -107,7 +107,7 @@ OPropertyContainer.prototype = Object.create(OArchitectValueContainer.prototype)
 OPropertyContainer.prototype.constructor = OPropertyContainer;
 
 OPropertyContainer.prototype.createElement = function (maxLength) {
-    var editProperty = !this.value.isSubClassProperty() ? this.createEditOPropertyElement() : null;
+    var editProperty = this.createLinkOrEditOPropertyElement();
     var deleteProperty = !this.value.isSubClassProperty() ? this.createDeleteOPropertyElement() : null;
     var label = this.createLabel(maxLength);
     return this.createContainer(label, editProperty, deleteProperty);
@@ -156,7 +156,7 @@ OPropertyContainer.prototype.createLabel = function (maxLength) {
     return span;
 };
 
-OPropertyContainer.prototype.createEditOPropertyElement = function () {
+OPropertyContainer.prototype.createLinkOrEditOPropertyElement = function () {
     var element = null;
     if (this.value.ownerClass.existsInDb) {
         element = this.createExternalLink(this.value.ownerClass.existsInDb);

@@ -7,20 +7,57 @@
  * @constructor
  */
 var OArchitectOProperty = function (ownerClass, name, type, cell) {
-    this.ownerClass = null;
-    this.name = null;
-    this.type = null;
-    this.linkedClass = null;
-    this.subClassProperty = false;
-    this.pageUrl = null;
-    this.cell = null;
-    this.previousName = null;
-
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (name != null) this.setName(name);
     if (type != null) this.setType(type);
     if (cell != null) this.setCell(cell);
 };
+
+/**
+ * {@link OArchitectOClass} which contains this property
+ */
+OArchitectOProperty.prototype.ownerClass = null;
+
+/**
+ * string name of this property
+ */
+OArchitectOProperty.prototype.name = null;
+
+/**
+ * string type of this property. See {@link OArchitectOType}
+ */
+OArchitectOProperty.prototype.type = null;
+
+/**
+ * {@link OArchitectOClass} in which this property is linked
+ */
+OArchitectOProperty.prototype.linkedClass = null;
+
+/**
+ * boolean true if this property is inherited property from superclass. Default false.
+ */
+OArchitectOProperty.prototype.subClassProperty = false;
+
+/**
+ * boolean true if superclass of this property exists in editor. Default false.
+ * Uses for resolving view property dependencies in classes cells
+ */
+OArchitectOProperty.prototype.superClassExistsInEditor = false;
+
+/**
+ * string url to property page. Uses for redirect user to property page
+ */
+OArchitectOProperty.prototype.pageUrl = null;
+
+/**
+ * {@link mxCell} which contains this property.
+ */
+OArchitectOProperty.prototype.cell = null;
+
+/**
+ * string contains previous name of this property. Needs for correct property rename
+ */
+OArchitectOProperty.prototype.previousName = null;
 
 /**
  * Config instance of {@link OArchitectOProperty} from json which is respond from database
@@ -37,8 +74,8 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
     var linkedClassCell = OArchitectUtil.getCellByClassName(json.linkedClass);
     if (linkedClassCell != null) this.setLinkedClass(linkedClassCell.value);
     if (this.cell != null) this.setCell(this.cell);
-
-    oClass.changeProperties(oClass, [this], this.subClassProperty, false);
+    else oClass.createCellForProperty(this);
+    oClass.notifySubClassesAboutChangesInProperty(this);
 };
 
 /**
@@ -55,7 +92,7 @@ OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propert
     if (linkedCell != null)
         this.setLinkedClass(linkedCell.value);
     this.cell.parent = oClass.cell;
-    oClass.changeProperties(oClass, [this], this.subClassProperty, false);
+    oClass.notifySubClassesAboutChangesInProperty(this);
 };
 
 /**
@@ -73,8 +110,9 @@ OArchitectOProperty.prototype.setType = function (type) {
  * @param name - string. Can't be null
  */
 OArchitectOProperty.prototype.setName = function (name, callback) {
+    var msg = null;
     if (name != null && this.name !== name) {
-        var msg = null;
+
         if (this.ownerClass != null && this.ownerClass instanceof OArchitectOClass) {
             var existsProperty = this.ownerClass.getProperty(name);
             if (existsProperty != null) {
@@ -82,11 +120,9 @@ OArchitectOProperty.prototype.setName = function (name, callback) {
                     msg = localizer.propertyExistsInSuperClass;
                 } else msg = localizer.propertyExistsInClass;
             } else setName(this, name);
-            if (callback != null) callback(this, msg);
         } else setName(this, name);
-    }  else if (this.name === name) {
-        if (callback != null) callback(this);
     }
+    if (callback != null) callback(this, msg);
 
     function setName(property, name) {
         property.previousName = property.name;
@@ -122,18 +158,19 @@ OArchitectOProperty.prototype.setCell = function (cell) {
 };
 
 /**
- * Update {@link OArchitectOProperty#ownerClass} sub classes about changes of this property
- */
-OArchitectOProperty.prototype.notifySubClassesPropertiesAboutChanges = function () {
-    this.ownerClass.changeProperties(this.ownerClass, [this], this.subClassProperty, false);
-};
-
-/**
  * Checks if this property is property from {@link OArchitectOProperty#ownerClass} super class.
  * @returns boolean true if is subclass property
  */
 OArchitectOProperty.prototype.isSubClassProperty = function () {
     return this.subClassProperty;
+};
+
+/**
+ * Checks if superclass of this property exists in editor
+ * @returns boolean - true if exists
+ */
+OArchitectOProperty.prototype.isSuperClassExistsInEditor = function () {
+    return this.superClassExistsInEditor;
 };
 
 /**
@@ -173,7 +210,7 @@ OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
             OArchitectUtil.manageEdgesBetweenCells(this.cell, linkedClass.cell, true);
         }
         this.linkedClass = linkedClass;
-        this.ownerClass.changeProperties(this.ownerClass, [this]);
+        this.ownerClass.notifySubClassesAboutChangesInProperty(this);
     }
 };
 
