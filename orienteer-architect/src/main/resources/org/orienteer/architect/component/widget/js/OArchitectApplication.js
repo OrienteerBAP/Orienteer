@@ -19,7 +19,7 @@ var localizer;
  * @param toolbarId
  * @constructor
  */
-var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
+var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId) {
 	this.basePath = basePath;
 	this.config = mxUtils.parseXml(config);
 	this.localizer = localizer;
@@ -27,10 +27,12 @@ var OArchitectApplication = function (basePath, config, localizer, containerId, 
     this.editorId = editorId;
     this.sidebarId = sidebarId;
     this.toolbarId = toolbarId;
+    this.outlineId = outlineId;
     this.saveEditorConfigCallbackUrl = null;
     this.applyEditorChangesCallbackUrl = null;
     this.getOClassesRequestCallbackUrl = null;
     this.existsOClassRequestCallbackUrl = null;
+    this.checkChangesRequestCallbackUrl = null;
     this.editor = null;
     this.callback = null;
 };
@@ -45,6 +47,7 @@ OArchitectApplication.prototype.init = function () {
         this.editor.configure(this.config.documentElement);
         this.configureEditorSidebar(this.editor);
         this.configureEditorToolbar(this.editor);
+        this.configureEditorOutline(this.editor);
     } else mxUtils.error('Browser is not supported!', 200, false);
 };
 
@@ -58,6 +61,7 @@ OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
     sidebar.addAction(localizer.classMsg, OArchitectActionNames.ADD_OCLASS_ACTION, OArchitectAction.addOClassAction);
     sidebar.addAction(localizer.property, OArchitectActionNames.ADD_OPROPERTY_ACTION, OArchitectAction.addOPropertyAction);
     sidebar.addAction(localizer.existsClasses, OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION, OArchitectAction.addExistsOClassesAction);
+    editor.sidebar = sidebar;
 };
 
 /**
@@ -69,6 +73,18 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
     toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
     toolbar.addAction(localizer.toJson, OArchitectActionNames.TO_JSON_ACTION, OArchitectAction.toJsonAction);
+    editor.toolbar = toolbar;
+};
+
+/**
+ * Config outline for editor
+ * @param editor {@link OArchitectEditor} for config
+ */
+OArchitectApplication.prototype.configureEditorOutline = function (editor) {
+    editor.outline = new mxOutline(editor.graph, this.getOutlineContainer());
+    this.getOutlineContainer().style.display = 'none';
+    var msg = new OArchitectMessage(localizer.fullscreenMode);
+    msg.show();
 };
 
 /**
@@ -90,6 +106,20 @@ OArchitectApplication.prototype.getSidebarContainer = function () {
  */
 OArchitectApplication.prototype.getToolbarContainer = function () {
     return $('#' + this.toolbarId).get(0);
+};
+
+/**
+ * @returns outline element
+ */
+OArchitectApplication.prototype.getOutlineContainer = function () {
+    return $('#' + this.outlineId).get(0);
+};
+
+/**
+ * @returns application element
+ */
+OArchitectApplication.prototype.getApplicationContainer = function () {
+    return $('#' + this.containerId).get(0);
 };
 
 /**
@@ -126,6 +156,16 @@ OArchitectApplication.prototype.setGetOClassesRequest = function (callbackUrl) {
  */
 OArchitectApplication.prototype.setExistsOClassRequest = function (callbackUrl) {
     this.existsOClassRequestCallbackUrl = callbackUrl;
+};
+
+
+/**
+ * Calls from Wicket!
+ * Set url for request changes in classes
+ * @param callbackUrl
+ */
+OArchitectApplication.prototype.setChecksAboutClassesChanges = function (callbackUrl) {
+    this.checkChangesRequestCallbackUrl = callbackUrl;
 };
 
 /**
@@ -172,6 +212,19 @@ OArchitectApplication.prototype.requestIfOClassExists = function (name, callback
     });
 };
 
+
+/**
+ * Create request for getting changes in given classes
+ * @param classesNames - json string which contains class names for checks
+ * @param callback - function which will be execute when get response
+ */
+OArchitectApplication.prototype.requestAboutChangesInClasses = function (classesNames, callback) {
+    this.callback = callback;
+    this.sendPostRequest(this.checkChangesRequestCallbackUrl, {
+        "classesNames": classesNames
+    });
+};
+
 /**
  * Create POST request to Wicket
  * @param url callback url
@@ -194,18 +247,49 @@ OArchitectApplication.prototype.executeCallback = function (response) {
     this.callback = null;
 };
 
+/**
+ * Apply editor config and checks about new changes
+ * @param xml - editor config
+ */
 OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     var doc = mxUtils.parseXml(xml);
     var codec = new mxCodec(doc);
     codec.decode(doc.documentElement, this.editor.graph.getModel());
+    this.checksAboutClassesChanges();
+};
+
+/**
+ * Checks about classes changes and update classes and editor config if its need.
+ */
+OArchitectApplication.prototype.checksAboutClassesChanges = function () {
+    function callback(json) {
+        if (json != null && json.length > 0) {
+            var allClasses = OArchitectUtil.getAllClasses();
+            var jsonClasses = JSON.parse(json);
+            var saveNewConfig = false;
+            OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
+                OArchitectUtil.forEach(allClasses, function (oClass, trigger) {
+                    if (jsonClass.name === oClass.name) {
+                        if (!oClass.equalsWithJsonClass(jsonClass)) {
+                            saveNewConfig = true;
+                            oClass.configFromDatabase(jsonClass);
+                        }
+                        trigger.stop = true;
+                    }
+                });
+            });
+            app.editor.execute(OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION);
+        }
+    }
+    this.requestAboutChangesInClasses(JSON.stringify(OArchitectUtil.getAllClassNames()), callback);
 };
 
 /**
  * Calls from Wicket!
  * Create new instance {@link OArchitectApplication}.
  */
-var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId) {
-    app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId);
+var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId) {
+    app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId);
     app.init();
 };
 

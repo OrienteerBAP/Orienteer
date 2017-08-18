@@ -107,7 +107,9 @@ OArchitectSidebar.prototype.makeDraggable = function (element, actionName) {
     var editor = this.editor;
     var graph = editor.graph;
     var draggable = mxUtils.makeDraggable(element, graph, function (graph, evt, cell) {
-        editor.execute(actionName, cell, evt);
+        var mouseEvent = new mxMouseEvent(evt, new mxCellState(graph.getModel(), cell));
+        graph.fireMouseEvent(mxEvent.MOUSE_UP, mouseEvent);
+        editor.execute(actionName, cell, mouseEvent);
     });
     draggable.getDropTarget = this.getDropTarget(actionName);
 };
@@ -118,13 +120,15 @@ OArchitectSidebar.prototype.getDropTarget = function (actionName) {
             return null;
         } else if (actionName === OArchitectActionNames.ADD_OPROPERTY_ACTION) {
             var cell = graph.getCellAt(x, y);
-            if (graph.isSwimlane(cell))
-                return cell;
-            var parent = graph.getModel().getParent(cell);
-            return graph.isSwimlane(parent) ? parent : null;
+            var result = getPropertyTargetCell(cell);
+            return result != null ? result : getPropertyTargetCell(graph.getModel().getParent(cell));
         } else if (actionName === OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION) {
             var cell = graph.getCellAt(x, y);
             return cell === null;
+        }
+
+        function getPropertyTargetCell(cell) {
+            return graph.isClass(cell) && !cell.value.existsInDb ? cell : null;
         }
     };
 };

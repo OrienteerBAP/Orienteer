@@ -3,8 +3,12 @@ var ru = {
     type: 'Тип',
     cancel: 'Отмена',
     ok: 'OK',
-    addOPropertyError: 'Свойство может быть добавлено только в класс',
+    more: 'Больше...',
+    goToOClassPage: 'Перейти на страницу класса',
+    goToOPropertyPage: 'Перейти на страницу свойства',
+    addOPropertyError: 'Свойство может быть добавлено в класс, который существует только в редакторе',
     info: 'Информация',
+    error: 'Ошибка',
     classMsg: 'Класс',
     property: 'Свойство',
     existsClasses: 'Существующие классы',
@@ -16,5 +20,13 @@ var ru = {
     applyChanges: 'Применить изменения',
     toJson: 'Конвертировать в JSON',
     classExistsInDatabase: 'Класс уже существует в базе данных',
-    classExistsInEditor: 'Класс уже существует в редакторе'
+    classExistsInEditor: 'Класс уже существует в редакторе',
+    propertyExistsInClass: 'Свойство уже существует в классе',
+    propertyExistsInSuperClass: 'Свойство уже существует в суперклассе',
+    fullscreenMode: 'Для включения полноэкранного режима нажмите: F11',
+    addClass: 'Добавить класс',
+    addProperty: 'Добавить свойство',
+    undo: 'Назад',
+    redo: 'Вперед',
+    deleteAction: 'Удалить'
 };

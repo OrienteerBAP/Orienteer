@@ -34,15 +34,16 @@ OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select
 };
 
 OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
-    head.innerHTML = create ? localizer.createProperty : localizer.editProperty;
+    this.createHeadBlock(head, create ? localizer.createProperty : localizer.editProperty,
+        OArchitectConstants.FA_ALIGN_JUSTIFY_CLASS);
 };
 
 OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, select) {
     var buttonBlock = this.createButtonBlock();
     var okBut = this.createOkButton(localizer.ok, input, select);
     var cancelBut = this.createCancelButton(localizer.cancel);
-    buttonBlock.appendChild(cancelBut);
     buttonBlock.appendChild(okBut);
+    buttonBlock.appendChild(cancelBut);
     body.appendChild(buttonBlock);
 };
 
@@ -89,9 +90,15 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
     var modal = this;
     return function () {
         if (nameField.value.length > 0) {
-            modal.value.setName(nameField.value);
-            modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
-            modal.destroy(modal.OK);
+            var newName = nameField.value;
+            modal.value.setName(newName, function (property, msg) {
+                if (property.name === newName) {
+                    modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
+                    modal.destroy(modal.OK);
+                } else {
+                    modal.showErrorFeedback(msg);
+                }
+            });
         }
     };
 };

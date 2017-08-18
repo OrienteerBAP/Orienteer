@@ -16,10 +16,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
-import org.orienteer.architect.component.behavior.ApplyEditorChangesBehavior;
-import org.orienteer.architect.component.behavior.ExistsOClassBehavior;
-import org.orienteer.architect.component.behavior.GetOClassesBehavior;
-import org.orienteer.architect.component.behavior.ManageEditorConfigBehavior;
+import org.orienteer.architect.component.behavior.*;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -49,7 +46,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     private WebMarkupContainer editor;
     private WebMarkupContainer toolbar;
     private WebMarkupContainer sidebar;
-
+    private WebMarkupContainer outline;
 
     public OArchitectEditorWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
@@ -62,9 +59,11 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         container.add(editor = newContainer("editor"));
         container.add(toolbar = newContainer("toolbar"));
         container.add(sidebar = newContainer("sidebar"));
+        container.add(outline = newContainer("outline"));
         SchemaOClassesPanel panel = new SchemaOClassesPanel("listClasses", "; app.executeCallback('%s');");
         container.add(panel);
         add(container);
+        add(new GetNewChangesBehavior());
         add(new ManageEditorConfigBehavior(getModel()));
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(panel));
@@ -89,6 +88,8 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectEditor.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectBar.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOType.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectMessage.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectPopupMenu.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectModalWindow.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectValueContainer.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OClassEditModalWindow.js")));
@@ -114,14 +115,15 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         TextTemplate configTemplate = new PackageTextTemplate(OArchitectEditorWidget.class, "config.tmpl.xml");
         Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
         String config = configTemplate.asString(params);
-        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s');",
+        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s');",
 											        		baseUrl,
 											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
 											                locale,
 											                container.getMarkupId(),
 											                editor.getMarkupId(),
 											                sidebar.getMarkupId(),
-											                toolbar.getMarkupId())));
+											                toolbar.getMarkupId(),
+                                                            outline.getMarkupId())));
     }
 
     private String getOArchitectEditorLocale() {

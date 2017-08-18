@@ -8,6 +8,7 @@ var OArchitectOClass = function() {
     this.propertiesForDelete = [];
     this.superClasses = [];
     this.subClasses = [];
+    this.pageUrl = null;
     this.existsInDb = false;
     this.existsInEditor = true;
     this.cell = null;
@@ -44,7 +45,7 @@ OArchitectOClass.prototype.setName = function (name, callback) {
     };
     var oClass = this;
     app.requestIfOClassExists(JSON.stringify(jsonObj), function (exists) {
-        var msg = '';
+        var msg = null;
         if (oClass.existsInDb || !exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
                 oClass.name = name;
@@ -227,8 +228,11 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
                     property.setType(changedProperty.type);
                 }
                 if (property.cell == null) {
-                    property.cell = OArchitectUtil.createOPropertyVertex(property);
-                    cellsForUpdate.push(property.cell);
+                    property.cell = getPropertyCellByName(classForChanges, property.name);
+                    if (property.cell == null) {
+                        property.cell = OArchitectUtil.createOPropertyVertex(property);
+                        cellsForUpdate.push(property.cell);
+                    }
                 }
                 property.setLinkedClass(changedProperty.linkedClass);
                 property.subClassProperty = isSubClass;
@@ -258,6 +262,21 @@ OArchitectOClass.prototype.changeProperties = function (oClass, changedPropertie
         OArchitectUtil.forEach(changedProperties, function (prop) {
             cellsForUpdate.push(prop.cell);
         });
+    }
+
+    function getPropertyCellByName(oClass, propertyName) {
+        var cell = null;
+        if (oClass.cell != null) {
+            var cells = OArchitectUtil.getClassPropertiesCells(oClass);
+            OArchitectUtil.forEach(cells, function (propertyCell, trigger) {
+                var property = propertyCell.value;
+                if (property != null && property.name === propertyName) {
+                    cell = propertyCell;
+                    trigger.stop = true;
+                }
+            });
+        }
+        return cell;
     }
 };
 
@@ -346,6 +365,59 @@ OArchitectOClass.prototype.getClassIndex = function (classes, searchClass) {
 
 OArchitectOClass.prototype.toString = function () {
     return this.name;
+};
+
+/**
+ * Checks if given json class is equals with current {@link OArchitectOClass} instance
+ * @param jsonClass - json class
+ * @returns boolean - true if equals
+ */
+OArchitectOClass.prototype.equalsWithJsonClass = function (jsonClass) {
+    var equals = true;
+    if (equals && jsonClass.name !== this.name) equals = false;
+    if (equals && jsonClass.superClasses.length !== this.superClasses.length) equals = false;
+    if (equals && jsonClass.subClasses.length !== this.subClasses.length) equals = false;
+    if (equals && jsonClass.properties.length !== this.properties.length) equals = false;
+    if (equals && jsonClass.pageUrl !== this.pageUrl) equals = false;
+    if (equals) {
+        equals = checkProperties(jsonClass.properties, this.properties);
+        if (equals) equals = checkClassNames(jsonClass.superClasses, OArchitectUtil.toClassNames(this.superClasses));
+        if (equals) equals = checkClassNames(jsonClass.subClasses, OArchitectUtil.toClassNames(this.subClasses));
+    }
+
+    function checkClassNames(jsonClassNames, oClassClassesNames) {
+        var equals = true;
+        jsonClassNames.sort();
+        oClassClassesNames.sort();
+        OArchitectUtil.forEach(jsonClassNames, function (jsonClassName, trigger) {
+            if (oClassClassesNames.indexOf(jsonClassName) === -1) {
+                equals = false;
+                trigger.stop = true;
+            }
+        });
+        return equals;
+    }
+
+    function checkProperties(jsonProperties, oClassProperties) {
+        var equals = false;
+        OArchitectUtil.forEach(jsonProperties, function (jsonProperty, trigger) {
+            equals = false;
+            OArchitectUtil.forEach(oClassProperties, function (property, trigger) {
+                if (jsonProperty.name === property.name) {
+                    equals = property.equalsWithJsonProperty(jsonProperty);
+                    trigger.stop = true;
+                }
+            });
+
+            if (equals === false) {
+                trigger.stop = true;
+            }
+        });
+
+        return equals;
+    }
+
+    return equals;
 };
 
 /**

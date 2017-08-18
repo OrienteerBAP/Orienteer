@@ -41,6 +41,7 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
             throw new WicketRuntimeException("Can't parse input json!", ex);
         }
         addClassesToSchema(classes);
+        target.appendJavaScript("; app.checksAboutClassesChanges();");
     }
 
     private void addClassesToSchema(List<OArchitectOClass> classes) {
@@ -56,7 +57,7 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
     private OClass addClassToSchema(OSchema schema, OArchitectOClass architectOClass) {
         String name = architectOClass.getName();
         OClass oClass = schema.getOrCreateClass(name);
-        if (architectOClass.isExistsInDatabase())
+        if (architectOClass.isExistsInDb())
             removePropertiesFromOClass(oClass, architectOClass.getPropertiesForDelete());
         addSuperClassesToOClass(schema, oClass, architectOClass.getSuperClasses());
         addPropertiesToOClass(schema, oClass, architectOClass.getProperties());

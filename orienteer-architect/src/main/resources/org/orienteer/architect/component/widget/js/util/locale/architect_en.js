@@ -3,8 +3,12 @@ var en = {
     type: 'Type',
     cancel: 'Cancel',
     ok: 'OK',
-    addOPropertyError: 'Property must add only in class',
+    more: 'More...',
+    goToOClassPage: 'Go to class page',
+    goToOPropertyPage: 'Go to property page',
+    addOPropertyError: 'You can add property in class which only exists in editor',
     info: 'Info',
+    error: 'Error',
     classMsg: 'Class',
     property: 'Property',
     existsClasses: 'Exists classes',
@@ -16,5 +20,13 @@ var en = {
     applyChanges: 'Apply Changes',
     toJson: 'To JSON',
     classExistsInDatabase: 'Class already exists in database',
-    classExistsInEditor: 'Class already exists in editor'
+    classExistsInEditor: 'Class already exists in editor',
+    propertyExistsInClass: 'Property already exists in class',
+    propertyExistsInSuperClass: 'Property already exists in superclass',
+    fullscreenMode: 'For enable fullscreen mode press: F11',
+    addClass: 'Add class',
+    addProperty: 'Add property',
+    undo: 'Undo',
+    redo: 'Redo',
+    deleteAction: 'Delete'
 };

@@ -37,7 +37,8 @@ GraphConnectionConfig.prototype.configEvents = function () {
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
     if (cell == null)
         return false;
-    return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
+    return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect()
+        && !cell.value.ownerClass.existsInDb;
 };
 
 GraphConnectionConfig.prototype.isCellDisconnectable = function (cell) {
@@ -52,7 +53,11 @@ GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
     var targetValue = target.value;
     var valid = false;
     if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
-        valid = !sourceValue.containsSuperClass(targetValue) && !targetValue.containsSuperClass(sourceValue);
+        valid = !sourceValue.existsInDb && !sourceValue.containsSuperClass(targetValue) && !targetValue.containsSuperClass(sourceValue);
+        if (this.connectionHandler.createLinkOnConnection) {
+            valid = !targetValue.existsInDb;
+        }
+
     } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
         valid = sourceValue.canConnect() && sourceValue.ownerClass !== targetValue;
     }
@@ -90,10 +95,13 @@ GraphConnectionConfig.prototype.connectionHandlerCreateEdgeState = function(me) 
 };
 
 GraphConnectionConfig.prototype.connectionHandlerCreateIcons = function (state) {
-    var createLinkIcon = state.cell != null && state.cell.value instanceof OArchitectOClass;
-    var propertyIcon =  state.cell != null && state.cell.value instanceof OArchitectOProperty;
-    var icons = propertyIcon ? [] : mxConnectionHandler.prototype.createIcons.apply(this, arguments);
-    if (createLinkIcon || propertyIcon) {
+    var createLinkIcon = state.cell != null && state.cell.value instanceof OArchitectOClass ||
+        state.cell.value instanceof OArchitectOProperty && !state.cell.value.ownerClass.existsInDb;
+    var onlyLink = state.cell != null && state.cell.value instanceof OArchitectOClass && state.cell.value.existsInDb;
+    if (!onlyLink) onlyLink = state.cell != null && cell.value instanceof OArchitectOProperty;
+    var icons = onlyLink ? [] : mxConnectionHandler.prototype.createIcons.apply(this, arguments);
+
+    if (createLinkIcon) {
         var image = new mxImage(app.basePath + OArchitectConstants.LINK_IMG_PATH, OArchitectConstants.ICON_SIZE, OArchitectConstants.ICON_SIZE);
         var bounds = new mxRectangle(0, 0, image.width, image.height);
         var icon = new mxImageShape(bounds, image.src, null, null, 0);
@@ -103,7 +111,7 @@ GraphConnectionConfig.prototype.connectionHandlerCreateIcons = function (state) 
 
 
         var getState = mxUtils.bind(this, function () {
-            return (this.currentState != null) ? this.currentState : state;
+            return this.currentState != null ? this.currentState : state;
         });
 
 
@@ -127,16 +135,14 @@ GraphConnectionConfig.prototype.connectionHandlerRedrawIcons = function (icons, 
         var withLinkIcon = icons.length === 2;
         var pos = this.getIconPosition(icons[0], state);
         if (withLinkIcon) {
-            initIcon(icons[0], pos.y, OArchitectConstants.ICON_SIZE * 4);
-            initIcon(icons[1], pos.y, OArchitectConstants.ICON_SIZE * 2);
-        } else initIcon(icons[0], pos.y, OArchitectConstants.ICON_SIZE * 2);
+            initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 4);
+            initIcon(icons[1], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
+        } else initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
 
     }
 
-    function initIcon(icon, y, xStep) {
-        var bounds = state.cellBounds;
-        var currentClassWidth = bounds.width;
-        icon.bounds.x = bounds.x + currentClassWidth - xStep;
+    function initIcon(icon, y, x, xStep) {
+        icon.bounds.x = x + OArchitectConstants.OCLASS_WIDTH / 2 - xStep;
         icon.bounds.y = y;
         icon.redraw();
     }

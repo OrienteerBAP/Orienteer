@@ -11,7 +11,8 @@ var OArchitectActionNames = {
     DELETE_CELL_ACTION:          'deleteCell',
     TO_JSON_ACTION:              'toJsonAction',
     SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
-    APPLY_EDITOR_CHANGES_ACTION: 'applyChanges'
+    APPLY_EDITOR_CHANGES_ACTION: 'applyChanges',
+    FULL_SCREEN_MODE:            'fullScreenMode'
 };
 
 /**
@@ -26,7 +27,7 @@ var OArchitectAction = {
     addOClassAction: function (editor, cell, evt) {
         var graph = editor.graph;
         graph.stopEditing(false);
-        var pt = graph.getPointForEvent(evt);
+        var pt = graph.getPointForEvent(evt.evt);
         var modal = new OClassEditModalWindow(new OArchitectOClass(), app.editorId, onDestroy, true);
 
         function onDestroy(oClass, event) {
@@ -43,8 +44,7 @@ var OArchitectAction = {
                 }
             }
         };
-        modal.show(pt.x, pt.y);
-
+        modal.show(evt.getGraphX(), evt.getGraphY());
     },
 
     /**
@@ -55,22 +55,22 @@ var OArchitectAction = {
         var action = function () {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var pt = graph.getPointForEvent(evt);
-            if (cell !== null) {
-                var oClass = OArchitectUtil.getClassByPropertyCell(graph, cell).value;
-                var property = new OArchitectOProperty();
+            var classCell = cell != null ? OArchitectUtil.getClassByPropertyCell(cell) : null;
+            if (classCell !== null) {
+                var property = new OArchitectOProperty(classCell.value);
                 var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
-                modal.show(pt.x, pt.y);
+                modal.show(evt.getGraphX(), evt.getGraphY());
 
                 function onDestroy(property, event) {
                     if (event === this.OK) {
-                        oClass.createProperty(property.name, property.type, property.cell);
+                        classCell.value.createProperty(property.name, property.type, property.cell);
                     }
                 }
             } else {
-                var infoModal = new InfoModalWindow(localizer.addOPropertyError, app.editorId);
-                infoModal.show(pt.x, pt.y);
+                var error = new OArchitectErrorModalWindow(localizer.addOPropertyError, app.editorId);
+                error.show(evt.getGraphX(), evt.getGraphY());
             }
+
         };
 
         action();
@@ -81,7 +81,7 @@ var OArchitectAction = {
      */
     addExistsOClassesAction: function (editor, cell, evt) {
         var graph = editor.graph;
-        var pt = graph.getPointForEvent(evt);
+        var pt = graph.getPointForEvent(evt.evt);
 
         var action = function (json) {
             const START_X = pt.x;
@@ -89,20 +89,40 @@ var OArchitectAction = {
             var x = START_X;
             var counterX = 1;
             var jsonClasses = JSON.parse(json);
+            var cells = [];
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
                 oClass.configFromDatabase(jsonClass);
                 addOClassCell(oClass.cell);
+                cells.push(oClass.cell);
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
+            applyLayout(cells);
         };
+
 
         function addOClassCell(cell) {
             graph.getModel().beginUpdate();
             try {
                 graph.addCell(cell, graph.getDefaultParent());
+            } finally {
+                graph.getModel().endUpdate();
+            }
+        }
+
+        function applyLayout(cells) {
+            graph.getModel().beginUpdate();
+            try {
+                var layout = new mxCircleLayout(graph, 20);
+                layout.disableEdgeStyle = false;
+                layout.isVertexIgnored = function (cell) {
+                    if (cell.edge)
+                        return mxPartitionLayout.prototype.isVertexIgnored.apply(this, arguments);
+                    return cells.indexOf(cell) === -1;
+                };
+                layout.execute(graph.getDefaultParent());
             } finally {
                 graph.getModel().endUpdate();
             }
@@ -116,24 +136,22 @@ var OArchitectAction = {
      */
     editOClassAction: function (editor, cell, evt) {
         var action = function () {
-            if (cell !== null && cell.value instanceof OArchitectOClass) {
-                var graph = editor.graph;
-                graph.stopEditing(false);
-                var pt = graph.getPointForEvent(evt);
-                var modal = new OClassEditModalWindow(cell.value, app.editorId, onDestroy, false);
-                modal.show(pt.x, pt.y);
+            var graph = editor.graph;
+            graph.stopEditing(false);
+            var modal = new OClassEditModalWindow(cell.value, app.editorId, onDestroy, false);
+            modal.show(evt.getGraphX(), evt.getGraphY());
 
-                function onDestroy(oClass, event) {
-                    if (event === this.OK) {
-                        graph.getModel().beginUpdate();
-                        try {
-                            graph.getModel().setValue(cell, oClass);
-                        } finally {
-                            graph.getModel().endUpdate();
-                        }
+            function onDestroy(oClass, event) {
+                if (event === this.OK) {
+                    graph.getModel().beginUpdate();
+                    try {
+                        graph.getModel().setValue(cell, oClass);
+                    } finally {
+                        graph.getModel().endUpdate();
                     }
                 }
             }
+
         };
 
         action();
@@ -144,17 +162,14 @@ var OArchitectAction = {
      */
     editOPropertyAction: function (editor, cell, evt) {
         var action = function () {
-            if (cell !== null && cell.value instanceof OArchitectOProperty) {
-                var graph = editor.graph;
-                graph.stopEditing(false);
-                var modal = new OPropertyEditModalWindow(cell.value, app.editorId, onDestroy, false);
-                var pt = graph.getPointForEvent(evt);
-                modal.show(pt.x, pt.y);
+            var graph = editor.graph;
+            graph.stopEditing(false);
+            var modal = new OPropertyEditModalWindow(cell.value, app.editorId, onDestroy, false);
+            modal.show(evt.getGraphX(), evt.getGraphY());
 
-                function onDestroy(property, event) {
-                    if (event === this.OK) {
-                        property.notifySubClassesPropertiesAboutChanges();
-                    }
+            function onDestroy(property, event) {
+                if (event === this.OK) {
+                    property.notifySubClassesPropertiesAboutChanges();
                 }
             }
         };
@@ -166,7 +181,13 @@ var OArchitectAction = {
      * Delete cell from editor action
      */
     deleteCellAction: function (editor, cell) {
-        OArchitectUtil.deleteCells(editor.graph.getSelectionCells());
+        var cellsForDelete = editor.graph.getSelectionCells();
+        if (cellsForDelete == null || cellsForDelete.length === 0 && cell != null) {
+            cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassByPropertyCell(cell)];
+        }
+        if (cellsForDelete != null && cellsForDelete.length > 0) {
+            OArchitectUtil.deleteCells(cellsForDelete);
+        }
     },
 
     /**
@@ -176,7 +197,7 @@ var OArchitectAction = {
         if (cell != null && cell.value instanceof OArchitectOProperty) {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var oClassCell = OArchitectUtil.getClassByPropertyCell(graph, cell);
+            var oClassCell = OArchitectUtil.getClassByPropertyCell(cell);
             var oClass = oClassCell.value;
             var property = cell.value;
             oClass.removeProperty(property, false);
@@ -203,5 +224,47 @@ var OArchitectAction = {
     //TODO: delete after development
     toJsonAction: function (editor) {
         console.warn('OClasses in JSON: ', OArchitectUtil.getOClassesAsJSON(editor.graph));
+    },
+
+    fullScreenModeAction: function (editor) {
+        editor.fullscreen = !editor.fullscreen;
+        configureOrienteerClasses(editor.fullscreen);
+
+        function configureOrienteerClasses(fullscreen) {
+            if (fullscreen) {
+                $('.metismenu').hide();
+                $('.sidebar-search').hide();
+                $('.navbar.navbar-default.navbar-fixed-top').hide();
+                configureEditorClasses(fullscreen);
+            } else {
+                configureEditorClasses(fullscreen);
+                $('.metismenu').show();
+                $('.sidebar-search').show();
+                $('.navbar.navbar-default.navbar-fixed-top').show();
+            }
+        }
+
+        function configureEditorClasses(fullscreen) {
+            var container = app.getApplicationContainer();
+            var editor = app.editor.container;
+            var sidebar = app.editor.sidebar.container;
+            var outline = app.editor.outline.outline.container;
+            if (fullscreen) {
+                container.classList.add(OArchitectConstants.FULLSCREEN_CLASS);
+                editor.classList.remove(OArchitectConstants.EDITOR_CLASS);
+                sidebar.classList.remove(OArchitectConstants.SIDEBAR_CLASS);
+                editor.classList.add(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
+                sidebar.classList.add(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+                outline.style.display = 'block';
+                app.editor.outline.update();
+            } else {
+                container.classList.remove(OArchitectConstants.FULLSCREEN_CLASS);
+                editor.classList.remove(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
+                sidebar.classList.remove(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+                editor.classList.add(OArchitectConstants.EDITOR_CLASS);
+                sidebar.classList.add(OArchitectConstants.SIDEBAR_CLASS);
+                outline.style.display = 'none';
+            }
+        }
     }
 };

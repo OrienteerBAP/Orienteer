@@ -41,15 +41,17 @@ OClassEditModalWindow.prototype.addValueBlock = function (body, input) {
 };
 
 OClassEditModalWindow.prototype.addHeadBlock = function (head, create) {
-    head.innerHTML = create ? localizer.createClass : localizer.editClass;
+    this.createHeadBlock(head, create ? localizer.createClass : localizer.editClass,
+        OArchitectConstants.FA_FILE_O_CLASS);
 };
 
 OClassEditModalWindow.prototype.addButtonBlock = function (body, input) {
     var buttonBlock = this.createButtonBlock();
     var okBut = this.createOkButton(localizer.ok, input);
     var cancelBut = this.createCancelButton(localizer.cancel);
-    buttonBlock.appendChild(cancelBut);
+
     buttonBlock.appendChild(okBut);
+    buttonBlock.appendChild(cancelBut);
     body.appendChild(buttonBlock);
 };
 
@@ -107,7 +109,7 @@ OClassEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameFi
             modal.value.setName(newName, function (oClass, msg) {
                 if (oClass.name === newName) {
                     modal.destroy(modal.OK);
-                } else console.warn(msg);
+                } else modal.showErrorFeedback(msg);
             });
 
         }

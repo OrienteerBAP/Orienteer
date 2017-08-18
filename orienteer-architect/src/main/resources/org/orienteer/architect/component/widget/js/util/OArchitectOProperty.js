@@ -12,10 +12,11 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.type = null;
     this.linkedClass = null;
     this.subClassProperty = false;
-    this.previousName = null;
+    this.pageUrl = null;
     this.cell = null;
+    this.previousName = null;
 
-    if (ownerClass != null) this.setOwnerClassName(ownerClass);
+    if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (name != null) this.setName(name);
     if (type != null) this.setType(type);
     if (cell != null) this.setCell(cell);
@@ -27,14 +28,16 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
  * @param json - json string which contains config for this property
  */
 OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
-    oClass.properties.push(this);
     this.setName(json.name);
+    if (oClass.getProperty(this.name) == null) oClass.properties.push(this);
     this.setType(json.type);
     this.subClassProperty = json.subClassProperty;
     this.ownerClass = oClass;
+    this.pageUrl = json.pageUrl;
     var linkedClassCell = OArchitectUtil.getCellByClassName(json.linkedClass);
-    if (linkedClassCell != null)
-        this.setLinkedClass(linkedClassCell.value);
+    if (linkedClassCell != null) this.setLinkedClass(linkedClassCell.value);
+    if (this.cell != null) this.setCell(this.cell);
+
     oClass.changeProperties(oClass, [this], this.subClassProperty, false);
 };
 
@@ -60,7 +63,7 @@ OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propert
  * @param type - string which contains type name. See {@link OArchitectOType}
  */
 OArchitectOProperty.prototype.setType = function (type) {
-    if (OArchitectOType.contains(type)) {
+    if (OArchitectOType.contains(type) && this.type !== type) {
         this.type = type;
     }
 };
@@ -69,10 +72,25 @@ OArchitectOProperty.prototype.setType = function (type) {
  * Set name of this property
  * @param name - string. Can't be null
  */
-OArchitectOProperty.prototype.setName = function (name) {
-    if (name != null) {
-        this.previousName = this.name;
-        this.name = name;
+OArchitectOProperty.prototype.setName = function (name, callback) {
+    if (name != null && this.name !== name) {
+        var msg = null;
+        if (this.ownerClass != null && this.ownerClass instanceof OArchitectOClass) {
+            var existsProperty = this.ownerClass.getProperty(name);
+            if (existsProperty != null) {
+                if (existsProperty.isSubClassProperty()) {
+                    msg = localizer.propertyExistsInSuperClass;
+                } else msg = localizer.propertyExistsInClass;
+            } else setName(this, name);
+            if (callback != null) callback(this, msg);
+        } else setName(this, name);
+    }  else if (this.name === name) {
+        if (callback != null) callback(this);
+    }
+
+    function setName(property, name) {
+        property.previousName = property.name;
+        property.name = name;
     }
 };
 
@@ -80,7 +98,7 @@ OArchitectOProperty.prototype.setName = function (name) {
  * Set owner class of this property
  * @param ownerClass - {@link OArchitectOClass} which is owner class of this property
  */
-OArchitectOProperty.prototype.setOwnerClassName = function (ownerClass) {
+OArchitectOProperty.prototype.setOwnerClass = function (ownerClass) {
     if (ownerClass != null) {
         this.ownerClass = ownerClass;
     }
@@ -161,6 +179,22 @@ OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
 
 OArchitectOProperty.prototype.toString = function () {
     return this.name;
+};
+
+/**
+ * Checks if given json property is equals with current {@link OArchitectOProperty} instance
+ * @param jsonProperty - json property
+ * @returns boolean - true if equals
+ */
+OArchitectOProperty.prototype.equalsWithJsonProperty = function (jsonProperty) {
+    var equals = true;
+    if (this.name !== jsonProperty.name) equals = false;
+    if (equals && this.type !== jsonProperty.type) equals = false;
+    if (equals && this.pageUrl !== jsonProperty.pageUrl) equals = false;
+    if (equals && this.subClassProperty != jsonProperty.subClassProperty) equals = false;
+    if (equals && this.linkedClass != null && this.linkedClass.name !== jsonProperty.linkedClass) equals = false;
+    if (equals && this.linkedClass == null && jsonProperty.linkedClass != null) equals = false;
+    return equals;
 };
 
 /**

@@ -3,8 +3,12 @@ var uk = {
     type: 'Тип',
     cancel: 'Скасувати',
     ok: 'OK',
-    addOPropertyError: 'Властивість може бути додана лише в клас',
+    more: 'Більше...',
+    goToOClassPage: 'Перейти на сторінку класу',
+    goToOPropertyPage: 'Перейти на сторінку властивості',
+    addOPropertyError: 'Властивість може бути додана в клас, який існує лише в редакторі',
     info: 'Інформація',
+    error: 'Помилка',
     classMsg: 'Клас',
     property: 'Властивість',
     existsClasses: 'Існуючі класи',
@@ -16,5 +20,13 @@ var uk = {
     applyChanges: 'Застосувати зміни',
     toJson: 'Конвертувати в JSON',
     classExistsInDatabase: 'Клас вже існує в базі даних',
-    classExistsInEditor: 'Клас вже існує в редакторі'
+    classExistsInEditor: 'Клас вже існує в редакторі',
+    propertyExistsInClass: 'Властивість вже існує в класі',
+    propertyExistsInSuperClass: 'Властивість вжу існує в суперкласі',
+    fullscreenMode: 'Для ввімкнення повноекранного режиму натисніть: F11',
+    addClass: 'Додати клас',
+    addProperty: 'Додати властивість',
+    undo: 'Назад',
+    redo: 'Впере',
+    deleteAction: 'Видалити'
 };
