@@ -53,6 +53,7 @@ var OArchitectConstants = {
     FA_REDO: 'fa fa-repeat',
     FA_PLUS_CIRCLE: 'fa fa-plus-circle',
     FA_INFO_CIRCLE: 'fa fa-info-circle',
+    FA_ERROR: 'fa fa-exclamation-circle',
     FA_2X_CLASS: 'fa-2x',
 
     /**

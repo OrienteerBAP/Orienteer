@@ -56,7 +56,7 @@ OArchitectModalWindow.prototype.internalOnShow = function () {
 OArchitectModalWindow.prototype.createModalElement = function (x, y) {
     var panel = document.createElement('div');
     panel.style.width = '300px';
-    panel.style.position = 'fixed';
+    panel.style.position = 'absolute';
     panel.classList.add('panel');
     panel.classList.add('panel-default');
     panel.setAttribute('id', this.getMarkupId());
@@ -139,27 +139,27 @@ OArchitectModalWindow.prototype.createSpan = function (content) {
     return span;
 };
 
-var InfoModalWindow = function (msg, containerId) {
+var OArchitectInfoModalWindow = function (msg, containerId) {
     OArchitectModalWindow.apply(this, arguments);
 };
 
-InfoModalWindow.prototype = Object.create(OArchitectModalWindow.prototype);
-InfoModalWindow.prototype.constructor = InfoModalWindow;
+OArchitectInfoModalWindow.prototype = Object.create(OArchitectModalWindow.prototype);
+OArchitectInfoModalWindow.prototype.constructor = OArchitectInfoModalWindow;
 
-InfoModalWindow.prototype.createContent = function (panel, head, body) {
+OArchitectInfoModalWindow.prototype.createContent = function (panel, head, body) {
     this.createHeadBlock(head, localizer.info, OArchitectConstants.FA_INFO_CIRCLE);
     body.appendChild(this.createMsgContent());
     body.appendChild(this.createOkButton());
 };
 
-InfoModalWindow.prototype.createMsgContent = function () {
+OArchitectInfoModalWindow.prototype.createMsgContent = function () {
     var content = document.createElement('div');
     content.style.margin = '10px';
     content.innerHTML = this.value;
     return content;
 };
 
-InfoModalWindow.prototype.createOkButton = function () {
+OArchitectInfoModalWindow.prototype.createOkButton = function () {
     var ok = this.newButton(localizer.ok, OArchitectConstants.BUTTON_PRIMARY_CLASS);
     var modal = this;
     ok.addEventListener('click', function () {
@@ -169,4 +169,17 @@ InfoModalWindow.prototype.createOkButton = function () {
     ok.style.marginRight = '10px';
     ok.style.marginBottom = '10px';
     return ok;
+};
+
+var OArchitectErrorModalWindow = function (msg, containerId) {
+    OArchitectInfoModalWindow.apply(this, arguments);
+};
+
+OArchitectErrorModalWindow.prototype = Object.create(OArchitectInfoModalWindow.prototype);
+OArchitectErrorModalWindow.prototype.constructor = OArchitectErrorModalWindow;
+
+OArchitectErrorModalWindow.prototype.createContent = function (panel, head, body) {
+    this.createHeadBlock(head, localizer.error, OArchitectConstants.FA_ERROR);
+    body.appendChild(this.createMsgContent());
+    body.appendChild(this.createOkButton());
 };

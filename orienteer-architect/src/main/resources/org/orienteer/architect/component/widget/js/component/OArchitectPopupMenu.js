@@ -55,11 +55,11 @@ OArchitectPopupMenu.prototype.addAction = function (action) {
 OArchitectPopupMenu.prototype.createMenuElement = function (event) {
     var div = document.createElement('div');
     div.classList.add(OArchitectConstants.LIST_GROUP);
-    div.style.position = 'fixed';
-    div.style.left = event.x + 'px';
-    div.style.top = event.y + 'px';
+    div.style.position = 'absolute';
+    div.style.left = event.getGraphX() + 'px';
+    div.style.top = event.getGraphY() + 'px';
     var menu = this;
-    var cell = this.editor.graph.getCellAt(event.layerX, event.layerY, this.editor.graph.getDefaultParent());
+    var cell = event.getCell();
     OArchitectUtil.forEach(this.popupMenuActions, function (popupMenuAction) {
         if (cell != null && popupMenuAction.useOnCell || cell != null && !popupMenuAction.notOnCell || cell == null && !popupMenuAction.useOnCell) {
             if (popupMenuAction.isValidCell(cell)) {
@@ -118,7 +118,6 @@ OArchitectPopupMenu.prototype.createLabelElement = function (label) {
 OArchitectPopupMenu.prototype.addClickActionToElement = function (element, popupMenuAction, cell, event) {
     var popup = this;
     element.addEventListener('click', function () {
-        console.warn('event: ', event);
         popup.editor.execute(popupMenuAction.editorActionName, cell, event);
         popup.destroy();
     });
@@ -127,10 +126,12 @@ OArchitectPopupMenu.prototype.addClickActionToElement = function (element, popup
 /**
  * Handler for {@link OArchitectPopupMenu} which shows menu
  * @param popupMenu {@link OArchitectPopupMenu}
+ * @param graph {@link mxGraph}
  * @constructor
  */
-var OArchitectPopupMenuHandler = function (popupMenu) {
+var OArchitectPopupMenuHandler = function (popupMenu, graph) {
     this.popupMenu = popupMenu;
+    this.graph = graph;
 };
 
 /**
@@ -140,7 +141,7 @@ OArchitectPopupMenuHandler.prototype.showMenu = false;
 
 OArchitectPopupMenuHandler.prototype.mouseDown = function (sender, evt) {
     this.destroy();
-    this.showMenu = mxEvent.isPopupTrigger(evt.evt);
+    this.showMenu = evt.isPopupTrigger();
 };
 
 OArchitectPopupMenuHandler.prototype.mouseMove = function (sender, evt) {
@@ -149,13 +150,14 @@ OArchitectPopupMenuHandler.prototype.mouseMove = function (sender, evt) {
 
 OArchitectPopupMenuHandler.prototype.mouseUp = function (sender, evt) {
     if (this.showMenu) {
-        this.show(evt.evt);
+        this.show(evt);
     } else this.destroy();
 };
 
 /**
  * Show popup menu
- * @param evt - PointerEvent which contains coordinates
+ * @param evt - {@link mxMouseEvent} which contains coordinates
+ * @param cell - {@link mxCell} under mouse pointer
  */
 OArchitectPopupMenuHandler.prototype.show = function (evt) {
     this.popupMenu.show(evt);

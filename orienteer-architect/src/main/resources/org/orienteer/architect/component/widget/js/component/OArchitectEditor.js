@@ -51,7 +51,7 @@ OArchitectEditor.prototype.configurePopupMenu = function () {
     this.popupHandler.enabled = false;
     var graph = this.graph;
     var menu = new OArchitectPopupMenu(this.container, this);
-    var handler = new OArchitectPopupMenuHandler(menu);
+    var handler = new OArchitectPopupMenuHandler(menu, graph);
     this.addActionsToPopupMenu(menu);
     graph.addMouseListener(handler);
     graph.addListener(mxEvent.ESCAPE, function () {

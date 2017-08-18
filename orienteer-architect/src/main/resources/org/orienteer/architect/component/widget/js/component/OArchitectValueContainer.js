@@ -49,8 +49,10 @@ OArchitectValueContainer.prototype.createExternalLink = function (existsInDb) {
 OArchitectValueContainer.prototype.addClickListenerForAction = function (element, action) {
     var editor = this.editor;
     var cell = this.cell;
-    element.addEventListener('click', function (event) {
-        editor.execute(action, cell, event);
+    mxEvent.redirectMouseEvents(element, editor.graph, null, function (evt) {
+        var mouseEvent = new mxMouseEvent(evt, new mxCellState(editor.graph.getModel(), cell));
+        editor.graph.fireMouseEvent(mxEvent.MOUSE_DOWN, mouseEvent);
+        editor.execute(action, cell, mouseEvent);
     });
 };
 
