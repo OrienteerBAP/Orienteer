@@ -1,5 +1,7 @@
 package org.orienteer.core.component.property;
 
+import java.util.ArrayList;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -39,7 +41,7 @@ public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 
 	public BinaryEditPanel(String id, IModel<byte[]> model) {
 		super(id, model);
-		fileUploadField = new FileUploadField("data");
+		fileUploadField = new FileUploadField("data", Model.ofList(new ArrayList<FileUpload>()));
 		add(fileUploadField);
 		fileUploadField.setOutputMarkupId(true);
 
