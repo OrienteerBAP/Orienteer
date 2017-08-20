@@ -302,7 +302,6 @@ OArchitectOClass.prototype.createSubClassPropertyFromTemplate = function (templa
  */
 OArchitectOClass.prototype.notifySubClassesAboutChangesInProperty = function (templateProperty, remove) {
     var action = function (subClass) {
-        console.warn('template property: ', templateProperty);
         var property = null;
         if (remove) {
             subClass.removeSuperClassProperty(templateProperty);

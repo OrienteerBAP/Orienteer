@@ -88,12 +88,14 @@ OClassContainer.prototype.createLinkOrEditOClassElement = function () {
     if (this.value.existsInDb) {
         element = this.createExternalLink(this.value.existsInDb);
         element.setAttribute('title', localizer.goToOClassPage);
-    } else {
+    } else if (app.canUpdate) {
         element = this.createIcon(OArchitectConstants.FA_EDIT);
         this.addClickListenerForAction(element, OArchitectActionNames.EDIT_OCLASS_ACTION);
     }
-    element.style.visibility = 'hidden';
-    element.style.marginRight = '5px';
+    if (element !== null) {
+        element.style.visibility = 'hidden';
+        element.style.marginRight = '5px';
+    }
     return element;
 };
 
@@ -161,18 +163,20 @@ OPropertyContainer.prototype.createLinkOrEditOPropertyElement = function () {
     if (this.value.ownerClass.existsInDb) {
         element = this.createExternalLink(this.value.ownerClass.existsInDb);
         element.setAttribute('title', localizer.goToOPropertyPage);
-    } else {
+    } else if (app.canUpdate) {
         element = this.createIcon(OArchitectConstants.FA_EDIT);
         this.addClickListenerForAction(element, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
     }
-    element.style.visibility = 'hidden';
-    element.style.marginRight = '5px';
+    if (element !== null) {
+        element.style.visibility = 'hidden';
+        element.style.marginRight = '5px';
+    }
     return element;
 };
 
 OPropertyContainer.prototype.createDeleteOPropertyElement = function () {
     var deleteElement = null;
-    if (!this.value.ownerClass.existsInDb) {
+    if (!this.value.ownerClass.existsInDb && app.canUpdate) {
         deleteElement = this.createIcon(OArchitectConstants.FA_DELETE);
         deleteElement.style.visibility = 'hidden';
         deleteElement.style.marginLeft = '5px';

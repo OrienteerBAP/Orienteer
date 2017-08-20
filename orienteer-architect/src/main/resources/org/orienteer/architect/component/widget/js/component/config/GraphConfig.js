@@ -29,10 +29,9 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     this.graph.isValidPropertyTarget = function (cell) {
         return OArchitectUtil.isValidPropertyTarget(cell);
     };
-    this.graph.isCellResizable = function (cell) {
-        return this.isClass(cell);
-    };
     this.graph.isCellMovable = function(cell) {
+        if (!app.canUpdate)
+            return false;
         return this.isClass(cell);
     };
     this.graph.isCellEditable = function (cell) {
@@ -42,6 +41,8 @@ GraphConfig.prototype.configureGraphBehavior = function () {
         return this.isClass(cell);
     };
     this.graph.isCellSelectable = function (cell) {
+        if (!app.canUpdate)
+            return false;
         return this.isClass(cell) || this.getModel().isEdge(cell);
     };
     this.graph.getTooltipForCell = function (cell) {

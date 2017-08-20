@@ -93,8 +93,6 @@
 .architect-editor-outline {
   position: fixed;
   border: 2px solid black;
-  top: 50px;
-  right: 2px;
   background: transparent;
   width: 250px;
   height: 150px;

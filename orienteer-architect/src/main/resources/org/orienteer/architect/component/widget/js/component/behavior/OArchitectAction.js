@@ -260,23 +260,36 @@ var OArchitectAction = {
         function configureEditorClasses(fullscreen) {
             var container = app.getApplicationContainer();
             var editor = app.editor.container;
-            var sidebar = app.editor.sidebar.container;
             var outline = app.editor.outline.outline.container;
             if (fullscreen) {
                 container.classList.add(OArchitectConstants.FULLSCREEN_CLASS);
                 editor.classList.remove(OArchitectConstants.EDITOR_CLASS);
-                sidebar.classList.remove(OArchitectConstants.SIDEBAR_CLASS);
                 editor.classList.add(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
-                sidebar.classList.add(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
                 outline.style.display = 'block';
+                outline.style.right = '2px';
+                if (app.canUpdate) {
+                    outline.style.top = app.getToolbarContainer().offsetHeight + 2 + 'px';
+                } else outline.style.top = '2px';
                 app.editor.outline.update();
             } else {
                 container.classList.remove(OArchitectConstants.FULLSCREEN_CLASS);
                 editor.classList.remove(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
-                sidebar.classList.remove(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
                 editor.classList.add(OArchitectConstants.EDITOR_CLASS);
-                sidebar.classList.add(OArchitectConstants.SIDEBAR_CLASS);
                 outline.style.display = 'none';
+            }
+            configureEditorClassesInWriterMode(fullscreen);
+        }
+
+        function configureEditorClassesInWriterMode(fullscreen) {
+            if (app.canUpdate) {
+                var sidebar = app.editor.sidebar.container;
+                if (fullscreen) {
+                    sidebar.classList.remove(OArchitectConstants.SIDEBAR_CLASS);
+                    sidebar.classList.add(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+                } else {
+                    sidebar.classList.remove(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+                    sidebar.classList.add(OArchitectConstants.SIDEBAR_CLASS);
+                }
             }
         }
     }

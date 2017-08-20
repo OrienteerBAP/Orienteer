@@ -47,16 +47,18 @@ OArchitectEditor.prototype.configureLayouts = function () {
 };
 
 OArchitectEditor.prototype.configurePopupMenu = function () {
-    mxEvent.disableContextMenu(this.container);
-    this.popupHandler.enabled = false;
-    var graph = this.graph;
-    var menu = new OArchitectPopupMenu(this.container, this);
-    var handler = new OArchitectPopupMenuHandler(menu, graph);
-    this.addActionsToPopupMenu(menu);
-    graph.addMouseListener(handler);
-    graph.addListener(mxEvent.ESCAPE, function () {
-        handler.destroy();
-    });
+    if (app.canUpdate) {
+        mxEvent.disableContextMenu(this.container);
+        this.popupHandler.enabled = false;
+        var graph = this.graph;
+        var menu = new OArchitectPopupMenu(this.container, this);
+        var handler = new OArchitectPopupMenuHandler(menu, graph);
+        this.addActionsToPopupMenu(menu);
+        graph.addMouseListener(handler);
+        graph.addListener(mxEvent.ESCAPE, function () {
+            handler.destroy();
+        });
+    }
 };
 
 OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
@@ -109,6 +111,18 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
     this.undoManager.removeListener(mxEvent.REDO);
     this.undoManager.addListener(mxEvent.UNDO, undoHandler);
     this.undoManager.addListener(mxEvent.REDO, undoHandler);
+};
+
+OArchitectEditor.prototype.undo = function () {
+    if (app.canUpdate) {
+        mxGraph.prototype.undo.apply(this, arguments);
+    }
+};
+
+OArchitectEditor.prototype.redo = function () {
+    if (app.canUpdate) {
+        mxGraph.prototype.redo.apply(this, arguments);
+    }
 };
 
 OArchitectEditor.prototype.configureDefaultActions = function () {

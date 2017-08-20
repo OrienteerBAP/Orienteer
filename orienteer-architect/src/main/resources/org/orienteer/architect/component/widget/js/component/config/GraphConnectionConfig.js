@@ -36,6 +36,8 @@ GraphConnectionConfig.prototype.configEvents = function () {
 };
 
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
+    if (!app.canUpdate)
+        return false;
     if (cell == null)
         return false;
     return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect()
@@ -43,6 +45,8 @@ GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
 };
 
 GraphConnectionConfig.prototype.isCellDisconnectable = function (cell) {
+    if (!app.canUpdate)
+        return false;
     if (cell.edge && cell.source.value instanceof OArchitectOProperty)
         return cell.source.value.canDisconnect();
 

@@ -29,6 +29,6 @@ var uk = {
     addExistsClasses: 'Додати існуючі класи',
     addProperty: 'Додати властивість',
     undo: 'Назад',
-    redo: 'Впере',
+    redo: 'Вперед',
     deleteAction: 'Видалити'
 };

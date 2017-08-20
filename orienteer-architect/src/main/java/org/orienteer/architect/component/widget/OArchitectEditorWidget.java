@@ -1,5 +1,7 @@
 package org.orienteer.architect.component.widget;
 
+import com.orientechnologies.orient.core.metadata.security.ORule;
+import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
@@ -18,25 +20,29 @@ import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.*;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Editor widget for OrientDB Schema
  */
 @Widget(id="architect-editor", domain = "document", selector = OArchitectModule.ODATA_MODEL_OCLASS, autoEnable = true, order=10)
-@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = {
-        OrientPermission.CREATE, OrientPermission.UPDATE, OrientPermission.DELETE, OrientPermission.READ
-})
+@RequiredOrientResource(value = OSecurityHelper.CLUSTER, permissions = OrientPermission.READ)
 public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OArchitectEditorWidget.class);
 
     private static final JavaScriptResourceReference MXGRAPH_JS = new WebjarsJavaScriptResourceReference("mxgraph/current/javascript/mxClient.min.js");
     private static final CssResourceReference MXGRAPH_CSS    = new WebjarsCssResourceReference("mxgraph/current/javascript/src/css/common.css");
@@ -111,11 +117,11 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/OArchitectApplication.js");
         String configUrl = urlFor(configXml, null).toString();
         String baseUrl = configUrl.substring(0, configUrl.indexOf("js/OArchitectApplication"));
-        
         TextTemplate configTemplate = new PackageTextTemplate(OArchitectEditorWidget.class, "config.tmpl.xml");
         Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
         String config = configTemplate.asString(params);
-        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s');",
+        boolean canUpdate = canUserUpdateEditor();
+        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s', %s);",
 											        		baseUrl,
 											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
 											                locale,
@@ -123,7 +129,8 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
 											                editor.getMarkupId(),
 											                sidebar.getMarkupId(),
 											                toolbar.getMarkupId(),
-                                                            outline.getMarkupId())));
+                                                            outline.getMarkupId(),
+                                                            Boolean.toString(canUpdate))));
     }
 
     private String getOArchitectEditorLocale() {
@@ -148,4 +155,18 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     	return "strict";
     }
 
+    private boolean canUserUpdateEditor() {
+        boolean canUpdate = false;
+        Set<? extends OSecurityRole> roles = OrienteerWebSession.get().getUser().getRoles();
+
+        for (OSecurityRole role : roles) {
+            canUpdate = role.allow(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.UPDATE.getPermissionFlag());
+            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.CREATE.getPermissionFlag());
+            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.CREATE.getPermissionFlag());
+            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.UPDATE.getPermissionFlag());
+            if (canUpdate)
+                break;
+        }
+        return canUpdate;
+    }
 }
