@@ -13,6 +13,7 @@ var localizer;
  * @param basePath
  * @param config
  * @param localizer
+ * @param widgetId
  * @param containerId
  * @param editorId
  * @param sidebarId
@@ -21,10 +22,11 @@ var localizer;
  * @param canUpdate
  * @constructor
  */
-var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
+var OArchitectApplication = function (basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
 	this.basePath = basePath;
 	this.config = mxUtils.parseXml(config);
 	this.localizer = localizer;
+	this.widgetId = widgetId;
     this.containerId = containerId;
     this.editorId = editorId;
     this.sidebarId = sidebarId;
@@ -108,6 +110,11 @@ OArchitectApplication.prototype.existsOClassRequestCallbackUrl = null;
  * string url to Wicket behavior which checks if given classes have changes in database
  */
 OArchitectApplication.prototype.checkChangesRequestCallbackUrl = null;
+
+/**
+ * string url to Wicket behavior which switch fullscreen mode
+ */
+OArchitectApplication.prototype.switchFullScreenModeCallbackUrl = null;
 
 /**
  * Contains callback function which executes every time after Wicket behavior response
@@ -235,6 +242,13 @@ OArchitectApplication.prototype.setExistsOClassRequest = function (callbackUrl) 
     this.existsOClassRequestCallbackUrl = callbackUrl;
 };
 
+/**
+ * Calls from Wicket!
+ * @param callbackUrl
+ */
+OArchitectApplication.prototype.setSwitchFullScreenMode = function (callbackUrl) {
+    this.switchFullScreenModeCallbackUrl = callbackUrl;
+};
 
 /**
  * Calls from Wicket!
@@ -252,6 +266,33 @@ OArchitectApplication.prototype.setChecksAboutClassesChanges = function (callbac
 OArchitectApplication.prototype.saveEditorConfig = function (xml) {
     this.sendPostRequest(this.saveEditorConfigCallbackUrl, {
         "config": xml
+    });
+};
+
+/**
+ * Switch fullscreen mode for editor
+ */
+OArchitectApplication.prototype.switchFullScreenMode = function () {
+    this.editor.fullscreen = !this.editor.fullscreen;
+    $('body').toggleClass('noscroll');
+    $('#' + this.widgetId).toggleClass('fullscreen');
+    $('#' + this.containerId).toggleClass(OArchitectConstants.FULLSCREEN_CLASS);
+    $('#' + this.editorId).toggleClass(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
+    if (this.canUpdate) {
+        $('#' + this.sidebarId).toggleClass(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+    }
+    var fullscreen = this.editor.fullscreen;
+    var outline = this.editor.outline.outline.container;
+    if (fullscreen) {
+        outline.style.display = 'block';
+        outline.style.right = '2px';
+        if (app.canUpdate) {
+            outline.style.top = app.getToolbarContainer().offsetHeight + 2 + 'px';
+        } else outline.style.top = '2px';
+        this.editor.outline.update();
+    } else outline.style.display = 'none';
+    this.sendPostRequest(this.switchFullScreenModeCallbackUrl, {
+        'fullscreen': fullscreen
     });
 };
 
@@ -362,8 +403,8 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
  * Calls from Wicket!
  * Create new instance {@link OArchitectApplication}.
  */
-var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
-    app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate);
+var init = function (basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
+    app = new OArchitectApplication(basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate);
     app.init();
 };
 

@@ -5,6 +5,9 @@ import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -12,6 +15,8 @@ import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
@@ -20,9 +25,11 @@ import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.*;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
+import org.orienteer.architect.component.panel.command.OArchitectFullScreenCommand;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
@@ -121,10 +128,11 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
         String config = configTemplate.asString(params);
         boolean canUpdate = canUserUpdateEditor();
-        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s', %s);",
+        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', %s);",
 											        		baseUrl,
 											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
 											                locale,
+											                this.getMarkupId(),
 											                container.getMarkupId(),
 											                editor.getMarkupId(),
 											                sidebar.getMarkupId(),
@@ -168,5 +176,28 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 break;
         }
         return canUpdate;
+    }
+
+    @Override
+    protected Command<ODocument> newFullScreenCommand(String id) {
+        final OArchitectFullScreenCommand<ODocument> command = new OArchitectFullScreenCommand<>(id);
+        add(new AbstractDefaultAjaxBehavior() {
+
+            private static final String FULLSCREEN_VAR = "fullscreen";
+
+            @Override
+            protected void respond(AjaxRequestTarget target) {
+                IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
+                command.setExpanded(target, params.getParameterValue(FULLSCREEN_VAR).toBoolean());
+            }
+
+            @Override
+            public void renderHead(Component component, IHeaderResponse response) {
+                super.renderHead(component, response);
+                response.render(OnLoadHeaderItem.forScript(
+                        String.format("; app.setSwitchFullScreenMode('%s');", getCallbackUrl())));
+            }
+        });
+        return command;
     }
 }

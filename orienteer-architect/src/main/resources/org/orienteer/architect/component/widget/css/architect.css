@@ -16,13 +16,8 @@
 }
 
 .architect-editor-fullscreen {
-  background: white url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UwZTBlMCIgb3BhY2l0eT0iMC4yIiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=");
-  overflow: hidden;
   width: 100%;
   height: 100%;
-  display: inline-block;
-  border-right: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
 }
 
 .architect-editor-sidebar {
@@ -36,11 +31,6 @@
 
 .architect-editor-sidebar-fullscreen {
   height: 100%;
-  position: absolute;
-  display: inline-block;
-  background-color: whiteSmoke;
-  border: 1px solid #e0e0e0;
-  z-index: 1000;
 }
 
 .architect-editor-toolbar {
@@ -91,7 +81,7 @@
 }
 
 .architect-editor-outline {
-  position: fixed;
+  position: absolute;
   border: 2px solid black;
   background: transparent;
   width: 250px;
@@ -121,6 +111,4 @@
   width: 100%;
   height: 100%;
   position: fixed;
-  top: 0;
-  left: 0;
 }
