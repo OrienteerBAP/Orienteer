@@ -1,7 +1,6 @@
 package org.orienteer.core.widget.command;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.widget.AbstractWidget;
@@ -12,7 +11,7 @@ import org.orienteer.core.widget.AbstractWidget;
  */
 public class FullScreenCommand<T> extends AjaxCommand<T> {
 	
-	private boolean expanded = false;
+	protected boolean expanded = false;
 	public FullScreenCommand(String commandId) {
 		super(commandId, Model.of());
 		setAutoNotify(false);
@@ -29,8 +28,15 @@ public class FullScreenCommand<T> extends AjaxCommand<T> {
 		expanded=!expanded;
 		configure();
 		target.add(this);
-		AbstractWidget<?> widget = findParent(AbstractWidget.class);
-		target.appendJavaScript("$('body').toggleClass('noscroll'); $('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
+		appendJavaScript(findParent(AbstractWidget.class), target);
 	}
 
+	/**
+	 * Append JavaScript code which enable widget fullscreen mode
+	 * @param widget {@link AbstractWidget} which need to be fullscreen
+	 * @param target {@link AjaxRequestTarget}
+	 */
+	protected void appendJavaScript(AbstractWidget<?> widget, AjaxRequestTarget target) {
+		target.appendJavaScript("$('body').toggleClass('noscroll'); $('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
+	}
 }
