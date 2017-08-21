@@ -90,7 +90,6 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
     var modal = this;
     return function () {
         if (nameField.value.length > 0) {
-            console.warn('click');
             var newName = nameField.value;
             modal.value.setName(newName, function (property, msg) {
                 if (property.name === newName) {

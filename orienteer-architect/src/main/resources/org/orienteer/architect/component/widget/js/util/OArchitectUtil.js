@@ -228,7 +228,7 @@ var OArchitectUtil = {
                 var classCells = graph.getChildVertices(graph.getDefaultParent());
                 OArchitectUtil.forEach(classCells, function (classCell) {
                     var oClass = classCell.value;
-                    oClass.configFromEditorConfig(classCell);
+                    oClass.configFromCell(classCell);
                 });
             }
             return result;

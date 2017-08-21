@@ -7,6 +7,16 @@
  * @constructor
  */
 var OArchitectOProperty = function (ownerClass, name, type, cell) {
+    this.ownerClass = null;
+    this.name = null;
+    this.type = null;
+    this.linkedClass = null;
+    this.subClassProperty = false;
+    this.superClassExistsInEditor = false;
+    this.pageUrl = null;
+    this.cell = null;
+    this.previousName = null;
+
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (name != null) this.setName(name);
     if (type != null) this.setType(type);
@@ -84,8 +94,8 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
  * @param oClass - {@link OArchitectOClass} which is owner of this property
  * @param propertyCell - {@link mxCell} which contains this property
  */
-OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propertyCell) {
-    oClass.properties.push(this);
+OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
+    if (oClass.getProperty(this.name) == null) oClass.properties.push(this);
     this.ownerClass = oClass;
     this.cell = propertyCell;
     var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
@@ -102,6 +112,7 @@ OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propert
 OArchitectOProperty.prototype.setType = function (type) {
     if (OArchitectOType.contains(type) && this.type !== type) {
         this.type = type;
+        this.setCell(this.cell);
     }
 };
 
@@ -127,6 +138,7 @@ OArchitectOProperty.prototype.setName = function (name, callback) {
     function setName(property, name) {
         property.previousName = property.name;
         property.name = name;
+        property.setCell(property.cell);
     }
 };
 
@@ -155,6 +167,10 @@ OArchitectOProperty.prototype.setCell = function (cell) {
             graph.getModel().endUpdate();
         }
     }
+};
+
+OArchitectOProperty.prototype.prepareForRemove = function () {
+    this.cell = null;
 };
 
 /**
@@ -205,12 +221,16 @@ OArchitectOProperty.prototype.canDisconnect = function () {
 OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
     if (this.linkedClass !== linkedClass) {
         if (linkedClass == null && this.linkedClass != null) {
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
+            if (!this.ownerClass.existsInDb) {
+                OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
+                this.linkedClass = linkedClass;
+                this.ownerClass.notifySubClassesAboutChangesInProperty(this);
+            }
         } else if (linkedClass != null) {
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, linkedClass.cell, true);
+            this.linkedClass = linkedClass;
+            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
+            this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         }
-        this.linkedClass = linkedClass;
-        this.ownerClass.notifySubClassesAboutChangesInProperty(this);
     }
 };
 

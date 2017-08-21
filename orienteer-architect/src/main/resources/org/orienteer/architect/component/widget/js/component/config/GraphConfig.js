@@ -41,8 +41,12 @@ GraphConfig.prototype.configureGraphBehavior = function () {
         return this.isClass(cell);
     };
     this.graph.isCellSelectable = function (cell) {
+        if (cell == null)
+            return false;
         if (!app.canUpdate)
             return false;
+        if (cell.edge && cell.source != null && cell.source.value instanceof OArchitectOClass)
+            return !cell.source.value.existsInDb;
         return this.isClass(cell) || this.getModel().isEdge(cell);
     };
     this.graph.getTooltipForCell = function (cell) {

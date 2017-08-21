@@ -2,7 +2,7 @@
  * Utility class which represents OClass from OrientDB in {@link OArchitectEditor}
  * @constructor
  */
-var OArchitectOClass = function() {
+var OArchitectOClass = function (name, cell) {
     this.name = null;
     this.properties = [];
     this.propertiesForDelete = [];
@@ -11,14 +11,13 @@ var OArchitectOClass = function() {
     this.pageUrl = null;
     this.existsInDb = false;
     this.existsInEditor = true;
+    this.removed = false;
     this.cell = null;
-    this.configuredFromEditorConfig = false;
-};
+    this.configuredFromCell = false;
 
-/**
- * boolean true if class has been removed from editor
- */
-OArchitectOClass.prototype.removed = false;
+    if (name != null) this.setName(name);
+    if (cell != null) this.setCell(cell);
+};
 
 /**
  * Config this instance from json which is respond from database
@@ -33,8 +32,8 @@ OArchitectOClass.prototype.configFromDatabase = function (json) {
  * Config this class from cell which is saved in xml config.
  * @param classCell - {@link mxCell} which will be used to config
  */
-OArchitectOClass.prototype.configFromEditorConfig = function (classCell) {
-    OArchitectOClassConfigurator.configOClassFromEditorConfig(this, classCell);
+OArchitectOClass.prototype.configFromCell = function (classCell) {
+    OArchitectOClassConfigurator.configOClassFromCell(this, classCell);
 };
 
 /**
@@ -54,6 +53,7 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         if (oClass.existsInDb || !exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
                 oClass.name = name;
+                oClass.setCell(oClass.cell);
             } else if (name !== oClass.name) msg = localizer.classExistsInEditor;
         } else msg = localizer.classExistsInDatabase;
         if (callback != null) callback(oClass, msg);
@@ -77,12 +77,24 @@ OArchitectOClass.prototype.setCell = function (cell) {
     }
 };
 
+OArchitectOClass.prototype.prepareForRemove = function () {
+    var config = this.toEditorConfigObject();
+    this.properties = config.properties;
+    this.propertiesForDelete = config.propertiesForDelete;
+    this.superClasses = config.superClasses;
+    this.subClasses = config.subClasses;
+    this.cell = null;
+    this.removed = true;
+    this.configuredFromCell = false;
+};
+
 /**
  * Create new {@link OArchitectOProperty} for this class and save it in this class
  * @param name - string name of property
  * @param type - string type of property
  * @param cell - {@link mxCell} which contains property
  * @param subClass - boolean true if creates subclass property
+ * @param superClassExistsInEditor
  * @returns {@link OArchitectOProperty}
  * @throws {@link Error} if property with given name already exists
  */
@@ -129,12 +141,11 @@ OArchitectOClass.prototype.addSuperClass = function (superClass) {
     var index = this.getSuperClassIndex(superClass);
     var classForAdd = index !== -1 ? this.superClasses[index] : null;
     if (classForAdd != null) {
-        if (!classForAdd.existsInEditor) {
+        if (!classForAdd.existsInEditor || classForAdd.existsInDb && classForAdd.removed) {
             this.superClasses.splice(index, 1);
             classForAdd = superClass;
         } else classForAdd = null;
     } else classForAdd = superClass;
-
     if (classForAdd != null) {
         this.superClasses.push(classForAdd);
         this.addPropertiesFromSuperClass(classForAdd);
@@ -174,8 +185,8 @@ OArchitectOClass.prototype.addSubClass = function (subClass) {
 OArchitectOClass.prototype.removeSuperClass = function (superClass) {
     var index = this.superClasses.indexOf(superClass);
     if (index > -1) {
-        this.superClasses.splice(index, 1);
         this.removeSuperClassProperties(superClass);
+        if (!superClass.existsInDb) this.superClasses.splice(index, 1);
         superClass.removeSubClass(this);
     }
 };
@@ -187,7 +198,7 @@ OArchitectOClass.prototype.removeSuperClass = function (superClass) {
 OArchitectOClass.prototype.removeSubClass = function (subClass) {
     var index = this.subClasses.indexOf(subClass);
     if (index > -1) {
-        this.subClasses.splice(index, 1);
+        if (!subClass.existsInDb) this.subClasses.splice(index, 1);
         subClass.removeSuperClass(this);
     }
 };
@@ -197,13 +208,15 @@ OArchitectOClass.prototype.removeSubClass = function (subClass) {
  * @param property {@link OArchitectOProperty}
  */
 OArchitectOClass.prototype.createCellForProperty = function (property) {
-    var graph = app.editor.graph;
-    graph.getModel().beginUpdate();
-    try {
-        property.setCell(OArchitectUtil.createOPropertyVertex(property));
-        graph.addCell(property.cell, this.cell);
-    } finally {
-        graph.getModel().endUpdate();
+    if (property != null && !property.superClassExistsInEditor) {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        try {
+            property.setCell(OArchitectUtil.createOPropertyVertex(property));
+            graph.addCell(property.cell, this.cell);
+        } finally {
+            graph.getModel().endUpdate();
+        }
     }
 };
 
@@ -256,15 +269,21 @@ OArchitectOClass.prototype.removeSuperClassProperties = function (superClass) {
  * @returns {number} index of property in properties array or -1 if superClassProperty don't exists in this class
  */
 OArchitectOClass.prototype.removeSuperClassProperty = function (superClassProperty) {
-    var index = this.getPropertyIndex(superClassProperty);
-    if (index > -1) {
-        var property = this.properties[index];
-        var notRemove = superClassProperty.ownerClass.removed && superClassProperty.ownerClass.existsInDb && property.isSubClassProperty() && property.cell == null;
-        if (notRemove) notRemove = this.existsInDb;
-        if (notRemove) {
-            property.superClassExistsInEditor = false;
-            this.createCellForProperty(property);
-        } else this.properties.splice(index, 1);
+    var superClass = superClassProperty.ownerClass;
+    var index = -1;
+    if (this.superClasses.indexOf(superClass) > -1) {
+        index = this.getPropertyIndex(superClassProperty);
+        if (index > -1) {
+            var property = this.properties[index];
+            var notRemove = superClassProperty.ownerClass.removed && superClassProperty.ownerClass.existsInDb && property.isSubClassProperty() && property.cell == null;
+            if (notRemove) notRemove = this.existsInDb;
+            if (notRemove) {
+                property.superClassExistsInEditor = false;
+                this.createCellForProperty(property);
+                if (property.linkedClass != null)
+                    OArchitectUtil.manageEdgesBetweenCells(property.cell, property.linkedClass.cell, true);
+            } else this.properties.splice(index, 1);
+        }
     }
     return index;
 };

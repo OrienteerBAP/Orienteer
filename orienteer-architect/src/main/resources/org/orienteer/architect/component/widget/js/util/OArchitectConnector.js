@@ -72,6 +72,7 @@ var OArchitectConnector = {
         var subClass = subClassCell.value;
         var superClass = superClassCell.value;
         subClass.removeSuperClass(superClass);
+        superClass.removeSubClass(subClass);
     },
 
     disconnectOPropertyFromOClassCell: function (graph, propertyCell, classCell) {

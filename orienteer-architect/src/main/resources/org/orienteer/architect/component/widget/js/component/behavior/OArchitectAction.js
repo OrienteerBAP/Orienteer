@@ -197,7 +197,7 @@ var OArchitectAction = {
         function prepareCellsForRemove(cells) {
             OArchitectUtil.forEach(cells, function (cell) {
                 if (cell.value instanceof OArchitectOClass) {
-                    cell.value.removed = true;
+                   cell.value.prepareForRemove();
                 }
             });
         }
@@ -239,6 +239,9 @@ var OArchitectAction = {
         console.warn('OClasses in JSON: ', OArchitectUtil.getOClassesAsJSON(editor.graph));
     },
 
+    /**
+     * Enable fullscreen mode
+     */
     fullScreenModeAction: function (editor) {
         editor.fullscreen = !editor.fullscreen;
         configureOrienteerClasses(editor.fullscreen);

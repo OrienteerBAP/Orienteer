@@ -13,7 +13,6 @@ GraphConnectionConfig.prototype.config = function () {
     graph.isCellConnectable = this.isCellConnectable;
     graph.isValidConnection = this.isValidConnection;
     graph.isCellDisconnectable = this.isCellDisconnectable;
-    graph.isCellDeletable = this.isCellDeletable;
     graph.connectionHandler.cursor = 'pointer';
     graph.connectionHandler.connectImage = new mxImage(app.basePath + OArchitectConstants.CONNECTOR_IMG_PATH, OArchitectConstants.ICON_SIZE, OArchitectConstants.ICON_SIZE);
     graph.connectionHandler.factoryMethod = this.connectionHandlerFactoryMethod;

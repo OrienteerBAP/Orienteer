@@ -83,15 +83,14 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
         var cells = graph.getSelectionCellsForChanges(changes);
         OArchitectUtil.forEach(cells, function (cell) {
             if (cell.isVertex()) {
-                if (cell.value instanceof OArchitectOProperty) {
+                if (cell.value instanceof OArchitectOClass) {
+                    OArchitectOClassConfigurator.configOClassFromCell(cell.value, cell);
+                    cell.value.removed = false;
+                } else if (cell.value instanceof OArchitectOProperty) {
                     var property = cell.value;
-                    var ownerClass = property.ownerClass;
-                    if (ownerClass.getProperty(property.name) == null) {
-                        ownerClass.properties.push(property);
-                        ownerClass.changeProperties(ownerClass, [property], property.subClassProperty);
-                    }
+                    property.configFromCell(cell.value.ownerClass, cell);
                 }
-            } else if (cell.isEdge()) {
+            } else if (cell.isEdge() && cell.source != null && cell.target != null) {
                 var sourceCell = cell.source;
                 var targetCell = cell.target;
                 var sourceValue = sourceCell.value;
@@ -99,6 +98,7 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
                 if (sourceValue != null && targetValue != null && targetValue instanceof OArchitectOClass) {
                     if (sourceValue instanceof OArchitectOClass) {
                         sourceValue.addSuperClass(targetValue);
+                        if (sourceValue.existsInDb) sourceValue.addPropertiesFromSuperClass(targetValue);
                     } else if (sourceValue instanceof OArchitectOProperty) {
                         sourceValue.setLinkedClass(targetValue);
                     }
@@ -115,13 +115,13 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
 
 OArchitectEditor.prototype.undo = function () {
     if (app.canUpdate) {
-        mxGraph.prototype.undo.apply(this, arguments);
+        mxEditor.prototype.undo.apply(this, arguments);
     }
 };
 
 OArchitectEditor.prototype.redo = function () {
     if (app.canUpdate) {
-        mxGraph.prototype.redo.apply(this, arguments);
+        mxEditor.prototype.redo.apply(this, arguments);
     }
 };
 

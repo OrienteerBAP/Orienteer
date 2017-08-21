@@ -23,9 +23,9 @@ var OArchitectOClassConfigurator = {
      * @param oClass - {@link OArchitectOClass} which will be config
      * @param classCell - {@link mxCell} which is saved in xml editor config
      */
-    configOClassFromEditorConfig: function (oClass, classCell) {
-        if (!oClass.configuredFromEditorConfig) {
-            oClass.configuredFromEditorConfig = true;
+    configOClassFromCell: function (oClass, classCell) {
+        if (!oClass.configuredFromCell) {
+            oClass.configuredFromCell = true;
             configure();
 
             function configure() {
@@ -58,7 +58,7 @@ var OArchitectOClassConfigurator = {
                 property.configFromDatabase(oClass, configElement);
             } else {
                 property = configElement.value;
-                property.configFromEditorConfig(oClass, configElement);
+                property.configFromCell(oClass, configElement);
             }
         });
     },
@@ -77,7 +77,7 @@ var OArchitectOClassConfigurator = {
             if (classCell != null) {
                 configuredClass = classCell.value;
                 if (!isJson) {
-                    OArchitectOClassConfigurator.configOClassFromEditorConfig(configuredClass, classCell);
+                    OArchitectOClassConfigurator.configOClassFromCell(configuredClass, classCell);
                 }
             } else {
                 configuredClass = new OArchitectOClass();
