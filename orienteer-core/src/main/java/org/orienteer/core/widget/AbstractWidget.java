@@ -46,6 +46,11 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	private IModel<ODocument> widgetDocumentModel;
 
 	private MethodsView methods;
+
+	private String settingsCommandId;
+	private String hideCommandId;
+	private String deleteCommandId;
+	private String fullScreenCommandId;
 	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
@@ -55,8 +60,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		add(commands = new RepeatingView("commands"));
 		methods = new MethodsView(commands, model,MethodPlace.ACTIONS,null);
 		methods.overrideBootstrapType(null);
-
-		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
+		addCommand(new AjaxCommand<T>(settingsCommandId = commands.newChildId(), "command.settings") {
 			
 			@Override
 			public void onClick(AjaxRequestTarget target) {
@@ -70,7 +74,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 				}
 			}
 		});
-		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
+		addCommand(new AjaxCommand<T>(hideCommandId = commands.newChildId(), "command.hide") {
 			
 			@Override
 			public void onClick(AjaxRequestTarget target) {
@@ -85,7 +89,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 				setVisible(getDashboardPanel().getModeObject().canModify());
 			}
 		});
-		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.delete") {
+		addCommand(new AjaxCommand<T>(deleteCommandId = commands.newChildId(), "command.delete") {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
@@ -100,7 +104,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 				setVisible(getDashboardPanel().getModeObject().canModify());
 			}
 		});
-		addCommand(newFullScreenCommand(commands.newChildId()));
+		addCommand(new FullScreenCommand<T>(fullScreenCommandId = commands.newChildId()));
 	}
 
 	@Override
@@ -116,9 +120,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		return this;
 	}
 
-	protected Command<T> newFullScreenCommand(String id) {
-		return new FullScreenCommand<>(id);
-	}
 
 	@Override
 	public String newCommandId() {
@@ -233,5 +234,25 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected OSchema getSchema() {
 		return OrientDbWebSession.get().getSchema();
+	}
+
+	protected void removeCommandById(String id) {
+		commands.remove(id);
+	}
+
+	protected String getSettingsCommandId() {
+		return settingsCommandId;
+	}
+
+	protected String getHideCommandId() {
+		return hideCommandId;
+	}
+
+	protected String getDeleteCommandId() {
+		return deleteCommandId;
+	}
+
+	protected String getFullScreenCommandId() {
+		return fullScreenCommandId;
 	}
 }

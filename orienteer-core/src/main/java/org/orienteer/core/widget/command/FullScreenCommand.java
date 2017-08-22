@@ -11,7 +11,7 @@ import org.orienteer.core.widget.AbstractWidget;
  */
 public class FullScreenCommand<T> extends AjaxCommand<T> {
 	
-	protected boolean expanded = false;
+	private boolean expanded = false;
 	public FullScreenCommand(String commandId) {
 		super(commandId, Model.of());
 		setAutoNotify(false);
@@ -28,15 +28,8 @@ public class FullScreenCommand<T> extends AjaxCommand<T> {
 		expanded=!expanded;
 		configure();
 		target.add(this);
-		appendJavaScript(findParent(AbstractWidget.class), target);
-	}
-
-	/**
-	 * Append JavaScript code which enable widget fullscreen mode
-	 * @param widget {@link AbstractWidget} which need to be fullscreen
-	 * @param target {@link AjaxRequestTarget}
-	 */
-	protected void appendJavaScript(AbstractWidget<?> widget, AjaxRequestTarget target) {
+		AbstractWidget<?> widget = findParent(AbstractWidget.class);
 		target.appendJavaScript("$('body').toggleClass('noscroll'); $('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
 	}
+
 }

@@ -271,19 +271,17 @@ OArchitectApplication.prototype.saveEditorConfig = function (xml) {
 
 /**
  * Switch fullscreen mode for editor
+ * @param clickOnCommand - boolean true if click on widget command
  */
-OArchitectApplication.prototype.switchFullScreenMode = function () {
+OArchitectApplication.prototype.switchFullScreenMode = function (clickOnCommand) {
     this.editor.fullscreen = !this.editor.fullscreen;
-    $('body').toggleClass('noscroll');
-    $('#' + this.widgetId).toggleClass('fullscreen');
     $('#' + this.containerId).toggleClass(OArchitectConstants.FULLSCREEN_CLASS);
     $('#' + this.editorId).toggleClass(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
     if (this.canUpdate) {
         $('#' + this.sidebarId).toggleClass(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
     }
-    var fullscreen = this.editor.fullscreen;
     var outline = this.editor.outline.outline.container;
-    if (fullscreen) {
+    if (this.editor.fullscreen) {
         outline.style.display = 'block';
         outline.style.right = '2px';
         if (app.canUpdate) {
@@ -291,9 +289,7 @@ OArchitectApplication.prototype.switchFullScreenMode = function () {
         } else outline.style.top = '2px';
         this.editor.outline.update();
     } else outline.style.display = 'none';
-    this.sendPostRequest(this.switchFullScreenModeCallbackUrl, {
-        'fullscreen': fullscreen
-    });
+    if (!clickOnCommand) this.sendPostRequest(this.switchFullScreenModeCallbackUrl, {});
 };
 
 /**
