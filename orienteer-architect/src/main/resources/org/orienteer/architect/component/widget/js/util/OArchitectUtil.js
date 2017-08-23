@@ -158,8 +158,16 @@ var OArchitectUtil = {
 
     getClassPropertiesCells: function (oClass) {
         var graph = app.editor.graph;
-        var result = graph.getChildVertices(oClass.cell);
-        return result != null ? result : [];
+        var cells = graph.getChildVertices(oClass.cell);
+        var result = [];
+        OArchitectUtil.forEach(cells, function (cell) {
+            if (cell.value instanceof OArchitectOProperty) {
+                if (oClass.getProperty(cell.value.name) != null) {
+                    result.push(cell);
+                }
+            }
+        });
+        return result;
     },
 
     getClassByPropertyCell: function (cell) {

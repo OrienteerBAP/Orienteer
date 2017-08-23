@@ -12,8 +12,6 @@ var OArchitectEditor = function(container) {
     this.container = container;
 
     this.fullscreen = false;
-    this.defaultWidth = $('#' + app.containerId).width();
-    this.defaultHeight = $('#' + app.containerId).height();
 
     this.configureDefaultActions();
     this.configureGraph([new GraphConfig(this), new GraphConnectionConfig(this),
@@ -77,7 +75,7 @@ OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
  * @param graph
  */
 OArchitectEditor.prototype.installUndoHandler = function (graph) {
-    mxEditor.prototype.installUndoHandler.apply(this, arguments);
+    this.installUndoSaver(graph);
     var undoHandler = function(sender, evt) {
         var changes = evt.getProperty('edit').changes;
         var cells = graph.getSelectionCellsForChanges(changes);
@@ -88,7 +86,8 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
                     cell.value.removed = false;
                 } else if (cell.value instanceof OArchitectOProperty) {
                     var property = cell.value;
-                    property.configFromCell(cell.value.ownerClass, cell);
+                    var classCell = OArchitectUtil.getCellByClassName(cell.value.ownerClass);
+                    if (classCell != null) property.configFromCell(classCell.value, cell);
                 }
             } else if (cell.isEdge() && cell.source != null && cell.target != null) {
                 var sourceCell = cell.source;
@@ -97,10 +96,9 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
                 var targetValue = targetCell.value;
                 if (sourceValue != null && targetValue != null && targetValue instanceof OArchitectOClass) {
                     if (sourceValue instanceof OArchitectOClass) {
-                        sourceValue.addSuperClass(targetValue);
-                        if (sourceValue.existsInDb) sourceValue.addPropertiesFromSuperClass(targetValue);
+                        OArchitectUtil.manageEdgesBetweenCells(sourceCell, targetCell, sourceValue.superClasses.indexOf(targetValue) > -1);
                     } else if (sourceValue instanceof OArchitectOProperty) {
-                        sourceValue.setLinkedClass(targetValue);
+                        OArchitectUtil.manageEdgesBetweenCells(sourceCell, targetCell, sourceValue.linkedClass === targetValue);
                     }
                 }
             }
@@ -111,6 +109,27 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
     this.undoManager.removeListener(mxEvent.REDO);
     this.undoManager.addListener(mxEvent.UNDO, undoHandler);
     this.undoManager.addListener(mxEvent.REDO, undoHandler);
+};
+
+OArchitectEditor.prototype.installUndoSaver = function (graph) {
+    var listener = mxUtils.bind(this, function(sender, evt) {
+        var edit = evt.getProperty('edit');
+        var changesForSave = [];
+        OArchitectUtil.forEach(edit.changes, function (change) {
+            if (change instanceof mxValueChange) {
+                if (change.previous !== null && change.value !== null) {
+                    changesForSave.push(change);
+                }
+            } else changesForSave.push(change);
+        });
+        if (changesForSave.length > 0) {
+            edit.changes = changesForSave;
+            this.undoManager.undoableEditHappened(edit);
+        }
+    });
+
+    graph.getModel().addListener(mxEvent.UNDO, listener);
+    graph.getView().addListener(mxEvent.UNDO, listener);
 };
 
 OArchitectEditor.prototype.undo = function () {
@@ -136,5 +155,4 @@ OArchitectEditor.prototype.configureDefaultActions = function () {
 OArchitectEditor.prototype.clone = function() {
     return mxUtils.clone(this);
 };
-
 

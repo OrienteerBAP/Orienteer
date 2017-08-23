@@ -14,6 +14,7 @@ var OArchitectOClass = function (name, cell) {
     this.removed = false;
     this.cell = null;
     this.configuredFromCell = false;
+    this.previousState = null;
 
     if (name != null) this.setName(name);
     if (cell != null) this.setCell(cell);
@@ -52,12 +53,19 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         var msg = null;
         if (oClass.existsInDb || !exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
+                oClass.savePreviousState();
                 oClass.name = name;
-                oClass.setCell(oClass.cell);
+                oClass.updateValueInCell();
             } else if (name !== oClass.name) msg = localizer.classExistsInEditor;
         } else msg = localizer.classExistsInDatabase;
         if (callback != null) callback(oClass, msg);
     });
+};
+
+OArchitectOClass.prototype.savePreviousState = function (clear) {
+    if (this.name !== null) {
+        this.previousState = clear ? null : this.toEditorConfigObject();
+    } else this.previousState = null;
 };
 
 /**
@@ -75,6 +83,10 @@ OArchitectOClass.prototype.setCell = function (cell) {
             graph.getModel().endUpdate();
         }
     }
+};
+
+OArchitectOClass.prototype.updateValueInCell = function () {
+    this.setCell(this.cell);
 };
 
 OArchitectOClass.prototype.prepareForRemove = function () {
@@ -175,6 +187,7 @@ OArchitectOClass.prototype.addSubClass = function (subClass) {
         classForAdd.addSuperClass(this);
         if (this.cell != null && classForAdd.cell != null)
             OArchitectUtil.manageEdgesBetweenCells(classForAdd.cell, this.cell, true);
+
     }
 };
 
@@ -489,7 +502,7 @@ OArchitectOClass.prototype.equalsWithJsonClass = function (jsonClass) {
  */
 OArchitectOClass.prototype.toJson = function () {
     function jsonFilter(key, value) {
-        if (key === 'cell') {
+        if (key === 'cell' || key === 'previousState') {
             value = undefined;
         } else if (key === 'superClasses' || key === 'subClasses') {
             var classes = [];
@@ -521,7 +534,7 @@ OArchitectOClass.prototype.toEditorConfigObject = function () {
     function toEditorProperties(properties) {
         var editorProperties = [];
         OArchitectUtil.forEach(properties, function (property) {
-            editorProperties.push(property);
+            editorProperties.push(property.toEditorConfigObject());
         });
         return editorProperties;
     }

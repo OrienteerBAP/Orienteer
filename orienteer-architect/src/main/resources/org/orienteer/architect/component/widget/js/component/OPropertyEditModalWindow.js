@@ -88,17 +88,23 @@ OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, 
 
 OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameField, typeSelect) {
     var modal = this;
+    var property = this.value;
     return function () {
         if (nameField.value.length > 0) {
             var newName = nameField.value;
-            modal.value.setName(newName, function (property, msg) {
-                if (property.name === newName) {
-                    modal.value.setType(typeSelect.options[typeSelect.selectedIndex].value);
-                    modal.destroy(modal.OK);
-                } else {
-                    modal.showErrorFeedback(msg);
-                }
-            });
+            var newType = typeSelect.options[typeSelect.selectedIndex].value;
+            var existsProperty = property.ownerClass.getProperty(newName);
+            if (property.isValidName(newName)) {
+                property.setNameAndType(newName, newType);
+                modal.destroy(modal.OK);
+            } else if (existsProperty != null && modal.create) {
+                if (existsProperty.isSubClassProperty()) {
+                    modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
+                } else modal.showErrorFeedback(localizer.propertyExistsInClass);
+            } else if (property.isValidType(newType)) {
+                property.setNameAndType(newName, newType);
+                modal.destroy(modal.OK);
+            }
         }
     };
 };

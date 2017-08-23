@@ -63,7 +63,14 @@ var OArchitectAction = {
 
                 function onDestroy(property, event) {
                     if (event === this.OK) {
-                        classCell.value.createProperty(property.name, property.type, property.cell);
+                        graph.getModel().beginUpdate();
+                        try {
+                            classCell.value.savePreviousState();
+                            classCell.value.createProperty(property.name, property.type, property.cell);
+                            classCell.value.updateValueInCell();
+                        } finally {
+                            graph.getModel().endUpdate();
+                        }
                     }
                 }
             } else {
@@ -138,20 +145,8 @@ var OArchitectAction = {
         var action = function () {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var modal = new OClassEditModalWindow(cell.value, app.editorId, onDestroy, false);
+            var modal = new OClassEditModalWindow(cell.value, app.editorId, null, false);
             modal.show(evt.getGraphX(), evt.getGraphY());
-
-            function onDestroy(oClass, event) {
-                if (event === this.OK) {
-                    graph.getModel().beginUpdate();
-                    try {
-                        graph.getModel().setValue(cell, oClass);
-                    } finally {
-                        graph.getModel().endUpdate();
-                    }
-                }
-            }
-
         };
 
         action();
@@ -213,7 +208,14 @@ var OArchitectAction = {
             var oClassCell = OArchitectUtil.getClassByPropertyCell(cell);
             var oClass = oClassCell.value;
             var property = cell.value;
-            oClass.removeProperty(property, false);
+            graph.getModel().beginUpdate();
+            try {
+                oClass.savePreviousState();
+                oClass.removeProperty(property, false);
+                oClass.updateValueInCell();
+            } finally {
+                graph.getModel().endUpdate();
+            }
         }
     },
 

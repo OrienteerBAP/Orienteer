@@ -57,9 +57,14 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     };
 
     this.graph.convertValueToString = this.convertValueToString;
-    this.graph.cellLabelChanged = this.cellLabelChanged;
+    this.graph.getModel().valueForCellChanged = this.valueForCellChanged;
 };
 
+GraphConfig.prototype.valueForCellChanged = function (cell, value) {
+    var previous = cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty ? cell.value.previousState : cell.value;
+    cell.value = value;
+    return previous;
+};
 
 GraphConfig.prototype.configureGraphLabels = function () {
     this.graph.setHtmlLabels(true);
@@ -88,16 +93,3 @@ GraphConfig.prototype.convertValueToString = function (cell) {
     } else return mxGraph.prototype.convertValueToString.apply(this, arguments);
 };
 
-GraphConfig.prototype.cellLabelChanged = function (cell, newValue) {
-    var value = null;
-    if (cell.value instanceof OArchitectOClass) {
-        value = newValue;
-        newValue = mxUtils.clone(cell.value);
-        newValue.name = value;
-    } else if (cell.value instanceof OArchitectOProperty) {
-        value = newValue;
-        newValue = mxUtils.clone(cell.value);
-        newValue.name = value;
-    }
-    mxGraph.prototype.cellLabelChanged.apply(this, arguments);
-};

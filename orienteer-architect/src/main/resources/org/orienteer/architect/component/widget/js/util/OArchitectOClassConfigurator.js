@@ -29,13 +29,14 @@ var OArchitectOClassConfigurator = {
             configure();
 
             function configure() {
+                oClass.cell = classCell;
                 var superClassesNames = oClass.superClasses;
                 var subClassesNames = oClass.subClasses;
+                var propertiesCells = OArchitectUtil.getClassPropertiesCells(oClass);
                 oClass.superClasses = [];
-                oClass.subClasses = [];
                 oClass.properties = [];
-                oClass.setCell(classCell);
-                OArchitectOClassConfigurator.configProperties(oClass, OArchitectUtil.getClassPropertiesCells(oClass), false);
+                oClass.subClasses = [];
+                OArchitectOClassConfigurator.configProperties(oClass, propertiesCells, false);
                 OArchitectOClassConfigurator.configClasses(oClass, superClassesNames, true, false);
                 OArchitectOClassConfigurator.configClasses(oClass, subClassesNames, false, false);
             }

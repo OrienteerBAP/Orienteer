@@ -17,6 +17,8 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.cell = null;
     this.previousName = null;
 
+    this.previousState = null;
+
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (name != null) this.setName(name);
     if (type != null) this.setType(type);
@@ -110,9 +112,8 @@ OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
  * @param type - string which contains type name. See {@link OArchitectOType}
  */
 OArchitectOProperty.prototype.setType = function (type) {
-    if (OArchitectOType.contains(type) && this.type !== type) {
+    if (this.isValidType(type)) {
         this.type = type;
-        this.setCell(this.cell);
     }
 };
 
@@ -120,26 +121,34 @@ OArchitectOProperty.prototype.setType = function (type) {
  * Set name of this property
  * @param name - string. Can't be null
  */
-OArchitectOProperty.prototype.setName = function (name, callback) {
-    var msg = null;
-    if (name != null && this.name !== name) {
-
-        if (this.ownerClass != null && this.ownerClass instanceof OArchitectOClass) {
-            var existsProperty = this.ownerClass.getProperty(name);
-            if (existsProperty != null) {
-                if (existsProperty.isSubClassProperty()) {
-                    msg = localizer.propertyExistsInSuperClass;
-                } else msg = localizer.propertyExistsInClass;
-            } else setName(this, name);
-        } else setName(this, name);
+OArchitectOProperty.prototype.setName = function (name) {
+    if (this.isValidName(name)) {
+        this.previousName = this.name;
+        this.name = name;
     }
-    if (callback != null) callback(this, msg);
+};
 
-    function setName(property, name) {
-        property.previousName = property.name;
-        property.name = name;
-        property.setCell(property.cell);
+OArchitectOProperty.prototype.setNameAndType = function (name, type) {
+    if (this.isValidName(name) || this.isValidType(type)) {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        try {
+            this.savePreviousState();
+            this.setName(name);
+            this.setType(type);
+            this.updateValueInCell();
+        } finally {
+            graph.getModel().endUpdate();
+        }
     }
+};
+
+OArchitectOProperty.prototype.isValidType = function (type) {
+    return type != null && OArchitectOType.contains(type) && this.type !== type;
+};
+
+OArchitectOProperty.prototype.isValidName = function (name) {
+    return name != null && this.name !== name && this.ownerClass.getProperty(name) == null;
 };
 
 /**
@@ -167,6 +176,18 @@ OArchitectOProperty.prototype.setCell = function (cell) {
             graph.getModel().endUpdate();
         }
     }
+};
+
+OArchitectOProperty.prototype.savePreviousState = function (clear) {
+    if (this.name !== null) {
+        this.ownerClass.savePreviousState();
+        this.previousState = clear ? null : this.toEditorConfigObject();
+    } else this.previousState = null;
+};
+
+OArchitectOProperty.prototype.updateValueInCell = function () {
+    this.ownerClass.updateValueInCell();
+    this.setCell(this.cell);
 };
 
 OArchitectOProperty.prototype.prepareForRemove = function () {
@@ -276,7 +297,10 @@ OArchitectOProperty.prototype.toJson = function () {
  * @returns {@link OArchitectOProperty} instance of this property which can be converted to editor xml config
  */
 OArchitectOProperty.prototype.toEditorConfigObject = function () {
-    var result = new OArchitectOProperty(this.ownerClass.name, this.name, this.type, null);
+    var result = new OArchitectOProperty();
+    result.ownerClass = this.ownerClass.name;
+    result.name = this.name;
+    result.type = this.type;
     result.linkedClass = this.linkedClass != null ? this.linkedClass.name : null;
     result.previousName = this.previousName;
     result.subClassProperty = this.subClassProperty;
