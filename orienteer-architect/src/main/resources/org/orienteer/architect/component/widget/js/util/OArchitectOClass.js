@@ -250,7 +250,7 @@ OArchitectOClass.prototype.removeCellFromProperty = function (property) {
 OArchitectOClass.prototype.addPropertiesFromSuperClass = function (superClass) {
     var oClass = this;
     OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
-        var property = oClass.createSubClassPropertyFromTemplate(superClassProperty);
+        var property = oClass.updateSubClassPropertyFromTemplate(superClassProperty);
         if (property !== null) {
             oClass.properties.push(property);
             oClass.notifySubClassesAboutChangesInProperty(property);
@@ -284,7 +284,7 @@ OArchitectOClass.prototype.removeSuperClassProperties = function (superClass) {
 OArchitectOClass.prototype.removeSuperClassProperty = function (superClassProperty) {
     var superClass = superClassProperty.ownerClass;
     var index = -1;
-    if (this.superClasses.indexOf(superClass) > -1) {
+    if (this.containsInSuperClassHierarchy(superClass)) {
         index = this.getPropertyIndex(superClassProperty);
         if (index > -1) {
             var property = this.properties[index];
@@ -307,11 +307,12 @@ OArchitectOClass.prototype.removeSuperClassProperty = function (superClassProper
  * @param templateProperty - {@link OArchitectOProperty} - template
  * @returns {@link OArchitectOProperty} if was be created new property or null if property with given name already exists in class
  */
-OArchitectOClass.prototype.createSubClassPropertyFromTemplate = function (templateProperty) {
+OArchitectOClass.prototype.updateSubClassPropertyFromTemplate = function (templateProperty) {
     var property = this.getProperty(templateProperty.name);
     var needForReturn = true;
     if (property === null) property = this.getProperty(templateProperty.previousName);
     if (property !== null) {
+        property.setName(templateProperty.name);
         property.setType(templateProperty.type);
         needForReturn = false;
         if (property.cell != null) {
@@ -338,7 +339,7 @@ OArchitectOClass.prototype.notifySubClassesAboutChangesInProperty = function (te
         if (remove) {
             subClass.removeSuperClassProperty(templateProperty);
         } else {
-            property = subClass.createSubClassPropertyFromTemplate(templateProperty);
+            property = subClass.updateSubClassPropertyFromTemplate(templateProperty);
             if (property !== null) subClass.properties.push(property);
         }
     };
@@ -351,7 +352,9 @@ OArchitectOClass.prototype.notifySubClassesAboutChangesInProperty = function (te
  */
 OArchitectOClass.prototype.applyActionToAllSubClasses = function (action) {
     OArchitectUtil.forEach(this.subClasses, function (subClass) {
+        subClass.savePreviousState();
         action(subClass);
+        subClass.updateValueInCell();
         subClass.applyActionToAllSubClasses(action);
     });
 };
@@ -403,6 +406,18 @@ OArchitectOClass.prototype.getPropertyIndex = function (property) {
         }
     }
     return index;
+};
+
+
+OArchitectOClass.prototype.containsInSuperClassHierarchy = function (oClass) {
+    var contains = this.superClasses.indexOf(oClass) > -1;
+    if (!contains) {
+        OArchitectUtil.forEach(this.superClasses, function (superClass, trigger) {
+            contains = superClass.containsInSuperClassHierarchy(oClass);
+            if (contains) trigger.stop = true;
+        });
+    }
+    return contains;
 };
 
 /**

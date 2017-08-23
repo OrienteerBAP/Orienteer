@@ -159,14 +159,8 @@ var OArchitectAction = {
         var action = function () {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var modal = new OPropertyEditModalWindow(cell.value, app.editorId, onDestroy, false);
+            var modal = new OPropertyEditModalWindow(cell.value, app.editorId, null, false);
             modal.show(evt.getGraphX(), evt.getGraphY());
-
-            function onDestroy(property, event) {
-                if (event === this.OK) {
-                    property.ownerClass.notifySubClassesAboutChangesInProperty(property);
-                }
-            }
         };
 
         action();

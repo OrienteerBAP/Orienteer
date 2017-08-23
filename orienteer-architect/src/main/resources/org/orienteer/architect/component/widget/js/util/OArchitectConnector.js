@@ -45,7 +45,16 @@ var OArchitectConnector = {
     connectSubClassCellWithSuperClassCell: function (graph, subClassCell, superClassCell) {
         var subClass = subClassCell.value;
         var superClass = superClassCell.value;
-        subClass.addSuperClass(superClass);
+        graph.getModel().beginUpdate();
+        try {
+            subClass.savePreviousState();
+            superClass.savePreviousState();
+            subClass.addSuperClass(superClass);
+            subClass.updateValueInCell();
+            superClass.updateValueInCell();
+        } finally {
+            graph.getModel().endUpdate();
+        }
     },
 
     createLinkForClass: function (graph, sourceCell, targetCell) {

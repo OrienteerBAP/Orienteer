@@ -137,6 +137,7 @@ OArchitectOProperty.prototype.setNameAndType = function (name, type) {
             this.setName(name);
             this.setType(type);
             this.updateValueInCell();
+            this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         } finally {
             graph.getModel().endUpdate();
         }
