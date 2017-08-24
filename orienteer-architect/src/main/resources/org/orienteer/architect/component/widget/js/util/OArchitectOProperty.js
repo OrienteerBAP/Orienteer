@@ -18,6 +18,7 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.previousName = null;
 
     this.previousState = null;
+    this.removed = false;
 
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (name != null) this.setName(name);
@@ -67,6 +68,16 @@ OArchitectOProperty.prototype.pageUrl = null;
 OArchitectOProperty.prototype.cell = null;
 
 /**
+ * Save previous state of property for undo
+ */
+OArchitectOProperty.prototype.previousState = null;
+
+/**
+ * boolean indicates if this property is removed. If true this property already removed
+ */
+OArchitectOProperty.prototype.removed = false;
+
+/**
  * string contains previous name of this property. Needs for correct property rename
  */
 OArchitectOProperty.prototype.previousName = null;
@@ -91,7 +102,6 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
 };
 
 /**
- * INTERNAL FUNCTION. DON'T CALL IT.
  * Config instance of {@link OArchitectOProperty} from cell which is saved in xml config.
  * @param oClass - {@link OArchitectOClass} which is owner of this property
  * @param propertyCell - {@link mxCell} which contains this property
@@ -103,6 +113,7 @@ OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
     var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
     if (linkedCell != null)
         this.setLinkedClass(linkedCell.value);
+    this.removed = false;
     this.cell.parent = oClass.cell;
     oClass.notifySubClassesAboutChangesInProperty(this);
 };
@@ -112,7 +123,7 @@ OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
  * @param type - string which contains type name. See {@link OArchitectOType}
  */
 OArchitectOProperty.prototype.setType = function (type) {
-    if (this.isValidType(type)) {
+    if (this.canModify() && this.isValidType(type)) {
         this.type = type;
     }
 };
@@ -122,18 +133,23 @@ OArchitectOProperty.prototype.setType = function (type) {
  * @param name - string. Can't be null
  */
 OArchitectOProperty.prototype.setName = function (name) {
-    if (this.isValidName(name)) {
+    if (this.canModify() && this.isValidName(name)) {
         this.previousName = this.name;
         this.name = name;
     }
 };
 
+/**
+ * Set name and type for this property and update property value in property cell and class value in class cell.
+ * @param name - string name
+ * @param type - string type
+ */
 OArchitectOProperty.prototype.setNameAndType = function (name, type) {
     if (this.isValidName(name) || this.isValidType(type)) {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         try {
-            this.savePreviousState();
+            this.saveState();
             this.setName(name);
             this.setType(type);
             this.updateValueInCell();
@@ -144,12 +160,24 @@ OArchitectOProperty.prototype.setNameAndType = function (name, type) {
     }
 };
 
+/**
+ * Checks if given type is valid for this property
+ * @param type - string with OrientDB type
+ * @return boolean true if type if valid
+ */
 OArchitectOProperty.prototype.isValidType = function (type) {
     return type != null && OArchitectOType.contains(type) && this.type !== type;
 };
 
+/**
+ * Checks if given name is valid for this property
+ * @param name - string property name
+ * @return boolean true if name is valid
+ */
 OArchitectOProperty.prototype.isValidName = function (name) {
-    return name != null && this.name !== name && this.ownerClass.getProperty(name) == null;
+    var valid = name != null && this.name !== name;
+    if (valid && this.ownerClass != null) valid = this.ownerClass.getProperty(name) == null;
+    return valid;
 };
 
 /**
@@ -179,20 +207,22 @@ OArchitectOProperty.prototype.setCell = function (cell) {
     }
 };
 
-OArchitectOProperty.prototype.savePreviousState = function (clear) {
-    if (this.name !== null) {
-        this.ownerClass.savePreviousState();
-        this.previousState = clear ? null : this.toEditorConfigObject();
+/**
+ * Save previous state of this property for undo action
+ */
+OArchitectOProperty.prototype.saveState = function () {
+    if (!this.isRemoved() && !this.ownerClass.isRemoved() && this.name !== null) {
+        this.ownerClass.saveState();
+        this.previousState = this.toEditorConfigObject();
     } else this.previousState = null;
 };
 
+/**
+ * Update property in property cell and update class in class cell
+ */
 OArchitectOProperty.prototype.updateValueInCell = function () {
     this.ownerClass.updateValueInCell();
     this.setCell(this.cell);
-};
-
-OArchitectOProperty.prototype.prepareForRemove = function () {
-    this.cell = null;
 };
 
 /**
@@ -241,7 +271,8 @@ OArchitectOProperty.prototype.canDisconnect = function () {
  * @param linkedClass {@link OArchitectOClass} which will be linked class for this property
  */
 OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
-    if (this.linkedClass !== linkedClass) {
+    if (this.canModify() && this.linkedClass !== linkedClass) {
+        this.saveState();
         if (linkedClass == null && this.linkedClass != null) {
             if (!this.ownerClass.existsInDb) {
                 OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
@@ -253,7 +284,21 @@ OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
             OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
             this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         }
+        this.updateValueInCell();
     }
+};
+
+/**
+ * @return boolean true if property has been already removed from class
+ */
+OArchitectOProperty.prototype.isRemoved = function () {
+    return this.removed;
+};
+
+OArchitectOProperty.prototype.canModify = function () {
+    var modify = !this.isRemoved();
+    if (modify && this.ownerClass != null) modify = !this.ownerClass.isRemoved();
+    return modify;
 };
 
 OArchitectOProperty.prototype.toString = function () {

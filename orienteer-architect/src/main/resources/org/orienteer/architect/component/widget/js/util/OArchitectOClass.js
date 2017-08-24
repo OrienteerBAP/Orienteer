@@ -21,6 +21,67 @@ var OArchitectOClass = function (name, cell) {
 };
 
 /**
+ * Name of this class
+ */
+OArchitectOClass.prototype.name = null;
+
+/**
+ * Properties of this class. Contains Array with {@link OArchitectOProperty}
+ */
+OArchitectOClass.prototype.properties = [];
+
+/**
+ * NOT SUPPORTED. IN DEVELOPMENT.
+ * Properties for delete from OrientDB of this class. Contains Array with {@link OArchitectOProperty}
+ */
+OArchitectOClass.prototype.propertiesForDelete = [];
+
+/**
+ * Superclasses of this class. Contains Array with {@link OArchitectOClass}
+ */
+OArchitectOClass.prototype.superClasses = [];
+
+/**
+ * Subclasses of this class. Contains Array with {@link OArchitectOClass}
+ */
+OArchitectOClass.prototype.subClasses = [];
+
+/**
+ * String URL to class page in Orienteer
+ */
+OArchitectOClass.prototype.pageUrl = null;
+
+/**
+ * Boolean indicates if this class exists in database. Default is false
+ */
+OArchitectOClass.prototype.existsInDb = false;
+
+/**
+ * Boolean indicates if this class exists in editor. Default is true
+ */
+OArchitectOClass.prototype.existsInEditor = true;
+
+/**
+ * Boolean indicates if this class have been removed from editor.
+ */
+OArchitectOClass.prototype.removed = false;
+
+/**
+ * {@link mxCell} which contains this class
+ */
+OArchitectOClass.prototype.cell = null;
+
+/**
+ * Boolean indicates if this class have been configured from cell (Undo action or from editor ml config)
+ */
+OArchitectOClass.prototype.configuredFromCell = false;
+
+/**
+ * Contains previous state of this class for undo action
+ */
+OArchitectOClass.prototype.previousState = null;
+
+/**
  * Config this instance from json which is respond from database
  * @param json - string which contains json data
  */
@@ -53,7 +114,7 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         var msg = null;
         if (oClass.existsInDb || !exists) {
             if (!OArchitectUtil.existsOClassInGraph(app.editor.graph, name)) {
-                oClass.savePreviousState();
+                oClass.saveState();
                 oClass.name = name;
                 oClass.updateValueInCell();
             } else if (name !== oClass.name) msg = localizer.classExistsInEditor;
@@ -62,9 +123,12 @@ OArchitectOClass.prototype.setName = function (name, callback) {
     });
 };
 
-OArchitectOClass.prototype.savePreviousState = function (clear) {
+/**
+ * Save current state of class for undo action
+ */
+OArchitectOClass.prototype.saveState = function () {
     if (this.name !== null) {
-        this.previousState = clear ? null : this.toEditorConfigObject();
+        this.previousState = this.toEditorConfigObject();
     } else this.previousState = null;
 };
 
@@ -85,10 +149,16 @@ OArchitectOClass.prototype.setCell = function (cell) {
     }
 };
 
+/**
+ * Update class value in class cell
+ */
 OArchitectOClass.prototype.updateValueInCell = function () {
     this.setCell(this.cell);
 };
 
+/**
+ * Prepare class for remove
+ */
 OArchitectOClass.prototype.prepareForRemove = function () {
     var config = this.toEditorConfigObject();
     this.properties = config.properties;
@@ -139,6 +209,7 @@ OArchitectOClass.prototype.removeProperty = function (oProperty) {
             index = this.propertiesForDelete.indexOf(oProperty);
             if (index === -1) this.propertiesForDelete.push(oProperty);
         }
+        property.removed = true;
         this.removeCellFromProperty(property);
         this.notifySubClassesAboutChangesInProperty(property, true);
     }
@@ -199,8 +270,10 @@ OArchitectOClass.prototype.removeSuperClass = function (superClass) {
     var index = this.superClasses.indexOf(superClass);
     if (index > -1) {
         this.removeSuperClassProperties(superClass);
-        if (!superClass.existsInDb) this.superClasses.splice(index, 1);
-        superClass.removeSubClass(this);
+        if (!superClass.existsInDb) {
+            this.superClasses.splice(index, 1);
+            superClass.removeSubClass(this);
+        }
     }
 };
 
@@ -211,8 +284,10 @@ OArchitectOClass.prototype.removeSuperClass = function (superClass) {
 OArchitectOClass.prototype.removeSubClass = function (subClass) {
     var index = this.subClasses.indexOf(subClass);
     if (index > -1) {
-        if (!subClass.existsInDb) this.subClasses.splice(index, 1);
-        subClass.removeSuperClass(this);
+        if (!subClass.existsInDb) {
+            this.subClasses.splice(index, 1);
+            subClass.removeSuperClass(this);
+        }
     }
 };
 
@@ -269,7 +344,9 @@ OArchitectOClass.prototype.removeSuperClassProperties = function (superClass) {
     OArchitectUtil.forEach(superClass.properties, function (superClassProperty) {
         var index = oClass.removeSuperClassProperty(superClassProperty);
         if (index > -1) {
-            oClass.notifySubClassesAboutChangesInProperty(superClassProperty, true);
+            var property = oClass.properties[index];
+            if (property == null)
+                oClass.notifySubClassesAboutChangesInProperty(superClassProperty, true);
         }
     });
 };
@@ -352,10 +429,12 @@ OArchitectOClass.prototype.notifySubClassesAboutChangesInProperty = function (te
  */
 OArchitectOClass.prototype.applyActionToAllSubClasses = function (action) {
     OArchitectUtil.forEach(this.subClasses, function (subClass) {
-        subClass.savePreviousState();
-        action(subClass);
-        subClass.updateValueInCell();
-        subClass.applyActionToAllSubClasses(action);
+        if (subClass instanceof OArchitectOClass) {
+            subClass.saveState();
+            action(subClass);
+            subClass.updateValueInCell();
+            subClass.applyActionToAllSubClasses(action);
+        }
     });
 };
 
@@ -452,6 +531,13 @@ OArchitectOClass.prototype.getClassIndex = function (classes, searchClass) {
         }
     }
     return index;
+};
+
+/**
+ * @return boolean true if class removed from editor
+ */
+OArchitectOClass.prototype.isRemoved = function () {
+    return this.removed;
 };
 
 OArchitectOClass.prototype.toString = function () {

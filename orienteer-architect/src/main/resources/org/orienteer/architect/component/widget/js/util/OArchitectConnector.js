@@ -8,16 +8,13 @@ var OArchitectConnector = {
      * Function don't remove edge between sourceCell and targetCell!
      * @param sourceCell - {@link mxCell} cell with source class
      * @param targetCell - {@link mxCell} cell with target class
-     * @param createLink - boolean if true create link from target class to source class
      */
-    connect: function(sourceCell, targetCell, createLink) {
+    connect: function(sourceCell, targetCell) {
         if (sourceCell != null && targetCell != null) {
             if (targetCell.value instanceof OArchitectOClass) {
                 var graph = app.editor.graph;
                 if (sourceCell.value instanceof OArchitectOClass) {
-                    if (createLink) {
-                        this.createLinkForClass(graph, sourceCell, targetCell);
-                    } else this.connectSubClassCellWithSuperClassCell(graph, sourceCell, targetCell);
+                    this.connectSubClassCellWithSuperClassCell(graph, sourceCell, targetCell);
                 } else if (sourceCell.value instanceof OArchitectOProperty && sourceCell.value.canConnect()) {
                     this.connectOPropertyCellWithOClassCell(graph, sourceCell, targetCell);
                 }
@@ -47,8 +44,8 @@ var OArchitectConnector = {
         var superClass = superClassCell.value;
         graph.getModel().beginUpdate();
         try {
-            subClass.savePreviousState();
-            superClass.savePreviousState();
+            subClass.saveState();
+            superClass.saveState();
             subClass.addSuperClass(superClass);
             subClass.updateValueInCell();
             superClass.updateValueInCell();
@@ -57,34 +54,35 @@ var OArchitectConnector = {
         }
     },
 
-    createLinkForClass: function (graph, sourceCell, targetCell) {
-        var targetClass = targetCell.value;
-        var property = new OArchitectOProperty();
-        var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
-        modal.orientDbTypes = OArchitectOType.linkTypes;
-        var geometry = targetCell.geometry;
-        modal.show(geometry.x - 20, geometry.y - 20);
-
-        function onDestroy(property, event) {
-            if (event === this.OK) {
-                var property = targetClass.createProperty(property.name, property.type);
-                property.setLinkedClass(sourceCell.value);
-            } else modal.showErrorFeedback(localizer.cannotCreateLink);
-        }
-    },
-
     connectOPropertyCellWithOClassCell: function (graph, propertyCell, classCell) {
-        propertyCell.value.setLinkedClass(classCell.value);
+        graph.getModel().beginUpdate();
+        var property = propertyCell.value;
+        if (property.ownerClass instanceof OArchitectOClass) {
+            try {
+                property.setLinkedClass(classCell);
+            } finally {
+                graph.getModel().endUpdate();
+            }
+        }
     },
 
     disconnectSubClassCellFromSuperClassCell: function (graph, subClassCell, superClassCell) {
         var subClass = subClassCell.value;
         var superClass = superClassCell.value;
-        subClass.removeSuperClass(superClass);
-        superClass.removeSubClass(subClass);
+        graph.getModel().beginUpdate();
+        try {
+            subClass.saveState();
+            superClass.saveState();
+            subClass.removeSuperClass(superClass);
+            superClass.removeSubClass(subClass);
+            superClass.updateValueInCell();
+            subClass.updateValueInCell();
+        } finally {
+            graph.getModel().endUpdate();
+        }
     },
 
-    disconnectOPropertyFromOClassCell: function (graph, propertyCell, classCell) {
-        propertyCell.value.setLinkedClass(null);
+    disconnectOPropertyFromOClassCell: function (graph, propertyCell) {
+        this.connectOPropertyCellWithOClassCell(graph, propertyCell, null);
     }
 };

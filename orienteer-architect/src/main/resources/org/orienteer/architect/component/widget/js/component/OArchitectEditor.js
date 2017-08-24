@@ -83,27 +83,15 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
             if (cell.isVertex()) {
                 if (cell.value instanceof OArchitectOClass) {
                     OArchitectOClassConfigurator.configOClassFromCell(cell.value, cell);
-                    cell.value.removed = false;
                 } else if (cell.value instanceof OArchitectOProperty) {
                     var property = cell.value;
                     var classCell = OArchitectUtil.getCellByClassName(cell.value.ownerClass);
-                    if (classCell != null) property.configFromCell(classCell.value, cell);
-                }
-            } else if (cell.isEdge() && cell.source != null && cell.target != null) {
-                var sourceCell = cell.source;
-                var targetCell = cell.target;
-                var sourceValue = sourceCell.value;
-                var targetValue = targetCell.value;
-                if (sourceValue != null && targetValue != null && targetValue instanceof OArchitectOClass) {
-                    if (sourceValue instanceof OArchitectOClass) {
-                        OArchitectUtil.manageEdgesBetweenCells(sourceCell, targetCell, sourceValue.superClasses.indexOf(targetValue) > -1);
-                    } else if (sourceValue instanceof OArchitectOProperty) {
-                        OArchitectUtil.manageEdgesBetweenCells(sourceCell, targetCell, sourceValue.linkedClass === targetValue);
+                    if (classCell != null) {
+                        property.configFromCell(classCell.value, cell);
                     }
                 }
             }
         });
-        graph.setSelectionCells(cells);
     };
     this.undoManager.removeListener(mxEvent.UNDO);
     this.undoManager.removeListener(mxEvent.REDO);
@@ -150,6 +138,7 @@ OArchitectEditor.prototype.configureDefaultActions = function () {
     this.addAction(OArchitectActionNames.DELETE_OPROPERTY_ACTION, OArchitectAction.deleteOPropertyAction);
     this.addAction(OArchitectActionNames.DELETE_CELL_ACTION, OArchitectAction.deleteCellAction);
     this.addAction(OArchitectActionNames.FULL_SCREEN_MODE, OArchitectAction.fullScreenModeAction);
+    this.addAction(OArchitectActionNames.ADD_OPROPERTY_LINK_ACTION, OArchitectAction.addOPropertyLinkAction);
 };
 
 OArchitectEditor.prototype.clone = function() {

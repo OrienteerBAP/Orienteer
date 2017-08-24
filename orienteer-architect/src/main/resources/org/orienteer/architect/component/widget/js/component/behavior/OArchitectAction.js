@@ -12,7 +12,8 @@ var OArchitectActionNames = {
     TO_JSON_ACTION:              'toJsonAction',
     SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
     APPLY_EDITOR_CHANGES_ACTION: 'applyChanges',
-    FULL_SCREEN_MODE:            'fullScreenMode'
+    FULL_SCREEN_MODE:            'fullScreenMode',
+    ADD_OPROPERTY_LINK_ACTION:   'addOPropertyLinkAction'
 };
 
 /**
@@ -65,7 +66,7 @@ var OArchitectAction = {
                     if (event === this.OK) {
                         graph.getModel().beginUpdate();
                         try {
-                            classCell.value.savePreviousState();
+                            classCell.value.saveState();
                             classCell.value.createProperty(property.name, property.type, property.cell);
                             classCell.value.updateValueInCell();
                         } finally {
@@ -81,6 +82,35 @@ var OArchitectAction = {
         };
 
         action();
+    },
+
+    addOPropertyLinkAction: function (editor, addOPropertyLinkEvent) {
+        if (addOPropertyLinkEvent != null) {
+            var graph = editor.graph;
+            var source = addOPropertyLinkEvent.source;
+            var target = addOPropertyLinkEvent.target;
+            var targetClass = target.value;
+            var property = new OArchitectOProperty(targetClass);
+            var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
+            modal.orientDbTypes = OArchitectOType.linkTypes;
+            modal.show(addOPropertyLinkEvent.event.getGraphX(), addOPropertyLinkEvent.event.getGraphY());
+
+            function onDestroy(property, event) {
+                if (event === this.OK) {
+                    graph.getModel().beginUpdate();
+                    try {
+                        targetClass.saveState();
+                        var newProperty = targetClass.createProperty(property.name, property.type);
+                        newProperty.setLinkedClass(source.value);
+                        newProperty.saveState();
+                        targetClass.updateValueInCell();
+                        newProperty.updateValueInCell();
+                    } finally {
+                        graph.getModel().endUpdate();
+                    }
+                } else modal.showErrorFeedback(localizer.cannotCreateLink);
+            }
+        }
     },
 
     /**
@@ -186,7 +216,8 @@ var OArchitectAction = {
         function prepareCellsForRemove(cells) {
             OArchitectUtil.forEach(cells, function (cell) {
                 if (cell.value instanceof OArchitectOClass) {
-                   cell.value.prepareForRemove();
+                   // cell.value.prepareForRemove();
+                    cell.value.removed = true;
                 }
             });
         }
@@ -204,7 +235,7 @@ var OArchitectAction = {
             var property = cell.value;
             graph.getModel().beginUpdate();
             try {
-                oClass.savePreviousState();
+                oClass.saveState();
                 oClass.removeProperty(property, false);
                 oClass.updateValueInCell();
             } finally {

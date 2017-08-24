@@ -95,16 +95,28 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
             var newType = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(newName);
             if (property.isValidName(newName)) {
-                property.setNameAndType(newName, newType);
+                setNameAndType(newName, newType);
                 modal.destroy(modal.OK);
             } else if (existsProperty != null && modal.create) {
                 if (existsProperty.isSubClassProperty()) {
                     modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
                 } else modal.showErrorFeedback(localizer.propertyExistsInClass);
             } else if (property.isValidType(newType)) {
-                property.setNameAndType(newName, newType);
+                setNameAndType(newName, newType);
                 modal.destroy(modal.OK);
+            }
+        }
+
+        function setNameAndType(name, type) {
+            app.editor.graph.getModel().beginUpdate();
+            try {
+                property.setNameAndType(name, type);
+                modal.afterUpdateValue(property);
+            } finally {
+                app.editor.graph.getModel().endUpdate();
             }
         }
     };
 };
+
+OPropertyEditModalWindow.prototype.afterUpdateValue = function (property) {};
