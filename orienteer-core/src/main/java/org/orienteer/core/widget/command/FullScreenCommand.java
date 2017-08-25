@@ -32,4 +32,9 @@ public class FullScreenCommand<T> extends AjaxCommand<T> {
 		target.appendJavaScript("$('body').toggleClass('noscroll'); $('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
 	}
 
+	@Override
+	protected void onDetach() {
+		this.expanded = false;
+		super.onDetach();
+	}
 }
