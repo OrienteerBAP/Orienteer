@@ -9,6 +9,8 @@ var OArchitectOClassConfigurator = {
      * @param json - string which contains json data
      */
     configOClassFromDatabase: function (oClass, json) {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
         oClass.name = json.name;
         oClass.existsInDb = json.existsInDb;
         oClass.pageUrl = json.pageUrl;
@@ -16,6 +18,8 @@ var OArchitectOClassConfigurator = {
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.subClasses, false, true);
         if (oClass.cell != null) oClass.setCell(oClass.cell);
+        OArchitectOClassConfigurator.configExistClassesLinks(oClass);
+        graph.getModel().endUpdate();
     },
 
     /**
@@ -29,6 +33,8 @@ var OArchitectOClassConfigurator = {
             configure();
 
             function configure() {
+                var graph = app.editor.graph;
+                graph.getModel().beginUpdate();
                 oClass.cell = classCell;
                 var superClassesNames = oClass.superClasses;
                 var subClassesNames = oClass.subClasses;
@@ -39,6 +45,7 @@ var OArchitectOClassConfigurator = {
                 OArchitectOClassConfigurator.configProperties(oClass, propertiesCells, false);
                 OArchitectOClassConfigurator.configClasses(oClass, superClassesNames, true, false);
                 OArchitectOClassConfigurator.configClasses(oClass, subClassesNames, false, false);
+                graph.getModel().endUpdate();
             }
         }
     },
@@ -61,6 +68,18 @@ var OArchitectOClassConfigurator = {
                 property = configElement.value;
                 property.configFromCell(oClass, configElement);
             }
+        });
+    },
+
+    configExistClassesLinks: function (oClass) {
+        OArchitectUtil.forEach(OArchitectUtil.getAllClasses(), function (existsClass) {
+            OArchitectUtil.forEach(existsClass.properties, function (property) {
+                if (property.linkedClass === oClass.name) {
+                    if (property.isSubClassProperty()) {
+                        property.linkedClass = oClass;
+                    } else property.setLinkedClassWithoutSavingState(oClass);
+                }
+            });
         });
     },
 

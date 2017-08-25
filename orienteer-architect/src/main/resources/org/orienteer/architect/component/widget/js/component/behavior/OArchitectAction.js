@@ -127,6 +127,7 @@ var OArchitectAction = {
             var counterX = 1;
             var jsonClasses = JSON.parse(json);
             var cells = [];
+            graph.getModel().beginUpdate();
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
@@ -137,6 +138,7 @@ var OArchitectAction = {
                 counterX++;
             });
             if (cells.length > 1) applyLayout(cells);
+            graph.getModel().endUpdate();
         };
 
 
@@ -204,7 +206,7 @@ var OArchitectAction = {
         if (cellsForDelete == null || cellsForDelete.length === 0 && cell != null) {
             cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassByPropertyCell(cell)];
         }
-        prepareCellsForRemove(cellsForDelete);
+        cellsForDelete = getPreparedCells(cellsForDelete);
         removeCells(cellsForDelete);
 
         function removeCells(cells) {
@@ -213,13 +215,17 @@ var OArchitectAction = {
             }
         }
 
-        function prepareCellsForRemove(cells) {
+        function getPreparedCells(cells) {
+            var result = [];
             OArchitectUtil.forEach(cells, function (cell) {
-                if (cell.value instanceof OArchitectOClass) {
-                   // cell.value.prepareForRemove();
-                    cell.value.removed = true;
+                if (OArchitectUtil.isCellDeletable(cell)) {
+                    if (cell.value instanceof OArchitectOClass) {
+                        cell.value.removed = true;
+                    }
+                    result.push(cell);
                 }
             });
+            return result;
         }
     },
 

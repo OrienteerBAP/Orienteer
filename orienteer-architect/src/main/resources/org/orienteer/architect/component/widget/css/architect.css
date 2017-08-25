@@ -112,3 +112,7 @@
   height: 100%;
   position: fixed;
 }
+
+div.wicket-modal {
+  z-index: 100000;
+}

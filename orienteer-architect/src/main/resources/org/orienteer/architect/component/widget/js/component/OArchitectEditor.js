@@ -60,14 +60,27 @@ OArchitectEditor.prototype.configurePopupMenu = function () {
 };
 
 OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
-    var action = new OArchitectPopupMenuAction(localizer.addProperty, OArchitectConstants.FA_ALIGN_JUSTIFY, OArchitectActionNames.ADD_OPROPERTY_ACTION, true);
-    action.isValidCell = OArchitectUtil.isValidPropertyTarget;
-    menu.addAction(new OArchitectPopupMenuAction(localizer.undo, OArchitectConstants.FA_UNDO, 'undo'));
-    menu.addAction(new OArchitectPopupMenuAction(localizer.redo, OArchitectConstants.FA_REDO, 'redo'));
+    var editor = this;
+    var addProperty = new OArchitectPopupMenuAction(localizer.addProperty, OArchitectConstants.FA_ALIGN_JUSTIFY, OArchitectActionNames.ADD_OPROPERTY_ACTION, true);
+    var undo = new OArchitectPopupMenuAction(localizer.undo, OArchitectConstants.FA_UNDO, 'undo');
+    var redo = new OArchitectPopupMenuAction(localizer.redo, OArchitectConstants.FA_REDO, 'redo');
+    var deleteAction = new OArchitectPopupMenuAction(localizer.deleteAction, OArchitectConstants.FA_DELETE, OArchitectActionNames.DELETE_CELL_ACTION, true);
+    addProperty.isValidCell = OArchitectUtil.isValidPropertyTarget;
+    undo.isEnabled = function () {
+        return editor.undoManager.canUndo();
+    };
+    redo.isEnabled = function () {
+        return editor.undoManager.canRedo();
+    };
+    deleteAction.isValidCell = function (cell) {
+        return OArchitectUtil.isCellDeletable(cell);
+    };
+    menu.addAction(undo);
+    menu.addAction(redo);
     menu.addAction(new OArchitectPopupMenuAction(localizer.addClass, OArchitectConstants.FA_FILE_O, OArchitectActionNames.ADD_OCLASS_ACTION, false, true));
     menu.addAction(new OArchitectPopupMenuAction(localizer.addExistsClasses, OArchitectConstants.FA_DATABASE, OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION, false, true));
-    menu.addAction(action);
-    menu.addAction(new OArchitectPopupMenuAction(localizer.deleteAction, OArchitectConstants.FA_DELETE, OArchitectActionNames.DELETE_CELL_ACTION, true));
+    menu.addAction(addProperty);
+    menu.addAction(deleteAction);
 };
 
 /**
@@ -81,13 +94,13 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
         var cells = graph.getSelectionCellsForChanges(changes);
         OArchitectUtil.forEach(cells, function (cell) {
             if (cell.isVertex()) {
-                if (cell.value instanceof OArchitectOClass) {
-                    OArchitectOClassConfigurator.configOClassFromCell(cell.value, cell);
-                } else if (cell.value instanceof OArchitectOProperty) {
-                    var property = cell.value;
-                    var classCell = OArchitectUtil.getCellByClassName(cell.value.ownerClass);
+                var value = cell.value;
+                if (value instanceof OArchitectOClass) {
+                    OArchitectOClassConfigurator.configOClassFromCell(value, cell);
+                } else if (value instanceof OArchitectOProperty) {
+                    var classCell = OArchitectUtil.getCellByClassName(value.ownerClass);
                     if (classCell != null) {
-                        property.configFromCell(classCell.value, cell);
+                        value.configFromCell(classCell.value, cell);
                     }
                 }
             }
@@ -106,6 +119,7 @@ OArchitectEditor.prototype.installUndoSaver = function (graph) {
         OArchitectUtil.forEach(edit.changes, function (change) {
             if (change instanceof mxValueChange) {
                 if (change.previous !== null && change.value !== null) {
+                    change.execute = null;
                     changesForSave.push(change);
                 }
             } else changesForSave.push(change);
@@ -118,6 +132,10 @@ OArchitectEditor.prototype.installUndoSaver = function (graph) {
 
     graph.getModel().addListener(mxEvent.UNDO, listener);
     graph.getView().addListener(mxEvent.UNDO, listener);
+};
+
+OArchitectEditor.prototype.clearCommandHistory = function () {
+    this.undoManager.clear();
 };
 
 OArchitectEditor.prototype.undo = function () {

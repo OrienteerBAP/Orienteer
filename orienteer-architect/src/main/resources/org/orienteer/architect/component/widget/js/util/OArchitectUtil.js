@@ -119,6 +119,18 @@ var OArchitectUtil = {
         }
     },
 
+    isCellDeletable: function (cell) {
+        if (cell == null) return false;
+        if (cell.isEdge() && cell.source != null) {
+            if (cell.source.value instanceof OArchitectOClass) {
+                return !cell.source.value.existsInDb;
+            } else if (cell.source.value instanceof OArchitectOProperty) {
+                return !cell.source.value.ownerClass.existsInDb;
+            }
+        }
+        return true;
+    },
+
     getCellsByClassNames: function (classNames) {
         var result = [];
         var cells = OArchitectUtil.getAllClassCells();
@@ -183,7 +195,7 @@ var OArchitectUtil = {
         var exists = false;
         var cells = graph.getChildVertices(graph.getDefaultParent());
         OArchitectUtil.forEach(cells, function (cell, trigger) {
-            if (cell.value.name === className) {
+            if (cell.value.name.toUpperCase() === className.toUpperCase()) {
                 exists = true;
                 trigger.stop = true;
             }

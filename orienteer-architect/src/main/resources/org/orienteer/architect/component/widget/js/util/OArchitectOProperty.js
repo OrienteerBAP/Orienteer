@@ -18,6 +18,7 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.previousName = null;
 
     this.previousState = null;
+    this.nextState = null;
     this.removed = false;
 
     if (ownerClass != null) this.setOwnerClass(ownerClass);
@@ -94,10 +95,15 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
     this.subClassProperty = json.subClassProperty;
     this.ownerClass = oClass;
     this.pageUrl = json.pageUrl;
-    var linkedClassCell = OArchitectUtil.getCellByClassName(json.linkedClass);
-    if (linkedClassCell != null) this.setLinkedClass(linkedClassCell.value);
-    if (this.cell != null) this.setCell(this.cell);
-    else oClass.createCellForProperty(this);
+    if (this.cell != null) {
+        this.setCell(this.cell);
+    } else oClass.createCellForProperty(this);
+
+    var linkedCell = OArchitectUtil.getCellByClassName(json.linkedClass);
+    if (linkedCell != null) {
+        this.setLinkedClassWithoutSavingState(linkedCell.value);
+    } else if (json.linkedClass != null) this.linkedClass = json.linkedClass;
+
     oClass.notifySubClassesAboutChangesInProperty(this);
 };
 
@@ -111,8 +117,9 @@ OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
     this.ownerClass = oClass;
     this.cell = propertyCell;
     var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
-    if (linkedCell != null)
-        this.setLinkedClass(linkedCell.value);
+    if (linkedCell != null) {
+        this.setLinkedClassWithoutSavingState(linkedCell.value);
+    }
     this.removed = false;
     this.cell.parent = oClass.cell;
     oClass.notifySubClassesAboutChangesInProperty(this);
@@ -288,6 +295,13 @@ OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
     }
 };
 
+OArchitectOProperty.prototype.setLinkedClassWithoutSavingState = function (linkedClass) {
+    if (this.canModify() && this.linkedClass !== linkedClass && linkedClass != null) {
+        this.linkedClass = linkedClass;
+        OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
+    }
+};
+
 /**
  * @return boolean true if property has been already removed from class
  */
@@ -327,10 +341,14 @@ OArchitectOProperty.prototype.equalsWithJsonProperty = function (jsonProperty) {
  */
 OArchitectOProperty.prototype.toJson = function () {
     function filter(key, value) {
-        if (key === 'cell') {
+        if (key === 'cell' || key === 'previousState' || key === 'nextState') {
             value = undefined;
         } else if (key === 'ownerClass' || key === 'linkedClass') {
-            value = value != null ? value.name : null;
+            if (value != null) {
+                if (value instanceof OArchitectOClass) {
+                    value = value.name;
+                }
+            }
         }
         return value;
     }
@@ -347,7 +365,11 @@ OArchitectOProperty.prototype.toEditorConfigObject = function () {
     result.ownerClass = this.ownerClass.name;
     result.name = this.name;
     result.type = this.type;
-    result.linkedClass = this.linkedClass != null ? this.linkedClass.name : null;
+    if (this.linkedClass != null) {
+        if (this.linkedClass instanceof OArchitectOClass) {
+            result.linkedClass = this.linkedClass.name;
+        } else result.linkedClass = this.linkedClass;
+    }
     result.previousName = this.previousName;
     result.subClassProperty = this.subClassProperty;
     return result;

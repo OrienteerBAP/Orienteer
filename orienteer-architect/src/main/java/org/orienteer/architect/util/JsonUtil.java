@@ -99,7 +99,7 @@ public abstract class JsonUtil implements IClusterable {
         }
         if (!jsonObject.isNull(LINKED_CLASS_NAME)) {
             String linkedClass = jsonObject.getString(LINKED_CLASS_NAME);
-            property.setLinkedClassName(linkedClass);
+            property.setLinkedClass(linkedClass);
         }
         return property;
     }
