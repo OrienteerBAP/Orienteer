@@ -21,9 +21,12 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.*;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
+import org.orienteer.architect.component.panel.command.OArchitectFullscreenCommand;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -31,8 +34,6 @@ import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.core.widget.command.FullScreenCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
@@ -46,8 +47,6 @@ import java.util.Set;
 @Widget(id="architect-editor", domain = "document", selector = OArchitectModule.ODATA_MODEL_OCLASS, autoEnable = true, order=10)
 @RequiredOrientResource(value = OSecurityHelper.CLUSTER, permissions = OrientPermission.READ)
 public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(OArchitectEditorWidget.class);
 
     private static final JavaScriptResourceReference MXGRAPH_JS = new WebjarsJavaScriptResourceReference("mxgraph/current/javascript/mxClient.min.js");
     private static final CssResourceReference MXGRAPH_CSS    = new WebjarsCssResourceReference("mxgraph/current/javascript/src/css/common.css");
@@ -83,31 +82,35 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     }
 
     private void addFullScreenCommand() {
-        removeCommandById(getFullScreenCommandId());
-        final IModel<Boolean> clickOnF11 = Model.of(false);
-        final FullScreenCommand<ODocument> fullScreenCommand = new FullScreenCommand<ODocument>(getFullScreenCommandId()) {
+        final IModel<FullScreenCommand> fullscreenModel = Model.of();
+        commands.visitChildren(FullScreenCommand.class, new IVisitor<Component, Void>() {
             @Override
-            public void onClick(AjaxRequestTarget target) {
-                super.onClick(target);
-                if (!clickOnF11.getObject()) target.appendJavaScript("; app.switchFullScreenMode(true);");
-            }
-        };
-        add(new AbstractDefaultAjaxBehavior() {
-            @Override
-            protected void respond(AjaxRequestTarget target) {
-                clickOnF11.setObject(true);
-                fullScreenCommand.onClick(target);
-                clickOnF11.setObject(false);
-            }
-
-            @Override
-            public void renderHead(Component component, IHeaderResponse response) {
-                super.renderHead(component, response);
-                response.render(OnLoadHeaderItem.forScript(
-                        String.format("; app.setSwitchFullScreenMode('%s');", getCallbackUrl())));
+            public void component(Component component, IVisit<Void> visit) {
+                if (fullscreenModel.getObject() == null)
+                    fullscreenModel.setObject((FullScreenCommand) component);
+                visit.stop();
             }
         });
-        addCommand(fullScreenCommand);
+        if (fullscreenModel.getObject() != null) {
+            final OArchitectFullscreenCommand fullscreen = new OArchitectFullscreenCommand(fullscreenModel.getObject().getId());
+            fullscreen.setBootstrapType(null);
+            commands.replace(fullscreen);
+            add(new AbstractDefaultAjaxBehavior() {
+                @Override
+                protected void respond(AjaxRequestTarget target) {
+                    fullscreen.setClickOnF11(true);
+                    fullscreen.onClick(target);
+                    fullscreen.setClickOnF11(false);
+                }
+
+                @Override
+                public void renderHead(Component component, IHeaderResponse response) {
+                    super.renderHead(component, response);
+                    response.render(OnLoadHeaderItem.forScript(
+                            String.format("; app.setSwitchFullScreenMode('%s');", getCallbackUrl())));
+                }
+            });
+        }
     }
 
     private WebMarkupContainer newContainer(String id) {
