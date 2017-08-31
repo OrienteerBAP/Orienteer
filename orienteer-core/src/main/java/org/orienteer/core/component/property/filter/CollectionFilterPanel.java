@@ -8,7 +8,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
@@ -52,12 +51,12 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
     }
 
     @Override
-    public void convertInput() {
-        List<T> collection = Lists.newArrayList();
+    protected Collection<T> getFilterInput() {
+        Collection<T> collection = Lists.newArrayList();
         for (ListFilterInput input : filterComponents) {
             collection.add(input.getConvertedInput());
         }
-        setConvertedInput(collection);
+        return collection;
     }
 
     private void createAndAddFiltersList(final List<ListFilterInput> filterComponents) {
@@ -101,6 +100,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             ListFilterInput next = iterator.next();
             if (!next.equals(component))
                 iterator.remove();
+            else next.setConvertedInput(null);
         }
         component.getRemoveButton().setVisible(false);
         component.getAddButton().setVisible(true);
@@ -172,6 +172,10 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
 
         public T getConvertedInput() {
             return inputComponent.getConvertedInput();
+        }
+
+        public void setConvertedInput(T value) {
+            inputComponent.setConvertedInput(value);
         }
 
         public void clearInputComponent() {

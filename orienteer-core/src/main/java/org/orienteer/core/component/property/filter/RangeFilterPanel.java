@@ -8,7 +8,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -61,11 +60,11 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
     }
 
     @Override
-    public void convertInput() {
+    protected Collection<T> getFilterInput() {
         Collection<T> collection = Lists.newArrayList();
         collection.add(startComponent.getConvertedInput());
         collection.add(endComponent.getConvertedInput());
-        setConvertedInput(collection);
+        return collection;
     }
 
     private WebMarkupContainer getRangeContainer(final Component component, final String filterId, boolean first) {
@@ -98,6 +97,8 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
 
     @Override
     protected void clearInputs() {
+        startComponent.setConvertedInput(null);
+        endComponent.setConvertedInput(null);
         startComponent.setModelObject(null);
         endComponent.setModelObject(null);
     }

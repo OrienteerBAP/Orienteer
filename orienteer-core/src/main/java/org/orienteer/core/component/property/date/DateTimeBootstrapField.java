@@ -87,7 +87,7 @@ public class DateTimeBootstrapField extends DateTimeField {
             public void beforeRender(Component component) {
                 Response response = component.getResponse();
                 response.write(String.format(
-                        "<div id='%s' class='input-group date' data-provide='datepicker'>", datePickerId));
+                        "<div id='%s' class='input-group date' data-provide='datepicker' style='width:200px;'>", datePickerId));
             }
 
             @Override

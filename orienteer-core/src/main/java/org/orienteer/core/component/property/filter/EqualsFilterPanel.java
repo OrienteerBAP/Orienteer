@@ -4,7 +4,6 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -71,6 +70,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
 
     @Override
     protected void clearInputs() {
+        formComponent.setConvertedInput(null);
         formComponent.setModelObject(null);
     }
 
