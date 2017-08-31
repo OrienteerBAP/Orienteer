@@ -18,7 +18,7 @@ public class OArchitectFullscreenCommand extends FullScreenCommand<Void> {
     public void onClick(AjaxRequestTarget target) {
         super.onClick(target);
         if (!clickOnF11)
-            target.appendJavaScript("; app.switchFullScreenMode(true);");
+            target.appendJavaScript("app.switchFullScreenMode(true);");
     }
 
     public void setClickOnF11(boolean clickOnF11) {

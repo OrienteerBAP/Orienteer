@@ -82,17 +82,14 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     }
 
     private void addFullScreenCommand() {
-        final IModel<FullScreenCommand> fullscreenModel = Model.of();
-        commands.visitChildren(FullScreenCommand.class, new IVisitor<Component, Void>() {
+        FullScreenCommand<?> command = commands.visitChildren(FullScreenCommand.class, new IVisitor<Component, FullScreenCommand<?>>() {
             @Override
-            public void component(Component component, IVisit<Void> visit) {
-                if (fullscreenModel.getObject() == null)
-                    fullscreenModel.setObject((FullScreenCommand) component);
-                visit.stop();
+            public void component(Component component, IVisit<FullScreenCommand<?>> visit) {
+            	visit.stop((FullScreenCommand<?>) component);
             }
         });
-        if (fullscreenModel.getObject() != null) {
-            final OArchitectFullscreenCommand fullscreen = new OArchitectFullscreenCommand(fullscreenModel.getObject().getId());
+        if (command != null) {
+            final OArchitectFullscreenCommand fullscreen = new OArchitectFullscreenCommand(command.getId());
             fullscreen.setBootstrapType(null);
             commands.replace(fullscreen);
             add(new AbstractDefaultAjaxBehavior() {
@@ -107,7 +104,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 public void renderHead(Component component, IHeaderResponse response) {
                     super.renderHead(component, response);
                     response.render(OnLoadHeaderItem.forScript(
-                            String.format("; app.setSwitchFullScreenMode('%s');", getCallbackUrl())));
+                            String.format("app.setSwitchFullScreenMode('%s');", getCallbackUrl())));
                 }
             });
         }
@@ -126,7 +123,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(CssReferenceHeaderItem.forReference(MXGRAPH_CSS));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/OArchitectApplication.js")));
         response.render(JavaScriptHeaderItem.forScript(
-                String.format("; initMxGraph('%s');", "en"), null));
+                String.format("initMxGraph('%s');", "en"), null));
         response.render(JavaScriptHeaderItem.forReference(MXGRAPH_JS));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectEditor.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/OArchitectBar.js")));
@@ -194,17 +191,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     }
 
     private boolean canUserUpdateEditor() {
-        boolean canUpdate = false;
-        Set<? extends OSecurityRole> roles = OrienteerWebSession.get().getUser().getRoles();
-
-        for (OSecurityRole role : roles) {
-            canUpdate = role.allow(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.UPDATE.getPermissionFlag());
-            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.CREATE.getPermissionFlag());
-            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.CREATE.getPermissionFlag());
-            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.UPDATE.getPermissionFlag());
-            if (canUpdate)
-                break;
-        }
-        return canUpdate;
+    	return OSecurityHelper.isAllowed(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.UPDATE, OrientPermission.CREATE)
+    		&& OSecurityHelper.isAllowed(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.UPDATE, OrientPermission.CREATE);	
     }
 }
