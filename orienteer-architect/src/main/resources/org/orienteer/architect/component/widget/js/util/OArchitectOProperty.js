@@ -12,15 +12,76 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.type = null;
     this.linkedClass = null;
     this.subClassProperty = false;
+    this.superClassExistsInEditor = false;
     this.pageUrl = null;
     this.cell = null;
     this.previousName = null;
+
+    this.previousState = null;
+    this.nextState = null;
+    this.removed = false;
 
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (name != null) this.setName(name);
     if (type != null) this.setType(type);
     if (cell != null) this.setCell(cell);
 };
+
+/**
+ * {@link OArchitectOClass} which contains this property
+ */
+OArchitectOProperty.prototype.ownerClass = null;
+
+/**
+ * string name of this property
+ */
+OArchitectOProperty.prototype.name = null;
+
+/**
+ * string type of this property. See {@link OArchitectOType}
+ */
+OArchitectOProperty.prototype.type = null;
+
+/**
+ * {@link OArchitectOClass} in which this property is linked
+ */
+OArchitectOProperty.prototype.linkedClass = null;
+
+/**
+ * boolean true if this property is inherited property from superclass. Default false.
+ */
+OArchitectOProperty.prototype.subClassProperty = false;
+
+/**
+ * boolean true if superclass of this property exists in editor. Default false.
+ * Uses for resolving view property dependencies in classes cells
+ */
+OArchitectOProperty.prototype.superClassExistsInEditor = false;
+
+/**
+ * string url to property page. Uses for redirect user to property page
+ */
+OArchitectOProperty.prototype.pageUrl = null;
+
+/**
+ * {@link mxCell} which contains this property.
+ */
+OArchitectOProperty.prototype.cell = null;
+
+/**
+ * Save previous state of property for undo
+ */
+OArchitectOProperty.prototype.previousState = null;
+
+/**
+ * boolean indicates if this property is removed. If true this property already removed
+ */
+OArchitectOProperty.prototype.removed = false;
+
+/**
+ * string contains previous name of this property. Needs for correct property rename
+ */
+OArchitectOProperty.prototype.previousName = null;
 
 /**
  * Config instance of {@link OArchitectOProperty} from json which is respond from database
@@ -34,28 +95,34 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
     this.subClassProperty = json.subClassProperty;
     this.ownerClass = oClass;
     this.pageUrl = json.pageUrl;
-    var linkedClassCell = OArchitectUtil.getCellByClassName(json.linkedClass);
-    if (linkedClassCell != null) this.setLinkedClass(linkedClassCell.value);
-    if (this.cell != null) this.setCell(this.cell);
+    if (this.cell != null) {
+        this.setCell(this.cell);
+    } else oClass.createCellForProperty(this);
 
-    oClass.changeProperties(oClass, [this], this.subClassProperty, false);
+    var linkedCell = OArchitectUtil.getCellByClassName(json.linkedClass);
+    if (linkedCell != null) {
+        this.setLinkedClassWithoutSavingState(linkedCell.value);
+    } else if (json.linkedClass != null) this.linkedClass = json.linkedClass;
+
+    oClass.notifySubClassesAboutChangesInProperty(this);
 };
 
 /**
- * INTERNAL FUNCTION. DON'T CALL IT.
  * Config instance of {@link OArchitectOProperty} from cell which is saved in xml config.
  * @param oClass - {@link OArchitectOClass} which is owner of this property
  * @param propertyCell - {@link mxCell} which contains this property
  */
-OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propertyCell) {
-    oClass.properties.push(this);
+OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
+    if (oClass.getProperty(this.name) == null) oClass.properties.push(this);
     this.ownerClass = oClass;
     this.cell = propertyCell;
     var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
-    if (linkedCell != null)
-        this.setLinkedClass(linkedCell.value);
+    if (linkedCell != null) {
+        this.setLinkedClassWithoutSavingState(linkedCell.value);
+    }
+    this.removed = false;
     this.cell.parent = oClass.cell;
-    oClass.changeProperties(oClass, [this], this.subClassProperty, false);
+    oClass.notifySubClassesAboutChangesInProperty(this);
 };
 
 /**
@@ -63,7 +130,7 @@ OArchitectOProperty.prototype.configFromEditorConfig = function (oClass, propert
  * @param type - string which contains type name. See {@link OArchitectOType}
  */
 OArchitectOProperty.prototype.setType = function (type) {
-    if (OArchitectOType.contains(type) && this.type !== type) {
+    if (this.canModify() && this.isValidType(type)) {
         this.type = type;
     }
 };
@@ -72,26 +139,52 @@ OArchitectOProperty.prototype.setType = function (type) {
  * Set name of this property
  * @param name - string. Can't be null
  */
-OArchitectOProperty.prototype.setName = function (name, callback) {
-    if (name != null && this.name !== name) {
-        var msg = null;
-        if (this.ownerClass != null && this.ownerClass instanceof OArchitectOClass) {
-            var existsProperty = this.ownerClass.getProperty(name);
-            if (existsProperty != null) {
-                if (existsProperty.isSubClassProperty()) {
-                    msg = localizer.propertyExistsInSuperClass;
-                } else msg = localizer.propertyExistsInClass;
-            } else setName(this, name);
-            if (callback != null) callback(this, msg);
-        } else setName(this, name);
-    }  else if (this.name === name) {
-        if (callback != null) callback(this);
+OArchitectOProperty.prototype.setName = function (name) {
+    if (this.canModify() && this.isValidName(name)) {
+        this.previousName = this.name;
+        this.name = name;
     }
+};
 
-    function setName(property, name) {
-        property.previousName = property.name;
-        property.name = name;
+/**
+ * Set name and type for this property and update property value in property cell and class value in class cell.
+ * @param name - string name
+ * @param type - string type
+ */
+OArchitectOProperty.prototype.setNameAndType = function (name, type) {
+    if (this.isValidName(name) || this.isValidType(type)) {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        try {
+            this.saveState();
+            this.setName(name);
+            this.setType(type);
+            this.updateValueInCell();
+            this.ownerClass.notifySubClassesAboutChangesInProperty(this);
+        } finally {
+            graph.getModel().endUpdate();
+        }
     }
+};
+
+/**
+ * Checks if given type is valid for this property
+ * @param type - string with OrientDB type
+ * @return boolean true if type if valid
+ */
+OArchitectOProperty.prototype.isValidType = function (type) {
+    return type != null && OArchitectOType.contains(type) && this.type !== type;
+};
+
+/**
+ * Checks if given name is valid for this property
+ * @param name - string property name
+ * @return boolean true if name is valid
+ */
+OArchitectOProperty.prototype.isValidName = function (name) {
+    var valid = name != null && this.name !== name;
+    if (valid && this.ownerClass != null) valid = this.ownerClass.getProperty(name) == null;
+    return valid;
 };
 
 /**
@@ -122,10 +215,21 @@ OArchitectOProperty.prototype.setCell = function (cell) {
 };
 
 /**
- * Update {@link OArchitectOProperty#ownerClass} sub classes about changes of this property
+ * Save previous state of this property for undo action
  */
-OArchitectOProperty.prototype.notifySubClassesPropertiesAboutChanges = function () {
-    this.ownerClass.changeProperties(this.ownerClass, [this], this.subClassProperty, false);
+OArchitectOProperty.prototype.saveState = function () {
+    if (!this.isRemoved() && !this.ownerClass.isRemoved() && this.name !== null) {
+        this.ownerClass.saveState();
+        this.previousState = this.toEditorConfigObject();
+    } else this.previousState = null;
+};
+
+/**
+ * Update property in property cell and update class in class cell
+ */
+OArchitectOProperty.prototype.updateValueInCell = function () {
+    this.ownerClass.updateValueInCell();
+    this.setCell(this.cell);
 };
 
 /**
@@ -134,6 +238,14 @@ OArchitectOProperty.prototype.notifySubClassesPropertiesAboutChanges = function 
  */
 OArchitectOProperty.prototype.isSubClassProperty = function () {
     return this.subClassProperty;
+};
+
+/**
+ * Checks if superclass of this property exists in editor
+ * @returns boolean - true if exists
+ */
+OArchitectOProperty.prototype.isSuperClassExistsInEditor = function () {
+    return this.superClassExistsInEditor;
 };
 
 /**
@@ -166,15 +278,41 @@ OArchitectOProperty.prototype.canDisconnect = function () {
  * @param linkedClass {@link OArchitectOClass} which will be linked class for this property
  */
 OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
-    if (this.linkedClass !== linkedClass) {
+    if (this.canModify() && this.linkedClass !== linkedClass) {
+        this.saveState();
         if (linkedClass == null && this.linkedClass != null) {
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
+            if (!this.ownerClass.existsInDb) {
+                OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
+                this.linkedClass = linkedClass;
+                this.ownerClass.notifySubClassesAboutChangesInProperty(this);
+            }
         } else if (linkedClass != null) {
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, linkedClass.cell, true);
+            this.linkedClass = linkedClass;
+            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
+            this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         }
-        this.linkedClass = linkedClass;
-        this.ownerClass.changeProperties(this.ownerClass, [this]);
+        this.updateValueInCell();
     }
+};
+
+OArchitectOProperty.prototype.setLinkedClassWithoutSavingState = function (linkedClass) {
+    if (this.canModify() && this.linkedClass !== linkedClass && linkedClass != null) {
+        this.linkedClass = linkedClass;
+        OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
+    }
+};
+
+/**
+ * @return boolean true if property has been already removed from class
+ */
+OArchitectOProperty.prototype.isRemoved = function () {
+    return this.removed;
+};
+
+OArchitectOProperty.prototype.canModify = function () {
+    var modify = !this.isRemoved();
+    if (modify && this.ownerClass != null) modify = !this.ownerClass.isRemoved();
+    return modify;
 };
 
 OArchitectOProperty.prototype.toString = function () {
@@ -203,10 +341,14 @@ OArchitectOProperty.prototype.equalsWithJsonProperty = function (jsonProperty) {
  */
 OArchitectOProperty.prototype.toJson = function () {
     function filter(key, value) {
-        if (key === 'cell') {
+        if (key === 'cell' || key === 'previousState' || key === 'nextState') {
             value = undefined;
         } else if (key === 'ownerClass' || key === 'linkedClass') {
-            value = value != null ? value.name : null;
+            if (value != null) {
+                if (value instanceof OArchitectOClass) {
+                    value = value.name;
+                }
+            }
         }
         return value;
     }
@@ -219,8 +361,15 @@ OArchitectOProperty.prototype.toJson = function () {
  * @returns {@link OArchitectOProperty} instance of this property which can be converted to editor xml config
  */
 OArchitectOProperty.prototype.toEditorConfigObject = function () {
-    var result = new OArchitectOProperty(this.ownerClass.name, this.name, this.type, null);
-    result.linkedClass = this.linkedClass != null ? this.linkedClass.name : null;
+    var result = new OArchitectOProperty();
+    result.ownerClass = this.ownerClass.name;
+    result.name = this.name;
+    result.type = this.type;
+    if (this.linkedClass != null) {
+        if (this.linkedClass instanceof OArchitectOClass) {
+            result.linkedClass = this.linkedClass.name;
+        } else result.linkedClass = this.linkedClass;
+    }
     result.previousName = this.previousName;
     result.subClassProperty = this.subClassProperty;
     return result;

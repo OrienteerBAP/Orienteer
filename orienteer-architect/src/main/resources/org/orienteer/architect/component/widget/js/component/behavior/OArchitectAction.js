@@ -12,7 +12,8 @@ var OArchitectActionNames = {
     TO_JSON_ACTION:              'toJsonAction',
     SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
     APPLY_EDITOR_CHANGES_ACTION: 'applyChanges',
-    FULL_SCREEN_MODE:            'fullScreenMode'
+    FULL_SCREEN_MODE:            'fullScreenMode',
+    ADD_OPROPERTY_LINK_ACTION:   'addOPropertyLinkAction'
 };
 
 /**
@@ -63,7 +64,14 @@ var OArchitectAction = {
 
                 function onDestroy(property, event) {
                     if (event === this.OK) {
-                        classCell.value.createProperty(property.name, property.type, property.cell);
+                        graph.getModel().beginUpdate();
+                        try {
+                            classCell.value.saveState();
+                            classCell.value.createProperty(property.name, property.type, property.cell);
+                            classCell.value.updateValueInCell();
+                        } finally {
+                            graph.getModel().endUpdate();
+                        }
                     }
                 }
             } else {
@@ -74,6 +82,35 @@ var OArchitectAction = {
         };
 
         action();
+    },
+
+    addOPropertyLinkAction: function (editor, addOPropertyLinkEvent) {
+        if (addOPropertyLinkEvent != null) {
+            var graph = editor.graph;
+            var source = addOPropertyLinkEvent.source;
+            var target = addOPropertyLinkEvent.target;
+            var targetClass = target.value;
+            var property = new OArchitectOProperty(targetClass);
+            var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
+            modal.orientDbTypes = OArchitectOType.linkTypes;
+            modal.show(addOPropertyLinkEvent.event.getGraphX(), addOPropertyLinkEvent.event.getGraphY());
+
+            function onDestroy(property, event) {
+                if (event === this.OK) {
+                    graph.getModel().beginUpdate();
+                    try {
+                        targetClass.saveState();
+                        var newProperty = targetClass.createProperty(property.name, property.type);
+                        newProperty.setLinkedClass(source.value);
+                        newProperty.saveState();
+                        targetClass.updateValueInCell();
+                        newProperty.updateValueInCell();
+                    } finally {
+                        graph.getModel().endUpdate();
+                    }
+                } else modal.showErrorFeedback(localizer.cannotCreateLink);
+            }
+        }
     },
 
     /**
@@ -90,6 +127,7 @@ var OArchitectAction = {
             var counterX = 1;
             var jsonClasses = JSON.parse(json);
             var cells = [];
+            graph.getModel().beginUpdate();
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
@@ -99,7 +137,8 @@ var OArchitectAction = {
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
-            applyLayout(cells);
+            if (cells.length > 1) applyLayout(cells);
+            graph.getModel().endUpdate();
         };
 
 
@@ -138,20 +177,8 @@ var OArchitectAction = {
         var action = function () {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var modal = new OClassEditModalWindow(cell.value, app.editorId, onDestroy, false);
+            var modal = new OClassEditModalWindow(cell.value, app.editorId, null, false);
             modal.show(evt.getGraphX(), evt.getGraphY());
-
-            function onDestroy(oClass, event) {
-                if (event === this.OK) {
-                    graph.getModel().beginUpdate();
-                    try {
-                        graph.getModel().setValue(cell, oClass);
-                    } finally {
-                        graph.getModel().endUpdate();
-                    }
-                }
-            }
-
         };
 
         action();
@@ -164,14 +191,8 @@ var OArchitectAction = {
         var action = function () {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var modal = new OPropertyEditModalWindow(cell.value, app.editorId, onDestroy, false);
+            var modal = new OPropertyEditModalWindow(cell.value, app.editorId, null, false);
             modal.show(evt.getGraphX(), evt.getGraphY());
-
-            function onDestroy(property, event) {
-                if (event === this.OK) {
-                    property.notifySubClassesPropertiesAboutChanges();
-                }
-            }
         };
 
         action();
@@ -185,8 +206,26 @@ var OArchitectAction = {
         if (cellsForDelete == null || cellsForDelete.length === 0 && cell != null) {
             cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassByPropertyCell(cell)];
         }
-        if (cellsForDelete != null && cellsForDelete.length > 0) {
-            OArchitectUtil.deleteCells(cellsForDelete);
+        cellsForDelete = getPreparedCells(cellsForDelete);
+        removeCells(cellsForDelete);
+
+        function removeCells(cells) {
+            if (cells != null && cells.length > 0) {
+                OArchitectUtil.deleteCells(cells);
+            }
+        }
+
+        function getPreparedCells(cells) {
+            var result = [];
+            OArchitectUtil.forEach(cells, function (cell) {
+                if (OArchitectUtil.isCellDeletable(cell)) {
+                    if (cell.value instanceof OArchitectOClass) {
+                        cell.value.removed = true;
+                    }
+                    result.push(cell);
+                }
+            });
+            return result;
         }
     },
 
@@ -200,7 +239,14 @@ var OArchitectAction = {
             var oClassCell = OArchitectUtil.getClassByPropertyCell(cell);
             var oClass = oClassCell.value;
             var property = cell.value;
-            oClass.removeProperty(property, false);
+            graph.getModel().beginUpdate();
+            try {
+                oClass.saveState();
+                oClass.removeProperty(property, false);
+                oClass.updateValueInCell();
+            } finally {
+                graph.getModel().endUpdate();
+            }
         }
     },
 
@@ -226,45 +272,10 @@ var OArchitectAction = {
         console.warn('OClasses in JSON: ', OArchitectUtil.getOClassesAsJSON(editor.graph));
     },
 
+    /**
+     * Enable fullscreen mode
+     */
     fullScreenModeAction: function (editor) {
-        editor.fullscreen = !editor.fullscreen;
-        configureOrienteerClasses(editor.fullscreen);
-
-        function configureOrienteerClasses(fullscreen) {
-            if (fullscreen) {
-                $('.metismenu').hide();
-                $('.sidebar-search').hide();
-                $('.navbar.navbar-default.navbar-fixed-top').hide();
-                configureEditorClasses(fullscreen);
-            } else {
-                configureEditorClasses(fullscreen);
-                $('.metismenu').show();
-                $('.sidebar-search').show();
-                $('.navbar.navbar-default.navbar-fixed-top').show();
-            }
-        }
-
-        function configureEditorClasses(fullscreen) {
-            var container = app.getApplicationContainer();
-            var editor = app.editor.container;
-            var sidebar = app.editor.sidebar.container;
-            var outline = app.editor.outline.outline.container;
-            if (fullscreen) {
-                container.classList.add(OArchitectConstants.FULLSCREEN_CLASS);
-                editor.classList.remove(OArchitectConstants.EDITOR_CLASS);
-                sidebar.classList.remove(OArchitectConstants.SIDEBAR_CLASS);
-                editor.classList.add(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
-                sidebar.classList.add(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
-                outline.style.display = 'block';
-                app.editor.outline.update();
-            } else {
-                container.classList.remove(OArchitectConstants.FULLSCREEN_CLASS);
-                editor.classList.remove(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
-                sidebar.classList.remove(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
-                editor.classList.add(OArchitectConstants.EDITOR_CLASS);
-                sidebar.classList.add(OArchitectConstants.SIDEBAR_CLASS);
-                outline.style.display = 'none';
-            }
-        }
+        app.switchFullScreenMode();
     }
 };

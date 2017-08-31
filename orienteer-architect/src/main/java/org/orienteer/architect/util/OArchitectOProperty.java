@@ -13,13 +13,13 @@ public class OArchitectOProperty implements IClusterable {
     private String name;
     private OType type;
     private boolean subClassProperty;
-    private String linkedClassName;
+    private String linkedClass;
     private String pageUrl;
 
     public static OArchitectOProperty toArchitectOProperty(OProperty property) {
         OArchitectOProperty architectProperty = new OArchitectOProperty(property.getName(), property.getType());
         if (property.getLinkedClass() != null)
-            architectProperty.setLinkedClassName(property.getLinkedClass().getName());
+            architectProperty.setLinkedClass(property.getLinkedClass().getName());
         architectProperty.setPageUrl("/property/" + property.getOwnerClass().getName() + "/" + property.getName());
         return architectProperty;
     }
@@ -32,12 +32,12 @@ public class OArchitectOProperty implements IClusterable {
         this(name, type, subClassProperty, null);
     }
 
-    public OArchitectOProperty(String name, OType type, boolean subClassProperty, String linkedClassName) {
+    public OArchitectOProperty(String name, OType type, boolean subClassProperty, String linkedClass) {
         Args.notEmpty(name, "name");
         this.name = name;
         this.type = type;
         this.subClassProperty = subClassProperty;
-        this.linkedClassName = linkedClassName;
+        this.linkedClass = linkedClass;
     }
 
     public String getName() {
@@ -64,12 +64,12 @@ public class OArchitectOProperty implements IClusterable {
         this.subClassProperty = subClassProperty;
     }
 
-    public String getLinkedClassName() {
-        return linkedClassName;
+    public String getLinkedClass() {
+        return linkedClass;
     }
 
-    public void setLinkedClassName(String linkedClassName) {
-        this.linkedClassName = linkedClassName;
+    public void setLinkedClass(String linkedClass) {
+        this.linkedClass = linkedClass;
     }
 
     public String getPageUrl() {

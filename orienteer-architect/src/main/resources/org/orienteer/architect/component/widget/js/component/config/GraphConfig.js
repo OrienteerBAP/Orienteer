@@ -29,10 +29,9 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     this.graph.isValidPropertyTarget = function (cell) {
         return OArchitectUtil.isValidPropertyTarget(cell);
     };
-    this.graph.isCellResizable = function (cell) {
-        return this.isClass(cell);
-    };
     this.graph.isCellMovable = function(cell) {
+        if (!app.canUpdate)
+            return false;
         return this.isClass(cell);
     };
     this.graph.isCellEditable = function (cell) {
@@ -42,6 +41,10 @@ GraphConfig.prototype.configureGraphBehavior = function () {
         return this.isClass(cell);
     };
     this.graph.isCellSelectable = function (cell) {
+        if (cell == null)
+            return false;
+        if (!app.canUpdate)
+            return false;
         return this.isClass(cell) || this.getModel().isEdge(cell);
     };
     this.graph.getTooltipForCell = function (cell) {
@@ -52,9 +55,40 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     };
 
     this.graph.convertValueToString = this.convertValueToString;
-    this.graph.cellLabelChanged = this.cellLabelChanged;
+    this.graph.getModel().valueForCellChanged = this.valueForCellChanged;
+
+    this.graph.getModel().setValue = function (cell, value) {
+        if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
+            var change = new mxValueChange(this, cell, value);
+            change.undo = function () {
+                var nextState = this.value.toEditorConfigObject();
+                this.value = this.previous;
+                this.previous = this.model.valueForCellChanged(this.cell, this.previous);
+                if (this.previous != null) this.previous.nextState = nextState;
+            };
+            change.redo = function () {
+                this.previous = this.value;
+                this.value = this.model.valueForCellChanged(this.cell, this.value, true);
+            };
+            this.execute(change);
+            return value;
+        }
+        return mxGraphModel.prototype.setValue.apply(this, arguments);
+    };
 };
 
+GraphConfig.prototype.valueForCellChanged = function (cell, value, redo) {
+    var previous = null;
+    if (redo) {
+        previous = value instanceof OArchitectOClass || value instanceof OArchitectOProperty ? value.nextState : cell.value;
+        if (previous != null) cell.value = previous;
+    } else {
+        previous = value instanceof OArchitectOClass || value instanceof OArchitectOProperty ? value.previousState : cell.value;
+        cell.value = value;
+    }
+    if (previous == null) previous = value;
+    return previous;
+};
 
 GraphConfig.prototype.configureGraphLabels = function () {
     this.graph.setHtmlLabels(true);
@@ -83,16 +117,3 @@ GraphConfig.prototype.convertValueToString = function (cell) {
     } else return mxGraph.prototype.convertValueToString.apply(this, arguments);
 };
 
-GraphConfig.prototype.cellLabelChanged = function (cell, newValue) {
-    var value = null;
-    if (cell.value instanceof OArchitectOClass) {
-        value = newValue;
-        newValue = mxUtils.clone(cell.value);
-        newValue.name = value;
-    } else if (cell.value instanceof OArchitectOProperty) {
-        value = newValue;
-        newValue = mxUtils.clone(cell.value);
-        newValue.name = value;
-    }
-    mxGraph.prototype.cellLabelChanged.apply(this, arguments);
-};

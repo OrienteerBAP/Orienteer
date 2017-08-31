@@ -1,41 +1,51 @@
 package org.orienteer.architect.component.widget;
 
+import com.orientechnologies.orient.core.metadata.security.ORule;
+import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.*;
 import org.orienteer.architect.component.panel.SchemaOClassesPanel;
+import org.orienteer.architect.component.panel.command.OArchitectFullscreenCommand;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
+import org.orienteer.core.widget.command.FullScreenCommand;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Editor widget for OrientDB Schema
  */
 @Widget(id="architect-editor", domain = "document", selector = OArchitectModule.ODATA_MODEL_OCLASS, autoEnable = true, order=10)
-@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = {
-        OrientPermission.CREATE, OrientPermission.UPDATE, OrientPermission.DELETE, OrientPermission.READ
-})
+@RequiredOrientResource(value = OSecurityHelper.CLUSTER, permissions = OrientPermission.READ)
 public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
 
     private static final JavaScriptResourceReference MXGRAPH_JS = new WebjarsJavaScriptResourceReference("mxgraph/current/javascript/mxClient.min.js");
@@ -68,6 +78,39 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(panel));
         add(new ExistsOClassBehavior());
+        addFullScreenCommand();
+    }
+
+    private void addFullScreenCommand() {
+        final IModel<FullScreenCommand> fullscreenModel = Model.of();
+        commands.visitChildren(FullScreenCommand.class, new IVisitor<Component, Void>() {
+            @Override
+            public void component(Component component, IVisit<Void> visit) {
+                if (fullscreenModel.getObject() == null)
+                    fullscreenModel.setObject((FullScreenCommand) component);
+                visit.stop();
+            }
+        });
+        if (fullscreenModel.getObject() != null) {
+            final OArchitectFullscreenCommand fullscreen = new OArchitectFullscreenCommand(fullscreenModel.getObject().getId());
+            fullscreen.setBootstrapType(null);
+            commands.replace(fullscreen);
+            add(new AbstractDefaultAjaxBehavior() {
+                @Override
+                protected void respond(AjaxRequestTarget target) {
+                    fullscreen.setClickOnF11(true);
+                    fullscreen.onClick(target);
+                    fullscreen.setClickOnF11(false);
+                }
+
+                @Override
+                public void renderHead(Component component, IHeaderResponse response) {
+                    super.renderHead(component, response);
+                    response.render(OnLoadHeaderItem.forScript(
+                            String.format("; app.setSwitchFullScreenMode('%s');", getCallbackUrl())));
+                }
+            });
+        }
     }
 
     private WebMarkupContainer newContainer(String id) {
@@ -111,19 +154,21 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         PackageResourceReference configXml = new PackageResourceReference(OArchitectEditorWidget.class, "js/OArchitectApplication.js");
         String configUrl = urlFor(configXml, null).toString();
         String baseUrl = configUrl.substring(0, configUrl.indexOf("js/OArchitectApplication"));
-        
         TextTemplate configTemplate = new PackageTextTemplate(OArchitectEditorWidget.class, "config.tmpl.xml");
         Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
         String config = configTemplate.asString(params);
-        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s');",
+        boolean canUpdate = canUserUpdateEditor();
+        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', %s);",
 											        		baseUrl,
 											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
 											                locale,
+											                this.getMarkupId(),
 											                container.getMarkupId(),
 											                editor.getMarkupId(),
 											                sidebar.getMarkupId(),
 											                toolbar.getMarkupId(),
-                                                            outline.getMarkupId())));
+                                                            outline.getMarkupId(),
+                                                            Boolean.toString(canUpdate))));
     }
 
     private String getOArchitectEditorLocale() {
@@ -148,4 +193,18 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     	return "strict";
     }
 
+    private boolean canUserUpdateEditor() {
+        boolean canUpdate = false;
+        Set<? extends OSecurityRole> roles = OrienteerWebSession.get().getUser().getRoles();
+
+        for (OSecurityRole role : roles) {
+            canUpdate = role.allow(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.UPDATE.getPermissionFlag());
+            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.CREATE.getPermissionFlag());
+            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.CREATE.getPermissionFlag());
+            if (canUpdate) canUpdate = role.allow(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.UPDATE.getPermissionFlag());
+            if (canUpdate)
+                break;
+        }
+        return canUpdate;
+    }
 }

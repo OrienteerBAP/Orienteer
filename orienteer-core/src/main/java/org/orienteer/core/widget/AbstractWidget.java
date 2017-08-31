@@ -1,7 +1,9 @@
 package org.orienteer.core.widget;
 
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
-
+import com.google.common.base.MoreObjects;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
@@ -16,21 +18,17 @@ import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
-import org.orienteer.core.method.MethodsView;
 import org.orienteer.core.method.MethodPlace;
+import org.orienteer.core.method.MethodsView;
 import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.core.widget.command.FullScreenCommand;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
 import ru.ydn.wicket.wicketorientdb.model.NvlModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
-import com.google.common.base.MoreObjects;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
 
 /**
  * Abstract root class for widgets
@@ -43,7 +41,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private int loadedWidgetVersion=-1;
 	
-	private RepeatingView commands;
+	protected RepeatingView commands;
 	
 	private IModel<ODocument> widgetDocumentModel;
 
@@ -57,7 +55,6 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		add(commands = new RepeatingView("commands"));
 		methods = new MethodsView(commands, model,MethodPlace.ACTIONS,null);
 		methods.overrideBootstrapType(null);
-
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override
@@ -104,7 +101,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		});
 		addCommand(new FullScreenCommand<T>(commands.newChildId()));
 	}
-	
+
 	@Override
 	public AbstractWidget<T> addCommand(Command<T> command) {
 		command.setBootstrapType(null);
@@ -117,6 +114,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		commands.remove(command);
 		return this;
 	}
+
 
 	@Override
 	public String newCommandId() {

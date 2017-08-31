@@ -113,10 +113,22 @@ var OArchitectUtil = {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         try {
-            graph.removeCells(cell, includeEdges);
+            graph.removeCells([cell], includeEdges);
         } finally {
             graph.getModel().endUpdate();
         }
+    },
+
+    isCellDeletable: function (cell) {
+        if (cell == null) return false;
+        if (cell.isEdge() && cell.source != null) {
+            if (cell.source.value instanceof OArchitectOClass) {
+                return !cell.source.value.existsInDb;
+            } else if (cell.source.value instanceof OArchitectOProperty) {
+                return !cell.source.value.ownerClass.existsInDb;
+            }
+        }
+        return true;
     },
 
     getCellsByClassNames: function (classNames) {
@@ -158,8 +170,16 @@ var OArchitectUtil = {
 
     getClassPropertiesCells: function (oClass) {
         var graph = app.editor.graph;
-        var result = graph.getChildVertices(oClass.cell);
-        return result != null ? result : [];
+        var cells = graph.getChildVertices(oClass.cell);
+        var result = [];
+        OArchitectUtil.forEach(cells, function (cell) {
+            if (cell.value instanceof OArchitectOProperty) {
+                if (oClass.getProperty(cell.value.name) != null) {
+                    result.push(cell);
+                }
+            }
+        });
+        return result;
     },
 
     getClassByPropertyCell: function (cell) {
@@ -175,7 +195,7 @@ var OArchitectUtil = {
         var exists = false;
         var cells = graph.getChildVertices(graph.getDefaultParent());
         OArchitectUtil.forEach(cells, function (cell, trigger) {
-            if (cell.value.name === className) {
+            if (cell.value.name.toUpperCase() === className.toUpperCase()) {
                 exists = true;
                 trigger.stop = true;
             }
@@ -228,7 +248,7 @@ var OArchitectUtil = {
                 var classCells = graph.getChildVertices(graph.getDefaultParent());
                 OArchitectUtil.forEach(classCells, function (classCell) {
                     var oClass = classCell.value;
-                    oClass.configFromEditorConfig(classCell);
+                    oClass.configFromCell(classCell);
                 });
             }
             return result;

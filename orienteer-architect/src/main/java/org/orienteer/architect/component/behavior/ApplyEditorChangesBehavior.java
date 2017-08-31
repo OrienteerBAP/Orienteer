@@ -29,7 +29,6 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
 
     private static final String JSON_VAR = "json";
 
-
     @Override
     protected void respond(AjaxRequestTarget target) {
         IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
@@ -95,8 +94,8 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
                 } else if (oProperty.getType() != property.getType()) {
                     oProperty.setType(property.getType());
                 }
-                if (!Strings.isNullOrEmpty(property.getLinkedClassName())) {
-                    OClass linkedClass = schema.getOrCreateClass(property.getLinkedClassName());
+                if (!Strings.isNullOrEmpty(property.getLinkedClass())) {
+                    OClass linkedClass = schema.getOrCreateClass(property.getLinkedClass());
                     oProperty.setLinkedClass(linkedClass);
                 }
             }

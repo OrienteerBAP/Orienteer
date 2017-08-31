@@ -13,29 +13,113 @@ var localizer;
  * @param basePath
  * @param config
  * @param localizer
+ * @param widgetId
  * @param containerId
  * @param editorId
  * @param sidebarId
  * @param toolbarId
+ * @param outlineId
+ * @param canUpdate
  * @constructor
  */
-var OArchitectApplication = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId) {
+var OArchitectApplication = function (basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
 	this.basePath = basePath;
 	this.config = mxUtils.parseXml(config);
 	this.localizer = localizer;
+	this.widgetId = widgetId;
     this.containerId = containerId;
     this.editorId = editorId;
     this.sidebarId = sidebarId;
     this.toolbarId = toolbarId;
     this.outlineId = outlineId;
-    this.saveEditorConfigCallbackUrl = null;
-    this.applyEditorChangesCallbackUrl = null;
-    this.getOClassesRequestCallbackUrl = null;
-    this.existsOClassRequestCallbackUrl = null;
-    this.checkChangesRequestCallbackUrl = null;
-    this.editor = null;
-    this.callback = null;
+    this.canUpdate = canUpdate;
 };
+
+/**
+ * Contains link to {@link OArchitectEditor}
+ */
+OArchitectApplication.prototype.editor = null;
+
+/**
+ * string path to mxGraph resources
+ */
+OArchitectApplication.prototype.basePath = null;
+
+/**
+ * xml config for mxGraph editor
+ */
+OArchitectApplication.prototype.config = null;
+
+/**
+ * object which contains localized strings
+ */
+OArchitectApplication.prototype.localizer = null;
+
+/**
+ * string container id
+ */
+OArchitectApplication.prototype.containerId = null;
+
+/**
+ * string editor id
+ */
+OArchitectApplication.prototype.editorId = null;
+
+/**
+ * string sidebar id
+ */
+OArchitectApplication.prototype.sidebarId = null;
+
+/**
+ * string toolbar id
+ */
+OArchitectApplication.prototype.toolbarId = null;
+
+/**
+ * string outline id
+ */
+OArchitectApplication.prototype.outlineId = null;
+
+/**
+ * boolean if true current user can update editor classes
+ * if false user can only read editor
+ */
+OArchitectApplication.prototype.canUpdate = false;
+
+/**
+ * string url to Wicket behavior which save editor xml config in database
+ */
+OArchitectApplication.prototype.saveEditorConfigCallbackUrl = null;
+
+/**
+ * string url to Wicket behavior which apply editor changes in database (creates classes and other)
+ */
+OArchitectApplication.prototype.applyEditorChangesCallbackUrl = null;
+
+/**
+ * string url to Wicket behavior which shows Wicket modal window with all classes in database
+ */
+OArchitectApplication.prototype.getOClassesRequestCallbackUrl = null;
+
+/**
+ * string url to Wicket behavior which checks if given class exists in database
+ */
+OArchitectApplication.prototype.existsOClassRequestCallbackUrl = null;
+
+/**
+ * string url to Wicket behavior which checks if given classes have changes in database
+ */
+OArchitectApplication.prototype.checkChangesRequestCallbackUrl = null;
+
+/**
+ * string url to Wicket behavior which switch fullscreen mode
+ */
+OArchitectApplication.prototype.switchFullScreenModeCallbackUrl = null;
+
+/**
+ * Contains callback function which executes every time after Wicket behavior response
+ */
+OArchitectApplication.prototype.callback = null;
 
 /**
  * Init application. Create editor and config it.
@@ -45,8 +129,8 @@ OArchitectApplication.prototype.init = function () {
         localizer = this.localizer;
         this.editor = new OArchitectEditor(this.getEditorContainer());
         this.editor.configure(this.config.documentElement);
-        this.configureEditorSidebar(this.editor);
-        this.configureEditorToolbar(this.editor);
+        if (this.canUpdate) this.configureEditorSidebar(this.editor);
+        if (this.canUpdate) this.configureEditorToolbar(this.editor);
         this.configureEditorOutline(this.editor);
     } else mxUtils.error('Browser is not supported!', 200, false);
 };
@@ -158,6 +242,13 @@ OArchitectApplication.prototype.setExistsOClassRequest = function (callbackUrl) 
     this.existsOClassRequestCallbackUrl = callbackUrl;
 };
 
+/**
+ * Calls from Wicket!
+ * @param callbackUrl
+ */
+OArchitectApplication.prototype.setSwitchFullScreenMode = function (callbackUrl) {
+    this.switchFullScreenModeCallbackUrl = callbackUrl;
+};
 
 /**
  * Calls from Wicket!
@@ -176,6 +267,29 @@ OArchitectApplication.prototype.saveEditorConfig = function (xml) {
     this.sendPostRequest(this.saveEditorConfigCallbackUrl, {
         "config": xml
     });
+};
+
+/**
+ * Switch fullscreen mode for editor
+ * @param clickOnCommand - boolean true if click on widget command
+ */
+OArchitectApplication.prototype.switchFullScreenMode = function (clickOnCommand) {
+    this.editor.fullscreen = !this.editor.fullscreen;
+    $('#' + this.containerId).toggleClass(OArchitectConstants.FULLSCREEN_CLASS);
+    $('#' + this.editorId).toggleClass(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
+    if (this.canUpdate) {
+        $('#' + this.sidebarId).toggleClass(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+    }
+    var outline = this.editor.outline.outline.container;
+    if (this.editor.fullscreen) {
+        outline.style.display = 'block';
+        outline.style.right = '2px';
+        if (app.canUpdate) {
+            outline.style.top = app.getToolbarContainer().offsetHeight + 2 + 'px';
+        } else outline.style.top = '2px';
+        this.editor.outline.update();
+    } else outline.style.display = 'none';
+    if (!clickOnCommand) this.sendPostRequest(this.switchFullScreenModeCallbackUrl, {});
 };
 
 /**
@@ -256,6 +370,7 @@ OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     var codec = new mxCodec(doc);
     codec.decode(doc.documentElement, this.editor.graph.getModel());
     this.checksAboutClassesChanges();
+    this.editor.clearCommandHistory();
 };
 
 /**
@@ -266,19 +381,16 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
         if (json != null && json.length > 0) {
             var allClasses = OArchitectUtil.getAllClasses();
             var jsonClasses = JSON.parse(json);
-            var saveNewConfig = false;
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 OArchitectUtil.forEach(allClasses, function (oClass, trigger) {
                     if (jsonClass.name === oClass.name) {
                         if (!oClass.equalsWithJsonClass(jsonClass)) {
-                            saveNewConfig = true;
                             oClass.configFromDatabase(jsonClass);
                         }
                         trigger.stop = true;
                     }
                 });
             });
-            app.editor.execute(OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION);
         }
     }
     this.requestAboutChangesInClasses(JSON.stringify(OArchitectUtil.getAllClassNames()), callback);
@@ -288,8 +400,8 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
  * Calls from Wicket!
  * Create new instance {@link OArchitectApplication}.
  */
-var init = function (basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId) {
-    app = new OArchitectApplication(basePath, config, localizer, containerId, editorId, sidebarId, toolbarId, outlineId);
+var init = function (basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
+    app = new OArchitectApplication(basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate);
     app.init();
 };
 

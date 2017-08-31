@@ -12,8 +12,6 @@ var OArchitectEditor = function(container) {
     this.container = container;
 
     this.fullscreen = false;
-    this.defaultWidth = $('#' + app.containerId).width();
-    this.defaultHeight = $('#' + app.containerId).height();
 
     this.configureDefaultActions();
     this.configureGraph([new GraphConfig(this), new GraphConnectionConfig(this),
@@ -47,26 +45,42 @@ OArchitectEditor.prototype.configureLayouts = function () {
 };
 
 OArchitectEditor.prototype.configurePopupMenu = function () {
-    mxEvent.disableContextMenu(this.container);
-    this.popupHandler.enabled = false;
-    var graph = this.graph;
-    var menu = new OArchitectPopupMenu(this.container, this);
-    var handler = new OArchitectPopupMenuHandler(menu, graph);
-    this.addActionsToPopupMenu(menu);
-    graph.addMouseListener(handler);
-    graph.addListener(mxEvent.ESCAPE, function () {
-        handler.destroy();
-    });
+    if (app.canUpdate) {
+        mxEvent.disableContextMenu(this.container);
+        this.popupHandler.enabled = false;
+        var graph = this.graph;
+        var menu = new OArchitectPopupMenu(this.container, this);
+        var handler = new OArchitectPopupMenuHandler(menu, graph);
+        this.addActionsToPopupMenu(menu);
+        graph.addMouseListener(handler);
+        graph.addListener(mxEvent.ESCAPE, function () {
+            handler.destroy();
+        });
+    }
 };
 
 OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
-    var action = new OArchitectPopupMenuAction(localizer.addProperty, OArchitectConstants.FA_ALIGN_JUSTIFY_CLASS, OArchitectActionNames.ADD_OPROPERTY_ACTION, true);
-    action.isValidCell = OArchitectUtil.isValidPropertyTarget;
-    menu.addAction(new OArchitectPopupMenuAction(localizer.undo, OArchitectConstants.FA_UNDO, 'undo'));
-    menu.addAction(new OArchitectPopupMenuAction(localizer.redo, OArchitectConstants.FA_REDO, 'redo'));
-    menu.addAction(new OArchitectPopupMenuAction(localizer.addClass, OArchitectConstants.FA_FILE_O_CLASS, OArchitectActionNames.ADD_OCLASS_ACTION, false, true));
-    menu.addAction(action);
-    menu.addAction(new OArchitectPopupMenuAction(localizer.deleteAction, OArchitectConstants.FA_DELETE, OArchitectActionNames.DELETE_CELL_ACTION, true));
+    var editor = this;
+    var addProperty = new OArchitectPopupMenuAction(localizer.addProperty, OArchitectConstants.FA_ALIGN_JUSTIFY, OArchitectActionNames.ADD_OPROPERTY_ACTION, true);
+    var undo = new OArchitectPopupMenuAction(localizer.undo, OArchitectConstants.FA_UNDO, 'undo');
+    var redo = new OArchitectPopupMenuAction(localizer.redo, OArchitectConstants.FA_REDO, 'redo');
+    var deleteAction = new OArchitectPopupMenuAction(localizer.deleteAction, OArchitectConstants.FA_DELETE, OArchitectActionNames.DELETE_CELL_ACTION, true);
+    addProperty.isValidCell = OArchitectUtil.isValidPropertyTarget;
+    undo.isEnabled = function () {
+        return editor.undoManager.canUndo();
+    };
+    redo.isEnabled = function () {
+        return editor.undoManager.canRedo();
+    };
+    deleteAction.isValidCell = function (cell) {
+        return OArchitectUtil.isCellDeletable(cell);
+    };
+    menu.addAction(undo);
+    menu.addAction(redo);
+    menu.addAction(new OArchitectPopupMenuAction(localizer.addClass, OArchitectConstants.FA_FILE_O, OArchitectActionNames.ADD_OCLASS_ACTION, false, true));
+    menu.addAction(new OArchitectPopupMenuAction(localizer.addExistsClasses, OArchitectConstants.FA_DATABASE, OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION, false, true));
+    menu.addAction(addProperty);
+    menu.addAction(deleteAction);
 };
 
 /**
@@ -74,40 +88,66 @@ OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
  * @param graph
  */
 OArchitectEditor.prototype.installUndoHandler = function (graph) {
-    mxEditor.prototype.installUndoHandler.apply(this, arguments);
+    this.installUndoSaver(graph);
     var undoHandler = function(sender, evt) {
         var changes = evt.getProperty('edit').changes;
         var cells = graph.getSelectionCellsForChanges(changes);
         OArchitectUtil.forEach(cells, function (cell) {
             if (cell.isVertex()) {
-                if (cell.value instanceof OArchitectOProperty) {
-                    var property = cell.value;
-                    var ownerClass = property.ownerClass;
-                    if (ownerClass.getProperty(property.name) == null) {
-                        ownerClass.properties.push(property);
-                        ownerClass.changeProperties(ownerClass, [property], property.subClassProperty);
-                    }
-                }
-            } else if (cell.isEdge()) {
-                var sourceCell = cell.source;
-                var targetCell = cell.target;
-                var sourceValue = sourceCell.value;
-                var targetValue = targetCell.value;
-                if (sourceValue != null && targetValue != null && targetValue instanceof OArchitectOClass) {
-                    if (sourceValue instanceof OArchitectOClass) {
-                        sourceValue.addSuperClass(targetValue);
-                    } else if (sourceValue instanceof OArchitectOProperty) {
-                        sourceValue.setLinkedClass(targetValue);
+                var value = cell.value;
+                if (value instanceof OArchitectOClass) {
+                    OArchitectOClassConfigurator.configOClassFromCell(value, cell);
+                } else if (value instanceof OArchitectOProperty) {
+                    var classCell = OArchitectUtil.getCellByClassName(value.ownerClass);
+                    if (classCell != null) {
+                        value.configFromCell(classCell.value, cell);
                     }
                 }
             }
         });
-        graph.setSelectionCells(cells);
     };
     this.undoManager.removeListener(mxEvent.UNDO);
     this.undoManager.removeListener(mxEvent.REDO);
     this.undoManager.addListener(mxEvent.UNDO, undoHandler);
     this.undoManager.addListener(mxEvent.REDO, undoHandler);
+};
+
+OArchitectEditor.prototype.installUndoSaver = function (graph) {
+    var listener = mxUtils.bind(this, function(sender, evt) {
+        var edit = evt.getProperty('edit');
+        var changesForSave = [];
+        OArchitectUtil.forEach(edit.changes, function (change) {
+            if (change instanceof mxValueChange) {
+                if (change.previous !== null && change.value !== null) {
+                    change.execute = null;
+                    changesForSave.push(change);
+                }
+            } else changesForSave.push(change);
+        });
+        if (changesForSave.length > 0) {
+            edit.changes = changesForSave;
+            this.undoManager.undoableEditHappened(edit);
+        }
+    });
+
+    graph.getModel().addListener(mxEvent.UNDO, listener);
+    graph.getView().addListener(mxEvent.UNDO, listener);
+};
+
+OArchitectEditor.prototype.clearCommandHistory = function () {
+    this.undoManager.clear();
+};
+
+OArchitectEditor.prototype.undo = function () {
+    if (app.canUpdate) {
+        mxEditor.prototype.undo.apply(this, arguments);
+    }
+};
+
+OArchitectEditor.prototype.redo = function () {
+    if (app.canUpdate) {
+        mxEditor.prototype.redo.apply(this, arguments);
+    }
 };
 
 OArchitectEditor.prototype.configureDefaultActions = function () {
@@ -116,10 +156,10 @@ OArchitectEditor.prototype.configureDefaultActions = function () {
     this.addAction(OArchitectActionNames.DELETE_OPROPERTY_ACTION, OArchitectAction.deleteOPropertyAction);
     this.addAction(OArchitectActionNames.DELETE_CELL_ACTION, OArchitectAction.deleteCellAction);
     this.addAction(OArchitectActionNames.FULL_SCREEN_MODE, OArchitectAction.fullScreenModeAction);
+    this.addAction(OArchitectActionNames.ADD_OPROPERTY_LINK_ACTION, OArchitectAction.addOPropertyLinkAction);
 };
 
 OArchitectEditor.prototype.clone = function() {
     return mxUtils.clone(this);
 };
-
 

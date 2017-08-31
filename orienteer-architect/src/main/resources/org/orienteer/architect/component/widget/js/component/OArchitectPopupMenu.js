@@ -62,7 +62,7 @@ OArchitectPopupMenu.prototype.createMenuElement = function (event) {
     var cell = event.getCell();
     OArchitectUtil.forEach(this.popupMenuActions, function (popupMenuAction) {
         if (cell != null && popupMenuAction.useOnCell || cell != null && !popupMenuAction.notOnCell || cell == null && !popupMenuAction.useOnCell) {
-            if (popupMenuAction.isValidCell(cell)) {
+            if (popupMenuAction.isEnabled() && popupMenuAction.isValidCell(cell)) {
                 div.appendChild(menu.createItemElement(popupMenuAction, cell, event));
             }
         }
@@ -192,5 +192,9 @@ var OArchitectPopupMenuAction = function (label, faIconCss, editorActionName, us
  * @returns boolean true by default
  */
 OArchitectPopupMenuAction.prototype.isValidCell = function (cell) {
+    return true;
+};
+
+OArchitectPopupMenuAction.prototype.isEnabled = function () {
     return true;
 };

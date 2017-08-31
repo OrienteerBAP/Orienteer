@@ -1,7 +1,6 @@
 package org.orienteer.core.widget.command;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.widget.AbstractWidget;

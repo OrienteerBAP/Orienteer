@@ -26,6 +26,8 @@ GraphConnectionConfig.prototype.config = function () {
     graph.connectionHandler.createIcons = this.connectionHandlerCreateIcons;
     graph.connectionHandler.redrawIcons = this.connectionHandlerRedrawIcons;
 
+    graph.connectionHandler.connect = this.connectionHandlerConnect;
+
     this.configEvents();
 };
 
@@ -35,6 +37,8 @@ GraphConnectionConfig.prototype.configEvents = function () {
 };
 
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
+    if (!app.canUpdate)
+        return false;
     if (cell == null)
         return false;
     return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect()
@@ -42,10 +46,18 @@ GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
 };
 
 GraphConnectionConfig.prototype.isCellDisconnectable = function (cell) {
+    if (!app.canUpdate)
+        return false;
     if (cell.edge && cell.source.value instanceof OArchitectOProperty)
         return cell.source.value.canDisconnect();
 
-    return true;
+    return this.isCellDeletable(cell);
+};
+
+GraphConnectionConfig.prototype.isCellDeletable = function (cell) {
+    if (cell.edge && cell.source.value instanceof OArchitectOClass)
+        return !cell.source.value.existsInDb;
+    return mxGraph.prototype.isCellDeletable.apply(this, arguments);
 };
 
 GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
@@ -82,6 +94,13 @@ GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (sourc
     geo.relative = true;
     edge.setGeometry(geo);
     return edge;
+};
+
+GraphConnectionConfig.prototype.connectionHandlerConnect = function (source, target, evt, dropTarget) {
+    this.currentEvent = evt;
+    if (this.createLinkOnConnection) this.createLinkOnConnection = source.value instanceof OArchitectOClass;
+    mxConnectionHandler.prototype.connect.apply(this, arguments);
+    this.graph.setSelectionCells([]);
 };
 
 GraphConnectionConfig.prototype.connectionHandlerCreateEdgeState = function(me) {
@@ -155,7 +174,14 @@ GraphConnectionConfig.prototype.connectionHandlerCreateEdge = function (value, s
     } else {
         this.createLinkOnConnection = false;
         this.linkConnection = true;
-        OArchitectConnector.connect(source, target, true);
+        var state = this.edgeState;
+        var evt = new mxMouseEvent(this.currentEvent, state);
+        this.graph.fireMouseEvent(mxEvent.MOUSE_UP, evt);
+        app.editor.execute(OArchitectActionNames.ADD_OPROPERTY_LINK_ACTION, {
+            "source": source,
+            "target": target,
+            "event": evt
+        });
     }
 
     return edge;

@@ -144,11 +144,11 @@ OArchitectSidebar.prototype.createElement = function (label, action) {
 OArchitectSidebar.prototype.getIconElementForAction = function (action) {
     var icon = document.createElement('i');
     if (action === OArchitectActionNames.ADD_OCLASS_ACTION) {
-        icon.setAttribute('class', OArchitectConstants.FA_FILE_O_CLASS);
+        icon.setAttribute('class', OArchitectConstants.FA_FILE_O);
     } else if (action === OArchitectActionNames.ADD_OPROPERTY_ACTION) {
-        icon.setAttribute('class', OArchitectConstants.FA_ALIGN_JUSTIFY_CLASS);
+        icon.setAttribute('class', OArchitectConstants.FA_ALIGN_JUSTIFY);
     } else if (action === OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION) {
-        icon.setAttribute('class', OArchitectConstants.FA_DATABASE_CLASS);
+        icon.setAttribute('class', OArchitectConstants.FA_DATABASE);
     }
     icon.classList.add(OArchitectConstants.FA_2X_CLASS);
     icon.style.margin = '5px';

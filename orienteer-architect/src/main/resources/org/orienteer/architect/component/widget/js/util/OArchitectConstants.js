@@ -42,9 +42,9 @@ var OArchitectConstants = {
     /**
      * Font Awesome icons classes
      */
-    FA_FILE_O_CLASS: 'fa fa-file-o',
-    FA_ALIGN_JUSTIFY_CLASS: 'fa fa-align-justify',
-    FA_DATABASE_CLASS: 'fa fa-database',
+    FA_FILE_O: 'fa fa-file-o',
+    FA_ALIGN_JUSTIFY: 'fa fa-align-justify',
+    FA_DATABASE: 'fa fa-database',
     FA_EXTERNAL_LINK: 'fa fa-external-link',
     FA_EDIT: 'fa fa-pencil-square-o',
     FA_LINK: 'fa fa-link',
@@ -60,7 +60,7 @@ var OArchitectConstants = {
      * Sizes for creating vertex
      */
     OCLASS_WIDTH: 150,
-    OCLASS_HEIGHT: 60,
+    OCLASS_HEIGHT: 48,
     OPROPERTY_HEIGHT: 20,
 
 
