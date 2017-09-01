@@ -32,6 +32,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     private final String filterId;
     private final IFilterCriteriaManager manager;
     private final IModel<Boolean> joinModel;
+    private String containerId;
 
     public AbstractFilterPanel(String id, IModel<T> model, String filterId,
                                IModel<OProperty> propertyModel,
@@ -101,7 +102,13 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
         return joinModel;
     }
 
+    public void setContainerId(String containerId) {
+        this.containerId = containerId;
+    }
 
+    public String getContainerId() {
+        return containerId;
+    }
 
     public void clearInputs(AjaxRequestTarget target) {
         joinModel.setObject(true);

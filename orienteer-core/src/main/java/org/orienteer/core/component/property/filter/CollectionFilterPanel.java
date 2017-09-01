@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.json.JSONArray;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -14,6 +15,8 @@ import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.orienteer.core.component.property.date.DateTimeBootstrapField;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -107,6 +110,15 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
         component.clearInputComponent();
     }
 
+    @Override
+    protected void onAfterRender() {
+        super.onAfterRender();
+        AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
+        if (target != null) {
+            target.appendJavaScript(String.format("; restoreInput('%s');", getContainerId()));
+        }
+    }
+
     private class ListFilterInput extends WebMarkupContainer {
         private final AjaxFallbackLink<Void> removeButton;
         private final AjaxFallbackLink<Void> addButton;
@@ -117,6 +129,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
         public ListFilterInput(final String id, final List<ListFilterInput> components) {
             super(id);
             inputComponent = (FormComponent<T>) createFilterComponent(Model.of());
+            inputComponent.setOutputMarkupId(true);
             removeButton = new AjaxFallbackLink<Void>("removeButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
@@ -130,6 +143,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
                     }
                     components.get(components.size() - 1).getAddButton().setVisible(true);
                     if (components.size() - 1 == 0) components.get(0).getRemoveButton().setVisible(false);
+                    saveInput(target, components);
                     target.add(CollectionFilterPanel.this);
                 }
 
@@ -148,6 +162,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
                         input.getRemoveButton().setVisible(true);
                     }
                     setVisible(false);
+                    saveInput(target, components);
                     target.add(CollectionFilterPanel.this);
                 }
 
@@ -163,11 +178,31 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             add(addButton);
         }
 
+        private void saveInput(AjaxRequestTarget target, List<ListFilterInput> components) {
+            List<String> ids = Lists.newArrayList();
+            for (ListFilterInput panel : components) {
+                ids.addAll(panel.getInputIds());
+            }
+            target.prependJavaScript(String.format("; saveInput('%s', %s);", getContainerId(),
+                    new JSONArray(ids).toString()));
+        }
+
         @Override
         public IMarkupFragment getMarkup(Component child) {
             if (child != null && child.getId().equals(getFilterId()))
                 return markupProvider.provideMarkup(child);
             return super.getMarkup(child);
+        }
+
+        public List<String> getInputIds() {
+            List<String> ids = Lists.newArrayList();
+            if (inputComponent instanceof DateTimeBootstrapField) {
+                DateTimeBootstrapField dateTime = (DateTimeBootstrapField) inputComponent;
+                ids.add(dateTime.getDateMarkupId());
+                if (dateTime.getHoursMarkupId() != null) ids.add(dateTime.getHoursMarkupId());
+                if (dateTime.getMinutesMarkupId() != null) ids.add(dateTime.getMinutesMarkupId());
+            } else ids.add(inputComponent.getMarkupId());
+            return ids;
         }
 
         public T getConvertedInput() {

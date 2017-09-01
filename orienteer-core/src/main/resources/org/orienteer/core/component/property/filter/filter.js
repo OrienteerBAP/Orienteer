@@ -11,6 +11,7 @@ var OFilterPanel = function (containerId, currentTabId) {
     this.containerId = containerId;
     this.currentTabId = currentTabId;
     this.currentPosition = {};
+    this.filterInput = {};
 
     if (this.containerId != null) this.init()
 };
@@ -29,6 +30,11 @@ OFilterPanel.prototype.currentTabId = null;
  * object - contains offset position of filter panel left and top
  */
 OFilterPanel.prototype.currentPosition = null;
+
+/**
+ * object - save filter input
+ */
+OFilterPanel.prototype.filterInput = null;
 
 /**
  * Init filter panel.
@@ -72,6 +78,21 @@ OFilterPanel.prototype.showCurrentTab = function () {
     $("#" + this.currentTabId).tab('show');
 };
 
+OFilterPanel.prototype.saveFilterInput = function (inputIds) {
+    if (inputIds != null && inputIds.length > 0) {
+        for (var i = 0; i < inputIds.length; i++) {
+            this.filterInput[inputIds[i]] = $('#' + inputIds[i]).val();
+        }
+    }
+};
+
+OFilterPanel.prototype.restoreFilterInput = function () {
+    for (var id in this.filterInput) {
+        $('#' + id).val(this.filterInput[id]);
+    }
+    this.filterInput = {};
+};
+
 function initFilter(containerId, currentTabId) {
     var filter = filtersOnPage[containerId];
     if (filter == null) {
@@ -87,11 +108,16 @@ function switchFilterTab(containerId, tabId) {
     if (filter != null) filter.setCurrentTabAndShow(tabId);
 }
 
-function saveFilterPosition(containerId) {
-    var filter = filtersOnPage[containerId];
-    if (filter != null) filter.saveCurrentPosition();
-}
-
 function removeFilter(containerId) {
     filtersOnPage[containerId] = undefined;
+}
+
+function saveInput(containerId, inputIds) {
+    var filter = filtersOnPage[containerId];
+    if (filter != null) filter.saveFilterInput(inputIds);
+}
+
+function restoreInput(containerId) {
+    var filter = filtersOnPage[containerId];
+    if (filter != null) filter.restoreFilterInput();
 }

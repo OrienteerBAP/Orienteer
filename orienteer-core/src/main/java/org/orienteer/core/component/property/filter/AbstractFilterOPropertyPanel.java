@@ -50,9 +50,9 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
     public AbstractFilterOPropertyPanel(String id, IModel<String> name, final Form form) {
         super(id);
         final List<AbstractFilterPanel> filterPanels = Lists.newArrayList();
-        createFilterPanels(filterPanels);
         final WebMarkupContainer container = new WebMarkupContainer("container");
         this.containerId = container.getMarkupId();
+        initFilterPanels(filterPanels);
         List<FilterTab> tabs = createPanelSwitches("switch", filterPanels);
         addFilterPanels(container, filterPanels, tabs);
         addFilterSwitches(container, tabs);
@@ -64,6 +64,13 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         container.add(new Label("panelTitle", name).setOutputMarkupPlaceholderTag(true));
         add(container);
         setOutputMarkupPlaceholderTag(true);
+    }
+
+    private void initFilterPanels(List<AbstractFilterPanel> filterPanels) {
+        createFilterPanels(filterPanels);
+        for (AbstractFilterPanel panel : filterPanels) {
+            panel.setContainerId(this.containerId);
+        }
     }
 
     protected abstract void createFilterPanels(List<AbstractFilterPanel> filterPanels);

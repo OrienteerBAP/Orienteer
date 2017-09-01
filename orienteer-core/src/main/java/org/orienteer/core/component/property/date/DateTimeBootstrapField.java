@@ -42,6 +42,9 @@ public class DateTimeBootstrapField extends DateTimeField {
     protected void onInitialize() {
         super.onInitialize();
         setOutputMarkupId(true);
+        get(DATE).setOutputMarkupId(true);
+        get(HOURS).setOutputMarkupId(true);
+        get(MINUTES).setOutputMarkupId(true);
     }
 
     @Override
@@ -178,5 +181,20 @@ public class DateTimeBootstrapField extends DateTimeField {
                 return sb.toString();
             }
         };
+    }
+
+    public String getDateMarkupId() {
+        Component date = get(DATE);
+        return date.getMarkupId();
+    }
+
+    public String getHoursMarkupId() {
+        Component hours = get(HOURS);
+        return hours.getMarkupId();
+    }
+
+    public String getMinutesMarkupId() {
+        Component minutes = get(MINUTES);
+        return minutes.getMarkupId();
     }
 }
