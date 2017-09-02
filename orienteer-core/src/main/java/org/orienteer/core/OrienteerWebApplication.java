@@ -12,22 +12,6 @@ import com.orientechnologies.orient.core.metadata.security.OUser;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 import org.apache.wicket.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-
-import org.apache.wicket.Application;
-import org.apache.wicket.Component;
-import org.apache.wicket.IApplicationListener;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.RuntimeConfigurationType;
-import org.apache.wicket.ThreadContext;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
@@ -35,6 +19,7 @@ import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
@@ -44,7 +29,6 @@ import org.apache.wicket.settings.RequestCycleSettings;
 import org.apache.wicket.util.string.Strings;
 import org.joda.time.DateTimeZone;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
-import org.joda.time.DateTimeZone;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
@@ -68,27 +52,6 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.io.IOException;
 import java.util.*;
 
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.name.Named;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.metadata.security.OUser;
-
-import de.agilecoders.wicket.webjars.WicketWebjars;
-import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
-import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
-import ru.ydn.wicket.wicketorientdb.OrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
-
 /**
  * Main {@link WebApplication} for Orienteer bases applications
  */
@@ -101,7 +64,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	
 	private LinkedHashMap<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	private boolean registeredModulesSorted = false;
-	
+	private boolean loadInSafeMode = false;
+	private boolean loadWithoutModules = false;
+	private String loadModeInfo;
+
 	@Inject
 	private IWebjarsSettings webjarSettings;
 	
@@ -417,5 +383,36 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	
 	public String getVersion() {
 		return Strings.isEmpty(version)?OrienteerWebApplication.class.getPackage().getImplementationVersion():version;
+	}
+
+	public String getLoadModeInfo() {
+		if (Strings.isEmpty(loadModeInfo) && isLoadInSafeMode()) {
+			loadModeInfo = isLoadWithoutModules() ? "application.load.without.modules" : "application.load.safe.mode";
+		}
+		return !Strings.isEmpty(loadModeInfo) ? new ResourceModel(loadModeInfo).getObject() : "";
+	}
+
+	/**
+	 * @return true if Orienteer loads in safe mode. Loads only trusted modules.
+	 */
+	public boolean isLoadInSafeMode() {
+		return loadInSafeMode;
+	}
+
+	/**
+	 * @return true if Orienteer loads without modules.
+	 */
+	public boolean isLoadWithoutModules() {
+		return loadWithoutModules;
+	}
+
+	public void setLoadInSafeMode(boolean loadInSafeMode) {
+		this.loadInSafeMode = loadInSafeMode;
+		this.loadModeInfo = null;
+	}
+
+	public void setLoadWithoutModules(boolean loadWithoutModules) {
+		this.loadWithoutModules = loadWithoutModules;
+		this.loadModeInfo = null;
 	}
 }

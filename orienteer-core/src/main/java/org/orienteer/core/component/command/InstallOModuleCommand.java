@@ -11,13 +11,14 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
+import org.orienteer.core.component.widget.loader.OArtifactsModalWindowPage;
 
 import java.util.List;
 
 /**
- * Command for download Orienteer module from server
+ * Command for download and install Orienteer module from server
  */
-public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtifact> {
+public class InstallOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtifact> {
 
     private Label feedback;
 
@@ -27,18 +28,17 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArti
     private static final String SINGLE_DOWNLOAD_SUCCESS = "widget.artifacts.modal.window.download.success";
     private static final String MULTI_DOWNLOAD_SUCCESS  = "widget.artifacts.modal.window.downloads.success";
 
-    private static final String DOWNLOAD_BUT = "command.download";
+    private final OArtifactsModalWindowPage windowPage;
+    private final boolean trusted;
 
-    public DownloadOModuleCommand(OrienteerDataTable<OArtifact, ?> table, Label feedback) {
-        super(new ResourceModel(DOWNLOAD_BUT), table);
+
+    public InstallOModuleCommand(OrienteerDataTable<OArtifact, ?> table, OArtifactsModalWindowPage windowPage, boolean trusted, Label feedback) {
+        super(new ResourceModel(trusted ? "command.install.module.trusted" : "command.install.module.untrusted"), table);
         this.feedback = feedback;
-    }
-
-    @Override
-    protected void onInstantiation() {
-        super.onInstantiation();
-        setIcon(FAIconType.download);
-        setBootstrapType(BootstrapType.PRIMARY);
+        this.trusted = trusted;
+        this.windowPage = windowPage;
+        setBootstrapType(trusted ? BootstrapType.DANGER : BootstrapType.WARNING);
+        setIcon(FAIconType.plus);
         setAutoNotify(false);
     }
 
@@ -57,8 +57,9 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArti
                 failed++;
             }
         }
-
-        configureFeedback(success, failed);
+        if (success > 0) {
+            windowPage.closeModalWindow(target);
+        } else configureFeedback(success, failed);
         target.add(feedback);
         target.add(getTable());
     }
@@ -71,7 +72,7 @@ public class DownloadOModuleCommand extends AbstractCheckBoxEnabledCommand<OArti
      */
     private void saveOArtifact(Artifact artifact, OArtifactReference reference) {
         OArtifact ooArtifact = new OArtifact();
-        ooArtifact.setTrusted(true);
+        ooArtifact.setTrusted(trusted);
         ooArtifact.setLoad(true);
         ooArtifact.setDownloaded(true);
 
