@@ -20,10 +20,14 @@
 }
 
 .input-container {
-    display: inline-flex;
+    display: table;
     margin-top: 10px;
 }
 
+.container-cell {
+    display: table-cell;
+    vertical-align: top;
+}
 
 .filter-bubble {
     position: absolute;
@@ -55,7 +59,8 @@
 }
 
 .filter-width {
-    width: 300px;
+    width: auto;
+    min-width: 300px;
 }
 
 .link-filter-class-choice {

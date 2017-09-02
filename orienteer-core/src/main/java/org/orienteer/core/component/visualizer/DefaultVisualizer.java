@@ -191,10 +191,6 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 					}
 				};
 				break;
-			case DATE:
-			case DATETIME:
-				component = null;
-				break;
 			default:
 				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
 					@Override

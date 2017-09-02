@@ -109,7 +109,11 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
 
     @Override
     protected void clearInputs() {
-        if (classFormComponent.isEnabled()) classFormComponent.setModelObject(null);
+        if (classFormComponent.isEnabled()) {
+            classFormComponent.setConvertedInput(null);
+            classFormComponent.setModelObject(null);
+        }
+        docFormComponent.setConvertedInput(null);
         docFormComponent.setModelObject(null);
     }
 }

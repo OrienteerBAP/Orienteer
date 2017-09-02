@@ -123,7 +123,11 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
 
     @Override
     protected void clearInputs() {
-        if (classesFormComponent.isEnabled()) classesFormComponent.setModelObject(Lists.<String>newArrayList());
+        if (classesFormComponent.isEnabled()) {
+            classesFormComponent.setConvertedInput(Lists.<String>newArrayList());
+            classesFormComponent.setModelObject(Lists.<String>newArrayList());
+        }
+        docsFormComponent.setConvertedInput(Lists.<ODocument>newArrayList());
         docsFormComponent.setModelObject(Lists.<ODocument>newArrayList());
     }
 }

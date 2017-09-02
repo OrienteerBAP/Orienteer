@@ -1,15 +1,19 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
-    <ul class="list-filter-inputs">
-        <li wicket:id="filters">
-            <div wicket:id="container" class="input-container">
+    <div wicket:id="filters">
+        <div wicket:id="container" class="input-container">
+            <div class="container-cell">
                 <a wicket:id="removeButton" class="remove-button btn btn-danger btn-sm">
                     <span class="glyphicon glyphicon-remove-sign"></span>
                 </a>
+            </div>
+            <div class="container-cell">
                 <div wicket:id="filter" class="input"></div>
+            </div>
+            <div class="container-cell">
                 <a wicket:id="addButton" class="add-button btn btn-default btn-sm">
                     <span class="glyphicon glyphicon-plus-sign"></span>
                 </a>
             </div>
-        </li>
-    </ul>
+        </div>
+    </div>
 </wicket:extend>

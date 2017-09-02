@@ -8,7 +8,6 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
@@ -33,6 +32,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     private final String filterId;
     private final IFilterCriteriaManager manager;
     private final IModel<Boolean> joinModel;
+    private String containerId;
 
     public AbstractFilterPanel(String id, IModel<T> model, String filterId,
                                IModel<OProperty> propertyModel,
@@ -61,7 +61,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     }
 
     @Override
-    public void convertInput() {
+    public final void convertInput() {
         setConvertedInput(getFilterInput());
     }
 
@@ -69,9 +69,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
      * Override for return filter input
      * @return filter input
      */
-    protected T getFilterInput() {
-        return null;
-    }
+    protected abstract T getFilterInput();
 
     @SuppressWarnings("unchecked")
     protected FormComponent<?> createFilterComponent(IModel<?> model) {
@@ -104,11 +102,19 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
         return joinModel;
     }
 
+    public void setContainerId(String containerId) {
+        this.containerId = containerId;
+    }
 
+    public String getContainerId() {
+        return containerId;
+    }
 
     public void clearInputs(AjaxRequestTarget target) {
         joinModel.setObject(true);
         clearInputs();
+        getModel().setObject(getFilterInput());
+        IModel<T> model = getModel();
         target.add(this);
     }
 

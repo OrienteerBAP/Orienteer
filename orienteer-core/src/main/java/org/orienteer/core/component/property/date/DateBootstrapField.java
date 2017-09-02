@@ -19,4 +19,14 @@ public class DateBootstrapField extends DateTimeBootstrapField {
         get(MINUTES).setVisibilityAllowed(false);
         get(AM_OR_PM_CHOICE).setVisibilityAllowed(false);
     }
+
+    @Override
+    public String getHoursMarkupId() {
+        return null;
+    }
+
+    @Override
+    public String getMinutesMarkupId() {
+        return null;
+    }
 }

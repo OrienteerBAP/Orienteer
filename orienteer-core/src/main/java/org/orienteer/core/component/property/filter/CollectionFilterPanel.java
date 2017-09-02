@@ -5,16 +5,18 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.json.JSONArray;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.orienteer.core.component.property.date.DateTimeBootstrapField;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -52,12 +54,12 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
     }
 
     @Override
-    public void convertInput() {
-        List<T> collection = Lists.newArrayList();
+    protected Collection<T> getFilterInput() {
+        Collection<T> collection = Lists.newArrayList();
         for (ListFilterInput input : filterComponents) {
             collection.add(input.getConvertedInput());
         }
-        setConvertedInput(collection);
+        return collection;
     }
 
     private void createAndAddFiltersList(final List<ListFilterInput> filterComponents) {
@@ -101,10 +103,20 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             ListFilterInput next = iterator.next();
             if (!next.equals(component))
                 iterator.remove();
+            else next.setConvertedInput(null);
         }
         component.getRemoveButton().setVisible(false);
         component.getAddButton().setVisible(true);
         component.clearInputComponent();
+    }
+
+    @Override
+    protected void onAfterRender() {
+        super.onAfterRender();
+        AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
+        if (target != null) {
+            target.appendJavaScript(String.format("; restoreInput('%s');", getContainerId()));
+        }
     }
 
     private class ListFilterInput extends WebMarkupContainer {
@@ -117,6 +129,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
         public ListFilterInput(final String id, final List<ListFilterInput> components) {
             super(id);
             inputComponent = (FormComponent<T>) createFilterComponent(Model.of());
+            inputComponent.setOutputMarkupId(true);
             removeButton = new AjaxFallbackLink<Void>("removeButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
@@ -130,6 +143,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
                     }
                     components.get(components.size() - 1).getAddButton().setVisible(true);
                     if (components.size() - 1 == 0) components.get(0).getRemoveButton().setVisible(false);
+                    saveInput(target, components);
                     target.add(CollectionFilterPanel.this);
                 }
 
@@ -148,6 +162,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
                         input.getRemoveButton().setVisible(true);
                     }
                     setVisible(false);
+                    saveInput(target, components);
                     target.add(CollectionFilterPanel.this);
                 }
 
@@ -163,6 +178,15 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             add(addButton);
         }
 
+        private void saveInput(AjaxRequestTarget target, List<ListFilterInput> components) {
+            List<String> ids = Lists.newArrayList();
+            for (ListFilterInput panel : components) {
+                ids.addAll(panel.getInputIds());
+            }
+            target.prependJavaScript(String.format("; saveInput('%s', %s);", getContainerId(),
+                    new JSONArray(ids).toString()));
+        }
+
         @Override
         public IMarkupFragment getMarkup(Component child) {
             if (child != null && child.getId().equals(getFilterId()))
@@ -170,8 +194,23 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             return super.getMarkup(child);
         }
 
+        public List<String> getInputIds() {
+            List<String> ids = Lists.newArrayList();
+            if (inputComponent instanceof DateTimeBootstrapField) {
+                DateTimeBootstrapField dateTime = (DateTimeBootstrapField) inputComponent;
+                ids.add(dateTime.getDateMarkupId());
+                if (dateTime.getHoursMarkupId() != null) ids.add(dateTime.getHoursMarkupId());
+                if (dateTime.getMinutesMarkupId() != null) ids.add(dateTime.getMinutesMarkupId());
+            } else ids.add(inputComponent.getMarkupId());
+            return ids;
+        }
+
         public T getConvertedInput() {
             return inputComponent.getConvertedInput();
+        }
+
+        public void setConvertedInput(T value) {
+            inputComponent.setConvertedInput(value);
         }
 
         public void clearInputComponent() {

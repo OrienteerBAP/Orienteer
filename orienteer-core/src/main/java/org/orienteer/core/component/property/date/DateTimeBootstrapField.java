@@ -42,6 +42,9 @@ public class DateTimeBootstrapField extends DateTimeField {
     protected void onInitialize() {
         super.onInitialize();
         setOutputMarkupId(true);
+        get(DATE).setOutputMarkupId(true);
+        get(HOURS).setOutputMarkupId(true);
+        get(MINUTES).setOutputMarkupId(true);
     }
 
     @Override
@@ -87,7 +90,7 @@ public class DateTimeBootstrapField extends DateTimeField {
             public void beforeRender(Component component) {
                 Response response = component.getResponse();
                 response.write(String.format(
-                        "<div id='%s' class='input-group date' data-provide='datepicker'>", datePickerId));
+                        "<div id='%s' class='input-group date' data-provide='datepicker' style='width:200px;'>", datePickerId));
             }
 
             @Override
@@ -178,5 +181,20 @@ public class DateTimeBootstrapField extends DateTimeField {
                 return sb.toString();
             }
         };
+    }
+
+    public String getDateMarkupId() {
+        Component date = get(DATE);
+        return date.getMarkupId();
+    }
+
+    public String getHoursMarkupId() {
+        Component hours = get(HOURS);
+        return hours.getMarkupId();
+    }
+
+    public String getMinutesMarkupId() {
+        Component minutes = get(MINUTES);
+        return minutes.getMarkupId();
     }
 }
