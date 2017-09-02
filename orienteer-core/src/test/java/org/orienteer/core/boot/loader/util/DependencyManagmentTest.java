@@ -1,5 +1,6 @@
 package org.orienteer.core.boot.loader.util;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -13,7 +14,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 
 public class DependencyManagmentTest {
 
@@ -77,6 +77,17 @@ public class DependencyManagmentTest {
            modules = downloadAllOrienteerModulesFromServer();
            deleteOArtifacts(modules);
         //}
+    }
+
+    @Test
+    public void testVersionRequest() {
+        String groupId = "org.orienteer";
+        String artifactId = "orienteer-devutils";
+        List<String> versions = OrienteerClassLoaderUtil.requestArtifactVersions(groupId, artifactId);
+        assertTrue(versions != null && !versions.isEmpty());
+        for (String version : versions) {
+            assertTrue(!Strings.isNullOrEmpty(version));
+        }
     }
 
     private List<OArtifact> downloadAllOrienteerModulesFromServer() throws IOException {

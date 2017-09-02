@@ -1,10 +1,12 @@
 package org.orienteer.core.boot.loader.util.artifact;
 
+import com.google.common.collect.Lists;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Class which contains information about maven coordinates and jar file.
@@ -15,27 +17,19 @@ public class OArtifactReference implements Serializable {
     private String version;
     private String description = ""; // optional need only for Orienteer default modules
     private String repository  = "";
+    private List<String> availableVersions;
     private File file;
 
-    public OArtifactReference(String groupId, String artifactId, String version, File file) {
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
-        this.file = file;
+    public OArtifactReference(String groupId, String artifactId, String version) {
+        this(groupId, artifactId, version, null);
     }
 
-    public OArtifactReference(String groupId, String artifactId, String version) {
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
+    public OArtifactReference(String groupId, String artifactId, String version, File file) {
+        this(groupId, artifactId, version, null, null, file);
     }
 
     public OArtifactReference(String groupId, String artifactId, String version, String repository, String description) {
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
-        this.repository = repository;
-        this.description = description;
+        this(groupId, artifactId, version, repository, description, null);
     }
 
     public OArtifactReference(String groupId, String artifactId, String version, String repository, String description, File file) {
@@ -45,13 +39,7 @@ public class OArtifactReference implements Serializable {
         this.repository = repository;
         this.description = description;
         this.file = file;
-    }
-
-    public OArtifactReference(String groupId, String artifactId, String version, String description) {
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
-        this.description = description;
+        this.availableVersions = Lists.newArrayList();
     }
 
     public static OArtifactReference valueOf(Artifact artifact) {
@@ -106,6 +94,12 @@ public class OArtifactReference implements Serializable {
         return this;
     }
 
+    public OArtifactReference addAvailableVersions(List<String> availableVersions) {
+        this.availableVersions.clear();
+        this.availableVersions.addAll(availableVersions);
+        return this;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -124,6 +118,10 @@ public class OArtifactReference implements Serializable {
 
     public File getFile() {
         return file;
+    }
+
+    public List<String> getAvailableVersions() {
+        return availableVersions;
     }
 
     @Override

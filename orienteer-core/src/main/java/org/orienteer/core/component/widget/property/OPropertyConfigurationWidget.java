@@ -1,5 +1,7 @@
 package org.orienteer.core.component.widget.property;
 
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -10,13 +12,8 @@ import org.orienteer.core.component.command.EditSchemaCommand;
 import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.meta.OPropertyMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
-import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Widget to show and modify {@link OProperty} configuration
@@ -38,7 +35,7 @@ public class OPropertyConfigurationWidget extends AbstractModeAwareWidget<OPrope
 				return new OPropertyMetaPanel<Object>(id, getModeModel(), OPropertyConfigurationWidget.this.getModel(), rowModel);
 			}
 		};
-		
+
 		form.add(structureTable);
 		
 		add(form);

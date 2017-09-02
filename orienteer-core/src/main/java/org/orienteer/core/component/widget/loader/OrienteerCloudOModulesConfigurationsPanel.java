@@ -15,8 +15,8 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.InstallOModuleCommand;
 import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.InstallOModuleCommand;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.CheckBoxColumn;
@@ -31,8 +31,7 @@ import java.util.List;
  */
 public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
 
-    private static final String SHOW_USER_ARTIFACT_ADD_BUT = "widget.artifacts.modal.window.button.user.artifact";
-    private static final String BACK_BUT      = "command.back";
+    private static final String BACK_BUT = "command.back";
 
     public OrienteerCloudOModulesConfigurationsPanel(String id, final OArtifactsModalWindowPage windowPage, ISortableDataProvider<OArtifact, String> provider) {
         super(id);
@@ -81,7 +80,7 @@ public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
         });
         columns.add(new OArtifactColumn(OArtifactField.GROUP.asModel(), modeModel));
         columns.add(new OArtifactColumn(OArtifactField.ARTIFACT.asModel(), modeModel));
-        columns.add(new OArtifactColumn(OArtifactField.VERSION.asModel(), modeModel));
+        columns.add(new OArtifactColumn(OArtifactField.VERSION.asModel(), DisplayMode.EDIT.asModel()));
         columns.add(new OArtifactColumn(OArtifactField.DESCRIPTION.asModel(), modeModel));
         columns.add(new OArtifactColumn(OArtifactField.DOWNLOADED.asModel(), modeModel));
         return columns;

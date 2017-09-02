@@ -75,12 +75,21 @@ public abstract class OrienteerClassLoaderUtil {
             for (OArtifact module : ooArtifacts) {
                 OArtifactReference metadataArtifact = metadataModule.getArtifactReference();
                 OArtifactReference moduleArtifact = module.getArtifactReference();
-                if (metadataArtifact.equals(moduleArtifact)) {
+                if (metadataArtifact.getGroupId().equals(moduleArtifact.getGroupId()) &&
+                        metadataArtifact.getArtifactId().equals(moduleArtifact.getArtifactId())) {
                     module.setDownloaded(true);
                 }
             }
         }
+        addAvailableVersions(ooArtifacts);
         return ooArtifacts;
+    }
+
+    private static void addAvailableVersions(List<OArtifact> artifacts) {
+        for (OArtifact artifact : artifacts) {
+            OArtifactReference reference = artifact.getArtifactReference();
+            reference.addAvailableVersions(requestArtifactVersions(reference.getGroupId(), reference.getArtifactId()));
+        }
     }
 
     /**
@@ -154,6 +163,10 @@ public abstract class OrienteerClassLoaderUtil {
     public static Artifact readGroupArtifactVersionInPomXml(Path pomXml) {
         Args.notNull(pomXml, "pomXml");
         return pomXmlUtils.readGroupArtifactVersionInPomXml(pomXml);
+    }
+
+    public static List<String> requestArtifactVersions(String groupId, String artifactId) {
+        return aetherUtils.requestArtifactVersions(new DefaultArtifact(String.format("%s:%s:(0,]", groupId, artifactId)));
     }
 
     /**
