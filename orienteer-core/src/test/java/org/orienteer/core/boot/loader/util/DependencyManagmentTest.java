@@ -38,8 +38,9 @@ public class DependencyManagmentTest {
             assertNotNull("Module from server can't be null", artifact);
         }
         for (OArtifact artifact : modules) {
-            Artifact downloadedArtifact =
-                    OrienteerClassLoaderUtil.downloadArtifact(artifact.getArtifactReference().toAetherArtifact());
+            OArtifactReference reference = artifact.getArtifactReference();
+            reference.setVersion(reference.getAvailableVersions().get(0));
+            Artifact downloadedArtifact = OrienteerClassLoaderUtil.downloadArtifact(reference.toAetherArtifact());
             assertNotNull("Can't resolve Orienteer module: " + artifact, downloadedArtifact);
             assertTrue("Downloaded modules jar file can't be null and must exists: " + downloadedArtifact,
                     downloadedArtifact.getFile() != null && downloadedArtifact.getFile().exists());

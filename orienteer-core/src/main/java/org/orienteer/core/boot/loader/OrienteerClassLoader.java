@@ -42,7 +42,7 @@ public class OrienteerClassLoader extends URLClassLoader {
     /**
      * Contains information about disabled modules when Orienteer reloads
      */
-    private static IModel<Set<OArtifact>> disabledModules;
+    private static IModel<Set<OArtifact>> disabledModules = new SetModel<>(Sets.<OArtifact>newHashSet());
 
     /**
      * Create trusted and untrusted OrienteerClassLoader
@@ -87,7 +87,6 @@ public class OrienteerClassLoader extends URLClassLoader {
      */
     private static List<OArtifact> filterModules(List<OArtifact> modules) {
         List<OArtifact> result = Lists.newArrayList();
-        if (disabledModules == null) disabledModules = new SetModel<>(Sets.<OArtifact>newHashSet());
         Set<OArtifact> disabled = disabledModules.getObject();
         for (OArtifact module : modules) {
             if (module.isLoad() && (useUnTrusted || module.isTrusted()) && !useOrienteerClassLoader) {
