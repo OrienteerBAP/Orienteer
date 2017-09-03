@@ -18,7 +18,6 @@ var ru = {
     editProperty: 'Отредактировать свойство',
     saveDataModel: 'Сохранить модель данных',
     applyChanges: 'Применить изменения',
-    toJson: 'Конвертировать в JSON',
     classExistsInDatabase: 'Класс уже существует в базе данных',
     classExistsInEditor: 'Класс уже существует в редакторе',
     propertyExistsInClass: 'Свойство уже существует в классе',

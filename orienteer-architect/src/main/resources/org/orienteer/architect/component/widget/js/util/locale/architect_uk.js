@@ -18,7 +18,6 @@ var uk = {
     editProperty: 'Редагувати властивість',
     saveDataModel: 'Зберегти модель даних',
     applyChanges: 'Застосувати зміни',
-    toJson: 'Конвертувати в JSON',
     classExistsInDatabase: 'Клас вже існує в базі даних',
     classExistsInEditor: 'Клас вже існує в редакторі',
     propertyExistsInClass: 'Властивість вже існує в класі',
