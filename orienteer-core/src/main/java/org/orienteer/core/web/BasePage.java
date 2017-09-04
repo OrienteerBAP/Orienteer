@@ -26,6 +26,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.AjaxIndicator;
+import org.orienteer.core.component.OModulesLoadFailedPanel;
 import org.orienteer.core.module.PerspectivesModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
@@ -110,7 +111,9 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	protected void onInitialize() {
 		super.onInitialize();
 		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS_FOR_CHANGING));
-		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(OrienteerWebApplication.get().getVersion());
+		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(
+				OrienteerWebApplication.get().getVersion(), OrienteerWebSession.get().isSignedIn() ? OrienteerWebApplication.get().getLoadModeInfo() : "");
+		if(get("modulesFailed")==null) add(new OModulesLoadFailedPanel("modulesFailed"));
 		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
 									.setEscapeModelStrings(false).setRenderBodyOnly(true));

@@ -18,7 +18,6 @@ var en = {
     editProperty: 'Edit property',
     saveDataModel: 'Save Data Model',
     applyChanges: 'Apply Changes',
-    toJson: 'To JSON',
     classExistsInDatabase: 'Class already exists in database',
     classExistsInEditor: 'Class already exists in editor',
     propertyExistsInClass: 'Property already exists in class',

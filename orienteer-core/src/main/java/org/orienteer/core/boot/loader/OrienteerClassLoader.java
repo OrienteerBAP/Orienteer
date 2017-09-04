@@ -2,6 +2,8 @@ package org.orienteer.core.boot.loader;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.util.SetModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.util.MavenResolver;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
@@ -13,7 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.*;
 
@@ -33,6 +38,11 @@ public class OrienteerClassLoader extends URLClassLoader {
     private static boolean useUnTrusted = true;
     private static boolean useOrienteerClassLoader = false;
     private static boolean orienteerClassLoaderOn = false;
+
+    /**
+     * Contains information about disabled modules when Orienteer reloads
+     */
+    private static IModel<Set<OArtifact>> disabledModules = new SetModel<>(Sets.<OArtifact>newHashSet());
 
     /**
      * Create trusted and untrusted OrienteerClassLoader
@@ -77,17 +87,18 @@ public class OrienteerClassLoader extends URLClassLoader {
      */
     private static List<OArtifact> filterModules(List<OArtifact> modules) {
         List<OArtifact> result = Lists.newArrayList();
+        Set<OArtifact> disabled = disabledModules.getObject();
         for (OArtifact module : modules) {
-            if (module.isLoad() && (useUnTrusted || module.isTrusted())) {
+            if (module.isLoad() && (useUnTrusted || module.isTrusted()) && !useOrienteerClassLoader) {
                 result.add(module);
-            } else if (!useUnTrusted && module.isLoad()) {
+            } else if (module.isLoad() && (!useUnTrusted || useOrienteerClassLoader)) {
                 module.setLoad(false);
+                disabled.add(module);
                 updateOArtifactInMetadata(module);
             }
         }
         return result;
     }
-
 
     /**
      * Get Orienteer classloader.
@@ -215,6 +226,17 @@ public class OrienteerClassLoader extends URLClassLoader {
 	
 	        return modules;
 		} else return new ArrayList<>();
+    }
+
+
+    public static IModel<Set<OArtifact>> getDisabledModules() {
+	    return disabledModules;
+    }
+
+    public static void clearDisabledModules() {
+	    if (disabledModules != null && disabledModules.getObject() != null) {
+	        disabledModules.getObject().clear();
+        }
     }
 
     @Override

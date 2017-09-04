@@ -23,6 +23,7 @@ import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
+import org.eclipse.aether.version.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,6 +108,26 @@ class AetherUtils {
         return resolveArtifactRequests(requests);
     }
 
+
+    public List<String> requestArtifactVersions(Artifact artifact) {
+        List<String> versions = Lists.newArrayList();
+        VersionRangeRequest rangeRequest = new VersionRangeRequest();
+        rangeRequest.setArtifact(artifact);
+        rangeRequest.setRepositories(repositories);
+        try {
+            VersionRangeResult versionResult = system.resolveVersionRange(session, rangeRequest);
+            if (!versionResult.getVersions().isEmpty()) {
+                String highest = versionResult.getHighestVersion().toString();
+                versions.add(highest);
+                for (Version version : versionResult.getVersions()) {
+                    if (!highest.equals(version.toString())) versions.add(version.toString());
+                }
+            }
+        } catch (VersionRangeResolutionException e) {
+            LOG.error("Can't create version request: {}", e);
+        }
+        return versions;
+    }
 
     /**
      * Download artifacts

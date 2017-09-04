@@ -231,7 +231,7 @@ class OMetadataUpdater extends AbstractXmlUtil {
         trusted.appendChild(document.createTextNode(Boolean.toString(oArtifact.isTrusted())));
         module.appendChild(trusted);
 
-        addMavenDependency(oArtifact.getArtifactReference(), document, module);
+        module.appendChild(createMavenDependency(oArtifact.getArtifactReference(), document));
     }
 
     /**
@@ -343,12 +343,10 @@ class OMetadataUpdater extends AbstractXmlUtil {
      * Add maven dependency to {@link Document} document.
      * @param artifactReference {@link OArtifactReference} which is maven dependency
      * @param document {@link Document} of metadata.xml
-     * @param element {@link Element} element of current artifact
      * @return {@link Element} with maven dependency
      */
-    private Element addMavenDependency(OArtifactReference artifactReference, Document document, Element element) {
+    private Element createMavenDependency(OArtifactReference artifactReference, Document document) {
         Element mavenElement = document.createElement(MetadataTag.DEPENDENCY.get());
-        element.appendChild(mavenElement);
 
         Element groupId = document.createElement(MetadataTag.GROUP_ID.get());
         groupId.appendChild(document.createTextNode(artifactReference.getGroupId()));

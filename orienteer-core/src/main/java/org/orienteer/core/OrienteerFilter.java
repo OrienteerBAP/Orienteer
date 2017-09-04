@@ -7,6 +7,7 @@ import com.google.inject.servlet.GuiceFilter;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
+import org.orienteer.core.component.OModulesLoadFailedPanel;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
@@ -62,6 +63,14 @@ public final class OrienteerFilter implements Filter {
         filter = new GuiceFilter();
         try {
             filter.init(filterConfig);
+            if (OrienteerClassLoader.isUseUnTrusted())
+                OrienteerClassLoader.clearDisabledModules();
+            OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+            if (app != null) {
+                OModulesLoadFailedPanel.clearInfoAboutUsers();
+                app.setLoadInSafeMode(!OrienteerClassLoader.isUseUnTrusted() || OrienteerClassLoader.isUseOrienteerClassLoader());
+                app.setLoadWithoutModules(OrienteerClassLoader.isUseOrienteerClassLoader());
+            }
         } catch (Throwable t) {
             if (OrienteerClassLoader.isUseUnTrusted()) {
                 LOG.warn("Can't run Orienteer with untrusted classloader. Orienteer runs with trusted classloader.", t);

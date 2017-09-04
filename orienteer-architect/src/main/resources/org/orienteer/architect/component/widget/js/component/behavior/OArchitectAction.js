@@ -9,7 +9,6 @@ var OArchitectActionNames = {
     EDIT_OPROPERTY_ACTION:       'editOProperty',
     DELETE_OPROPERTY_ACTION:     'deleteOProperty',
     DELETE_CELL_ACTION:          'deleteCell',
-    TO_JSON_ACTION:              'toJsonAction',
     SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
     APPLY_EDITOR_CHANGES_ACTION: 'applyChanges',
     FULL_SCREEN_MODE:            'fullScreenMode',
@@ -265,11 +264,6 @@ var OArchitectAction = {
     applyEditorChangesAction: function (editor) {
         OArchitectAction.saveEditorConfigAction.apply(this, arguments);
         app.applyEditorChanges(OArchitectUtil.getOClassesAsJSON(editor.graph));
-    },
-
-    //TODO: delete after development
-    toJsonAction: function (editor) {
-        console.warn('OClasses in JSON: ', OArchitectUtil.getOClassesAsJSON(editor.graph));
     },
 
     /**

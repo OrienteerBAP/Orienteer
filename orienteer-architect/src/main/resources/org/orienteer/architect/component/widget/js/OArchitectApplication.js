@@ -156,7 +156,6 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new OArchitectToolbar(editor, this.getToolbarContainer());
     toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
     toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
-    toolbar.addAction(localizer.toJson, OArchitectActionNames.TO_JSON_ACTION, OArchitectAction.toJsonAction);
     editor.toolbar = toolbar;
 };
 

@@ -4,6 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
@@ -16,6 +17,8 @@ import org.orienteer.core.component.property.AbstractFileUploadPanel;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
+
+import java.util.List;
 
 /**
  * Meta panel for {@link OArtifact}
@@ -116,7 +119,12 @@ public class OArtifactMetaPanel<V> extends AbstractComplexModeMetaPanel<OArtifac
                     result = new TextField<>(id, model);
                     break;
                 case VERSION:
-                    result = new TextField<>(id, model);
+                    List<String> versions = getEntityModel().getObject().getArtifactReference().getAvailableVersions();
+                    if (versions != null && !versions.isEmpty()) {
+                        DropDownChoice<String> choice = new DropDownChoice<>(id, (IModel<String>) model, versions);
+                        choice.getModel().setObject(versions.get(0));
+                        result = choice;
+                    } else result = new TextField<>(id, model);
                     break;
                 case REPOSITORY:
                     result = new TextField<>(id, model);
