@@ -69,7 +69,8 @@ OClassEditModalWindow.prototype.createNameInput = function (createNewOClass) {
 
 OClassEditModalWindow.prototype.createOkButton = function (label, nameField) {
     var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);
-    button.addEventListener('click', this.createOkButtonOnClickBehavior(nameField));
+    this.onEnterPressed = this.createOkButtonOnClickBehavior(nameField);
+    button.addEventListener('click', this.onEnterPressed);
     button.style.float = 'right';
     button.style.marginRight = '10px';
     button.style.marginBottom = '10px';
@@ -111,7 +112,6 @@ OClassEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameFi
                     modal.destroy(modal.OK);
                 } else modal.showErrorFeedback(msg);
             });
-
-        }
+        } else modal.showErrorFeedback(localizer.classEmptyName);
     };
 };

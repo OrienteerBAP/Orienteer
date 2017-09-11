@@ -20,13 +20,25 @@ var OArchitectModalWindow = function (value, containerId, onDestroy) {
     this.onDestroy = onDestroy;
 };
 
+/**
+ * Function which calls when user press enter
+ */
+OArchitectModalWindow.prototype.onEnterPressed = null;
+
 OArchitectModalWindow.prototype.show = function (x, y) {
     if (!this.isShow) {
         var id = '#' + this.containerId;
+        var modal = this;
         $(id).append(this.createModalElement(x, y));
         $('#' + this.getMarkupId()).draggable({
             containment: id,
             cursor: 'move'
+        });
+        $(window).keydown(function (event) {
+            if (event.keyCode === OArchitectConstants.ENTER_KEY) {
+                if (modal.onEnterPressed != null)
+                    modal.onEnterPressed();
+            }
         });
         this.isShow = true;
         this.internalOnShow();
@@ -38,6 +50,7 @@ OArchitectModalWindow.prototype.destroy = function (event) {
         modalWindowCounter--;
         this.internalOnDestroy(this.value, event);
         $('#' + this.getMarkupId()).remove();
+        $(window).off('keydown');
         this.markupId = null;
         this.isShow = false;
     } else throw new Error('Can\'t destroy modal window, because it is not show!');
@@ -51,7 +64,6 @@ OArchitectModalWindow.prototype.internalOnDestroy = function (value, event) {
 OArchitectModalWindow.prototype.internalOnShow = function () {
     app.editor.keyHandler.handler.setEnabled(false);
 };
-
 
 OArchitectModalWindow.prototype.createModalElement = function (x, y) {
     var panel = document.createElement('span');
@@ -169,6 +181,10 @@ OArchitectInfoModalWindow.prototype.createOkButton = function () {
     ok.style.marginRight = '10px';
     ok.style.marginBottom = '10px';
     return ok;
+};
+
+OArchitectInfoModalWindow.prototype.onEnterPressed = function () {
+    this.destroy(this.OK);
 };
 
 var OArchitectErrorModalWindow = function (msg, containerId) {

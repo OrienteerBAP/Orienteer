@@ -19,6 +19,7 @@ GraphConfig.prototype.config = function () {
     this.graph.foldingEnabled = false;
     this.configureGraphBehavior();
     this.configureGraphLabels();
+    this.configEvents();
 };
 
 
@@ -117,3 +118,16 @@ GraphConfig.prototype.convertValueToString = function (cell) {
     } else return mxGraph.prototype.convertValueToString.apply(this, arguments);
 };
 
+GraphConfig.prototype.configEvents = function () {
+    var graph = this.graph;
+    graph.addListener(mxEvent.DOUBLE_CLICK, function (sender, evt) {
+        var cell = evt.getProperty('cell');
+        var event = evt.getProperty('event');
+        event = new mxMouseEvent(event);
+        graph.fireMouseEvent(mxEvent.DOUBLE_CLICK, event);
+        if (cell != null) {
+            var classCell = OArchitectUtil.getClassCellByPropertyCell(cell);
+            app.editor.execute(OArchitectActionNames.ADD_OPROPERTY_ACTION, classCell, event);
+        }
+    });
+};

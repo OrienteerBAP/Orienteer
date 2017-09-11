@@ -55,7 +55,7 @@ var OArchitectAction = {
         var action = function () {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var classCell = cell != null ? OArchitectUtil.getClassByPropertyCell(cell) : null;
+            var classCell = cell != null ? OArchitectUtil.getClassCellByPropertyCell(cell) : null;
             if (classCell !== null) {
                 var property = new OArchitectOProperty(classCell.value);
                 var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
@@ -203,7 +203,7 @@ var OArchitectAction = {
     deleteCellAction: function (editor, cell) {
         var cellsForDelete = editor.graph.getSelectionCells();
         if (cellsForDelete == null || cellsForDelete.length === 0 && cell != null) {
-            cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassByPropertyCell(cell)];
+            cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassCellByPropertyCell(cell)];
         }
         cellsForDelete = getPreparedCells(cellsForDelete);
         removeCells(cellsForDelete);
@@ -235,7 +235,7 @@ var OArchitectAction = {
         if (cell != null && cell.value instanceof OArchitectOProperty) {
             var graph = editor.graph;
             graph.stopEditing(false);
-            var oClassCell = OArchitectUtil.getClassByPropertyCell(cell);
+            var oClassCell = OArchitectUtil.getClassCellByPropertyCell(cell);
             var oClass = oClassCell.value;
             var property = cell.value;
             graph.getModel().beginUpdate();
@@ -254,7 +254,17 @@ var OArchitectAction = {
      * Creates POST request to Wicket.
      */
     saveEditorConfigAction: function (editor) {
-        app.saveEditorConfig(mxUtils.getXml(OArchitectUtil.getEditorXmlNode(editor.graph)));
+        app.editor.toolbar.elementExecuted = true;
+        app.saveEditorConfig(mxUtils.getXml(OArchitectUtil.getEditorXmlNode(editor.graph)), function (respond) {
+            var msg;
+            if (respond.save) {
+                msg = new OArchitectMessage(localizer.saveDataModelSuccess);
+            } else {
+                msg = new OArchitectMessage(localizer.saveDataModelError, true);
+            }
+            msg.show();
+            app.editor.toolbar.elementExecuted = false;
+        });
     },
 
     /**
@@ -262,14 +272,23 @@ var OArchitectAction = {
      * Creates POST request to Wicket
      */
     applyEditorChangesAction: function (editor) {
-        OArchitectAction.saveEditorConfigAction.apply(this, arguments);
-        app.applyEditorChanges(OArchitectUtil.getOClassesAsJSON(editor.graph));
+        app.editor.toolbar.elementExecuted = true;
+        app.applyEditorChanges(OArchitectUtil.getOClassesAsJSON(editor.graph), function (respond) {
+            var msg;
+            if (respond.apply) {
+                msg = new OArchitectMessage(localizer.applyChangesSuccess);
+            } else {
+                msg = new OArchitectMessage(localizer.applyChangesError, true);
+            }
+            msg.show();
+            app.editor.toolbar.elementExecuted = false;
+        });
     },
 
     /**
      * Enable fullscreen mode
      */
-    fullScreenModeAction: function (editor) {
+    fullScreenModeAction: function () {
         app.switchFullScreenMode();
     }
 };

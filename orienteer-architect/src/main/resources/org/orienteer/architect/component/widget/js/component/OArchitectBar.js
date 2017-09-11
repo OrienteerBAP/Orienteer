@@ -55,6 +55,7 @@ OArchitectBar.prototype.addElementToContainer = function () {
  */
 var OArchitectToolbar = function (editor, container) {
     OArchitectBar.apply(this, arguments);
+    this.elementExecuted = false;
 };
 
 OArchitectToolbar.prototype = Object.create(OArchitectBar.prototype);
@@ -64,10 +65,12 @@ OArchitectToolbar.prototype.addElementToContainer = function (label, actionName)
     this.addItem(this, label, actionName);
     var element = this.createElement(label, actionName);
     var editor = this.editor;
+    var toolbar = this;
     this.container.appendChild(element);
-
-    mxEvent.addListener(element, 'click', function (evt) {
-        editor.execute(actionName);
+    mxEvent.addListener(element, 'click', function () {
+        if (!toolbar.elementExecuted) {
+            editor.execute(actionName);
+        }
     });
 };
 
