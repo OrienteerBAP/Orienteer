@@ -88,8 +88,8 @@ var OArchitectAction = {
             var graph = editor.graph;
             var source = addOPropertyLinkEvent.source;
             var target = addOPropertyLinkEvent.target;
-            var targetClass = target.value;
-            var property = new OArchitectOProperty(targetClass);
+            var sourceClass = source.value;
+            var property = new OArchitectOProperty(sourceClass);
             var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
             modal.orientDbTypes = OArchitectOType.linkTypes;
             modal.show(addOPropertyLinkEvent.event.getGraphX(), addOPropertyLinkEvent.event.getGraphY());
@@ -98,11 +98,11 @@ var OArchitectAction = {
                 if (event === this.OK) {
                     graph.getModel().beginUpdate();
                     try {
-                        targetClass.saveState();
-                        var newProperty = targetClass.createProperty(property.name, property.type);
-                        newProperty.setLinkedClass(source.value);
+                        sourceClass.saveState();
+                        var newProperty = sourceClass.createProperty(property.name, property.type);
+                        newProperty.setLinkedClass(target.value);
                         newProperty.saveState();
-                        targetClass.updateValueInCell();
+                        sourceClass.updateValueInCell();
                         newProperty.updateValueInCell();
                     } finally {
                         graph.getModel().endUpdate();

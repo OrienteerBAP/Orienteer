@@ -66,6 +66,7 @@ var OArchitectConstants = {
     OPROPERTY_HEIGHT: 20,
 
     ENTER_KEY: 13,
+    ESC_KEY: 27,
 
     CONNECTOR_IMG_PATH: 'img/arrow.png',
     LINK_IMG_PATH: 'img/link.png',

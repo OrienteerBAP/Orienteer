@@ -38,6 +38,8 @@ OArchitectModalWindow.prototype.show = function (x, y) {
             if (event.keyCode === OArchitectConstants.ENTER_KEY) {
                 if (modal.onEnterPressed != null)
                     modal.onEnterPressed();
+            } else if (event.keyCode === OArchitectConstants.ESC_KEY) {
+                modal.destroy(modal.CANCEL);
             }
         });
         this.isShow = true;
