@@ -8,14 +8,18 @@ var OArchitectUtil = {
         var vertex = new mxCell(oClass,
             new mxGeometry(x, y, OArchitectConstants.OCLASS_WIDTH, OArchitectConstants.OCLASS_HEIGHT));
         vertex.setVertex(true);
-        vertex.setStyle(OArchitectConstants.OCLASS_EDITOR_STYLE);
+        if (!oClass.existsInDb) vertex.setStyle(OArchitectConstants.OCLASS_EDITOR_STYLE);
+        else vertex.setStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE);
         return vertex;
     },
 
     createOPropertyVertex: function (property) {
         var vertex = new mxCell(property,
-            new mxGeometry(0, 0, 0, OArchitectConstants.OPROPERTY_HEIGHT), OArchitectConstants.OPROPERTY_EDITOR_STYLE);
+            new mxGeometry(0, 0, 0, OArchitectConstants.OPROPERTY_HEIGHT));
         vertex.setVertex(true);
+        if (property.ownerClass != null && property.ownerClass.existsInDb) {
+            vertex.setStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE);
+        } else vertex.setStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE);
         return vertex;
     },
 

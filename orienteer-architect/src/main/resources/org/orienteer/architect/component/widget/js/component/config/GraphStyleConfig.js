@@ -12,7 +12,9 @@ GraphStyleConfig.prototype.config = function () {
     var stylesheet = this.graph.getStylesheet();
     stylesheet.putDefaultVertexStyle(this.createVertexStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_EDITOR_STYLE, this.createOClassStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE, this.createOClassExistsStyle());
     stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE, this.createOPropertyStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE, this.createOPropertyExistsStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, this.createOClassConnectionStyle());
     stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_CONNECTION_STYLE, this.createOPropertyConnectionStyle());
 };
@@ -37,6 +39,17 @@ GraphStyleConfig.prototype.createOClassStyle = function () {
     return style;
 };
 
+/**
+ * Create style for change color in classes which exists in database
+ */
+GraphStyleConfig.prototype.createOClassExistsStyle = function () {
+    var style = this.createOClassStyle();
+    style[mxConstants.STYLE_GRADIENTCOLOR] = '#E6C229';
+    style[mxConstants.STYLE_FILLCOLOR]     = '#2791c8';
+    style[mxConstants.STYLE_STROKECOLOR]   = '#E6C229';
+    return style;
+};
+
 GraphStyleConfig.prototype.createOPropertyStyle = function () {
     var style = {};
     style[mxConstants.STYLE_SHAPE] = mxConstants.SHAPE_RECTANGLE;
@@ -49,6 +62,15 @@ GraphStyleConfig.prototype.createOPropertyStyle = function () {
     style[mxConstants.STYLE_SPACING_LEFT] = '4';
     style[mxConstants.STYLE_STROKECOLOR] = '#1B78C8';
     style[mxConstants.STYLE_STROKEWIDTH] = '2';
+    return style;
+};
+
+/**
+ * Create style for properties which exists in database
+ */
+GraphStyleConfig.prototype.createOPropertyExistsStyle = function () {
+    var style = this.createOPropertyStyle();
+    style[mxConstants.STYLE_STROKECOLOR] = '#E6C229';
     return style;
 };
 

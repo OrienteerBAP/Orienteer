@@ -12,7 +12,7 @@ var OArchitectOClassConfigurator = {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         oClass.name = json.name;
-        oClass.existsInDb = json.existsInDb;
+        oClass.setExistsInDb(json.existsInDb);
         oClass.pageUrl = json.pageUrl;
         OArchitectOClassConfigurator.configProperties(oClass, json.properties, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
@@ -36,6 +36,7 @@ var OArchitectOClassConfigurator = {
                 var graph = app.editor.graph;
                 graph.getModel().beginUpdate();
                 oClass.cell = classCell;
+                oClass.setExistsInDb(oClass.existsInDb);
                 var superClassesNames = oClass.superClasses;
                 var subClassesNames = oClass.subClasses;
                 var propertiesCells = OArchitectUtil.getClassPropertiesCells(oClass);

@@ -555,6 +555,25 @@ OArchitectOClass.prototype.toString = function () {
     return this.name;
 };
 
+OArchitectOClass.prototype.setExistsInDb = function (existsInDb) {
+    this.existsInDb = existsInDb;
+    if (this.cell != null) {
+        var cells = [];
+        OArchitectUtil.forEach(this.properties, function (property) {
+            if (property.cell != null) {
+                cells.push(property.cell);
+            }
+        });
+        if (this.existsInDb) {
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE, [this.cell]);
+            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE, cells);
+        } else {
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EDITOR_STYLE, [this.cell]);
+            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE, cells);
+        }
+    }
+};
+
 /**
  * Checks if given json class is equals with current {@link OArchitectOClass} instance
  * @param jsonClass - json class
