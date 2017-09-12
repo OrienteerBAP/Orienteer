@@ -2,8 +2,6 @@ package org.orienteer.core.service;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import com.google.inject.servlet.RequestScoped;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -21,8 +19,6 @@ import org.orienteer.core.service.impl.GuiceOrientDbSettings;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.tasks.OTaskManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 
@@ -49,8 +45,6 @@ import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
  */
 public class OrienteerModule extends AbstractModule {
 
-	private static final Logger LOG = LoggerFactory.getLogger(OrienteerModule.class);
-	
 	public OrienteerModule() {
 	}
 
