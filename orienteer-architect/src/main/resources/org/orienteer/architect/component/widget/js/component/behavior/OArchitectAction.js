@@ -21,6 +21,20 @@ var OArchitectActionNames = {
  */
 var OArchitectAction = {
 
+    activeActionForClass: {},
+
+    lockActionsForClass: function (oClass) {
+        this.activeActionForClass[oClass.name] = 1;
+    },
+
+    unlockActionsForClass: function (oClass) {
+        this.activeActionForClass[oClass.name] = undefined;
+    },
+
+    isAvailableActionForClass: function (oClass) {
+        return this.activeActionForClass[oClass.name] === undefined;
+    },
+
     /**
      * Add new {@link OArchitectOClass} to editor action
      */
@@ -43,7 +57,7 @@ var OArchitectAction = {
                     graph.getModel().endUpdate();
                 }
             }
-        };
+        }
         modal.show(evt.getGraphX(), evt.getGraphY());
     },
 
@@ -57,20 +71,24 @@ var OArchitectAction = {
             graph.stopEditing(false);
             var classCell = cell != null ? OArchitectUtil.getClassCellByPropertyCell(cell) : null;
             if (classCell !== null) {
-                var property = new OArchitectOProperty(classCell.value);
-                var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
-                modal.show(evt.getGraphX(), evt.getGraphY());
+                if (OArchitectAction.isAvailableActionForClass(classCell.value)) {
+                    OArchitectAction.lockActionsForClass(classCell.value);
+                    var property = new OArchitectOProperty(classCell.value);
+                    var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
+                    modal.show(evt.getGraphX(), evt.getGraphY());
 
-                function onDestroy(property, event) {
-                    if (event === this.OK) {
-                        graph.getModel().beginUpdate();
-                        try {
-                            classCell.value.saveState();
-                            classCell.value.createProperty(property.name, property.type, property.cell);
-                            classCell.value.updateValueInCell();
-                        } finally {
-                            graph.getModel().endUpdate();
+                    function onDestroy(property, event) {
+                        if (event === this.OK) {
+                            graph.getModel().beginUpdate();
+                            try {
+                                classCell.value.saveState();
+                                classCell.value.createProperty(property.name, property.type, property.cell);
+                                classCell.value.updateValueInCell();
+                            } finally {
+                                graph.getModel().endUpdate();
+                            }
                         }
+                        OArchitectAction.unlockActionsForClass(classCell.value);
                     }
                 }
             } else {
@@ -84,7 +102,9 @@ var OArchitectAction = {
     },
 
     addOPropertyLinkAction: function (editor, addOPropertyLinkEvent) {
-        if (addOPropertyLinkEvent != null) {
+        if (addOPropertyLinkEvent != null && OArchitectAction.isAvailableActionForClass(addOPropertyLinkEvent.source.value)) {
+            OArchitectAction.lockActionsForClass(addOPropertyLinkEvent.source.value);
+            OArchitectAction.lockActionsForClass(addOPropertyLinkEvent.target.value);
             var graph = editor.graph;
             var source = addOPropertyLinkEvent.source;
             var target = addOPropertyLinkEvent.target;
@@ -108,6 +128,8 @@ var OArchitectAction = {
                         graph.getModel().endUpdate();
                     }
                 } else modal.showErrorFeedback(localizer.cannotCreateLink);
+                OArchitectAction.unlockActionsForClass(sourceClass);
+                OArchitectAction.unlockActionsForClass(target.value);
             }
         }
     },
@@ -174,10 +196,15 @@ var OArchitectAction = {
      */
     editOClassAction: function (editor, cell, evt) {
         var action = function () {
-            var graph = editor.graph;
-            graph.stopEditing(false);
-            var modal = new OClassEditModalWindow(cell.value, app.editorId, null, false);
-            modal.show(evt.getGraphX(), evt.getGraphY());
+            if (OArchitectAction.isAvailableActionForClass(cell.value)) {
+                OArchitectAction.lockActionsForClass(cell.value);
+                var graph = editor.graph;
+                graph.stopEditing(false);
+                var modal = new OClassEditModalWindow(cell.value, app.editorId, function () {
+                    OArchitectAction.unlockActionsForClass(cell.value);
+                }, false);
+                modal.show(evt.getGraphX(), evt.getGraphY());
+            }
         };
 
         action();
@@ -188,10 +215,15 @@ var OArchitectAction = {
      */
     editOPropertyAction: function (editor, cell, evt) {
         var action = function () {
-            var graph = editor.graph;
-            graph.stopEditing(false);
-            var modal = new OPropertyEditModalWindow(cell.value, app.editorId, null, false);
-            modal.show(evt.getGraphX(), evt.getGraphY());
+            if (OArchitectAction.isAvailableActionForClass(cell.value.ownerClass)) {
+                OArchitectAction.lockActionsForClass(cell.value.ownerClass);
+                var graph = editor.graph;
+                graph.stopEditing(false);
+                var modal = new OPropertyEditModalWindow(cell.value, app.editorId, function () {
+                    OArchitectAction.unlockActionsForClass(cell.value.ownerClass);
+                }, false);
+                modal.show(evt.getGraphX(), evt.getGraphY());
+            }
         };
 
         action();

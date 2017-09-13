@@ -75,9 +75,12 @@ GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (sourc
     var getEdgeStyle = function (source) {
         var style = null;
         if (source.value instanceof OArchitectOClass) {
-            style = OArchitectConstants.OCLASS_CONNECTION_STYLE;
+            style = source.value.existsInDb ? OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE : OArchitectConstants.OCLASS_CONNECTION_STYLE;
         } else if (source.value instanceof OArchitectOProperty && OArchitectOType.isLink(source.value.type)) {
-            style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
+            if (source.value.ownerClass.existsInDb && source.value.linkedClass.existsInDb) {
+                style = OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE;
+            } else
+                style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
         }
         return style;
     };
@@ -113,8 +116,9 @@ GraphConnectionConfig.prototype.connectionHandlerCreateIcons = function (state) 
     }
 
     var createLinkIcon = state.cell != null && state.cell.value instanceof OArchitectOClass ||
-        state.cell.value instanceof OArchitectOProperty;
-    var icons = mxConnectionHandler.prototype.createIcons.apply(this, arguments);
+        state.cell.value instanceof OArchitectOProperty && state.cell.value.isLink();
+    var icons = state.cell.value instanceof OArchitectOClass ?
+        mxConnectionHandler.prototype.createIcons.apply(this, arguments) : [];
 
     if (createLinkIcon) {
         var image = new mxImage(app.basePath + OArchitectConstants.LINK_IMG_PATH, OArchitectConstants.ICON_SIZE, OArchitectConstants.ICON_SIZE);

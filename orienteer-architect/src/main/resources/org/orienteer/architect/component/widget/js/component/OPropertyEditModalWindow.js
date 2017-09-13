@@ -34,7 +34,7 @@ OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select
 };
 
 OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
-    this.createHeadBlock(head, create ? localizer.createProperty : localizer.editProperty,
+    this.createHeadBlock(head, (create ? localizer.createProperty : localizer.editProperty) + ' (' + this.value.ownerClass.name + ')',
         OArchitectConstants.FA_ALIGN_JUSTIFY);
 };
 
@@ -109,7 +109,6 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
                 modal.destroy(modal.OK);
             }
         } else {
-            console.warn('empty name');
             modal.showErrorFeedback(localizer.propertyEmptyName);
         }
 

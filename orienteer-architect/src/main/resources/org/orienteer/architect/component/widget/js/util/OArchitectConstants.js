@@ -12,6 +12,8 @@ var OArchitectConstants = {
     OPROPERTY_EXISTS_EDITOR_STYLE: 'oPropertyExistsStyle',
     OCLASS_CONNECTION_STYLE: 'oClassConnectionStyle',
     OPROPERTY_CONNECTION_STYLE: 'oPropertyConnectionStyle',
+    OCLASS_EXISTS_CONNECTION_STYLE: 'oClassExistsConnectionStyle',
+    OPROPERTY_EXISTS_CONNECTION_STYLE: 'oPropertyExistsConnectionStyle',
 
     /**
      * OArchitect CSS classes

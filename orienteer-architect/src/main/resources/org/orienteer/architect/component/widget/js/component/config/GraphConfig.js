@@ -127,7 +127,9 @@ GraphConfig.prototype.configEvents = function () {
         graph.fireMouseEvent(mxEvent.DOUBLE_CLICK, event);
         if (cell != null) {
             var classCell = OArchitectUtil.getClassCellByPropertyCell(cell);
-            app.editor.execute(OArchitectActionNames.ADD_OPROPERTY_ACTION, classCell, event);
+            if (classCell != null && !classCell.value.existsInDb) {
+                app.editor.execute(OArchitectActionNames.ADD_OPROPERTY_ACTION, classCell, event);
+            }
         }
     });
 };

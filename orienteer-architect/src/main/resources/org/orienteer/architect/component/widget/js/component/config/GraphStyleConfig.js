@@ -9,6 +9,7 @@ var GraphStyleConfig = function (editor) {
 };
 
 GraphStyleConfig.prototype.config = function () {
+    // mxConstants.CURSOR_MOVABLE_VERTEX = 'default';
     var stylesheet = this.graph.getStylesheet();
     stylesheet.putDefaultVertexStyle(this.createVertexStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_EDITOR_STYLE, this.createOClassStyle());
@@ -17,6 +18,8 @@ GraphStyleConfig.prototype.config = function () {
     stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE, this.createOPropertyExistsStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, this.createOClassConnectionStyle());
     stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_CONNECTION_STYLE, this.createOPropertyConnectionStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, this.createOClassExistsConnectionStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE, this.createOPropertyExistsConnectionStyle());
 };
 
 GraphStyleConfig.prototype.createOClassStyle = function () {
@@ -44,9 +47,9 @@ GraphStyleConfig.prototype.createOClassStyle = function () {
  */
 GraphStyleConfig.prototype.createOClassExistsStyle = function () {
     var style = this.createOClassStyle();
-    style[mxConstants.STYLE_GRADIENTCOLOR] = '#E6C229';
-    style[mxConstants.STYLE_FILLCOLOR]     = '#2791c8';
-    style[mxConstants.STYLE_STROKECOLOR]   = '#E6C229';
+    style[mxConstants.STYLE_GRADIENTCOLOR] = '#6D5A72';
+    style[mxConstants.STYLE_FILLCOLOR]     = '#8884FF';
+    style[mxConstants.STYLE_STROKECOLOR]   = '#6D5A72';
     return style;
 };
 
@@ -70,7 +73,7 @@ GraphStyleConfig.prototype.createOPropertyStyle = function () {
  */
 GraphStyleConfig.prototype.createOPropertyExistsStyle = function () {
     var style = this.createOPropertyStyle();
-    style[mxConstants.STYLE_STROKECOLOR] = '#E6C229';
+    style[mxConstants.STYLE_STROKECOLOR] = '#6D5A72';
     return style;
 };
 
@@ -78,6 +81,8 @@ GraphStyleConfig.prototype.createOClassConnectionStyle = function () {
     var style = {};
     style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
     style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_BLOCK;
+    style[mxConstants.STYLE_STARTFILL] = 0;
+    style[mxConstants.STYLE_ENDFILL] = 0;
     style[mxConstants.STYLE_EDGE] = mxConstants.EDGESTYLE_ORTHOGONAL;
     style[mxConstants.STYLE_STROKEWIDTH] = '2';
     return style;
@@ -85,10 +90,22 @@ GraphStyleConfig.prototype.createOClassConnectionStyle = function () {
 
 GraphStyleConfig.prototype.createOPropertyConnectionStyle = function () {
     var style = {};
-    style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_DIAMOND;
+    style[mxConstants.STYLE_ENDARROW] = mxConstants.ARROW_OPEN;
     style[mxConstants.STYLE_EDGE] = mxConstants.EDGESTYLE_ORTHOGONAL;
     style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
     style[mxConstants.STYLE_STROKEWIDTH] = '2';
+    return style;
+};
+
+GraphStyleConfig.prototype.createOClassExistsConnectionStyle = function () {
+    var style = this.createOClassConnectionStyle();
+    style[mxConstants.STYLE_STROKECOLOR] = '#6D5A72';
+    return style;
+};
+
+GraphStyleConfig.prototype.createOPropertyExistsConnectionStyle = function () {
+    var style = this.createOPropertyConnectionStyle();
+    style[mxConstants.STYLE_STROKECOLOR] = '#6D5A72';
     return style;
 };
 

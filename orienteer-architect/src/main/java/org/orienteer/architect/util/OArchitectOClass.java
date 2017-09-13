@@ -3,10 +3,15 @@ package org.orienteer.architect.util;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.http.util.Args;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.model.util.CollectionModel;
 import org.apache.wicket.util.io.IClusterable;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.model.ExtendedOPropertiesDataProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -24,6 +29,7 @@ public class OArchitectOClass implements IClusterable {
     public static OArchitectOClass toArchitectOClass(OClass oClass) {
         OArchitectOClass architectOClass = new OArchitectOClass(oClass.getName());
         architectOClass.setExistsInDb(true);
+
         architectOClass.setProperties(toOArchitectProperties(oClass.properties(), oClass.getSuperClasses()));
         architectOClass.setSuperClasses(toOArchitectClassNames(oClass.getSuperClasses()));
         architectOClass.setSubClasses(toOArchitectClassNames(oClass.getSubclasses()));
@@ -33,7 +39,11 @@ public class OArchitectOClass implements IClusterable {
 
     private static List<OArchitectOProperty> toOArchitectProperties(Collection<OProperty> properties, List<OClass> superClasses) {
         List<OArchitectOProperty> architectProperties = new ArrayList<>(properties.size());
-        for (OProperty property : properties) {
+        ExtendedOPropertiesDataProvider provider = new ExtendedOPropertiesDataProvider(new CollectionModel<>(properties));
+        provider.setSort(CustomAttribute.ORDER.getName(), SortOrder.ASCENDING);
+        Iterator<? extends OProperty> iterator = provider.iterator(0, provider.size());
+        while (iterator.hasNext()){
+            OProperty property = iterator.next();
             OArchitectOProperty architectOProperty = OArchitectOProperty.toArchitectOProperty(property);
             architectOProperty.setSubClassProperty(isSubClassProperty(property, superClasses));
             architectProperties.add(architectOProperty);

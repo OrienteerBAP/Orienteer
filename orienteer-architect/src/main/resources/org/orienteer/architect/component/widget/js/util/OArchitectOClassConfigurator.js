@@ -75,13 +75,15 @@ var OArchitectOClassConfigurator = {
     configExistClassesLinks: function (oClass) {
         OArchitectUtil.forEach(OArchitectUtil.getAllClasses(), function (existsClass) {
             OArchitectUtil.forEach(existsClass.properties, function (property) {
-                if (property.linkedClass === oClass.name) {
-                    if (property.isSubClassProperty()) {
+                if (property.linkedClass === oClass.name ||
+                    property.linkedClass instanceof OArchitectOClass && property.linkedClass.name === oClass.name) {
+                    if (property.isSubClassProperty() && property.isSuperClassExistsInEditor()) {
                         property.linkedClass = oClass;
                     } else property.setLinkedClassWithoutSavingState(oClass);
                 }
             });
         });
+
     },
 
     /**
