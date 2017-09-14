@@ -14,10 +14,10 @@ import org.orienteer.core.util.OSchemaHelper;
  */
 public class OArchitectModule extends AbstractOrienteerModule {
 
-    public static final String ODATA_MODEL_OCLASS = "ODataModel";
-    public static final String NAME_OPROPERTY               = "name";
-    public static final String DESCRIPTION_OPROPERTY        = "description";
-    public static final String CONFIG_OPROPERTY             = "config";
+    public static final String ODATA_MODEL_OCLASS    = "ODataModel";
+    public static final String NAME_OPROPERTY        = "name";
+    public static final String DESCRIPTION_OPROPERTY = "description";
+    public static final String CONFIG_OPROPERTY      = "config";
 
     protected OArchitectModule() {
         super("architect", 1);

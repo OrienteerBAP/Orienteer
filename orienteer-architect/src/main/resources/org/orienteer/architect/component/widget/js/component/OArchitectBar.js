@@ -55,6 +55,7 @@ OArchitectBar.prototype.addElementToContainer = function () {
  */
 var OArchitectToolbar = function (editor, container) {
     OArchitectBar.apply(this, arguments);
+    this.elementExecuted = false;
 };
 
 OArchitectToolbar.prototype = Object.create(OArchitectBar.prototype);
@@ -64,10 +65,12 @@ OArchitectToolbar.prototype.addElementToContainer = function (label, actionName)
     this.addItem(this, label, actionName);
     var element = this.createElement(label, actionName);
     var editor = this.editor;
+    var toolbar = this;
     this.container.appendChild(element);
-
-    mxEvent.addListener(element, 'click', function (evt) {
-        editor.execute(actionName);
+    mxEvent.addListener(element, 'click', function () {
+        if (!toolbar.elementExecuted) {
+            editor.execute(actionName);
+        }
     });
 };
 
@@ -110,8 +113,16 @@ OArchitectSidebar.prototype.makeDraggable = function (element, actionName) {
         var mouseEvent = new mxMouseEvent(evt, new mxCellState(graph.getModel(), cell));
         graph.fireMouseEvent(mxEvent.MOUSE_UP, mouseEvent);
         editor.execute(actionName, cell, mouseEvent);
-    });
+    }, null, -mxConstants.TOOLTIP_VERTICAL_OFFSET, -mxConstants.TOOLTIP_VERTICAL_OFFSET);
     draggable.getDropTarget = this.getDropTarget(actionName);
+    draggable.mouseDown = function () {
+        this.element.style.cursor = 'no-drop';
+        mxDragSource.prototype.mouseDown.apply(this, arguments);
+    };
+    draggable.mouseUp = function () {
+        this.element.style.cursor = 'default';
+        mxDragSource.prototype.mouseUp.apply(this, arguments);
+    }
 };
 
 OArchitectSidebar.prototype.getDropTarget = function (actionName) {

@@ -296,7 +296,7 @@ OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
 };
 
 OArchitectOProperty.prototype.setLinkedClassWithoutSavingState = function (linkedClass) {
-    if (this.canModify() && this.linkedClass !== linkedClass && linkedClass != null) {
+    if (this.canModify() && linkedClass != null) {
         this.linkedClass = linkedClass;
         OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
     }

@@ -7,7 +7,6 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -28,19 +27,24 @@ import java.util.List;
 public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
 
     private static final String JSON_VAR = "json";
+    private boolean actionActive = false;
 
     @Override
     protected void respond(AjaxRequestTarget target) {
+        if (actionActive)
+            return;
+        actionActive = true;
         IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
         String json = params.getParameterValue(JSON_VAR).toString("[]");
         List<OArchitectOClass> classes;
+        classes = JsonUtil.fromJSON(json);
         try {
-            classes = JsonUtil.fromJSON(json);
+            addClassesToSchema(classes);
+            target.prependJavaScript("; app.executeCallback({apply: true}); app.checksAboutClassesChanges();");
         } catch (Exception ex) {
-            throw new WicketRuntimeException("Can't parse input json!", ex);
+            target.prependJavaScript("; app.executeCallback({apply: false});");
         }
-        addClassesToSchema(classes);
-        target.appendJavaScript("; app.checksAboutClassesChanges();");
+        actionActive = false;
     }
 
     private void addClassesToSchema(List<OArchitectOClass> classes) {

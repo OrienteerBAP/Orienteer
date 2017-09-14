@@ -38,8 +38,7 @@ public final class OrienteerFilter implements Filter {
     private static OrienteerFilter instance;
 
     private Filter filter;
-    private Injector injector;
-    
+
     private FilterConfig filterConfig;
     private ClassLoader classLoader;
     private boolean reloading;
@@ -54,7 +53,7 @@ public final class OrienteerFilter implements Filter {
     	Thread.currentThread().setContextClassLoader(classLoader);
         LOG.info("Start initialization: " + this.getClass().getName());
         ServletContext context = filterConfig.getServletContext();
-        injector = Guice.createInjector(new OrienteerInitModule(properties));
+        Injector injector = Guice.createInjector(new OrienteerInitModule(properties));
         context.setAttribute(Injector.class.getName(), injector);
         initFilter(filterConfig);
     }

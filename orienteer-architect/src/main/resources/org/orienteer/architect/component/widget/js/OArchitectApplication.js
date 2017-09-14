@@ -143,8 +143,8 @@ OArchitectApplication.prototype.init = function () {
 OArchitectApplication.prototype.configureEditorSidebar = function (editor) {
     var sidebar = new OArchitectSidebar(editor, this.getSidebarContainer());
     sidebar.addAction(localizer.classMsg, OArchitectActionNames.ADD_OCLASS_ACTION, OArchitectAction.addOClassAction);
-    sidebar.addAction(localizer.property, OArchitectActionNames.ADD_OPROPERTY_ACTION, OArchitectAction.addOPropertyAction);
     sidebar.addAction(localizer.existsClasses, OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION, OArchitectAction.addExistsOClassesAction);
+    sidebar.addAction(localizer.property, OArchitectActionNames.ADD_OPROPERTY_ACTION, OArchitectAction.addOPropertyAction);
     editor.sidebar = sidebar;
 };
 
@@ -261,8 +261,10 @@ OArchitectApplication.prototype.setChecksAboutClassesChanges = function (callbac
 /**
  * Save editor config in database
  * @param xml config which will be saved
+ * @param callback function which calls after saving editor config
  */
-OArchitectApplication.prototype.saveEditorConfig = function (xml) {
+OArchitectApplication.prototype.saveEditorConfig = function (xml, callback) {
+    this.callback = callback;
     this.sendPostRequest(this.saveEditorConfigCallbackUrl, {
         "config": xml
     });
@@ -293,9 +295,11 @@ OArchitectApplication.prototype.switchFullScreenMode = function (clickOnCommand)
 
 /**
  * Apply editor changes. Save editor classes in database
- * @param json json string which contains editor classes
+ * @param json - json string which contains editor classes
+ * @param callback - function which calls after apply changes
  */
-OArchitectApplication.prototype.applyEditorChanges = function (json) {
+OArchitectApplication.prototype.applyEditorChanges = function (json, callback) {
+    this.callback = callback;
     this.sendPostRequest(this.applyEditorChangesCallbackUrl, {
        "json": json
     });
@@ -356,8 +360,10 @@ OArchitectApplication.prototype.sendPostRequest = function (url, data) {
  * @param response data from server
  */
 OArchitectApplication.prototype.executeCallback = function (response) {
-    this.callback(response);
-    this.callback = null;
+    if (this.callback != null) {
+        this.callback(response);
+        this.callback = null;
+    }
 };
 
 /**

@@ -34,7 +34,7 @@ OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select
 };
 
 OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
-    this.createHeadBlock(head, create ? localizer.createProperty : localizer.editProperty,
+    this.createHeadBlock(head, (create ? localizer.createProperty : localizer.editProperty) + ' (' + this.value.ownerClass.name + ')',
         OArchitectConstants.FA_ALIGN_JUSTIFY);
 };
 
@@ -79,7 +79,8 @@ OPropertyEditModalWindow.prototype.createNameInput = function (createNewOPropert
 
 OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, typeSelect) {
     var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);
-    button.addEventListener('click', this.createOkButtonOnClickBehavior(nameField, typeSelect));
+    this.onEnterPressed = this.createOkButtonOnClickBehavior(nameField, typeSelect);
+    button.addEventListener('click', this.onEnterPressed);
     button.style.float = 'right';
     button.style.marginRight = '10px';
     button.style.marginBottom = '10px';
@@ -94,7 +95,9 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
             var newName = nameField.value;
             var newType = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(newName);
-            if (property.isValidName(newName)) {
+            if (newName === property.name && newType === property.type) {
+                modal.destroy(modal.OK);
+            } else if (property.isValidName(newName)) {
                 setNameAndType(newName, newType);
                 modal.destroy(modal.OK);
             } else if (existsProperty != null && modal.create) {
@@ -105,6 +108,8 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
                 setNameAndType(newName, newType);
                 modal.destroy(modal.OK);
             }
+        } else {
+            modal.showErrorFeedback(localizer.propertyEmptyName);
         }
 
         function setNameAndType(name, type) {

@@ -20,8 +20,9 @@ import org.orienteer.architect.OArchitectModule;
 public class ManageEditorConfigBehavior extends AbstractDefaultAjaxBehavior {
 
     private static final String CONFIG_VAR = "config";
-
     private IModel<ODocument> model;
+
+    private boolean actionActive = false;
 
     public ManageEditorConfigBehavior(IModel<ODocument> model) {
         this.model = model;
@@ -29,10 +30,19 @@ public class ManageEditorConfigBehavior extends AbstractDefaultAjaxBehavior {
 
     @Override
     protected void respond(AjaxRequestTarget target) {
+        if (actionActive)
+            return;
+        actionActive = true;
         IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
-        ODocument document = model.getObject();
-        document.field(OArchitectModule.CONFIG_OPROPERTY, params.getParameterValue(CONFIG_VAR));
-        document.save();
+        try {
+            ODocument document = model.getObject();
+            document.field(OArchitectModule.CONFIG_OPROPERTY, params.getParameterValue(CONFIG_VAR));
+            document.save();
+            target.appendJavaScript("; app.executeCallback({save: true});");
+        } catch (Exception ex) {
+            target.appendJavaScript("; app.executeCallback({save: false});");
+        }
+        actionActive = false;
     }
 
     @Override

@@ -7,9 +7,13 @@ var OArchitectConstants = {
      * Styles for {@link mxGraph} to create class/property vertex/edge.
      */
     OCLASS_EDITOR_STYLE: 'oClassStyle',
+    OCLASS_EXISTS_EDITOR_STYLE: 'oClassExistsStyle',
     OPROPERTY_EDITOR_STYLE: 'oPropertyStyle',
+    OPROPERTY_EXISTS_EDITOR_STYLE: 'oPropertyExistsStyle',
     OCLASS_CONNECTION_STYLE: 'oClassConnectionStyle',
     OPROPERTY_CONNECTION_STYLE: 'oPropertyConnectionStyle',
+    OCLASS_EXISTS_CONNECTION_STYLE: 'oClassExistsConnectionStyle',
+    OPROPERTY_EXISTS_CONNECTION_STYLE: 'oPropertyExistsConnectionStyle',
 
     /**
      * OArchitect CSS classes
@@ -63,7 +67,8 @@ var OArchitectConstants = {
     OCLASS_HEIGHT: 48,
     OPROPERTY_HEIGHT: 20,
 
-
+    ENTER_KEY: 13,
+    ESC_KEY: 27,
 
     CONNECTOR_IMG_PATH: 'img/arrow.png',
     LINK_IMG_PATH: 'img/link.png',

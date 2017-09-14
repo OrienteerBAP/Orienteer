@@ -49,6 +49,7 @@
 .sidebar-item:hover {
   color: #2E2E2E;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .toolbar-item {

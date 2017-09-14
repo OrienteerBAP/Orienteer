@@ -12,7 +12,7 @@ var OArchitectOClassConfigurator = {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         oClass.name = json.name;
-        oClass.existsInDb = json.existsInDb;
+        oClass.setExistsInDb(json.existsInDb);
         oClass.pageUrl = json.pageUrl;
         OArchitectOClassConfigurator.configProperties(oClass, json.properties, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
@@ -36,6 +36,7 @@ var OArchitectOClassConfigurator = {
                 var graph = app.editor.graph;
                 graph.getModel().beginUpdate();
                 oClass.cell = classCell;
+                oClass.setExistsInDb(oClass.existsInDb);
                 var superClassesNames = oClass.superClasses;
                 var subClassesNames = oClass.subClasses;
                 var propertiesCells = OArchitectUtil.getClassPropertiesCells(oClass);
@@ -74,13 +75,15 @@ var OArchitectOClassConfigurator = {
     configExistClassesLinks: function (oClass) {
         OArchitectUtil.forEach(OArchitectUtil.getAllClasses(), function (existsClass) {
             OArchitectUtil.forEach(existsClass.properties, function (property) {
-                if (property.linkedClass === oClass.name) {
-                    if (property.isSubClassProperty()) {
+                if (property.linkedClass === oClass.name ||
+                    property.linkedClass instanceof OArchitectOClass && property.linkedClass.name === oClass.name) {
+                    if (property.isSubClassProperty() && property.isSuperClassExistsInEditor()) {
                         property.linkedClass = oClass;
                     } else property.setLinkedClassWithoutSavingState(oClass);
                 }
             });
         });
+
     },
 
     /**
