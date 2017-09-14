@@ -275,23 +275,36 @@ OArchitectApplication.prototype.saveEditorConfig = function (xml, callback) {
  * @param clickOnCommand - boolean true if click on widget command
  */
 OArchitectApplication.prototype.switchFullScreenMode = function (clickOnCommand) {
-    this.editor.fullscreen = !this.editor.fullscreen;
-    $('#' + this.containerId).toggleClass(OArchitectConstants.FULLSCREEN_CLASS);
-    $('#' + this.editorId).toggleClass(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
-    if (this.canUpdate) {
-        $('#' + this.sidebarId).toggleClass(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+    if (this.editor.fullScreenEnable) {
+        this.editor.fullscreen = !this.editor.fullscreen;
+        $('#' + this.containerId).toggleClass(OArchitectConstants.FULLSCREEN_CLASS);
+        $('#' + this.editorId).toggleClass(OArchitectConstants.EDITOR_FULLSCREEN_CLASS);
+        if (this.canUpdate) {
+            $('#' + this.sidebarId).toggleClass(OArchitectConstants.SIDEBAR_FULLSCREEN_CLASS);
+        }
+        var outline = this.editor.outline.outline.container;
+        if (this.editor.fullscreen) {
+            outline.style.display = 'block';
+            outline.style.right = '2px';
+            if (app.canUpdate) {
+                outline.style.top = app.getToolbarContainer().offsetHeight + 2 + 'px';
+            } else outline.style.top = '2px';
+            this.editor.outline.update();
+        } else outline.style.display = 'none';
+        if (!clickOnCommand) this.sendPostRequest(this.switchFullScreenModeCallbackUrl, {});
     }
-    var outline = this.editor.outline.outline.container;
-    if (this.editor.fullscreen) {
-        outline.style.display = 'block';
-        outline.style.right = '2px';
-        if (app.canUpdate) {
-            outline.style.top = app.getToolbarContainer().offsetHeight + 2 + 'px';
-        } else outline.style.top = '2px';
-        this.editor.outline.update();
-    } else outline.style.display = 'none';
-    if (!clickOnCommand) this.sendPostRequest(this.switchFullScreenModeCallbackUrl, {});
 };
+
+/**
+ * Calls FROM WICKET
+ * Switch page scrolling
+ */
+OArchitectApplication.prototype.switchPageScrolling = function () {
+    if (!this.editor.fullscreen) {
+        $('body').toggleClass('noscroll');
+    }
+};
+
 
 /**
  * Apply editor changes. Save editor classes in database
@@ -383,6 +396,7 @@ OArchitectApplication.prototype.applyXmlConfig = function (xml) {
  */
 OArchitectApplication.prototype.checksAboutClassesChanges = function () {
     function callback(json) {
+        app.editor.saveActions = false;
         if (json != null && json.length > 0) {
             var allClasses = OArchitectUtil.getAllClasses();
             var jsonClasses = JSON.parse(json);
@@ -397,6 +411,7 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
                 });
             });
         }
+        app.editor.saveActions = true;
     }
     this.requestAboutChangesInClasses(JSON.stringify(OArchitectUtil.getAllClassNames()), callback);
 };

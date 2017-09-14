@@ -39,7 +39,7 @@ public class AddOClassesCommand extends AbstractCheckBoxEnabledCommand<OClass> {
         String json = JsonUtil.toJSON(architectOClasses);
         if (Strings.isNullOrEmpty(json)) json = "[]";
         manager.executeCallback(target, json);
-        manager.switchModalWindow(target, false);
+        manager.closeModalWindow(target);
     }
 
     private List<OArchitectOClass> toOArchitectOClasses(List<OClass> classes) {

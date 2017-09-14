@@ -14,6 +14,7 @@ import java.util.List;
 public interface IOArchitectOClassesManager extends IClusterable {
     public void setExistsClasses(List<OArchitectOClass> classes);
     public void executeCallback(AjaxRequestTarget target, String json);
-    public void switchModalWindow(AjaxRequestTarget target, boolean show);
+    public void showModalWindow(AjaxRequestTarget target);
+    public void closeModalWindow(AjaxRequestTarget target);
     public OrienteerDataTable<OClass, String> getTable();
 }

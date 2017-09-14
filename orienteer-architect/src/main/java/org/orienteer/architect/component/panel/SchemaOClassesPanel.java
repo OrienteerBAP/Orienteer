@@ -46,11 +46,18 @@ public class SchemaOClassesPanel extends Panel implements IOArchitectOClassesMan
         this.jsCallback = jsCallback;
         modal = createModalWindow("modal");
         modal.setContent(createGenericTablePanel(modal.getContentId()));
+        modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+            @Override
+            public void onClose(AjaxRequestTarget target) {
+                switchPageScroll(target, false);
+            }
+        });
         add(modal);
     }
 
     private ModalWindow createModalWindow(String id) {
         ModalWindow modal = new ModalWindow(id);
+        modal.setOutputMarkupId(true);
         modal.setTitle(new ResourceModel("widget.architect.editor.list.classes.title"));
         modal.setInitialWidth(670);
         modal.setInitialHeight(510);
@@ -128,9 +135,23 @@ public class SchemaOClassesPanel extends Panel implements IOArchitectOClassesMan
     }
 
     @Override
-    public void switchModalWindow(AjaxRequestTarget target, boolean show) {
-        if (show) modal.show(target);
-        else modal.close(target);
+    public void showModalWindow(AjaxRequestTarget target) {
+        if (!modal.isShown()) {
+            modal.show(target);
+            switchPageScroll(target, true);
+        }
+    }
+
+    @Override
+    public void closeModalWindow(AjaxRequestTarget target) {
+        if (modal.isShown()) {
+            modal.close(target);
+        }
+    }
+
+
+    private void switchPageScroll(AjaxRequestTarget target, boolean show) {
+        target.appendJavaScript(String.format("; app.editor.fullScreenEnable = %s; app.switchPageScrolling(); ", !show));
     }
 
     @Override

@@ -12,6 +12,8 @@ var OArchitectEditor = function(container) {
     this.container = container;
 
     this.fullscreen = false;
+    this.saveActions = true;
+    this.fullScreenEnable = true;
 
     this.configureDefaultActions();
     this.configureGraph([new GraphConfig(this), new GraphConnectionConfig(this),
@@ -114,19 +116,21 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
 
 OArchitectEditor.prototype.installUndoSaver = function (graph) {
     var listener = mxUtils.bind(this, function(sender, evt) {
-        var edit = evt.getProperty('edit');
-        var changesForSave = [];
-        OArchitectUtil.forEach(edit.changes, function (change) {
-            if (change instanceof mxValueChange) {
-                if (change.previous !== null && change.value !== null) {
-                    change.execute = null;
-                    changesForSave.push(change);
-                }
-            } else changesForSave.push(change);
-        });
-        if (changesForSave.length > 0) {
-            edit.changes = changesForSave;
-            this.undoManager.undoableEditHappened(edit);
+        if (app.editor.saveActions) {
+            var edit = evt.getProperty('edit');
+            var changesForSave = [];
+            OArchitectUtil.forEach(edit.changes, function (change) {
+                if (change instanceof mxValueChange) {
+                    if (change.previous !== null && change.value !== null) {
+                        change.execute = null;
+                        changesForSave.push(change);
+                    }
+                } else if (!(change instanceof mxStyleChange)) changesForSave.push(change);
+            });
+            if (changesForSave.length > 0) {
+                edit.changes = changesForSave;
+                this.undoManager.undoableEditHappened(edit);
+            }
         }
     });
 

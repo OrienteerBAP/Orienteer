@@ -30,7 +30,7 @@ public class CancelCommand extends AjaxFormCommand<OClass> {
     @Override
     public void onClick(AjaxRequestTarget target) {
         manager.executeCallback(target, "null");
-        manager.switchModalWindow(target, false);
+        manager.closeModalWindow(target);
     }
 
 }

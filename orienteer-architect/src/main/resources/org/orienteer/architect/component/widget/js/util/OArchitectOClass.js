@@ -559,17 +559,49 @@ OArchitectOClass.prototype.setExistsInDb = function (existsInDb) {
     this.existsInDb = existsInDb;
     if (this.cell != null) {
         var cells = [];
-        OArchitectUtil.forEach(this.properties, function (property) {
-            if (property.cell != null) {
-                cells.push(property.cell);
-            }
-        });
+        var propertyEdgeCells = [];
+        var classEdgeCells = [];
+        addPropertiesCells(this.properties, cells, propertyEdgeCells);
+        addClassesEdges(this.superClasses, this.cell, classEdgeCells);
+        addClassesEdges(this.subClasses, this.cell, classEdgeCells);
+
+
         if (this.existsInDb) {
             app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE, [this.cell]);
             app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE, cells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE, propertyEdgeCells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, classEdgeCells);
         } else {
             app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EDITOR_STYLE, [this.cell]);
             app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE, cells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_CONNECTION_STYLE, propertyEdgeCells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, classEdgeCells);
+        }
+
+        function addPropertiesCells(properties, propertiesCells, edgeCells) {
+            OArchitectUtil.forEach(properties, function (property) {
+                if (property.cell != null) {
+                    propertiesCells.push(property.cell);
+                    var link = property.linkedClass;
+                    if (link != null && link instanceof OArchitectOClass && link.existsInDb && link.cell != null) {
+                        var edges = app.editor.graph.getEdgesBetween(cell, link.cell);
+                        OArchitectUtil.forEach(edges, function (edge) {
+                            edgeCells.push(edge);
+                        });
+                    }
+                }
+            });
+        }
+
+        function addClassesEdges(classes, cell, edges) {
+            OArchitectUtil.forEach(classes, function (oClass) {
+                if (oClass.cell != null) {
+                    var e = app.editor.graph.getEdgesBetween(oClass.cell, cell);
+                    OArchitectUtil.forEach(e, function (edge) {
+                        edges.push(edge);
+                    });
+                }
+            });
         }
     }
 };

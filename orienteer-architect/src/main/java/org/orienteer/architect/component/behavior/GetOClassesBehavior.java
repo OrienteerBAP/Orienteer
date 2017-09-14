@@ -28,7 +28,7 @@ public class GetOClassesBehavior extends AbstractDefaultAjaxBehavior {
         IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
         String json = params.getParameterValue(EXISTS_CLASSES_VAR).toString("[]");
         manager.setExistsClasses(JsonUtil.fromJSON(json));
-        manager.switchModalWindow(target, true);
+        manager.showModalWindow(target);
     }
 
     @Override
