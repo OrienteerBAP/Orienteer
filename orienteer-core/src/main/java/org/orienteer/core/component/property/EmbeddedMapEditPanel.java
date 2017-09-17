@@ -120,9 +120,10 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 	{
 		super(id, new DynamicPropertyValueModel<Map<String, V>>(documentModel, propertyModel));
 		setOutputMarkupId(true);
+		OProperty property = propertyModel.getObject();
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
-		final OType linkedType = propertyModel.getObject().getLinkedType();
-		final OType oType = linkedType != null ? linkedType : OType.ANY;
+		final OType linkedType = property.getLinkedType();
+		final OType oType = linkedType != null ? linkedType : (OType.LINKMAP.equals(property.getType()) ? OType.LINK :OType.ANY);
 		listView = new ListView<Pair<V>>("items", new PropertyModel<List<Pair<V>>>(this, "data")) {
 
 			@Override
@@ -208,7 +209,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 	}
 	
 	protected void convertToData() {
-		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
+		visitChildren(FormComponent.class, new IVisitor<FormComponent<Object>, Void>() {
 
 			@Override
 			public void component(FormComponent<Object> object,

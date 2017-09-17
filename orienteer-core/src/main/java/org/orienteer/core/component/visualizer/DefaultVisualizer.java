@@ -75,6 +75,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case EMBEDDEDSET:
                 	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
                 case EMBEDDEDMAP:
+                case LINKMAP:
                 	return new EmbeddedMapViewPanel<V>(id, documentModel, propertyModel);
                 case BINARY:
                 	return new BinaryViewPanel(id, documentModel, propertyModel, valueModel);
@@ -89,7 +90,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 				case BOOLEAN:
 					return new CheckBox(id, (IModel<Boolean>)valueModel);
 				case LINK:
-					return new LinkEditPanel(id, documentModel, propertyModel);
+					return new LinkEditPanel(id, documentModel, propertyModel, (IModel<OIdentifiable>)valueModel);
 					//return new TextField<V>(id, getModel()).setType(ODocument.class);
 				case LINKLIST:
 				case LINKSET:
@@ -105,6 +106,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
                 case EMBEDDEDSET:
                 	return new EmbeddedCollectionEditPanel<Object, Set<Object>>(id, documentModel, propertyModel, HashSet.class);
                 case EMBEDDEDMAP:
+                case LINKMAP:
                 	return new EmbeddedMapEditPanel<V>(id, documentModel, propertyModel);
                 case BINARY:
                 	return new BinaryEditPanel(id, documentModel, propertyModel, (IModel<byte[]>)valueModel);
