@@ -16,7 +16,7 @@ public class OArchitectOProperty implements IClusterable {
     private boolean subClassProperty;
     private String linkedClass;
     private String pageUrl;
-    private String inverseProperty;
+    private OArchitectOProperty inverseProperty;
     private boolean existsInDb;
 
     public static OArchitectOProperty toArchitectOProperty(OProperty property) {
@@ -24,7 +24,11 @@ public class OArchitectOProperty implements IClusterable {
         if (property.getLinkedClass() != null) {
             architectProperty.setLinkedClass(property.getLinkedClass().getName());
             OProperty inverse = CustomAttribute.PROP_INVERSE.getValue(property);
-            if (inverse != null) architectProperty.setInverseProperty(inverse.getName());
+            if (inverse != null) {
+                OArchitectOProperty prop = new OArchitectOProperty(inverse.getName(), inverse.getType());
+                prop.setExistsInDb(true);
+                architectProperty.setInverseProperty(prop);
+            }
         }
         architectProperty.setPageUrl("/property/" + property.getOwnerClass().getName() + "/" + property.getName());
         architectProperty.setExistsInDb(true);
@@ -87,11 +91,11 @@ public class OArchitectOProperty implements IClusterable {
         this.pageUrl = pageUrl;
     }
 
-    public String getInverseProperty() {
+    public OArchitectOProperty getInverseProperty() {
         return inverseProperty;
     }
 
-    public void setInverseProperty(String inverseProperty) {
+    public void setInverseProperty(OArchitectOProperty inverseProperty) {
         this.inverseProperty = inverseProperty;
     }
 

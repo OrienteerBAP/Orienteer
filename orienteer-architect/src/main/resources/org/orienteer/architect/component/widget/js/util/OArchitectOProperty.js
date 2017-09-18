@@ -113,11 +113,15 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
     } else if (json.linkedClass != null) this.linkedClass = json.linkedClass;
 
     if (json.inverseProperty != null) {
-        var property = this.linkedClass instanceof OArchitectOClass ? this.linkedClass.getProperty(json.inverseProperty) : null;
+        var property = this.linkedClass instanceof OArchitectOClass ? this.linkedClass.getProperty(json.inverseProperty.name) : null;
+        this.setInversePropertyEnable(true);
         if (property !== null) {
             this.setInverseProperty(property);
         } else {
-            this.inverseProperty = json.inverseProperty;
+            this.inverseProperty = new OArchitectOProperty();
+            this.inverseProperty.name = json.inverseProperty.name;
+            this.inverseProperty.type = json.inverseProperty.type;
+            this.inverseProperty.existsInDb = json.inverseProperty.existsInDb;
         }
     }
     this.setExistsInDb(json.existsInDb);
@@ -480,7 +484,15 @@ OArchitectOProperty.prototype.toJson = function () {
                 }
             }
         } else if (key === 'inverseProperty') {
-            value = value instanceof OArchitectOProperty ? value.name : value;
+            if (value !== null) {
+                var prop = new OArchitectOProperty();
+                if (value instanceof OArchitectOProperty) {
+                    prop.name = value.name;
+                    prop.type = value.type;
+                    prop.ownerClass = value.ownerClass instanceof OArchitectOClass ? value.ownerClass.name : null;
+                } else prop.name = value;
+                value = prop;
+            }
         }
         return value;
     }

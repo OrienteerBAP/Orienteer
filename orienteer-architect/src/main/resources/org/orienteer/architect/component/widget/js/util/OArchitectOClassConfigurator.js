@@ -15,10 +15,10 @@ var OArchitectOClassConfigurator = {
         oClass.pageUrl = json.pageUrl;
         if (oClass.cell != null) oClass.setCell(oClass.cell);
         OArchitectOClassConfigurator.configProperties(oClass, json.properties, true);
+        oClass.setExistsInDb(json.existsInDb);
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.subClasses, false, true);
         OArchitectOClassConfigurator.configExistClassesLinks(oClass);
-        oClass.setExistsInDb(json.existsInDb);
         graph.getModel().endUpdate();
     },
 
@@ -79,9 +79,20 @@ var OArchitectOClassConfigurator = {
                     property.linkedClass instanceof OArchitectOClass && property.linkedClass.name === oClass.name) {
                     if (property.isSubClassProperty() && property.isSuperClassExistsInEditor()) {
                         property.linkedClass = oClass;
-                    } else property.setLinkedClass(oClass);
+                        if (property.inverseProperty != null) {
+                            var prop = oClass.getProperty(property.inverseProperty.name);
+                            if (prop !== null) property.inverseProperty = prop;
+                        }
+                    } else {
+                        property.setLinkedClass(oClass);
+                        if (property.inverseProperty != null) {
+                            var inverse = oClass.getProperty(property.inverseProperty.name);
+                            if (inverse !== null) property.setInverseProperty(inverse);
+                        }
+                    }
                 }
             });
+            existsClass.setExistsInDb(existsClass.existsInDb);
         });
 
     },

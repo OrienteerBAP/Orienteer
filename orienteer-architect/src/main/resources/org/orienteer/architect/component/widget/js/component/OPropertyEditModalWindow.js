@@ -113,8 +113,9 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
             var name = nameField.value;
             var type = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(name);
-
-            if (property.isValidName(name) || property.isValidType(type) || property.isValidInverseProperty(inverseBlock.inverseProperty)) {
+            if (property.existsInDb) {
+                modal.destroy(modal.OK);
+            } else if (property.isValidName(name) || property.isValidType(type) || property.isValidInverseProperty(inverseBlock.inverseProperty)) {
                 updateProperty(name, type, inverseBlock.enableInverseProperty, inverseBlock.inverseProperty);
                 modal.destroy(modal.OK);
             } else if (name === property.name && type === property.type) {
@@ -226,9 +227,11 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
     var linkedClass = this.property.linkedClass;
     var inverseValidProperties = linkedClass instanceof OArchitectOClass ? linkedClass.getAvailableInverseProperties() : [];
     var inverseProperty = this.property.inverseProperty;
-    this.clearSelectAndAddProperties(inverseValidProperties, select);
     var propertyPresent = false;
-
+    if (inverseValidProperties.length === 0 && inverseProperty !== null) {
+        inverseValidProperties.push(inverseProperty);
+    }
+    this.clearSelectAndAddProperties(inverseValidProperties, select);
     if (inverseProperty !== null && linkedClass !== null && inverseValidProperties.length > 0) {
         for (var i = 0; i < inverseValidProperties.length; i++) {
             if (inverseValidProperties[i].name === inverseProperty.name) {
@@ -238,7 +241,6 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
             }
         }
     }
-
     if (inverseValidProperties.length === 0 || this.disabled && !propertyPresent) {
         this.emptyInverseProperties = true;
     }

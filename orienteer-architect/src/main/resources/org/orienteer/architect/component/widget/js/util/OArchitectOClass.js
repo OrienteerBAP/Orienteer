@@ -679,7 +679,14 @@ OArchitectOClass.prototype.toJson = function () {
                 }
             }
         } else if (key === 'inverseProperty') {
-            value = value instanceof OArchitectOProperty ? value.name : value;
+            if (value !== null) {
+                var prop = new OArchitectOProperty();
+                if (value instanceof OArchitectOProperty) {
+                    prop.name = value.name;
+                    prop.type = value.type;
+                } else prop.name = value;
+                value = prop;
+            }
         }
 
         return value;

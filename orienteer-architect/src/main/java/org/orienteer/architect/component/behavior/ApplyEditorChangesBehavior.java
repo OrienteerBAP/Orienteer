@@ -100,12 +100,25 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
                     oProperty.setType(property.getType());
                 }
                 if (!Strings.isNullOrEmpty(property.getLinkedClass())) {
-                    OClass linkedClass = schema.getOrCreateClass(property.getLinkedClass());
-                    oProperty.setLinkedClass(linkedClass);
-                    OProperty inverseProp = !Strings.isNullOrEmpty(property.getInverseProperty()) ?
-                            linkedClass.getProperty(property.getInverseProperty()) : null;
-                    CustomAttribute.PROP_INVERSE.setValue(oProperty, inverseProp);
+                    setLinkedClassForProperty(property, oProperty, schema);
                 }
+            }
+        }
+    }
+
+    private void setLinkedClassForProperty(OArchitectOProperty architectProperty, OProperty property, OSchema schema) {
+        boolean classExists = schema.existsClass(architectProperty.getLinkedClass());
+        OClass linkedClass = classExists ? schema.getClass(architectProperty.getLinkedClass()) :
+                schema.createClass(architectProperty.getLinkedClass());
+        property.setLinkedClass(linkedClass);
+        if (architectProperty.getInverseProperty() != null) {
+            OArchitectOProperty p = architectProperty.getInverseProperty();
+            if (!Strings.isNullOrEmpty(p.getName()) && p.getType() != null) {
+                OProperty inverseProp = linkedClass.getProperty(p.getName());
+                if (inverseProp == null && !classExists) {
+                    inverseProp = linkedClass.createProperty(p.getName(), p.getType());
+                }
+                CustomAttribute.PROP_INVERSE.setValue(property, inverseProp);
             }
         }
     }

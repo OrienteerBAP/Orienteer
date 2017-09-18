@@ -39,7 +39,7 @@ var OArchitectUtil = {
         function getCellsForRemove(cells) {
             var result = [];
             OArchitectUtil.forEach(cells, function (cell) {
-                if (cell.edge) {
+                if (cell.edge && cell.source != null) {
                     if (cell.source.value instanceof OArchitectOProperty) {
                         if (cell.source.value.canDisconnect() || withoutChecks) result.push(cell);
                     } else result.push(cell);
