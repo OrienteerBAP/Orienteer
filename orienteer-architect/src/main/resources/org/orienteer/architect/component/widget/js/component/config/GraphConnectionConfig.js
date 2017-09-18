@@ -51,7 +51,7 @@ GraphConnectionConfig.prototype.isCellDisconnectable = function (cell) {
 };
 
 GraphConnectionConfig.prototype.isCellDeletable = function (cell) {
-    if (cell.edge && cell.source.value instanceof OArchitectOClass)
+    if (cell.edge && cell.source.value instanceof OArchitectOClass && cell.target.value instanceof OArchitectOClass)
         return !cell.source.value.existsInDb;
     return mxGraph.prototype.isCellDeletable.apply(this, arguments);
 };
@@ -68,22 +68,24 @@ GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
     return valid;
 };
 
-GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (source) {
-    var getEdgeStyle = function (source) {
+GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (source, target) {
+    var getEdgeStyle = function (source, target) {
         var style = null;
         if (source.value instanceof OArchitectOClass) {
             style = source.value.existsInDb ? OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE : OArchitectConstants.OCLASS_CONNECTION_STYLE;
         } else if (source.value instanceof OArchitectOProperty && OArchitectOType.isLink(source.value.type)) {
             if (source.value.existsInDb && source.value.linkedClass.existsInDb) {
-                style = OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE;
-            } else
-                style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
+                style = target.value instanceof OArchitectOProperty ? OArchitectConstants.OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE :
+                    OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE;
+            } else if (target != null && target.value instanceof OArchitectOProperty) {
+                style = OArchitectConstants.OPROPERTY_INVERSE_CONNECTION_STYLE;
+            } else style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
         }
         return style;
     };
     var edge = new mxCell('');
     edge.setEdge(true);
-    edge.setStyle(getEdgeStyle(source));
+    edge.setStyle(getEdgeStyle(source, target));
     var geo = new mxGeometry();
     geo.relative = true;
     edge.setGeometry(geo);
@@ -149,8 +151,8 @@ GraphConnectionConfig.prototype.connectionHandlerRedrawIcons = function (icons, 
         var pos = this.getIconPosition(icons[0], state);
         if (withLinkIcon) {
             initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 4);
-            initIcon(icons[1], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
-        } else initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
+            initIcon(icons[1], pos.y, pos.x, OArchitectConstants.ICON_SIZE);
+        } else initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE);
 
     }
 

@@ -11,13 +11,13 @@ var OArchitectConnector = {
      */
     connect: function(sourceCell, targetCell) {
         if (sourceCell != null && targetCell != null) {
-            if (targetCell.value instanceof OArchitectOClass) {
-                var graph = app.editor.graph;
-                if (sourceCell.value instanceof OArchitectOClass) {
-                    this.connectSubClassCellWithSuperClassCell(graph, sourceCell, targetCell);
-                } else if (sourceCell.value instanceof OArchitectOProperty && sourceCell.value.canConnect()) {
-                    this.connectOPropertyCellWithOClassCell(graph, sourceCell, targetCell);
-                }
+            var graph = app.editor.graph;
+            if (sourceCell.value instanceof OArchitectOClass) {
+                this.connectSubClassCellWithSuperClassCell(graph, sourceCell, targetCell);
+            } else if (sourceCell.value instanceof OArchitectOProperty && targetCell.value instanceof OArchitectOProperty) {
+                this.connectInverseProperties(graph, sourceCell, targetCell);
+            } else if (sourceCell.value instanceof OArchitectOProperty && sourceCell.value.canConnect()) {
+                this.connectOPropertyCellWithOClassCell(graph, sourceCell, targetCell);
             }
         }
     },
@@ -29,10 +29,12 @@ var OArchitectConnector = {
      * @param targetCell {@link mxCell}
      */
     disconnect: function (sourceCell, targetCell) {
-        if (targetCell.value instanceof OArchitectOClass) {
+        if (sourceCell != null && targetCell != null) {
             var graph = app.editor.graph;
             if (sourceCell.value instanceof OArchitectOClass) {
                 this.disconnectSubClassCellFromSuperClassCell(graph, sourceCell, targetCell);
+            } else if (sourceCell.value instanceof OArchitectOProperty && targetCell.value instanceof OArchitectOProperty) {
+                this.disconnectInverseProperties(graph, sourceCell, targetCell);
             } else if (sourceCell.value instanceof OArchitectOProperty) {
                 this.disconnectOPropertyFromOClassCell(graph, sourceCell, targetCell);
             }
@@ -64,6 +66,26 @@ var OArchitectConnector = {
             } finally {
                 graph.getModel().endUpdate();
             }
+        }
+    },
+
+    connectInverseProperties: function (graph, propertyCell, inversePropertyCell) {
+        if (propertyCell.value === inversePropertyCell.value.inverseProperty) {
+            var property = propertyCell.value;
+            var inverse = inversePropertyCell.value;
+            property.setInversePropertyEnable(true);
+            inverse.setInversePropertyEnable(true);
+            property.setLinkedClass(inverse.ownerClass, true);
+            inverse.setLinkedClass(property.ownerClass, true);
+            property.setInverseProperty(inverse);
+            inverse.setInverseProperty(property);
+        }
+    },
+
+    disconnectInverseProperties: function (graph, propertyCell, inversePropertyCell) {
+        if (propertyCell.value === inversePropertyCell.value.inverseProperty) {
+            propertyCell.value.setInverseProperty(null);
+            inversePropertyCell.value.setInverseProperty(null);
         }
     },
 

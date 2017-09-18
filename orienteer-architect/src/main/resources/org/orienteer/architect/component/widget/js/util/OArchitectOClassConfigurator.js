@@ -63,7 +63,7 @@ var OArchitectOClassConfigurator = {
             if (isJson) {
                 var name = configElement.name;
                 property = oClass.getProperty(name);
-                if (property == null) property = new OArchitectOProperty();
+                if (property === null) property = new OArchitectOProperty();
                 property.configFromDatabase(oClass, configElement);
             } else {
                 property = configElement.value;

@@ -25,6 +25,8 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.existsInDb = false;
     this.databaseJson = null;
 
+    this.notSetLinkedClass = false;
+
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (name != null) this.setName(name);
     if (type != null) this.setType(type);
@@ -138,9 +140,16 @@ OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
     this.removed = false;
     this.cell.parent = oClass.cell;
     if (this.inverseProperty !== null) {
-        var property = this.linkedClass instanceof OArchitectOClass ? this.linkedClass.getProperty(this.inverseProperty) : null;
+        var property = null;
+        var name = this.inverseProperty;
+        OArchitectUtil.forEach(app.editor.graph.getChildVertices(linkedCell), function (cell, trigger) {
+            if (cell.value.name === name) {
+                property = cell.value;
+                trigger.stop = true;
+            }
+        });
         if (property !== null) {
-            this.setInverseProperty(property)
+            this.setInverseProperty(property);
         }
     }
     oClass.notifySubClassesAboutChangesInProperty(this);
@@ -352,9 +361,26 @@ OArchitectOProperty.prototype.setInverseProperty = function (property) {
     if (this.inverseProperty !== property && this.isInverseProperty()) {
         if (property !== null) {
             this.inverseProperty = property;
+            if (this === property.inverseProperty) {
+                manageEdgeBetweenPropertyClasses(this, property, false);
+                OArchitectUtil.manageEdgesBetweenCells(this.cell, property.cell, true);
+            }
         } else if (this.inverseProperty !== null) {
+            if (this === this.inverseProperty.inverseProperty) {
+                manageEdgeBetweenPropertyClasses(this, this.inverseProperty, true);
+                OArchitectUtil.manageEdgesBetweenCells(this.cell, this.inverseProperty.cell, false);
+            }
             this.inverseProperty = null;
         }
+    }
+
+    function manageEdgeBetweenPropertyClasses(property, inverse, create) {
+        property.notSetLinkedClass = true;
+        inverse.notSetLinkedClass = true;
+        OArchitectUtil.manageEdgesBetweenCells(property.cell, inverse.ownerClass.cell, create);
+        OArchitectUtil.manageEdgesBetweenCells(inverse.cell, property.ownerClass.cell, create);
+        property.notSetLinkedClass = false;
+        inverse.notSetLinkedClass = false;
     }
 };
 
@@ -372,7 +398,7 @@ OArchitectOProperty.prototype.canModifyNameAndType = function () {
 };
 
 OArchitectOProperty.prototype.canModifyLink = function () {
-    var modify = !this.isRemoved() && this.ownerClass != null;
+    var modify = !this.isRemoved() && this.ownerClass != null && !this.notSetLinkedClass;
     if (modify) modify = !this.ownerClass.isRemoved();
     return modify;
 };
@@ -407,22 +433,36 @@ OArchitectOProperty.prototype.equalsWithJsonLink = function (jsonProperty) {
 OArchitectOProperty.prototype.setExistsInDb = function (existsInDb) {
     this.existsInDb = existsInDb;
     if (this.cell != null) {
-        var edges = getEdges(this.cell, this.linkedClass);
+        var edges = this.linkedClass !== null ? getEdges(this.cell, this.linkedClass.cell) : [];
+        var inverseEdges = getInverseEdges(this);
         if (this.existsInDb) {
             app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EXISTS_STYLE, [this.cell]);
             app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE, edges);
+            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE, inverseEdges);
         } else {
             app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_STYLE, [this.cell]);
             app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_CONNECTION_STYLE, edges);
+            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_INVERSE_CONNECTION_STYLE, inverseEdges);
         }
 
-        function getEdges(cell, linkedClass) {
-            var result = [];
-            if (linkedClass != null && linkedClass instanceof OArchitectOClass && linkedClass.cell != null)
-                result = app.editor.graph.getEdgesBetween(cell, linkedClass.cell);
-            return result;
-        }
     }
+
+    function getInverseEdges(property) {
+        var result = [];
+        if (property.isInverseProperty() && property.inverseProperty !== null
+            && property === property.inverseProperty.inverseProperty && property.inverseProperty.cell != null) {
+            result = getEdges(property.cell, property.inverseProperty.cell);
+        }
+        return result;
+    }
+
+    function getEdges(cell1, cell2) {
+        var result = [];
+        if (cell1 !== null && cell2 !== null)
+            result = app.editor.graph.getEdgesBetween(cell1, cell2);
+        return result;
+    }
+
 };
 
 /**

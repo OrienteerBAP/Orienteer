@@ -20,6 +20,7 @@ OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) 
     var input = this.createNameInput(this.create);
     var typeSelect = this.createOTypeSelect(this.create, this.value, this.orientDbTypes);
     var inverseBlock = new OPropertyInverseBlock(this.value, this);
+    inverseBlock.setDisabled(input.disabled);
     this.addValueBlock(body, input, typeSelect, inverseBlock.createElement(typeSelect));
     this.addButtonBlock(body, input, typeSelect, inverseBlock);
     this.addHeadBlock(head, this.create);
@@ -60,37 +61,6 @@ OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOPrope
     return select;
 };
 
-OPropertyEditModalWindow.prototype.createInverseBlock = function (typeSelect, inverseSelect, inverseCheckbox) {
-    var block = document.createElement('div');
-    var checkboxBlock = document.createElement('span');
-    var inverseBlock = document.createElement('div');
-    checkboxBlock.appendChild(this.createLabel(localizer.inverseEnable + ':'));
-    checkboxBlock.appendChild(inverseCheckbox);
-    inverseBlock.appendChild(this.createLabel(localizer.inverse + ':'));
-    inverseBlock.appendChild(inverseSelect);
-    block.appendChild(checkboxBlock);
-    block.appendChild(inverseBlock);
-    switchDisplay(inverseCheckbox.checked, inverseBlock);
-    switchDisplay(OArchitectOType.isLink(typeSelect.value), block);
-
-    inverseCheckbox.addEventListener('change', function () {
-        switchDisplay(inverseCheckbox.checked, inverseBlock);
-    });
-
-    typeSelect.addEventListener('change', function () {
-        switchDisplay(OArchitectOType.isLink(typeSelect.value), block);
-    });
-
-    function switchDisplay(show, block) {
-        if (show) {
-            block.style.display = 'block';
-        } else {
-            block.style.display = 'none';
-        }
-    }
-    return block;
-};
-
 OPropertyEditModalWindow.prototype.createNameInput = function (createNewOProperty) {
     var input = document.createElement('input');
     input.classList.add('form-control');
@@ -99,6 +69,12 @@ OPropertyEditModalWindow.prototype.createNameInput = function (createNewOPropert
         input.value = this.value.name;
         input.disabled = !this.value.canModifyNameAndType();
     }
+
+    setTimeout(function () {
+        if (!input.disabled)
+            input.focus();
+    }, 100);
+
     return input;
 };
 
@@ -173,6 +149,7 @@ var OPropertyInverseBlock = function (property, modal) {
     this.inverseProperty = null;
     this.enableInverseProperty = false;
     this.emptyInverseProperties = false;
+    this.disabled = false;
     this.EMPTY = '';
 };
 
@@ -180,6 +157,7 @@ OPropertyInverseBlock.prototype.inverseProperty        = null;
 OPropertyInverseBlock.prototype.emptyInverseProperties = false;
 OPropertyInverseBlock.prototype.enableInverseProperty  = false;
 OPropertyInverseBlock.prototype.EMPTY                  = '';
+OPropertyInverseBlock.prototype.disabled               = false;
 
 OPropertyInverseBlock.prototype.createElement = function (typeSelect) {
     var checkbox = this.createCheckbox();
@@ -237,6 +215,7 @@ OPropertyInverseBlock.prototype.createCheckbox = function () {
         checkbox.checked = this.property.isInverseProperty();
     }
     this.enableInverseProperty = checkbox.checked;
+    checkbox.disabled = this.disabled;
     return checkbox;
 };
 
@@ -248,17 +227,19 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
     var inverseValidProperties = linkedClass instanceof OArchitectOClass ? linkedClass.getAvailableInverseProperties() : [];
     var inverseProperty = this.property.inverseProperty;
     this.clearSelectAndAddProperties(inverseValidProperties, select);
+    var propertyPresent = false;
 
     if (inverseProperty !== null && linkedClass !== null && inverseValidProperties.length > 0) {
         for (var i = 0; i < inverseValidProperties.length; i++) {
             if (inverseValidProperties[i].name === inverseProperty.name) {
                 select.selectedIndex = i + 1;
+                propertyPresent = true;
                 break;
             }
         }
     }
 
-    if (inverseValidProperties.length === 0) {
+    if (inverseValidProperties.length === 0 || this.disabled && !propertyPresent) {
         this.emptyInverseProperties = true;
     }
 
@@ -268,6 +249,8 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
              inverseBlock.inverseProperty = OArchitectUtil.getPropertyFromJson(json);
          }
     });
+
+    select.disabled = this.disabled;
 
     return select;
 };
@@ -301,10 +284,14 @@ OPropertyInverseBlock.prototype.isEmptyInverseProperties = function () {
     return this.emptyInverseProperties;
 };
 
-OPropertyInverseBlock.prototype.switchDisplay = function (display, element) {
-    if (display) {
-        element.style.display = 'block';
+OPropertyInverseBlock.prototype.setDisabled = function (disabled) {
+    this.disabled = disabled;
+};
+
+OPropertyInverseBlock.prototype.switchDisplay = function (show, block) {
+    if (show) {
+        block.style.display = 'block';
     } else {
-        element.style.display = 'none';
+        block.style.display = 'none';
     }
 };

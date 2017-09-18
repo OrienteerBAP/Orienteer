@@ -116,7 +116,7 @@ OArchitectSidebar.prototype.makeDraggable = function (element, actionName) {
     }, null, -mxConstants.TOOLTIP_VERTICAL_OFFSET, -mxConstants.TOOLTIP_VERTICAL_OFFSET);
     draggable.getDropTarget = this.getDropTarget(actionName);
     draggable.mouseDown = function () {
-        this.element.style.cursor = 'no-drop';
+        this.element.style.cursor = 'move';
         mxDragSource.prototype.mouseDown.apply(this, arguments);
     };
     draggable.mouseUp = function () {

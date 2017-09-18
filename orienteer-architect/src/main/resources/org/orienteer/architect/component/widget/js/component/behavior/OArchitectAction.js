@@ -110,6 +110,7 @@ var OArchitectAction = {
             var target = addOPropertyLinkEvent.target;
             var sourceClass = source.value;
             var property = new OArchitectOProperty(sourceClass);
+            property.linkedClass = target.value;
             var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
             modal.orientDbTypes = OArchitectOType.linkTypes;
             modal.show(addOPropertyLinkEvent.event.getGraphX(), addOPropertyLinkEvent.event.getGraphY());
@@ -121,6 +122,8 @@ var OArchitectAction = {
                         sourceClass.saveState();
                         var newProperty = sourceClass.createProperty(property.name, property.type);
                         newProperty.setAndSaveLinkedClass(target.value);
+                        newProperty.setInversePropertyEnable(property.inversePropertyEnable);
+                        newProperty.setInverseProperty(property.inverseProperty);
                         newProperty.saveState();
                         sourceClass.updateValueInCell();
                         newProperty.updateValueInCell();
@@ -239,7 +242,7 @@ var OArchitectAction = {
     deleteCellAction: function (editor, cell) {
         var cellsForDelete = editor.graph.getSelectionCells();
         if (cellsForDelete == null || cellsForDelete.length === 0 && cell != null) {
-            cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassCellByPropertyCell(cell)];
+            cellsForDelete = OArchitectUtil.isCellDeletable(cell) ? [cell] : [OArchitectUtil.getClassCellByPropertyCell(cell)];
         }
         cellsForDelete = getPreparedCells(cellsForDelete);
         removeCells(cellsForDelete);
@@ -254,9 +257,7 @@ var OArchitectAction = {
             var result = [];
             OArchitectUtil.forEach(cells, function (cell) {
                 if (OArchitectUtil.isCellDeletable(cell)) {
-                    if (cell.value instanceof OArchitectOClass) {
-                        cell.value.removed = true;
-                    }
+                    cell.value.removed = true;
                     result.push(cell);
                 }
             });

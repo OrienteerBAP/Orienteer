@@ -12,9 +12,10 @@ var OArchitectConstants = {
     OPROPERTY_EXISTS_STYLE: 'oPropertyExistsStyle',
     OCLASS_CONNECTION_STYLE: 'oClassConnectionStyle',
     OPROPERTY_CONNECTION_STYLE: 'oPropertyConnectionStyle',
+    OPROPERTY_INVERSE_CONNECTION_STYLE: 'oPropertyInverseConnectionStyle',
     OCLASS_EXISTS_CONNECTION_STYLE: 'oClassExistsConnectionStyle',
     OPROPERTY_EXISTS_CONNECTION_STYLE: 'oPropertyExistsConnectionStyle',
-
+    OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE: 'oPropertyExistsInverseConnectionStyle',
     /**
      * OArchitect CSS classes
      */

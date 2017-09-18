@@ -129,7 +129,7 @@ var OArchitectUtil = {
             if (cell.source.value instanceof OArchitectOClass) {
                 return !cell.source.value.existsInDb;
             } else if (cell.source.value instanceof OArchitectOProperty) {
-                return !cell.source.value.ownerClass.existsInDb;
+                return !cell.source.value.existsInDb;
             }
         }
         return true;
