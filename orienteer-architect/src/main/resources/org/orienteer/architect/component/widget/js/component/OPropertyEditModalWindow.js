@@ -231,6 +231,8 @@ OPropertyInverseBlock.prototype.createCheckbox = function () {
     checkbox.setAttribute('type', 'checkbox');
     checkbox.classList.add('form-control');
     checkbox.style.width = 'auto';
+    checkbox.style.height = 'auto';
+    checkbox.style.marginLeft = '10px';
     if (!this.modal.create) {
         checkbox.checked = this.property.isInverseProperty();
     }
