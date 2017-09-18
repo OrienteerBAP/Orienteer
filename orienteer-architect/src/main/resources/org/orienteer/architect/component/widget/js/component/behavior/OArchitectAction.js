@@ -82,7 +82,8 @@ var OArchitectAction = {
                             graph.getModel().beginUpdate();
                             try {
                                 classCell.value.saveState();
-                                classCell.value.createProperty(property.name, property.type, property.cell);
+                                var prop = classCell.value.createProperty(property.name, property.type, property.cell);
+                                prop.setInversePropertyEnable(property.inversePropertyEnable);
                                 classCell.value.updateValueInCell();
                             } finally {
                                 graph.getModel().endUpdate();

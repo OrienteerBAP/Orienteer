@@ -57,7 +57,7 @@ OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOPrope
         var index = types.indexOf(property.type.toUpperCase());
         if (index > -1)
             select.selectedIndex = index;
-    }
+    } else select.selectedIndex = 0;
     return select;
 };
 
@@ -113,9 +113,7 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
             var name = nameField.value;
             var type = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(name);
-            if (property.existsInDb) {
-                modal.destroy(modal.OK);
-            } else if (property.isValidName(name) || property.isValidType(type) || property.isValidInverseProperty(inverseBlock.inverseProperty)) {
+            if (property.isValidName(name) || property.isValidType(type) || property.isValidInverseProperty(inverseBlock.inverseProperty)) {
                 updateProperty(name, type, inverseBlock.enableInverseProperty, inverseBlock.inverseProperty);
                 modal.destroy(modal.OK);
             } else if (name === property.name && type === property.type) {

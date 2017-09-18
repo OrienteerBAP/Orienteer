@@ -8,8 +8,8 @@
  */
 var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.ownerClass = null;
-    this.name = null;
-    this.type = null;
+    this.name = name != null ? name : null;
+    this.type = type != null ? type : null;
     this.linkedClass = null;
     this.subClassProperty = false;
     this.superClassExistsInEditor = false;
@@ -28,8 +28,6 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.notSetLinkedClass = false;
 
     if (ownerClass != null) this.setOwnerClass(ownerClass);
-    if (name != null) this.setName(name);
-    if (type != null) this.setType(type);
     if (cell != null) this.setCell(cell);
 };
 
@@ -188,6 +186,8 @@ OArchitectOProperty.prototype.setName = function (name) {
  * Set name and type for this property and update property value in property cell and class value in class cell.
  * @param name - string name
  * @param type - string type
+ * @param inversePropertyEnable
+ * @param inverseProperty
  */
 OArchitectOProperty.prototype.updateProperty = function (name, type, inversePropertyEnable, inverseProperty) {
     if (this.isValidName(name) || this.isValidType(type) || this.isValidInverseProperty(inverseProperty)) {
@@ -396,7 +396,7 @@ OArchitectOProperty.prototype.isRemoved = function () {
 };
 
 OArchitectOProperty.prototype.canModifyNameAndType = function () {
-    var modify = !this.isRemoved() && this.ownerClass != null && !this.ownerClass.existsInDb;
+    var modify = !this.isRemoved() && this.ownerClass != null && !this.existsInDb;
     if (modify) modify = !this.ownerClass.isRemoved();
     return modify;
 };

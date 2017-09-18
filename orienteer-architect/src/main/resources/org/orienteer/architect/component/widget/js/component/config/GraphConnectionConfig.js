@@ -110,10 +110,6 @@ GraphConnectionConfig.prototype.connectionHandlerCreateEdgeState = function(me) 
 };
 
 GraphConnectionConfig.prototype.connectionHandlerCreateIcons = function (state) {
-    if (state.cell.value.existsInDb) {
-        return [];
-    }
-
     var createLinkIcon = state.cell != null && state.cell.value instanceof OArchitectOClass ||
         state.cell.value instanceof OArchitectOProperty && state.cell.value.isLink();
     var icons = state.cell.value instanceof OArchitectOClass ?

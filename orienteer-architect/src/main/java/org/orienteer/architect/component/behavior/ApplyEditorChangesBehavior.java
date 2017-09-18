@@ -107,15 +107,13 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
     }
 
     private void setLinkedClassForProperty(OArchitectOProperty architectProperty, OProperty property, OSchema schema) {
-        boolean classExists = schema.existsClass(architectProperty.getLinkedClass());
-        OClass linkedClass = classExists ? schema.getClass(architectProperty.getLinkedClass()) :
-                schema.createClass(architectProperty.getLinkedClass());
+        OClass linkedClass = schema.getOrCreateClass(architectProperty.getLinkedClass());
         property.setLinkedClass(linkedClass);
         if (architectProperty.getInverseProperty() != null) {
             OArchitectOProperty p = architectProperty.getInverseProperty();
             if (!Strings.isNullOrEmpty(p.getName()) && p.getType() != null) {
                 OProperty inverseProp = linkedClass.getProperty(p.getName());
-                if (inverseProp == null && !classExists) {
+                if (inverseProp == null) {
                     inverseProp = linkedClass.createProperty(p.getName(), p.getType());
                 }
                 CustomAttribute.PROP_INVERSE.setValue(property, inverseProp);
