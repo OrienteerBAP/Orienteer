@@ -120,7 +120,7 @@ var OArchitectAction = {
                     try {
                         sourceClass.saveState();
                         var newProperty = sourceClass.createProperty(property.name, property.type);
-                        newProperty.setLinkedClass(target.value);
+                        newProperty.setAndSaveLinkedClass(target.value);
                         newProperty.saveState();
                         sourceClass.updateValueInCell();
                         newProperty.updateValueInCell();
@@ -148,18 +148,22 @@ var OArchitectAction = {
             var counterX = 1;
             var jsonClasses = JSON.parse(json);
             var cells = [];
+            var classes = [];
             graph.getModel().beginUpdate();
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
                 oClass.configFromDatabase(jsonClass);
+                oClass.setDatabaseJson(jsonClass);
                 addOClassCell(oClass.cell);
                 cells.push(oClass.cell);
+                classes.push(oClass);
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
             if (cells.length > 1) applyLayout(cells);
             graph.getModel().endUpdate();
+            OArchitectUtil.updateExistsInDB(classes);
         };
 
 
@@ -322,5 +326,10 @@ var OArchitectAction = {
      */
     fullScreenModeAction: function () {
         app.switchFullScreenMode();
+    },
+
+    //TODO: remove this action in release
+    toJsonAction: function () {
+        console.warn('JSON: ', OArchitectUtil.getOClassesAsJSON(app.editor.graph));
     }
 };

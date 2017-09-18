@@ -1,6 +1,9 @@
 var uk = {
     name: 'Ім\'я',
     type: 'Тип',
+    inverseEnable: 'Зворотній зв\'язок ввімкнений',
+    inverse: 'Зворотній зв\'язок',
+    noAvailableInverseProperties: 'Немає доступних властивостей для зворотнього зв\'язку',
     cancel: 'Скасувати',
     ok: 'OK',
     more: 'Більше...',

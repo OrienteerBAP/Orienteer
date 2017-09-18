@@ -37,10 +37,7 @@ GraphConnectionConfig.prototype.configEvents = function () {
 };
 
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
-    if (!app.canUpdate)
-        return false;
-    if (cell == null)
-        return false;
+    if (!app.canUpdate || cell == null) return false;
     return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
 };
 
@@ -66,7 +63,7 @@ GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
     if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
         valid = !sourceValue.containsSuperClass(targetValue) && !targetValue.containsSuperClass(sourceValue);
     } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
-        valid = sourceValue.canConnect() && sourceValue.ownerClass !== targetValue;
+        valid = sourceValue.canConnect();
     }
     return valid;
 };
@@ -77,7 +74,7 @@ GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (sourc
         if (source.value instanceof OArchitectOClass) {
             style = source.value.existsInDb ? OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE : OArchitectConstants.OCLASS_CONNECTION_STYLE;
         } else if (source.value instanceof OArchitectOProperty && OArchitectOType.isLink(source.value.type)) {
-            if (source.value.ownerClass.existsInDb && source.value.linkedClass.existsInDb) {
+            if (source.value.existsInDb && source.value.linkedClass.existsInDb) {
                 style = OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE;
             } else
                 style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
@@ -187,11 +184,13 @@ GraphConnectionConfig.prototype.connectionHandlerCreateEdge = function (value, s
 GraphConnectionConfig.prototype.createCellConnectedBehavior = function () {
     return function (graph, eventObject) {
         if (!graph.connectionHandler.linkConnection) {
-            var properties = eventObject.properties;
-            if (properties.edge != null) {
-                var source = properties.edge.source;
-                var target = properties.edge.target;
-                OArchitectConnector.connect(source, target);
+            var edge = eventObject.getProperty('edge');
+            if (edge != null) {
+                var source = edge.source;
+                var target = edge.target;
+                if (source != null && target != null) {
+                    OArchitectConnector.connect(source, target);
+                }
             }
         } else graph.connectionHandler.linkConnection = false;
     }

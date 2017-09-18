@@ -6,10 +6,10 @@ var OArchitectConstants = {
     /**
      * Styles for {@link mxGraph} to create class/property vertex/edge.
      */
-    OCLASS_EDITOR_STYLE: 'oClassStyle',
-    OCLASS_EXISTS_EDITOR_STYLE: 'oClassExistsStyle',
-    OPROPERTY_EDITOR_STYLE: 'oPropertyStyle',
-    OPROPERTY_EXISTS_EDITOR_STYLE: 'oPropertyExistsStyle',
+    OCLASS_STYLE: 'oClassStyle',
+    OCLASS_EXISTS_STYLE: 'oClassExistsStyle',
+    OPROPERTY_STYLE: 'oPropertyStyle',
+    OPROPERTY_EXISTS_STYLE: 'oPropertyExistsStyle',
     OCLASS_CONNECTION_STYLE: 'oClassConnectionStyle',
     OPROPERTY_CONNECTION_STYLE: 'oPropertyConnectionStyle',
     OCLASS_EXISTS_CONNECTION_STYLE: 'oClassExistsConnectionStyle',

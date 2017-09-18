@@ -109,39 +109,46 @@ OPropertyContainer.prototype = Object.create(OArchitectValueContainer.prototype)
 OPropertyContainer.prototype.constructor = OPropertyContainer;
 
 OPropertyContainer.prototype.createElement = function (maxLength) {
-    var editProperty = this.createLinkOrEditOPropertyElement();
-    var deleteProperty = !this.value.isSubClassProperty() ? this.createDeleteOPropertyElement() : null;
+    var link = this.createLinkOPropertyIcon();
+    var editProperty = this.createEditOPropertyIcon();
+    var deleteProperty = !this.value.isSubClassProperty() ? this.createDeleteOPropertyIcon() : null;
     var label = this.createLabel(maxLength);
-    return this.createContainer(label, editProperty, deleteProperty);
+    return this.createContainer(label, link, editProperty, deleteProperty);
 };
 
-OPropertyContainer.prototype.createContainer = function (label, editProperty, deleteProperty) {
+OPropertyContainer.prototype.createContainer = function (label, link, editProperty, deleteProperty) {
     var container = document.createElement('div');
-
-    container.addEventListener('mouseover', function () {
-        if (editProperty != null) {
-            editProperty.style.visibility = 'visible';
-            editProperty.style.cursor = 'pointer';
-        }
-        if (deleteProperty != null) {
-            deleteProperty.style.visibility = 'visible';
-            deleteProperty.style.cursor = 'pointer';
-        }
-    });
-    container.addEventListener('mouseout', function () {
-        if (editProperty != null) {
-            editProperty.style.visibility = 'hidden';
-            editProperty.style.cursor = 'default';
-        }
-        if (deleteProperty != null) {
-            deleteProperty.style.visibility = 'hidden';
-            deleteProperty.style.cursor = 'default';
-        }
-    });
-
+    if (link !== null) container.appendChild(link);
     if (editProperty !== null) container.appendChild(editProperty);
     container.appendChild(label);
     if (deleteProperty !== null) container.appendChild(deleteProperty);
+
+    container.addEventListener('mouseover', function () {
+        showElement(link);
+        showElement(editProperty);
+        showElement(deleteProperty);
+    });
+
+    container.addEventListener('mouseout', function () {
+        hideElement(link);
+        hideElement(editProperty);
+        hideElement(deleteProperty);
+    });
+
+    function showElement(element) {
+        if (element !== null) {
+            element.style.visibility = 'visible';
+            element.style.cursor = 'pointer';
+        }
+    }
+
+    function hideElement(element) {
+        if (element !== null) {
+            element.style.visibility = 'hidden';
+            element.style.cursor = 'default';
+        }
+    }
+
     return container;
 };
 
@@ -158,12 +165,22 @@ OPropertyContainer.prototype.createLabel = function (maxLength) {
     return span;
 };
 
-OPropertyContainer.prototype.createLinkOrEditOPropertyElement = function () {
+OPropertyContainer.prototype.createLinkOPropertyIcon = function () {
     var element = null;
-    if (this.value.ownerClass.existsInDb) {
-        element = this.createExternalLink(this.value.ownerClass.existsInDb);
+    if (this.value.existsInDb) {
+        element = this.createExternalLink(this.value.existsInDb);
         element.setAttribute('title', localizer.goToOPropertyPage);
-    } else if (app.canUpdate) {
+    }
+    if (element !== null) {
+        element.style.visibility = 'hidden';
+        element.style.marginRight = '5px';
+    }
+    return element;
+};
+
+OPropertyContainer.prototype.createEditOPropertyIcon = function () {
+    var element = null;
+    if (app.canUpdate) {
         element = this.createIcon(OArchitectConstants.FA_EDIT);
         this.addClickListenerForAction(element, OArchitectActionNames.EDIT_OPROPERTY_ACTION);
     }
@@ -174,9 +191,9 @@ OPropertyContainer.prototype.createLinkOrEditOPropertyElement = function () {
     return element;
 };
 
-OPropertyContainer.prototype.createDeleteOPropertyElement = function () {
+OPropertyContainer.prototype.createDeleteOPropertyIcon = function () {
     var deleteElement = null;
-    if (!this.value.ownerClass.existsInDb && app.canUpdate) {
+    if (!this.value.existsInDb && app.canUpdate) {
         deleteElement = this.createIcon(OArchitectConstants.FA_DELETE);
         deleteElement.style.visibility = 'hidden';
         deleteElement.style.marginLeft = '5px';

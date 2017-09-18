@@ -156,6 +156,7 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new OArchitectToolbar(editor, this.getToolbarContainer());
     toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
     toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
+    toolbar.addAction('To JSON', 'toJsonAction', OArchitectAction.toJsonAction);
     editor.toolbar = toolbar;
 };
 
@@ -398,19 +399,29 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
     function callback(json) {
         app.editor.saveActions = false;
         if (json != null && json.length > 0) {
-            var allClasses = OArchitectUtil.getAllClasses();
+            var allClasses = OArchitectUtil.getAllClassesInEditor();
             var jsonClasses = JSON.parse(json);
+            OArchitectUtil.updateExistsInDB(configFromDb(jsonClasses, allClasses));
+        }
+
+        function configFromDb(jsonClasses, allClasses) {
+            var classes = [];
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 OArchitectUtil.forEach(allClasses, function (oClass, trigger) {
                     if (jsonClass.name === oClass.name) {
-                        if (!oClass.equalsWithJsonClass(jsonClass)) {
+                        var equals = oClass.equalsWithJsonClass(jsonClass);
+                        if (!equals) {
                             oClass.configFromDatabase(jsonClass);
+                            classes.push(oClass);
                         }
+                        oClass.setDatabaseJson(jsonClass);
                         trigger.stop = true;
                     }
                 });
             });
+            return classes;
         }
+
         app.editor.saveActions = true;
     }
     this.requestAboutChangesInClasses(JSON.stringify(OArchitectUtil.getAllClassNames()), callback);

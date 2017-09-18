@@ -16,6 +16,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.architect.util.JsonUtil;
 import org.orienteer.architect.util.OArchitectOClass;
 import org.orienteer.architect.util.OArchitectOProperty;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 
 import java.util.List;
@@ -93,14 +94,17 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         for (OArchitectOProperty property : properties) {
             if (!property.isSubClassProperty()) {
                 OProperty oProperty = oClass.getProperty(property.getName());
-                if (oProperty == null) {
+                if (oProperty == null && !property.isExistsInDb()) {
                     oProperty = oClass.createProperty(property.getName(), property.getType());
-                } else if (oProperty.getType() != property.getType()) {
+                } else if (oProperty != null && !property.isExistsInDb() && oProperty.getType() != property.getType()) {
                     oProperty.setType(property.getType());
                 }
                 if (!Strings.isNullOrEmpty(property.getLinkedClass())) {
                     OClass linkedClass = schema.getOrCreateClass(property.getLinkedClass());
                     oProperty.setLinkedClass(linkedClass);
+                    OProperty inverseProp = !Strings.isNullOrEmpty(property.getInverseProperty()) ?
+                            linkedClass.getProperty(property.getInverseProperty()) : null;
+                    CustomAttribute.PROP_INVERSE.setValue(oProperty, inverseProp);
                 }
             }
         }

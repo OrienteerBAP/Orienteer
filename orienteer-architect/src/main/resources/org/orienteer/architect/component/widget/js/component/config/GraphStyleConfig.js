@@ -12,10 +12,10 @@ GraphStyleConfig.prototype.config = function () {
     // mxConstants.CURSOR_MOVABLE_VERTEX = 'default';
     var stylesheet = this.graph.getStylesheet();
     stylesheet.putDefaultVertexStyle(this.createVertexStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EDITOR_STYLE, this.createOClassStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE, this.createOClassExistsStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE, this.createOPropertyStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE, this.createOPropertyExistsStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OCLASS_STYLE, this.createOClassStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_STYLE, this.createOClassExistsStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_STYLE, this.createOPropertyStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_STYLE, this.createOPropertyExistsStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, this.createOClassConnectionStyle());
     stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_CONNECTION_STYLE, this.createOPropertyConnectionStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, this.createOClassExistsConnectionStyle());

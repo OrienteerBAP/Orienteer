@@ -1,4 +1,4 @@
 /**
- * Contains commands for {@link org.orienteer.architect.component.panel.SchemaOClassesPanel}
+ * Contains commands for {@link org.orienteer.architect.component.panel.SchemaOClassesModalPanel}
  */
 package org.orienteer.architect.component.panel.command;

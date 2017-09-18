@@ -59,7 +59,8 @@ var OArchitectConnector = {
         var property = propertyCell.value;
         if (property.ownerClass instanceof OArchitectOClass) {
             try {
-                property.setLinkedClass(classCell);
+                if (classCell != null) property.setAndSaveLinkedClass(classCell.value);
+                else property.setAndSaveLinkedClass(null);
             } finally {
                 graph.getModel().endUpdate();
             }

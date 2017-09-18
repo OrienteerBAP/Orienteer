@@ -139,7 +139,7 @@ OArchitectSidebar.prototype.getDropTarget = function (actionName) {
         }
 
         function getPropertyTargetCell(cell) {
-            return graph.isClass(cell) && !cell.value.existsInDb ? cell : null;
+            return graph.isClass(cell) ? cell : null;
         }
     };
 };

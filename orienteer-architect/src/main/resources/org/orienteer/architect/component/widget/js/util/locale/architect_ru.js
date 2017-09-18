@@ -1,6 +1,9 @@
 var ru = {
     name: 'Имя',
     type: 'Тип',
+    inverseEnable: 'Обратная связь включена',
+    inverse: 'Обратная связь',
+    noAvailableInverseProperties: 'Нет доступных свойств для обратной связи',
     cancel: 'Отмена',
     ok: 'OK',
     more: 'Больше...',

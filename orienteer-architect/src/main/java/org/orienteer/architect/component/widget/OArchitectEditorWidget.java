@@ -1,7 +1,6 @@
 package org.orienteer.architect.component.widget;
 
 import com.orientechnologies.orient.core.metadata.security.ORule;
-import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
@@ -14,7 +13,6 @@ import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -25,9 +23,8 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.*;
-import org.orienteer.architect.component.panel.SchemaOClassesPanel;
+import org.orienteer.architect.component.panel.SchemaOClassesModalPanel;
 import org.orienteer.architect.component.panel.command.OArchitectFullscreenCommand;
-import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.util.CommonUtils;
@@ -39,7 +36,6 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Editor widget for OrientDB Schema
@@ -70,7 +66,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         container.add(toolbar = newContainer("toolbar"));
         container.add(sidebar = newContainer("sidebar"));
         container.add(outline = newContainer("outline"));
-        SchemaOClassesPanel panel = new SchemaOClassesPanel("listClasses", "; app.executeCallback('%s');");
+        SchemaOClassesModalPanel panel = new SchemaOClassesModalPanel("listClasses", "; app.executeCallback('%s');");
         container.add(panel);
         add(container);
         add(new GetNewChangesBehavior());
