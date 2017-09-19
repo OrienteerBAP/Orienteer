@@ -92,7 +92,7 @@ GraphConfig.prototype.configureGraphLabels = function () {
     this.graph.setHtmlLabels(true);
     var editor = this.editor;
     this.graph.getLabel = function (cell) {
-        var label = mxGraph.prototype.getLabel.apply(this, arguments);
+        var label = null;
         if (this.model.isVertex(cell)) {
             var max = parseInt(this.getCellGeometry(cell).width / 8);
             var container = null;

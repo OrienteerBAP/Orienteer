@@ -315,6 +315,9 @@ var OArchitectAction = {
             var msg;
             if (respond.apply) {
                 msg = new OArchitectMessage(localizer.applyChangesSuccess);
+                OArchitectUtil.forEach(OArchitectUtil.getAllEdgesWithValue(OArchitectConstants.UNSAVED_INHERITANCE), function (edge) {
+                    edge.value = '';
+                });
             } else {
                 msg = new OArchitectMessage(localizer.applyChangesError, true);
             }

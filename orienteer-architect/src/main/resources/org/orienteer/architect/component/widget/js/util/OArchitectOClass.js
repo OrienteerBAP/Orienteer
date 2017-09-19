@@ -641,25 +641,29 @@ OArchitectOClass.prototype.toString = function () {
 OArchitectOClass.prototype.setExistsInDb = function (existsInDb) {
     this.existsInDb = existsInDb;
     if (this.cell != null) {
-        var classEdgeCells = [];
-        addClassesEdges(this.superClasses, this.cell, classEdgeCells);
-        addClassesEdges(this.subClasses, this.cell, classEdgeCells);
+        var edgesInDb = [];
+        var edges = [];
+        addClassesEdges(this.superClasses, this.cell, edgesInDb, edges);
+        addClassesEdges(this.subClasses, this.cell, edgesInDb, edges);
 
 
         if (this.existsInDb) {
             app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_STYLE, [this.cell]);
-            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, classEdgeCells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, edgesInDb);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, edges);
         } else {
             app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_STYLE, [this.cell]);
-            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, classEdgeCells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, edgesInDb);
         }
 
-        function addClassesEdges(classes, cell, edges) {
+        function addClassesEdges(classes, cell, edgesInDb, edges) {
             OArchitectUtil.forEach(classes, function (oClass) {
                 if (oClass.cell != null) {
                     var e = app.editor.graph.getEdgesBetween(oClass.cell, cell);
                     OArchitectUtil.forEach(e, function (edge) {
-                        edges.push(edge);
+                        if (edge.value !== OArchitectConstants.UNSAVED_INHERITANCE) {
+                            edgesInDb.push(edge);
+                        } else edges.push(edge);
                     });
                 }
             });
