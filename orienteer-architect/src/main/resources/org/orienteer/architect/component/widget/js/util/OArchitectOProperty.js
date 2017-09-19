@@ -27,6 +27,8 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
 
     this.notSetLinkedClass = false;
 
+    this.order = 0;
+
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (cell != null) this.setCell(cell);
 };
@@ -90,6 +92,11 @@ OArchitectOProperty.prototype.removed = false;
 OArchitectOProperty.prototype.previousName = null;
 
 /**
+ * number - order for display properties in Orienteer
+ */
+OArchitectOProperty.prototype.order = 0;
+
+/**
  * Config instance of {@link OArchitectOProperty} from json which is respond from database
  * @param oClass - {@link OArchitectOClass} which is owner of this property
  * @param json - json string which contains config for this property
@@ -101,6 +108,7 @@ OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
     this.subClassProperty = json.subClassProperty;
     this.ownerClass = oClass;
     this.pageUrl = json.pageUrl;
+    this.order = json.order;
     if (this.cell != null) {
         this.setCell(this.cell);
     } else oClass.createCellForProperty(this);
@@ -369,7 +377,7 @@ OArchitectOProperty.prototype.setInverseProperty = function (property) {
                 manageEdgeBetweenPropertyClasses(this, property, false);
                 OArchitectUtil.manageEdgesBetweenCells(this.cell, property.cell, true);
             }
-        } else if (this.inverseProperty !== null) {
+        } else if (this.inverseProperty !== null && !this.existsInDb) {
             if (this === this.inverseProperty.inverseProperty) {
                 manageEdgeBetweenPropertyClasses(this, this.inverseProperty, true);
                 OArchitectUtil.manageEdgesBetweenCells(this.cell, this.inverseProperty.cell, false);
@@ -422,6 +430,7 @@ OArchitectOProperty.prototype.equalsWithJsonProperty = function (jsonProperty) {
     if (equals && this.type !== jsonProperty.type) equals = false;
     if (equals && this.pageUrl !== jsonProperty.pageUrl) equals = false;
     if (equals && this.subClassProperty != jsonProperty.subClassProperty) equals = false;
+    if (equals && this.order !== jsonProperty.order) equals = false;
     return equals && this.equalsWithJsonLink(jsonProperty);
 };
 
@@ -467,6 +476,14 @@ OArchitectOProperty.prototype.setExistsInDb = function (existsInDb) {
         return result;
     }
 
+};
+
+OArchitectOProperty.prototype.setOrder = function (order) {
+    this.order = order;
+};
+
+OArchitectOProperty.prototype.getOrder = function () {
+    return this.order;
 };
 
 /**
@@ -515,6 +532,7 @@ OArchitectOProperty.prototype.toEditorConfigObject = function () {
     result.inverseProperty = this.inverseProperty instanceof OArchitectOProperty ? this.inverseProperty.name : this.inverseProperty;
     result.existsInDb = this.existsInDb;
     result.pageUrl = this.pageUrl;
+    result.order = this.order;
     result.inversePropertyEnable = this.inversePropertyEnable;
     return result;
 };

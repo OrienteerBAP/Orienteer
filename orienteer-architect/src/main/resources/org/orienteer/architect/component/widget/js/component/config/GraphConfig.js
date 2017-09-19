@@ -24,34 +24,31 @@ GraphConfig.prototype.config = function () {
 
 
 GraphConfig.prototype.configureGraphBehavior = function () {
+    this.graph.graphHandler.setRemoveCellsFromParent(false);
     this.graph.isClass = function (cell) {
         return cell != null && cell.value instanceof OArchitectOClass;
     };
     this.graph.isValidPropertyTarget = function (cell) {
         return OArchitectUtil.isValidPropertyTarget(cell);
     };
-    this.graph.isCellMovable = function(cell) {
+    this.graph.isCellMovable = function() {
         if (!app.canUpdate)
             return false;
-        return this.isClass(cell);
+        return true;
     };
-    this.graph.isCellEditable = function (cell) {
+    this.graph.isCellEditable = function () {
         return false;
     };
     this.graph.isValidDropTarget = function(cell) {
         return this.isClass(cell);
     };
-    this.graph.isCellSelectable = function (cell) {
-        if (cell == null)
-            return false;
-        if (!app.canUpdate)
-            return false;
-        return this.isClass(cell) || this.getModel().isEdge(cell);
+    this.graph.isCellSelectable = function () {
+        return true;
     };
-    this.graph.getTooltipForCell = function (cell) {
+    this.graph.getTooltipForCell = function () {
         return null;
     };
-    this.graph.isCellResizable = function (cell) {
+    this.graph.isCellResizable = function () {
         return false;
     };
 
@@ -95,7 +92,7 @@ GraphConfig.prototype.configureGraphLabels = function () {
     this.graph.setHtmlLabels(true);
     var editor = this.editor;
     this.graph.getLabel = function (cell) {
-        var label = mxGraph.prototype.getLabel.apply(this, arguments);
+        var label = null;
         if (this.model.isVertex(cell)) {
             var max = parseInt(this.getCellGeometry(cell).width / 8);
             var container = null;
@@ -131,5 +128,18 @@ GraphConfig.prototype.configEvents = function () {
                 app.editor.execute(OArchitectActionNames.ADD_OPROPERTY_ACTION, classCell, event);
             }
         }
+    });
+    graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {
+        var cells = evt.getProperty('cells');
+        OArchitectUtil.forEach(cells, function (cell) {
+            if (cell.value instanceof OArchitectOProperty) {
+                setTimeout(function () {
+                    var oClassCell = OArchitectUtil.getClassCellByPropertyCell(cell);
+                    if (oClassCell !== null && oClassCell.value !== null) {
+                        oClassCell.value.changePropertiesOrder(mxEvent.CELLS_MOVED);
+                    }
+                }, 0);
+            }
+        });
     });
 };

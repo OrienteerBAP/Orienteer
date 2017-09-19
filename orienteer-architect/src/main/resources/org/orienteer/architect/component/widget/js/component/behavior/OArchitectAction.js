@@ -257,7 +257,8 @@ var OArchitectAction = {
         function getPreparedCells(cells) {
             var result = [];
             OArchitectUtil.forEach(cells, function (cell) {
-                if (OArchitectUtil.isCellDeletable(cell)) {
+                if (OArchitectUtil.isCellDeletable(cell) && cell.value instanceof OArchitectOClass
+                    && OArchitectAction.isAvailableActionForClass(cell.value)) {
                     cell.value.removed = true;
                     result.push(cell);
                 }
@@ -271,18 +272,20 @@ var OArchitectAction = {
      */
     deleteOPropertyAction: function (editor, cell) {
         if (cell != null && cell.value instanceof OArchitectOProperty) {
-            var graph = editor.graph;
-            graph.stopEditing(false);
-            var oClassCell = OArchitectUtil.getClassCellByPropertyCell(cell);
-            var oClass = oClassCell.value;
-            var property = cell.value;
-            graph.getModel().beginUpdate();
-            try {
-                oClass.saveState();
-                oClass.removeProperty(property, false);
-                oClass.updateValueInCell();
-            } finally {
-                graph.getModel().endUpdate();
+            if (OArchitectAction.isAvailableActionForClass(cell.value.ownerClass)) {
+                var graph = editor.graph;
+                graph.stopEditing(false);
+                var oClassCell = OArchitectUtil.getClassCellByPropertyCell(cell);
+                var oClass = oClassCell.value;
+                var property = cell.value;
+                graph.getModel().beginUpdate();
+                try {
+                    oClass.saveState();
+                    oClass.removeProperty(property, false);
+                    oClass.updateValueInCell();
+                } finally {
+                    graph.getModel().endUpdate();
+                }
             }
         }
     },
@@ -315,6 +318,9 @@ var OArchitectAction = {
             var msg;
             if (respond.apply) {
                 msg = new OArchitectMessage(localizer.applyChangesSuccess);
+                OArchitectUtil.forEach(OArchitectUtil.getAllEdgesWithValue(OArchitectConstants.UNSAVED_INHERITANCE), function (edge) {
+                    edge.value = '';
+                });
             } else {
                 msg = new OArchitectMessage(localizer.applyChangesError, true);
             }

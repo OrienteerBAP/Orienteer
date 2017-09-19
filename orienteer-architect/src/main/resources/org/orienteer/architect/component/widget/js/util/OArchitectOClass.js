@@ -172,6 +172,7 @@ OArchitectOClass.prototype.saveState = function (superClasses, subClasses) {
  */
 OArchitectOClass.prototype.updateValueInCell = function (superClasses, subClasses) {
     this.setCell(this.cell);
+    this.changePropertiesOrder();
     if (superClasses) updateValueInCell(this.superClasses);
     if (subClasses) updateValueInCell(this.subClasses);
 
@@ -558,6 +559,75 @@ OArchitectOClass.prototype.getClassIndex = function (classes, searchClass) {
 };
 
 /**
+ * Change properties order in class
+ * @param event - event for change properties order
+ * if event === mxEvent.CELLS_MOVED order changes from class cell otherwise order changes from database class config
+ */
+OArchitectOClass.prototype.changePropertiesOrder = function (event) {
+    if (this.cell !== null) {
+        changeOrder(this);
+
+        function changeOrder(oClass) {
+            if (event === mxEvent.CELLS_MOVED) {
+                changeMovePropertiesOrder(oClass);
+            } else changeOClassPropertiesOrder(oClass);
+            app.editor.graph.constrainChildCells(oClass.cell);
+        }
+
+        function changeMovePropertiesOrder(oClass) {
+            var orderStep = oClass.getPropertyOrderStep();
+            var properties = OArchitectUtil.getOrderValidProperties(oClass.properties);
+            var order = OArchitectUtil.getPropertyWithMinOrder(properties);
+            var children = oClass.cell.children;
+            for (var i = 0; i < children.length; i++) {
+                var index = getPropertyIndex(children[i].value, properties);
+                properties[index].setOrder(order);
+                order += orderStep;
+            }
+        }
+
+        function changeOClassPropertiesOrder(oClass) {
+            var properties = OArchitectUtil.getOrderValidProperties(oClass.properties);
+            var children = oClass.cell.children;
+            sortPropertiesByOrder(properties);
+            for (var i = 0; i < properties.length; i++) {
+                var index = getCellIndex(children, properties[i]);
+                var tmp = children[i];
+                children[i] = children[index];
+                children[index] = tmp;
+            }
+        }
+
+        function sortPropertiesByOrder(properties) {
+            properties.sort(function (prop1, prop2) {
+                return prop1.getOrder() > prop2.getOrder();
+            });
+        }
+
+        function getCellIndex(cells, property) {
+            for (var i = 0; i < cells.length; i++) {
+                if (property.name === cells[i].value.name)
+                    return i;
+            }
+            return -1;
+        }
+
+        function getPropertyIndex(property, properties) {
+            for (var i = 0; i < properties.length; i++) {
+                if (properties[i].name === property.name) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    }
+};
+
+OArchitectOClass.prototype.getPropertyOrderStep = function () {
+    return 10;
+};
+
+/**
  * @return boolean true if class removed from editor
  */
 OArchitectOClass.prototype.isRemoved = function () {
@@ -571,25 +641,29 @@ OArchitectOClass.prototype.toString = function () {
 OArchitectOClass.prototype.setExistsInDb = function (existsInDb) {
     this.existsInDb = existsInDb;
     if (this.cell != null) {
-        var classEdgeCells = [];
-        addClassesEdges(this.superClasses, this.cell, classEdgeCells);
-        addClassesEdges(this.subClasses, this.cell, classEdgeCells);
+        var edgesInDb = [];
+        var edges = [];
+        addClassesEdges(this.superClasses, this.cell, edgesInDb, edges);
+        addClassesEdges(this.subClasses, this.cell, edgesInDb, edges);
 
 
         if (this.existsInDb) {
             app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_STYLE, [this.cell]);
-            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, classEdgeCells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, edgesInDb);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, edges);
         } else {
             app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_STYLE, [this.cell]);
-            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, classEdgeCells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, edgesInDb);
         }
 
-        function addClassesEdges(classes, cell, edges) {
+        function addClassesEdges(classes, cell, edgesInDb, edges) {
             OArchitectUtil.forEach(classes, function (oClass) {
                 if (oClass.cell != null) {
                     var e = app.editor.graph.getEdgesBetween(oClass.cell, cell);
                     OArchitectUtil.forEach(e, function (edge) {
-                        edges.push(edge);
+                        if (edge.value !== OArchitectConstants.UNSAVED_INHERITANCE) {
+                            edgesInDb.push(edge);
+                        } else edges.push(edge);
                     });
                 }
             });

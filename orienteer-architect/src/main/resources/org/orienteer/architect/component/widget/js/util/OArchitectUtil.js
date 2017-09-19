@@ -127,12 +127,23 @@ var OArchitectUtil = {
         if (cell == null) return false;
         if (cell.isEdge() && cell.source != null) {
             if (cell.source.value instanceof OArchitectOClass) {
-                return !cell.source.value.existsInDb;
+                return !cell.source.value.existsInDb || !cell.target.value.existsInDb
+                    || cell.value === OArchitectConstants.UNSAVED_INHERITANCE;
             } else if (cell.source.value instanceof OArchitectOProperty) {
                 return !cell.source.value.existsInDb;
             }
         }
         return true;
+    },
+
+    getAllEdgesWithValue: function (value) {
+        var edges = [];
+        var graph = app.editor.graph;
+        OArchitectUtil.forEach(graph.getModel().getChildEdges(graph.getDefaultParent()), function (edge) {
+            if (edge.value === value)
+                edges.push(edge);
+        });
+        return edges;
     },
 
     isValidPropertyTarget: function (cell) {
@@ -193,6 +204,41 @@ var OArchitectUtil = {
             }
         }
         return result;
+    },
+
+    getPropertyWithMinOrder: function (properties) {
+        var property = properties.length > 0 ? getOrder(properties) : 0;
+        for (var i = 0; i < properties.length; i++) {
+            if (OArchitectUtil.isOrderValidProperty(properties[i])) {
+                if (property > properties[i].getOrder()) {
+                    property = properties[i].getOrder();
+                }
+            }
+        }
+
+        function getOrder(properties) {
+            for (var i = 0; i < properties.length; i++) {
+                if (OArchitectUtil.isOrderValidProperty(properties[i]))
+                    return properties[i].getOrder();
+            }
+            return 0;
+        }
+
+        return property;
+    },
+
+    getOrderValidProperties: function (properties) {
+        var result = [];
+        OArchitectUtil.forEach(properties, function (property) {
+            if (OArchitectUtil.isOrderValidProperty(property)) {
+                result.push(property);
+            }
+        });
+        return result;
+    },
+
+    isOrderValidProperty: function (property) {
+        return !property.isSubClassProperty() || !property.isSuperClassExistsInEditor();
     },
 
     getPropertyFromJson: function (json) {

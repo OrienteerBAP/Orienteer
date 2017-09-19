@@ -23,6 +23,7 @@ public abstract class JsonUtil implements IClusterable {
     private static final String SUBCLASS_PROPERTY     = "subClassProperty";
     private static final String LINKED_CLASS_NAME     = "linkedClass";
     private static final String TYPE                  = "type";
+    private static final String ORDER                 = "order";
     private static final String PAGE_URL              = "pageUrl";
     private static final String INVERSE_PROPERTY      = "inverseProperty";
 
@@ -103,6 +104,9 @@ public abstract class JsonUtil implements IClusterable {
             }
             if (!jsonObject.isNull(LINKED_CLASS_NAME)) {
                 property.setLinkedClass(jsonObject.getString(LINKED_CLASS_NAME));
+            }
+            if (!jsonObject.isNull(ORDER)) {
+                property.setOrder(jsonObject.getInt(ORDER));
             }
             if (!jsonObject.isNull(INVERSE_PROPERTY)) {
                 property.setInverseProperty(convertInverseProperty(jsonObject.getJSONObject(INVERSE_PROPERTY)));
