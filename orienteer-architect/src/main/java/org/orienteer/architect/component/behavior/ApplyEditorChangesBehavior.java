@@ -102,6 +102,7 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
                 if (!Strings.isNullOrEmpty(property.getLinkedClass())) {
                     setLinkedClassForProperty(property, oProperty, schema);
                 }
+                CustomAttribute.ORDER.setValue(oProperty, property.getOrder());
             }
         }
     }

@@ -16,6 +16,7 @@ var OArchitectConstants = {
     OCLASS_EXISTS_CONNECTION_STYLE: 'oClassExistsConnectionStyle',
     OPROPERTY_EXISTS_CONNECTION_STYLE: 'oPropertyExistsConnectionStyle',
     OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE: 'oPropertyExistsInverseConnectionStyle',
+
     /**
      * OArchitect CSS classes
      */

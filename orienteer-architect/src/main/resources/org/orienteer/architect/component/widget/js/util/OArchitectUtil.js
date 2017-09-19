@@ -195,6 +195,41 @@ var OArchitectUtil = {
         return result;
     },
 
+    getPropertyWithMinOrder: function (properties) {
+        var property = properties.length > 0 ? getOrder(properties) : 0;
+        for (var i = 0; i < properties.length; i++) {
+            if (OArchitectUtil.isOrderValidProperty(properties[i])) {
+                if (property > properties[i].getOrder()) {
+                    property = properties[i].getOrder();
+                }
+            }
+        }
+
+        function getOrder(properties) {
+            for (var i = 0; i < properties.length; i++) {
+                if (OArchitectUtil.isOrderValidProperty(properties[i]))
+                    return properties[i].getOrder();
+            }
+            return 0;
+        }
+
+        return property;
+    },
+
+    getOrderValidProperties: function (properties) {
+        var result = [];
+        OArchitectUtil.forEach(properties, function (property) {
+            if (OArchitectUtil.isOrderValidProperty(property)) {
+                result.push(property);
+            }
+        });
+        return result;
+    },
+
+    isOrderValidProperty: function (property) {
+        return !property.isSubClassProperty() || !property.isSuperClassExistsInEditor();
+    },
+
     getPropertyFromJson: function (json) {
         var result = null;
         if (json != null && json.length > 0) {

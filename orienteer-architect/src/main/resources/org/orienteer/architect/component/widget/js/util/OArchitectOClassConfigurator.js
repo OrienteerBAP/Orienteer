@@ -19,6 +19,7 @@ var OArchitectOClassConfigurator = {
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.subClasses, false, true);
         OArchitectOClassConfigurator.configExistClassesLinks(oClass);
+        oClass.changePropertiesOrder();
         graph.getModel().endUpdate();
     },
 
