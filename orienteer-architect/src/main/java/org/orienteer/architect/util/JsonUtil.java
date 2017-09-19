@@ -1,5 +1,6 @@
 package org.orienteer.architect.util;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.ajax.json.JSONArray;
@@ -23,6 +24,7 @@ public abstract class JsonUtil implements IClusterable {
     private static final String LINKED_CLASS_NAME     = "linkedClass";
     private static final String TYPE                  = "type";
     private static final String PAGE_URL              = "pageUrl";
+    private static final String INVERSE_PROPERTY      = "inverseProperty";
 
     private JsonUtil() {}
 
@@ -90,17 +92,28 @@ public abstract class JsonUtil implements IClusterable {
     }
 
     private static OArchitectOProperty convertOPropertyFromJson(JSONObject jsonObject) {
-        String name = jsonObject.getString(NAME);
-        OType type = OType.valueOf(jsonObject.getString(TYPE));
-        OArchitectOProperty property = new OArchitectOProperty(name, type);
-        if (!jsonObject.isNull(SUBCLASS_PROPERTY)) {
-            String subClassProperty = jsonObject.getString(SUBCLASS_PROPERTY);
-            property.setSubClassProperty(subClassProperty.equals("1") || subClassProperty.equals("true"));
-        }
-        if (!jsonObject.isNull(LINKED_CLASS_NAME)) {
-            String linkedClass = jsonObject.getString(LINKED_CLASS_NAME);
-            property.setLinkedClass(linkedClass);
+        String name = !jsonObject.isNull(NAME) ? jsonObject.getString(NAME) : null;
+        OType type = !jsonObject.isNull(TYPE) ? OType.valueOf(jsonObject.getString(TYPE)) : null;
+        OArchitectOProperty property = null;
+        if (!Strings.isNullOrEmpty(name) && type != null) {
+            property = new OArchitectOProperty(name, type);
+            if (!jsonObject.isNull(SUBCLASS_PROPERTY)) {
+                String subClassProperty = jsonObject.getString(SUBCLASS_PROPERTY);
+                property.setSubClassProperty(subClassProperty.equals("1") || subClassProperty.equals("true"));
+            }
+            if (!jsonObject.isNull(LINKED_CLASS_NAME)) {
+                property.setLinkedClass(jsonObject.getString(LINKED_CLASS_NAME));
+            }
+            if (!jsonObject.isNull(INVERSE_PROPERTY)) {
+                property.setInverseProperty(convertInverseProperty(jsonObject.getJSONObject(INVERSE_PROPERTY)));
+            }
         }
         return property;
+    }
+
+    private static OArchitectOProperty convertInverseProperty(JSONObject jsonObject) {
+        String name = !jsonObject.isNull(NAME) ? jsonObject.getString(NAME) : null;
+        OType type = !jsonObject.isNull(TYPE) ? OType.valueOf(jsonObject.getString(TYPE)) : null;
+        return !Strings.isNullOrEmpty(name) && type != null ? new OArchitectOProperty(name, type) : null;
     }
 }

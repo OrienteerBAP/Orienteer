@@ -1,6 +1,9 @@
 var en = {
     name: 'Name',
     type: 'Type',
+    inverseEnable: 'Inverse enable',
+    inverse: 'Inverse',
+    noAvailableInverseProperties: 'No available inverse properties',
     cancel: 'Cancel',
     ok: 'OK',
     more: 'More...',

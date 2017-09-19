@@ -7,7 +7,7 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.orienteer.architect.component.panel.IOArchitectOClassesManager;
+import org.orienteer.architect.component.panel.IOClassesModalManager;
 import org.orienteer.architect.util.JsonUtil;
 
 /**
@@ -16,10 +16,11 @@ import org.orienteer.architect.util.JsonUtil;
 public class GetOClassesBehavior extends AbstractDefaultAjaxBehavior {
 
     private static final String EXISTS_CLASSES_VAR = "existsClasses";
+    private static final String CLASSES_LIST_VAR   = "classesList";
 
-    private final IOArchitectOClassesManager manager;
+    private final IOClassesModalManager manager;
 
-    public GetOClassesBehavior(IOArchitectOClassesManager manager) {
+    public GetOClassesBehavior(IOClassesModalManager manager) {
         this.manager = manager;
     }
 
@@ -27,8 +28,17 @@ public class GetOClassesBehavior extends AbstractDefaultAjaxBehavior {
     protected void respond(AjaxRequestTarget target) {
         IRequestParameters params = RequestCycle.get().getRequest().getRequestParameters();
         String json = params.getParameterValue(EXISTS_CLASSES_VAR).toString("[]");
-        manager.setExistsClasses(JsonUtil.fromJSON(json));
-        manager.switchModalWindow(target, true);
+        boolean classesList = params.getParameterValue(CLASSES_LIST_VAR).toBoolean(false);
+        if (classesList) {
+            target.appendJavaScript(String.format("; app.executeCallback('%s');", getAllClassesAsJson()));
+        } else {
+            manager.setExistsClasses(JsonUtil.fromJSON(json));
+            manager.showModalWindow(target);
+        }
+    }
+
+    private String getAllClassesAsJson() {
+        return JsonUtil.toJSON(manager.toOArchitectOClasses(manager.getAllClasses()));
     }
 
     @Override

@@ -12,12 +12,12 @@ var OArchitectOClassConfigurator = {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         oClass.name = json.name;
-        oClass.setExistsInDb(json.existsInDb);
         oClass.pageUrl = json.pageUrl;
+        if (oClass.cell != null) oClass.setCell(oClass.cell);
         OArchitectOClassConfigurator.configProperties(oClass, json.properties, true);
+        oClass.setExistsInDb(json.existsInDb);
         OArchitectOClassConfigurator.configClasses(oClass, json.superClasses, true, true);
         OArchitectOClassConfigurator.configClasses(oClass, json.subClasses, false, true);
-        if (oClass.cell != null) oClass.setCell(oClass.cell);
         OArchitectOClassConfigurator.configExistClassesLinks(oClass);
         graph.getModel().endUpdate();
     },
@@ -36,7 +36,6 @@ var OArchitectOClassConfigurator = {
                 var graph = app.editor.graph;
                 graph.getModel().beginUpdate();
                 oClass.cell = classCell;
-                oClass.setExistsInDb(oClass.existsInDb);
                 var superClassesNames = oClass.superClasses;
                 var subClassesNames = oClass.subClasses;
                 var propertiesCells = OArchitectUtil.getClassPropertiesCells(oClass);
@@ -46,6 +45,7 @@ var OArchitectOClassConfigurator = {
                 OArchitectOClassConfigurator.configProperties(oClass, propertiesCells, false);
                 OArchitectOClassConfigurator.configClasses(oClass, superClassesNames, true, false);
                 OArchitectOClassConfigurator.configClasses(oClass, subClassesNames, false, false);
+                oClass.setExistsInDb(oClass.existsInDb);
                 graph.getModel().endUpdate();
             }
         }
@@ -63,7 +63,7 @@ var OArchitectOClassConfigurator = {
             if (isJson) {
                 var name = configElement.name;
                 property = oClass.getProperty(name);
-                if (property == null) property = new OArchitectOProperty();
+                if (property === null) property = new OArchitectOProperty();
                 property.configFromDatabase(oClass, configElement);
             } else {
                 property = configElement.value;
@@ -73,15 +73,26 @@ var OArchitectOClassConfigurator = {
     },
 
     configExistClassesLinks: function (oClass) {
-        OArchitectUtil.forEach(OArchitectUtil.getAllClasses(), function (existsClass) {
+        OArchitectUtil.forEach(OArchitectUtil.getAllClassesInEditor(), function (existsClass) {
             OArchitectUtil.forEach(existsClass.properties, function (property) {
                 if (property.linkedClass === oClass.name ||
                     property.linkedClass instanceof OArchitectOClass && property.linkedClass.name === oClass.name) {
                     if (property.isSubClassProperty() && property.isSuperClassExistsInEditor()) {
                         property.linkedClass = oClass;
-                    } else property.setLinkedClassWithoutSavingState(oClass);
+                        if (property.inverseProperty != null) {
+                            var prop = oClass.getProperty(property.inverseProperty.name);
+                            if (prop !== null) property.inverseProperty = prop;
+                        }
+                    } else {
+                        property.setLinkedClass(oClass);
+                        if (property.inverseProperty != null) {
+                            var inverse = oClass.getProperty(property.inverseProperty.name);
+                            if (inverse !== null) property.setInverseProperty(inverse);
+                        }
+                    }
                 }
             });
+            existsClass.setExistsInDb(existsClass.existsInDb);
         });
 
     },
@@ -94,6 +105,7 @@ var OArchitectOClassConfigurator = {
      * @param isJson - true if config subclasses or super classes from json
      */
     configClasses: function (oClass, classesNames, isSuperClasses, isJson) {
+        var classes = [];
         OArchitectUtil.forEach(classesNames, function (className) {
             var classCell = OArchitectUtil.getCellByClassName(className);
             var configuredClass = null;
@@ -101,6 +113,7 @@ var OArchitectOClassConfigurator = {
                 configuredClass = classCell.value;
                 if (!isJson) {
                     OArchitectOClassConfigurator.configOClassFromCell(configuredClass, classCell);
+                    classes.push(configuredClass);
                 }
             } else {
                 configuredClass = new OArchitectOClass();

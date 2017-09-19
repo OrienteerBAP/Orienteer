@@ -9,17 +9,18 @@ var GraphStyleConfig = function (editor) {
 };
 
 GraphStyleConfig.prototype.config = function () {
-    // mxConstants.CURSOR_MOVABLE_VERTEX = 'default';
     var stylesheet = this.graph.getStylesheet();
     stylesheet.putDefaultVertexStyle(this.createVertexStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EDITOR_STYLE, this.createOClassStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE, this.createOClassExistsStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE, this.createOPropertyStyle());
-    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE, this.createOPropertyExistsStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OCLASS_STYLE, this.createOClassStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_STYLE, this.createOClassExistsStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_STYLE, this.createOPropertyStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_STYLE, this.createOPropertyExistsStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, this.createOClassConnectionStyle());
     stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_CONNECTION_STYLE, this.createOPropertyConnectionStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_INVERSE_CONNECTION_STYLE, this.createOPropertyInverseConnectionStyle());
     stylesheet.putCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, this.createOClassExistsConnectionStyle());
     stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE, this.createOPropertyExistsConnectionStyle());
+    stylesheet.putCellStyle(OArchitectConstants.OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE, this.createOPropertyInverseExistsConnectionStyle());
 };
 
 GraphStyleConfig.prototype.createOClassStyle = function () {
@@ -97,6 +98,12 @@ GraphStyleConfig.prototype.createOPropertyConnectionStyle = function () {
     return style;
 };
 
+GraphStyleConfig.prototype.createOPropertyInverseConnectionStyle = function () {
+    var style = this.createOPropertyConnectionStyle();
+    style[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_OPEN;
+    return style;
+};
+
 GraphStyleConfig.prototype.createOClassExistsConnectionStyle = function () {
     var style = this.createOClassConnectionStyle();
     style[mxConstants.STYLE_STROKECOLOR] = '#6D5A72';
@@ -106,6 +113,12 @@ GraphStyleConfig.prototype.createOClassExistsConnectionStyle = function () {
 GraphStyleConfig.prototype.createOPropertyExistsConnectionStyle = function () {
     var style = this.createOPropertyConnectionStyle();
     style[mxConstants.STYLE_STROKECOLOR] = '#6D5A72';
+    return style;
+};
+
+GraphStyleConfig.prototype.createOPropertyInverseExistsConnectionStyle = function () {
+    var style = this.createOPropertyExistsConnectionStyle();
+    style[mxConstants.STYLE_STARTARROW] = mxConstants.ARROW_OPEN;
     return style;
 };
 

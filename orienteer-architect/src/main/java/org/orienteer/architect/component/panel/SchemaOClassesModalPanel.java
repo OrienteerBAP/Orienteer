@@ -9,6 +9,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -28,12 +29,14 @@ import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Panel which represents list of classes for orienteer-architect editor
  */
-public class SchemaOClassesPanel extends Panel implements IOArchitectOClassesManager {
+public class SchemaOClassesModalPanel extends Panel implements IOClassesModalManager {
 
     private OrienteerDataTable<OClass, String> table;
     private ModalWindow modal;
@@ -41,16 +44,23 @@ public class SchemaOClassesPanel extends Panel implements IOArchitectOClassesMan
 
     private final String jsCallback;
 
-    public SchemaOClassesPanel(String id, String jsCallback) {
+    public SchemaOClassesModalPanel(String id, String jsCallback) {
         super(id);
         this.jsCallback = jsCallback;
         modal = createModalWindow("modal");
         modal.setContent(createGenericTablePanel(modal.getContentId()));
+        modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
+            @Override
+            public void onClose(AjaxRequestTarget target) {
+                switchPageScroll(target, false);
+            }
+        });
         add(modal);
     }
 
     private ModalWindow createModalWindow(String id) {
         ModalWindow modal = new ModalWindow(id);
+        modal.setOutputMarkupId(true);
         modal.setTitle(new ResourceModel("widget.architect.editor.list.classes.title"));
         modal.setInitialWidth(670);
         modal.setInitialHeight(510);
@@ -63,7 +73,7 @@ public class SchemaOClassesPanel extends Panel implements IOArchitectOClassesMan
         AbstractJavaSortableDataProvider<OClass, String> provider = getProvider();
         provider.setSort("name", SortOrder.ASCENDING);
         List<IColumn<OClass, String>> columns = getColumns();
-        GenericTablePanel<OClass> tablePanel = new GenericTablePanel<>(modal.getContentId(), columns, provider, 20);
+        GenericTablePanel<OClass> tablePanel = new GenericTablePanel<>(id, columns, provider, 20);
         table = tablePanel.getDataTable();
         addCommands(table);
         return tablePanel;
@@ -128,9 +138,42 @@ public class SchemaOClassesPanel extends Panel implements IOArchitectOClassesMan
     }
 
     @Override
-    public void switchModalWindow(AjaxRequestTarget target, boolean show) {
-        if (show) modal.show(target);
-        else modal.close(target);
+    public void showModalWindow(AjaxRequestTarget target) {
+        if (!modal.isShown()) {
+            modal.show(target);
+            switchPageScroll(target, true);
+        }
+    }
+
+    @Override
+    public void closeModalWindow(AjaxRequestTarget target) {
+        if (modal.isShown()) {
+            modal.close(target);
+        }
+    }
+
+    @Override
+    public List<OClass> getAllClasses() {
+        List<OClass> classes = Lists.newArrayList();
+        IDataProvider<OClass> dataProvider = table.getDataProvider();
+        Iterator<? extends OClass> iterator = dataProvider.iterator(0, dataProvider.size());
+        while (iterator.hasNext()) {
+            classes.add(iterator.next());
+        }
+        return classes;
+    }
+
+    @Override
+    public List<OArchitectOClass> toOArchitectOClasses(List<OClass> classes) {
+        List<OArchitectOClass> architectOClasses = new ArrayList<>(classes.size());
+        for (OClass oClass : classes) {
+            architectOClasses.add(OArchitectOClass.toArchitectOClass(oClass));
+        }
+        return architectOClasses;
+    }
+
+    private void switchPageScroll(AjaxRequestTarget target, boolean show) {
+        target.appendJavaScript(String.format("; app.editor.fullScreenEnable = %s; app.switchPageScrolling(); ", !show));
     }
 
     @Override

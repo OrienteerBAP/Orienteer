@@ -11,9 +11,12 @@ import java.util.List;
 /**
  * Interface for manage list of OClasses for add OClasses from schema to orienteer-architect editor
  */
-public interface IOArchitectOClassesManager extends IClusterable {
+public interface IOClassesModalManager extends IClusterable {
     public void setExistsClasses(List<OArchitectOClass> classes);
     public void executeCallback(AjaxRequestTarget target, String json);
-    public void switchModalWindow(AjaxRequestTarget target, boolean show);
+    public void showModalWindow(AjaxRequestTarget target);
+    public void closeModalWindow(AjaxRequestTarget target);
+    public List<OClass> getAllClasses();
+    public List<OArchitectOClass> toOArchitectOClasses(List<OClass> classes);
     public OrienteerDataTable<OClass, String> getTable();
 }

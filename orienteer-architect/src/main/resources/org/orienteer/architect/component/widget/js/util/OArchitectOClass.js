@@ -18,6 +18,8 @@ var OArchitectOClass = function (name, cell) {
     this.previousState = null;
     this.nextState = null;
 
+    this.databaseJson = null;
+
     if (name != null) this.setName(name);
     if (cell != null) this.setCell(cell);
 };
@@ -510,6 +512,17 @@ OArchitectOClass.prototype.containsInSuperClassHierarchy = function (oClass) {
     return contains;
 };
 
+
+OArchitectOClass.prototype.getAvailableInverseProperties = function () {
+    var result = [];
+    OArchitectUtil.forEach(this.properties, function (property) {
+        if (property.isLink()) {
+            result.push(property);
+        }
+    });
+    return result;
+};
+
 /**
  * @param superClass - {@link OArchitectOClass} for search
  * @returns number - index of class in superclasses array of this class
@@ -558,18 +571,28 @@ OArchitectOClass.prototype.toString = function () {
 OArchitectOClass.prototype.setExistsInDb = function (existsInDb) {
     this.existsInDb = existsInDb;
     if (this.cell != null) {
-        var cells = [];
-        OArchitectUtil.forEach(this.properties, function (property) {
-            if (property.cell != null) {
-                cells.push(property.cell);
-            }
-        });
+        var classEdgeCells = [];
+        addClassesEdges(this.superClasses, this.cell, classEdgeCells);
+        addClassesEdges(this.subClasses, this.cell, classEdgeCells);
+
+
         if (this.existsInDb) {
-            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE, [this.cell]);
-            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE, cells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_STYLE, [this.cell]);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE, classEdgeCells);
         } else {
-            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EDITOR_STYLE, [this.cell]);
-            app.editor.graph.setCellStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE, cells);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_STYLE, [this.cell]);
+            app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_CONNECTION_STYLE, classEdgeCells);
+        }
+
+        function addClassesEdges(classes, cell, edges) {
+            OArchitectUtil.forEach(classes, function (oClass) {
+                if (oClass.cell != null) {
+                    var e = app.editor.graph.getEdgesBetween(oClass.cell, cell);
+                    OArchitectUtil.forEach(e, function (edge) {
+                        edges.push(edge);
+                    });
+                }
+            });
         }
     }
 };
@@ -627,13 +650,21 @@ OArchitectOClass.prototype.equalsWithJsonClass = function (jsonClass) {
     return equals;
 };
 
+OArchitectOClass.prototype.setDatabaseJson = function (json) {
+    var oClass = this;
+    this.databaseJson = json;
+    OArchitectUtil.forEach(json.properties, function (jsonProperty) {
+        oClass.getProperty(jsonProperty.name).databaseJson = jsonProperty;
+    });
+};
+
 /**
  * Convert current class to json string
  * @returns json string
  */
 OArchitectOClass.prototype.toJson = function () {
     function jsonFilter(key, value) {
-        if (key === 'cell' || key === 'previousState' || key === 'nextState') {
+        if (key === 'cell' || key === 'previousState' || key === 'nextState' || key === 'databaseJson') {
             value = undefined;
         } else if (key === 'superClasses' || key === 'subClasses') {
             var classes = [];
@@ -646,6 +677,15 @@ OArchitectOClass.prototype.toJson = function () {
                 if (value instanceof OArchitectOClass) {
                     value = value.name;
                 }
+            }
+        } else if (key === 'inverseProperty') {
+            if (value !== null) {
+                var prop = new OArchitectOProperty();
+                if (value instanceof OArchitectOProperty) {
+                    prop.name = value.name;
+                    prop.type = value.type;
+                } else prop.name = value;
+                value = prop;
             }
         }
 
@@ -665,6 +705,7 @@ OArchitectOClass.prototype.toEditorConfigObject = function () {
     result.superClasses = toEditorClasses(this.superClasses);
     result.subClasses = toEditorClasses(this.subClasses);
     result.existsInDb = this.existsInDb;
+    result.pageUrl = this.pageUrl;
 
     function toEditorProperties(properties) {
         var editorProperties = [];

@@ -8,8 +8,8 @@ var OArchitectUtil = {
         var vertex = new mxCell(oClass,
             new mxGeometry(x, y, OArchitectConstants.OCLASS_WIDTH, OArchitectConstants.OCLASS_HEIGHT));
         vertex.setVertex(true);
-        if (!oClass.existsInDb) vertex.setStyle(OArchitectConstants.OCLASS_EDITOR_STYLE);
-        else vertex.setStyle(OArchitectConstants.OCLASS_EXISTS_EDITOR_STYLE);
+        if (!oClass.existsInDb) vertex.setStyle(OArchitectConstants.OCLASS_STYLE);
+        else vertex.setStyle(OArchitectConstants.OCLASS_EXISTS_STYLE);
         return vertex;
     },
 
@@ -17,9 +17,9 @@ var OArchitectUtil = {
         var vertex = new mxCell(property,
             new mxGeometry(0, 0, 0, OArchitectConstants.OPROPERTY_HEIGHT));
         vertex.setVertex(true);
-        if (property.ownerClass != null && property.ownerClass.existsInDb) {
-            vertex.setStyle(OArchitectConstants.OPROPERTY_EXISTS_EDITOR_STYLE);
-        } else vertex.setStyle(OArchitectConstants.OPROPERTY_EDITOR_STYLE);
+        if (property.existsInDb) {
+            vertex.setStyle(OArchitectConstants.OPROPERTY_EXISTS_STYLE);
+        } else vertex.setStyle(OArchitectConstants.OPROPERTY_STYLE);
         return vertex;
     },
 
@@ -39,7 +39,7 @@ var OArchitectUtil = {
         function getCellsForRemove(cells) {
             var result = [];
             OArchitectUtil.forEach(cells, function (cell) {
-                if (cell.edge) {
+                if (cell.edge && cell.source != null) {
                     if (cell.source.value instanceof OArchitectOProperty) {
                         if (cell.source.value.canDisconnect() || withoutChecks) result.push(cell);
                     } else result.push(cell);
@@ -73,7 +73,7 @@ var OArchitectUtil = {
         return graph.getChildVertices(graph.getDefaultParent());
     },
 
-    getAllClasses: function () {
+    getAllClassesInEditor: function () {
         var cells = OArchitectUtil.getAllClassCells();
         var classes = [];
         OArchitectUtil.forEach(cells, function (cell) {
@@ -91,7 +91,7 @@ var OArchitectUtil = {
     },
 
     getAllClassNames: function () {
-        return OArchitectUtil.toClassNames(OArchitectUtil.getAllClasses());
+        return OArchitectUtil.toClassNames(OArchitectUtil.getAllClassesInEditor());
     },
 
     manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
@@ -129,33 +129,17 @@ var OArchitectUtil = {
             if (cell.source.value instanceof OArchitectOClass) {
                 return !cell.source.value.existsInDb;
             } else if (cell.source.value instanceof OArchitectOProperty) {
-                return !cell.source.value.ownerClass.existsInDb;
+                return !cell.source.value.existsInDb;
             }
         }
         return true;
     },
 
-    getCellsByClassNames: function (classNames) {
-        var result = [];
-        var cells = OArchitectUtil.getAllClassCells();
-        OArchitectUtil.forEach(cells, function (cell) {
-            var oClass = cell.value;
-            if (oClass != null && classNames.indexOf(oClass.name) > -1) {
-                result.push(cell);
-            }
-        });
-
-        return result;
-    },
-
     isValidPropertyTarget: function (cell) {
-        var valid = false;
-
-        if (cell.value instanceof OArchitectOClass) {
-            valid = !cell.value.existsInDb;
-        } else if (cell.value instanceof OArchitectOProperty) {
+        var valid = cell.value instanceof OArchitectOClass;
+        if (!valid && cell.value instanceof OArchitectOProperty) {
             var classCell = OArchitectUtil.getClassCellByPropertyCell(cell);
-            valid = classCell != null && !classCell.value.existsInDb;
+            valid = classCell instanceof OArchitectOClass;
         }
         return valid;
     },
@@ -193,6 +177,36 @@ var OArchitectUtil = {
         if (cell === graph.getDefaultParent())
             return null;
         return this.getClassCellByPropertyCell(graph.getModel().getParent(cell));
+    },
+
+    getClassFromJson: function (json) {
+        var result = null;
+        if (json != null && json.length > 0) {
+            var parse = JSON.parse(json);
+            var cell = this.getCellByClassName(parse.name);
+
+            if (cell != null) {
+                result = cell.value;
+            } else {
+                result = new OArchitectOClass();
+                result.configFromDatabase(parse);
+            }
+        }
+        return result;
+    },
+
+    getPropertyFromJson: function (json) {
+        var result = null;
+        if (json != null && json.length > 0) {
+            var parse = JSON.parse(json);
+            var classCell = this.getCellByClassName(parse.ownerClass);
+
+            if (classCell != null) {
+                var ownerClass = classCell.value;
+                result = ownerClass.getProperty(parse.name);
+            }
+        }
+        return result;
     },
 
     existsOClassInGraph: function (graph, className) {
@@ -250,12 +264,24 @@ var OArchitectUtil = {
             if (into instanceof mxGraphModel) {
                 var graph = app.editor.graph;
                 var classCells = graph.getChildVertices(graph.getDefaultParent());
+                var classes = [];
                 OArchitectUtil.forEach(classCells, function (classCell) {
                     var oClass = classCell.value;
                     oClass.configFromCell(classCell);
+                    classes.push(oClass);
                 });
+                OArchitectUtil.updateExistsInDB(classes);
             }
             return result;
         }
+    },
+
+    updateExistsInDB: function(classes) {
+        OArchitectUtil.forEach(classes, function (oClass) {
+            oClass.setExistsInDb(oClass.existsInDb);
+            OArchitectUtil.forEach(oClass.properties, function (property) {
+                property.setExistsInDb(property.existsInDb);
+            });
+        });
     }
 };

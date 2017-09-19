@@ -82,7 +82,8 @@ var OArchitectAction = {
                             graph.getModel().beginUpdate();
                             try {
                                 classCell.value.saveState();
-                                classCell.value.createProperty(property.name, property.type, property.cell);
+                                var prop = classCell.value.createProperty(property.name, property.type, property.cell);
+                                prop.setInversePropertyEnable(property.inversePropertyEnable);
                                 classCell.value.updateValueInCell();
                             } finally {
                                 graph.getModel().endUpdate();
@@ -110,6 +111,7 @@ var OArchitectAction = {
             var target = addOPropertyLinkEvent.target;
             var sourceClass = source.value;
             var property = new OArchitectOProperty(sourceClass);
+            property.linkedClass = target.value;
             var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
             modal.orientDbTypes = OArchitectOType.linkTypes;
             modal.show(addOPropertyLinkEvent.event.getGraphX(), addOPropertyLinkEvent.event.getGraphY());
@@ -120,7 +122,9 @@ var OArchitectAction = {
                     try {
                         sourceClass.saveState();
                         var newProperty = sourceClass.createProperty(property.name, property.type);
-                        newProperty.setLinkedClass(target.value);
+                        newProperty.setAndSaveLinkedClass(target.value);
+                        newProperty.setInversePropertyEnable(property.inversePropertyEnable);
+                        newProperty.setInverseProperty(property.inverseProperty);
                         newProperty.saveState();
                         sourceClass.updateValueInCell();
                         newProperty.updateValueInCell();
@@ -148,18 +152,22 @@ var OArchitectAction = {
             var counterX = 1;
             var jsonClasses = JSON.parse(json);
             var cells = [];
+            var classes = [];
             graph.getModel().beginUpdate();
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
                 oClass.configFromDatabase(jsonClass);
+                oClass.setDatabaseJson(jsonClass);
                 addOClassCell(oClass.cell);
                 cells.push(oClass.cell);
+                classes.push(oClass);
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
             if (cells.length > 1) applyLayout(cells);
             graph.getModel().endUpdate();
+            OArchitectUtil.updateExistsInDB(classes);
         };
 
 
@@ -235,7 +243,7 @@ var OArchitectAction = {
     deleteCellAction: function (editor, cell) {
         var cellsForDelete = editor.graph.getSelectionCells();
         if (cellsForDelete == null || cellsForDelete.length === 0 && cell != null) {
-            cellsForDelete = cell.value instanceof OArchitectOClass ? [cell] : [OArchitectUtil.getClassCellByPropertyCell(cell)];
+            cellsForDelete = OArchitectUtil.isCellDeletable(cell) ? [cell] : [OArchitectUtil.getClassCellByPropertyCell(cell)];
         }
         cellsForDelete = getPreparedCells(cellsForDelete);
         removeCells(cellsForDelete);
@@ -250,9 +258,7 @@ var OArchitectAction = {
             var result = [];
             OArchitectUtil.forEach(cells, function (cell) {
                 if (OArchitectUtil.isCellDeletable(cell)) {
-                    if (cell.value instanceof OArchitectOClass) {
-                        cell.value.removed = true;
-                    }
+                    cell.value.removed = true;
                     result.push(cell);
                 }
             });
@@ -322,5 +328,10 @@ var OArchitectAction = {
      */
     fullScreenModeAction: function () {
         app.switchFullScreenMode();
+    },
+
+    //TODO: remove this action in release
+    toJsonAction: function () {
+        console.warn('JSON: ', OArchitectUtil.getOClassesAsJSON(app.editor.graph));
     }
 };

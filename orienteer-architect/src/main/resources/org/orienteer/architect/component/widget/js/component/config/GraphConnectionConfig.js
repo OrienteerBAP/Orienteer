@@ -37,10 +37,7 @@ GraphConnectionConfig.prototype.configEvents = function () {
 };
 
 GraphConnectionConfig.prototype.isCellConnectable = function (cell) {
-    if (!app.canUpdate)
-        return false;
-    if (cell == null)
-        return false;
+    if (!app.canUpdate || cell == null) return false;
     return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
 };
 
@@ -54,7 +51,7 @@ GraphConnectionConfig.prototype.isCellDisconnectable = function (cell) {
 };
 
 GraphConnectionConfig.prototype.isCellDeletable = function (cell) {
-    if (cell.edge && cell.source.value instanceof OArchitectOClass)
+    if (cell.edge && cell.source.value instanceof OArchitectOClass && cell.target.value instanceof OArchitectOClass)
         return !cell.source.value.existsInDb;
     return mxGraph.prototype.isCellDeletable.apply(this, arguments);
 };
@@ -66,27 +63,29 @@ GraphConnectionConfig.prototype.isValidConnection = function (source, target) {
     if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
         valid = !sourceValue.containsSuperClass(targetValue) && !targetValue.containsSuperClass(sourceValue);
     } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
-        valid = sourceValue.canConnect() && sourceValue.ownerClass !== targetValue;
+        valid = sourceValue.canConnect();
     }
     return valid;
 };
 
-GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (source) {
-    var getEdgeStyle = function (source) {
+GraphConnectionConfig.prototype.connectionHandlerFactoryMethod = function (source, target) {
+    var getEdgeStyle = function (source, target) {
         var style = null;
         if (source.value instanceof OArchitectOClass) {
             style = source.value.existsInDb ? OArchitectConstants.OCLASS_EXISTS_CONNECTION_STYLE : OArchitectConstants.OCLASS_CONNECTION_STYLE;
         } else if (source.value instanceof OArchitectOProperty && OArchitectOType.isLink(source.value.type)) {
-            if (source.value.ownerClass.existsInDb && source.value.linkedClass.existsInDb) {
-                style = OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE;
-            } else
-                style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
+            if (source.value.existsInDb && source.value.linkedClass.existsInDb) {
+                style = target.value instanceof OArchitectOProperty ? OArchitectConstants.OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE :
+                    OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE;
+            } else if (target != null && target.value instanceof OArchitectOProperty) {
+                style = OArchitectConstants.OPROPERTY_INVERSE_CONNECTION_STYLE;
+            } else style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
         }
         return style;
     };
     var edge = new mxCell('');
     edge.setEdge(true);
-    edge.setStyle(getEdgeStyle(source));
+    edge.setStyle(getEdgeStyle(source, target));
     var geo = new mxGeometry();
     geo.relative = true;
     edge.setGeometry(geo);
@@ -111,10 +110,6 @@ GraphConnectionConfig.prototype.connectionHandlerCreateEdgeState = function(me) 
 };
 
 GraphConnectionConfig.prototype.connectionHandlerCreateIcons = function (state) {
-    if (state.cell.value.existsInDb) {
-        return [];
-    }
-
     var createLinkIcon = state.cell != null && state.cell.value instanceof OArchitectOClass ||
         state.cell.value instanceof OArchitectOProperty && state.cell.value.isLink();
     var icons = state.cell.value instanceof OArchitectOClass ?
@@ -152,8 +147,8 @@ GraphConnectionConfig.prototype.connectionHandlerRedrawIcons = function (icons, 
         var pos = this.getIconPosition(icons[0], state);
         if (withLinkIcon) {
             initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 4);
-            initIcon(icons[1], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
-        } else initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE * 2);
+            initIcon(icons[1], pos.y, pos.x, OArchitectConstants.ICON_SIZE);
+        } else initIcon(icons[0], pos.y, pos.x, OArchitectConstants.ICON_SIZE);
 
     }
 
@@ -187,11 +182,13 @@ GraphConnectionConfig.prototype.connectionHandlerCreateEdge = function (value, s
 GraphConnectionConfig.prototype.createCellConnectedBehavior = function () {
     return function (graph, eventObject) {
         if (!graph.connectionHandler.linkConnection) {
-            var properties = eventObject.properties;
-            if (properties.edge != null) {
-                var source = properties.edge.source;
-                var target = properties.edge.target;
-                OArchitectConnector.connect(source, target);
+            var edge = eventObject.getProperty('edge');
+            if (edge != null) {
+                var source = edge.source;
+                var target = edge.target;
+                if (source != null && target != null) {
+                    OArchitectConnector.connect(source, target);
+                }
             }
         } else graph.connectionHandler.linkConnection = false;
     }
