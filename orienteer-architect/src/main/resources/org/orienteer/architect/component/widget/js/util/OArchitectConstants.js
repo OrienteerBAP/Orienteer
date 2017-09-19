@@ -67,7 +67,7 @@ var OArchitectConstants = {
     /**
      * Sizes for creating vertex
      */
-    OCLASS_WIDTH: 150,
+    OCLASS_WIDTH: 180,
     OCLASS_HEIGHT: 48,
     OPROPERTY_HEIGHT: 20,
 
