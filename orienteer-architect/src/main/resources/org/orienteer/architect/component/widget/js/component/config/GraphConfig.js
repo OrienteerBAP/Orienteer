@@ -60,6 +60,8 @@ GraphConfig.prototype.configureGraphBehavior = function () {
         return false;
     };
 
+    this.graph.edgeLabelsMovable = false;
+
     this.graph.convertValueToString = this.convertValueToString;
     this.graph.getModel().valueForCellChanged = this.valueForCellChanged;
 
@@ -99,9 +101,10 @@ GraphConfig.prototype.valueForCellChanged = function (cell, value, redo) {
 GraphConfig.prototype.configureGraphLabels = function () {
     this.graph.setHtmlLabels(true);
     var editor = this.editor;
+    var config = this;
     this.graph.getLabel = function (cell) {
         var label = null;
-        if (this.model.isVertex(cell)) {
+        if (cell.isVertex()) {
             var max = parseInt(this.getCellGeometry(cell).width / 8);
             var container = null;
             if (cell.value instanceof OArchitectOClass) {
@@ -110,9 +113,41 @@ GraphConfig.prototype.configureGraphLabels = function () {
                 container = new OPropertyContainer(cell.value, editor, cell);
             }
             if (container !== null) label = container.createElement(max);
+        } else if (cell.isEdge()) {
+            label = config.getLabelForEdge(cell);
         }
         return label;
     };
+};
+
+GraphConfig.prototype.getLabelForEdge = function (cell) {
+    var label = null;
+    if (cell.isEdge()) {
+        var source = cell.source.value;
+        var target = cell.target.value;
+        var sourceGeo = source instanceof OArchitectOProperty ? this.graph.getCellGeometry(cell.source.parent) : null;
+        var targetGeo = this.graph.getCellGeometry(target instanceof OArchitectOProperty ? cell.target.parent : cell.target);
+        if (source instanceof OArchitectOProperty && target instanceof OArchitectOProperty) {
+            if (OArchitectOType.isMultiValue(source.type) && OArchitectOType.isMultiValue(target.type)) {
+                label = '* - *';
+            } else if (OArchitectOType.isMultiValue(source.type) && !OArchitectOType.isMultiValue(target.type)) {
+                label = isRight() ? '* - 1' : '1 - *';
+            } else if (!OArchitectOType.isMultiValue(source.type) && OArchitectOType.isMultiValue(target.type)) {
+                label = isRight() ? '1 - *' : '* - 1';
+            }
+        } else if (source instanceof OArchitectOProperty && target instanceof OArchitectOClass) {
+            if (OArchitectOType.isMultiValue(source.type)) {
+                label = isRight() ? '* - 1' : '1 - *';
+            } else {
+                label = '1 - 1';
+            }
+        }
+
+        function isRight() {
+            return sourceGeo.x < targetGeo.x;
+        }
+    }
+    return label;
 };
 
 GraphConfig.prototype.convertValueToString = function (cell) {
