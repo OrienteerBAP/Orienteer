@@ -19,6 +19,8 @@ var OArchitectConstants = {
 
     UNSAVED_INHERITANCE: 'unsavedInheritance',
 
+    NAMING_PATTERN: /^[a-zA-Z_$][a-zA-Z_$0-9]*$/,
+
     /**
      * OArchitect CSS classes
      */
