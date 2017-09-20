@@ -45,8 +45,16 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     this.graph.isCellSelectable = function () {
         return true;
     };
-    this.graph.getTooltipForCell = function () {
-        return null;
+    this.graph.getTooltipForCell = function (cell) {
+        var tooltip = null;
+        if (cell !== null) {
+            if (cell.value instanceof OArchitectOClass) {
+                tooltip = localizer.classMsg + ': ' + cell.value.name;
+            } else if (cell.value instanceof OArchitectOProperty) {
+                tooltip = localizer.property + ': ' + cell.value.name;
+            }
+        }
+        return tooltip;
     };
     this.graph.isCellResizable = function () {
         return false;
