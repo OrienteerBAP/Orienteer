@@ -86,6 +86,7 @@ GraphStyleConfig.prototype.createOClassConnectionStyle = function () {
     style[mxConstants.STYLE_ENDFILL] = 0;
     style[mxConstants.STYLE_EDGE] = mxConstants.EDGESTYLE_ORTHOGONAL;
     style[mxConstants.STYLE_STROKEWIDTH] = '2';
+    style[mxConstants.STYLE_FONTSIZE] = '15';
     return style;
 };
 
@@ -95,6 +96,7 @@ GraphStyleConfig.prototype.createOPropertyConnectionStyle = function () {
     style[mxConstants.STYLE_EDGE] = mxConstants.EDGESTYLE_ORTHOGONAL;
     style[mxConstants.STYLE_LABEL_BACKGROUNDCOLOR] = '#FFFFFF';
     style[mxConstants.STYLE_STROKEWIDTH] = '2';
+    style[mxConstants.STYLE_FONTSIZE] = '15';
     return style;
 };
 

@@ -19,6 +19,8 @@ var OArchitectConstants = {
 
     UNSAVED_INHERITANCE: 'unsavedInheritance',
 
+    NAMING_PATTERN: /^[a-zA-Z_$][a-zA-Z_$0-9]*$/,
+
     /**
      * OArchitect CSS classes
      */
@@ -67,7 +69,7 @@ var OArchitectConstants = {
     /**
      * Sizes for creating vertex
      */
-    OCLASS_WIDTH: 150,
+    OCLASS_WIDTH: 180,
     OCLASS_HEIGHT: 48,
     OPROPERTY_HEIGHT: 20,
 

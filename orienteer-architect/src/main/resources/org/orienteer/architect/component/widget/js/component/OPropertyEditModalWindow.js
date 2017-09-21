@@ -111,6 +111,14 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
     return function () {
         if (nameField.value.length > 0) {
             var name = nameField.value;
+            if (OArchitectConstants.NAMING_PATTERN.test(name)) {
+                action(name);
+            } else modal.showErrorFeedback(localizer.propertyNameForbidden);
+        } else {
+            modal.showErrorFeedback(localizer.propertyEmptyName);
+        }
+
+        function action(name) {
             var type = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(name);
             if (property.isValidName(name) || property.isValidType(type) || property.isValidInverseProperty(inverseBlock.inverseProperty)) {
@@ -123,8 +131,6 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
                     modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
                 } else modal.showErrorFeedback(localizer.propertyExistsInClass);
             }
-        } else {
-            modal.showErrorFeedback(localizer.propertyEmptyName);
         }
 
         function updateProperty(name, type, inversePropertyEnable, inverseProperty) {

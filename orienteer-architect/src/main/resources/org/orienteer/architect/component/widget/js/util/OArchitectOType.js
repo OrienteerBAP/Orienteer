@@ -63,6 +63,15 @@ var OArchitectOType = {
         return this.linkTypes.indexOf(type) > -1;
     },
 
+    isMultiValue: function (type) {
+        var result = false;
+        if (this.contains(type)) {
+            result = type === this.LINKLIST || type === this.LINKMAP || type === this.LINKSET || type === this.LINKBAG
+            || type === this.EMBEDDEDLIST || type === this.EMBEDDEDMAP || type === this.EMBEDDEDSET;
+        }
+        return result;
+    },
+
     clone: function () {
         return mxUtils.clone(this);
     }

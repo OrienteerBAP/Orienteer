@@ -106,12 +106,14 @@ OClassEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameFi
     var modal = this;
     return function () {
         if (nameField.value.length > 0) {
-            var newName = nameField.value;
-            modal.value.setName(newName, function (oClass, msg) {
-                if (oClass.name === newName) {
-                    modal.destroy(modal.OK);
-                } else modal.showErrorFeedback(msg);
-            });
+            var name = nameField.value;
+            if (OArchitectConstants.NAMING_PATTERN.test(name)) {
+                modal.value.setName(name, function (oClass, msg) {
+                    if (oClass.name === name) {
+                        modal.destroy(modal.OK);
+                    } else modal.showErrorFeedback(msg);
+                });
+            } else modal.showErrorFeedback(localizer.classNameForbidden);
         } else modal.showErrorFeedback(localizer.classEmptyName);
     };
 };

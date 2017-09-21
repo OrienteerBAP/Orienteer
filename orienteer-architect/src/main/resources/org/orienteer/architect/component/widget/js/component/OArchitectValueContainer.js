@@ -5,7 +5,7 @@ var OArchitectValueContainer = function (value, editor) {
 };
 
 OArchitectValueContainer.prototype.createElement = function (maxLength, iconCss) {
-    return this.createContainer(this.createLabel(maxLength), this.createIcon(iconCss));
+    return this.createContainer(this.createLabel(this.value, maxLength), this.createIcon(iconCss));
 };
 
 OArchitectValueContainer.prototype.createContainer = function (label, icon) {
@@ -15,13 +15,12 @@ OArchitectValueContainer.prototype.createContainer = function (label, icon) {
     return div;
 };
 
-OArchitectValueContainer.prototype.createLabel = function (maxLength) {
-    var label = this.value;
-    if (label.length > maxLength) {
-        label = label.slice(0, maxLength - 5) + '...';
+OArchitectValueContainer.prototype.createLabel = function (value, maxLength) {
+    if (value.length > maxLength) {
+        value = value.slice(0, maxLength - 5) + '...';
     }
     var span = document.createElement('span');
-    span.innerHTML = mxUtils.htmlEntities(label);
+    span.innerHTML = mxUtils.htmlEntities(value);
     return span;
 };
 
@@ -65,7 +64,7 @@ OClassContainer.prototype = Object.create(OArchitectValueContainer.prototype);
 OClassContainer.prototype.constructor = OClassContainer;
 
 OClassContainer.prototype.createElement = function (maxLength) {
-    return this.createContainer(this.createLabel(maxLength), this.createLinkOrEditOClassElement());
+    return this.createContainer(this.createLabel(this.value.name, maxLength), this.createLinkOrEditOClassElement());
 };
 
 OClassContainer.prototype.createContainer = function (label, editElement) {
