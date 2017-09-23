@@ -70,22 +70,44 @@ var OArchitectConnector = {
     },
 
     connectInverseProperties: function (graph, propertyCell, inversePropertyCell) {
-        if (propertyCell.value === inversePropertyCell.value.inverseProperty) {
-            var property = propertyCell.value;
-            var inverse = inversePropertyCell.value;
+        console.warn('CONNECT INVERSE PROPERTY');
+        var property = propertyCell.value;
+        var inverse = inversePropertyCell.value;
+        if (propertyCell.value === inversePropertyCell.value.inverseProperty && !property.inverseLock && !inverse.inverseLock) {
+            graph.getModel().beginUpdate();
+            property.saveState();
+            inverse.saveState();
+
             property.setInversePropertyEnable(true);
             inverse.setInversePropertyEnable(true);
             property.setLinkedClass(inverse.ownerClass, true);
             inverse.setLinkedClass(property.ownerClass, true);
             property.setInverseProperty(inverse);
             inverse.setInverseProperty(property);
+
+            property.updateValueInCell();
+            inverse.updateValueInCell();
+            graph.getModel().endUpdate();
         }
     },
 
     disconnectInverseProperties: function (graph, propertyCell, inversePropertyCell) {
-        if (propertyCell.value === inversePropertyCell.value.inverseProperty) {
-            propertyCell.value.setInverseProperty(null);
-            inversePropertyCell.value.setInverseProperty(null);
+        console.warn('DISCONNECT INVERSE PROPERTY');
+        var property = propertyCell.value;
+        var inverse = inversePropertyCell.value;
+        if (property === inverse.inverseProperty && !property.inverseLock && !inverse.inverseLock) {
+            graph.getModel().beginUpdate();
+            property.saveState();
+            inverse.saveState();
+
+            property.setInverseProperty(null);
+            inverse.setInverseProperty(null);
+            property.setLinkedClass(null);
+            inverse.setLinkedClass(null);
+
+            property.updateValueInCell();
+            inverse.updateValueInCell();
+            graph.getModel().endUpdate();
         }
     },
 

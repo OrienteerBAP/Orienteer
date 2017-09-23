@@ -84,7 +84,7 @@ GraphConnectionConfig.prototype.createIsValidConnection = function () {
 GraphConnectionConfig.prototype.createConnectionHandlerFactoryMethod = function () {
     var config = this;
     return function (source, target) {
-        var edge = new mxCell(this.unsavedInheritance ? OArchitectConstants.UNSAVED_INHERITANCE : '');
+        var edge = new mxCell(this.unsavedInheritance && !this.createLinkOnConnection ? OArchitectConstants.UNSAVED_INHERITANCE : '');
         edge.setEdge(true);
         edge.setStyle(config.getConnectionStyle(this.unsavedInheritance, source, target));
         var geo = new mxGeometry();

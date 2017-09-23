@@ -121,7 +121,7 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
         function action(name) {
             var type = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(name);
-            if (property.isValidName(name) || property.isValidType(type) || property.isValidInverseProperty(inverseBlock.inverseProperty)) {
+            if (property.canUpdate(name, type, inverseBlock.inverseProperty, inverseBlock.inversePropertyEnable)) {
                 updateProperty(name, type, inverseBlock.enableInverseProperty, inverseBlock.inverseProperty);
                 modal.destroy(modal.OK);
             } else if (name === property.name && type === property.type) {
@@ -236,6 +236,7 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
         inverseValidProperties.push(inverseProperty);
     }
     this.clearSelectAndAddProperties(inverseValidProperties, select);
+    inverseBlock.inverseProperty = inverseProperty;
     if (inverseProperty !== null && linkedClass !== null && inverseValidProperties.length > 0) {
         for (var i = 0; i < inverseValidProperties.length; i++) {
             if (inverseValidProperties[i].name === inverseProperty.name) {

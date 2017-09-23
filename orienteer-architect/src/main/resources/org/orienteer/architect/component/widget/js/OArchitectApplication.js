@@ -156,6 +156,7 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new OArchitectToolbar(editor, this.getToolbarContainer());
     toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
     toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
+    toolbar.addAction('To Classes', 'toClassesAction', OArchitectAction.toClassesAction);
     toolbar.addAction('To JSON', 'toJsonAction', OArchitectAction.toJsonAction);
     editor.toolbar = toolbar;
 };
@@ -411,7 +412,7 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
                     if (jsonClass.name === oClass.name) {
                         var equals = oClass.equalsWithJsonClass(jsonClass);
                         if (!equals) {
-                            oClass.configFromDatabase(jsonClass);
+                            oClass.configFromJson(jsonClass);
                             classes.push(oClass);
                         }
                         oClass.setDatabaseJson(jsonClass);

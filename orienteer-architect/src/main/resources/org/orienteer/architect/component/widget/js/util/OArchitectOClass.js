@@ -13,7 +13,6 @@ var OArchitectOClass = function (name, cell) {
     this.existsInEditor = true;
     this.removed = false;
     this.cell = null;
-    this.configuredFromCell = false;
 
     this.previousState = null;
     this.nextState = null;
@@ -89,8 +88,8 @@ OArchitectOClass.prototype.previousState = null;
  * Config this instance from json which is respond from database
  * @param json - string which contains json data
  */
-OArchitectOClass.prototype.configFromDatabase = function (json) {
-    OArchitectOClassConfigurator.configOClassFromDatabase(this, json);
+OArchitectOClass.prototype.configFromJson = function (json) {
+    OArchitectOClassConfigurator.configOClassFromJson(this, json);
 };
 
 /**
@@ -156,6 +155,7 @@ OArchitectOClass.prototype.setCell = function (cell) {
 OArchitectOClass.prototype.saveState = function (superClasses, subClasses) {
     if (this.name !== null) {
         this.previousState = this.toEditorConfigObject();
+        console.warn('save oclass state, previous state: ', this.previousState);
         if (superClasses) saveState(this.superClasses);
         if (subClasses) saveState(this.subClasses);
     } else this.previousState = null;
@@ -415,6 +415,9 @@ OArchitectOClass.prototype.updateSubClassPropertyFromTemplate = function (templa
     }
     property.subClassProperty = true;
     property.linkedClass = templateProperty.linkedClass;
+    console.warn(this.name, ' - template inverse property: ', templateProperty.inverseProperty);
+    property.inversePropertyEnable = templateProperty.inversePropertyEnable;
+    property.inverseProperty = templateProperty.inverseProperty;
     property.superClassExistsInEditor = templateProperty.ownerClass.cell !== null;
     return needForReturn ? property : null;
 };
@@ -758,6 +761,7 @@ OArchitectOClass.prototype.toJson = function () {
                 if (value instanceof OArchitectOProperty) {
                     prop.name = value.name;
                     prop.type = value.type;
+                    prop.ownerClass = value.ownerClass instanceof OArchitectOClass ? value.ownerClass.name : null;
                 } else prop.name = value;
                 value = prop;
             }
@@ -780,7 +784,7 @@ OArchitectOClass.prototype.toEditorConfigObject = function () {
     result.subClasses = toEditorClasses(this.subClasses);
     result.existsInDb = this.existsInDb;
     result.pageUrl = this.pageUrl;
-
+    result.previousState = this.previousState;
     function toEditorProperties(properties) {
         var editorProperties = [];
         OArchitectUtil.forEach(properties, function (property) {

@@ -130,7 +130,7 @@ var OArchitectUtil = {
                 return !cell.source.value.existsInDb || !cell.target.value.existsInDb
                     || cell.value === OArchitectConstants.UNSAVED_INHERITANCE;
             } else if (cell.source.value instanceof OArchitectOProperty) {
-                return !cell.source.value.existsInDb;
+                return !cell.value.existsInDb;
             }
         }
         return true;
@@ -200,7 +200,7 @@ var OArchitectUtil = {
                 result = cell.value;
             } else {
                 result = new OArchitectOClass();
-                result.configFromDatabase(parse);
+                result.configFromJson(parse);
             }
         }
         return result;

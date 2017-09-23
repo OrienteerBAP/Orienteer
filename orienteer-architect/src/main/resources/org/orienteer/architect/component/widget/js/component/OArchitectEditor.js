@@ -92,21 +92,38 @@ OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
 OArchitectEditor.prototype.installUndoHandler = function (graph) {
     this.installUndoSaver(graph);
     var undoHandler = function(sender, evt) {
-        var changes = evt.getProperty('edit').changes;
+        var edit = evt.getProperty('edit');
+        var changes = edit.changes;
         var cells = graph.getSelectionCellsForChanges(changes);
-        OArchitectUtil.forEach(cells, function (cell) {
-            if (cell.isVertex()) {
-                var value = cell.value;
-                if (value instanceof OArchitectOClass) {
-                    OArchitectOClassConfigurator.configOClassFromCell(value, cell);
-                } else if (value instanceof OArchitectOProperty) {
-                    var classCell = OArchitectUtil.getCellByClassName(value.ownerClass);
-                    if (classCell != null) {
-                        value.configFromCell(classCell.value, cell);
+
+        app.editor.saveActions = false;
+        removeCellsFromHistory(cells);
+        configureCells(cells);
+        app.editor.saveActions = true;
+
+        function configureCells(cells) {
+            OArchitectUtil.forEach(cells, function (cell) {
+                if (cell.isVertex()) {
+                    var value = cell.value;
+                    if (value instanceof OArchitectOClass) {
+                        value.configFromCell(cell);
+                    } else if (value instanceof OArchitectOProperty) {
+                        var classCell = OArchitectUtil.getCellByClassName(value.ownerClass.name);
+                        if (classCell !== null) {
+                            value.configFromCell(classCell.value, cell);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
+        function removeCellsFromHistory(cells) {
+            OArchitectUtil.forEach(cells, function (cell) {
+                if (cell.value instanceof OArchitectOClass) {
+                    OArchitectOClassConfigurator.removeConfiguredClassName(cell.value.name);
+                }
+            });
+        }
     };
     this.undoManager.removeListener(mxEvent.UNDO);
     this.undoManager.removeListener(mxEvent.REDO);

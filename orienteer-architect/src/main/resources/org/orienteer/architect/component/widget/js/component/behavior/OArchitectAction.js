@@ -156,9 +156,11 @@ var OArchitectAction = {
             graph.getModel().beginUpdate();
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
-                oClass.cell = OArchitectUtil.createOClassVertex(oClass, x, START_Y);
-                oClass.configFromDatabase(jsonClass);
+                console.warn('json class: ', jsonClass);
+                oClass.setCell(OArchitectUtil.createOClassVertex(oClass, x, START_Y));
+                oClass.configFromJson(jsonClass);
                 oClass.setDatabaseJson(jsonClass);
+                oClass.updateValueInCell(true, true);
                 addOClassCell(oClass.cell);
                 cells.push(oClass.cell);
                 classes.push(oClass);
@@ -248,22 +250,35 @@ var OArchitectAction = {
         cellsForDelete = getPreparedCells(cellsForDelete);
         removeCells(cellsForDelete);
 
-        function removeCells(cells) {
-            if (cells != null && cells.length > 0) {
-                OArchitectUtil.deleteCells(cells);
-            }
-        }
-
         function getPreparedCells(cells) {
             var result = [];
             OArchitectUtil.forEach(cells, function (cell) {
-                if (OArchitectUtil.isCellDeletable(cell) && cell.value instanceof OArchitectOClass
-                    && OArchitectAction.isAvailableActionForClass(cell.value)) {
+                if (OArchitectUtil.isCellDeletable(cell) && canDelete(cell)) {
                     cell.value.removed = true;
                     result.push(cell);
                 }
             });
+
+            function canDelete(cell) {
+                if (cell.isVertex()) {
+                    return canDeleteClass(cell);
+                } else {
+                    return canDeleteClass(cell.source) && canDeleteClass(cell.target);
+                }
+
+                function canDeleteClass(cell) {
+                    return OArchitectAction.isAvailableActionForClass(cell.value instanceof OArchitectOClass ?
+                        cell.value : cell.value.ownerClass);
+                }
+            }
+
             return result;
+        }
+
+        function removeCells(cells) {
+            if (cells != null && cells.length > 0) {
+                OArchitectUtil.deleteCells(cells);
+            }
         }
     },
 
@@ -337,7 +352,12 @@ var OArchitectAction = {
     },
 
     //TODO: remove this action in release
+    toClassesAction: function () {
+        console.warn('Classes: ', OArchitectUtil.getAllClassesInEditor());
+    },
+
+    //TODO: remove this action in release
     toJsonAction: function () {
-        console.warn('JSON: ', OArchitectUtil.getOClassesAsJSON(app.editor.graph));
+        console.warn('To JSON: ', OArchitectUtil.getOClassesAsJSON(app.editor.graph));
     }
 };
