@@ -74,7 +74,7 @@ var OArchitectConnector = {
         var property = propertyCell.value;
         var inverse = inversePropertyCell.value;
         if (propertyCell.value === inversePropertyCell.value.inverseProperty && !property.inverseLock && !inverse.inverseLock) {
-            graph.getModel().beginUpdate();
+            // graph.getModel().beginUpdate();
             property.saveState();
             inverse.saveState();
 
@@ -87,7 +87,7 @@ var OArchitectConnector = {
 
             property.updateValueInCell();
             inverse.updateValueInCell();
-            graph.getModel().endUpdate();
+            // graph.getModel().endUpdate();
         }
     },
 
@@ -96,7 +96,7 @@ var OArchitectConnector = {
         var property = propertyCell.value;
         var inverse = inversePropertyCell.value;
         if (property === inverse.inverseProperty && !property.inverseLock && !inverse.inverseLock) {
-            graph.getModel().beginUpdate();
+            // graph.getModel().beginUpdate();
             property.saveState();
             inverse.saveState();
 
@@ -107,7 +107,7 @@ var OArchitectConnector = {
 
             property.updateValueInCell();
             inverse.updateValueInCell();
-            graph.getModel().endUpdate();
+            // graph.getModel().endUpdate();
         }
     },
 

@@ -95,22 +95,26 @@ var OArchitectUtil = {
     },
 
     manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
+        var cell = null;
         var graph = app.editor.graph;
         var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
-        graph.getModel().beginUpdate();
-        try {
+        // graph.getModel().beginUpdate();
+        // try {
+        if (app.editor.saveActions) console.warn('update level: ', graph.getModel().updateLevel);
             if (connect) {
                 if (edgesBetween == null || edgesBetween.length == 0) {
                     graph.connectionHandler.connect(sourceCell, targetCell);
-                }
+                    cell = graph.getEdgesBetween(sourceCell, targetCell)[0];
+                } else cell = edgesBetween[0];
             } else {
                 if (edgesBetween != null && edgesBetween.length > 0) {
                     graph.removeCells(edgesBetween, true);
                 }
             }
-        } finally {
-            graph.getModel().endUpdate();
-        }
+        // } finally {
+        //     graph.getModel().endUpdate();
+        // }
+        return cell;
     },
 
     removeCell: function (cell, includeEdges) {
@@ -172,11 +176,12 @@ var OArchitectUtil = {
         var cells = graph.getChildVertices(oClass.cell);
         var result = [];
         OArchitectUtil.forEach(cells, function (cell) {
-            if (cell.value instanceof OArchitectOProperty) {
-                if (oClass.getProperty(cell.value.name) != null) {
-                    result.push(cell);
-                }
-            }
+            result.push(cell);
+            // if (cell.value instanceof OArchitectOProperty) {
+            //     if (oClass.getProperty(cell.value.name) != null) {
+            //
+            //     }
+            // }
         });
         return result;
     },
@@ -287,7 +292,7 @@ var OArchitectUtil = {
     createWriteComplexAttributeFunction: function () {
         var defaultBehavior = mxObjectCodec.prototype.writeComplexAttribute;
         return function (enc, obj, name, value, node) {
-            if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
+            if (value instanceof OArchitectEditorObject) {
                 value = value.toEditorConfigObject();
             } else if (name === 'cell' || name === 'configuredFromEditorConfig' || name === 'existsInEditor') {
                 value = undefined;
@@ -312,14 +317,25 @@ var OArchitectUtil = {
                 var classCells = graph.getChildVertices(graph.getDefaultParent());
                 var classes = [];
                 OArchitectUtil.forEach(classCells, function (classCell) {
-                    var oClass = classCell.value;
-                    oClass.configFromCell(classCell);
+                    var oClass = new OArchitectOClass();
+                    oClass.configFromJson(JSON.parse(classCell.value.json), classCell);
+                    oClass.previousState = null;
+                    oClass.nextState = null;
                     classes.push(oClass);
                 });
                 OArchitectUtil.updateExistsInDB(classes);
             }
             return result;
         }
+    },
+
+    updateAllCells: function () {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        OArchitectUtil.forEach(graph.getChildCells(graph.getDefaultParent()), function (cell) {
+            graph.getModel().setValue(cell, cell.value);
+        });
+        graph.getModel().endUpdate();
     },
 
     updateExistsInDB: function(classes) {
@@ -330,4 +346,23 @@ var OArchitectUtil = {
             });
         });
     }
+};
+
+var OArchitectEditorObject = function (property) {
+    this.property = property;
+};
+
+OArchitectEditorObject.prototype.configFromJson = function () {
+    console.log('config editor object from json');
+};
+
+OArchitectEditorObject.prototype.toJson = function () {
+    return JSON.stringify(this);
+};
+
+OArchitectEditorObject.prototype.toEditorConfigObject = function () {
+    var json = this.toJson();
+    return {
+        "json": json
+    };
 };

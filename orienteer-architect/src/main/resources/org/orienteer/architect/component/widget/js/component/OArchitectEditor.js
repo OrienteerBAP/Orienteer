@@ -93,42 +93,39 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
     this.installUndoSaver(graph);
     var undoHandler = function(sender, evt) {
         var edit = evt.getProperty('edit');
-        var changes = edit.changes;
-        var cells = graph.getSelectionCellsForChanges(changes);
+        var cells = graph.getSelectionCellsForChanges(edit.changes);
 
         app.editor.saveActions = false;
-        removeCellsFromHistory(cells);
+        console.warn('changes: ', edit.changes);
         configureCells(cells);
+        OArchitectUtil.updateAllCells();
         app.editor.saveActions = true;
 
         function configureCells(cells) {
             OArchitectUtil.forEach(cells, function (cell) {
                 if (cell.isVertex()) {
                     var value = cell.value;
-                    if (value instanceof OArchitectOClass) {
-                        value.configFromCell(cell);
-                    } else if (value instanceof OArchitectOProperty) {
-                        var classCell = OArchitectUtil.getCellByClassName(value.ownerClass.name);
-                        if (classCell !== null) {
-                            value.configFromCell(classCell.value, cell);
+                    var json = !(value instanceof OArchitectEditorObject) ? JSON.parse(value.json) : null;
+                    if (json !== null) {
+                        if (json.property) {
+                            var classCell = OArchitectUtil.getCellByClassName(json.ownerClass);
+                            if (classCell !== null && classCell.value instanceof OArchitectOClass) {
+                                var property = new OArchitectOProperty();
+                                property.configFromJson(classCell.value, json, cell);
+                            }
+                        } else {
+                            var oClass = new OArchitectOClass();
+                            oClass.configFromJson(json, cell);
                         }
                     }
                 }
             });
         }
-
-        function removeCellsFromHistory(cells) {
-            OArchitectUtil.forEach(cells, function (cell) {
-                if (cell.value instanceof OArchitectOClass) {
-                    OArchitectOClassConfigurator.removeConfiguredClassName(cell.value.name);
-                }
-            });
-        }
     };
-    this.undoManager.removeListener(mxEvent.UNDO);
-    this.undoManager.removeListener(mxEvent.REDO);
-    this.undoManager.addListener(mxEvent.UNDO, undoHandler);
-    this.undoManager.addListener(mxEvent.REDO, undoHandler);
+    // this.undoManager.removeListener(mxEvent.UNDO);
+    // this.undoManager.removeListener(mxEvent.REDO);
+    // this.undoManager.addListener(mxEvent.UNDO, undoHandler);
+    // this.undoManager.addListener(mxEvent.REDO, undoHandler);
 };
 
 OArchitectEditor.prototype.installUndoSaver = function (graph) {
@@ -144,6 +141,7 @@ OArchitectEditor.prototype.installUndoSaver = function (graph) {
                     }
                 } else if (!(change instanceof mxStyleChange)) changesForSave.push(change);
             });
+            console.warn('saved changes: ', changesForSave);
             if (changesForSave.length > 0) {
                 edit.changes = changesForSave;
                 this.undoManager.undoableEditHappened(edit);

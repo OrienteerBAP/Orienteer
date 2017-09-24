@@ -390,6 +390,7 @@ OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     var codec = new mxCodec(doc);
     codec.decode(doc.documentElement, this.editor.graph.getModel());
     this.checksAboutClassesChanges();
+    OArchitectUtil.updateAllCells();
     this.editor.clearCommandHistory();
 };
 

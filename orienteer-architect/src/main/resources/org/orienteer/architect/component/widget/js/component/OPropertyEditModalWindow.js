@@ -134,13 +134,13 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
         }
 
         function updateProperty(name, type, inversePropertyEnable, inverseProperty) {
-            app.editor.graph.getModel().beginUpdate();
-            try {
+            // app.editor.graph.getModel().beginUpdate();
+            // try {
                 property.updateProperty(name, type, inversePropertyEnable, inverseProperty);
                 modal.afterUpdateValue(property);
-            } finally {
-                app.editor.graph.getModel().endUpdate();
-            }
+            // } finally {
+            //     app.editor.graph.getModel().endUpdate();
+            // }
         }
     };
 };

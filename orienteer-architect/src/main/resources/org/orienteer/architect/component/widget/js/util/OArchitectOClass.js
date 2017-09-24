@@ -3,6 +3,7 @@
  * @constructor
  */
 var OArchitectOClass = function (name, cell) {
+    OArchitectEditorObject.apply(this, [false]);
     this.name = null;
     this.properties = [];
     this.propertiesForDelete = [];
@@ -22,6 +23,9 @@ var OArchitectOClass = function (name, cell) {
     if (name != null) this.setName(name);
     if (cell != null) this.setCell(cell);
 };
+
+OArchitectOClass.prototype = Object.create(OArchitectEditorObject.prototype);
+OArchitectOClass.prototype.constructor = OArchitectOClass;
 
 /**
  * Name of this class
@@ -75,11 +79,6 @@ OArchitectOClass.prototype.removed = false;
 OArchitectOClass.prototype.cell = null;
 
 /**
- * Boolean indicates if this class have been configured from cell (Undo action or from editor ml config)
- */
-OArchitectOClass.prototype.configuredFromCell = false;
-
-/**
  * Contains previous state of this class for undo action
  */
 OArchitectOClass.prototype.previousState = null;
@@ -87,18 +86,105 @@ OArchitectOClass.prototype.previousState = null;
 /**
  * Config this instance from json which is respond from database
  * @param json - string which contains json data
+ * @param cell
  */
-OArchitectOClass.prototype.configFromJson = function (json) {
-    OArchitectOClassConfigurator.configOClassFromJson(this, json);
-};
+OArchitectOClass.prototype.configFromJson = function (json, cell) {
+    // console.warn('config class from json: ', json);
+    this.name = json.name;
+    this.pageUrl = json.pageUrl;
+    this.databaseJson = json.databaseJson !== undefined ? json.databaseJson : null;
+    setCell(this, cell);
+    configProperties(this, json.properties);
+    configClasses(this, json.superClasses, true);
+    configClasses(this, json.subClasses, false);
+    configExistsClassesLinks(this);
+    this.setExistsInDb(json.existsInDb);
+    this.changePropertiesOrder();
+    this.saveState(true, true);
 
-/**
- * INTERNAL FUNCTION. DON'T CALL IT.
- * Config this class from cell which is saved in xml config.
- * @param classCell - {@link mxCell} which will be used to config
- */
-OArchitectOClass.prototype.configFromCell = function (classCell) {
-    OArchitectOClassConfigurator.configOClassFromCell(this, classCell);
+    function setCell(oClass, cell) {
+        if (cell != null) {
+            oClass.setCell(cell);
+        } else if (oClass.cell !== null) {
+            oClass.setCell(oClass.cell);
+        }
+    }
+
+    function configProperties(oClass, jsonProperties) {
+        var propertyCells = OArchitectUtil.getClassPropertiesCells(oClass);
+        OArchitectUtil.forEach(jsonProperties, function (jsonProperty) {
+            var property = oClass.getProperty(jsonProperty.name);
+            var configured = false;
+            if (property === null) {
+                var cell = getPropertyCell(jsonProperty, propertyCells);
+                console.warn(oClass.name, ' - config property: ', cell);
+                if (cell === null) {
+                    property = oClass.createProperty(jsonProperty.name, jsonProperty.type, null, jsonProperty.subClassProperty);
+                } else {
+                    property = cell.value instanceof OArchitectOProperty ? cell.value : new OArchitectOProperty();
+                }
+                property.configFromJson(oClass, jsonProperty, cell);
+                configured = true;
+            }
+            if (!configured && property !== null) property.configFromJson(oClass, jsonProperty);
+        });
+    }
+
+    function configClasses(oClass, jsonClasses, isSuperClasses) {
+        OArchitectUtil.forEach(jsonClasses, function (jsonClassName) {
+            var classCell = OArchitectUtil.getCellByClassName(jsonClassName);
+            var configuredClass = null;
+            if (classCell !== null) {
+                configuredClass = classCell.value;
+            } else {
+                configuredClass = new OArchitectOClass();
+                configuredClass.name = jsonClassName;
+                configuredClass.existsInEditor = false;
+            }
+            if (isSuperClasses) oClass.addSuperClass(configuredClass);
+            else oClass.addSubClass(configuredClass);
+        });
+    }
+
+    function configExistsClassesLinks(oClass) {
+        OArchitectUtil.forEach(OArchitectUtil.getAllClassesInEditor(), function (existsClass) {
+            if (existsClass instanceof OArchitectOClass) {
+                OArchitectUtil.forEach(existsClass.properties, function (property) {
+                    if (isLinkToClass(property, oClass)) {
+                        if (property.isSubClassProperty() && property.isSuperClassExistsInEditor()) {
+                            property.linkedClass = oClass;
+                            if (property.inverseProperty !== null) {
+                                property.inverseProperty = oClass.getProperty(property.inverseProperty.name);
+                            }
+                        } else {
+                            property.setLinkedClass(oClass);
+                            if (property.inverseProperty !== null) {
+                                property.setInverseProperty(oClass.getProperty(property.inverseProperty.name));
+                            }
+                        }
+                    }
+                });
+                existsClass.setExistsInDb(existsClass.existsInDb);
+            }
+        });
+
+        function isLinkToClass(property, oClass) {
+            return property.linkedClass === oClass.name ||
+                property.linkedClass instanceof OArchitectOClass && property.linkedClass.name === oClass.name;
+        }
+    }
+
+    function getPropertyCell(propertyJson, propertyCells) {
+        var result = null;
+        OArchitectUtil.forEach(propertyCells, function (cell, trigger) {
+            var name = cell.value instanceof OArchitectOProperty ? cell.value.name : JSON.parse(cell.value.json).name;
+            if (name === propertyJson.name) {
+                result = cell;
+                trigger.stop = true;
+            }
+        });
+        return result;
+    }
 };
 
 /**
@@ -123,11 +209,11 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         if (callback != null) callback(oClass, msg);
 
         function setName(oClass) {
-            app.editor.graph.getModel().beginUpdate();
+            // app.editor.graph.getModel().beginUpdate();
             oClass.saveState(true, true);
             oClass.name = name;
-            oClass.updateValueInCell(true, true);
-            app.editor.graph.getModel().endUpdate();
+            // oClass.updateValueInCell(true, true);
+            // app.editor.graph.getModel().endUpdate();
         }
     });
 };
@@ -137,15 +223,15 @@ OArchitectOClass.prototype.setName = function (name, callback) {
  * @param cell {@link mxCell}
  */
 OArchitectOClass.prototype.setCell = function (cell) {
-    if (cell != null) {
+    if (cell !== null) {
         var graph = app.editor.graph;
-        graph.getModel().beginUpdate();
-        try {
+        // graph.getModel().beginUpdate();
+        // try {
             this.cell = cell;
             graph.getModel().setValue(this.cell, this);
-        } finally {
-            graph.getModel().endUpdate();
-        }
+        // } finally {
+        //     graph.getModel().endUpdate();
+        // }
     }
 };
 
@@ -155,7 +241,6 @@ OArchitectOClass.prototype.setCell = function (cell) {
 OArchitectOClass.prototype.saveState = function (superClasses, subClasses) {
     if (this.name !== null) {
         this.previousState = this.toEditorConfigObject();
-        console.warn('save oclass state, previous state: ', this.previousState);
         if (superClasses) saveState(this.superClasses);
         if (subClasses) saveState(this.subClasses);
     } else this.previousState = null;
@@ -314,6 +399,7 @@ OArchitectOClass.prototype.createCellForProperty = function (property) {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         try {
+            console.warn('create cell for - ', property.name);
             property.setCell(OArchitectUtil.createOPropertyVertex(property));
             graph.addCell(property.cell, this.cell);
         } finally {
@@ -415,7 +501,6 @@ OArchitectOClass.prototype.updateSubClassPropertyFromTemplate = function (templa
     }
     property.subClassProperty = true;
     property.linkedClass = templateProperty.linkedClass;
-    console.warn(this.name, ' - template inverse property: ', templateProperty.inverseProperty);
     property.inversePropertyEnable = templateProperty.inversePropertyEnable;
     property.inverseProperty = templateProperty.inverseProperty;
     property.superClassExistsInEditor = templateProperty.ownerClass.cell !== null;
@@ -741,7 +826,7 @@ OArchitectOClass.prototype.setDatabaseJson = function (json) {
  */
 OArchitectOClass.prototype.toJson = function () {
     function jsonFilter(key, value) {
-        if (key === 'cell' || key === 'previousState' || key === 'nextState' || key === 'databaseJson') {
+        if (key === 'cell' || key === 'previousState' || key === 'nextState'  || key === 'databaseJson') {
             value = undefined;
         } else if (key === 'superClasses' || key === 'subClasses') {
             var classes = [];
@@ -772,33 +857,36 @@ OArchitectOClass.prototype.toJson = function () {
     return JSON.stringify(this, jsonFilter);
 };
 
-/**
- * @returns {@link OArchitectOClass} instance of this class which can be converted to editor xml config
- */
-OArchitectOClass.prototype.toEditorConfigObject = function () {
-    var result = new OArchitectOClass();
-    result.name = this.name;
-    result.properties = toEditorProperties(this.properties);
-    result.propertiesForDelete = toEditorProperties(this.propertiesForDelete);
-    result.superClasses = toEditorClasses(this.superClasses);
-    result.subClasses = toEditorClasses(this.subClasses);
-    result.existsInDb = this.existsInDb;
-    result.pageUrl = this.pageUrl;
-    result.previousState = this.previousState;
-    function toEditorProperties(properties) {
-        var editorProperties = [];
-        OArchitectUtil.forEach(properties, function (property) {
-            editorProperties.push(property.toEditorConfigObject());
-        });
-        return editorProperties;
-    }
-
-    function toEditorClasses(classes) {
-        var editorClasses = [];
-        OArchitectUtil.forEach(classes, function (oClass) {
-            editorClasses.push(oClass.name);
-        });
-        return editorClasses;
-    }
-    return result;
-};
+// /**
+//  * @returns {@link OArchitectOClass} instance of this class which can be converted to editor xml config
+//  */
+// OArchitectOClass.prototype.toEditorConfigObject = function () {
+//     // var result = new OArchitectOClass();
+//     // result.name = this.name;
+//     // result.properties = toEditorProperties(this.properties);
+//     // result.propertiesForDelete = toEditorProperties(this.propertiesForDelete);
+//     // result.superClasses = toEditorClasses(this.superClasses);
+//     // result.subClasses = toEditorClasses(this.subClasses);
+//     // result.existsInDb = this.existsInDb;
+//     // result.pageUrl = this.pageUrl;
+//     // result.previousState = this.previousState;
+//     // function toEditorProperties(properties) {
+//     //     var editorProperties = [];
+//     //     OArchitectUtil.forEach(properties, function (property) {
+//     //         editorProperties.push(property.toEditorConfigObject());
+//     //     });
+//     //     return editorProperties;
+//     // }
+//     //
+//     // function toEditorClasses(classes) {
+//     //     var editorClasses = [];
+//     //     OArchitectUtil.forEach(classes, function (oClass) {
+//     //         editorClasses.push(oClass.name);
+//     //     });
+//     //     return editorClasses;
+//     // }
+//     var json = this.toJson();
+//     return {
+//         json: json
+//     };
+// };

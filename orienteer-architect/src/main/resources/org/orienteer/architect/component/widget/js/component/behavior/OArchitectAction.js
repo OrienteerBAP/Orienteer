@@ -81,11 +81,15 @@ var OArchitectAction = {
                         if (event === this.OK) {
                             graph.getModel().beginUpdate();
                             try {
-                                classCell.value.saveState();
-                                var prop = classCell.value.createProperty(property.name, property.type, property.cell);
-                                prop.setInversePropertyEnable(property.inversePropertyEnable);
-                                classCell.value.updateValueInCell();
+                                console.warn('start transaction');
+                                var command = new OPropertyCreateCommand(property, classCell.value);
+                                graph.getModel().execute(command);
+                                // classCell.value.saveState();
+                                // var prop = classCell.value.createProperty(property.name, property.type, property.cell);
+                                // prop.setInversePropertyEnable(property.inversePropertyEnable);
+                                // prop.updateValueInCell();
                             } finally {
+                                console.warn('end transaction');
                                 graph.getModel().endUpdate();
                             }
                         }
@@ -122,11 +126,12 @@ var OArchitectAction = {
                     try {
                         sourceClass.saveState();
                         var newProperty = sourceClass.createProperty(property.name, property.type);
-                        newProperty.setAndSaveLinkedClass(target.value);
+                        newProperty.setLinkedClass(target.value);
                         newProperty.setInversePropertyEnable(property.inversePropertyEnable);
                         newProperty.setInverseProperty(property.inverseProperty);
-                        newProperty.saveState();
-                        sourceClass.updateValueInCell();
+                        // newProperty.saveState();
+                        // sourceClass.updateValueInCell();
+                        sourceClass.notifySubClassesAboutChangesInProperty(newProperty, false);
                         newProperty.updateValueInCell();
                     } finally {
                         graph.getModel().endUpdate();
@@ -157,9 +162,9 @@ var OArchitectAction = {
             OArchitectUtil.forEach(jsonClasses, function (jsonClass) {
                 var oClass = new OArchitectOClass();
                 console.warn('json class: ', jsonClass);
-                oClass.setCell(OArchitectUtil.createOClassVertex(oClass, x, START_Y));
-                oClass.configFromJson(jsonClass);
+                oClass.configFromJson(jsonClass, OArchitectUtil.createOClassVertex(oClass, x, START_Y));
                 oClass.setDatabaseJson(jsonClass);
+                oClass.previousState = null;
                 oClass.updateValueInCell(true, true);
                 addOClassCell(oClass.cell);
                 cells.push(oClass.cell);
@@ -167,7 +172,10 @@ var OArchitectAction = {
                 x = counterX % 3 !== 0 ? x + OArchitectConstants.OCLASS_WIDTH + 10 : START_X;
                 counterX++;
             });
-            if (cells.length > 1) applyLayout(cells);
+            if (cells.length > 1) {
+                applyLayout(cells);
+                OArchitectUtil.updateAllCells();
+            }
             graph.getModel().endUpdate();
             OArchitectUtil.updateExistsInDB(classes);
         };
@@ -210,7 +218,12 @@ var OArchitectAction = {
                 OArchitectAction.lockActionsForClass(cell.value);
                 var graph = editor.graph;
                 graph.stopEditing(false);
-                var modal = new OClassEditModalWindow(cell.value, app.editorId, function () {
+                var modal = new OClassEditModalWindow(cell.value, app.editorId, function (oClass, event) {
+                    if (event === modal.OK) {
+                        graph.getModel().beginUpdate();
+                        oClass.updateValueInCell();
+                        graph.getModel().endUpdate();
+                    }
                     OArchitectAction.unlockActionsForClass(cell.value);
                 }, false);
                 modal.show(evt.getGraphX(), evt.getGraphY());
@@ -229,7 +242,13 @@ var OArchitectAction = {
                 OArchitectAction.lockActionsForClass(cell.value.ownerClass);
                 var graph = editor.graph;
                 graph.stopEditing(false);
-                var modal = new OPropertyEditModalWindow(cell.value, app.editorId, function () {
+                graph.getModel().beginUpdate();
+                var modal = new OPropertyEditModalWindow(cell.value, app.editorId, function (property, event) {
+                    if (event === modal.OK) {
+                        console.warn('update level: ', editor.graph.getModel().updateLevel);
+                        property.updateValueInCell();
+                    }
+                    graph.getModel().endUpdate();
                     OArchitectAction.unlockActionsForClass(cell.value.ownerClass);
                 }, false);
                 modal.show(evt.getGraphX(), evt.getGraphY());

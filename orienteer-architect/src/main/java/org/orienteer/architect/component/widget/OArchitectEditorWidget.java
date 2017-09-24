@@ -134,10 +134,10 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConfig.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConnectionConfig.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphStyleConfig.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectCommand.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectUtil.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOClass.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOProperty.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOClassConfigurator.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectUtil.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectConstants.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectConnector.js")));
         String locale = getOArchitectEditorLocale();
