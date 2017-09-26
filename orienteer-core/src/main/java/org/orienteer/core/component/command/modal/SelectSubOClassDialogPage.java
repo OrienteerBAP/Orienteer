@@ -22,6 +22,8 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OClassColumn;
 import org.orienteer.core.component.table.OClassMetaColumn;
 import org.orienteer.core.component.table.component.GenericTablePanel;
+import org.orienteer.core.model.SubClassesModel;
+
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 
@@ -34,18 +36,7 @@ import java.util.List;
  * Dialog to show table of {@link OClass}es to select
  */
 public abstract class SelectSubOClassDialogPage extends GenericPanel<OClass> {
-	
-	private static class OClassCanBeInstanciated implements Predicate<OClass>, Serializable {
 
-		@Override
-		public boolean apply(OClass input) {
-			return !input.isAbstract();
-		}
-		
-	}
-	
-	private final static Predicate<OClass> CAN_BE_INSTANTIATED = new OClassCanBeInstanciated();
-	
 	private ModalWindow modal;
 	
 	public SelectSubOClassDialogPage(ModalWindow modal, IModel<OClass> model) {
@@ -78,21 +69,9 @@ public abstract class SelectSubOClassDialogPage extends GenericPanel<OClass> {
 				}.setIcon(FAIconType.plus).setBootstrapType(BootstrapType.INFO));
             }
         });
-		SortableDataProvider<OClass, String> provider = new OClassesDataProvider(new PropertyModel<Collection<OClass>>(this, "classesList"));
+        SortableDataProvider<OClass, String> provider = new OClassesDataProvider(new SubClassesModel(getModel(), true, true));
 		GenericTablePanel<OClass> tablePanel = new GenericTablePanel<OClass>("tablePanel", columns, provider, 20);
 		add(tablePanel);
-	}
-	
-	public List<OClass> getClassesList() {
-		List<OClass> ret = new ArrayList<OClass>();
-		OClass oClass = getModelObject();
-		if(oClass!=null) {
-			if(CAN_BE_INSTANTIATED.apply(oClass)) ret.add(oClass);
-			ret.addAll(Collections2.filter(oClass.getAllSubclasses(), CAN_BE_INSTANTIATED));
-		} else {
-			ret.addAll(Collections2.filter(OrienteerWebSession.get().getDatabase().getMetadata().getSchema().getClasses(), CAN_BE_INSTANTIATED));
-		}
-		return ret;
 	}
 
 	protected abstract void onSelect(AjaxRequestTarget target, OClass selectedOClass);
