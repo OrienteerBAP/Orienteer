@@ -121,29 +121,31 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
         function action(name) {
             var type = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(name);
-            if (property.canUpdate(name, type, inverseBlock.inverseProperty, inverseBlock.inversePropertyEnable)) {
+            if (existsProperty !== null && modal.create) {
+                if (existsProperty.isSubClassProperty()) {
+                    modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
+                } else modal.showErrorFeedback(localizer.propertyExistsInClass);
+            } else if (property.canUpdate(name, type, inverseBlock.inverseProperty, inverseBlock.inversePropertyEnable)) {
                 updateProperty(name, type, inverseBlock.enableInverseProperty, inverseBlock.inverseProperty);
                 modal.destroy(modal.OK);
             } else if (name === property.name && type === property.type) {
                 modal.destroy(modal.OK);
-            } else if (existsProperty != null && modal.create) {
-                if (existsProperty.isSubClassProperty()) {
-                    modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
-                } else modal.showErrorFeedback(localizer.propertyExistsInClass);
             }
         }
 
         function updateProperty(name, type, inversePropertyEnable, inverseProperty) {
-            // app.editor.graph.getModel().beginUpdate();
-            // try {
-                property.updateProperty(name, type, inversePropertyEnable, inverseProperty);
-                modal.afterUpdateValue(property);
-            // } finally {
-            //     app.editor.graph.getModel().endUpdate();
-            // }
+            var tempProperty = new OArchitectOProperty();
+            tempProperty.name = name;
+            tempProperty.type = type;
+            tempProperty.inversePropertyEnable = inversePropertyEnable;
+            tempProperty.inverseProperty = inverseProperty;
+            modal.updateProperty(property, tempProperty);
+            modal.afterUpdateValue(property);
         }
     };
 };
+
+OPropertyEditModalWindow.prototype.updateProperty = function (property, propertyWithChanges) {};
 
 OPropertyEditModalWindow.prototype.afterUpdateValue = function (property) {};
 

@@ -15,6 +15,8 @@ var OArchitectEditor = function(container) {
     this.saveActions = true;
     this.fullScreenEnable = true;
 
+    this.undoOrRedoRuns = false;
+
     this.configureDefaultActions();
     this.configureGraph([new GraphConfig(this), new GraphConnectionConfig(this),
         new GraphStyleConfig(this)]);
@@ -130,16 +132,18 @@ OArchitectEditor.prototype.installUndoHandler = function (graph) {
 
 OArchitectEditor.prototype.installUndoSaver = function (graph) {
     var listener = mxUtils.bind(this, function(sender, evt) {
-        if (app.editor.saveActions) {
+        if (app.editor.saveActions && !app.editor.undoOrRedoRuns) {
             var edit = evt.getProperty('edit');
             var changesForSave = [];
             OArchitectUtil.forEach(edit.changes, function (change) {
-                if (change instanceof mxValueChange) {
-                    if (change.previous !== null && change.value !== null) {
-                        change.execute = null;
-                        changesForSave.push(change);
-                    }
-                } else if (!(change instanceof mxStyleChange)) changesForSave.push(change);
+                // if (change instanceof mxValueChange) {
+                //     if (change.previous !== null && change.value !== null) {
+                //         // change.execute = null;
+                //         changesForSave.push(change);
+                //     }
+                // } else
+                    if (!(change instanceof mxStyleChange)) changesForSave.push(change);
+
             });
             console.warn('saved changes: ', changesForSave);
             if (changesForSave.length > 0) {
@@ -159,13 +163,17 @@ OArchitectEditor.prototype.clearCommandHistory = function () {
 
 OArchitectEditor.prototype.undo = function () {
     if (app.canUpdate) {
+        this.undoOrRedoRuns = true;
         mxEditor.prototype.undo.apply(this, arguments);
+        this.undoOrRedoRuns = false;
     }
 };
 
 OArchitectEditor.prototype.redo = function () {
     if (app.canUpdate) {
+        this.undoOrRedoRuns = true;
         mxEditor.prototype.redo.apply(this, arguments);
+        this.undoOrRedoRuns = false;
     }
 };
 

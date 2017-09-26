@@ -89,7 +89,6 @@ OArchitectOClass.prototype.previousState = null;
  * @param cell
  */
 OArchitectOClass.prototype.configFromJson = function (json, cell) {
-    // console.warn('config class from json: ', json);
     this.name = json.name;
     this.pageUrl = json.pageUrl;
     this.databaseJson = json.databaseJson !== undefined ? json.databaseJson : null;
@@ -117,7 +116,6 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
             var configured = false;
             if (property === null) {
                 var cell = getPropertyCell(jsonProperty, propertyCells);
-                console.warn(oClass.name, ' - config property: ', cell);
                 if (cell === null) {
                     property = oClass.createProperty(jsonProperty.name, jsonProperty.type, null, jsonProperty.subClassProperty);
                 } else {
@@ -209,11 +207,12 @@ OArchitectOClass.prototype.setName = function (name, callback) {
         if (callback != null) callback(oClass, msg);
 
         function setName(oClass) {
-            // app.editor.graph.getModel().beginUpdate();
-            oClass.saveState(true, true);
-            oClass.name = name;
+            app.editor.graph.getModel().beginUpdate();
+            // oClass.saveState(true, true);
+            // oClass.name = name;
+            app.editor.graph.getModel().execute(new OClassChangeNameCommand(oClass, name));
             // oClass.updateValueInCell(true, true);
-            // app.editor.graph.getModel().endUpdate();
+            app.editor.graph.getModel().endUpdate();
         }
     });
 };
@@ -239,17 +238,17 @@ OArchitectOClass.prototype.setCell = function (cell) {
  * Save current state of class for undo action
  */
 OArchitectOClass.prototype.saveState = function (superClasses, subClasses) {
-    if (this.name !== null) {
-        this.previousState = this.toEditorConfigObject();
-        if (superClasses) saveState(this.superClasses);
-        if (subClasses) saveState(this.subClasses);
-    } else this.previousState = null;
-
-    function saveState(classes) {
-        OArchitectUtil.forEach(classes, function (oClass) {
-            oClass.saveState();
-        });
-    }
+    // if (this.name !== null) {
+    //     this.previousState = this.toEditorConfigObject();
+    //     if (superClasses) saveState(this.superClasses);
+    //     if (subClasses) saveState(this.subClasses);
+    // } else this.previousState = null;
+    //
+    // function saveState(classes) {
+    //     OArchitectUtil.forEach(classes, function (oClass) {
+    //         oClass.saveState();
+    //     });
+    // }
 };
 
 /**
@@ -319,6 +318,7 @@ OArchitectOClass.prototype.removeProperty = function (oProperty) {
  * @param superClass {@link OArchitectOClass}
  */
 OArchitectOClass.prototype.addSuperClass = function (superClass) {
+    var edge = null;
     var index = this.getSuperClassIndex(superClass);
     var classForAdd = index !== -1 ? this.superClasses[index] : null;
     if (classForAdd != null) {
@@ -328,13 +328,15 @@ OArchitectOClass.prototype.addSuperClass = function (superClass) {
         } else classForAdd = null;
     } else classForAdd = superClass;
 
-    if (classForAdd != null) {
+    if (classForAdd !== null) {
         this.superClasses.push(classForAdd);
         this.addPropertiesFromSuperClass(classForAdd);
         classForAdd.addSubClass(this);
-        if (this.cell != null && classForAdd.cell != null)
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, classForAdd.cell, true);
+        if (this.cell !== null && classForAdd.cell !== null) {
+            edge = OArchitectUtil.manageEdgesBetweenCells(this.cell, classForAdd.cell, true);
+        }
     }
+    return edge;
 };
 
 /**
@@ -395,12 +397,12 @@ OArchitectOClass.prototype.removeSubClass = function (subClass) {
  * @param property {@link OArchitectOProperty}
  */
 OArchitectOClass.prototype.createCellForProperty = function (property) {
-    if (property != null && !property.superClassExistsInEditor) {
+    if (property !== null && !property.superClassExistsInEditor) {
         var graph = app.editor.graph;
         graph.getModel().beginUpdate();
         try {
-            console.warn('create cell for - ', property.name);
-            property.setCell(OArchitectUtil.createOPropertyVertex(property));
+            if (property.cell === null) property.setCell(OArchitectUtil.createOPropertyVertex(property));
+            else property.setCell(property.cell);
             graph.addCell(property.cell, this.cell);
         } finally {
             graph.getModel().endUpdate();

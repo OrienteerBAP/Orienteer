@@ -308,10 +308,10 @@ OArchitectOProperty.prototype.setCell = function (cell) {
  * Save previous state of this property for undo action
  */
 OArchitectOProperty.prototype.saveState = function () {
-    if (!this.isRemoved() && !this.ownerClass.isRemoved() && this.name !== null) {
-        this.ownerClass.saveState();
-        this.previousState = this.toEditorConfigObject();
-    } else this.previousState = null;
+    // if (!this.isRemoved() && !this.ownerClass.isRemoved() && this.name !== null) {
+    //     this.ownerClass.saveState();
+    //     this.previousState = this.toEditorConfigObject();
+    // } else this.previousState = null;
 };
 
 /**
@@ -373,26 +373,30 @@ OArchitectOProperty.prototype.canDisconnect = function () {
  * @param linkedClass {@link OArchitectOClass} which will be linked class for this property
  */
 OArchitectOProperty.prototype.setAndSaveLinkedClass = function (linkedClass) {
+    var edge = null;
     if (this.canModifyLink() && this.isValidLink(linkedClass)) {
         this.saveState();
-        this.setLinkedClass(linkedClass);
+        edge = this.setLinkedClass(linkedClass);
         this.updateValueInCell();
     }
+    return edge;
 };
 
 OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
+    var edge = null;
     if (this.canModifyLink() && this.isValidLink(linkedClass)) {
-        if (linkedClass == null && this.linkedClass != null) {
+        if (linkedClass == null && this.linkedClass !== null) {
             OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
             this.linkedClass = linkedClass;
             this.setInverseProperty(null);
             this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         } else if (linkedClass != null) {
             this.linkedClass = linkedClass;
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
+            edge = OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
             this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         }
     }
+    return edge;
 };
 
 OArchitectOProperty.prototype.isInverseProperty = function () {
@@ -407,19 +411,24 @@ OArchitectOProperty.prototype.setInversePropertyEnable = function (enable) {
     this.ownerClass.notifySubClassesAboutChangesInProperty(this);
 };
 
-OArchitectOProperty.prototype.setInverseProperty = function (property) {
-    if (/* this.inverseProperty !== property && */ this.isInverseProperty()) {
+OArchitectOProperty.prototype.setInverseProperty = function (property, createConnection) {
+    var edge = null;
+    if (this.isInverseProperty() || property === null) {
+        createConnection = createConnection == null ? true : createConnection;
         this.inverseLock = true;
         if (property !== null) {
             this.inverseProperty = property;
             if (property.inverseProperty !== null && this.name === property.inverseProperty.name) {
                 manageEdgeBetweenPropertyClasses(this, property, false);
-                OArchitectUtil.manageEdgesBetweenCells(this.cell, property.cell, true);
+                if (createConnection) {
+                    edge = OArchitectUtil.manageEdgesBetweenCells(this.cell, property.cell, true, true);
+                    edge.setValue('inverse');
+                }
             }
         } else if (this.inverseProperty !== null && !this.existsInDb) {
             if (this.inverseProperty.inverseProperty !== null && this.name === this.inverseProperty.inverseProperty.name) {
+                OArchitectUtil.manageEdgesBetweenCells(this.cell, this.inverseProperty.cell, false, true);
                 manageEdgeBetweenPropertyClasses(this, this.inverseProperty, true);
-                OArchitectUtil.manageEdgesBetweenCells(this.cell, this.inverseProperty.cell, false);
             }
             this.inverseProperty = null;
         }
@@ -435,6 +444,7 @@ OArchitectOProperty.prototype.setInverseProperty = function (property) {
         property.notSetLinkedClass = false;
         inverse.notSetLinkedClass = false;
     }
+    return edge;
 };
 
 /**

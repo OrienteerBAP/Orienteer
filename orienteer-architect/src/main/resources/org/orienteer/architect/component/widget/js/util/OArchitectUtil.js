@@ -94,26 +94,28 @@ var OArchitectUtil = {
         return OArchitectUtil.toClassNames(OArchitectUtil.getAllClassesInEditor());
     },
 
-    manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
-        var cell = null;
+    manageEdgesBetweenCells: function (sourceCell, targetCell, connect, removeEdgesBetween) {
         var graph = app.editor.graph;
+        var cell = null;
         var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
-        // graph.getModel().beginUpdate();
-        // try {
-        if (app.editor.saveActions) console.warn('update level: ', graph.getModel().updateLevel);
-            if (connect) {
-                if (edgesBetween == null || edgesBetween.length == 0) {
-                    graph.connectionHandler.connect(sourceCell, targetCell);
-                    cell = graph.getEdgesBetween(sourceCell, targetCell)[0];
-                } else cell = edgesBetween[0];
-            } else {
-                if (edgesBetween != null && edgesBetween.length > 0) {
-                    graph.removeCells(edgesBetween, true);
-                }
-            }
-        // } finally {
-        //     graph.getModel().endUpdate();
-        // }
+        graph.getModel().beginUpdate();
+        if (edgesBetween.length > 0 && (!connect || removeEdgesBetween)) {
+            removeEdges(edgesBetween);
+            edgesBetween = [];
+        }
+
+        if (connect && edgesBetween.length === 0) {
+            graph.connectionHandler.connect(sourceCell, targetCell);
+            cell = graph.getEdgesBetween(sourceCell, targetCell)[0];
+        } else if (edgesBetween.length > 0) {
+            cell = edgesBetween[0];
+            graph.addCell(cell, graph.getDefaultParent());
+        }
+        graph.getModel().endUpdate();
+
+        function removeEdges(edges) {
+            graph.removeCells(edges, true);
+        }
         return cell;
     },
 
@@ -157,6 +159,17 @@ var OArchitectUtil = {
             valid = classCell instanceof OArchitectOClass;
         }
         return valid;
+    },
+
+    getPropertyCellByName: function (name, oClass) {
+        var result = null;
+        OArchitectUtil.forEach(this.getClassPropertiesCells(oClass), function (cell, trigger) {
+            if (cell.value.name === name) {
+                result = cell;
+                trigger.stop = true;
+            }
+        });
+        return result;
     },
 
     getCellByClassName: function (className) {
@@ -345,6 +358,43 @@ var OArchitectUtil = {
                 property.setExistsInDb(property.existsInDb);
             });
         });
+    },
+
+    // executeRemovePropertyCommands: function (property) {
+    //     var model = app.editor.graph.getModel();
+    //     model.beginUpdate();
+    //     OArchitectConnector.disable = true;
+    //     if (property.inverseProperty !== null) {
+    //         var inverseProp = property.inverseProperty;
+    //         if (property === inverseProp.inverseProperty) {
+    //             model.execute(new OPropertyInverseChangeCommand(inverseProp, inverseProp.inversePropertyEnable, inverseProp.inverseProperty))
+    //         }
+    //         model.execute(new OPropertyInverseChangeCommand(property, property.inversePropertyEnable, inverseProp));
+    //         if (inverseProp.linkedClass === property.ownerClass) {
+    //             model.execute(new OPropertyLinkChangeCommand(inverseProp, inverseProp.linkedClass));
+    //         }
+    //     }
+    //     if (property.linkedClass !== null) {
+    //         model.execute(new OPropertyLinkChangeCommand(property, property.linkedClass));
+    //     }
+    //     model.execute(new OPropertyCreateCommand(property, property.ownerClass, true));
+    //     OArchitectConnector.disable = false;
+    //     model.endUpdate();
+    //
+    // },
+
+    inverseArray: function (arr) {
+        var n = arr.length - 1;
+        for (var i = 0; i < arr.length; i++) {
+            if (i >= n) {
+                break;
+            }
+            var tmp = arr[i];
+            arr[i] = arr[n];
+            arr[n] = tmp;
+            n--;
+        }
+        return arr;
     }
 };
 

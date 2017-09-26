@@ -194,11 +194,15 @@ GraphConnectionConfig.prototype.createCellConnectedBehavior = function () {
     return function (graph, eventObject) {
         if (!graph.connectionHandler.linkConnection) {
             var edge = eventObject.getProperty('edge');
-            if (edge != null) {
+            if (edge != null && OArchitectConnector.isEnable()) {
                 var source = edge.source;
                 var target = edge.target;
                 if (source != null && target != null) {
-                    OArchitectConnector.connect(source, target);
+                    if (!app.editor.undoOrRedoRuns) {
+                        graph.getModel().beginUpdate();
+                        graph.getModel().execute(new OConnectionManageCommand(source, target, false));
+                        graph.getModel().endUpdate();
+                    } else OArchitectConnector.connect(source, target);
                 }
             }
         } else graph.connectionHandler.linkConnection = false;
@@ -210,8 +214,13 @@ GraphConnectionConfig.prototype.createCellRemovedBehavior = function () {
         var cells = eventObject.properties.cells;
         for (var i = 0; i < cells.length; i++) {
             var cell = cells[i];
-            if (cell.edge) {
-                OArchitectConnector.disconnect(cell.source, cell.target);
+            if (cell.edge && OArchitectConnector.isEnable()) {
+                if (!app.editor.undoOrRedoRuns) {
+                    console.warn('cell removed behavior');
+                    graph.getModel().beginUpdate();
+                    graph.getModel().execute(new OConnectionManageCommand(cell.source, cell.target, true));
+                    graph.getModel().endUpdate();
+                } else OArchitectConnector.disconnect(cell.source, cell.target);
             }
         }
     }
