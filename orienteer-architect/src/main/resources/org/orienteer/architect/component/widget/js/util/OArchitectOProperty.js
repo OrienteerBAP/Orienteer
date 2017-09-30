@@ -7,6 +7,8 @@
  * @constructor
  */
 var OArchitectOProperty = function (ownerClass, name, type, cell) {
+    OArchitectEditorObject.apply(this, []);
+
     this.ownerClass = null;
     this.name = name != null ? name : null;
     this.type = type != null ? type : null;
@@ -17,8 +19,6 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.cell = null;
     this.previousName = null;
 
-    this.previousState = null;
-    this.nextState = null;
     this.removed = false;
     this.inverseProperty = null;
     this.inversePropertyEnable = false;
@@ -26,12 +26,16 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.databaseJson = null;
 
     this.notSetLinkedClass = false;
+    this.inverseLock = false;
 
     this.order = 0;
 
     if (ownerClass != null) this.setOwnerClass(ownerClass);
     if (cell != null) this.setCell(cell);
 };
+
+OArchitectOProperty.prototype = Object.create(OArchitectEditorObject.prototype);
+OArchitectOProperty.prototype.constructor = OArchitectOProperty;
 
 /**
  * {@link OArchitectOClass} which contains this property
@@ -100,69 +104,59 @@ OArchitectOProperty.prototype.order = 0;
  * Config instance of {@link OArchitectOProperty} from json which is respond from database
  * @param oClass - {@link OArchitectOClass} which is owner of this property
  * @param json - json string which contains config for this property
+ * @param cell
  */
-OArchitectOProperty.prototype.configFromDatabase = function (oClass, json) {
+OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
+    app.editor.disableConnection();
     if (this.isValidName(json.name)) this.name = json.name;
-    if (oClass.getProperty(this.name) == null) oClass.properties.push(this);
+    if (oClass.getProperty(this.name) === null) {
+        oClass.properties.push(this);
+    }
     if (this.isValidType(json.type)) this.type = json.type;
     this.subClassProperty = json.subClassProperty;
     this.ownerClass = oClass;
     this.pageUrl = json.pageUrl;
     this.order = json.order;
-    if (this.cell != null) {
-        this.setCell(this.cell);
-    } else oClass.createCellForProperty(this);
 
-    var linkedCell = OArchitectUtil.getCellByClassName(json.linkedClass);
-    if (linkedCell != null) {
-        this.setLinkedClass(linkedCell.value);
-    } else if (json.linkedClass != null) this.linkedClass = json.linkedClass;
+    if (!this.isSubClassProperty()) setCell(this, oClass, cell);
+    if (json.linkedClass != null) setLinkedClass(this, json);
 
-    if (json.inverseProperty != null) {
-        var property = this.linkedClass instanceof OArchitectOClass ? this.linkedClass.getProperty(json.inverseProperty.name) : null;
-        this.setInversePropertyEnable(true);
-        if (property !== null) {
-            this.setInverseProperty(property);
-        } else {
-            this.inverseProperty = new OArchitectOProperty();
-            this.inverseProperty.name = json.inverseProperty.name;
-            this.inverseProperty.type = json.inverseProperty.type;
-            this.inverseProperty.existsInDb = json.inverseProperty.existsInDb;
-        }
-    }
+    this.setInversePropertyEnable(json.inversePropertyEnable);
+    if (this.inversePropertyEnable && json.inverseProperty != null) setInverseProperty(this, json);
+
     this.setExistsInDb(json.existsInDb);
     oClass.notifySubClassesAboutChangesInProperty(this);
-};
+    app.editor.enableConnection();
 
-/**
- * Config instance of {@link OArchitectOProperty} from cell which is saved in xml config.
- * @param oClass - {@link OArchitectOClass} which is owner of this property
- * @param propertyCell - {@link mxCell} which contains this property
- */
-OArchitectOProperty.prototype.configFromCell = function (oClass, propertyCell) {
-    if (oClass.getProperty(this.name) === null) oClass.properties.push(this);
-    this.ownerClass = oClass;
-    this.cell = propertyCell;
-    var linkedCell = OArchitectUtil.getCellByClassName(this.linkedClass);
-    if (linkedCell !== null) {
-        this.setLinkedClass(linkedCell.value);
+    function setCell(property, oClass, cell) {
+        property.setCell(property.cell !== null ? property.cell : cell != null ? cell : null);
+        if (property.cell === null) oClass.createCellForProperty(this);
     }
-    this.removed = false;
-    this.cell.parent = oClass.cell;
-    if (this.inverseProperty !== null) {
-        var property = null;
-        var name = this.inverseProperty;
-        OArchitectUtil.forEach(app.editor.graph.getChildVertices(linkedCell), function (cell, trigger) {
-            if (cell.value.name === name) {
-                property = cell.value;
-                trigger.stop = true;
-            }
-        });
-        if (property !== null) {
-            this.setInverseProperty(property);
+
+    function setLinkedClass(property, json) {
+        var linkedCell = OArchitectUtil.getCellByClassName(json.linkedClass);
+        if (linkedCell !== null) {
+            property.setLinkedClass(linkedCell.value);
+        } else property.linkedClass = json.linkedClass;
+    }
+
+    function setInverseProperty(property, json) {
+        var inverse = null;
+        if (property.linkedClass instanceof OArchitectOClass) {
+            inverse = property.linkedClass.getProperty(json.inverseProperty.name);
+        }
+
+        if (inverse !== null) {
+            property.setInverseProperty(inverse);
+        } else {
+            property.inverseProperty = new OArchitectOProperty();
+            property.inverseProperty.name = json.inverseProperty.name;
+            property.inverseProperty.type = json.inverseProperty.type;
+            property.inverseProperty.linkedClass = json.inverseProperty.linkedClass;
+            property.inverseProperty.inverseProperty = json.inverseProperty.inverseProperty;
+            property.inverseProperty.existsInDb = json.inverseProperty.existsInDb;
         }
     }
-    oClass.notifySubClassesAboutChangesInProperty(this);
 };
 
 /**
@@ -190,29 +184,9 @@ OArchitectOProperty.prototype.setName = function (name) {
     }
 };
 
-/**
- * Set name and type for this property and update property value in property cell and class value in class cell.
- * @param name - string name
- * @param type - string type
- * @param inversePropertyEnable
- * @param inverseProperty
- */
-OArchitectOProperty.prototype.updateProperty = function (name, type, inversePropertyEnable, inverseProperty) {
-    if (this.isValidName(name) || this.isValidType(type) || this.isValidInverseProperty(inverseProperty)) {
-        var graph = app.editor.graph;
-        graph.getModel().beginUpdate();
-        try {
-            this.saveState();
-            this.setName(name);
-            this.setType(type);
-            this.setInversePropertyEnable(inversePropertyEnable);
-            this.setInverseProperty(inverseProperty);
-            this.updateValueInCell();
-            this.ownerClass.notifySubClassesAboutChangesInProperty(this);
-        } finally {
-            graph.getModel().endUpdate();
-        }
-    }
+OArchitectOProperty.prototype.canUpdate = function (name, type, inversePropertyEnable, inverseProperty) {
+    return this.isValidName(name) || this.isValidType(type)
+        || this.isValidInverseProperty(inverseProperty) || this.inversePropertyEnable !== inversePropertyEnable;
 };
 
 /**
@@ -236,11 +210,11 @@ OArchitectOProperty.prototype.isValidName = function (name) {
 };
 
 OArchitectOProperty.prototype.isValidLink = function (link) {
-    return link === null || link instanceof OArchitectOClass && link !== this.linkedClass;
+    return link === null || link !== undefined && link instanceof OArchitectOClass; //&& link !== this.linkedClass;
 };
 
 OArchitectOProperty.prototype.isValidInverseProperty = function (property) {
-    return property === null || property instanceof OArchitectOProperty && this.inverseProperty !== property;
+    return property === null || property !== undefined && property instanceof OArchitectOProperty; //&& this.inverseProperty !== property;
 };
 
 /**
@@ -258,26 +232,11 @@ OArchitectOProperty.prototype.setOwnerClass = function (ownerClass) {
  * @param cell - {@link mxCell} which contains this property
  */
 OArchitectOProperty.prototype.setCell = function (cell) {
-    if (cell != null) {
+    if (cell !== null) {
         var graph = app.editor.graph;
-        graph.getModel().beginUpdate();
-        try {
-            this.cell = cell;
-            graph.getModel().setValue(this.cell, this);
-        } finally {
-            graph.getModel().endUpdate();
-        }
+        this.cell = cell;
+        graph.getModel().setValue(this.cell, this);
     }
-};
-
-/**
- * Save previous state of this property for undo action
- */
-OArchitectOProperty.prototype.saveState = function () {
-    if (!this.isRemoved() && !this.ownerClass.isRemoved() && this.name !== null) {
-        this.ownerClass.saveState();
-        this.previousState = this.toEditorConfigObject();
-    } else this.previousState = null;
 };
 
 /**
@@ -334,28 +293,18 @@ OArchitectOProperty.prototype.canDisconnect = function () {
     return !this.subClassProperty;
 };
 
-/**
- * Set {@link OArchitectOProperty#linkedClass} for this property
- * @param linkedClass {@link OArchitectOClass} which will be linked class for this property
- */
-OArchitectOProperty.prototype.setAndSaveLinkedClass = function (linkedClass) {
-    if (this.canModifyLink() && this.isValidLink(linkedClass)) {
-        this.saveState();
-        this.setLinkedClass(linkedClass);
-        this.updateValueInCell();
-    }
-};
-
 OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
     if (this.canModifyLink() && this.isValidLink(linkedClass)) {
-        if (linkedClass == null && this.linkedClass != null) {
+        if (linkedClass == null && this.linkedClass !== null) {
             OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
-            this.linkedClass = linkedClass;
-            this.setInverseProperty(null);
-            this.ownerClass.notifySubClassesAboutChangesInProperty(this);
+            if (!this.existsInDb) {
+                this.linkedClass = linkedClass;
+                this.setInverseProperty(null);
+                this.ownerClass.notifySubClassesAboutChangesInProperty(this);
+            }
         } else if (linkedClass != null) {
             this.linkedClass = linkedClass;
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
+            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true, true);
             this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         }
     }
@@ -366,24 +315,36 @@ OArchitectOProperty.prototype.isInverseProperty = function () {
 };
 
 OArchitectOProperty.prototype.setInversePropertyEnable = function (enable) {
+    if (!enable && this.inverseProperty !== null) {
+        this.setInverseProperty(null);
+    }
     this.inversePropertyEnable = enable;
+    this.ownerClass.notifySubClassesAboutChangesInProperty(this);
 };
 
-OArchitectOProperty.prototype.setInverseProperty = function (property) {
-    if (this.inverseProperty !== property && this.isInverseProperty()) {
+OArchitectOProperty.prototype.setInverseProperty = function (property, createConnection) {
+    if (this.isInverseProperty() || property === null) {
+        createConnection = createConnection == null ? true : createConnection;
+        this.inverseLock = true;
         if (property !== null) {
             this.inverseProperty = property;
-            if (this === property.inverseProperty) {
+            if (property.inverseProperty !== null && this === property.inverseProperty) {
                 manageEdgeBetweenPropertyClasses(this, property, false);
-                OArchitectUtil.manageEdgesBetweenCells(this.cell, property.cell, true);
+                if (createConnection) {
+                    OArchitectUtil.manageEdgesBetweenCells(this.cell, property.cell, true, true);
+                }
+            } else if (property.ownerClass !== null) {
+                OArchitectUtil.manageEdgesBetweenCells(this.cell, property.ownerClass.cell, true, true);
             }
         } else if (this.inverseProperty !== null && !this.existsInDb) {
-            if (this === this.inverseProperty.inverseProperty) {
+            if (this.inverseProperty.inverseProperty !== null && this === this.inverseProperty.inverseProperty) {
+                OArchitectUtil.manageEdgesBetweenCells(this.cell, this.inverseProperty.cell, false, true);
                 manageEdgeBetweenPropertyClasses(this, this.inverseProperty, true);
-                OArchitectUtil.manageEdgesBetweenCells(this.cell, this.inverseProperty.cell, false);
             }
-            this.inverseProperty = null;
+            if (!this.existsInDb) this.inverseProperty = null;
         }
+        this.ownerClass.notifySubClassesAboutChangesInProperty(this);
+        this.inverseLock = false;
     }
 
     function manageEdgeBetweenPropertyClasses(property, inverse, create) {
@@ -410,8 +371,14 @@ OArchitectOProperty.prototype.canModifyNameAndType = function () {
 };
 
 OArchitectOProperty.prototype.canModifyLink = function () {
-    var modify = !this.isRemoved() && this.ownerClass != null && !this.notSetLinkedClass;
+    var modify = !this.isRemoved() && this.ownerClass !== null && !this.notSetLinkedClass;
     if (modify) modify = !this.ownerClass.isRemoved();
+    return modify;
+};
+
+OArchitectOProperty.prototype.canModifyInverseProperty = function () {
+    var modify = this.canModifyLink();
+    if (modify) modify = !this.isLinkExistsInDb(this.linkedClass);
     return modify;
 };
 
@@ -441,6 +408,10 @@ OArchitectOProperty.prototype.equalsWithJsonLink = function (jsonProperty) {
     if (equals && this.inverseProperty != null && this.inverseProperty.name !== jsonProperty.inverseProperty) equals = false;
     if (equals && this.inverseProperty == null && jsonProperty.inverseProperty != null) equals = false;
     return equals;
+};
+
+OArchitectOProperty.prototype.isLinkExistsInDb = function (linkedClass) {
+    return linkedClass !== null && this.databaseJson !== null ? this.databaseJson.linkedClass === linkedClass.name : false;
 };
 
 OArchitectOProperty.prototype.setExistsInDb = function (existsInDb) {
@@ -492,7 +463,7 @@ OArchitectOProperty.prototype.getOrder = function () {
  */
 OArchitectOProperty.prototype.toJson = function () {
     function filter(key, value) {
-        if (key === 'cell' || key === 'previousState' || key === 'nextState' || key === 'databaseJson') {
+        if (key === 'cell' || key === 'databaseJson') {
             value = undefined;
         } else if (key === 'ownerClass' || key === 'linkedClass') {
             if (value != null) {
@@ -515,24 +486,4 @@ OArchitectOProperty.prototype.toJson = function () {
     }
 
     return JSON.stringify(this, filter);
-};
-
-/**
- * Creates instance of {@link OArchitectOProperty} which can be converted to editor xml config
- * @returns {@link OArchitectOProperty} instance of this property which can be converted to editor xml config
- */
-OArchitectOProperty.prototype.toEditorConfigObject = function () {
-    var result = new OArchitectOProperty();
-    result.ownerClass = this.ownerClass.name;
-    result.name = this.name;
-    result.type = this.type;
-    result.linkedClass = this.linkedClass instanceof OArchitectOClass ? this.linkedClass.name : this.linkedClass;
-    result.previousName = this.previousName;
-    result.subClassProperty = this.subClassProperty;
-    result.inverseProperty = this.inverseProperty instanceof OArchitectOProperty ? this.inverseProperty.name : this.inverseProperty;
-    result.existsInDb = this.existsInDb;
-    result.pageUrl = this.pageUrl;
-    result.order = this.order;
-    result.inversePropertyEnable = this.inversePropertyEnable;
-    return result;
 };

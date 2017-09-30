@@ -18,6 +18,8 @@ import org.orienteer.architect.util.OArchitectOClass;
 import org.orienteer.architect.util.OArchitectOProperty;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -26,6 +28,8 @@ import java.util.List;
  * When runs this behavior changes in editor write to OrientDB schema
  */
 public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApplyEditorChangesBehavior.class);
 
     private static final String JSON_VAR = "json";
     private boolean actionActive = false;
@@ -41,8 +45,10 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         classes = JsonUtil.fromJSON(json);
         try {
             addClassesToSchema(classes);
-            target.prependJavaScript("; app.executeCallback({apply: true}); app.checksAboutClassesChanges();");
+            target.prependJavaScript("; app.executeCallback({apply: true}); " +
+                    "app.checksAboutClassesChanges(function() {app.saveEditorConfig(mxUtils.getXml(OArchitectUtil.getEditorXmlNode(app.editor.graph)),null);}); ");
         } catch (Exception ex) {
+            LOG.error("Can't apply editor changes: ", ex);
             target.prependJavaScript("; app.executeCallback({apply: false});");
         }
         actionActive = false;
@@ -61,8 +67,6 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
     private OClass addClassToSchema(OSchema schema, OArchitectOClass architectOClass) {
         String name = architectOClass.getName();
         OClass oClass = schema.getOrCreateClass(name);
-        if (architectOClass.isExistsInDb())
-            removePropertiesFromOClass(oClass, architectOClass.getPropertiesForDelete());
         addSuperClassesToOClass(schema, oClass, architectOClass.getSuperClasses());
         addPropertiesToOClass(schema, oClass, architectOClass.getProperties());
         return oClass;
@@ -81,14 +85,6 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         }
     }
 
-    private void removePropertiesFromOClass(OClass oClass, List<OArchitectOProperty> propertiesForDelete) {
-        for (OArchitectOProperty property : propertiesForDelete) {
-            OProperty oProperty = oClass.getProperty(property.getName());
-            if (oProperty != null) {
-                oClass.dropProperty(oProperty.getName());
-            }
-        }
-    }
 
     private void addPropertiesToOClass(OSchema schema, OClass oClass, List<OArchitectOProperty> properties) {
         for (OArchitectOProperty property : properties) {
