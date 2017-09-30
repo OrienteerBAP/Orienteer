@@ -12,7 +12,6 @@ var OArchitectEditor = function(container) {
     this.container = container;
 
     this.fullscreen = false;
-    this.saveActions = true;
 
     this.unsaveCounter = 0;
 

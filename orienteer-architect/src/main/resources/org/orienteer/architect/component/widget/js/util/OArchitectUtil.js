@@ -74,7 +74,7 @@ var OArchitectUtil = {
             var graph = app.editor.graph;
             var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
             graph.getModel().beginUpdate();
-            if (edgesBetween.length > 0 && (!connect || removeEdgesBetween)) {
+            if (edgesBetween.length > 0 && (!connect /*|| removeEdgesBetween */)) {
                 removeEdges(edgesBetween);
                 edgesBetween = [];
             }

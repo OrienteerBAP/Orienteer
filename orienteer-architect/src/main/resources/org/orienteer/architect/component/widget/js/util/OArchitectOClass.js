@@ -279,8 +279,10 @@ OArchitectOClass.prototype.removeProperty = function (oProperty) {
  * Add new superclass for this class.
  * Creates new connection between this class and new superclass
  * @param superClass {@link OArchitectOClass}
+ * @param createEdge
  */
-OArchitectOClass.prototype.addSuperClass = function (superClass) {
+OArchitectOClass.prototype.addSuperClass = function (superClass, createEdge) {
+    createEdge = createEdge == null ? true : createEdge;
     var index = this.getSuperClassIndex(superClass);
     var classForAdd = index !== -1 ? this.superClasses[index] : null;
     if (classForAdd != null) {
@@ -293,10 +295,10 @@ OArchitectOClass.prototype.addSuperClass = function (superClass) {
     if (classForAdd !== null) {
         this.superClasses.push(classForAdd);
         this.addPropertiesFromSuperClass(classForAdd);
-        classForAdd.addSubClass(this);
+        classForAdd.addSubClass(this, createEdge);
     }
 
-    if (this.cell !== null && superClass.cell !== null && this.getSuperClassIndex(superClass) !== -1) {
+    if (this.cell !== null && superClass.cell !== null && this.getSuperClassIndex(superClass) !== -1 && createEdge) {
         OArchitectUtil.manageEdgesBetweenCells(this.cell, superClass.cell, true, true);
     }
 };
@@ -305,8 +307,10 @@ OArchitectOClass.prototype.addSuperClass = function (superClass) {
  * Add new subclass for this class.
  * Creates new connection between this class and new subclass
  * @param subClass {@link OArchitectOClass}
+ * @param createEdge
  */
-OArchitectOClass.prototype.addSubClass = function (subClass) {
+OArchitectOClass.prototype.addSubClass = function (subClass, createEdge) {
+    createEdge = createEdge == null ? true : createEdge;
     var index = this.getSubClassIndex(subClass);
     var classForAdd = index > -1 ? this.subClasses[index] : null;
     if (classForAdd != null) {
@@ -318,10 +322,10 @@ OArchitectOClass.prototype.addSubClass = function (subClass) {
 
     if (classForAdd !== null) {
         this.subClasses.push(classForAdd);
-        classForAdd.addSuperClass(this);
+        classForAdd.addSuperClass(this, createEdge);
     }
 
-    if (this.cell !== null && subClass.cell !== null && this.getSubClassIndex(subClass) !== -1) {
+    if (this.cell !== null && subClass.cell !== null && this.getSubClassIndex(subClass) !== -1 && createEdge) {
         OArchitectUtil.manageEdgesBetweenCells(subClass.cell, this.cell, true);
     }
 };

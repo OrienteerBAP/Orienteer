@@ -23,6 +23,8 @@ var OArchitectAction = {
 
     activeActionForClass: {},
 
+    lockAddOClass: false,
+
     lockActionsForClass: function (oClass) {
         this.activeActionForClass[oClass.name] = 1;
     },

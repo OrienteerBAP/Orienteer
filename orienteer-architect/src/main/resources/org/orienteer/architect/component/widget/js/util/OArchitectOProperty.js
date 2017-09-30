@@ -26,7 +26,6 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
     this.databaseJson = null;
 
     this.notSetLinkedClass = false;
-    this.inverseLock = false;
 
     this.order = 0;
 
@@ -293,18 +292,19 @@ OArchitectOProperty.prototype.canDisconnect = function () {
     return !this.subClassProperty;
 };
 
-OArchitectOProperty.prototype.setLinkedClass = function (linkedClass) {
+OArchitectOProperty.prototype.setLinkedClass = function (linkedClass, createEdge) {
     if (this.canModifyLink() && this.isValidLink(linkedClass)) {
-        if (linkedClass == null && this.linkedClass !== null) {
+        if (linkedClass === null && this.linkedClass !== null) {
             OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, false);
             if (!this.existsInDb) {
-                this.linkedClass = linkedClass;
+                this.linkedClass = null;
                 this.setInverseProperty(null);
                 this.ownerClass.notifySubClassesAboutChangesInProperty(this);
             }
-        } else if (linkedClass != null) {
+        } else if (linkedClass !== null) {
             this.linkedClass = linkedClass;
-            OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true, true);
+            createEdge = createEdge == null ? true : createEdge;
+            if (createEdge) OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true, true);
             this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         }
     }
@@ -325,7 +325,6 @@ OArchitectOProperty.prototype.setInversePropertyEnable = function (enable) {
 OArchitectOProperty.prototype.setInverseProperty = function (property, createConnection) {
     if (this.isInverseProperty() || property === null) {
         createConnection = createConnection == null ? true : createConnection;
-        this.inverseLock = true;
         if (property !== null) {
             this.inverseProperty = property;
             if (property.inverseProperty !== null && this === property.inverseProperty) {
@@ -344,7 +343,6 @@ OArchitectOProperty.prototype.setInverseProperty = function (property, createCon
             if (!this.existsInDb) this.inverseProperty = null;
         }
         this.ownerClass.notifySubClassesAboutChangesInProperty(this);
-        this.inverseLock = false;
     }
 
     function manageEdgeBetweenPropertyClasses(property, inverse, create) {

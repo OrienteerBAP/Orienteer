@@ -61,17 +61,22 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     this.graph.edgeLabelsMovable = false;
 
     this.graph.convertValueToString = this.convertValueToString;
-    this.graph.getModel().execute = function (change) {
-        var isArchitectCommand = change instanceof OArchitectCommand;
-        if (!isArchitectCommand) change.execute();
-        this.beginUpdate();
-        this.currentEdit.add(change);
-        if (isArchitectCommand) change.execute();
-        this.fireEvent(new mxEventObject(mxEvent.EXECUTE, 'change', change));
-        // New global executed event
-        this.fireEvent(new mxEventObject(mxEvent.EXECUTED, 'change', change));
-        this.endUpdate();
-    };
+    // this.graph.getModel().execute = function (change) {
+    //     var isArchitectCommand = change instanceof OArchitectCommand;
+    //     if (isArchitectCommand) {
+    //         app.editor.graph.addListener(mxEvent.END_EDIT, function () {
+    //             change.execute();
+    //             app.editor.graph.removeListener(this);
+    //         });
+    //     }
+    //     if (!isArchitectCommand) change.execute();
+    //     this.beginUpdate();
+    //     this.currentEdit.add(change);
+    //     this.fireEvent(new mxEventObject(mxEvent.EXECUTE, 'change', change));
+    //     // New global executed event
+    //     this.fireEvent(new mxEventObject(mxEvent.EXECUTED, 'change', change));
+    //     this.endUpdate();
+    // };
 };
 
 GraphConfig.prototype.valueForCellChanged = function (cell, value, redo) {
@@ -152,6 +157,8 @@ GraphConfig.prototype.configEvents = function () {
             if (classCell !== null && classCell.value instanceof OArchitectOClass) {
                 app.editor.execute(OArchitectActionNames.ADD_OPROPERTY_ACTION, classCell, event);
             }
+        } else {
+            app.editor.execute(OArchitectActionNames.ADD_OCLASS_ACTION, null, event);
         }
     });
     graph.addListener(mxEvent.CELLS_MOVED, function (sender, evt) {

@@ -99,7 +99,7 @@ OPropertyLinkChangeCommand.prototype.executeCommand = function () {
         this.removed = true;
     } else {
         var tmp = this.property.linkedClass;
-        this.property.setLinkedClass(this.linkedClass);
+        this.property.setLinkedClass(this.linkedClass, !this.removed);
         this.linkedClass = tmp;
         this.removed = false;
     }
@@ -132,7 +132,7 @@ OPropertyInverseChangeCommand.prototype.executeCommand = function () {
         var previousInversePropertyEnable = this.property.inversePropertyEnable;
         var previousInverseProperty = this.property.inverseProperty;
         this.property.setInversePropertyEnable(this.inversePropertyEnable);
-        this.property.setInverseProperty(this.inverseProperty/*, !app.editor.undoOrRedoRuns*/);
+        this.property.setInverseProperty(this.inverseProperty, !this.removed);
         this.inversePropertyEnable = previousInversePropertyEnable;
         this.inverseProperty = previousInverseProperty;
         this.removed = false;
@@ -193,6 +193,7 @@ var OClassInheritanceCommand = function (subClass, superClass, remove) {
     this.subClass = subClass;
     this.superClass = superClass;
     this.remove = remove != null ? remove : false;
+    this.removed = false;
 };
 
 OClassInheritanceCommand.prototype = Object.create(OArchitectCommand.prototype);
@@ -202,11 +203,12 @@ OClassInheritanceCommand.prototype.executeCommand = function () {
     var graph = app.editor.graph;
 
     graph.getModel().beginUpdate();
-
     if (this.remove) {
         this.subClass.removeSuperClass(this.superClass);
+        this.removed = true;
     } else {
-        this.subClass.addSuperClass(this.superClass);
+        this.subClass.addSuperClass(this.superClass, !this.removed);
+        this.removed = false;
     }
     this.subClass.updateValueInCell();
     this.superClass.updateValueInCell();
@@ -335,15 +337,15 @@ OPropertyRemoveCommand.prototype.getRemovePropertyCommands = function (property)
         var inverseProp = property.inverseProperty;
         if (property === inverseProp.inverseProperty) {
             commands.push(new OPropertyInverseChangeCommand(
-                inverseProp, inverseProp.inversePropertyEnable, null));
+                inverseProp, inverseProp.inversePropertyEnable, property, true));
             if (inverseProp.linkedClass === property.ownerClass) {
-                commands.push(new OPropertyLinkChangeCommand(inverseProp, null));
+                commands.push(new OPropertyLinkChangeCommand(inverseProp, property.linkedClass, true));
             }
         }
-        commands.push(new OPropertyInverseChangeCommand(property, property.inversePropertyEnable, null));
+        commands.push(new OPropertyInverseChangeCommand(property, property.inversePropertyEnable, inverseProp, true));
     }
     if (property.linkedClass !== null) {
-        commands.push(new OPropertyLinkChangeCommand(property, null));
+        commands.push(new OPropertyLinkChangeCommand(property, property.linkedClass, true));
     }
     commands.push(new OPropertyCreateCommand(property, property.ownerClass, true));
     return commands;
