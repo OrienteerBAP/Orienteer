@@ -71,40 +71,7 @@ GraphConfig.prototype.configureGraphBehavior = function () {
         // New global executed event
         this.fireEvent(new mxEventObject(mxEvent.EXECUTED, 'change', change));
         this.endUpdate();
-
     };
-    // this.graph.getModel().valueForCellChanged = this.valueForCellChanged;
-
-    // this.graph.getModel().setValue = function (cell, value) {
-    //     // if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
-    //     //     var change = new mxValueChange(this, cell, value);
-    //     //     change.undo = function () {
-    //     //         if (cell.value != null) this.value = this.cell.value;
-    //     //         if (this.value instanceof OArchitectEditorObject) {
-    //     //             var state = this.value.toEditorConfigObject();
-    //     //             var previous = this.value.previousState;
-    //     //             console.warn('undo previous: ', previous);
-    //     //             this.value = this.previous;
-    //     //             this.cell.setValue(this.value);
-    //     //             this.previous = previous !== null ? previous : null;
-    //     //             this.nextState = state;
-    //     //         } else if (this.value != null) this.cell.setValue(this.value);
-    //     //     };
-    //     //     change.redo = function () {
-    //     //         if (cell.value != null) this.value = this.cell.value;
-    //     //         console.warn('redo value: ', this.value);
-    //     //         if (this.value instanceof OArchitectEditorObject) {
-    //     //             var state = this.value.toEditorConfigObject();
-    //     //             this.value = this.nextState;
-    //     //             this.cell.setValue(this.value);
-    //     //             this.previous = state;
-    //     //         } else if (this.value != null) this.cell.setValue(this.value);
-    //     //     };
-    //     //     this.execute(change);
-    //     //     return value;
-    //     // }
-    //     return mxGraphModel.prototype.setValue.apply(this, arguments);
-    // };
 };
 
 GraphConfig.prototype.valueForCellChanged = function (cell, value, redo) {

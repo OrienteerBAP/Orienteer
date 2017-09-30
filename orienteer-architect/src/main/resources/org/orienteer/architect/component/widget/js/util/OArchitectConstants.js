@@ -18,6 +18,7 @@ var OArchitectConstants = {
     OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE: 'oPropertyExistsInverseConnectionStyle',
 
     UNSAVED_INHERITANCE: 'unsavedInheritance',
+    SAVED_INHERITANCE: 'savedInheritance',
 
     NAMING_PATTERN: /^[a-zA-Z_$][a-zA-Z_$0-9]*$/,
 

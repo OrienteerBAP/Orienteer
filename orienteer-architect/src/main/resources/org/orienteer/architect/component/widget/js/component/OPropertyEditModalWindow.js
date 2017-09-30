@@ -20,7 +20,7 @@ OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) 
     var input = this.createNameInput(this.create);
     var typeSelect = this.createOTypeSelect(this.create, this.value, this.orientDbTypes);
     var inverseBlock = new OPropertyInverseBlock(this.value, this);
-    inverseBlock.setDisabled(input.disabled);
+    inverseBlock.setDisabled(!this.value.canModifyInverseProperty());
     this.addValueBlock(body, input, typeSelect, inverseBlock.createElement(typeSelect));
     this.addButtonBlock(body, input, typeSelect, inverseBlock);
     this.addHeadBlock(head, this.create);

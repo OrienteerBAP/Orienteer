@@ -18,7 +18,6 @@ public abstract class JsonUtil implements IClusterable {
     private static final String NAME                   = "name";
     private static final String SUPER_CLASSES          = "superClasses";
     private static final String PROPERTIES             = "properties";
-    private static final String PROPERTIES_FOR_DELETE  = "propertiesForDelete";
     private static final String EXISTS_IN_DB           = "existsInDb";
     private static final String SUBCLASS_PROPERTY      = "subClassProperty";
     private static final String LINKED_CLASS_NAME      = "linkedClass";
@@ -70,9 +69,6 @@ public abstract class JsonUtil implements IClusterable {
         }
         if (!jsonObject.isNull(PROPERTIES)) {
             oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));
-        }
-        if (!jsonObject.isNull(PROPERTIES_FOR_DELETE)) {
-            oClass.setPropertiesForDelete(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES_FOR_DELETE)));
         }
         return oClass;
     }

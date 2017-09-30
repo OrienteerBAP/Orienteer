@@ -13,6 +13,11 @@ var OArchitectEditor = function(container) {
 
     this.fullscreen = false;
     this.saveActions = true;
+
+    this.unsaveCounter = 0;
+
+    this.connectionLockCounter = 0;
+
     this.fullScreenEnable = true;
 
     this.undoOrRedoRuns = false;
@@ -92,60 +97,16 @@ OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
  * @param graph
  */
 OArchitectEditor.prototype.installUndoHandler = function (graph) {
-    this.installUndoSaver(graph);
-    var undoHandler = function(sender, evt) {
-        var edit = evt.getProperty('edit');
-        var cells = graph.getSelectionCellsForChanges(edit.changes);
-
-        app.editor.saveActions = false;
-        console.warn('changes: ', edit.changes);
-        configureCells(cells);
-        OArchitectUtil.updateAllCells();
-        app.editor.saveActions = true;
-
-        function configureCells(cells) {
-            OArchitectUtil.forEach(cells, function (cell) {
-                if (cell.isVertex()) {
-                    var value = cell.value;
-                    var json = !(value instanceof OArchitectEditorObject) ? JSON.parse(value.json) : null;
-                    if (json !== null) {
-                        if (json.property) {
-                            var classCell = OArchitectUtil.getCellByClassName(json.ownerClass);
-                            if (classCell !== null && classCell.value instanceof OArchitectOClass) {
-                                var property = new OArchitectOProperty();
-                                property.configFromJson(classCell.value, json, cell);
-                            }
-                        } else {
-                            var oClass = new OArchitectOClass();
-                            oClass.configFromJson(json, cell);
-                        }
-                    }
-                }
-            });
-        }
-    };
-    // this.undoManager.removeListener(mxEvent.UNDO);
-    // this.undoManager.removeListener(mxEvent.REDO);
-    // this.undoManager.addListener(mxEvent.UNDO, undoHandler);
-    // this.undoManager.addListener(mxEvent.REDO, undoHandler);
-};
-
-OArchitectEditor.prototype.installUndoSaver = function (graph) {
+    var editor = this;
     var listener = mxUtils.bind(this, function(sender, evt) {
-        if (app.editor.saveActions && !app.editor.undoOrRedoRuns) {
+        if (editor.isSaveActions()) {
             var edit = evt.getProperty('edit');
             var changesForSave = [];
             OArchitectUtil.forEach(edit.changes, function (change) {
-                // if (change instanceof mxValueChange) {
-                //     if (change.previous !== null && change.value !== null) {
-                //         // change.execute = null;
-                //         changesForSave.push(change);
-                //     }
-                // } else
-                    if (!(change instanceof mxStyleChange)) changesForSave.push(change);
-
+                if (!(change instanceof mxStyleChange)) {
+                    changesForSave.push(change);
+                }
             });
-            console.warn('saved changes: ', changesForSave);
             if (changesForSave.length > 0) {
                 edit.changes = changesForSave;
                 this.undoManager.undoableEditHappened(edit);
@@ -157,8 +118,32 @@ OArchitectEditor.prototype.installUndoSaver = function (graph) {
     graph.getView().addListener(mxEvent.UNDO, listener);
 };
 
+OArchitectEditor.prototype.connectionAvailable = function () {
+    return this.connectionLockCounter === 0;
+};
+
+OArchitectEditor.prototype.disableConnection = function () {
+    this.connectionLockCounter++;
+};
+
+OArchitectEditor.prototype.enableConnection = function () {
+    this.connectionLockCounter--;
+};
+
 OArchitectEditor.prototype.clearCommandHistory = function () {
     this.undoManager.clear();
+};
+
+OArchitectEditor.prototype.beginUnsaveActions = function () {
+    this.unsaveCounter++;
+};
+
+OArchitectEditor.prototype.endUnsaveActions = function () {
+    if (this.unsaveCounter > 0) this.unsaveCounter--;
+};
+
+OArchitectEditor.prototype.isSaveActions = function () {
+    return this.unsaveCounter === 0;
 };
 
 OArchitectEditor.prototype.undo = function () {

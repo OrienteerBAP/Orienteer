@@ -156,8 +156,6 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new OArchitectToolbar(editor, this.getToolbarContainer());
     toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
     toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
-    toolbar.addAction('To Classes', 'toClassesAction', OArchitectAction.toClassesAction);
-    toolbar.addAction('To JSON', 'toJsonAction', OArchitectAction.toJsonAction);
     editor.toolbar = toolbar;
 };
 
@@ -376,8 +374,9 @@ OArchitectApplication.prototype.sendPostRequest = function (url, data) {
  */
 OArchitectApplication.prototype.executeCallback = function (response) {
     if (this.callback != null) {
-        this.callback(response);
+        var callback = this.callback;
         this.callback = null;
+        callback(response);
     }
 };
 
@@ -388,18 +387,19 @@ OArchitectApplication.prototype.executeCallback = function (response) {
 OArchitectApplication.prototype.applyXmlConfig = function (xml) {
     var doc = mxUtils.parseXml(xml);
     var codec = new mxCodec(doc);
+    app.editor.beginUnsaveActions();
     codec.decode(doc.documentElement, this.editor.graph.getModel());
     this.checksAboutClassesChanges();
     OArchitectUtil.updateAllCells();
-    this.editor.clearCommandHistory();
+    app.editor.endUnsaveActions();
 };
 
 /**
  * Checks about classes changes and update classes and editor config if its need.
  */
-OArchitectApplication.prototype.checksAboutClassesChanges = function () {
+OArchitectApplication.prototype.checksAboutClassesChanges = function (onCheckEnd) {
     function callback(json) {
-        app.editor.saveActions = false;
+        app.editor.beginUnsaveActions();
         if (json != null && json.length > 0) {
             var allClasses = OArchitectUtil.getAllClassesInEditor();
             var jsonClasses = JSON.parse(json);
@@ -423,8 +423,8 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function () {
             });
             return classes;
         }
-
-        app.editor.saveActions = true;
+        if (onCheckEnd != null) onCheckEnd();
+        app.editor.endUnsaveActions();
     }
     this.requestAboutChangesInClasses(JSON.stringify(OArchitectUtil.getAllClassNames()), callback);
 };

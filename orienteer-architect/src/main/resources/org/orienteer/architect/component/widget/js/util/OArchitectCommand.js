@@ -8,57 +8,18 @@ OArchitectCommand.prototype.executeCommands = function (commands) {
 };
 
 OArchitectCommand.prototype.execute = function () {
-    console.log('execute architect command');
+    app.editor.beginUnsaveActions();
+    app.editor.disableConnection();
+    this.executeCommand();
+    app.editor.enableConnection();
+    app.editor.endUnsaveActions();
 };
 
-// var OArchitectObjectCreateCommand = function (edges) {
-//     this.edges = edges;
-// };
-//
-// OArchitectObjectCreateCommand.prototype.updateEdges = function (mainCell) {
-//     OArchitectUtil.forEach(this.edges, function (edge) {
-//         var cell = null;
-//         if (edge.source.value === mainCell.value) {
-//             if (edge.target.value instanceof OArchitectOProperty) {
-//                 cell = getPropertyCell(edge.target.value.name, edge.target.value.ownerClass.name);
-//             } else {
-//                 cell = getClassCell(edge.target.value.name);
-//             }
-//             if (cell !== null) {
-//                 // OArchitectConnector.connect(mainCell, cell);
-//                 OArchitectConnector.disable = true;
-//                 OArchitectUtil.manageEdgesBetweenCells(mainCell, cell, true);
-//                 OArchitectConnector.disable = false;
-//             }
-//         } else if (edge.target.value === mainCell.value) {
-//             if (edge.source.value instanceof OArchitectOProperty) {
-//                 cell = getPropertyCell(edge.source.value.name, edge.source.value.ownerClass.name);
-//             } else {
-//                 cell = getClassCell(edge.source.value.name);
-//             }
-//             if (cell !== null) {
-//                 OArchitectConnector.disable = true;
-//                 OArchitectUtil.manageEdgesBetweenCells(cell, mainCell, true);
-//                 OArchitectConnector.disable = false;
-//             }
-//         }
-//     });
-//
-//     function getClassCell(className) {
-//         return OArchitectUtil.getCellByClassName(className);
-//     }
-//
-//     function getPropertyCell(propertyName, className) {
-//         var classCell = OArchitectUtil.getCellByClassName(className);
-//         var property = classCell !== null ? classCell.value.getProperty(propertyName) : null;
-//         return property !== null ? property.cell : null;
-//     }
-// };
+OArchitectCommand.prototype.executeCommand = function () {};
 
 /**
  * Commands for properties
  */
-
 var OPropertyCreateCommand = function (property, oClass, remove) {
     OArchitectCommand.apply(this, []);
     this.property = property;
@@ -69,9 +30,7 @@ var OPropertyCreateCommand = function (property, oClass, remove) {
 OPropertyCreateCommand.prototype = Object.create(OArchitectCommand.prototype);
 OPropertyCreateCommand.prototype.constructor = OPropertyCreateCommand;
 
-OPropertyCreateCommand.prototype.execute = function () {
-    OArchitectConnector.disable();
-    app.editor.saveActions = false;
+OPropertyCreateCommand.prototype.executeCommand = function () {
     if (!this.remove) {
         if (this.property.cell !== null) {
             this.oClass.properties.push(this.property);
@@ -85,8 +44,6 @@ OPropertyCreateCommand.prototype.execute = function () {
         this.oClass.removeProperty(this.property);
         this.remove = false;
     }
-    app.editor.saveActions = true;
-    OArchitectConnector.enable();
 };
 
 
@@ -100,9 +57,8 @@ var OPropertyNameAndTypeChangeCommand = function (property, name, type) {
 OPropertyNameAndTypeChangeCommand.prototype = Object.create(OArchitectCommand.prototype);
 OPropertyNameAndTypeChangeCommand.prototype.constructor = OPropertyNameAndTypeChangeCommand;
 
-OPropertyNameAndTypeChangeCommand.prototype.execute = function () {
+OPropertyNameAndTypeChangeCommand.prototype.executeCommand = function () {
     this.property = this.init(this.property);
-    app.editor.saveActions = false;
     var tmpName = this.property.name;
     var tmpType = this.property.type;
     this.property.setName(this.name);
@@ -110,7 +66,6 @@ OPropertyNameAndTypeChangeCommand.prototype.execute = function () {
     this.name = tmpName;
     this.type = tmpType;
     this.property.updateValueInCell();
-    app.editor.saveActions = true;
 };
 
 OPropertyNameAndTypeChangeCommand.prototype.init = function (property) {
@@ -125,46 +80,63 @@ OPropertyNameAndTypeChangeCommand.prototype.init = function (property) {
     return property;
 };
 
-var OPropertyLinkChangeCommand = function (property, linkedClass) {
+var OPropertyLinkChangeCommand = function (property, linkedClass, remove) {
     OPropertyNameAndTypeChangeCommand.apply(this, [property, null]);
     this.linkedClass = linkedClass;
+    this.remove = remove;
+    this.removed = false;
 };
 
 OPropertyLinkChangeCommand.prototype = Object.create(OPropertyNameAndTypeChangeCommand.prototype);
 OPropertyLinkChangeCommand.prototype.constructor = OPropertyLinkChangeCommand;
 
-OPropertyLinkChangeCommand.prototype.execute = function () {
-    this.property = this.init(this.property);
-    app.editor.saveActions = false;
-    // OArchitectConnector.disable();
-    var tmp = this.property.linkedClass;
-    this.property.setLinkedClass(this.linkedClass);
-    // OArchitectConnector.enable();
-    this.linkedClass = tmp;
-    app.editor.saveActions = true;
+OPropertyLinkChangeCommand.prototype.executeCommand = function () {
+    var prop = this.init(this.property);
+    this.property = prop !== null ? prop : this.property;
+    if (this.remove && !this.removed) {
+        this.linkedClass = this.property.linkedClass;
+        this.property.setLinkedClass(null);
+        this.removed = true;
+    } else {
+        var tmp = this.property.linkedClass;
+        this.property.setLinkedClass(this.linkedClass);
+        this.linkedClass = tmp;
+        this.removed = false;
+    }
 };
 
-var OPropertyInverseChangeCommand = function (property, inversePropertyEnable, inverseProperty) {
+var OPropertyInverseChangeCommand = function (property, inversePropertyEnable, inverseProperty, remove) {
     OPropertyNameAndTypeChangeCommand.apply(this, [property]);
     this.inversePropertyEnable = inversePropertyEnable;
     this.inverseProperty = inverseProperty;
+    this.remove = remove != null ? remove : false;
+    this.removed = false;
 };
 
 OPropertyInverseChangeCommand.prototype = Object.create(OPropertyNameAndTypeChangeCommand.prototype);
 OPropertyInverseChangeCommand.prototype.constructor = OPropertyInverseChangeCommand;
 
-OPropertyInverseChangeCommand.prototype.execute = function () {
-    console.warn('inverse change command');
-    app.editor.saveActions = false;
-    this.property = this.init(this.property);
+OPropertyInverseChangeCommand.prototype.executeCommand = function () {
+    var prop = this.init(this.property);
+    if (prop !== null) this.property = prop;
     if (this.inverseProperty !== null) this.inverseProperty = this.init(this.inverseProperty);
-    var previousInversePropertyEnable = this.property.inversePropertyEnable;
-    var previousInverseProperty = this.property.inverseProperty;
-    this.property.setInversePropertyEnable(this.inversePropertyEnable);
-    this.property.setInverseProperty(this.inverseProperty/*, !app.editor.undoOrRedoRuns*/);
-    this.inversePropertyEnable = previousInversePropertyEnable;
-    this.inverseProperty = previousInverseProperty;
-    app.editor.saveActions = true;
+
+    if (this.remove && !this.removed) {
+        var tmp = this.property.inversePropertyEnable;
+        this.inverseProperty = this.property.inverseProperty;
+        this.property.setInversePropertyEnable(this.inversePropertyEnable);
+        this.property.setInverseProperty(null);
+        this.inversePropertyEnable = tmp;
+        this.removed = true;
+    } else {
+        var previousInversePropertyEnable = this.property.inversePropertyEnable;
+        var previousInverseProperty = this.property.inverseProperty;
+        this.property.setInversePropertyEnable(this.inversePropertyEnable);
+        this.property.setInverseProperty(this.inverseProperty/*, !app.editor.undoOrRedoRuns*/);
+        this.inversePropertyEnable = previousInversePropertyEnable;
+        this.inverseProperty = previousInverseProperty;
+        this.removed = false;
+    }
 };
 
 /**
@@ -182,8 +154,7 @@ var OClassCreateCommand = function (oClass, x, y, remove) {
 OClassCreateCommand.prototype = Object.create(OArchitectCommand.prototype);
 OClassCreateCommand.prototype.constructor = OClassCreateCommand;
 
-OClassCreateCommand.prototype.execute = function () {
-    app.editor.saveActions = false;
+OClassCreateCommand.prototype.executeCommand = function () {
     var graph = app.editor.graph;
     if (this.oClass.cell === null || this.removed) {
         this.removed = false;
@@ -200,111 +171,92 @@ OClassCreateCommand.prototype.execute = function () {
         OArchitectUtil.removeCell(this.oClass.cell, true);
         this.removed = true;
     }
-    app.editor.saveActions = true;
 };
-
-
-// OClassCreateCommand.prototype.updateProperties = function () {
-//     var command = this;
-//     OArchitectUtil.forEach(this.oClass.properties, function (property) {
-//          command.updateEdges(property.cell);
-//     });
-// };
 
 var OClassChangeNameCommand = function (oClass, name) {
     this.oClass = oClass;
     this.name = name;
 };
 
-OClassChangeNameCommand.prototype = Object.create(OClassChangeNameCommand.prototype);
+OClassChangeNameCommand.prototype = Object.create(OArchitectCommand.prototype);
 OClassChangeNameCommand.prototype.constructor = OClassChangeNameCommand;
 
-OClassChangeNameCommand.prototype.execute = function () {
-    app.editor.saveActions = false;
+OClassChangeNameCommand.prototype.executeCommand = function () {
     var tmp = this.oClass.name;
     this.oClass.name = this.name;
     this.name = tmp;
     this.oClass.updateValueInCell(true, true);
-    app.editor.saveActions = true;
 };
 
-
-/**
- * Connection commands
- **/
-
-var OConnectionManageCommand = function (sourceCell, targetCell, remove) {
-    this.sourceCell = sourceCell;
-    this.targetCell = targetCell;
-    this.remove = remove == null ? false : remove;
-    this.commands = null;
+var OClassInheritanceCommand = function (subClass, superClass, remove) {
+    OArchitectCommand.apply(this, []);
+    this.subClass = subClass;
+    this.superClass = superClass;
+    this.remove = remove != null ? remove : false;
 };
 
-OConnectionManageCommand.prototype = Object.create(OArchitectCommand.prototype);
-OConnectionManageCommand.prototype.constructor = OConnectionManageCommand;
+OClassInheritanceCommand.prototype = Object.create(OArchitectCommand.prototype);
+OClassInheritanceCommand.prototype.constructor = OClassInheritanceCommand;
 
-OConnectionManageCommand.prototype.execute = function () {
-    app.editor.saveActions = false;
-    if (this.commands === null) {
-        this.commands = this.getRemoveCommands();
-    } else OArchitectUtil.inverseArray(this.commands);
+OClassInheritanceCommand.prototype.executeCommand = function () {
+    var graph = app.editor.graph;
 
-    this.executeCommands(this.commands);
+    graph.getModel().beginUpdate();
 
     if (this.remove) {
-        console.warn('connection manager disconnect');
-        OArchitectConnector.disconnect(this.sourceCell, this.targetCell);
+        this.subClass.removeSuperClass(this.superClass);
     } else {
-        console.warn('connection manager connect');
-        OArchitectConnector.connect(this.sourceCell, this.targetCell);
-        // var graph = app.editor.graph;
-        // graph.addCell(edge, graph.getDefaultParent());
+        this.subClass.addSuperClass(this.superClass);
     }
+    this.subClass.updateValueInCell();
+    this.superClass.updateValueInCell();
     this.remove = !this.remove;
-    app.editor.saveActions = true;
-};
-
-OConnectionManageCommand.prototype.getRemoveCommands = function () {
-    var commands = [];
-    if (isInverse(this.sourceCell.value, this.targetCell.value)) {
-        var property = this.sourceCell.value;
-        commands.push(new OPropertyInverseChangeCommand(property, property.inversePropertyEnable, null));
-    }
-    // else if (this.sourceCell.value instanceof OArchitectOClass && this.targetCell.value instanceof OArchitectOClass) {
-    //
-    // }
-
-    function isInverse(value, targetValue) {
-        return value instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass && value !== null;
-    }
-
-    return commands;
+    graph.getModel().endUpdate();
 };
 
 /**
  * Macro commands
  **/
-var OPropertyRemoveCommand = function (property) {
-    this.property = property;
+
+var OArchitectRemoveCommand = function () {
     this.removed = false;
     this.commands = null;
 };
 
-OPropertyRemoveCommand.prototype = Object.create(OArchitectCommand.prototype);
+OArchitectRemoveCommand.prototype = Object.create(OArchitectCommand.prototype);
+OArchitectRemoveCommand.prototype.constructor = OArchitectRemoveCommand;
+
+OArchitectRemoveCommand.prototype.prepareCommandsForExistsInDb = function () {
+    var removed = this.removed;
+    OArchitectUtil.forEach(this.commands, function (command) {
+        if (command instanceof OPropertyLinkChangeCommand) {
+            command.linkedClass = removed ? command.property.linkedClass : null;
+        } else if (command instanceof OPropertyInverseChangeCommand) {
+            command.inverseProperty = removed ? command.property.inverseProperty : null;
+        }
+    });
+};
+
+var OPropertyRemoveCommand = function (property) {
+    OArchitectRemoveCommand.apply(this, []);
+    this.property = property;
+};
+
+OPropertyRemoveCommand.prototype = Object.create(OArchitectRemoveCommand.prototype);
 OPropertyRemoveCommand.prototype.constructor = OPropertyRemoveCommand;
 
-OPropertyRemoveCommand.prototype.execute = function () {
-    var model = app.editor.graph.getModel();
+OPropertyRemoveCommand.prototype.executeCommand = function () {
     var property = this.property;
-    OArchitectConnector.disable();
-    model.beginUpdate();
+
     if (this.commands === null) {
         this.commands = this.getRemovePropertyCommands(property);
     } else OArchitectUtil.inverseArray(this.commands);
+
+    if (this.property.existsInDb) {
+        this.prepareCommandsForExistsInDb();
+    }
     this.executeCommands(this.commands);
     this.removed = !this.removed;
-    model.endUpdate();
-    OArchitectConnector.enable();
 };
 
 OPropertyRemoveCommand.prototype.getRemovePropertyCommands = function (property) {
@@ -327,29 +279,31 @@ OPropertyRemoveCommand.prototype.getRemovePropertyCommands = function (property)
     return commands;
 };
 
+
 var OClassRemoveCommand = function (oClass) {
+    OArchitectRemoveCommand.apply(this, []);
     this.oClass = oClass;
-    this.commands = null;
 };
 
-OClassRemoveCommand.prototype = Object.create(OArchitectCommand.prototype);
+OClassRemoveCommand.prototype = Object.create(OArchitectRemoveCommand.prototype);
 OClassRemoveCommand.prototype.constructor = OClassRemoveCommand;
 
-OClassRemoveCommand.prototype.execute = function () {
-    var model = app.editor.graph.getModel();
-    model.beginUpdate();
-    console.warn('execute oclass remove command');
+OClassRemoveCommand.prototype.executeCommand = function () {
     if (this.commands === null) {
         this.commands = this.getRemoveOClassCommands();
     } else OArchitectUtil.inverseArray(this.commands);
+    if (this.oClass.existsInDb) {
+        this.prepareCommandsForExistsInDb();
+    }
     this.executeCommands(this.commands);
-    model.endUpdate();
+    this.removed = !this.removed;
+    this.oClass.removed = this.removed;
 };
 
 OClassRemoveCommand.prototype.getRemoveOClassCommands = function () {
     var commands = [];
     var geometry = this.oClass.cell.geometry;
-
+    addRemoveEdgesCommand(this.oClass.cell);
     addRemovePropertiesCommand(this.oClass.properties);
     commands.push(new OClassCreateCommand(this.oClass, geometry.x, geometry.y, true));
 
@@ -360,5 +314,69 @@ OClassRemoveCommand.prototype.getRemoveOClassCommands = function () {
             }
         });
     }
+    
+    function addRemoveEdgesCommand(cell) {
+        var edges = app.editor.graph.getEdges(cell);
+        OArchitectUtil.forEach(edges, function (edge) {
+            commands.push(new OConnectionManageCommand(edge.source, edge.target, true));
+        });
+    }
+    
+    return commands;
+};
+
+/**
+ * Connection command
+ **/
+var OConnectionManageCommand = function (sourceCell, targetCell, remove) {
+    OArchitectRemoveCommand.apply(this, [remove == null ? false : remove]);
+    this.sourceCell = sourceCell;
+    this.targetCell = targetCell;
+    this.remove = remove == null ? false : remove;
+};
+
+OConnectionManageCommand.prototype = Object.create(OArchitectRemoveCommand.prototype);
+OConnectionManageCommand.prototype.constructor = OConnectionManageCommand;
+
+OConnectionManageCommand.prototype.executeCommand = function () {
+    if (this.commands === null) {
+        this.commands = this.getCommands(this.remove);
+        if (this.remove) {
+            OArchitectUtil.inverseArray(this.commands);
+        }
+    } else OArchitectUtil.inverseArray(this.commands);
+
+    if (this.sourceCell.value.existsInDb && this.remove) {
+        this.prepareCommandsForExistsInDb();
+    }
+    this.executeCommands(this.commands);
+    this.removed = !this.removed;
+};
+
+OConnectionManageCommand.prototype.getCommands = function (remove) {
+    var commands = [];
+    var sourceValue = this.sourceCell.value;
+    var targetValue = this.targetCell.value;
+
+    if (sourceValue instanceof OArchitectOProperty && this.targetCell.value instanceof OArchitectOClass) {
+        commands.push(new OPropertyLinkChangeCommand(sourceValue, targetValue, remove));
+    }
+
+    if (isInverse(sourceValue, this.targetCell.value)) {
+        commands.push(new OPropertyInverseChangeCommand(sourceValue, sourceValue.inversePropertyEnable, targetValue, remove));
+    } else if (isSyncInverse(sourceValue, this.targetCell.value)) {
+        commands.push(new OPropertyInverseChangeCommand(sourceValue, sourceValue.inversePropertyEnable, targetValue, remove));
+    } else if (sourceValue instanceof OArchitectOClass) {
+        commands.push(new OClassInheritanceCommand(sourceValue, targetValue, remove));
+    }
+
+    function isInverse(value, targetValue) {
+        return value instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass && value.inverseProperty !== null;
+    }
+
+    function isSyncInverse(value, targetValue) {
+        return targetValue instanceof OArchitectOProperty && isInverse(value, targetValue.ownerClass) && isInverse(targetValue, value.ownerClass);
+    }
+
     return commands;
 };
