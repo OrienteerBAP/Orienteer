@@ -89,7 +89,7 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
     configClasses(this, json.subClasses, false);
     configExistsClassesLinks(this);
     this.setExistsInDb(json.existsInDb);
-    this.changePropertiesOrder();
+    this.updatePropertiesOrder();
     app.editor.enableConnection();
 
     function setCell(oClass, cell) {
@@ -223,7 +223,7 @@ OArchitectOClass.prototype.setCell = function (cell) {
  */
 OArchitectOClass.prototype.updateValueInCell = function (superClasses, subClasses) {
     this.setCell(this.cell);
-    this.changePropertiesOrder();
+    this.updatePropertiesOrder();
     if (superClasses) updateValueInCell(this.superClasses);
     if (subClasses) updateValueInCell(this.subClasses);
 
@@ -619,32 +619,12 @@ OArchitectOClass.prototype.getClassIndex = function (classes, searchClass) {
 };
 
 /**
- * Change properties order in class
- * @param event - event for change properties order
- * if event === mxEvent.CELLS_MOVED order changes from class cell otherwise order changes from database class config
+ * Update properties order in class
  */
-OArchitectOClass.prototype.changePropertiesOrder = function (event) {
+OArchitectOClass.prototype.updatePropertiesOrder = function () {
     if (this.cell !== null) {
-        changeOrder(this);
-
-        function changeOrder(oClass) {
-            if (event === mxEvent.CELLS_MOVED) {
-                changeMovePropertiesOrder(oClass);
-            } else changeOClassPropertiesOrder(oClass);
-            app.editor.graph.constrainChildCells(oClass.cell);
-        }
-
-        function changeMovePropertiesOrder(oClass) {
-            var orderStep = oClass.getPropertyOrderStep();
-            var properties = OArchitectUtil.getOrderValidProperties(oClass.properties);
-            var order = OArchitectUtil.getPropertyWithMinOrder(properties);
-            var children = oClass.cell.children;
-            for (var i = 0; i < children.length; i++) {
-                var index = getPropertyIndex(children[i].value, properties);
-                properties[index].setOrder(order);
-                order += orderStep;
-            }
-        }
+        changeOClassPropertiesOrder(this);
+        app.editor.graph.constrainChildCells(this.cell);
 
         function changeOClassPropertiesOrder(oClass) {
             var properties = OArchitectUtil.getOrderValidProperties(oClass.properties);
@@ -671,15 +651,6 @@ OArchitectOClass.prototype.changePropertiesOrder = function (event) {
             for (var i = 0; i < cells.length; i++) {
                 if (property.name === cells[i].value.name)
                     return i;
-            }
-            return -1;
-        }
-
-        function getPropertyIndex(property, properties) {
-            for (var i = 0; i < properties.length; i++) {
-                if (properties[i].name === property.name) {
-                    return i;
-                }
             }
             return -1;
         }

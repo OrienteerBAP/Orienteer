@@ -158,10 +158,12 @@ GraphConfig.prototype.configEvents = function () {
         var cells = evt.getProperty('cells');
         OArchitectUtil.forEach(cells, function (cell) {
             if (cell.value instanceof OArchitectOProperty) {
+                graph.getModel().beginUpdate();
                 setTimeout(function () {
                     var oClassCell = OArchitectUtil.getClassCellByPropertyCell(cell);
                     if (oClassCell !== null && oClassCell.value !== null) {
-                        oClassCell.value.changePropertiesOrder(mxEvent.CELLS_MOVED);
+                        graph.getModel().execute(new OClassChangePropertyOrderCommand(oClassCell.value));
+                        graph.getModel().endUpdate();
                     }
                 }, 0);
             }

@@ -214,6 +214,76 @@ OClassInheritanceCommand.prototype.executeCommand = function () {
     graph.getModel().endUpdate();
 };
 
+var OClassChangePropertyOrderCommand = function (oClass) {
+    OArchitectCommand.apply(this, []);
+    this.oClass = oClass;
+    this.orderMap = null;
+    this.changed = false;
+};
+
+OClassChangePropertyOrderCommand.prototype = Object.create(OArchitectCommand.prototype);
+OClassChangePropertyOrderCommand.prototype.constructor = OClassChangePropertyOrderCommand;
+
+OClassChangePropertyOrderCommand.prototype.executeCommand = function () {
+    if (this.changed) {
+        var propertiesMap = this.orderMap;
+        this.initOrderMap();
+        changePropertiesOrder(propertiesMap, OArchitectUtil.getOrderValidProperties(this.oClass.properties));
+    } else {
+        this.initOrderMap();
+        changePropertiesOrder(this.getChangedPropertiesOrder(), OArchitectUtil.getOrderValidProperties(this.oClass.properties));
+        this.changed = true;
+    }
+    this.oClass.updateValueInCell(true, true);
+
+    function changePropertiesOrder(propertiesMap, classProperties) {
+        for (var name in propertiesMap) {
+            var property = getPropertyByName(name);
+            property.setOrder(propertiesMap[name]);
+        }
+
+        function getPropertyByName(name) {
+            for (var i = 0; i < classProperties.length; i++) {
+                if (name === classProperties[i].name)
+                    return classProperties[i];
+            }
+            return null;
+        }
+    }
+};
+
+OClassChangePropertyOrderCommand.prototype.initOrderMap = function () {
+    this.orderMap = {};
+    var orderMap = this.orderMap;
+    OArchitectUtil.forEach(OArchitectUtil.getOrderValidProperties(this.oClass.properties), function (property) {
+        orderMap[property.name] = property.getOrder();
+    });
+};
+
+OClassChangePropertyOrderCommand.prototype.getChangedPropertiesOrder = function () {
+    var propertiesMap = {};
+    var orderStep = this.oClass.getPropertyOrderStep();
+    var properties = OArchitectUtil.getOrderValidProperties(this.oClass.properties);
+    var order = OArchitectUtil.getPropertyWithMinOrder(properties);
+    var children = this.oClass.cell.children;
+
+    for (var i = 0; i < children.length; i++) {
+        var index = getPropertyIndex(children[i].value, properties);
+        propertiesMap[properties[index].name] = order;
+        order += orderStep;
+    }
+
+    function getPropertyIndex(property, properties) {
+        for (var i = 0; i < properties.length; i++) {
+            if (properties[i].name === property.name) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    return propertiesMap;
+};
+
 /**
  * Macro commands
  **/
