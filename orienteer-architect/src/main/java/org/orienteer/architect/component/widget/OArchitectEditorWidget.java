@@ -81,7 +81,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         FullScreenCommand<?> command = commands.visitChildren(FullScreenCommand.class, new IVisitor<Component, FullScreenCommand<?>>() {
             @Override
             public void component(Component component, IVisit<FullScreenCommand<?>> visit) {
-            	visit.stop((FullScreenCommand<?>) component);
+                visit.stop((FullScreenCommand<?>) component);
             }
         });
         if (command != null) {
@@ -134,12 +134,11 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConfig.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphConnectionConfig.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/component/config/GraphStyleConfig.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectCommand.js")));
+        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectUtil.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOClass.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOProperty.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectOClassConfigurator.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectUtil.js")));
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectConstants.js")));
-        response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class, "js/util/OArchitectConnector.js")));
         String locale = getOArchitectEditorLocale();
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(OArchitectEditorWidget.class,
                 String.format("js/util/locale/architect_%s.js", locale))));
@@ -152,16 +151,16 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         String config = configTemplate.asString(params);
         boolean canUpdate = canUserUpdateEditor();
         response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', %s);",
-											        		baseUrl,
-											        		CommonUtils.escapeAndWrapAsJavaScriptString(config),
-											                locale,
-											                this.getMarkupId(),
-											                container.getMarkupId(),
-											                editor.getMarkupId(),
-											                sidebar.getMarkupId(),
-											                toolbar.getMarkupId(),
-                                                            outline.getMarkupId(),
-                                                            Boolean.toString(canUpdate))));
+                baseUrl,
+                CommonUtils.escapeAndWrapAsJavaScriptString(config),
+                locale,
+                this.getMarkupId(),
+                container.getMarkupId(),
+                editor.getMarkupId(),
+                sidebar.getMarkupId(),
+                toolbar.getMarkupId(),
+                outline.getMarkupId(),
+                Boolean.toString(canUpdate))));
     }
 
     private String getOArchitectEditorLocale() {
@@ -180,14 +179,14 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     protected IModel<String> getDefaultTitleModel() {
         return new ResourceModel("widget.architect.editor.title");
     }
-    
+
     @Override
     protected String getWidgetStyleClass() {
-    	return "strict";
+        return "strict";
     }
 
     private boolean canUserUpdateEditor() {
-    	return OSecurityHelper.isAllowed(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.UPDATE, OrientPermission.CREATE)
-    		&& OSecurityHelper.isAllowed(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.UPDATE, OrientPermission.CREATE);	
+        return OSecurityHelper.isAllowed(ORule.ResourceGeneric.CLUSTER, "internal", OrientPermission.UPDATE, OrientPermission.CREATE)
+                && OSecurityHelper.isAllowed(ORule.ResourceGeneric.SCHEMA, "", OrientPermission.UPDATE, OrientPermission.CREATE);
     }
 }

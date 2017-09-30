@@ -32,9 +32,7 @@ GraphConfig.prototype.configureGraphBehavior = function () {
         return OArchitectUtil.isValidPropertyTarget(cell);
     };
     this.graph.isCellMovable = function() {
-        if (!app.canUpdate)
-            return false;
-        return true;
+        return app.canUpdate;
     };
     this.graph.isCellEditable = function () {
         return false;
@@ -63,39 +61,25 @@ GraphConfig.prototype.configureGraphBehavior = function () {
     this.graph.edgeLabelsMovable = false;
 
     this.graph.convertValueToString = this.convertValueToString;
-    this.graph.getModel().valueForCellChanged = this.valueForCellChanged;
-
-    this.graph.getModel().setValue = function (cell, value) {
-        if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
-            var change = new mxValueChange(this, cell, value);
-            change.undo = function () {
-                var nextState = this.value.toEditorConfigObject();
-                this.value = this.previous;
-                this.previous = this.model.valueForCellChanged(this.cell, this.previous);
-                if (this.previous != null) this.previous.nextState = nextState;
-            };
-            change.redo = function () {
-                this.previous = this.value;
-                this.value = this.model.valueForCellChanged(this.cell, this.value, true);
-            };
-            this.execute(change);
-            return value;
-        }
-        return mxGraphModel.prototype.setValue.apply(this, arguments);
+    this.graph.getModel().execute = function (change) {
+        var isArchitectCommand = change instanceof OArchitectCommand;
+        if (!isArchitectCommand) change.execute();
+        this.beginUpdate();
+        this.currentEdit.add(change);
+        if (isArchitectCommand) change.execute();
+        this.fireEvent(new mxEventObject(mxEvent.EXECUTE, 'change', change));
+        // New global executed event
+        this.fireEvent(new mxEventObject(mxEvent.EXECUTED, 'change', change));
+        this.endUpdate();
     };
 };
 
 GraphConfig.prototype.valueForCellChanged = function (cell, value, redo) {
-    var previous = null;
-    if (redo) {
-        previous = value instanceof OArchitectOClass || value instanceof OArchitectOProperty ? value.nextState : cell.value;
-        if (previous != null) cell.value = previous;
-    } else {
-        previous = value instanceof OArchitectOClass || value instanceof OArchitectOProperty ? value.previousState : cell.value;
-        cell.value = value;
+    if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
+        cell.setValue(value);
+        return value.previousState;
     }
-    if (previous == null) previous = value;
-    return previous;
+    return mxGraphModel.prototype.valueForCellChanged.apply(this, arguments);
 };
 
 GraphConfig.prototype.configureGraphLabels = function () {
@@ -129,18 +113,16 @@ GraphConfig.prototype.getLabelForEdge = function (cell) {
         var targetGeo = this.graph.getCellGeometry(target instanceof OArchitectOProperty ? cell.target.parent : cell.target);
         if (source instanceof OArchitectOProperty && target instanceof OArchitectOProperty) {
             if (OArchitectOType.isMultiValue(source.type) && OArchitectOType.isMultiValue(target.type)) {
-                label = '* - *';
+                label = '*..*';
             } else if (OArchitectOType.isMultiValue(source.type) && !OArchitectOType.isMultiValue(target.type)) {
-                label = isRight() ? '* - 1' : '1 - *';
+                label = isRight() ? '1..*' : '*..1';
             } else if (!OArchitectOType.isMultiValue(source.type) && OArchitectOType.isMultiValue(target.type)) {
-                label = isRight() ? '1 - *' : '* - 1';
+                label = isRight() ? '*..1' : '1..*';
+            } else if (!OArchitectOType.isMultiValue(source.type) && !OArchitectOType.isMultiValue(source.type)) {
+                label = '1..1';
             }
-        } else if (source instanceof OArchitectOProperty && target instanceof OArchitectOClass) {
-            if (OArchitectOType.isMultiValue(source.type)) {
-                label = isRight() ? '* - 1' : '1 - *';
-            } else {
-                label = '1 - 1';
-            }
+        } else if (source instanceof OArchitectOProperty) {
+            label = isRight() ? '*..1' : '1..*';
         }
 
         function isRight() {
@@ -176,10 +158,12 @@ GraphConfig.prototype.configEvents = function () {
         var cells = evt.getProperty('cells');
         OArchitectUtil.forEach(cells, function (cell) {
             if (cell.value instanceof OArchitectOProperty) {
+                graph.getModel().beginUpdate();
                 setTimeout(function () {
                     var oClassCell = OArchitectUtil.getClassCellByPropertyCell(cell);
                     if (oClassCell !== null && oClassCell.value !== null) {
-                        oClassCell.value.changePropertiesOrder(mxEvent.CELLS_MOVED);
+                        graph.getModel().execute(new OClassChangePropertyOrderCommand(oClassCell.value));
+                        graph.getModel().endUpdate();
                     }
                 }, 0);
             }
