@@ -113,14 +113,16 @@ GraphConfig.prototype.getLabelForEdge = function (cell) {
         var targetGeo = this.graph.getCellGeometry(target instanceof OArchitectOProperty ? cell.target.parent : cell.target);
         if (source instanceof OArchitectOProperty && target instanceof OArchitectOProperty) {
             if (OArchitectOType.isMultiValue(source.type) && OArchitectOType.isMultiValue(target.type)) {
-                label = '* - *';
+                label = '*..*';
             } else if (OArchitectOType.isMultiValue(source.type) && !OArchitectOType.isMultiValue(target.type)) {
-                label = isRight() ? '* - 1' : '1 - *';
+                label = isRight() ? '1..*' : '*..1';
             } else if (!OArchitectOType.isMultiValue(source.type) && OArchitectOType.isMultiValue(target.type)) {
-                label = isRight() ? '1 - *' : '* - 1';
+                label = isRight() ? '*..1' : '1..*';
             } else if (!OArchitectOType.isMultiValue(source.type) && !OArchitectOType.isMultiValue(source.type)) {
-                label = '1 - 1';
+                label = '1..1';
             }
+        } else if (source instanceof OArchitectOProperty) {
+            label = isRight() ? '*..1' : '1..*';
         }
 
         function isRight() {

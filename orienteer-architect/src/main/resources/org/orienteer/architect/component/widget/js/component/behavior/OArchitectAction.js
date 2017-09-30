@@ -39,16 +39,20 @@ var OArchitectAction = {
      * Add new {@link OArchitectOClass} to editor action
      */
     addOClassAction: function (editor, cell, evt) {
-        var graph = editor.graph;
-        graph.stopEditing(false);
-        var pt = graph.getPointForEvent(evt.evt);
-        graph.getModel().beginUpdate();
-        var modal = new OClassEditModalWindow(new OArchitectOClass(), app.editorId, function (oClass, event) {
-            if (event === this.OK) {
-                graph.getModel().execute(new OClassCreateCommand(oClass, pt.x, pt.y));
-            }
-            graph.getModel().endUpdate();
-        }, true);
+        if (!OArchitectAction.lockAddOClass) {
+            OArchitectAction.lockAddOClass = true;
+            var graph = editor.graph;
+            graph.stopEditing(false);
+            var pt = graph.getPointForEvent(evt.evt);
+            graph.getModel().beginUpdate();
+            var modal = new OClassEditModalWindow(new OArchitectOClass(), app.editorId, function (oClass, event) {
+                if (event === this.OK) {
+                    graph.getModel().execute(new OClassCreateCommand(oClass, pt.x, pt.y));
+                }
+                OArchitectAction.lockAddOClass = false;
+                graph.getModel().endUpdate();
+            }, true);
+        }
 
         modal.show(evt.getGraphX(), evt.getGraphY());
     },
