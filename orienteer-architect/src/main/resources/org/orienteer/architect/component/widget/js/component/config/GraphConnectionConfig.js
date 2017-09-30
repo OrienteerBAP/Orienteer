@@ -10,9 +10,9 @@ var GraphConnectionConfig = function (editor) {
 
 GraphConnectionConfig.prototype.config = function () {
     var graph = this.graph;
-    graph.createIsCellConnectable = this.createIsCellConnectable();
-    graph.createIsValidConnection = this.createIsValidConnection();
-    graph.createIsCellDisconnectable = this.createIsCellDisconnectable();
+    graph.isCellConnectable = this.createIsCellConnectable();
+    graph.isValidConnection = this.createIsValidConnection();
+    graph.isCellDisconnectable = this.createIsCellDisconnectable();
     graph.connectionHandler.cursor = 'pointer';
     graph.connectionHandler.connectImage = new mxImage(app.basePath + OArchitectConstants.CONNECTOR_IMG_PATH, OArchitectConstants.ICON_SIZE, OArchitectConstants.ICON_SIZE);
     graph.connectionHandler.factoryMethod = this.createConnectionHandlerFactoryMethod();
@@ -27,11 +27,6 @@ GraphConnectionConfig.prototype.config = function () {
     graph.connectionHandler.redrawIcons = this.createConnectionHandlerRedrawIcons();
 
     graph.connectionHandler.connect = this.createConnectionHandlerConnect();
-
-    graph.connectionHandler.mouseUp = function () {
-        this.unsavedInheritance = !this.createLinkOnConnection;
-        mxConnectionHandler.prototype.mouseUp.apply(this, arguments);
-    };
 
     this.configEvents();
 };
@@ -84,14 +79,27 @@ GraphConnectionConfig.prototype.createIsValidConnection = function () {
 GraphConnectionConfig.prototype.createConnectionHandlerFactoryMethod = function () {
     var config = this;
     return function (source, target) {
-        var edge = new mxCell(this.unsavedInheritance ? OArchitectConstants.UNSAVED_INHERITANCE : '');
+        var edge = new mxCell();
+        edge.setValue(getEdgeValue(source, target));
         edge.setEdge(true);
-        edge.setStyle(config.getConnectionStyle(this.unsavedInheritance, source, target));
+        edge.setStyle(config.getConnectionStyle(edge.value, source, target));
         var geo = new mxGeometry();
         geo.relative = true;
         edge.setGeometry(geo);
         return edge;
     };
+
+    function getEdgeValue(source, target) {
+        var result = '';
+        if (source != null && target != null) {
+            var sourceValue = source.value;
+            var targetValue = target.value;
+            if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
+                result = sourceValue.isSuperClassExistsInDb(targetValue) ? OArchitectConstants.SAVED_INHERITANCE : OArchitectConstants.UNSAVED_INHERITANCE;
+            }
+        }
+        return result;
+    }
 };
 
 GraphConnectionConfig.prototype.createConnectionHandlerConnect = function () {
@@ -194,11 +202,15 @@ GraphConnectionConfig.prototype.createCellConnectedBehavior = function () {
     return function (graph, eventObject) {
         if (!graph.connectionHandler.linkConnection) {
             var edge = eventObject.getProperty('edge');
-            if (edge != null) {
+            if (edge != null && app.editor.connectionAvailable()) {
                 var source = edge.source;
                 var target = edge.target;
                 if (source != null && target != null) {
-                    OArchitectConnector.connect(source, target);
+                    if (!app.editor.undoOrRedoRuns) {
+                        graph.getModel().beginUpdate();
+                        graph.getModel().execute(new OConnectionManageCommand(source, target, false));
+                        graph.getModel().endUpdate();
+                    }
                 }
             }
         } else graph.connectionHandler.linkConnection = false;
@@ -210,17 +222,21 @@ GraphConnectionConfig.prototype.createCellRemovedBehavior = function () {
         var cells = eventObject.properties.cells;
         for (var i = 0; i < cells.length; i++) {
             var cell = cells[i];
-            if (cell.edge) {
-                OArchitectConnector.disconnect(cell.source, cell.target);
+            if (cell.edge && app.editor.connectionAvailable()) {
+                if (!app.editor.undoOrRedoRuns) {
+                    graph.getModel().beginUpdate();
+                    graph.getModel().execute(new OConnectionManageCommand(cell.source, cell.target, true));
+                    graph.getModel().endUpdate();
+                }
             }
         }
     }
 };
 
-GraphConnectionConfig.prototype.getConnectionStyle = function (createUserInheritance, source, target) {
+GraphConnectionConfig.prototype.getConnectionStyle = function (edgeValue, source, target) {
     var style = null;
     if (source.value instanceof OArchitectOClass) {
-        style = this.getOClassConnectionStyle(createUserInheritance, source);
+        style = this.getOClassConnectionStyle(edgeValue === OArchitectConstants.UNSAVED_INHERITANCE, source);
     } else if (source.value instanceof OArchitectOProperty && OArchitectOType.isLink(source.value.type)) {
         style = this.getOPropertyConnectionStyle(source, target);
     }
@@ -239,9 +255,12 @@ GraphConnectionConfig.prototype.getOClassConnectionStyle = function (createUserI
 
 GraphConnectionConfig.prototype.getOPropertyConnectionStyle = function (source, target) {
     var style;
-    if (source.value.existsInDb && source.value.linkedClass.existsInDb) {
-        style = target.value instanceof OArchitectOProperty ? OArchitectConstants.OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE :
-            OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE;
+    if (source.value.existsInDb && source.value.linkedClass !== null && source.value.linkedClass.existsInDb) {
+        if (target.value instanceof OArchitectOClass) {
+            style = source.value.isLinkExistsInDb(target.value) ? OArchitectConstants.OPROPERTY_EXISTS_CONNECTION_STYLE : OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
+        } else {
+            style = source.value.isLinkExistsInDb(target.value.ownerClass) ? OArchitectConstants.OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE : OArchitectConstants.OPROPERTY_CONNECTION_STYLE;
+        }
     } else if (target != null && target.value instanceof OArchitectOProperty) {
         style = OArchitectConstants.OPROPERTY_INVERSE_CONNECTION_STYLE;
     } else style = OArchitectConstants.OPROPERTY_CONNECTION_STYLE;

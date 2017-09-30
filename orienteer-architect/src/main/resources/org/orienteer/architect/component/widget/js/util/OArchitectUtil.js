@@ -23,32 +23,6 @@ var OArchitectUtil = {
         return vertex;
     },
 
-    deleteCells: function (cells, withoutChecks) {
-
-        deleteCells(app.editor.graph, getCellsForRemove(cells));
-
-        function deleteCells(graph, cells) {
-            graph.getModel().beginUpdate();
-            try {
-                graph.removeCells(cells, true);
-            } finally {
-                graph.getModel().endUpdate();
-            }
-        }
-
-        function getCellsForRemove(cells) {
-            var result = [];
-            OArchitectUtil.forEach(cells, function (cell) {
-                if (cell.edge && cell.source != null) {
-                    if (cell.source.value instanceof OArchitectOProperty) {
-                        if (cell.source.value.canDisconnect() || withoutChecks) result.push(cell);
-                    } else result.push(cell);
-                } else result.push(cell);
-            });
-            return result;
-        }
-    },
-
     getOClassesAsJSON: function (graph) {
         var withParents = [];
         var withoutParents = [];
@@ -94,23 +68,31 @@ var OArchitectUtil = {
         return OArchitectUtil.toClassNames(OArchitectUtil.getAllClassesInEditor());
     },
 
-    manageEdgesBetweenCells:   function (sourceCell, targetCell, connect) {
-        var graph = app.editor.graph;
-        var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
-        graph.getModel().beginUpdate();
-        try {
-            if (connect) {
-                if (edgesBetween == null || edgesBetween.length == 0) {
-                    graph.connectionHandler.connect(sourceCell, targetCell);
-                }
-            } else {
-                if (edgesBetween != null && edgesBetween.length > 0) {
-                    graph.removeCells(edgesBetween, true);
-                }
+    manageEdgesBetweenCells: function (sourceCell, targetCell, connect, removeEdgesBetween) {
+        var cell = null;
+        if (sourceCell !== null && targetCell !== null) {
+            var graph = app.editor.graph;
+            var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
+            graph.getModel().beginUpdate();
+            if (edgesBetween.length > 0 && (!connect || removeEdgesBetween)) {
+                removeEdges(edgesBetween);
+                edgesBetween = [];
             }
-        } finally {
+
+            if (connect && edgesBetween.length === 0) {
+                graph.connectionHandler.connect(sourceCell, targetCell);
+                cell = graph.getEdgesBetween(sourceCell, targetCell)[0];
+            } else if (edgesBetween.length > 0) {
+                graph.addCell(edgesBetween[0], graph.getDefaultParent());
+                cell = edgesBetween[0];
+            }
             graph.getModel().endUpdate();
+
+            function removeEdges(edges) {
+                graph.removeCells(edges, true);
+            }
         }
+        return cell;
     },
 
     removeCell: function (cell, includeEdges) {
@@ -133,7 +115,7 @@ var OArchitectUtil = {
                 return !cell.source.value.existsInDb;
             }
         }
-        return true;
+        return cell.isVertex() && cell.value instanceof OArchitectOProperty ? !cell.value.existsInDb : true;
     },
 
     getAllEdgesWithValue: function (value) {
@@ -172,11 +154,7 @@ var OArchitectUtil = {
         var cells = graph.getChildVertices(oClass.cell);
         var result = [];
         OArchitectUtil.forEach(cells, function (cell) {
-            if (cell.value instanceof OArchitectOProperty) {
-                if (oClass.getProperty(cell.value.name) != null) {
-                    result.push(cell);
-                }
-            }
+            result.push(cell);
         });
         return result;
     },
@@ -188,22 +166,6 @@ var OArchitectUtil = {
         if (cell === graph.getDefaultParent())
             return null;
         return this.getClassCellByPropertyCell(graph.getModel().getParent(cell));
-    },
-
-    getClassFromJson: function (json) {
-        var result = null;
-        if (json != null && json.length > 0) {
-            var parse = JSON.parse(json);
-            var cell = this.getCellByClassName(parse.name);
-
-            if (cell != null) {
-                result = cell.value;
-            } else {
-                result = new OArchitectOClass();
-                result.configFromDatabase(parse);
-            }
-        }
-        return result;
     },
 
     getPropertyWithMinOrder: function (properties) {
@@ -255,6 +217,15 @@ var OArchitectUtil = {
         return result;
     },
 
+    isUnsavedInheritance: function (subClass, superClass) {
+        var unsaved = false;
+        if (subClass.cell !== null && superClass.cell !== null) {
+            var edges = app.editor.graph.getEdgesBetween(subClass.cell, superClass.cell);
+            if (edges.length > 0) unsaved = edges[0].value === OArchitectConstants.UNSAVED_INHERITANCE;
+        }
+        return unsaved;
+    },
+
     existsOClassInGraph: function (graph, className) {
         var exists = false;
         var cells = graph.getChildVertices(graph.getDefaultParent());
@@ -287,7 +258,7 @@ var OArchitectUtil = {
     createWriteComplexAttributeFunction: function () {
         var defaultBehavior = mxObjectCodec.prototype.writeComplexAttribute;
         return function (enc, obj, name, value, node) {
-            if (value instanceof OArchitectOClass || value instanceof OArchitectOProperty) {
+            if (value instanceof OArchitectEditorObject) {
                 value = value.toEditorConfigObject();
             } else if (name === 'cell' || name === 'configuredFromEditorConfig' || name === 'existsInEditor') {
                 value = undefined;
@@ -304,7 +275,7 @@ var OArchitectUtil = {
      */
     createDecodeFunction: function () {
         var defaultBehavior = mxCodec.prototype.decode;
-        
+
         return function (node, into) {
             var result = defaultBehavior.apply(this, arguments);
             if (into instanceof mxGraphModel) {
@@ -312,14 +283,23 @@ var OArchitectUtil = {
                 var classCells = graph.getChildVertices(graph.getDefaultParent());
                 var classes = [];
                 OArchitectUtil.forEach(classCells, function (classCell) {
-                    var oClass = classCell.value;
-                    oClass.configFromCell(classCell);
+                    var oClass = new OArchitectOClass();
+                    oClass.configFromJson(JSON.parse(classCell.value.json), classCell);
                     classes.push(oClass);
                 });
                 OArchitectUtil.updateExistsInDB(classes);
             }
             return result;
         }
+    },
+
+    updateAllCells: function () {
+        var graph = app.editor.graph;
+        graph.getModel().beginUpdate();
+        OArchitectUtil.forEach(graph.getChildCells(graph.getDefaultParent()), function (cell) {
+            graph.getModel().setValue(cell, cell.value);
+        });
+        graph.getModel().endUpdate();
     },
 
     updateExistsInDB: function(classes) {
@@ -329,5 +309,37 @@ var OArchitectUtil = {
                 property.setExistsInDb(property.existsInDb);
             });
         });
+    },
+
+    inverseArray: function (arr) {
+        var n = arr.length - 1;
+        for (var i = 0; i < arr.length; i++) {
+            if (i >= n) {
+                break;
+            }
+            var tmp = arr[i];
+            arr[i] = arr[n];
+            arr[n] = tmp;
+            n--;
+        }
+        return arr;
     }
+};
+
+var OArchitectEditorObject = function () {
+};
+
+OArchitectEditorObject.prototype.configFromJson = function () {
+    console.log('config editor object from json');
+};
+
+OArchitectEditorObject.prototype.toJson = function () {
+    return JSON.stringify(this);
+};
+
+OArchitectEditorObject.prototype.toEditorConfigObject = function () {
+    var json = this.toJson();
+    return {
+        "json": json
+    };
 };

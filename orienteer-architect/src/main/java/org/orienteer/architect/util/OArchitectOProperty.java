@@ -17,6 +17,7 @@ public class OArchitectOProperty implements IClusterable {
     private String linkedClass;
     private String pageUrl;
     private int order;
+    private boolean inversePropertyEnable;
     private OArchitectOProperty inverseProperty;
     private boolean existsInDb;
 
@@ -28,6 +29,7 @@ public class OArchitectOProperty implements IClusterable {
             if (inverse != null) {
                 OArchitectOProperty prop = new OArchitectOProperty(inverse.getName(), inverse.getType());
                 prop.setExistsInDb(true);
+                architectProperty.setInversePropertyEnable(true);
                 architectProperty.setInverseProperty(prop);
             }
         }
@@ -116,6 +118,14 @@ public class OArchitectOProperty implements IClusterable {
 
     public void setOrder(int order) {
         this.order = order;
+    }
+
+    public boolean isInversePropertyEnable() {
+        return inversePropertyEnable;
+    }
+
+    public void setInversePropertyEnable(boolean inversePropertyEnable) {
+        this.inversePropertyEnable = inversePropertyEnable;
     }
 
     @Override

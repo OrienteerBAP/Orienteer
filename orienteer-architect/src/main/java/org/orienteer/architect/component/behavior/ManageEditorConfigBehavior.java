@@ -11,6 +11,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.architect.OArchitectModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage OArchitect editor config behavior.
@@ -18,6 +20,8 @@ import org.orienteer.architect.OArchitectModule;
  * Open and apply config when user open {@link org.orienteer.architect.component.widget.OArchitectEditorWidget}
  */
 public class ManageEditorConfigBehavior extends AbstractDefaultAjaxBehavior {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ManageEditorConfigBehavior.class);
 
     private static final String CONFIG_VAR = "config";
     private IModel<ODocument> model;
@@ -40,6 +44,7 @@ public class ManageEditorConfigBehavior extends AbstractDefaultAjaxBehavior {
             document.save();
             target.appendJavaScript("; app.executeCallback({save: true});");
         } catch (Exception ex) {
+            LOG.error("Can't save editor config to database: {}", ex);
             target.appendJavaScript("; app.executeCallback({save: false});");
         }
         actionActive = false;

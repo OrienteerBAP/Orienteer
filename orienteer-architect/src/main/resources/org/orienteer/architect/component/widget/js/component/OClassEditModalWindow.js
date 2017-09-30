@@ -55,7 +55,6 @@ OClassEditModalWindow.prototype.addButtonBlock = function (body, input) {
     body.appendChild(buttonBlock);
 };
 
-//TODO: validate user input
 OClassEditModalWindow.prototype.createNameInput = function (createNewOClass) {
     this.input = document.createElement('input');
     this.input.classList.add('form-control');
