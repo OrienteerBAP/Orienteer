@@ -34,10 +34,14 @@ public class LinkEditPanel extends FormComponentPanel<OIdentifiable> implements 
 {
 	protected IModel<ODocument> inputDocument;
 	protected ModalWindow modal;
+	
+	public LinkEditPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel) {
+		this(id, documentModel, propertyModel, new DynamicPropertyValueModel<OIdentifiable>(documentModel, propertyModel));
+	}
 
-	public LinkEditPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel)
+	public LinkEditPanel(String id, IModel<ODocument> documentModel, IModel<OProperty> propertyModel, IModel<OIdentifiable> valueModel)
 	{
-		super(id, new DynamicPropertyValueModel<OIdentifiable>(documentModel, propertyModel));
+		super(id, valueModel);
 		setOutputMarkupPlaceholderTag(true);
 		setRenderBodyOnly(false);
 		inputDocument = new ODocumentModel(getModelObject());

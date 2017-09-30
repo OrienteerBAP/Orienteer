@@ -35,9 +35,10 @@ public class EmbeddedMapViewPanel<V> extends GenericPanel<Map<String, V>> {
 	
 	public EmbeddedMapViewPanel(String id, final IModel<ODocument> documentModel, final IModel<OProperty> propertyModel) {
 		super(id, new DynamicPropertyValueModel<Map<String, V>>(documentModel, propertyModel));
+		OProperty property = propertyModel.getObject();
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
-		final OType linkedType = propertyModel.getObject().getLinkedType();
-		final OType oType = linkedType != null ? linkedType : OType.ANY;
+		final OType linkedType = property.getLinkedType();
+		final OType oType = linkedType != null ? linkedType : (OType.LINKMAP.equals(property.getType()) ? OType.LINK :OType.ANY);
 		IModel<Set<Map.Entry<String, V>>> entriesModel = new PropertyModel<Set<Map.Entry<String,V>>>(getModel(), "entrySet()");
 		ListView<Map.Entry<String, V>> listView = 
 				new ListView<Map.Entry<String, V>>("items", new CollectionAdapterModel<Map.Entry<String, V>, Set<Map.Entry<String, V>>>(entriesModel)) {

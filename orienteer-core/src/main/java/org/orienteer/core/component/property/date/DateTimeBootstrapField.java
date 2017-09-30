@@ -2,6 +2,7 @@ package org.orienteer.core.component.property.date;
 
 import com.google.common.base.Strings;
 import org.apache.wicket.Component;
+import org.apache.wicket.datetime.PatternDateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.datetime.markup.html.form.DateTextField;
 import org.apache.wicket.extensions.yui.calendar.DatePicker;
@@ -49,7 +50,7 @@ public class DateTimeBootstrapField extends DateTimeField {
 
     @Override
     protected DateTextField newDateTextField(String id, PropertyModel<Date> model) {
-        DateTextField dateTextField = DateTextField.forDatePattern(id, model, createJavaDateFormat());
+        DateTextField dateTextField = new DateTextField(id, model, new PatternDateConverter(createJavaDateFormat(), false));
         dateTextField.setOutputMarkupId(true);
         return dateTextField;
     }

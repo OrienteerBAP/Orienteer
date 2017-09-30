@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
@@ -13,7 +14,9 @@ import org.orienteer.core.component.command.*;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
+import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
@@ -50,6 +53,13 @@ public class ListAllODocumentsWidget extends AbstractWidget<OClass> {
 
 		add(tablePanel);
 		add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
+		
+		addCommand(new BookmarkablePageLinkCommand<OClass>(newCommandId(), "command.gotoClass", OClassPage.class) {
+			@Override
+			public PageParameters getPageParameters() {
+				return OClassPage.preparePageParameters(ListAllODocumentsWidget.this.getModelObject(), DisplayMode.VIEW);
+			}
+		});
 	}
 
 	@Override
