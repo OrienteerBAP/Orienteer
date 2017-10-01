@@ -210,16 +210,16 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
     }
 
     private String initFilterJs(String containerId, String tabId) {
-        return tabId != null ? String.format("; initFilter('%s', '%s');", containerId, tabId) :
-                String.format("; initFilter('%s');", containerId);
+        return tabId != null ? String.format("initFilter('%s', '%s');", containerId, tabId) :
+                String.format("initFilter('%s');", containerId);
     }
 
     private String showTabJs(String containerId, String id) {
-        return String.format("; switchFilterTab('%s', '%s')", containerId, id);
+        return String.format("switchFilterTab('%s', '%s')", containerId, id);
     }
 
     private String removeFilterJs(String id) {
-        return String.format("; removeFilter('%s');", id);
+        return String.format("removeFilter('%s');", id);
     }
 
     /**

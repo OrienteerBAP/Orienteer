@@ -30,7 +30,7 @@ public class GetOClassesBehavior extends AbstractDefaultAjaxBehavior {
         String json = params.getParameterValue(EXISTS_CLASSES_VAR).toString("[]");
         boolean classesList = params.getParameterValue(CLASSES_LIST_VAR).toBoolean(false);
         if (classesList) {
-            target.appendJavaScript(String.format("; app.executeCallback('%s');", getAllClassesAsJson()));
+            target.appendJavaScript(String.format("app.executeCallback('%s');", getAllClassesAsJson()));
         } else {
             manager.setExistsClasses(JsonUtil.fromJSON(json));
             manager.showModalWindow(target);
@@ -44,7 +44,7 @@ public class GetOClassesBehavior extends AbstractDefaultAjaxBehavior {
     @Override
     public void renderHead(Component component, IHeaderResponse response) {
         super.renderHead(component, response);
-        response.render(OnLoadHeaderItem.forScript(String.format("; app.setGetOClassesRequest('%s');",
+        response.render(OnLoadHeaderItem.forScript(String.format("app.setGetOClassesRequest('%s');",
                 getCallbackUrl())));
     }
 }

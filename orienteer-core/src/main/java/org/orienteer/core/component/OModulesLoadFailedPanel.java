@@ -54,7 +54,7 @@ public class OModulesLoadFailedPanel extends Panel {
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
                 super.renderHead(component, response);
-                response.render(OnLoadHeaderItem.forScript(String.format("; (%s)();", getCallbackFunction())));
+                response.render(OnLoadHeaderItem.forScript(String.format("(%s)();", getCallbackFunction())));
             }
         });
         add(modal);

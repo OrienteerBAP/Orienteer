@@ -66,7 +66,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         container.add(toolbar = newContainer("toolbar"));
         container.add(sidebar = newContainer("sidebar"));
         container.add(outline = newContainer("outline"));
-        SchemaOClassesModalPanel panel = new SchemaOClassesModalPanel("listClasses", "; app.executeCallback('%s');");
+        SchemaOClassesModalPanel panel = new SchemaOClassesModalPanel("listClasses", "app.executeCallback('%s');");
         container.add(panel);
         add(container);
         add(new GetNewChangesBehavior());

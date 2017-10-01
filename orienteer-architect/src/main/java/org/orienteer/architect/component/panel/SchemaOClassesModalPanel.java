@@ -173,7 +173,7 @@ public class SchemaOClassesModalPanel extends Panel implements IOClassesModalMan
     }
 
     private void switchPageScroll(AjaxRequestTarget target, boolean show) {
-        target.appendJavaScript(String.format("; app.editor.fullScreenEnable = %s; app.switchPageScrolling(); ", !show));
+        target.appendJavaScript(String.format("app.editor.fullScreenEnable = %s; app.switchPageScrolling();", !show));
     }
 
     @Override

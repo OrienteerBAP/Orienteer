@@ -29,7 +29,7 @@ public class ExistsOClassBehavior extends AbstractDefaultAjaxBehavior {
             OSchema schema = OrienteerWebApplication.get().getDatabase().getMetadata().getSchema();
             exists = schema.existsClass(className);
         }
-        target.appendJavaScript(String.format("; app.executeCallback(%s);", exists.toString()));
+        target.appendJavaScript(String.format("app.executeCallback(%s);", exists.toString()));
     }
 
     private String getClassNameFromJson(String json) {
@@ -41,6 +41,6 @@ public class ExistsOClassBehavior extends AbstractDefaultAjaxBehavior {
     public void renderHead(Component component, IHeaderResponse response) {
         super.renderHead(component, response);
         response.render(OnLoadHeaderItem.forScript(
-                String.format("; app.setExistsOClassRequest('%s');", getCallbackUrl())));
+                String.format("app.setExistsOClassRequest('%s');", getCallbackUrl())));
     }
 }

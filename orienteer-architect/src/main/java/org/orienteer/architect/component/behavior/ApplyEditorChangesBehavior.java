@@ -45,11 +45,11 @@ public class ApplyEditorChangesBehavior extends AbstractDefaultAjaxBehavior {
         classes = JsonUtil.fromJSON(json);
         try {
             addClassesToSchema(classes);
-            target.prependJavaScript("; app.executeCallback({apply: true}); " +
+            target.prependJavaScript("app.executeCallback({apply: true}); " +
                     "app.checksAboutClassesChanges(function() {app.saveEditorConfig(mxUtils.getXml(OArchitectUtil.getEditorXmlNode(app.editor.graph)),null);}); ");
         } catch (Exception ex) {
             LOG.error("Can't apply editor changes: ", ex);
-            target.prependJavaScript("; app.executeCallback({apply: false});");
+            target.prependJavaScript("app.executeCallback({apply: false});");
         }
         actionActive = false;
     }

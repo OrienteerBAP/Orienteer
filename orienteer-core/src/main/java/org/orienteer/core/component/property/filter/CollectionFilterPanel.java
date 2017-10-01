@@ -115,7 +115,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
         super.onAfterRender();
         AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
         if (target != null) {
-            target.appendJavaScript(String.format("; restoreInput('%s');", getContainerId()));
+            target.appendJavaScript(String.format("restoreInput('%s');", getContainerId()));
         }
     }
 
@@ -183,7 +183,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             for (ListFilterInput panel : components) {
                 ids.addAll(panel.getInputIds());
             }
-            target.prependJavaScript(String.format("; saveInput('%s', %s);", getContainerId(),
+            target.prependJavaScript(String.format("saveInput('%s', %s);", getContainerId(),
                     new JSONArray(ids).toString()));
         }
 

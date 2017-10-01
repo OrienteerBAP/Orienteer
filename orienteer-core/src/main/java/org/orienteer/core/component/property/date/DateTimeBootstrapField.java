@@ -104,7 +104,7 @@ public class DateTimeBootstrapField extends DateTimeField {
 
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
-                String jqueryInit = String.format("; initJQDatepicker('%s', %s);", datePickerId,
+                String jqueryInit = String.format("initJQDatepicker('%s', %s);", datePickerId,
                         getDatePickerParams().toString());
                 response.render(OnDomReadyHeaderItem.forScript(jqueryInit));
             }
@@ -118,7 +118,7 @@ public class DateTimeBootstrapField extends DateTimeField {
         response.render(CssHeaderItem.forReference(new CssResourceReference(DateTimeBootstrapField.class, "datetime.css")));
         super.renderHead(response);
 
-        response.render(OnDomReadyHeaderItem.forScript(String.format("; initDateMarkup('%s')", getMarkupId())));
+        response.render(OnDomReadyHeaderItem.forScript(String.format("initDateMarkup('%s')", getMarkupId())));
     }
 
     private Map<String, String> getDatePickerParams() {

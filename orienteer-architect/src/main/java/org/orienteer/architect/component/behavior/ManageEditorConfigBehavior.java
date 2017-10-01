@@ -42,10 +42,10 @@ public class ManageEditorConfigBehavior extends AbstractDefaultAjaxBehavior {
             ODocument document = model.getObject();
             document.field(OArchitectModule.CONFIG_OPROPERTY, params.getParameterValue(CONFIG_VAR));
             document.save();
-            target.appendJavaScript("; app.executeCallback({save: true});");
+            target.appendJavaScript("app.executeCallback({save: true});");
         } catch (Exception ex) {
             LOG.error("Can't save editor config to database: {}", ex);
-            target.appendJavaScript("; app.executeCallback({save: false});");
+            target.appendJavaScript("app.executeCallback({save: false});");
         }
         actionActive = false;
     }
