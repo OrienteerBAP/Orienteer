@@ -15,17 +15,17 @@ import java.util.List;
  */
 public abstract class JsonUtil implements IClusterable {
 
-    private static final String NAME                  = "name";
-    private static final String SUPER_CLASSES         = "superClasses";
-    private static final String PROPERTIES            = "properties";
-    private static final String PROPERTIES_FOR_DELETE = "propertiesForDelete";
-    private static final String EXISTS_IN_DB          = "existsInDb";
-    private static final String SUBCLASS_PROPERTY     = "subClassProperty";
-    private static final String LINKED_CLASS_NAME     = "linkedClass";
-    private static final String TYPE                  = "type";
-    private static final String ORDER                 = "order";
-    private static final String PAGE_URL              = "pageUrl";
-    private static final String INVERSE_PROPERTY      = "inverseProperty";
+    private static final String NAME                   = "name";
+    private static final String SUPER_CLASSES          = "superClasses";
+    private static final String PROPERTIES             = "properties";
+    private static final String EXISTS_IN_DB           = "existsInDb";
+    private static final String SUBCLASS_PROPERTY      = "subClassProperty";
+    private static final String LINKED_CLASS_NAME      = "linkedClass";
+    private static final String TYPE                   = "type";
+    private static final String ORDER                  = "order";
+    private static final String PAGE_URL               = "pageUrl";
+    private static final String INVERSE_PROPERY_ENABLE = "inversePropertyEnable";
+    private static final String INVERSE_PROPERTY       = "inverseProperty";
 
     private JsonUtil() {}
 
@@ -70,9 +70,6 @@ public abstract class JsonUtil implements IClusterable {
         if (!jsonObject.isNull(PROPERTIES)) {
             oClass.setProperties(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES)));
         }
-        if (!jsonObject.isNull(PROPERTIES_FOR_DELETE)) {
-            oClass.setPropertiesForDelete(getOPropertyListFromJson(jsonObject.getJSONArray(PROPERTIES_FOR_DELETE)));
-        }
         return oClass;
     }
 
@@ -108,8 +105,11 @@ public abstract class JsonUtil implements IClusterable {
             if (!jsonObject.isNull(ORDER)) {
                 property.setOrder(jsonObject.getInt(ORDER));
             }
-            if (!jsonObject.isNull(INVERSE_PROPERTY)) {
-                property.setInverseProperty(convertInverseProperty(jsonObject.getJSONObject(INVERSE_PROPERTY)));
+            if (!jsonObject.isNull(INVERSE_PROPERY_ENABLE)) {
+                property.setInversePropertyEnable(jsonObject.getBoolean(INVERSE_PROPERY_ENABLE));
+                if (!jsonObject.isNull(INVERSE_PROPERTY)) {
+                    property.setInverseProperty(convertInverseProperty(jsonObject.getJSONObject(INVERSE_PROPERTY)));
+                }
             }
         }
         return property;

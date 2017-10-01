@@ -20,7 +20,7 @@ OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) 
     var input = this.createNameInput(this.create);
     var typeSelect = this.createOTypeSelect(this.create, this.value, this.orientDbTypes);
     var inverseBlock = new OPropertyInverseBlock(this.value, this);
-    inverseBlock.setDisabled(input.disabled);
+    inverseBlock.setDisabled(!this.value.canModifyInverseProperty());
     this.addValueBlock(body, input, typeSelect, inverseBlock.createElement(typeSelect));
     this.addButtonBlock(body, input, typeSelect, inverseBlock);
     this.addHeadBlock(head, this.create);
@@ -121,29 +121,31 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
         function action(name) {
             var type = typeSelect.options[typeSelect.selectedIndex].value;
             var existsProperty = property.ownerClass.getProperty(name);
-            if (property.isValidName(name) || property.isValidType(type) || property.isValidInverseProperty(inverseBlock.inverseProperty)) {
+            if (existsProperty !== null && modal.create) {
+                if (existsProperty.isSubClassProperty()) {
+                    modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
+                } else modal.showErrorFeedback(localizer.propertyExistsInClass);
+            } else if (property.canUpdate(name, type, inverseBlock.inverseProperty, inverseBlock.inversePropertyEnable)) {
                 updateProperty(name, type, inverseBlock.enableInverseProperty, inverseBlock.inverseProperty);
                 modal.destroy(modal.OK);
             } else if (name === property.name && type === property.type) {
                 modal.destroy(modal.OK);
-            } else if (existsProperty != null && modal.create) {
-                if (existsProperty.isSubClassProperty()) {
-                    modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
-                } else modal.showErrorFeedback(localizer.propertyExistsInClass);
             }
         }
 
         function updateProperty(name, type, inversePropertyEnable, inverseProperty) {
-            app.editor.graph.getModel().beginUpdate();
-            try {
-                property.updateProperty(name, type, inversePropertyEnable, inverseProperty);
-                modal.afterUpdateValue(property);
-            } finally {
-                app.editor.graph.getModel().endUpdate();
-            }
+            var tempProperty = new OArchitectOProperty();
+            tempProperty.name = name;
+            tempProperty.type = type;
+            tempProperty.inversePropertyEnable = inversePropertyEnable;
+            tempProperty.inverseProperty = inverseProperty;
+            modal.updateProperty(property, tempProperty);
+            modal.afterUpdateValue(property);
         }
     };
 };
+
+OPropertyEditModalWindow.prototype.updateProperty = function (property, propertyWithChanges) {};
 
 OPropertyEditModalWindow.prototype.afterUpdateValue = function (property) {};
 
@@ -236,6 +238,7 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
         inverseValidProperties.push(inverseProperty);
     }
     this.clearSelectAndAddProperties(inverseValidProperties, select);
+    inverseBlock.inverseProperty = inverseProperty;
     if (inverseProperty !== null && linkedClass !== null && inverseValidProperties.length > 0) {
         for (var i = 0; i < inverseValidProperties.length; i++) {
             if (inverseValidProperties[i].name === inverseProperty.name) {
@@ -250,10 +253,10 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
     }
 
     select.addEventListener('change', function () {
-         var json = select.options[select.selectedIndex].value;
-         if (json !== inverseBlock.EMPTY) {
-             inverseBlock.inverseProperty = OArchitectUtil.getPropertyFromJson(json);
-         }
+        var json = select.options[select.selectedIndex].value;
+        if (json !== inverseBlock.EMPTY) {
+            inverseBlock.inverseProperty = OArchitectUtil.getPropertyFromJson(json);
+        }
     });
 
     select.disabled = this.disabled;

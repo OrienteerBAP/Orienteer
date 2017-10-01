@@ -12,8 +12,14 @@ var OArchitectEditor = function(container) {
     this.container = container;
 
     this.fullscreen = false;
-    this.saveActions = true;
+
+    this.unsaveCounter = 0;
+
+    this.connectionLockCounter = 0;
+
     this.fullScreenEnable = true;
+
+    this.undoOrRedoRuns = false;
 
     this.configureDefaultActions();
     this.configureGraph([new GraphConfig(this), new GraphConnectionConfig(this),
@@ -28,7 +34,7 @@ OArchitectEditor.prototype.constructor = OArchitectEditor;
 OArchitectEditor.prototype.configureGraph = function (configs) {
     this.setGraphContainer(this.container);
     OArchitectUtil.forEach(configs, function (config) {
-       config.config();
+        config.config();
     });
 };
 
@@ -90,42 +96,15 @@ OArchitectEditor.prototype.addActionsToPopupMenu = function (menu) {
  * @param graph
  */
 OArchitectEditor.prototype.installUndoHandler = function (graph) {
-    this.installUndoSaver(graph);
-    var undoHandler = function(sender, evt) {
-        var changes = evt.getProperty('edit').changes;
-        var cells = graph.getSelectionCellsForChanges(changes);
-        OArchitectUtil.forEach(cells, function (cell) {
-            if (cell.isVertex()) {
-                var value = cell.value;
-                if (value instanceof OArchitectOClass) {
-                    OArchitectOClassConfigurator.configOClassFromCell(value, cell);
-                } else if (value instanceof OArchitectOProperty) {
-                    var classCell = OArchitectUtil.getCellByClassName(value.ownerClass);
-                    if (classCell != null) {
-                        value.configFromCell(classCell.value, cell);
-                    }
-                }
-            }
-        });
-    };
-    this.undoManager.removeListener(mxEvent.UNDO);
-    this.undoManager.removeListener(mxEvent.REDO);
-    this.undoManager.addListener(mxEvent.UNDO, undoHandler);
-    this.undoManager.addListener(mxEvent.REDO, undoHandler);
-};
-
-OArchitectEditor.prototype.installUndoSaver = function (graph) {
+    var editor = this;
     var listener = mxUtils.bind(this, function(sender, evt) {
-        if (app.editor.saveActions) {
+        if (editor.isSaveActions()) {
             var edit = evt.getProperty('edit');
             var changesForSave = [];
             OArchitectUtil.forEach(edit.changes, function (change) {
-                if (change instanceof mxValueChange) {
-                    if (change.previous !== null && change.value !== null) {
-                        change.execute = null;
-                        changesForSave.push(change);
-                    }
-                } else if (!(change instanceof mxStyleChange)) changesForSave.push(change);
+                if (!(change instanceof mxStyleChange)) {
+                    changesForSave.push(change);
+                }
             });
             if (changesForSave.length > 0) {
                 edit.changes = changesForSave;
@@ -138,19 +117,47 @@ OArchitectEditor.prototype.installUndoSaver = function (graph) {
     graph.getView().addListener(mxEvent.UNDO, listener);
 };
 
+OArchitectEditor.prototype.connectionAvailable = function () {
+    return this.connectionLockCounter === 0;
+};
+
+OArchitectEditor.prototype.disableConnection = function () {
+    this.connectionLockCounter++;
+};
+
+OArchitectEditor.prototype.enableConnection = function () {
+    this.connectionLockCounter--;
+};
+
 OArchitectEditor.prototype.clearCommandHistory = function () {
     this.undoManager.clear();
 };
 
+OArchitectEditor.prototype.beginUnsaveActions = function () {
+    this.unsaveCounter++;
+};
+
+OArchitectEditor.prototype.endUnsaveActions = function () {
+    if (this.unsaveCounter > 0) this.unsaveCounter--;
+};
+
+OArchitectEditor.prototype.isSaveActions = function () {
+    return this.unsaveCounter === 0;
+};
+
 OArchitectEditor.prototype.undo = function () {
     if (app.canUpdate) {
+        this.undoOrRedoRuns = true;
         mxEditor.prototype.undo.apply(this, arguments);
+        this.undoOrRedoRuns = false;
     }
 };
 
 OArchitectEditor.prototype.redo = function () {
     if (app.canUpdate) {
+        this.undoOrRedoRuns = true;
         mxEditor.prototype.redo.apply(this, arguments);
+        this.undoOrRedoRuns = false;
     }
 };
 
@@ -166,4 +173,3 @@ OArchitectEditor.prototype.configureDefaultActions = function () {
 OArchitectEditor.prototype.clone = function() {
     return mxUtils.clone(this);
 };
-

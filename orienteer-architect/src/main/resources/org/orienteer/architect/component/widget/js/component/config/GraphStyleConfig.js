@@ -115,6 +115,7 @@ GraphStyleConfig.prototype.createOClassExistsConnectionStyle = function () {
 GraphStyleConfig.prototype.createOPropertyExistsConnectionStyle = function () {
     var style = this.createOPropertyConnectionStyle();
     style[mxConstants.STYLE_STROKECOLOR] = '#6D5A72';
+    style[mxConstants.STYLE_FONTCOLOR] = '#6D5A72';
     return style;
 };
 
