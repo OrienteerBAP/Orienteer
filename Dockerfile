@@ -1,4 +1,4 @@
-FROM maven:3.5.0-jdk-7-alpine
+FROM maven:3.5.0-jdk-8-alpine
 EXPOSE 8080
 MAINTAINER Ilia Naryzhny (phantom@ydn.ru)
 
