@@ -27,6 +27,8 @@ var OArchitectOProperty = function (ownerClass, name, type, cell) {
 
     this.notSetLinkedClass = false;
 
+    this.exists = false;
+
     this.order = 0;
 
     if (ownerClass != null) this.setOwnerClass(ownerClass);
@@ -116,6 +118,7 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
     this.ownerClass = oClass;
     this.pageUrl = json.pageUrl;
     this.order = json.order;
+    this.exists = json.exists != null ? json.exists : true;
 
     if (!this.isSubClassProperty()) setCell(this, oClass, cell);
     if (json.linkedClass != null) setLinkedClass(this, json);
@@ -360,6 +363,10 @@ OArchitectOProperty.prototype.setInverseProperty = function (property, createCon
  */
 OArchitectOProperty.prototype.isRemoved = function () {
     return this.removed;
+};
+
+OArchitectOProperty.prototype.isExists = function () {
+    return this.exists;
 };
 
 OArchitectOProperty.prototype.canModifyNameAndType = function () {
