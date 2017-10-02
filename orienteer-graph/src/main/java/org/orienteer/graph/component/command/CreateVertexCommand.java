@@ -91,4 +91,11 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
         OrientVertex vertex = tx.getVertex(documentModel.getObject().getIdentity());
         tx.addEdge(null, vertex, newVertex, edgeClass.getName());
     }
+    
+    @Override
+    public void detachModels() {
+    	super.detachModels();
+    	classModel.detach();
+    	documentModel.detach();
+    }    
 }

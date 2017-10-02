@@ -60,5 +60,13 @@ public class DeleteEdgeCommand extends AbstractDeleteCommand<ODocument> implemen
 	public RequiredOrientResource[] getRequiredResources() {
 		return OSecurityHelper.requireOClass(classModel.getObject(), OrientPermission.DELETE);
 	}
+    
+    
+    @Override
+    public void detachModels() {
+    	super.detachModels();
+    	classModel.detach();
+    	documentModel.detach();
+    }
 
 }

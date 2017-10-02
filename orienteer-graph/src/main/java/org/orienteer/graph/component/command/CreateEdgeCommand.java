@@ -107,4 +107,11 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
                 tx.shutdown();
         }
     }
+    
+    @Override
+    public void detachModels() {
+    	super.detachModels();
+    	classModel.detach();
+    	documentModel.detach();
+    }
 }
