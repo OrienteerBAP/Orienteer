@@ -246,7 +246,7 @@ OArchitectOClass.prototype.updateValueInCell = function (superClasses, subClasse
  */
 OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass, superClassExistsInEditor) {
     var property = null;
-    if (name != null && type != null) {
+    if (name !== null && type !== null) {
         property = this.getProperty(name);
         if (property != null)
             throw new Error('OProperty with name: ' + name + ' already exists!');
