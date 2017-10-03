@@ -269,33 +269,41 @@ public class OClassIntrospector implements IOClassIntrospector
 		if(doc==null) return Application.get().getResourceSettings().getLocalizer().getString("nodoc", null);
 		else
 		{
+			String ret = null;
 			if(nameProp==null) nameProp = getNameProperty(doc.getSchemaClass());
 			if(nameProp!=null)
 			{
 				Object value = doc.field(nameProp.getName());
-				if(value==null) return Application.get().getResourceSettings().getLocalizer().getString("noname", null);
-				OType type = nameProp.getType();
-				Locale locale = OrienteerWebSession.get().getLocale();
-				switch (type)
-				{
-					case DATE:
-						return OrienteerWebApplication.DATE_CONVERTER.convertToString((Date)value, locale);
-					case DATETIME:
-						return OrienteerWebApplication.DATE_TIME_CONVERTER.convertToString((Date)value, locale);
-					case LINK:
-						return value instanceof ODocument?getDocumentName((ODocument)value):null;
-					case EMBEDDEDMAP:
-						Map<String, Object> localizations = (Map<String, Object>)value;
-						Object localized = CommonUtils.localizeByMap(localizations, true, locale.getLanguage(), Locale.getDefault().getLanguage());
-						if(localized!=null) return localized.toString();
-					default:
-						return value.toString();
+				if(value!=null) {
+					OType type = nameProp.getType();
+					Locale locale = OrienteerWebSession.get().getLocale();
+					switch (type)
+					{
+						case DATE:
+							ret = OrienteerWebApplication.DATE_CONVERTER.convertToString((Date)value, locale);
+							break;
+						case DATETIME:
+							ret = OrienteerWebApplication.DATE_TIME_CONVERTER.convertToString((Date)value, locale);
+							break;
+						case LINK:
+							ret =  value instanceof ODocument?getDocumentName((ODocument)value):null;
+							break;
+						case EMBEDDEDMAP:
+							Map<String, Object> localizations = (Map<String, Object>)value;
+							Object localized = CommonUtils.localizeByMap(localizations, true, locale.getLanguage(), Locale.getDefault().getLanguage());
+							ret = localized!=null ? localized.toString() : value.toString();
+							break;
+						default:
+							ret =  value.toString();
+							break;
+					}
 				}
 			}
 			else
 			{
-				return doc.toString();
+				ret = doc.toString();
 			}
+			return !Strings.isEmpty(ret) ? ret : Application.get().getResourceSettings().getLocalizer().getString("noname", null);
 		}
 	}
 	
