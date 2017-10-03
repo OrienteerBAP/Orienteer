@@ -38,9 +38,11 @@ OPropertyCreateCommand.prototype.executeCommand = function () {
             this.oClass.notifySubClassesAboutChangesInProperty(this.property);
         } else this.property = this.oClass.createProperty(this.property.name, this.property.type, this.property.cell);
         this.property.removed = false;
+        this.property.exists = true;
         this.remove = true;
     } else {
         this.property.removed = true;
+        this.property.exists = false;
         this.oClass.removeProperty(this.property);
         this.remove = false;
     }
@@ -69,7 +71,7 @@ OPropertyNameAndTypeChangeCommand.prototype.executeCommand = function () {
 };
 
 OPropertyNameAndTypeChangeCommand.prototype.init = function (property) {
-    if (property.isRemoved()) {
+    if (property.isRemoved() || !property.isExists()) {
         property = getProperty(property.name, property.ownerClass.name);
     }
 
@@ -111,6 +113,8 @@ var OPropertyInverseChangeCommand = function (property, inversePropertyEnable, i
     this.inverseProperty = inverseProperty;
     this.remove = remove != null ? remove : false;
     this.removed = false;
+    this.commands = null;
+    this.executed = false;
 };
 
 OPropertyInverseChangeCommand.prototype = Object.create(OPropertyNameAndTypeChangeCommand.prototype);
@@ -119,7 +123,16 @@ OPropertyInverseChangeCommand.prototype.constructor = OPropertyInverseChangeComm
 OPropertyInverseChangeCommand.prototype.executeCommand = function () {
     var prop = this.init(this.property);
     if (prop !== null) this.property = prop;
-    if (this.inverseProperty !== null) this.inverseProperty = this.init(this.inverseProperty);
+    initInverseProperty(this, false);
+
+    if (this.commands === null && this.inverseProperty !== null && !this.inverseProperty.isExists()) {
+        this.commands = this.getCommands();
+    } else if (this.commands !== null)  OArchitectUtil.inverseArray(this.commands);
+
+    if (this.commands !== null) {
+        this.executeCommands(this.commands);
+        if (!this.executed) initInverseProperty(this, true);
+    }
 
     if (this.remove && !this.removed) {
         var tmp = this.property.inversePropertyEnable;
@@ -137,6 +150,20 @@ OPropertyInverseChangeCommand.prototype.executeCommand = function () {
         this.inverseProperty = previousInverseProperty;
         this.removed = false;
     }
+    this.executed = !this.executed;
+    function initInverseProperty(command, existsIgnore) {
+        if (command.inverseProperty !== null && (command.inverseProperty.isExists() || existsIgnore))  {
+            command.inverseProperty = command.init(command.inverseProperty);
+        }
+    }
+};
+
+OPropertyInverseChangeCommand.prototype.getCommands = function () {
+    var commands = [];
+    commands.push(new OPropertyCreateCommand(this.inverseProperty, this.inverseProperty.ownerClass, false));
+    commands.push(new OPropertyLinkChangeCommand(this.inverseProperty, this.property.ownerClass, false));
+    commands.push(new OPropertyInverseChangeCommand(this.inverseProperty, true, this.property, false));
+    return commands;
 };
 
 /**

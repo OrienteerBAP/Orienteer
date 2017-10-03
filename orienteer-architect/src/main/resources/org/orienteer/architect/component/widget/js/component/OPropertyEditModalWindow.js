@@ -9,6 +9,7 @@
 var OPropertyEditModalWindow = function (property, containerId, onDestroy, create) {
     OClassEditModalWindow.apply(this, arguments);
     this.create = create;
+    this.orientDbTypes = OArchitectOType.types;
 };
 
 OPropertyEditModalWindow.prototype = Object.create(OClassEditModalWindow.prototype);
@@ -17,23 +18,13 @@ OPropertyEditModalWindow.prototype.constructor = OPropertyEditModalWindow;
 OPropertyEditModalWindow.prototype.orientDbTypes = OArchitectOType.types;
 
 OPropertyEditModalWindow.prototype.createContent = function (panel, head, body) {
-    var input = this.createNameInput(this.create);
-    var typeSelect = this.createOTypeSelect(this.create, this.value, this.orientDbTypes);
+    var nameAndTypeBlock = new OPropertyNameAndTypeBlock(this.value, this.create, this.orientDbTypes, this);
     var inverseBlock = new OPropertyInverseBlock(this.value, this);
     inverseBlock.setDisabled(!this.value.canModifyInverseProperty());
-    this.addValueBlock(body, input, typeSelect, inverseBlock.createElement(typeSelect));
-    this.addButtonBlock(body, input, typeSelect, inverseBlock);
+    body.appendChild(nameAndTypeBlock.createElement());
+    body.appendChild(inverseBlock.createElement(nameAndTypeBlock.typeSelect));
+    this.addButtonBlock(body, nameAndTypeBlock, inverseBlock);
     this.addHeadBlock(head, this.create);
-};
-
-OPropertyEditModalWindow.prototype.addValueBlock = function (body, input, select, inverseBlock) {
-    var valueBlock = this.createValueBlock();
-    valueBlock.appendChild(this.createLabel(localizer.name + ':'));
-    valueBlock.appendChild(input);
-    valueBlock.appendChild(this.createLabel(localizer.type + ':'));
-    valueBlock.appendChild(select);
-    valueBlock.appendChild(inverseBlock);
-    body.appendChild(valueBlock);
 };
 
 OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
@@ -41,41 +32,13 @@ OPropertyEditModalWindow.prototype.addHeadBlock = function (head, create) {
         OArchitectConstants.FA_ALIGN_JUSTIFY);
 };
 
-OPropertyEditModalWindow.prototype.addButtonBlock = function (body, input, typeSelect, inverseBlock) {
+OPropertyEditModalWindow.prototype.addButtonBlock = function (body, nameAndTypeBlock, inverseBlock) {
     var buttonBlock = this.createButtonBlock();
-    var okBut = this.createOkButton(localizer.ok, input, typeSelect, inverseBlock);
+    var okBut = this.createOkButton(localizer.ok, nameAndTypeBlock, inverseBlock);
     var cancelBut = this.createCancelButton(localizer.cancel);
     buttonBlock.appendChild(okBut);
     buttonBlock.appendChild(cancelBut);
     body.appendChild(buttonBlock);
-};
-
-OPropertyEditModalWindow.prototype.createOTypeSelect = function (createNewOProperty, property, types) {
-    var select = this.createSelect(types);
-    if (!createNewOProperty && property.type !== null) {
-        select.disabled = !property.canModifyNameAndType();
-        var index = types.indexOf(property.type.toUpperCase());
-        if (index > -1)
-            select.selectedIndex = index;
-    } else select.selectedIndex = 0;
-    return select;
-};
-
-OPropertyEditModalWindow.prototype.createNameInput = function (createNewOProperty) {
-    var input = document.createElement('input');
-    input.classList.add('form-control');
-    input.setAttribute('type', 'text');
-    if (createNewOProperty === false) {
-        input.value = this.value.name;
-        input.disabled = !this.value.canModifyNameAndType();
-    }
-
-    setTimeout(function () {
-        if (!input.disabled)
-            input.focus();
-    }, 100);
-
-    return input;
 };
 
 OPropertyEditModalWindow.prototype.createSelect = function (values) {
@@ -95,9 +58,9 @@ OPropertyEditModalWindow.prototype.createSelectOption = function (value) {
     return option;
 };
 
-OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, typeSelect, inverseBlock) {
+OPropertyEditModalWindow.prototype.createOkButton = function (label, nameAndTypeBlock, inverseBlock) {
     var button = this.newButton(label, OArchitectConstants.BUTTON_PRIMARY_CLASS);
-    this.onEnterPressed = this.createOkButtonOnClickBehavior(nameField, typeSelect, inverseBlock);
+    this.onEnterPressed = this.createOkButtonOnClickBehavior(nameAndTypeBlock, inverseBlock);
     button.addEventListener('click', this.onEnterPressed);
     button.style.float = 'right';
     button.style.marginRight = '10px';
@@ -105,12 +68,12 @@ OPropertyEditModalWindow.prototype.createOkButton = function (label, nameField, 
     return button;
 };
 
-OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameField, typeSelect, inverseBlock) {
+OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nameAndTypeBlock, inverseBlock) {
     var modal = this;
     var property = this.value;
     return function () {
-        if (nameField.value.length > 0) {
-            var name = nameField.value;
+        if (nameAndTypeBlock.name !== null) {
+            var name = nameAndTypeBlock.name;
             if (OArchitectConstants.NAMING_PATTERN.test(name)) {
                 action(name);
             } else modal.showErrorFeedback(localizer.propertyNameForbidden);
@@ -119,14 +82,14 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
         }
 
         function action(name) {
-            var type = typeSelect.options[typeSelect.selectedIndex].value;
+            var type = nameAndTypeBlock.type;
             var existsProperty = property.ownerClass.getProperty(name);
             if (existsProperty !== null && modal.create) {
                 if (existsProperty.isSubClassProperty()) {
                     modal.showErrorFeedback(localizer.propertyExistsInSuperClass);
                 } else modal.showErrorFeedback(localizer.propertyExistsInClass);
-            } else if (property.canUpdate(name, type, inverseBlock.inverseProperty, inverseBlock.inversePropertyEnable)) {
-                updateProperty(name, type, inverseBlock.enableInverseProperty, inverseBlock.inverseProperty);
+            } else if (property.canUpdate(name, type, inverseBlock.getInverseProperty(), inverseBlock.inversePropertyEnable)) {
+                updateProperty(name, type, inverseBlock.enableInverseProperty, inverseBlock.getInverseProperty());
                 modal.destroy(modal.OK);
             } else if (name === property.name && type === property.type) {
                 modal.destroy(modal.OK);
@@ -150,6 +113,81 @@ OPropertyEditModalWindow.prototype.updateProperty = function (property, property
 OPropertyEditModalWindow.prototype.afterUpdateValue = function (property) {};
 
 
+var OPropertyNameAndTypeBlock = function (property, create, types, modal) {
+    this.property = property;
+    this.create = create;
+    this.types = types;
+    this.modal = modal;
+    this.name = null;
+    this.type = null;
+    this.typeSelect = null;
+    this.nameInput = null;
+    this.block = null;
+};
+
+OPropertyNameAndTypeBlock.prototype.name = null;
+OPropertyNameAndTypeBlock.prototype.type = null;
+OPropertyNameAndTypeBlock.prototype.types = null;
+OPropertyNameAndTypeBlock.prototype.modal = null;
+
+OPropertyNameAndTypeBlock.prototype.createElement = function () {
+    this.block = this.modal.createValueBlock();
+    this.block.appendChild(this.modal.createLabel(localizer.name + ':'));
+    this.block.appendChild(this.nameInput = this.createNameInput(this.property));
+    this.block.appendChild(this.modal.createLabel(localizer.type + ':'));
+    this.block.appendChild(this.createOTypeSelect(this.property));
+    return this.block;
+};
+
+OPropertyNameAndTypeBlock.prototype.show = function () {
+    this.block.style.display = 'block';
+};
+
+OPropertyNameAndTypeBlock.prototype.hide = function () {
+    this.block.style.display = 'none';
+};
+
+OPropertyNameAndTypeBlock.prototype.createNameInput = function (property) {
+    var input = document.createElement('input');
+    var block = this;
+    input.classList.add('form-control');
+    input.setAttribute('type', 'text');
+    if (!this.create) {
+        input.value = property.name;
+        input.disabled = !property.canModifyNameAndType();
+        this.name = property.name;
+    }
+
+    setTimeout(function () {
+        if (!input.disabled)
+            input.focus();
+    }, 100);
+
+    input.addEventListener('input', function () {
+        block.name = input.value;
+    });
+    return input;
+};
+
+OPropertyNameAndTypeBlock.prototype.createOTypeSelect = function (property) {
+    var select = this.modal.createSelect(this.types);
+    var block = this;
+    if (!this.create && property.type !== null) {
+        select.disabled = !property.canModifyNameAndType();
+        var index = this.types.indexOf(property.type.toUpperCase());
+        if (index > -1)
+            select.selectedIndex = index;
+        this.type = select.options[select.selectedIndex].value;
+    } else select.selectedIndex = 0;
+    block.type = select.options[select.selectedIndex].value;
+
+    select.addEventListener('change', function () {
+        block.type = select.options[select.selectedIndex].value;
+    });
+    this.typeSelect = select;
+    return select;
+};
+
 var OPropertyInverseBlock = function (property, modal) {
     this.property = property;
     this.modal = modal;
@@ -158,6 +196,8 @@ var OPropertyInverseBlock = function (property, modal) {
     this.emptyInverseProperties = false;
     this.disabled = false;
     this.EMPTY = '';
+    this.createInversePropertyBlock = null;
+    this.needCreateInverseProperty = false;
 };
 
 OPropertyInverseBlock.prototype.inverseProperty        = null;
@@ -171,30 +211,55 @@ OPropertyInverseBlock.prototype.createElement = function (typeSelect) {
     var select = this.createInversePropertySelect();
     var mainBlock = this.createMainBlock(checkbox);
     var inverseBlock = this.createInverseBlock(select);
+    this.createInversePropertyBlock = new OPropertyNameAndTypeBlock(new OArchitectOProperty(), true, OArchitectOType.linkTypes, this.modal);
+    this.needCreateInverseProperty = this.property.linkedClass !== null && checkbox.checked;
     mainBlock.appendChild(inverseBlock);
+    mainBlock.appendChild(this.createInversePropertyBlock.createElement());
     switchDisplay(this);
     addEvents(this);
 
     function switchDisplay(inverse) {
         inverse.switchDisplay(OArchitectOType.isLink(typeSelect.value), mainBlock);
         inverse.switchDisplay(checkbox.checked, inverseBlock);
+        switchCreateInverseProperty(checkbox, inverse);
     }
 
     function addEvents(inverse) {
         checkbox.addEventListener('change', function () {
             inverse.switchDisplay(checkbox.checked, inverseBlock);
             inverse.enableInverseProperty = checkbox.checked;
+            inverse.needCreateInverseProperty = inverse.property.linkedClass !== null && checkbox.checked;
+            switchCreateInverseProperty(checkbox, inverse);
         });
         typeSelect.addEventListener('change', function () {
             inverse.switchDisplay(OArchitectOType.isLink(typeSelect.value), mainBlock);
         });
+        select.addEventListener('change', function () {
+            switchDisplay(inverse);
+        });
+        inverse.createInversePropertyBlock.nameInput.addEventListener('input', function () {
+            var name = inverse.createInversePropertyBlock.name;
+            inverse.switchDisplay(name === null || name.length === 0, select);
+        });
+    }
+
+    function switchCreateInverseProperty(checkbox, inverse) {
+        if (checkbox.checked && isShowCreateInverseProperty(select, inverse)) {
+            inverse.createInversePropertyBlock.show();
+        } else {
+            inverse.createInversePropertyBlock.hide();
+        }
+    }
+
+    function isShowCreateInverseProperty(select, inverse) {
+        return select.options[select.selectedIndex].value.length === 0 && inverse.needCreateInverseProperty;
     }
 
     return mainBlock;
 };
 
 OPropertyInverseBlock.prototype.createMainBlock = function (checkbox) {
-    var div = document.createElement('div');
+    var div = this.modal.createValueBlock();
     div.appendChild(this.modal.createLabel(localizer.inverseEnable + ':'));
     div.appendChild(checkbox);
     return div;
@@ -256,7 +321,7 @@ OPropertyInverseBlock.prototype.createInversePropertySelect = function () {
         var json = select.options[select.selectedIndex].value;
         if (json !== inverseBlock.EMPTY) {
             inverseBlock.inverseProperty = OArchitectUtil.getPropertyFromJson(json);
-        }
+        } else inverseBlock.inverseProperty = null;
     });
 
     select.disabled = this.disabled;
@@ -283,6 +348,19 @@ OPropertyInverseBlock.prototype.clearSelect = function (select) {
     while (select.options.length > 0) {
         select.remove(0);
     }
+};
+
+OPropertyInverseBlock.prototype.getInverseProperty = function () {
+    if (!this.enableInverseProperty) this.inverseProperty = null;
+    if (this.needCreateInverseProperty && this.createInversePropertyBlock.name !== null) {
+        this.inverseProperty = new OArchitectOProperty();
+        this.inverseProperty.ownerClass = this.property.linkedClass;
+        this.inverseProperty.name = this.createInversePropertyBlock.name;
+        this.inverseProperty.type = this.createInversePropertyBlock.type;
+        this.inverseProperty.inversePropertyEnable = true;
+        this.inverseProperty.linkedClass = this.property.ownerClass;
+    }
+    return this.inverseProperty;
 };
 
 OPropertyInverseBlock.prototype.isInversePropertyEnabled = function () {
