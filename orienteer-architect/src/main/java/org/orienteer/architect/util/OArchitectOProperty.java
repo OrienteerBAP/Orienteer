@@ -1,5 +1,6 @@
 package org.orienteer.architect.util;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.http.util.Args;
@@ -21,7 +22,7 @@ public class OArchitectOProperty implements IClusterable {
     private OArchitectOProperty inverseProperty;
     private boolean existsInDb;
 
-    public static OArchitectOProperty toArchitectOProperty(OProperty property) {
+    public static OArchitectOProperty toArchitectOProperty(OClass oClass, OProperty property) {
         OArchitectOProperty architectProperty = new OArchitectOProperty(property.getName(), property.getType());
         if (property.getLinkedClass() != null) {
             architectProperty.setLinkedClass(property.getLinkedClass().getName());
@@ -35,7 +36,7 @@ public class OArchitectOProperty implements IClusterable {
         }
         int order = CustomAttribute.ORDER.getValue(property);
         architectProperty.setOrder(order);
-        architectProperty.setPageUrl("/property/" + property.getOwnerClass().getName() + "/" + property.getName());
+        architectProperty.setPageUrl("/property/" + oClass.getName() + "/" + property.getName());
         architectProperty.setExistsInDb(true);
         return architectProperty;
     }

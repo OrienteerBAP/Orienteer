@@ -29,21 +29,22 @@ public class OArchitectOClass implements IClusterable {
         OArchitectOClass architectOClass = new OArchitectOClass(oClass.getName());
         architectOClass.setExistsInDb(true);
 
-        architectOClass.setProperties(toOArchitectProperties(oClass.properties(), oClass.getSuperClasses()));
+        architectOClass.setProperties(toOArchitectProperties(oClass, oClass.getSuperClasses()));
         architectOClass.setSuperClasses(toOArchitectClassNames(oClass.getSuperClasses()));
         architectOClass.setSubClasses(toOArchitectClassNames(oClass.getSubclasses()));
         architectOClass.setPageUrl("/class/" + oClass.getName());
         return architectOClass;
     }
 
-    private static List<OArchitectOProperty> toOArchitectProperties(Collection<OProperty> properties, List<OClass> superClasses) {
+    private static List<OArchitectOProperty> toOArchitectProperties(OClass oClass, List<OClass> superClasses) {
+        Collection<OProperty> properties = oClass.properties();
         List<OArchitectOProperty> architectProperties = new ArrayList<>(properties.size());
         ExtendedOPropertiesDataProvider provider = new ExtendedOPropertiesDataProvider(new CollectionModel<>(properties));
         provider.setSort(CustomAttribute.ORDER.getName(), SortOrder.ASCENDING);
         Iterator<? extends OProperty> iterator = provider.iterator(0, provider.size());
         while (iterator.hasNext()){
             OProperty property = iterator.next();
-            OArchitectOProperty architectOProperty = OArchitectOProperty.toArchitectOProperty(property);
+            OArchitectOProperty architectOProperty = OArchitectOProperty.toArchitectOProperty(oClass, property);
             architectOProperty.setSubClassProperty(isSubClassProperty(property, superClasses));
             architectProperties.add(architectOProperty);
         }

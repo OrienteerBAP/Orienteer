@@ -634,13 +634,17 @@ OArchitectOClass.prototype.updatePropertiesOrder = function () {
             var properties = OArchitectUtil.getOrderValidProperties(oClass.properties);
             var children = oClass.cell.children;
             sortPropertiesByOrder(properties);
+            var counter = 0;
             for (var i = 0; i < properties.length; i++) {
                 var property = properties[i];
                 if (!property.isRemoved()) {
                     var index = getCellIndex(children, properties[i]);
-                    var tmp = children[i];
-                    children[i] = children[index];
-                    children[index] = tmp;
+                    if (index > -1) {
+                        var tmp = children[counter];
+                        children[counter] = children[index];
+                        children[index] = tmp;
+                        counter++;
+                    }
                 }
             }
         }
@@ -653,7 +657,8 @@ OArchitectOClass.prototype.updatePropertiesOrder = function () {
 
         function getCellIndex(cells, property) {
             for (var i = 0; i < cells.length; i++) {
-                if (property.name === cells[i].value.name)
+                var cell = cells[i];
+                if (property.name === cell.value.name)
                     return i;
             }
             return -1;
