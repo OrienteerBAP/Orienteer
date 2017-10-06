@@ -17,6 +17,7 @@ import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.OrienteerHeadersToolbar;
+import ru.ydn.wicket.wicketorientdb.model.AbstractFilteredProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
@@ -32,13 +33,12 @@ public class GenericTablePanel<K> extends Panel {
     private final OrienteerDataTable<K, String> dataTable;
 
 
-
     public GenericTablePanel(String id, List<? extends IColumn<K, String>> columns, OQueryDataProvider<K> provider, int rowsPerRange) {
        this(id, columns, provider, rowsPerRange, true);
     }
 
     public GenericTablePanel(String id, List<? extends IColumn<K, String>> columns, ISortableDataProvider<K, String> provider, int rowsPerRange) {
-        this(id, columns, provider, rowsPerRange, provider instanceof OQueryDataProvider);
+        this(id, columns, provider, rowsPerRange, provider instanceof AbstractFilteredProvider && ((AbstractFilteredProvider) provider).isFilterEnable());
     }
 
     @SuppressWarnings("unchecked")
