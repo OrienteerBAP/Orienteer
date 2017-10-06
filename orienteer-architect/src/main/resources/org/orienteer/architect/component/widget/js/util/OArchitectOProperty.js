@@ -120,7 +120,7 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
     this.order = json.order;
     this.exists = json.exists != null ? json.exists : true;
 
-    if (!this.isSubClassProperty()) setCell(this, oClass, cell);
+    if (!this.isSubClassProperty() || !this.isSuperClassExistsInEditor()) setCell(this, oClass, cell);
     if (json.linkedClass != null) setLinkedClass(this, json);
 
     this.setInversePropertyEnable(json.inversePropertyEnable);
