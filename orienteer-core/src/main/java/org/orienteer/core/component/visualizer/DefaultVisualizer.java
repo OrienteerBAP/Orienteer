@@ -137,14 +137,12 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 		final IFilterCriteriaManager manager = getManager(propertyModel, filterForm);
 		Component component;
 		OProperty property = propertyModel.getObject();
-		OType type = property.getType();
+		final OType type = property.getType();
 		switch (type) {
 			case EMBEDDED:
-			case EMBEDDEDMAP:
 			case EMBEDDEDLIST:
 			case EMBEDDEDSET:
 			case LINKBAG:
-			case LINKMAP:
 			case TRANSIENT:
 			case BINARY:
 			case ANY:
@@ -167,6 +165,21 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 					@Override
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
 						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<ODocument>(),
+								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
+				break;
+			case EMBEDDEDMAP:
+			case LINKMAP:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new MapContainsKeyFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<String>of(),
+								id, propertyModel, DefaultVisualizer.this, manager));
+						if (type == OType.EMBEDDEDMAP) {
+							filterPanels.add(new EmbeddedMapContainsValueFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
+									id, propertyModel, DefaultVisualizer.this, manager));
+						} else filterPanels.add(new LinkMapContainsValueFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<ODocument>of(),
 								id, propertyModel, DefaultVisualizer.this, manager));
 					}
 				};
