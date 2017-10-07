@@ -1,8 +1,9 @@
 package org.orienteer.core.component.property;
 
-import java.util.Map;
-import java.util.Set;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.basic.Label;
@@ -14,14 +15,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
-
 import ru.ydn.wicket.wicketorientdb.model.CollectionAdapterModel;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * {@link FormComponentPanel} to view embedded {@link Map}
@@ -39,9 +37,9 @@ public class EmbeddedMapViewPanel<V> extends GenericPanel<Map<String, V>> {
 		final DefaultVisualizer visualizer = DefaultVisualizer.INSTANCE;
 		final OType linkedType = property.getLinkedType();
 		final OType oType = linkedType != null ? linkedType : (OType.LINKMAP.equals(property.getType()) ? OType.LINK :OType.ANY);
-		IModel<Set<Map.Entry<String, V>>> entriesModel = new PropertyModel<Set<Map.Entry<String,V>>>(getModel(), "entrySet()");
+		IModel<Set<Map.Entry<String, V>>> entriesModel = new PropertyModel<>(getModel(), "entrySet()");
 		ListView<Map.Entry<String, V>> listView = 
-				new ListView<Map.Entry<String, V>>("items", new CollectionAdapterModel<Map.Entry<String, V>, Set<Map.Entry<String, V>>>(entriesModel)) {
+				new ListView<Map.Entry<String, V>>("items", new CollectionAdapterModel<>(entriesModel)) {
 
 			@Override
 			protected void populateItem(ListItem<Map.Entry<String, V>> item) {

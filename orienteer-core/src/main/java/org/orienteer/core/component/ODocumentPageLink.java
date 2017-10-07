@@ -1,15 +1,15 @@
 package org.orienteer.core.component;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.model.ODocumentNameModel;
-
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link BookmarkablePageLink} for {@link ODocument}
@@ -55,7 +55,12 @@ public class ODocumentPageLink extends BookmarkablePageLink<ODocument>
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		setVisible(getModelObject()!=null && getModelObject() instanceof ODocument);
+		Object modelObject = getModelObject();
+		ODocument document = modelObject instanceof ODocument ? (ODocument) modelObject : null;
+		if (document == null && modelObject instanceof ORecordId) {
+			document = new ODocument((ORecordId)modelObject);
+		}
+		setVisible(document!=null);
 	}
 
 	public ODocumentPageLink setDocumentNameAsBody(boolean docNameAsBody)
