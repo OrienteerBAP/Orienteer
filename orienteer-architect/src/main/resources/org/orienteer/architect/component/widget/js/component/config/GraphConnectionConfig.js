@@ -28,6 +28,16 @@ GraphConnectionConfig.prototype.config = function () {
 
     graph.connectionHandler.connect = this.createConnectionHandlerConnect();
 
+    graph.connectionHandler.validateConnection = function (source, target) {
+        if (source === target && this.createLinkOnConnection) return null;
+        return mxConnectionHandler.prototype.validateConnection.apply(this, arguments);
+    };
+
+    graph.connectionHandler.mouseUp = function (sender, me) {
+        if (me == null || me.state == null) this.createLinkOnConnection = false;
+        mxConnectionHandler.prototype.mouseUp.apply(this, arguments);
+    };
+
     this.configEvents();
 };
 
@@ -38,8 +48,11 @@ GraphConnectionConfig.prototype.configEvents = function () {
 
 GraphConnectionConfig.prototype.createIsCellConnectable = function () {
     return function (cell) {
-        if (!app.canUpdate || cell == null) return false;
-        return cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
+        var connectable  = !(!app.canUpdate || cell == null);
+        if (connectable) {
+            connectable = cell.value instanceof OArchitectOClass || cell.value instanceof OArchitectOProperty && cell.value.canConnect();
+        }
+        return connectable;
     };
 };
 
@@ -149,6 +162,7 @@ GraphConnectionConfig.prototype.createConnectionHandlerCreateIcons = function ()
                     this.graph.fireMouseEvent(mxEvent.MOUSE_DOWN, new mxMouseEvent(evt, getState()));
                 }
             });
+
             mxEvent.redirectMouseEvents(icon.node, this.graph, getState, mouseDown);
             icons.push(icon);
             this.redrawIcons(icons, state);
