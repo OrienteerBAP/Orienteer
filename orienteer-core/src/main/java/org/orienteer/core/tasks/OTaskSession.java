@@ -121,9 +121,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 						}
 					}
 				}
-				if (retry>0){
-					document.reload();
-				}
+				document.unload();
 				return true;
 			}
 		}.execute();
