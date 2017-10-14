@@ -68,13 +68,13 @@ var OArchitectUtil = {
         return OArchitectUtil.toClassNames(OArchitectUtil.getAllClassesInEditor());
     },
 
-    manageEdgesBetweenCells: function (sourceCell, targetCell, connect, removeEdgesBetween) {
+    manageEdgesBetweenCells: function (sourceCell, targetCell, connect) {
         var cell = null;
         if (sourceCell !== null && targetCell !== null) {
             var graph = app.editor.graph;
             var edgesBetween = graph.getEdgesBetween(sourceCell, targetCell);
             graph.getModel().beginUpdate();
-            if (edgesBetween.length > 0 && (!connect /*|| removeEdgesBetween */)) {
+            if (edgesBetween.length > 0 && (!connect)) {
                 removeEdges(edgesBetween);
                 edgesBetween = [];
             }
