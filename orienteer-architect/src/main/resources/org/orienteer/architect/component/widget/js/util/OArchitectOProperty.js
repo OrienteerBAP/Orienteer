@@ -125,6 +125,7 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
 
     this.setInversePropertyEnable(json.inversePropertyEnable);
     if (this.inversePropertyEnable && json.inverseProperty != null) setInverseProperty(this, json);
+    else this.setInverseProperty(null, false);
 
     this.setExistsInDb(json.existsInDb);
     oClass.notifySubClassesAboutChangesInProperty(this);
@@ -338,12 +339,12 @@ OArchitectOProperty.prototype.setInverseProperty = function (property, createCon
             } else if (property.ownerClass !== null) {
                 OArchitectUtil.manageEdgesBetweenCells(this.cell, property.ownerClass.cell, true, true);
             }
-        } else if (this.inverseProperty !== null && !this.existsInDb) {
+        } else if (this.inverseProperty !== null) {
             if (this.inverseProperty.inverseProperty !== null && this === this.inverseProperty.inverseProperty) {
                 OArchitectUtil.manageEdgesBetweenCells(this.cell, this.inverseProperty.cell, false, true);
                 manageEdgeBetweenPropertyClasses(this, this.inverseProperty, true);
             }
-            if (!this.existsInDb) this.inverseProperty = null;
+            this.inverseProperty = null;
         }
         this.ownerClass.notifySubClassesAboutChangesInProperty(this);
     }
