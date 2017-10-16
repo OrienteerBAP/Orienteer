@@ -2,7 +2,11 @@ package org.orienteer.core.component.property.filter;
 
 import com.google.common.collect.Lists;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -45,7 +49,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
 
     private final String containerId;
 
-    private String currentTabId;
+    private FilterTab currentTab;
 
     public AbstractFilterOPropertyPanel(String id, IModel<String> name, final Form form) {
         super(id);
@@ -54,12 +58,14 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         this.containerId = container.getMarkupId();
         initFilterPanels(filterPanels);
         List<FilterTab> tabs = createPanelSwitches("switch", filterPanels);
+        currentTab = tabs.get(0);
         addFilterPanels(container, filterPanels, tabs);
         addFilterSwitches(container, tabs);
         container.setOutputMarkupPlaceholderTag(true);
         container.setVisible(false);
         container.add(newOkButton("okButton", container, form));
         container.add(newClearButton("clearButton", container, form, filterPanels));
+        container.add(newOnEnterPressBehavior(container));
         add(newShowFilterButton("showFilters", container));
         container.add(new Label("panelTitle", name).setOutputMarkupPlaceholderTag(true));
         add(container);
@@ -75,6 +81,28 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
 
     protected abstract void createFilterPanels(List<AbstractFilterPanel> filterPanels);
 
+    private AjaxFormSubmitBehavior newOnEnterPressBehavior(final WebMarkupContainer container) {
+        return new AjaxFormSubmitBehavior("keypress") {
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
+                    @Override
+                    public CharSequence getPrecondition(Component component) {
+                        return "return Wicket.Event.keyCode(attrs.event) === 13;";
+                    }
+                });
+            }
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                super.onSubmit(target);
+                onOkSubmit(target, container);
+            }
+        };
+    }
+
     private AjaxFormCommand<Void> newOkButton(String id, final WebMarkupContainer container, final Form form) {
         return new AjaxFormCommand<Void>(id, Model.of("OK")) {
             @Override
@@ -83,9 +111,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        container.setVisible(false);
-                        target.add(container);
-                        target.appendJavaScript(removeFilterJs(containerId));
+                        onOkSubmit(target, container);
                     }
                 };
             }
@@ -126,6 +152,12 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         };
     }
 
+    private void onOkSubmit(AjaxRequestTarget target, WebMarkupContainer container) {
+        container.setVisible(false);
+        target.add(container);
+        target.appendJavaScript(removeFilterJs(containerId));
+    }
+
     private AjaxFallbackLink<Void> newShowFilterButton(String id, final WebMarkupContainer container) {
         return new AjaxFallbackLink<Void>(id) {
             @Override
@@ -134,7 +166,8 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                 container.setVisible(visible);
                 target.add(container);
                 if (visible) {
-                    target.appendJavaScript(initFilterJs(containerId, currentTabId));
+                    target.appendJavaScript(initFilterJs(containerId, currentTab != null ? currentTab.getMarkupId() : null));
+                    if (currentTab != null) currentTab.getPanel().focus(target);
                 } else target.appendJavaScript(removeFilterJs(containerId));
             }
         };
@@ -190,11 +223,9 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         for (AbstractFilterPanel panel : panels) {
             if (panel == null)
                 continue;
-            final FilterCriteriaType type = panel.getFilterCriteriaType();
-            FilterTab tab = new FilterTab(id, type);
-            tab.setBody(new ResourceModel(String.format(TAB_NAME_TEMPLATE, type.getName())));
+            FilterTab tab = new FilterTab(id, panel);
+            tab.setBody(new ResourceModel(String.format(TAB_NAME_TEMPLATE, panel.getFilterCriteriaType().getName())));
             switches.add(tab);
-
         }
         return switches;
     }
@@ -206,7 +237,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                 new JavaScriptResourceReference(AbstractFilterOPropertyPanel.class, "filter.js")));
         response.render(CssHeaderItem.forReference(
                 new CssResourceReference(AbstractFilterOPropertyPanel.class, "filter.css")));
-        response.render(OnDomReadyHeaderItem.forScript(initFilterJs(containerId, currentTabId)));
+        response.render(OnDomReadyHeaderItem.forScript(initFilterJs(containerId, currentTab != null ? currentTab.getMarkupId() : null)));
     }
 
     private String initFilterJs(String containerId, String tabId) {
@@ -227,23 +258,28 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
      */
     private class FilterTab extends AjaxFallbackLink<Void> {
 
-        private final FilterCriteriaType type;
+        private final AbstractFilterPanel panel;
         private String tabId;
 
-        public FilterTab(String id, FilterCriteriaType type) {
+        public FilterTab(String id, AbstractFilterPanel panel) {
             super(id);
-            this.type = type;
+            this.panel = panel;
             setOutputMarkupId(true);
         }
 
         @Override
         public void onClick(AjaxRequestTarget target) {
-            currentTabId = getMarkupId();
-            target.appendJavaScript(showTabJs(containerId, currentTabId));
+            currentTab = this;
+            panel.focus(target);
+            target.appendJavaScript(showTabJs(containerId, currentTab.getMarkupId()));
+        }
+
+        public AbstractFilterPanel getPanel() {
+            return panel;
         }
 
         public FilterCriteriaType getType() {
-            return type;
+            return panel.getFilterCriteriaType();
         }
 
         public void setTabId(String tabId) {

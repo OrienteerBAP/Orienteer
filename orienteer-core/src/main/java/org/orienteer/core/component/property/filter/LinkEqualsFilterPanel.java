@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -15,8 +16,6 @@ import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.model.OClassTextChoiceProvider;
 import org.orienteer.core.util.ODocumentChoiceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wicketstuff.select2.Select2Choice;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -30,19 +29,12 @@ import static org.orienteer.core.component.meta.OClassMetaPanel.BOOTSTRAP_SELECT
  */
 public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LinkEqualsFilterPanel.class);
-
     private FormComponent<OClass> classFormComponent;
     private FormComponent<ODocument> docFormComponent;
 
     public LinkEqualsFilterPanel(String id, IModel<ODocument> model, String filterId, IModel<OProperty> propertyModel,
                                  IVisualizer visualizer, IFilterCriteriaManager manager) {
         super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
-    }
-
-    @Override
-    protected void onInitialize() {
-        super.onInitialize();
         WebMarkupContainer container = new WebMarkupContainer(getFilterId()) {
             @Override
             public IMarkupFragment getMarkup(Component child) {
@@ -77,7 +69,8 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
                 .setCloseOnSelect(true)
                 .setTheme(BOOTSTRAP_SELECT2_THEME)
                 .setContainerCssClass("link-filter-class-choice");
-        choice.add(new AjaxFormSubmitBehavior(getForm(), "change") {});
+        choice.add(new AjaxFormSubmitBehavior("change") {});
+        choice.setOutputMarkupId(true);
         return choice;
     }
 
@@ -88,7 +81,8 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
                 .setCloseOnSelect(true)
                 .setTheme(BOOTSTRAP_SELECT2_THEME)
                 .setContainerCssClass("link-filter-document-choice");
-        choice.add(new AjaxFormSubmitBehavior(getForm(), "change") {});
+        choice.add(new AjaxFormSubmitBehavior("change") {});
+        choice.setOutputMarkupId(true);
         return choice;
     }
 
@@ -100,6 +94,13 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
     @Override
     protected ODocument getFilterInput() {
         return docFormComponent.getConvertedInput();
+    }
+
+    @Override
+    protected void focus(AjaxRequestTarget target) {
+        if (classFormComponent.isEnabled()) {
+            target.focusComponent(classFormComponent);
+        } else target.focusComponent(docFormComponent);
     }
 
     @Override

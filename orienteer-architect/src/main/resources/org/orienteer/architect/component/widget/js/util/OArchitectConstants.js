@@ -17,6 +17,8 @@ var OArchitectConstants = {
     OPROPERTY_EXISTS_CONNECTION_STYLE: 'oPropertyExistsConnectionStyle',
     OPROPERTY_EXISTS_INVERSE_CONNECTION_STYLE: 'oPropertyExistsInverseConnectionStyle',
 
+    UNSAVED_LINK: 'unsavedLink',
+    SAVED_LINK: 'savedLink',
     UNSAVED_INHERITANCE: 'unsavedInheritance',
     SAVED_INHERITANCE: 'savedInheritance',
 

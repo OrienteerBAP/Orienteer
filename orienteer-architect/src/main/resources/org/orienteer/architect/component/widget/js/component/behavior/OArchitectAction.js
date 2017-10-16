@@ -336,7 +336,10 @@ var OArchitectAction = {
             if (respond.apply) {
                 msg = new OArchitectMessage(localizer.applyChangesSuccess);
                 OArchitectUtil.forEach(OArchitectUtil.getAllEdgesWithValue(OArchitectConstants.UNSAVED_INHERITANCE), function (edge) {
-                    edge.setValue('');
+                    edge.setValue(OArchitectConstants.SAVED_INHERITANCE);
+                });
+                OArchitectUtil.forEach(OArchitectUtil.getAllEdgesWithValue(OArchitectConstants.UNSAVED_LINK), function (edge) {
+                    edge.setValue(OArchitectConstants.SAVED_LINK);
                 });
             } else {
                 msg = new OArchitectMessage(localizer.applyChangesError, true);

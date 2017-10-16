@@ -71,13 +71,19 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
      */
     protected abstract T getFilterInput();
 
+    /**
+     * Set focus on filtered component
+     * @param target {@link AjaxRequestTarget}
+     */
+    protected abstract void focus(AjaxRequestTarget target);
+
     @SuppressWarnings("unchecked")
     protected FormComponent<?> createFilterComponent(IModel<?> model) {
         return (FormComponent<?>) visualizer.createComponent(filterId, DisplayMode.EDIT, null, propertyModel, model);
     }
 
     protected IModel<String> getTitle() {
-        return new ResourceModel(java.lang.String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
+        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
                 getFilterCriteriaType().getName()));
     }
 

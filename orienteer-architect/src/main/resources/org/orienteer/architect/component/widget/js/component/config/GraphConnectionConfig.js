@@ -57,13 +57,8 @@ GraphConnectionConfig.prototype.createIsCellConnectable = function () {
 };
 
 GraphConnectionConfig.prototype.createIsCellDisconnectable = function () {
-    return function (cell) {
-        if (!app.canUpdate)
-            return false;
-        if (cell.edge && cell.source.value instanceof OArchitectOProperty)
-            return cell.source.value.canDisconnect();
-
-        return this.isCellDeletable(cell);
+    return function () {
+        return false;
     };
 };
 
@@ -109,6 +104,10 @@ GraphConnectionConfig.prototype.createConnectionHandlerFactoryMethod = function 
             var targetValue = target.value;
             if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
                 result = sourceValue.isSuperClassExistsInDb(targetValue) ? OArchitectConstants.SAVED_INHERITANCE : OArchitectConstants.UNSAVED_INHERITANCE;
+            } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
+                result = sourceValue.isLinkExistsInDb(targetValue) ? OArchitectConstants.SAVED_LINK : OArchitectConstants.UNSAVED_LINK;
+            } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOProperty) {
+                result = sourceValue.isLinkExistsInDb(targetValue.ownerClass) ? OArchitectConstants.SAVED_LINK : OArchitectConstants.UNSAVED_LINK;
             }
         }
         return result;
