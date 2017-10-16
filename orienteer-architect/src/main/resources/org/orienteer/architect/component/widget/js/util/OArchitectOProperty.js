@@ -58,6 +58,9 @@ OArchitectOProperty.prototype.type = null;
  */
 OArchitectOProperty.prototype.linkedClass = null;
 
+/**
+ * {@link OArchitectOProperty} which is inverse property for this property
+ */
 OArchitectOProperty.prototype.inverseProperty = null;
 
 /**
@@ -102,6 +105,11 @@ OArchitectOProperty.prototype.previousName = null;
 OArchitectOProperty.prototype.order = 0;
 
 /**
+ * @type {boolean} true if link exists in database false otherwise
+ */
+OArchitectOProperty.prototype.linkExistsInDb = false;
+
+/**
  * Config instance of {@link OArchitectOProperty} from json which is respond from database
  * @param oClass - {@link OArchitectOClass} which is owner of this property
  * @param json - json string which contains config for this property
@@ -122,6 +130,7 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
 
     if (!this.isSubClassProperty() || !this.isSuperClassExistsInEditor()) setCell(this, oClass, cell);
     if (json.linkedClass != null) setLinkedClass(this, json);
+    else this.setLinkedClass(null, false);
 
     this.setInversePropertyEnable(json.inversePropertyEnable);
     if (this.inversePropertyEnable && json.inverseProperty != null) setInverseProperty(this, json);
@@ -140,7 +149,10 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
         var linkedCell = OArchitectUtil.getCellByClassName(json.linkedClass);
         if (linkedCell !== null) {
             property.setLinkedClass(linkedCell.value);
-        } else property.linkedClass = json.linkedClass;
+        } else {
+            property.setLinkedClass(null, false);
+            property.linkedClass = json.linkedClass;
+        }
     }
 
     function setInverseProperty(property, json) {
@@ -308,7 +320,10 @@ OArchitectOProperty.prototype.setLinkedClass = function (linkedClass, createEdge
         } else if (linkedClass !== null) {
             this.linkedClass = linkedClass;
             createEdge = createEdge == null ? true : createEdge;
-            if (createEdge) OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true, true);
+            if (createEdge) {
+                var cell = OArchitectUtil.manageEdgesBetweenCells(this.cell, this.linkedClass.cell, true);
+                if (cell !== null && this.isLinkExistsInDb(linkedClass)) cell.setValue(OArchitectConstants.SAVED_LINK);
+            }
             this.ownerClass.notifySubClassesAboutChangesInProperty(this);
         }
     }
@@ -448,8 +463,11 @@ OArchitectOProperty.prototype.setExistsInDb = function (existsInDb) {
 
     function getEdges(cell1, cell2) {
         var result = [];
-        if (cell1 !== null && cell2 !== null)
-            result = app.editor.graph.getEdgesBetween(cell1, cell2);
+        if (cell1 !== null && cell2 !== null) {
+            OArchitectUtil.forEach(app.editor.graph.getEdgesBetween(cell1, cell2), function (edge) {
+                if (edge.value !== OArchitectConstants.UNSAVED_LINK) result.push(edge);
+            });
+        }
         return result;
     }
 

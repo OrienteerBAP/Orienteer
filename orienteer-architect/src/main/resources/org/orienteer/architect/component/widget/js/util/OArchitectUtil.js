@@ -112,7 +112,7 @@ var OArchitectUtil = {
                 return !cell.source.value.existsInDb || !cell.target.value.existsInDb
                     || cell.value === OArchitectConstants.UNSAVED_INHERITANCE;
             } else if (cell.source.value instanceof OArchitectOProperty) {
-                return !cell.source.value.existsInDb;
+                return !cell.source.value.existsInDb || cell.value === OArchitectConstants.UNSAVED_LINK;
             }
         }
         return cell.isVertex() && cell.value instanceof OArchitectOProperty ? !cell.value.existsInDb : true;

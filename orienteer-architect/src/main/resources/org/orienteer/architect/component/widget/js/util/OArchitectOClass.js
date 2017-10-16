@@ -689,7 +689,7 @@ OArchitectOClass.prototype.setExistsInDb = function (existsInDb) {
         var edges = [];
         addClassesEdges(this.superClasses, this.cell, edgesInDb, edges);
         addClassesEdges(this.subClasses, this.cell, edgesInDb, edges);
-
+        setPropertiesExistsInDb(this);
 
         if (this.existsInDb) {
             app.editor.graph.setCellStyle(OArchitectConstants.OCLASS_EXISTS_STYLE, [this.cell]);
@@ -713,6 +713,12 @@ OArchitectOClass.prototype.setExistsInDb = function (existsInDb) {
                         } else edges.push(edge);
                     });
                 }
+            });
+        }
+
+        function setPropertiesExistsInDb(oClass) {
+            OArchitectUtil.forEach(oClass.properties, function (property) {
+                property.setExistsInDb(property.existsInDb);
             });
         }
     }
