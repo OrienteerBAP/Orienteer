@@ -10,7 +10,9 @@ import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -75,30 +77,56 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	}
 	
 	public <V> void persist() {
-		new DBClosure<Boolean>() {
+		DBClosure.sudoSave(document);
+	}
+	
+	public <V> void persist(final String field, final V value) {
+		document.field(field, value);
+		if(document.getIdentity().isPersistent()) {
+			DBClosure.sudoSave(document);
+		}
+	}
 
+	public void relativeChange(final String field, final Object value,final String changeCommand){
+		new DBClosure<Boolean>() {
 			@Override
 			protected Boolean execute(ODatabaseDocument db) {
-				db.save(document);
+				int maxRetries = 50;
+				OCommandSQL command = new OCommandSQL("update "+document.getIdentity()+" "+changeCommand);
+				int retry = 0;					
+				while(true){
+					try {
+						command.execute(value);
+						break;
+					} catch (OConcurrentModificationException  e) {
+						retry++;
+						if (retry>=maxRetries){
+							throw e;//if all retries failed
+						}
+					}
+				}
+				document.unload();
 				return true;
 			}
 		}.execute();
 	}
 	
-	public <V> void persist(final String field, final V value) {
+	public void increment(final String field, final Number value){
 		if(document.getIdentity().isPersistent()) {
-			new DBClosure<Boolean>() {
-	
-				@Override
-				protected Boolean execute(ODatabaseDocument db) {
-					document.field(field, value);
-					db.save(document);
-					return true;
-				}
-			}.execute();
+			relativeChange(field,value,"INCREMENT "+field+"=?");
 		} else {
-			document.field(field, value);
-		}
+			Number oldValue = document.field(field);
+			document.field(field, oldValue.doubleValue()+value.doubleValue());
+		}		
+	}
+
+	public void append(final String field, final String value){
+		if(document.getIdentity().isPersistent()) {
+			relativeChange(field,value,"SET "+field+"=ifnull("+field+",'').append(?)");
+		} else {
+			String oldValue = document.field(field);
+			document.field(field, oldValue+value);
+		}		
 	}
 
 	@Override
@@ -187,7 +215,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	
 	@Override
 	public ITaskSession incrementCurrentProgress() {
-		setCurrentProgress(getCurrentProgress()+1);
+		increment(Field.PROGRESS_CURRENT.fieldName(), 1);
 		return this;
 	}
 
