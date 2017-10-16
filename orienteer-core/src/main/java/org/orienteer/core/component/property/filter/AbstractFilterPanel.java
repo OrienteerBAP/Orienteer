@@ -77,7 +77,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     }
 
     protected IModel<String> getTitle() {
-        return new ResourceModel(java.lang.String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
+        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
                 getFilterCriteriaType().getName()));
     }
 

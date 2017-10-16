@@ -2,7 +2,11 @@ package org.orienteer.core.component.property.filter;
 
 import com.google.common.collect.Lists;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -60,6 +64,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         container.setVisible(false);
         container.add(newOkButton("okButton", container, form));
         container.add(newClearButton("clearButton", container, form, filterPanels));
+        container.add(newOnEnterPressBehavior(container));
         add(newShowFilterButton("showFilters", container));
         container.add(new Label("panelTitle", name).setOutputMarkupPlaceholderTag(true));
         add(container);
@@ -75,6 +80,28 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
 
     protected abstract void createFilterPanels(List<AbstractFilterPanel> filterPanels);
 
+    private AjaxFormSubmitBehavior newOnEnterPressBehavior(final WebMarkupContainer container) {
+        return new AjaxFormSubmitBehavior("keypress") {
+
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(new AjaxCallListener() {
+                    @Override
+                    public CharSequence getPrecondition(Component component) {
+                        return "return Wicket.Event.keyCode(attrs.event) === 13;";
+                    }
+                });
+            }
+
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                super.onSubmit(target);
+                onOkSubmit(target, container);
+            }
+        };
+    }
+
     private AjaxFormCommand<Void> newOkButton(String id, final WebMarkupContainer container, final Form form) {
         return new AjaxFormCommand<Void>(id, Model.of("OK")) {
             @Override
@@ -83,9 +110,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
 
                     @Override
                     protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        container.setVisible(false);
-                        target.add(container);
-                        target.appendJavaScript(removeFilterJs(containerId));
+                        onOkSubmit(target, container);
                     }
                 };
             }
@@ -124,6 +149,12 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                 setIcon(FAIconType.trash);
             }
         };
+    }
+
+    private void onOkSubmit(AjaxRequestTarget target, WebMarkupContainer container) {
+        container.setVisible(false);
+        target.add(container);
+        target.appendJavaScript(removeFilterJs(containerId));
     }
 
     private AjaxFallbackLink<Void> newShowFilterButton(String id, final WebMarkupContainer container) {
