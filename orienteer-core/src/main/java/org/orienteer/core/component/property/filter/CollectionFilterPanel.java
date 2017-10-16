@@ -42,11 +42,6 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
     public CollectionFilterPanel(String id, IModel<Collection<T>> model, String filterId, IModel<OProperty> propertyModel,
                                  IVisualizer visualizer, IFilterCriteriaManager manager) {
         super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
-    }
-
-    @Override
-    protected void onInitialize() {
-        super.onInitialize();
         setOutputMarkupPlaceholderTag(true);
         filterComponents = Lists.newArrayList();
         filterComponents.add(new ListFilterInput("container", filterComponents));
@@ -60,6 +55,12 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             collection.add(input.getConvertedInput());
         }
         return collection;
+    }
+
+    @Override
+    protected void focus(AjaxRequestTarget target) {
+        if (!filterComponents.isEmpty())
+            filterComponents.get(0).focus(target);
     }
 
     private void createAndAddFiltersList(final List<ListFilterInput> filterComponents) {
@@ -143,6 +144,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
                     }
                     components.get(components.size() - 1).getAddButton().setVisible(true);
                     if (components.size() - 1 == 0) components.get(0).getRemoveButton().setVisible(false);
+                    components.get(components.size() - 1).focus(target);
                     saveInput(target, components);
                     target.add(CollectionFilterPanel.this);
                 }
@@ -157,13 +159,15 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             addButton = new AjaxFallbackLink<Void>("addButton") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    components.add(new ListFilterInput(id, components));
+                    ListFilterInput filterInput = new ListFilterInput(id, components);
+                    components.add(filterInput);
                     for (ListFilterInput input : components) {
                         input.getRemoveButton().setVisible(true);
                     }
                     setVisible(false);
                     saveInput(target, components);
                     target.add(CollectionFilterPanel.this);
+                    filterInput.focus(target);
                 }
 
                 @Override
@@ -176,6 +180,10 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
             add(inputComponent);
             add(removeButton);
             add(addButton);
+        }
+
+        public void focus(AjaxRequestTarget target) {
+            target.focusComponent(inputComponent);
         }
 
         private void saveInput(AjaxRequestTarget target, List<ListFilterInput> components) {

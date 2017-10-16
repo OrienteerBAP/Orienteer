@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -39,11 +40,6 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
     public CollectionLinkFilterPanel(String id, IModel<Collection<ODocument>> model, String filterId, IModel<OProperty> propertyModel,
                                      IVisualizer visualizer, IFilterCriteriaManager manager) {
         super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
-    }
-
-    @Override
-    protected void onInitialize() {
-        super.onInitialize();
         WebMarkupContainer container = new WebMarkupContainer(getFilterId()) {
             @Override
             public IMarkupFragment getMarkup(Component child) {
@@ -76,6 +72,13 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
         return docsFormComponent.getConvertedInput();
     }
 
+    @Override
+    protected void focus(AjaxRequestTarget target) {
+        if (classesFormComponent.isEnabled()) {
+            target.focusComponent(classesFormComponent);
+        } else target.focusComponent(docsFormComponent);
+    }
+
     private Select2MultiChoice<String> createClassChooseComponent(String id, IModel<Collection<String>> classNamesModel) {
         Select2MultiChoice<String> choice = new Select2MultiChoice<String>(id, classNamesModel,
                 OClassCollectionTextChoiceProvider.INSTANCE) {
@@ -94,7 +97,7 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
                 .setCloseOnSelect(true)
                 .setTheme(BOOTSTRAP_SELECT2_THEME)
                 .setContainerCssClass("link-filter-class-choice");
-        choice.add(new AjaxFormSubmitBehavior(getForm(), "change") {});
+        choice.add(new AjaxFormSubmitBehavior("change") {});
         return choice;
     }
 
@@ -107,7 +110,7 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
                 .setCloseOnSelect(true)
                 .setTheme(BOOTSTRAP_SELECT2_THEME)
                 .setContainerCssClass("link-filter-class-choice");
-        choice.add(new AjaxFormSubmitBehavior(getForm(), "change") {});
+        choice.add(new AjaxFormSubmitBehavior("change") {});
         return choice;
     }
 

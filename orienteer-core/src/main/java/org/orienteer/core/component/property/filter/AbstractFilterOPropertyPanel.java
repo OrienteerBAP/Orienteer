@@ -49,7 +49,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
 
     private final String containerId;
 
-    private String currentTabId;
+    private FilterTab currentTab;
 
     public AbstractFilterOPropertyPanel(String id, IModel<String> name, final Form form) {
         super(id);
@@ -58,6 +58,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         this.containerId = container.getMarkupId();
         initFilterPanels(filterPanels);
         List<FilterTab> tabs = createPanelSwitches("switch", filterPanels);
+        currentTab = tabs.get(0);
         addFilterPanels(container, filterPanels, tabs);
         addFilterSwitches(container, tabs);
         container.setOutputMarkupPlaceholderTag(true);
@@ -165,7 +166,8 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                 container.setVisible(visible);
                 target.add(container);
                 if (visible) {
-                    target.appendJavaScript(initFilterJs(containerId, currentTabId));
+                    target.appendJavaScript(initFilterJs(containerId, currentTab != null ? currentTab.getMarkupId() : null));
+                    if (currentTab != null) currentTab.getPanel().focus(target);
                 } else target.appendJavaScript(removeFilterJs(containerId));
             }
         };
@@ -221,11 +223,9 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         for (AbstractFilterPanel panel : panels) {
             if (panel == null)
                 continue;
-            final FilterCriteriaType type = panel.getFilterCriteriaType();
-            FilterTab tab = new FilterTab(id, type);
-            tab.setBody(new ResourceModel(String.format(TAB_NAME_TEMPLATE, type.getName())));
+            FilterTab tab = new FilterTab(id, panel);
+            tab.setBody(new ResourceModel(String.format(TAB_NAME_TEMPLATE, panel.getFilterCriteriaType().getName())));
             switches.add(tab);
-
         }
         return switches;
     }
@@ -237,7 +237,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                 new JavaScriptResourceReference(AbstractFilterOPropertyPanel.class, "filter.js")));
         response.render(CssHeaderItem.forReference(
                 new CssResourceReference(AbstractFilterOPropertyPanel.class, "filter.css")));
-        response.render(OnDomReadyHeaderItem.forScript(initFilterJs(containerId, currentTabId)));
+        response.render(OnDomReadyHeaderItem.forScript(initFilterJs(containerId, currentTab != null ? currentTab.getMarkupId() : null)));
     }
 
     private String initFilterJs(String containerId, String tabId) {
@@ -258,23 +258,28 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
      */
     private class FilterTab extends AjaxFallbackLink<Void> {
 
-        private final FilterCriteriaType type;
+        private final AbstractFilterPanel panel;
         private String tabId;
 
-        public FilterTab(String id, FilterCriteriaType type) {
+        public FilterTab(String id, AbstractFilterPanel panel) {
             super(id);
-            this.type = type;
+            this.panel = panel;
             setOutputMarkupId(true);
         }
 
         @Override
         public void onClick(AjaxRequestTarget target) {
-            currentTabId = getMarkupId();
-            target.appendJavaScript(showTabJs(containerId, currentTabId));
+            currentTab = this;
+            panel.focus(target);
+            target.appendJavaScript(showTabJs(containerId, currentTab.getMarkupId()));
+        }
+
+        public AbstractFilterPanel getPanel() {
+            return panel;
         }
 
         public FilterCriteriaType getType() {
-            return type;
+            return panel.getFilterCriteriaType();
         }
 
         public void setTabId(String tabId) {
