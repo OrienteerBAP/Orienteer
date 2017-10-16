@@ -139,7 +139,6 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 		OProperty property = propertyModel.getObject();
 		final OType type = property.getType();
 		switch (type) {
-			case EMBEDDED:
 			case EMBEDDEDLIST:
 			case EMBEDDEDSET:
 			case LINKBAG:
@@ -147,6 +146,17 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 			case BINARY:
 			case ANY:
 				component = null;
+				break;
+			case EMBEDDED:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						filterPanels.add(new EmbeddedContainsKeyPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
+								id, propertyModel, DefaultVisualizer.this, manager));
+						filterPanels.add(new EmbeddedContainsValuePanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
+								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
 				break;
 			case LINK:
 				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
