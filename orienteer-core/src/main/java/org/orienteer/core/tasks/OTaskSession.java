@@ -77,29 +77,13 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	}
 	
 	public <V> void persist() {
-		new DBClosure<Boolean>() {
-
-			@Override
-			protected Boolean execute(ODatabaseDocument db) {
-				db.save(document);
-				return true;
-			}
-		}.execute();
+		DBClosure.sudoSave(document);
 	}
 	
 	public <V> void persist(final String field, final V value) {
+		document.field(field, value);
 		if(document.getIdentity().isPersistent()) {
-			new DBClosure<Boolean>() {
-	
-				@Override
-				protected Boolean execute(ODatabaseDocument db) {
-					document.field(field, value);
-					db.save(document);
-					return true;
-				}
-			}.execute();
-		} else {
-			document.field(field, value);
+			DBClosure.sudoSave(document);
 		}
 	}
 
