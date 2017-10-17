@@ -20,7 +20,6 @@ import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ import java.util.List;
  * SELECT FROM aClass WHERE a BETWEEN value1 AND value2
  * @param <T> type of value
  */
-public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
+public class RangeFilterPanel<T> extends AbstractFilterPanel<List<T>> {
 
     @Inject
     private IMarkupProvider markupProvider;
@@ -37,7 +36,7 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
     private FormComponent<T> endComponent;
 
     @SuppressWarnings("unchecked")
-    public RangeFilterPanel(String id, IModel<Collection<T>> model, String filterId, IModel<OProperty> propertyModel,
+    public RangeFilterPanel(String id, IModel<List<T>> model, String filterId, IModel<OProperty> propertyModel,
                             IVisualizer visualizer, IFilterCriteriaManager manager) {
         super(id, model, filterId, propertyModel, visualizer, manager, Model.of(true));
         startComponent = (FormComponent<T>) createFilterComponent(Model.of());
@@ -58,8 +57,8 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
     }
 
     @Override
-    protected Collection<T> getFilterInput() {
-        Collection<T> collection = Lists.newArrayList();
+    protected List<T> getFilterInput() {
+        List<T> collection = Lists.newArrayList();
         collection.add(startComponent.getConvertedInput());
         collection.add(endComponent.getConvertedInput());
         return collection;
@@ -89,7 +88,7 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<Collection<T>> {
 
 
     @Override
-    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<Collection<T>> models) {
+    protected void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<List<T>> models) {
         manager.addFilterCriteria(manager.createRangeFilterCriteria(models, getJoinModel()));
     }
 
