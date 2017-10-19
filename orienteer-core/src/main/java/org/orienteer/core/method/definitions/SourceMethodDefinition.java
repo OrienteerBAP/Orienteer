@@ -8,6 +8,8 @@ import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.configs.OMethodConfig;
 import org.orienteer.core.method.filters.PermissionFilter;
 import org.orienteer.core.method.filters.SelectorFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * {@link IMethodDefinition} implementation for Java source method definitions
  * 
@@ -16,6 +18,8 @@ import org.orienteer.core.method.filters.SelectorFilter;
  *
  */
 public class SourceMethodDefinition implements IMethodDefinition{
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SourceMethodDefinition.class);
 	private Class<? extends IMethod> methodClass;
 	private int order;
 	private String methodId;
@@ -48,8 +52,7 @@ public class SourceMethodDefinition implements IMethodDefinition{
 			newMethod.methodInit(getMethodId(),dataObject,config);
 			return newMethod;
 		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Can't obtain a method", e);
 		}
 		return null;
 	}

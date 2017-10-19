@@ -188,7 +188,7 @@ class MetadataUtil {
             Files.deleteIfExists(metadataPath);
         } catch (IOException e) {
             LOG.warn("File metadata.xml does not exists.");
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            if (LOG.isDebugEnabled()) LOG.debug(e.getMessage(), e);
         }
     }
 

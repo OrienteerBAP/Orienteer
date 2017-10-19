@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.HashBasedTable;
@@ -31,6 +33,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
  */
 public class CalculablePropertiesHook extends ODocumentHookAbstract
 {
+	private static final Logger LOG = LoggerFactory.getLogger(CalculablePropertiesHook.class);
 	private final static Pattern FULL_QUERY_PATTERN = Pattern.compile("^\\s*(select|traverse)", Pattern.CASE_INSENSITIVE);
 	
 	private Map<String, Integer> schemaVersions = new ConcurrentHashMap<String, Integer>();
@@ -169,8 +172,8 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 								value = OType.convert(value, type.getDefaultJavaType());
 								iDocument.field(calcProperty, value);
 							}
-						} catch (OCommandSQLParsingException e) {
-							e.printStackTrace();
+						} catch (OCommandSQLParsingException e) { //TODO: Refactor because one exception prevent calculation for others
+							LOG.warn("Can't parse SQL for calculable property", e);
 							iDocument.field(calcProperty, e.getLocalizedMessage());
 						}
 					}
