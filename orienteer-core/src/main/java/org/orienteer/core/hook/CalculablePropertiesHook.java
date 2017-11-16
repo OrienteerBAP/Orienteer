@@ -120,6 +120,7 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 		onRecordAfterRead(iDocument);
 	}
 
+
 	@Override
 	public void onRecordAfterRead(ODocument iDocument) {
 		super.onRecordAfterRead(iDocument);
@@ -170,7 +171,10 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 									value = calculated.get(0).field("value");
 								}
 								value = OType.convert(value, type.getDefaultJavaType());
-								iDocument.field(calcProperty, value);
+								Object oldValue = iDocument.field(calcProperty); 
+								if (oldValue!=value && (oldValue==null || !oldValue.equals(value))){
+									iDocument.field(calcProperty, value);
+								}
 							}
 						} catch (OCommandSQLParsingException e) { //TODO: Refactor because one exception prevent calculation for others
 							LOG.warn("Can't parse SQL for calculable property", e);
