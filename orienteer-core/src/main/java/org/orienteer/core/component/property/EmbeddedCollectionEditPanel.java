@@ -1,14 +1,12 @@
 package org.orienteer.core.component.property;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.tika.metadata.Property.PropertyType;
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
@@ -20,20 +18,14 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
-import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ru.ydn.wicket.wicketorientdb.model.CollectionAdapterModel;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * {@link FormComponentPanel} to edit embedded collections
@@ -46,7 +38,8 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 	protected final Class<?> finalType;
 	private List<T> data;
 	private ListView<T> listView;
-	
+	private Class<FormComponent> embeddedView;
+
 	@Inject
 	private IMarkupProvider markupProvider;
 	
@@ -61,8 +54,11 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 		listView = new ListView<T>("items", new PropertyModel<List<T>>(this, "data")) {
 
 			@Override
+			@SuppressWarnings("unchecked")
 			protected void populateItem(final ListItem<T> item) {
-				item.add(visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, item.getModel()));
+				Component component = visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, item.getModel());
+				if (embeddedView == null && component != null) embeddedView = (Class<FormComponent>) component.getClass();
+				item.add(component);
 				item.add(new AjaxFormCommand<Object>("remove", "command.remove")
 						{
 							@Override
@@ -78,7 +74,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 						 .setBootstrapType(BootstrapType.DANGER)
 						 .setIcon((String)null));
 			}
-			
+
 			@Override
 			protected ListItem<T> newItem(int index, IModel<T> itemModel) {
 				return new ListItem<T>(index, itemModel)
@@ -130,12 +126,12 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 	}
 	
 	protected void convertToData() {
-		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<Object>, Void>() {
+		visitFormComponentsPostOrder(this, new IVisitor<FormComponent<?>, Void>() {
 
 			@Override
-			public void component(FormComponent<Object> object,
+			public void component(FormComponent<?> object,
 					IVisit<Void> visit) {
-				if(!(EmbeddedCollectionEditPanel.this.equals(object)))
+				if(embeddedView != null && embeddedView.equals(object.getClass()))
 				{
 					object.convertInput();
 					object.updateModel();
