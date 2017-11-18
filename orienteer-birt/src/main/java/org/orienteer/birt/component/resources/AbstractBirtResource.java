@@ -8,6 +8,8 @@ import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderTask;
 import org.eclipse.birt.report.engine.api.IReportDocument;
 import org.orienteer.birt.component.IBirtReportData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base resource for BIRT reports export
@@ -15,10 +17,8 @@ import org.orienteer.birt.component.IBirtReportData;
  */
 public abstract class AbstractBirtResource extends AbstractResource {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractBirtResource.class);
 	
 	private IBirtReportData reportData;
 
@@ -47,8 +47,7 @@ public abstract class AbstractBirtResource extends AbstractResource {
 				renderTask.render();
 				cache.close();	        
 			} catch (EngineException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error("BIRT report generation failed", e);
 			}
 	      }
 	    });

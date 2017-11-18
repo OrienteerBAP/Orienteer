@@ -85,8 +85,7 @@ class InitUtils {
             if (!Files.exists(pathToDir))
                 Files.createDirectory(pathToDir);
         } catch (IOException e) {
-            LOG.error("Cannot create folder: " + pathToDir.toAbsolutePath());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            LOG.error("Cannot create folder: " + pathToDir.toAbsolutePath(), e);
         }
         return pathToDir;
     }

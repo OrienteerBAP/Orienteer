@@ -9,6 +9,8 @@ import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.method.configs.OClassOMethodConfig;
 import org.orienteer.core.method.filters.OEntityFilter;
 import org.orienteer.core.method.filters.PermissionFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -17,6 +19,8 @@ import org.orienteer.core.method.filters.PermissionFilter;
  */
 public class ClassMethodDefinition implements IMethodDefinition{
 
+	private static final Logger LOG = LoggerFactory.getLogger(ClassMethodDefinition.class);
+	
 	private int order;
 	private String methodId;
 	private Class<? extends IMethod> methodClass;
@@ -61,8 +65,7 @@ public class ClassMethodDefinition implements IMethodDefinition{
 				return newMethod;
 			}
 		} catch (InstantiationException | IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Can't obtain a method", e);
 		}
 		return null;
 	}

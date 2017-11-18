@@ -9,6 +9,8 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodConfig;
 import org.orienteer.core.method.IMethodEnvironmentData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -21,6 +23,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
  */
 public abstract class AbstractOMethod implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractOMethod.class);
 
 	private IMethodEnvironmentData envData;
 	private String id;
@@ -57,8 +60,7 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 			try {
 				component.add(behavior.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error("Can't apply behaviors", e);
 			}
 		}		
 	}

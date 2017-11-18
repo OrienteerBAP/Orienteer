@@ -13,7 +13,7 @@
 **/.settings/
 build.cmd
 **/databases/
-**/Orienteer/
+/Orienteer/
 ${artifactId}/
 **/.idea/
 **/*.iml

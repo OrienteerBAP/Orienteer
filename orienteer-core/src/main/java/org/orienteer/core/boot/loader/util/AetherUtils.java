@@ -102,7 +102,7 @@ class AetherUtils {
         try {
             descriptorResult = system.readArtifactDescriptor(session, descriptorRequest);
         } catch (ArtifactDescriptorException e) {
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            if (LOG.isDebugEnabled()) LOG.debug(e.getMessage(), e);
         }
         Set<ArtifactRequest> requests = createArtifactRequests(descriptorResult);
         return resolveArtifactRequests(requests);
@@ -228,7 +228,7 @@ class AetherUtils {
             result = system.resolveArtifact(session, request);
         } catch (ArtifactResolutionException e) {
             LOG.warn("Cannot resolve artifact: " + request.getArtifact());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            if (LOG.isDebugEnabled()) LOG.debug(e.getMessage(), e);
         }
         return result;
     }
@@ -253,7 +253,7 @@ class AetherUtils {
             @Override
             public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception)
             {
-                exception.printStackTrace();
+            	LOG.error("ServiceLocator failed", exception);
             }
         });
 
@@ -288,7 +288,7 @@ class AetherUtils {
             descriptorResult = system.readArtifactDescriptor(session, request);
         } catch (ArtifactDescriptorException e) {
             LOG.warn("Can't get artifact description: {}", request);
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            if (LOG.isDebugEnabled()) LOG.debug(e.getMessage(), e);
         }
         return descriptorResult;
     }

@@ -11,6 +11,8 @@ import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -24,6 +26,8 @@ import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.resol
  * Utility class for download maven dependencies.
  */
 public class MavenResolver {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MavenResolver.class);
 
     private static MavenResolver resolver;
     private final boolean resolvingRecursively;
@@ -130,7 +134,7 @@ public class MavenResolver {
         try {
             results = resolveDependencies(groupArtifactVersion);
         } catch (ArtifactDescriptorException | DependencyCollectionException | DependencyResolutionException e) {
-            e.printStackTrace();
+        	LOG.debug(e.getMessage(), e);
         }
         return results != null ? results : Lists.<Artifact>newArrayList();
     }

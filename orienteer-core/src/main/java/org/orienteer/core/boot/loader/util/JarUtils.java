@@ -89,10 +89,7 @@ class JarUtils {
             result = path;
         } catch (IOException e) {
             Files.deleteIfExists(path);
-            if (LOG.isDebugEnabled()) {
-                LOG.error("Can't unarchive " + jarEntry.getName());
-                e.printStackTrace();
-            }
+            LOG.error("Can't unarchive " + jarEntry.getName(), e);
         }
         return result;
     }
@@ -217,8 +214,7 @@ class JarUtils {
             }
             jarFile.close();
         } catch (IOException e) {
-            LOG.error("Cannot read jar file: " + pathToJar.toAbsolutePath());
-            if (LOG.isDebugEnabled()) e.printStackTrace();
+            LOG.error("Cannot read jar file: " + pathToJar.toAbsolutePath(), e);
         }
         return ret;
     }

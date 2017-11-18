@@ -4,12 +4,16 @@ import java.util.HashSet;
 
 import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.MethodStorage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Storage for {@link ClassMethodDefinition} 
  *
  */
 public class ClassMethodDefinitionStorage extends AbstractMethodDefinitionStorage{
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ClassMethodDefinition.class);
 
 	public ClassMethodDefinitionStorage(MethodStorage storage) {
 		super(storage);
@@ -22,8 +26,7 @@ public class ClassMethodDefinitionStorage extends AbstractMethodDefinitionStorag
 			try {
 				definitions.add(new ClassMethodDefinition(f));
 			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				LOG.error("Error during methods reloading", e);
 			}
 		}
 	}

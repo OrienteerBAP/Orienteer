@@ -46,6 +46,8 @@ import org.orienteer.birt.component.service.IBirtReportConfig;
 import org.orienteer.birt.orientdb.impl.Connection;
 import org.orienteer.birt.orientdb.impl.Driver;
 import org.orienteer.core.OrienteerWebApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -56,10 +58,8 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
  */
 public abstract class AbstractBirtReportPanel extends Panel implements IPageable, IBirtReportData, IResourceListener {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractBirtHTMLImageHandler.class);
 	protected static final String REPORT_COMPONENT_NAME = "reportContent";
 	protected static final String RESOURCE_IMAGE_ID = "imageId";
 
@@ -198,8 +198,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 						odash.setProperty(Connection.DB_USER_PROPERTY, OrientDbWebSession.get().getUsername());
 						odash.setProperty(Connection.DB_PASSWORD_PROPERTY, OrientDbWebSession.get().getPassword());
 					} catch (SemanticException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						LOG.error("Cen't part BIRT xml file", e);
 					}
 				}
 			}
@@ -265,7 +264,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		try {
 			out = buf.toString("UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			LOG.error("Encoding is not supported", e);
 			out = buf.toString();
 		}
 		get(REPORT_COMPONENT_NAME).setDefaultModelObject(out);
@@ -277,7 +276,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		try {
 			updateReportOut();
 		} catch (EngineException e) {
-			e.printStackTrace();
+			LOG.error("Can't update report output", e);
 		}
 		super.onBeforeRender();
 	}

@@ -12,6 +12,8 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
 import org.orienteer.core.method.IMethodEnvironmentData;
 import org.orienteer.core.method.IMethodFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -22,6 +24,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class OClassOMethodConfig extends AbstractOMethodConfig{
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(OClassOMethodConfig.class);
 	
 	private ClassOMethod oMethod;
 	private transient List<IMethodFilter> filters;
@@ -94,13 +97,11 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 			}else{
 				javaMethod.invoke(null,dataObject);
 			}
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		} catch (IllegalAccessException | IllegalArgumentException 
+				| InvocationTargetException | NoSuchMethodException 
+				| SecurityException | InstantiationException e) {
+			LOG.error("Error during method invokation", e);
+		} 
 	}
 
 	public String getJavaMethodName() {

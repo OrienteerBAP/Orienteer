@@ -18,6 +18,8 @@ import org.orienteer.birt.component.resources.ExcelBirtResource;
 import org.orienteer.birt.component.resources.HtmlBirtResource;
 import org.orienteer.birt.component.resources.PDFBirtResource;
 import org.orienteer.birt.component.service.BirtReportParameterDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
@@ -27,11 +29,8 @@ import com.google.common.base.Strings;
  */
 public class BirtManagementPanel extends Panel{
 
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(BirtManagementPanel.class);
 	
 	private static final String PAGER_NAME = "paginator";
 	//private static final String BUTTONS_NAME = "buttons";
@@ -98,7 +97,7 @@ public class BirtManagementPanel extends Panel{
 							} catch (EngineException e) {
 								String message = e.getMessage();
 								error("Cannot update report cache:"+message);
-								e.printStackTrace();
+								LOG.error("Can't update report cache", e);
 							}
 						}
 						

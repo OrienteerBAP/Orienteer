@@ -13,6 +13,8 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.util.OSchemaHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -33,6 +35,7 @@ public class Module extends AbstractOrienteerModule{
 	
 	public static final String MODULE_NAME = "orienteer-birt";
 	
+	private static final Logger LOG = LoggerFactory.getLogger(Module.class);
 	
 	
 	private IReportEngine engine;
@@ -92,7 +95,7 @@ public class Module extends AbstractOrienteerModule{
 		    engine = factory.createReportEngine( config );
 		    engine.changeLogLevel( Level.WARNING );
 		}catch( Exception ex){
-		    ex.printStackTrace();
+			LOG.error("Can't initialize BIRT module", ex);
 		}
 	}
 	
@@ -107,8 +110,7 @@ public class Module extends AbstractOrienteerModule{
 		    Platform.shutdown();
 		    RegistryProviderFactory.releaseDefault();
 		}catch ( Exception e1 ){
-			e1.printStackTrace();
-		    // Ignore
+			LOG.error("Can't destroy BIRT module", e1);
 		}			
 	}
 

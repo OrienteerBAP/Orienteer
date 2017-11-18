@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.birt.report.engine.api.EngineException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Config for BIRT report based on simple filename
@@ -17,10 +19,8 @@ import org.eclipse.birt.report.engine.api.EngineException;
  */
 public class BirtReportFileConfig implements IBirtReportConfig {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(BirtReportFileConfig.class);
 	
 	private String reportFileName;
 	private Map<String, Object> parameters;
@@ -49,8 +49,7 @@ public class BirtReportFileConfig implements IBirtReportConfig {
 			FileInputStream stream = new FileInputStream(reportFileName);
 			return stream;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("Report file is absent", e);
 		}
 		return null;
 	}

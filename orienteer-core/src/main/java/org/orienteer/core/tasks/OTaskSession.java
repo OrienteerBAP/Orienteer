@@ -1,5 +1,7 @@
 package org.orienteer.core.tasks;
 
+import org.apache.wicket.model.Model;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
@@ -8,6 +10,9 @@ import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
+import org.orienteer.core.widget.AbstractWidget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
@@ -22,6 +27,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
  */
 public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOG = LoggerFactory.getLogger(OTaskSession.class);
 
 	///////////////////////////////////////////////////////////////////////
 	//OMethods
@@ -36,8 +42,12 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 		try {
 			interrupt();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			AbstractWidget<?> widget = data.getCurrentWidget();
+			if(widget!=null) {
+				widget.error(widget.getLocalizer().getString("errors.session.cantinterupt", widget, Model.of(e.getMessage())));
+				
+			}
+			LOG.error("Can't interrupt the session", e);
 		}
 	}
 	///////////////////////////////////////////////////////////////////////
