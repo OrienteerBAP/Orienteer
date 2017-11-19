@@ -21,7 +21,7 @@ public class EmbeddedContainsValuePanel<T extends Serializable> extends EqualsFi
     }
 
     @Override
-    protected FormComponent<?> createFilterComponent(IModel<?> model) {
+    public FormComponent<?> createFilterComponent(IModel<?> model) {
         return new TextField<>(getFilterId(), model);
     }
 

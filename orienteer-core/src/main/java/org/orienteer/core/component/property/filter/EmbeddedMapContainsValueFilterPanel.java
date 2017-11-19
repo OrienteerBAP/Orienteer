@@ -21,7 +21,7 @@ public class EmbeddedMapContainsValueFilterPanel<T extends Serializable> extends
     }
 
     @Override
-    protected FormComponent<?> createFilterComponent(IModel<?> model) {
+    public FormComponent<?> createFilterComponent(IModel<?> model) {
         return new TextField<>(getFilterId(), model);
     }
 

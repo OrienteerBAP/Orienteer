@@ -46,7 +46,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
 
     @Override
     @SuppressWarnings("unchecked")
-    protected FormComponent<?> createFilterComponent(IModel<?> model) {
+    public FormComponent<?> createFilterComponent(IModel<?> model) {
         if (getPropertyModel().getObject().getType() == OType.BOOLEAN) {
             return new BooleanFilterPanel(getFilterId(), (IModel<Boolean>) model);
         }

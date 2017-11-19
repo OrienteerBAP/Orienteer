@@ -26,7 +26,7 @@
 
 .container-cell {
     display: table-cell;
-    vertical-align: top;
+    vertical-align: bottom;
 }
 
 .filter-bubble {

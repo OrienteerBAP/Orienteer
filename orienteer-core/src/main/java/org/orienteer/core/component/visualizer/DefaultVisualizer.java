@@ -34,10 +34,9 @@ import java.util.*;
 /**
  * Default {@link IVisualizer}. Should cover all property types
  */
-public class DefaultVisualizer extends AbstractSimpleVisualizer
-{
+public class DefaultVisualizer extends AbstractSimpleVisualizer {
 	public static final DefaultVisualizer INSTANCE = new DefaultVisualizer();
-	
+
 	public DefaultVisualizer()
 	{
 		super("default", false, OType.values());
@@ -139,8 +138,6 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 		OProperty property = propertyModel.getObject();
 		final OType type = property.getType();
 		switch (type) {
-			case EMBEDDEDLIST:
-			case EMBEDDEDSET:
 			case LINKBAG:
 			case TRANSIENT:
 			case BINARY:
@@ -166,6 +163,24 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer
 								id, propertyModel, DefaultVisualizer.this, manager));
 						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<ODocument>(),
 								id, propertyModel, DefaultVisualizer.this, manager));
+					}
+				};
+				break;
+			case EMBEDDEDLIST:
+			case EMBEDDEDSET:
+				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
+					@Override
+					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
+						OProperty prop = propertyModel.getObject();
+						if (prop != null) {
+							if (prop.getLinkedType() != null)
+								filterPanels.add(new EmbeddedCollectionContainsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
+										id, propertyModel, DefaultVisualizer.this, manager));
+
+							if (prop.getLinkedType() == null)
+								filterPanels.add(new EmbeddedCollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<String>(),
+										id, propertyModel, DefaultVisualizer.this, manager, true));
+						}
 					}
 				};
 				break;
