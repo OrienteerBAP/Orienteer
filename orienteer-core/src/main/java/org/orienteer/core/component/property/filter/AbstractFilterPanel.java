@@ -78,7 +78,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     protected abstract void focus(AjaxRequestTarget target);
 
     @SuppressWarnings("unchecked")
-    protected FormComponent<?> createFilterComponent(IModel<?> model) {
+    public FormComponent<?> createFilterComponent(IModel<?> model) {
         return (FormComponent<?>) visualizer.createComponent(filterId, DisplayMode.EDIT, null, propertyModel, model);
     }
 
@@ -96,7 +96,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
         return visualizer;
     }
 
-    protected String getFilterId() {
+    public String getFilterId() {
         return filterId;
     }
 
