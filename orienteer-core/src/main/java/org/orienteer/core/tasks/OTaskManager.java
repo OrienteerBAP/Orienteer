@@ -1,26 +1,13 @@
 package org.orienteer.core.tasks;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.mail.internet.NewsAddress;
-
 import org.apache.wicket.MetaDataKey;
 import org.orienteer.core.OrienteerWebApplication;
 
 import com.google.common.collect.MapMaker;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 /**
  * Task Manager class to provide required management capabilities over set of running tasks 
@@ -39,6 +26,7 @@ public class OTaskManager {
 		OTaskManager taskManager = app.getMetaData(TASK_MANAGER_KEY);
 		if(taskManager==null) {
 			synchronized(OTaskManager.class){
+				taskManager = app.getMetaData(TASK_MANAGER_KEY);
 				if(taskManager==null){
 					taskManager = new OTaskManager();
 					app.setMetaData(TASK_MANAGER_KEY, taskManager);
