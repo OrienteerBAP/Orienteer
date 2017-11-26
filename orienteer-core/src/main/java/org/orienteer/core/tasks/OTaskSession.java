@@ -87,14 +87,28 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	}
 	
 	public <V> void persist() {
-		DBClosure.sudoSave(document);
+		sudoSave();
 	}
 	
 	public <V> void persist(final String field, final V value) {
 		document.field(field, value);
 		if(document.getIdentity().isPersistent()) {
-			DBClosure.sudoSave(document);
+			sudoSave();
 		}
+	}
+	
+	private void sudoSave(){
+		new DBClosure<Boolean>() {
+			@Override
+			protected Boolean execute(ODatabaseDocument db) {
+				document.save();
+				if (document.getDatabase().getTransaction().isActive()){
+					document.getDatabase().commit();
+					document.getDatabase().begin();
+				}
+				return true;
+			}
+		}.execute();
 	}
 
 	public void relativeChange(final String field, final Object value,final String changeCommand){
