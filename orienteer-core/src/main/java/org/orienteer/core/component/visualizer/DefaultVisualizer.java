@@ -61,7 +61,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 					return new LinkViewPanel(id, (IModel<ODocument>)valueModel);
 				case LINKLIST:
 				case LINKSET:
-					return new LinksCollectionViewPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
+					return new LinksCollectionViewPanel<>(id, documentModel, property);
                 case DATE:
                 	return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_CONVERTER);
                 case DATETIME:
@@ -72,7 +72,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
                 	return new EmbeddedDocumentPanel(id, (IModel<ODocument>)valueModel, new PropertyModel<OClass>(propertyModel, "linkedClass"), mode.asModel());
                 case EMBEDDEDLIST:
                 case EMBEDDEDSET:
-                	return new EmbeddedCollectionViewPanel<Object, Collection<Object>>(id, documentModel, propertyModel);
+                	return new EmbeddedCollectionViewPanel<>(id, documentModel, propertyModel);
                 case EMBEDDEDMAP:
                 case LINKMAP:
                 	return new EmbeddedMapViewPanel<V>(id, documentModel, propertyModel);
@@ -93,7 +93,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 					//return new TextField<V>(id, getModel()).setType(ODocument.class);
 				case LINKLIST:
 				case LINKSET:
-					return new LinksCollectionEditPanel<OIdentifiable, Collection<OIdentifiable>>(id, documentModel, property);
+					return new LinksCollectionEditPanel<>(id, documentModel, property);
                 case DATE:
 					return new DateBootstrapField(id, (IModel<Date>) valueModel);
                 case DATETIME:
@@ -173,13 +173,13 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
 						OProperty prop = propertyModel.getObject();
 						if (prop != null) {
-							if (prop.getLinkedType() != null)
+							if (prop.getLinkedType() != null) {
 								filterPanels.add(new EmbeddedCollectionContainsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
 										id, propertyModel, DefaultVisualizer.this, manager));
-
-							if (prop.getLinkedType() == null)
+							} else {
 								filterPanels.add(new EmbeddedCollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<String>(),
 										id, propertyModel, DefaultVisualizer.this, manager, true));
+							}
 						}
 					}
 				};
