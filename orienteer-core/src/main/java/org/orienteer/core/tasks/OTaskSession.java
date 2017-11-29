@@ -1,7 +1,11 @@
 package org.orienteer.core.tasks;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.model.Model;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
@@ -13,13 +17,6 @@ import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
 import org.orienteer.core.widget.AbstractWidget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
-
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**

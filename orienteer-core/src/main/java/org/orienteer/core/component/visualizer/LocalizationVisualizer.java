@@ -19,8 +19,10 @@ import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
  */
 public class LocalizationVisualizer extends AbstractSimpleVisualizer {
 
+    public static final String NAME = "localization";
+
     public LocalizationVisualizer() {
-        super("localization", false, OType.EMBEDDEDMAP);
+        super(NAME, false, OType.EMBEDDEDMAP);
     }
 
     @Override
@@ -28,7 +30,7 @@ public class LocalizationVisualizer extends AbstractSimpleVisualizer {
         switch (mode)
         {
             case VIEW:
-            	return new Label(id, new FunctionModel<Object, String>(new DynamicPropertyValueModel<Object>(documentModel, propertyModel), LocalizeFunction.getInstance()));
+            	return new Label(id, new FunctionModel<>(new DynamicPropertyValueModel<>(documentModel, propertyModel), LocalizeFunction.getInstance()));
             case EDIT:
                 return new OLocalizationEditPanel<V>(id, documentModel, propertyModel).setType(String.class);
             default:

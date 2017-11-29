@@ -1,13 +1,13 @@
 package org.orienteer.core.tasks;
 
-import java.util.Collection;
-import java.util.Map;
-import org.apache.wicket.MetaDataKey;
-import org.orienteer.core.OrienteerWebApplication;
-
 import com.google.common.collect.MapMaker;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
+import org.apache.wicket.MetaDataKey;
+import org.orienteer.core.OrienteerWebApplication;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Task Manager class to provide required management capabilities over set of running tasks 
