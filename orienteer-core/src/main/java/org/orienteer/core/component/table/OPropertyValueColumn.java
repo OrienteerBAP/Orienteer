@@ -8,8 +8,6 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
@@ -52,8 +50,6 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 	protected IModel<String> newLabelModel() {
 		return new OPropertyNamingModel(getCriteryModel());
 	}
-
-	private static final Logger LOG = LoggerFactory.getLogger(OPropertyValueColumn.class);
 
 	@SuppressWarnings("unchecked")
 	@Override
