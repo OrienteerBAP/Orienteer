@@ -6,6 +6,9 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.io.Serializable;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -29,6 +32,17 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
  */
 @Widget(id="vertices", domain="document", order=10, autoEnable=true, selector="E")
 public class GraphVerticesWidget extends AbstractWidget<ODocument> {
+	
+	private class DirectionLocalizer implements Function<ODocument, String>, Serializable {
+
+		@Override
+		public String apply(ODocument vertex) {
+			Object fieldIn =  getModelObject().field("in");
+            String direction = ((OIdentifiable)fieldIn).getIdentity().equals(vertex.getIdentity()) ? "in":"out";
+            return getLocalizer().getString("widget.document.vertices.title." + direction, GraphVerticesWidget.this);
+		}
+		
+	}
 
     @Inject
     private OClassIntrospector oClassIntrospector;
@@ -41,18 +55,9 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
         OProperty nameProperty = oClassIntrospector.getNameProperty(getModelObject().getSchemaClass());
         OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
 
-        Function<ODocument, String> directionLocalizer = new Function<ODocument, String>() {
-            @Override
-            public String apply(ODocument vertex) {
-            	Object fieldIn =  model.getObject().field("in");
-                String direction = ((OIdentifiable)fieldIn).getIdentity().equals(vertex.getIdentity()) ? "in":"out";
-                return getLocalizer().getString("widget.document.vertices.title." + direction, GraphVerticesWidget.this);
-            }
-        };
-
         ODocumentDescriptionColumn directionColumn = new ODocumentDescriptionColumn(
                 new StringResourceModel("property.direction", this, Model.of()),
-                directionLocalizer);
+                new DirectionLocalizer());
         OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>("select from [" +
                 ((OIdentifiable) model.getObject().field("in")).getIdentity() + "," +
                 ((OIdentifiable) model.getObject().field("out")).getIdentity() + "]");
@@ -73,5 +78,10 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     @Override
     protected IModel<String> getDefaultTitleModel() {
         return new StringResourceModel("widget.document.vertices.title", new ODocumentNameModel(getModel()));
+    }
+    
+    @Override
+    protected String getWidgetStyleClass() {
+    	return "strict";
     }
 }

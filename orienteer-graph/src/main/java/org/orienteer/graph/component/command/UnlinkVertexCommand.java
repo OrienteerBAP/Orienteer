@@ -1,5 +1,7 @@
 package org.orienteer.graph.component.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -36,6 +38,9 @@ public class UnlinkVertexCommand extends AbstractDeleteCommand<ODocument> implem
 	private static final long serialVersionUID = 1L;
 	private IModel<OClass> classModel;
     private IModel<ODocument> documentModel;
+    
+    @Inject
+    private Provider<OrientGraph> orientGraphProvider;
 
     public UnlinkVertexCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel)
     {
@@ -43,21 +48,21 @@ public class UnlinkVertexCommand extends AbstractDeleteCommand<ODocument> implem
         setBootstrapType(BootstrapType.WARNING);
         this.documentModel = documentModel;
         this.classModel = new OClassModel(GraphModule.EDGE_CLASS_NAME);
+        setChandingModel(true);
     }
 	
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 		super.performMultiAction(target, objects);
-        OrientGraph tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
-        tx.commit();
+        OrientGraph tx = orientGraphProvider.get();
         for (ODocument doc : objects) {
             ORID id = doc.getIdentity();
             OrientVertex vertex = tx.getVertex(id);
 
             removeEdges(tx, vertex);
         }
-        tx.begin();
-        setResponsePage(new ODocumentPage(documentModel.getObject()).setModeObject(DisplayMode.VIEW));
+        tx.commit();tx.begin();
+        sendActionPerformed();
 	}
 
     private void removeEdges(OrientGraph tx, OrientVertex vertex) {

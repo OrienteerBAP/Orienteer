@@ -1,5 +1,7 @@
 package org.orienteer.graph.component.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -35,6 +37,9 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
 
     private IModel<OClass> classModel;
     private IModel<ODocument> documentModel;
+    
+    @Inject
+    private Provider<OrientGraph> orientGraphProvider;
 
     public CreateEdgeCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentIModel) {
     	this(new ResourceModel("command.link"),table,documentIModel);
@@ -47,6 +52,7 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
         setAutoNotify(false);
         this.classModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
         this.documentModel = documentIModel;
+        setChandingModel(true);
     }
 
     @Override
@@ -57,25 +63,17 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
         SelectSubOClassDialogPage selectEdgeClassDialog = new SelectSubOClassDialogPage(modal, new OClassModel(GraphModule.EDGE_CLASS_NAME)) {
 
             @Override
-            protected void onSelect(AjaxRequestTarget target, final OClass selectedOClass) {
+            protected void onSelect(AjaxRequestTarget target, OClass selectedOClass) {
                 modal.setTitle(new ResourceModel("dialog.select.vertices"));
 
+                final OClassModel selectedEdgeOClassModel = new OClassModel(selectedOClass);
                 OClassModel vertexOClassModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
                 modal.setContent(new SelectDialogPanel(modal.getContentId(), modal, vertexOClassModel, true) {
                     @Override
                     protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects, boolean selectMore) {
-                        createEdge(objects, selectedOClass);
-
-                        modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
-                        {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            public void onClose(AjaxRequestTarget target)
-                            {
-                                target.add(getPage());
-                            }
-                        });
+                        createEdge(objects, selectedEdgeOClassModel.getObject());
+                        this.modal.close(target);
+                        CreateEdgeCommand.this.sendActionPerformed();
                         return true;
                     }
                 });
@@ -94,18 +92,11 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
     }
 
     private void createEdge(List<ODocument> documents, OClass edgeClass) {
-        OrientGraph tx = null;
-        try {
-            tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
-            for (ODocument createTo : documents) {
-                tx.addEdge(null, tx.getVertex(documentModel.getObject().getIdentity()), tx.getVertex(createTo.getIdentity()), edgeClass.getName());
-            }
-
+        OrientGraph tx = orientGraphProvider.get();
+        for (ODocument createTo : documents) {
+            tx.addEdge(null, tx.getVertex(documentModel.getObject().getIdentity()), tx.getVertex(createTo.getIdentity()), edgeClass.getName());
         }
-        finally {
-            if (tx != null)
-                tx.shutdown();
-        }
+        tx.commit();tx.begin();
     }
     
     @Override

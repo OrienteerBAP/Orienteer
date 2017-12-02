@@ -20,7 +20,7 @@ public class GraphGuiceModule extends AbstractModule {
 	@RequestScoped
 	public OrientGraph provideOrientGraph(ODatabaseDocumentTx dbTx)
 	{
-		return new OrientGraph(dbTx);
+		return new OrientGraph(dbTx, false);
 	}
 
 }

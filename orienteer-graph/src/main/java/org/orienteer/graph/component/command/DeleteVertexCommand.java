@@ -1,5 +1,7 @@
 package org.orienteer.graph.component.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -32,25 +34,28 @@ public class DeleteVertexCommand extends AbstractDeleteCommand<ODocument> implem
     private final IModel<ODocument> documentModel;
     private IModel<OClass> classModel;
 
+    @Inject
+    private Provider<OrientGraph> orientGraphProvider;
+
 
 	public DeleteVertexCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentModel)
 	{
 		super(table);
 		this.classModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
         this.documentModel = documentModel;
+        setChandingModel(true);
 	}
 	
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 		super.performMultiAction(target, objects);
-        OrientGraph tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
-        tx.commit();
+        OrientGraph tx = orientGraphProvider.get();
         for (ODocument doc : objects) {
             ORID id = doc.getIdentity();
             tx.removeVertex(tx.getVertex(id));
         }
-        tx.begin();
-        setResponsePage(new ODocumentPage(documentModel.getObject()).setModeObject(DisplayMode.VIEW));
+        tx.commit();tx.begin();
+        sendActionPerformed();
 	}
 
 	@Override

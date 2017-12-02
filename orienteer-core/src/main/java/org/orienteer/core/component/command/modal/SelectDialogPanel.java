@@ -38,7 +38,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 	
-	private ModalWindow modal;
+	protected ModalWindow modal;
 	private boolean isMultiValue;
 	private boolean canChangeClass;
 	private WebMarkupContainer resultsContainer;

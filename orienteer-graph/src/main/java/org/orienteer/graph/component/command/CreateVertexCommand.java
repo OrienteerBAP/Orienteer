@@ -1,5 +1,7 @@
 package org.orienteer.graph.component.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
@@ -32,6 +34,9 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
 
     private IModel<OClass> classModel;
     private IModel<ODocument> documentModel;
+    
+    @Inject
+    private Provider<OrientGraph> orientGraphProvider;
 
     public CreateVertexCommand(OrienteerDataTable<ODocument, ?> table, IModel<ODocument> documentIModel) {
         super(new ResourceModel("command.create"), table);
@@ -40,6 +45,7 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
         setAutoNotify(false);
         this.classModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
         this.documentModel = documentIModel;
+        setChandingModel(true);
     }
 
     @Override
@@ -50,26 +56,16 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
         SelectSubOClassDialogPage selectVertexClassDialog = new SelectSubOClassDialogPage(modal, new OClassModel(GraphModule.VERTEX_CLASS_NAME)) {
 
             @Override
-            protected void onSelect(AjaxRequestTarget target, final OClass selectedOVertexClass) {
+            protected void onSelect(AjaxRequestTarget target, OClass selectedOVertexClass) {
                 modal.setTitle(new ResourceModel("dialog.select.edge.class"));
 
+                final IModel<OClass> selectedOVertextClassModel = new OClassModel(selectedOVertexClass);
                 OClassModel edgeOClassModel = new OClassModel(GraphModule.EDGE_CLASS_NAME);
                 modal.setContent(new SelectSubOClassDialogPage(modal, edgeOClassModel) {
                     @Override
                     protected void onSelect(AjaxRequestTarget target, final OClass selectedOEdgeClass) {
-                        createVertex(selectedOVertexClass, selectedOEdgeClass);
-
-                        modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback()
-                        {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            public void onClose(AjaxRequestTarget target)
-                            {
-                                setResponsePage(new ODocumentPage(new ODocumentModel(documentModel.getObject())).setModeObject(DisplayMode.VIEW));
-                                //target.add(getPage());
-                            }
-                        });
+                        OrientVertex newV = createVertex(selectedOVertextClassModel.getObject(), selectedOEdgeClass);
+                        setResponsePage(new ODocumentPage(newV.getRecord()).setModeObject(DisplayMode.EDIT));
                     }
                 });
 
@@ -85,11 +81,13 @@ public class CreateVertexCommand extends AbstractModalWindowCommand<ODocument> i
         return OSecurityHelper.requireOClass(classModel.getObject(), OrientPermission.CREATE);
     }
 
-    private void createVertex(OClass vertexClass, OClass edgeClass) {
-        OrientGraph tx = new OrientGraphFactory(getDatabase().getURL()).getTx();
+    private OrientVertex createVertex(OClass vertexClass, OClass edgeClass) {
+        OrientGraph tx = orientGraphProvider.get();
         OrientVertex newVertex = tx.addVertex(vertexClass.getName(), (String) null);
         OrientVertex vertex = tx.getVertex(documentModel.getObject().getIdentity());
         tx.addEdge(null, vertex, newVertex, edgeClass.getName());
+        tx.commit();tx.begin();
+        return newVertex;
     }
     
     @Override
