@@ -64,7 +64,8 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
 
             @Override
             protected void onSelect(AjaxRequestTarget target, OClass selectedOClass) {
-                modal.setTitle(new ResourceModel("dialog.select.vertices"));
+                modal.setWindowClosedCallback(null);
+            	modal.setTitle(new ResourceModel("dialog.select.vertices"));
 
                 final OClassModel selectedEdgeOClassModel = new OClassModel(selectedOClass);
                 OClassModel vertexOClassModel = new OClassModel(GraphModule.VERTEX_CLASS_NAME);
