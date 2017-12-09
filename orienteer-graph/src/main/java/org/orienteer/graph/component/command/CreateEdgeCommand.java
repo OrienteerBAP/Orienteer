@@ -5,8 +5,6 @@ import com.google.inject.Provider;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
@@ -17,11 +15,8 @@ import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.command.modal.SelectDialogPanel;
 import org.orienteer.core.component.command.modal.SelectSubOClassDialogPage;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.graph.module.GraphModule;
-
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
@@ -37,7 +32,6 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
 
     private IModel<OClass> classModel;
     private IModel<ODocument> documentModel;
-    
     @Inject
     private Provider<OrientGraph> orientGraphProvider;
 
@@ -73,7 +67,6 @@ public class CreateEdgeCommand extends AbstractModalWindowCommand<ODocument> imp
                     @Override
                     protected boolean onSelect(AjaxRequestTarget target, List<ODocument> objects, boolean selectMore) {
                         createEdge(objects, selectedEdgeOClassModel.getObject());
-                        this.modal.close(target);
                         CreateEdgeCommand.this.sendActionPerformed();
                         return true;
                     }
