@@ -60,8 +60,8 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
                 new StringResourceModel("property.direction", this, Model.of()),
                 new DirectionLocalizer());
 
-        OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>("select both() from " + model.getObject().getIdentity());
-        GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<ODocument>("vertices",
+        OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>("select expand(bothV()) from " + model.getObject().getIdentity());
+        GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<>("vertices",
                 Lists.newArrayList(entityColumn, directionColumn),
                 provider,//setParameter does not work here
                 2);
