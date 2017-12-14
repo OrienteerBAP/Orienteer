@@ -1,6 +1,7 @@
 package org.orienteer.core.tasks;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.ORecordElement.STATUS;
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
@@ -79,7 +80,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	}
 	
 	private <V> V getField(ITaskSession.Field field, V defValue) {
-		V ret =  document.field(field.fieldName());
+		V ret =  getDocument().field(field.fieldName());
 		return ret!=null?ret:defValue;
 	}
 	
@@ -87,11 +88,17 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 		sudoSave();
 	}
 	
+	/**
+	 * @deprecated use  {@link setField} instead
+	 */
+	@Deprecated
 	public <V> void persist(final String field, final V value) {
+		setField(field,value);
+		/*
 		document.field(field, value);
 		if(document.getIdentity().isPersistent()) {
 			sudoSave();
-		}
+		}*/
 	}
 	
 	private void sudoSave(){
@@ -101,14 +108,13 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 				document.save();
 				if (document.getDatabase().getTransaction().isActive()){
 					document.getDatabase().commit();
-					document.getDatabase().begin();
 				}
 				return true;
 			}
 		}.execute();
 	}
 
-	public void relativeChange(final String field, final Object value,final String changeCommand){
+	public void atomicChange(final String field, final Object value,final String changeCommand){
 		new DBClosure<Boolean>() {
 			@Override
 			protected Boolean execute(ODatabaseDocument db) {
@@ -121,32 +127,52 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 						break;
 					} catch (OConcurrentModificationException  e) {
 						retry++;
+						try { Thread.sleep((long) (Math.random()*150));} catch (InterruptedException e1) {}
 						if (retry>=maxRetries){
 							throw e;//if all retries failed
 						}
 					}
 				}
-				document.unload();
+				document.setInternalStatus(STATUS.NOT_LOADED);
 				return true;
 			}
 		}.execute();
 	}
 	
-	public void increment(final String field, final Number value){
+	/**
+	 * Atomic set field value
+	 * @param field
+	 * @param value
+	 */
+	public <V> void setField(final String field, final V value){
+		document.field(field, value);
 		if(document.getIdentity().isPersistent()) {
-			relativeChange(field,value,"INCREMENT "+field+"=?");
-		} else {
-			Number oldValue = document.field(field);
-			document.field(field, oldValue.doubleValue()+value.doubleValue());
+			atomicChange(field,value,"SET "+field+"=?");
+		}		
+	}
+	/**
+	 * Atomic increment number field value
+	 * @param field
+	 * @param value
+	 */
+	public void incrementField(final String field, final Number value){
+		Number oldValue = document.field(field);
+		document.field(field, oldValue.doubleValue()+value.doubleValue());
+		if(document.getIdentity().isPersistent()) {
+			atomicChange(field,value,"INCREMENT "+field+"=?");
 		}		
 	}
 
-	public void append(final String field, final String value){
+	/**
+	 * Atomic append string field value
+	 * @param field
+	 * @param value
+	 */
+	public void appendField(final String field, final String value){
+		String oldValue = document.field(field);
+		document.field(field, oldValue+value);
 		if(document.getIdentity().isPersistent()) {
-			relativeChange(field,value,"SET "+field+"=ifnull("+field+",'').append(?)");
-		} else {
-			String oldValue = document.field(field);
-			document.field(field, oldValue+value);
+			atomicChange(field,value,"SET "+field+"=ifnull("+field+",'').append(?)");
 		}		
 	}
 
@@ -192,7 +218,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 
 	@Override
 	public ITaskSession setDeleteOnFinish(boolean deleteOnFinish) {
-		persist(Field.DELETE_ON_FINISH.fieldName(), deleteOnFinish);
+		setField(Field.DELETE_ON_FINISH.fieldName(), deleteOnFinish);
 		return this;
 	}
 
@@ -203,7 +229,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 
 	@Override
 	public ITaskSession setProgress(double progress) {
-		persist(Field.PROGRESS.fieldName(), progress);
+		setField(Field.PROGRESS.fieldName(), progress);
 		return this;
 	}
 
@@ -214,7 +240,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 
 	@Override
 	public ITaskSession setFinalProgress(double progress) {
-		persist(Field.PROGRESS_FINAL.fieldName(), progress);
+		setField(Field.PROGRESS_FINAL.fieldName(), progress);
 		return this;
 	}
 
@@ -225,7 +251,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 
 	@Override
 	public ITaskSession setCurrentProgress(double progress) {
-		persist(Field.PROGRESS_CURRENT.fieldName(), progress);
+		setField(Field.PROGRESS_CURRENT.fieldName(), progress);
 		return this;
 	}
 
@@ -236,8 +262,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	
 	@Override
 	public ITaskSession incrementCurrentProgress() {
-		increment(Field.PROGRESS_CURRENT.fieldName(), 1);
+		incrementField(Field.PROGRESS_CURRENT.fieldName(), 1);
 		return this;
 	}
-
 }
