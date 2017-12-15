@@ -133,7 +133,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 						}
 					}
 				}
-				document.setInternalStatus(STATUS.NOT_LOADED);
+				document.reload();
 				return true;
 			}
 		}.execute();
