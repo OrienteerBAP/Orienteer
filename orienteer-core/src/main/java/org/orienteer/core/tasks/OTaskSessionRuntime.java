@@ -1,21 +1,9 @@
 package org.orienteer.core.tasks;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
-import java.util.TimeZone;
-
-import org.apache.wicket.Application;
-import org.apache.wicket.Session;
-import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.module.TaskManagerModule;
-import org.orienteer.core.util.OSchemaHelper;
-
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import ru.ydn.wicket.wicketorientdb.OUserCatchPasswordHook;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
@@ -67,8 +55,8 @@ public class OTaskSessionRuntime implements ITaskSession{
 
 	@Override
 	public OTaskSessionRuntime start() {
-		getOTaskSessionPersisted().getDocument().field(Field.START_TIMESTAMP.fieldName(), new Date());
-		getOTaskSessionPersisted().getDocument().field(Field.THREAD_NAME.fieldName(), Thread.currentThread().getName());
+		getOTaskSessionPersisted().setField(Field.START_TIMESTAMP.fieldName(), new Date());
+		getOTaskSessionPersisted().setField(Field.THREAD_NAME.fieldName(), Thread.currentThread().getName());
 		setStatus(Status.RUNNING);
 		getOTaskSessionPersisted().persist();
 		OTaskManager.get().register(this);
@@ -80,7 +68,7 @@ public class OTaskSessionRuntime implements ITaskSession{
 		if (isDeleteOnFinish()){
 			delSelf();
 		}else{
-			getOTaskSessionPersisted().getDocument().field(Field.FINISH_TIMESTAMP.fieldName(), new Date());
+			getOTaskSessionPersisted().setField(Field.FINISH_TIMESTAMP.fieldName(), new Date());
 			setStatus(Status.FINISHED);
 		}
 		return this;
@@ -101,7 +89,7 @@ public class OTaskSessionRuntime implements ITaskSession{
 		ITaskSessionCallback callback = getCallback();
 		if(callback==null) throw new IllegalStateException("Session can't be interrupted: no callback specified");
 		callback.interrupt();
-		getOTaskSessionPersisted().getDocument().field(Field.FINISH_TIMESTAMP.fieldName(), new Date());
+		getOTaskSessionPersisted().setField(Field.FINISH_TIMESTAMP.fieldName(), new Date());
 		setStatus(Status.INTERRUPTED);
 		return this;
 	}
@@ -118,7 +106,7 @@ public class OTaskSessionRuntime implements ITaskSession{
 	
 	void setStatus(Status status) {
 		this.status = status;
-		getOTaskSessionPersisted().persist(Field.STATUS.fieldName(), status.name());
+		getOTaskSessionPersisted().setField(Field.STATUS.fieldName(), status.name());
 	}
 
 	@Override
@@ -171,7 +159,7 @@ public class OTaskSessionRuntime implements ITaskSession{
 	}
 
 	public ITaskSession setOTask(OTask oTask) {
-		getOTaskSessionPersisted().persist( Field.TASK_LINK.fieldName(),oTask.getDocument().getIdentity());
+		getOTaskSessionPersisted().setField( Field.TASK_LINK.fieldName(),oTask.getDocument().getIdentity());
 		return null;
 	}
 
