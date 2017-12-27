@@ -290,6 +290,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void addLink(ODocument doc, OProperty property, ODocument value)
 	{
 		if(doc==null || property ==null || value == null || isUnderTheLock(doc)) return;
@@ -297,26 +298,31 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 		if(doc.getSchemaClass().isSubClassOf(property.getOwnerClass()))
 		{
 			Object wrappedValue = value.getIdentity().isPersistent()?value.getIdentity():value;
+			Object oldValue = doc.field(field);
 			if(property.getType().isMultiValue())
 			{
-				Collection<Object> objects = doc.field(field);
+				Collection<Object> objects = (Collection<Object>) oldValue;
 				if(objects==null)
 				{
-					objects = new ArrayList<Object>();
+					objects = new ArrayList<Object>(1);
 					objects.add(wrappedValue);
 					doc.field(field, objects);
+					//It's safe of fields with multivalue
+					saveOutOfHook(doc);
 				}
-				else
+				else if(!objects.contains(wrappedValue)) 
 				{
 					objects.add(wrappedValue);
+					//It's safe of fields with multivalue
+					saveOutOfHook(doc);
 				}
-				//It's safe of fields with multivalue
-				saveOutOfHook(doc);
 			}
 			else
 			{
-				doc.field(field, wrappedValue);
-				doc.save();
+				if (oldValue==null || !oldValue.equals(wrappedValue)){
+					doc.field(field, wrappedValue);
+					doc.save();
+				}
 			}
 		}
 	}
