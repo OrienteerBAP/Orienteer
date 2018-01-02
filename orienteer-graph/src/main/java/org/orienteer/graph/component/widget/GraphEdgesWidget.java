@@ -53,17 +53,17 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
         commonParent.declaredProperties();
         commonParent.properties();
+        columns.add(new AbstractColumn<ODocument, String>(new SimpleNamingModel<String>("out"), null) {
+        	@Override
+        	public void populateItem(Item<ICellPopulator<ODocument>> components, String s, IModel<ODocument> documentIModel) {
+        		IModel<ODocument> vertex = Model.of((ODocument)documentIModel.getObject().field("out"));
+        		components.add(new LinkViewPanel(s, vertex));
+        	}
+        });
         columns.add(new AbstractColumn<ODocument, String>(new SimpleNamingModel<String>("in"), null) {
             @Override
             public void populateItem(Item<ICellPopulator<ODocument>> components, String s, IModel<ODocument> documentIModel) {
                 IModel<ODocument> vertex = Model.of((ODocument)documentIModel.getObject().field("in"));
-                components.add(new LinkViewPanel(s, vertex));
-            }
-        });
-        columns.add(new AbstractColumn<ODocument, String>(new SimpleNamingModel<String>("out"), null) {
-            @Override
-            public void populateItem(Item<ICellPopulator<ODocument>> components, String s, IModel<ODocument> documentIModel) {
-                IModel<ODocument> vertex = Model.of((ODocument)documentIModel.getObject().field("out"));
                 components.add(new LinkViewPanel(s, vertex));
             }
         });
