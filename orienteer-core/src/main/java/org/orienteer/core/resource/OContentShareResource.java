@@ -27,14 +27,16 @@ import java.util.Map;
 public class OContentShareResource extends AbstractResource {
     private static final Logger LOG = LoggerFactory.getLogger(OContentShareResource.class);
 
-    public static final String MOUNT_PATH = "/content/${rid}/${file}";
+    public static final String MOUNT_PATH = "/content/${type}/${rid}/${file}/${format}";
     public static final String RES_KEY    = OContentShareResource.class.getSimpleName();
 
-    public static URL urlFor(String field, ODocument document) {
+    public static URL urlFor(String field, String type, String format, ODocument document) {
         try {
             Map<String, String> map = new HashMap<>(2);
-            map.put("file", field);
+            map.put("type", type);
             map.put("rid", document.getIdentity().toString().substring(1));
+            map.put("file", field);
+            map.put("format", format);
             HttpServletRequest request = (HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest();
             String path = new StrSubstitutor(map).replace(MOUNT_PATH);
             return new URL(request.getScheme() + "://" + request.getHeader("host") + path);
@@ -52,8 +54,9 @@ public class OContentShareResource extends AbstractResource {
             PageParameters params = attributes.getParameters();
             ODocument document = getDocumentByRid(params.get("rid").toOptionalString());
             if (document != null) {
-                final byte [] data = document.field(params.get("file").toOptionalString());
-                if (data.length > 0) {
+                final byte [] data = document.field(params.get("file").toOptionalString(), byte[].class);
+                if (data != null && data.length > 0) {
+                    response.setContentType(params.get("type").toOptionalString() + "/" + params.get("format"));
                     response.setWriteCallback(new WriteCallback() {
                         @Override
                         public void writeData(IResource.Attributes attributes) throws IOException {
