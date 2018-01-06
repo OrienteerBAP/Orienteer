@@ -36,6 +36,7 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.MethodManager;
 import org.orienteer.core.module.*;
+import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.web.BasePage;
@@ -175,6 +176,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountPages("org.orienteer.core.web");
 		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
+		getSharedResources().add(OContentShareResource.RES_KEY, getServiceInstance(OContentShareResource.class));
+		mountResource(OContentShareResource.MOUNT_PATH, new SharedResourceReference(OContentShareResource.RES_KEY));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
