@@ -1,25 +1,27 @@
 package org.orienteer.core.resource;
 
-import com.google.common.base.Strings;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import java.io.IOException;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.tika.Tika;
+import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.SharedResourceReference;
+import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.time.Time;
 import org.orienteer.core.OrienteerWebApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Share dynamic resources such as image, video and other.
@@ -27,23 +29,23 @@ import java.util.Map;
 public class OContentShareResource extends AbstractResource {
     private static final Logger LOG = LoggerFactory.getLogger(OContentShareResource.class);
 
-    public static final String MOUNT_PATH = "/content/${type}/${rid}/${file}/${format}";
+    public static final String MOUNT_PATH = "/content/${rid}/${field}";
     public static final String RES_KEY    = OContentShareResource.class.getSimpleName();
+    
+    @Inject
+    private Provider<ODatabaseDocument> dbProvider;
 
-    public static URL urlFor(String field, String type, String format, ODocument document) {
-        try {
-            Map<String, String> map = new HashMap<>(2);
-            map.put("type", type);
-            map.put("rid", document.getIdentity().toString().substring(1));
-            map.put("file", field);
-            map.put("format", format);
-            HttpServletRequest request = (HttpServletRequest) RequestCycle.get().getRequest().getContainerRequest();
-            String path = new StrSubstitutor(map).replace(MOUNT_PATH);
-            return new URL(request.getScheme() + "://" + request.getHeader("host") + path);
-        } catch (MalformedURLException e) {
-            LOG.error("Can't create url for attachment with field = {}, document = {}", field, document, e);
-        }
-        return null;
+    public static CharSequence urlFor(ODocument document, String field, String contentType, boolean fullUrl) {
+    	
+    	PageParameters params = new PageParameters();
+    	params.add("rid", document.getIdentity().toString().substring(1));
+    	params.add("field", field);
+    	if(!Strings.isEmpty(contentType)) params.add("type", contentType);
+    	CharSequence url = RequestCycle.get().urlFor(new SharedResourceReference(RES_KEY), params);
+    	if(fullUrl) {
+    		url = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
+    	}
+    	return url;
     }
 
     @Override
@@ -52,11 +54,16 @@ public class OContentShareResource extends AbstractResource {
         response.setLastModified(Time.now());
         if (response.dataNeedsToBeWritten(attributes)) {
             PageParameters params = attributes.getParameters();
-            ODocument document = getDocumentByRid(params.get("rid").toOptionalString());
+            String rid = "#"+params.get("rid").toOptionalString();
+            ODocument document = ORecordId.isA(rid) ? (ODocument)dbProvider.get().load(new ORecordId(rid)) : null;
             if (document != null) {
-                final byte [] data = document.field(params.get("file").toOptionalString(), byte[].class);
+                final byte [] data = document.field(params.get("field").toString(), byte[].class);
                 if (data != null && data.length > 0) {
-                    response.setContentType(params.get("type").toOptionalString() + "/" + params.get("format"));
+                	String contentType = params.get("type").toOptionalString();
+                	if(Strings.isEmpty(contentType)) {
+                		contentType = new Tika().detect(data);
+                	}
+                    response.setContentType(contentType);
                     response.setWriteCallback(new WriteCallback() {
                         @Override
                         public void writeData(IResource.Attributes attributes) throws IOException {
@@ -70,8 +77,10 @@ public class OContentShareResource extends AbstractResource {
         }
         return response;
     }
-
-    private ODocument getDocumentByRid(String rid) {
-        return !Strings.isNullOrEmpty(rid) ? (ODocument) OrienteerWebApplication.get().getDatabase().getRecord(new ORecordId(rid)) : null;
+    
+    public static void mount(OrienteerWebApplication app) {
+    	app.getSharedResources().add(OContentShareResource.RES_KEY, app.getServiceInstance(OContentShareResource.class));
+		app.mountResource(OContentShareResource.MOUNT_PATH, new SharedResourceReference(OContentShareResource.RES_KEY));
     }
+
 }

@@ -176,8 +176,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountPages("org.orienteer.core.web");
 		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
-		getSharedResources().add(OContentShareResource.RES_KEY, getServiceInstance(OContentShareResource.class));
-		mountResource(OContentShareResource.MOUNT_PATH, new SharedResourceReference(OContentShareResource.RES_KEY));
+		OContentShareResource.mount(this);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
