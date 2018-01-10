@@ -1,11 +1,8 @@
 package org.orienteer.core.resource;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.servlet.http.HttpServletResponse;
-
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.tika.Tika;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -16,19 +13,16 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.time.Time;
 import org.orienteer.core.OrienteerWebApplication;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Share dynamic resources such as image, video and other.
  */
 public class OContentShareResource extends AbstractResource {
-    private static final Logger LOG = LoggerFactory.getLogger(OContentShareResource.class);
-
     public static final String MOUNT_PATH = "/content/${rid}/${field}";
     public static final String RES_KEY    = OContentShareResource.class.getSimpleName();
     
@@ -36,10 +30,10 @@ public class OContentShareResource extends AbstractResource {
     private Provider<ODatabaseDocument> dbProvider;
 
     public static CharSequence urlFor(ODocument document, String field, String contentType, boolean fullUrl) {
-    	
     	PageParameters params = new PageParameters();
     	params.add("rid", document.getIdentity().toString().substring(1));
     	params.add("field", field);
+    	params.add("v", document.getVersion());
     	if(!Strings.isEmpty(contentType)) params.add("type", contentType);
     	CharSequence url = RequestCycle.get().urlFor(new SharedResourceReference(RES_KEY), params);
     	if(fullUrl) {
