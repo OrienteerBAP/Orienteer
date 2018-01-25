@@ -2,6 +2,7 @@ package org.orienteer.logger.server;
 
 import java.util.Date;
 
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
@@ -87,10 +88,11 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	}
 	
 	private void installOLogger(OrienteerWebApplication app, ODocument moduleDoc) {
-		String collectorUrl = moduleDoc.field("collectorUrl");
 		IOLoggerConfiguration config = new DefaultOLoggerConfiguration();
 		config.setApplicationName(app.getResourceSettings().getLocalizer().getString("application.name", null));
-		config.setCollectorUrl(collectorUrl);
+		//If collector URL was not overwriten from system properties: lets get it from module
+		if(Strings.isEmpty(config.getCollectorUrl())) 
+			config.setCollectorUrl((String)moduleDoc.field("collectorUrl"));
 		OLogger oLogger = new OLoggerBuilder()
 								.setLoggerEventDispatcher(new EmbeddedOLoggerEventDispatcher())
 								.addEnhancer(new OWebEnhancer())
