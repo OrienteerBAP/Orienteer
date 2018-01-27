@@ -91,6 +91,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		});
 		IModel<ODocument> perspectiveModel = new PropertyModel<>(this, "perspective");
 		Button perspectiveButton = new Button("perspectiveButton");
+
 		perspectiveButton.add(new FAIcon("icon", new ODocumentPropertyModel<String>(perspectiveModel, "icon")));
 		perspectiveButton.add(new Label("name", new ODocumentNameModel(perspectiveModel)));
 		add(perspectiveButton);
