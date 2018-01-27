@@ -10,6 +10,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 import org.apache.wicket.*;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
@@ -222,6 +223,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
+
+		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
 	}
 
 
