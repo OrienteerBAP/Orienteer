@@ -31,7 +31,9 @@
           <span wicket:id="name"></span>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="perspectiveMenuButton" wicket:id="perspectives">
-          <div class="dropdown-header text-center"><strong>Perspective</strong></div>
+          <div class="dropdown-header text-center">
+            <strong><wicket:message key="menu.perspective">Perspective</wicket:message></strong>
+          </div>
           <a wicket:id="link" class="dropdown-item"><i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span></a>
         </div>
       </li>
@@ -41,7 +43,9 @@
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountMenuButton">
 
-          <div class="dropdown-header text-center"><strong>Settings</strong></div>
+          <div class="dropdown-header text-center">
+            <strong><wicket:message key="menu.settings">Settings</wicket:message></strong>
+          </div>
           <wicket:enclosure child="logout">
             <a class="dropdown-item" wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
             <a class="dropdown-item" wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a>
