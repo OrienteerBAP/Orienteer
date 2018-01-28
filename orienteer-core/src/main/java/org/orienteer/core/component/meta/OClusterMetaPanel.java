@@ -36,7 +36,7 @@ import java.util.*;
  */
 public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster, DisplayMode, String, V> implements IDisplayModeAware
 {
-    public static final List<String> OCLUSTER_ATTRS = new ArrayList<String>(Arrays.asList(OClustersWidget.NAME,
+    public static final List<String> OCLUSTER_ATTRS = new ArrayList<String>(Arrays.asList(OClustersWidget.NAME, OClustersWidget.ID,
             OClustersWidget.CONFLICT_STRATEGY, OClustersWidget.COUNT, OClustersWidget.COMPRESSION,
             OClustersWidget.RECORD_GROW_FACTOR, OClustersWidget.RECORD_OVERFLOW_GROW_FACTOR));
 
@@ -118,7 +118,7 @@ public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster,
             if (OClustersWidget.COMPRESSION.equals(critery)) {
                 return new DropDownChoice<String>(id, (IModel<String>)getModel(), COMPRESSIONS);
             }
-            else if(OClustersWidget.COUNT.equals(critery)){
+            else if(OClustersWidget.COUNT.equals(critery) || OClustersWidget.ID.equals(critery)){
                 return resolveComponent(id, DisplayMode.VIEW, critery);
             } else {
                 return new TextField<V>(id, getModel()).setType(String.class);
