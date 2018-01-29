@@ -42,7 +42,7 @@ public class Module extends AbstractOrienteerModule{
 	public void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass("OETLConfig", "OTask")
-			.oProperty("config", OType.STRING).assignVisualization("textarea");
+			.oProperty("config", OType.STRING).assignVisualization("javascript");
 		
 		OETLTaskSession.onInstallModule(app, db);
 	}

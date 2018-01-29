@@ -35,11 +35,14 @@ public class ODBScriptResultRenderer implements IScriptResultRenderer{
 			// Trying to find ODocument related stuff
 			Object value = dataModel.getObject();
 			if(value == null) return null;
-			if(value.getClass().isArray()) {
-				value = Arrays.asList((Object[])value);
-				Class<?> arrayClass = value.getClass().getComponentType();
-				if(arrayClass != null && OIdentifiable.class.isAssignableFrom(arrayClass)) {
-					return new MultiLineLabel(id, serializeODocuments((Collection<OIdentifiable>)value));
+			Class<?> valueClass = value.getClass();
+			if(valueClass.isArray()) {
+				Class<?> arrayClass = valueClass.getComponentType();
+				if(!arrayClass.isPrimitive()) {
+					value = Arrays.asList((Object[])value);
+					if(arrayClass != null && OIdentifiable.class.isAssignableFrom(arrayClass)) {
+						return new MultiLineLabel(id, serializeODocuments((Collection<OIdentifiable>)value));
+					}
 				}
 			}
 			if(value instanceof Collection<?>) {

@@ -29,6 +29,7 @@ import java.util.List;
 @Widget(domain="schema", tab="clusters", id="list-oclusters", order=50, autoEnable=true)
 public class OClustersWidget extends AbstractWidget<Void> {
     public static final String NAME = "name";
+    public static final String ID = "id";
     public static final String COUNT = "recordsSize";
     public static final String CONFLICT_STRATEGY = "recordConflictStrategy";
     public static final String RECORD_GROW_FACTOR = "recordGrowFactor";
@@ -43,6 +44,7 @@ public class OClustersWidget extends AbstractWidget<Void> {
         List<IColumn<OCluster, String>> columns = new ArrayList<IColumn<OCluster,String>>();
         columns.add(new OClusterColumn(NAME, modeModel));
         columns.add(new OClusterMetaColumn(CONFLICT_STRATEGY, modeModel));
+        columns.add(new OClusterMetaColumn(ID, modeModel));
         columns.add(new OClusterMetaColumn(COUNT, modeModel));
 
         AbstractJavaSortableDataProvider<OCluster, String> provider =  new OClustersDataProvider();
