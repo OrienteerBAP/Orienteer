@@ -12,9 +12,10 @@ Now we can make and run OrientDB ETL scripts from Orienteer.
 
 - Make new OETLConfig (Orienteer object with OETLConfig class)
 - Set name for your script
-- Set ETL config script into "config" field
-- Press "Run" button.
-- Now we see ETL script log. For refresh - press F5 button.
+- Set ETL config script into ***Config*** field
+- Press ***Save*** button
+- Press ***Run*** button.
+- Now we see ETL script log. For refresh - press ***F5*** button(keyboard button).
 
 ### Example
 
