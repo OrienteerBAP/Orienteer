@@ -36,9 +36,9 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Schema.png
++++?image=http://orienteer.org/images/overview/Orienteer_Schema.png&size=auto
 
-+++?image=http://orienteer.org/images/overview/Schema.png
++++?image=http://orienteer.org/images/overview/Schema.png&size=auto
 
 ---
 
@@ -50,6 +50,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
++++?image=http://orienteer.org/images/overview/Orienteer_Architect.png&size=auto
 
 ---
 ## Orienteer BIRT
@@ -60,6 +61,10 @@ Open Source Business Application Platform
 - Fully embedded execution
 - Export capabilities
 
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/Orienteer_BIRT.png&size=auto
+
 ---
 ## Orienteer BPM
 
@@ -69,6 +74,9 @@ Open Source Business Application Platform
 - Seamless integration on scripting level
 - Historical data
 
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/Orienteer_BPM.png&size=auto
 ---
 ## Orienteer Camel
 
@@ -88,6 +96,12 @@ Open Source Business Application Platform
     - Scripting w/ orienteer context
 - Wicket statistics pages for debuging
 
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/Orienteer_DevTools_JS.png&size=auto
+
++++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=auto
+
 ---
 ## Orienteer ETL
 
@@ -102,6 +116,11 @@ Open Source Business Application Platform
 - Module for extended support of OrientDB graph capabilities
     - Graph visualization
     - Graph widgets for vertexes and edges
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/Graph_viz.png&size=auto
+
 ---
 ## Orienteer Logger Server
 
@@ -110,6 +129,10 @@ Open Source Business Application Platform
     - Pure java library for reporting – can be used on Android or any java application
     - Orienteer server side for analysis
 - Flexible reporting fields
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/Orienteer+Logger.png&size=auto
 
 ---
 ## Orienteer Pages
@@ -125,12 +148,22 @@ Open Source Business Application Platform
 - Widget for data pivoting and in-place analysis
 - Pre-integrated with Orienteer localization
 
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/pivottable.png&size=auto
+
++++?image=http://orienteer.org/images/overview/PivotTable_barcharts.png&size=auto
+
 ---
 ## Orienteer Taucharts
 
 - Beautiful visualizations for datasets from Orienteer
 - Dynamic or preloaded data
 - Flexible Taucharts configuration
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/Taucharts.png&size=auto
 
 ---
 ## Orienteer Telegram
@@ -141,6 +174,10 @@ Open Source Business Application Platform
 - Flexible search
 - Paging
 - Ability to customize document representation
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/otelebot.png&size=auto
 
 ---
 ## Documentation
