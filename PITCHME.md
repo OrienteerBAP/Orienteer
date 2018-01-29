@@ -132,7 +132,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer+Logger.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_Logger.png&size=auto
 
 ---
 ## Orienteer Pages
