@@ -8,7 +8,7 @@ Open Source Business Application Platform
 ## Key Features
 
 - Open Source
-- Dockerized/Cloud based
+- Dockerized/Cloud-based
 - Rapid Application Development
 - Extreme performance
 - High integration capabilities
@@ -28,8 +28,8 @@ Open Source Business Application Platform
 - Lightweight
 - Based on a multi-paradigm NoSQL DB: OrientDB
 - Powerful security model
-- Build in localization
-- Dashboards/Widgets based UI
+- Buil-in localization
+- Dashboards/Widgets-based UI
 - Dynamic pluggable architecture
 - Background processes/tasks
 - Docker ready
@@ -44,9 +44,9 @@ Open Source Business Application Platform
 
 ## Orienteer Architect
 
-- Rapid Application Development
-- UML based with support  of Orienteer’s features
-- Ordering
+- UML-based editor of data-models
+    - Support  of Orienteer specific features
+- Rapid Application Development methodology
 
 @fa[arrow-down]
 
@@ -55,7 +55,7 @@ Open Source Business Application Platform
 ---
 ## Orienteer BIRT
 
-- 2 side integration
+- 2-side integration
     - Adapter for Eclipse BIRT for reports design
     - Module for Orienteer for seamless reports representation
 - Fully embedded execution
@@ -80,7 +80,7 @@ Open Source Business Application Platform
 ---
 ## Orienteer Camel
 
-- 2 side integration:
+- 2-side integration:
     - Adapter for Apache Camel to work with OrientDB and Orienteer
     - Module for Orienteer for Apache Camel specific background tasks
 - Easy embedding of integrations with external data sources and data storages
@@ -127,7 +127,7 @@ Open Source Business Application Platform
 - Remote monitoring of incidents
 - Contains 2 parts
     - Pure java library for reporting – can be used on Android or any java application
-    - Orienteer server side for analysis
+    - Orienteer server-side for analysis
 - Flexible reporting fields
 
 @fa[arrow-down]
@@ -138,7 +138,7 @@ Open Source Business Application Platform
 ## Orienteer Pages
 
 - Lightweight CMS for Orienteer
-- Dynamic programming of server/client side
+- Dynamic programming of server/client-side
 - REST for one-page applications
 - Special tags for easy widgets/properties embedding
 
