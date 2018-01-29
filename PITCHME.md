@@ -18,7 +18,7 @@ Open Source Business Application Platform
 
 ---
 
-# Orienteer Modules
+# Modules
 
 ![Modules Screenshot](http://orienteer.org/images/overview/Collage2_cond.png)
 ---
