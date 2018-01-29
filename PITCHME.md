@@ -26,14 +26,19 @@ Open Source Business Application Platform
 ## Orienteer Core
 
 - Lightweight
-- Based on a multi-paradigm modern NoSQL DB: OrientDB
-- Flexible AJAX based UI
-- Powerful security from top to bottom
+- Based on a multi-paradigm NoSQL DB: OrientDB
+- Powerful security model
 - Build in localization
 - Dashboards/Widgets based UI
 - Dynamic pluggable architecture
 - Background processes/tasks
 - Docker ready
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/Orienteer_Schema.png
+
++++?image=http://orienteer.org/images/overview/Schema.png
 
 ---
 
@@ -42,6 +47,9 @@ Open Source Business Application Platform
 - Rapid Application Development
 - UML based with support  of Orienteer’s features
 - Ordering
+
+@fa[arrow-down]
+
 
 ---
 ## Orienteer BIRT
