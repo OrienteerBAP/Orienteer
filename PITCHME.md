@@ -1,6 +1,7 @@
 # Orienteer
 
 Open Source Business Application Platform
+![Word Clound](http://orienteer.org/images/wordcloud.png)
 
 ---
 
