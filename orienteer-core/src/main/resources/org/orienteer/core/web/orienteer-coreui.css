@@ -1,0 +1,8 @@
+.app-header.navbar .navbar-brand {
+    background-image: none;
+}
+
+.img-logo {
+    width: 35px;
+    margin-right: 5px;
+}

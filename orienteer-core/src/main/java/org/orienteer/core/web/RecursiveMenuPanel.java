@@ -1,7 +1,6 @@
 package org.orienteer.core.web;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -11,20 +10,15 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
-
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,7 +58,7 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
                 if (isActiveItem(urlModel)) {
                     item.add(new AttributeModifier("class", "active"));
                 }
-                item.add(new RecursiveMenuPanel("subItems", itemModel)); 
+                item.add(new RecursiveMenuPanel("subItems", itemModel));
             }
         });
     }
