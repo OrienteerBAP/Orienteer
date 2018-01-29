@@ -7,6 +7,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
@@ -24,6 +27,7 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -144,7 +148,10 @@ public class SearchPage extends OrienteerBasePage<String>
 	public IModel<String> getTitleModel() {
 		return new ResourceModel("search.title");
 	}
-	
-	
-	
+
+	@Override
+	public void renderHead(IHeaderResponse response) {
+		super.renderHead(response);
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(JQueryDashboardSupport.JQUERY_UI_JS)));
+	}
 }
