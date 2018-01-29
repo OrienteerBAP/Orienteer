@@ -61,10 +61,6 @@ Open Source Business Application Platform
 - Fully embedded execution
 - Export capabilities
 
-@fa[arrow-down]
-
-+++?image=http://orienteer.org/images/overview/Orienteer_BIRT.png&size=auto
-
 ---
 ## Orienteer BPM
 
