@@ -57,7 +57,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
 	public static final JavaScriptResourceReference TEATHER_JS = new WebjarsJavaScriptResourceReference("tether/current/js/tether.min.js");
 	public static final JavaScriptResourceReference PACE_JS = new WebjarsJavaScriptResourceReference("pace/current/pace.min.js");
-	public static final JavaScriptResourceReference POPER_JS = new WebjarsJavaScriptResourceReference("popper.js/current/dist/popper.min.js");
+	public static final JavaScriptResourceReference POPER_JS = new WebjarsJavaScriptResourceReference("popper.js/current/dist/umd/popper.min.js");
 	public static final JavaScriptResourceReference COREUI_JS = new WebjarsJavaScriptResourceReference("coreui__ajax/current/Static_Starter_GULP/src/js/app.js");
 //	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
 
@@ -144,8 +144,8 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 				getApplication().getJavaScriptLibrarySettings();
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem
 				.forReference(javaScriptSettings.getJQueryReference())));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(POPER_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
+        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(POPER_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TEATHER_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(COREUI_JS)));

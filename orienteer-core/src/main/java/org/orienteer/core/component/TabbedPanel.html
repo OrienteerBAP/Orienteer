@@ -1,8 +1,10 @@
 <wicket:panel xmlns:wicket="http://wicket.apache.org">
-<div wicket:id="tabs-container" class="tab-row">
-  <ul class="nav nav-tabs" role="tablist">
-    <li wicket:id="tabs" class="nav-item"><a href="#" class="nav-link" wicket:id="link"><span wicket:id="title">[[tab title]]</span></a></li>
-  </ul>
-</div>
-<div wicket:id="panel" class="tab-panel"><!-- no panel --></div>
+  <div class="card">
+    <div wicket:id="tabs-container" class="card-header">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li wicket:id="tabs" class="nav-item"><a href="#" class="nav-link" wicket:id="link"><span wicket:id="title">[[tab title]]</span></a></li>
+      </ul>
+    </div>
+    <div wicket:id="panel" class="card-body"><!-- no panel --></div>
+  </div>
 </wicket:panel>
