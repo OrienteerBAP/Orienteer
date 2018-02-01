@@ -36,9 +36,29 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Schema.png&size=contain
++++
 
-+++?image=http://orienteer.org/images/overview/Schema.png&size=contain
+Display DB Schema as grid...
+
+![Orienteer grid schema](http://orienteer.org/images/overview/Orienteer_Schema.png)
+
++++
+
+...or as graph
+
+![Orienteer graph schema](http://orienteer.org/images/overview/Schema.png)
+
++++
+
+Filtering data out
+
+![Orienteer filters](http://orienteer.org/images/overview/orienteer_filters.png)
+
++++
+
+Runtime module loading
+
+![Orienteer modules](http://orienteer.org/images/overview/orienteer_modules.png)
 
 ---
 
@@ -47,10 +67,27 @@ Open Source Business Application Platform
 - UML-based editor of data-models
     - Support  of Orienteer specific features
 - Rapid Application Development methodology
+- Support runtime DB change
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Architect.png&size=contain
++++
+
+Can make you own UML-based diagram
+
+![Architect diagram](http://orienteer.org/images/overview/architect_own_diagram.png)
+
++++
+
+Use exist or not exist classes
+
+![Architect use classes](http://orienteer.org/images/overview/architect_use_classes.png)
+
++++
+
+And apply it to DB!
+
+![Architect save](http://orienteer.org/images/overview/architect_save.png)
 
 ---
 ## Orienteer BIRT
