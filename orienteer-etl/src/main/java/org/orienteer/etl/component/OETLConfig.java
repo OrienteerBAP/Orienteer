@@ -1,5 +1,6 @@
 package org.orienteer.etl.component;
 
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
@@ -53,24 +54,46 @@ public class OETLConfig extends OTask {
 		final OETLTaskSession session = new OETLTaskSession();
 		session.start();
 
-		final String configuration = getDocument().field(ETL_CONFIG_FIELD);
-		final OrienteerETLProcessor processor = OrienteerETLProcessor.parseConfigRecord(session,configuration);
+		try {
+			final String configuration = getDocument().field(ETL_CONFIG_FIELD);
+			final OrienteerETLProcessor processor = OrienteerETLProcessor.parseConfigRecord(session,configuration);
 
-		Thread thread = new Thread(new Runnable(){
-			@Override
-			public void run() {
-				processor.doExecute();
-				session.finish();
-			}
-		});
+			Thread thread = new Thread(new Runnable(){
+				@Override
+				public void run() {
+					try {
+						processor.doExecute();
+					} catch (Exception e) {
+						session.appendOut("ETL Processor runtime error!");
+						printCause(e, session);
+					}finally{
+						session.finish();
+					}
+				}
+			});
 
-		session.setCallback(new OETLTaskSessionCallback(thread,processor));
-		session.setDeleteOnFinish((Boolean) document.field(OTask.Field.AUTODELETE_SESSIONS.fieldName()));
-		session.setOTask(this);
+			session.setCallback(new OETLTaskSessionCallback(thread,processor));
+			session.setDeleteOnFinish((Boolean) document.field(OTask.Field.AUTODELETE_SESSIONS.fieldName()));
+			session.setOTask(this);
 
-		thread.start();
+			thread.start();
+		} catch (Exception e) {
+			session.appendOut("ETL Processor execute error!");
+			printCause(e, session);
+			session.finish();
+		}
+		
 		
 		return session;
+	}
+
+	private void printCause(Throwable e,OETLTaskSession session){
+		if (!Strings.isEmpty(e.getMessage())){
+			session.appendOut(e.getMessage());
+		}
+		if (e.getCause()!=null){
+			printCause(e.getCause(), session);
+		}
 	}
 
 }
