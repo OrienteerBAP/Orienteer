@@ -36,9 +36,9 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Schema.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_Schema.png&size=contain
 
-+++?image=http://orienteer.org/images/overview/Schema.png&size=auto
++++?image=http://orienteer.org/images/overview/Schema.png&size=contain
 
 ---
 
@@ -50,7 +50,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Architect.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_Architect.png&size=contain
 
 ---
 ## Orienteer BIRT
@@ -60,6 +60,12 @@ Open Source Business Application Platform
     - Module for Orienteer for seamless reports representation
 - Fully embedded execution
 - Export capabilities
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/birt_eclipse_ss.png&size=contain
+
++++?image=http://orienteer.org/images/overview/birt_orienteer_sn.png&size=contain
 
 ---
 ## Orienteer BPM
@@ -72,7 +78,8 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_BPM.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_BPM.png&size=contain
+
 ---
 ## Orienteer Camel
 
@@ -82,6 +89,16 @@ Open Source Business Application Platform
 - Easy embedding of integrations with external data sources and data storages
 - Support of wide range of OrientDB specific conversions
 - Support of streaming integrations
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/camel_data_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/camel_script_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/camel_session_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=contain
 
 ---
 ## Orienteer Dev Utils
@@ -94,9 +111,9 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_DevTools_JS.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_DevTools_JS.png&size=contain
 
-+++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=contain
 
 ---
 ## Orienteer ETL
@@ -105,6 +122,16 @@ Open Source Business Application Platform
 - RDBMs, Files/URLs with JSON/XML, Excel and other data source types
 - Multiple steps transformation rules are supported
 - Reconciliation or auto-merge is possible
+
+@fa[arrow-down]
+
++++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/etl_script_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/etl_session_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/etl_result_sn.png&size=contain
 
 ---
 ## Orienteer Graph
@@ -115,7 +142,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Graph_viz.png&size=auto
++++?image=http://orienteer.org/images/overview/Graph_viz.png&size=contain
 
 ---
 ## Orienteer Logger Server
@@ -128,7 +155,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Logger.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_Logger.png&size=contain
 
 ---
 ## Orienteer Pages
@@ -146,9 +173,9 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/pivottable.png&size=auto
++++?image=http://orienteer.org/images/overview/pivottable.png&size=contain
 
-+++?image=http://orienteer.org/images/overview/PivotTable_barcharts.png&size=auto
++++?image=http://orienteer.org/images/overview/PivotTable_barcharts.png&size=contain
 
 ---
 ## Orienteer Taucharts
@@ -159,7 +186,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Taucharts.png&size=auto
++++?image=http://orienteer.org/images/overview/Taucharts.png&size=contain
 
 ---
 ## Orienteer Telegram
@@ -173,7 +200,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/otelebot.png&size=auto
++++?image=http://orienteer.org/images/overview/otelebot.png&size=contain
 
 ---
 ## Documentation
