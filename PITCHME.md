@@ -63,9 +63,17 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/birt_eclipse_ss.png&size=contain
++++
 
-+++?image=http://orienteer.org/images/overview/birt_orienteer_sn.png&size=contain
+Can make report in Eclipse BIRT...
+
+![Camel data](http://orienteer.org/images/overview/birt_eclipse_ss.png)
+
++++
+
+...and use in Orienteer!
+
+![Camel data](http://orienteer.org/images/overview/birt_orienteer_sn.png)
 
 ---
 ## Orienteer BPM
@@ -92,15 +100,26 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/camel_data_sn.png&size=contain
++++
 
-+++?image=http://orienteer.org/images/overview/camel_script_sn.png&size=contain
+We have some DB data and want to export to CSV
 
-+++?image=http://orienteer.org/images/overview/camel_session_sn.png&size=contain
+![Camel data](http://orienteer.org/images/overview/camel_data_sn.png)
 
 +++
 
-Now we have CSV file contains
+We can write script, press "Run"...
+
+![Camel script](http://orienteer.org/images/overview/camel_script_sn.png)
+
++++
+
+... wait some time ...
+![Camel session](http://orienteer.org/images/overview/camel_session_sn.png)
+
++++
+
+...and get CSV file! 
 
 ![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
 
@@ -116,15 +135,27 @@ Now we have CSV file contains
 
 +++
 
-We have CSV file contains
+We have CSV file and want to import it to DB
 
 ![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
 
-+++?image=http://orienteer.org/images/overview/etl_script_sn.png&size=contain
++++
 
-+++?image=http://orienteer.org/images/overview/etl_session_sn.png&size=contain
+We can write script, press "Run"...
 
-+++?image=http://orienteer.org/images/overview/etl_result_sn.png&size=contain
+![ETL Script](http://orienteer.org/images/overview/etl_script_sn.png)
+
++++
+
+... wait some time ...
+
+![ETL Session](http://orienteer.org/images/overview/etl_session_sn.png)
+
++++
+
+...and get DB data!
+
+![ETL result](http://orienteer.org/images/overview/etl_result_sn.png)
 
 ---
 
