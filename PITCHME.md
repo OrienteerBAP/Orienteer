@@ -98,7 +98,7 @@ Open Source Business Application Platform
 
 +++?image=http://orienteer.org/images/overview/camel_session_sn.png&size=contain
 
-+++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=contain
++++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=50% auto
 
 ---
 ## Orienteer Dev Utils
@@ -125,7 +125,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=contain
++++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=50% auto
 
 +++?image=http://orienteer.org/images/overview/etl_script_sn.png&size=contain
 
