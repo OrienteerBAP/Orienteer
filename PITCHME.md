@@ -98,9 +98,36 @@ Open Source Business Application Platform
 
 +++?image=http://orienteer.org/images/overview/camel_session_sn.png&size=contain
 
-+++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=50% auto
++++
+
+Now we have CSV file contains
+
+![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
 
 ---
+## Orienteer ETL
+
+- Quick and robust loading of data from external data sources
+- RDBMs, Files/URLs with JSON/XML, Excel and other data source types
+- Multiple steps transformation rules are supported
+- Reconciliation or auto-merge is possible
+
+@fa[arrow-down]
+
++++
+
+We have CSV file contains
+
+![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
+
++++?image=http://orienteer.org/images/overview/etl_script_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/etl_session_sn.png&size=contain
+
++++?image=http://orienteer.org/images/overview/etl_result_sn.png&size=contain
+
+---
+
 ## Orienteer Dev Utils
 
 - Extended functionality for developers
@@ -116,24 +143,7 @@ Open Source Business Application Platform
 +++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=contain
 
 ---
-## Orienteer ETL
 
-- Quick and robust loading of data from external data sources
-- RDBMs, Files/URLs with JSON/XML, Excel and other data source types
-- Multiple steps transformation rules are supported
-- Reconciliation or auto-merge is possible
-
-@fa[arrow-down]
-
-+++?image=http://orienteer.org/images/overview/camel_out_sn.png&size=50% auto
-
-+++?image=http://orienteer.org/images/overview/etl_script_sn.png&size=contain
-
-+++?image=http://orienteer.org/images/overview/etl_session_sn.png&size=contain
-
-+++?image=http://orienteer.org/images/overview/etl_result_sn.png&size=contain
-
----
 ## Orienteer Graph
 
 - Module for extended support of OrientDB graph capabilities
