@@ -65,7 +65,7 @@ public class Module extends AbstractOrienteerModule{
 	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(OIntegrationConfig.TASK_CLASS,OTask.TASK_CLASS)
-			.oProperty("script", OType.STRING, 15).assignVisualization("textarea");
+			.oProperty("script", OType.STRING, 15).assignVisualization("script");
 		OCamelTaskSession.onInstallModule(app, db);
 	}
 	
