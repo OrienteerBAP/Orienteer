@@ -36,9 +36,29 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Schema.png&size=auto
++++
 
-+++?image=http://orienteer.org/images/overview/Schema.png&size=auto
+Display DB Schema as grid...
+
+![Orienteer grid schema](http://orienteer.org/images/overview/Orienteer_Schema.png)
+
++++
+
+...or as graph
+
+![Orienteer graph schema](http://orienteer.org/images/overview/Schema.png)
+
++++
+
+Filtering data out
+
+![Orienteer filters](http://orienteer.org/images/overview/orienteer_filters.png)
+
++++
+
+Runtime module loading
+
+![Orienteer modules](http://orienteer.org/images/overview/orienteer_modules.png)
 
 ---
 
@@ -47,10 +67,27 @@ Open Source Business Application Platform
 - UML-based editor of data-models
     - Support  of Orienteer specific features
 - Rapid Application Development methodology
+- Support runtime DB change
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Architect.png&size=auto
++++
+
+Can make you own UML-based diagram
+
+![Architect diagram](http://orienteer.org/images/overview/architect_own_diagram.png)
+
++++
+
+Use exist or not exist classes
+
+![Architect use classes](http://orienteer.org/images/overview/architect_use_classes.png)
+
++++
+
+And apply it to DB!
+
+![Architect save](http://orienteer.org/images/overview/architect_save.png)
 
 ---
 ## Orienteer BIRT
@@ -60,6 +97,20 @@ Open Source Business Application Platform
     - Module for Orienteer for seamless reports representation
 - Fully embedded execution
 - Export capabilities
+
+@fa[arrow-down]
+
++++
+
+Can make report in Eclipse BIRT...
+
+![Camel data](http://orienteer.org/images/overview/birt_eclipse_ss.png)
+
++++
+
+...and use in Orienteer!
+
+![Camel data](http://orienteer.org/images/overview/birt_orienteer_sn.png)
 
 ---
 ## Orienteer BPM
@@ -72,7 +123,8 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_BPM.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_BPM.png&size=contain
+
 ---
 ## Orienteer Camel
 
@@ -83,7 +135,67 @@ Open Source Business Application Platform
 - Support of wide range of OrientDB specific conversions
 - Support of streaming integrations
 
+@fa[arrow-down]
+
++++
+
+We have some DB data and want to export to CSV
+
+![Camel data](http://orienteer.org/images/overview/camel_data_sn.png)
+
++++
+
+We can write script, press "Run"...
+
+![Camel script](http://orienteer.org/images/overview/camel_script_sn.png)
+
++++
+
+... wait some time ...
+![Camel session](http://orienteer.org/images/overview/camel_session_sn.png)
+
++++
+
+...and get CSV file! 
+
+![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
+
 ---
+## Orienteer ETL
+
+- Quick and robust loading of data from external data sources
+- RDBMs, Files/URLs with JSON/XML, Excel and other data source types
+- Multiple steps transformation rules are supported
+- Reconciliation or auto-merge is possible
+
+@fa[arrow-down]
+
++++
+
+We have CSV file and want to import it to DB
+
+![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
+
++++
+
+We can write script, press "Run"...
+
+![ETL Script](http://orienteer.org/images/overview/etl_script_sn.png)
+
++++
+
+... wait some time ...
+
+![ETL Session](http://orienteer.org/images/overview/etl_session_sn.png)
+
++++
+
+...and get DB data!
+
+![ETL result](http://orienteer.org/images/overview/etl_result_sn.png)
+
+---
+
 ## Orienteer Dev Utils
 
 - Extended functionality for developers
@@ -94,19 +206,12 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_DevTools_JS.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_DevTools_JS.png&size=contain
 
-+++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=auto
-
----
-## Orienteer ETL
-
-- Quick and robust loading of data from external data sources
-- RDBMs, Files/URLs with JSON/XML, Excel and other data source types
-- Multiple steps transformation rules are supported
-- Reconciliation or auto-merge is possible
++++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=contain
 
 ---
+
 ## Orienteer Graph
 
 - Module for extended support of OrientDB graph capabilities
@@ -115,7 +220,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Graph_viz.png&size=auto
++++?image=http://orienteer.org/images/overview/Graph_viz.png&size=contain
 
 ---
 ## Orienteer Logger Server
@@ -128,7 +233,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Logger.png&size=auto
++++?image=http://orienteer.org/images/overview/Orienteer_Logger.png&size=contain
 
 ---
 ## Orienteer Pages
@@ -146,9 +251,9 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/pivottable.png&size=auto
++++?image=http://orienteer.org/images/overview/pivottable.png&size=contain
 
-+++?image=http://orienteer.org/images/overview/PivotTable_barcharts.png&size=auto
++++?image=http://orienteer.org/images/overview/PivotTable_barcharts.png&size=contain
 
 ---
 ## Orienteer Taucharts
@@ -159,7 +264,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Taucharts.png&size=auto
++++?image=http://orienteer.org/images/overview/Taucharts.png&size=contain
 
 ---
 ## Orienteer Telegram
@@ -173,7 +278,7 @@ Open Source Business Application Platform
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/otelebot.png&size=auto
++++?image=http://orienteer.org/images/overview/otelebot.png&size=contain
 
 ---
 ## Documentation
