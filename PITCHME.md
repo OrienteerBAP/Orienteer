@@ -1,4 +1,3 @@
-@title[Orienteer - Open Source Business Application Platform]
 # Orienteer
 
 Open Source Business Application Platform
