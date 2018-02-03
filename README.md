@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/OrienteerBAP/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerBAP/Orienteer) [![Coverage Status](https://coveralls.io/repos/github/OrienteerBAP/Orienteer/badge.svg)](https://coveralls.io/github/OrienteerBAP/Orienteer) [![Gitter](https://badges.gitter.im/OrienteerBAP/Orienteer.svg)](https://gitter.im/OrienteerBAP/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/5897a42427d3c30044303569/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5897a42427d3c30044303569) [![Docker Pulls](https://img.shields.io/docker/pulls/orienteer/orienteer.svg)](https://hub.docker.com/r/orienteer/orienteer/)
+[![Build Status](https://travis-ci.org/OrienteerBAP/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerBAP/Orienteer) [![Coverage Status](https://coveralls.io/repos/github/OrienteerBAP/Orienteer/badge.svg)](https://coveralls.io/github/OrienteerBAP/Orienteer) [![Gitter](https://badges.gitter.im/OrienteerBAP/Orienteer.svg)](https://gitter.im/OrienteerBAP/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/5897a42427d3c30044303569/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5897a42427d3c30044303569) [![Docker Pulls](https://img.shields.io/docker/pulls/orienteer/orienteer.svg)](https://hub.docker.com/r/orienteer/orienteer/) [![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/OrienteerBAP/Orienteer/) 
 
 ## Orienteer
 
@@ -15,8 +15,9 @@
 * Developers friendly
 * Scalling and cloud ready (support of Docker)
 
+## [Git Pitch](https://gitpitch.com/OrienteerBAP/Orienteer#/)
 ## [User Guide](https://orienteer.gitbooks.io/orienteer/content/)
-## [Demo Site](http://demo.orienteer.org)
+## [Demo Site](https://demo.orienteer.org)
 
 ### Orienteer installation
 
