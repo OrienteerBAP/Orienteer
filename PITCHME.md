@@ -1,3 +1,4 @@
+@title[Orienteer - Open Source Business Application Platform]
 # Orienteer
 
 Open Source Business Application Platform
@@ -64,8 +65,9 @@ Data filtering
 ![Orienteer filters](http://orienteer.org/images/overview/orienteer_filters.png)
 
 +++
+@title[Modules loading]
 
-##### Dynamic module loading
+Dynamic module loading
 
 ![Orienteer modules](http://orienteer.org/images/overview/orienteer_modules.png)
 
@@ -81,18 +83,21 @@ Data filtering
 @fa[arrow-down]
 
 +++
+@title[UML-like editor]
 
 UML-like editor for data modeling
 
 ![Architect diagram](http://orienteer.org/images/overview/architect_own_diagram.png)
 
 +++
+@title[Create or reuse]
 
 New classes or reuse existing
 
 ![Architect use classes](http://orienteer.org/images/overview/architect_use_classes.png)
 
 +++
+@title[Applying to DB]
 
 Applying to DB
 
@@ -110,12 +115,14 @@ Applying to DB
 @fa[arrow-down]
 
 +++
+@title[Eclipse BIRT]
 
 Prepare report in Eclipse BIRT...
 
 ![Camel data](http://orienteer.org/images/overview/birt_eclipse_ss.png)
 
 +++
+@title[Orienteer BIRT widget]
 
 ...then upload and use it in Orienteer!
 
@@ -133,6 +140,7 @@ Prepare report in Eclipse BIRT...
 @fa[arrow-down]
 
 +++?image=http://orienteer.org/images/overview/Orienteer_BPM.png&size=contain
+@title[BPM Editor]
 
 ---
 ## Orienteer Camel
@@ -147,23 +155,27 @@ Prepare report in Eclipse BIRT...
 @fa[arrow-down]
 
 +++
+@title[Data sample]
 
 Some data to export
 
 ![Camel data](http://orienteer.org/images/overview/camel_data_sn.png)
 
 +++
+@title[Camel config]
 
 Specify simple camel configuration, press "Run"...
 
 ![Camel script](http://orienteer.org/images/overview/camel_script_sn.png)
 
 +++
+@title[Camel Task]
 
 ... wait for a while ...
 ![Camel session](http://orienteer.org/images/overview/camel_session_sn.png)
 
 +++
+@title[Results in CSV]
 
 ...and get CSV file! 
 
@@ -180,24 +192,28 @@ Specify simple camel configuration, press "Run"...
 @fa[arrow-down]
 
 +++
+@title[Source CSV]
 
 CSV file to import to DB
 
 ![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
 
 +++
+@title[OrientDB ETL]
 
-Specify OrientDB configuration, press "Run"...
+Specify OrientDB ETL configuration, press "Run"...
 
 ![ETL Script](http://orienteer.org/images/overview/etl_script_sn.png)
 
 +++
+@title[ETL Task]
 
 ... wait for a while ...
 
 ![ETL Session](http://orienteer.org/images/overview/etl_session_sn.png)
 
 +++
+@title[Results in Orienteer]
 
 ...and get data in Orienteer!
 
@@ -216,8 +232,10 @@ Specify OrientDB configuration, press "Run"...
 @fa[arrow-down]
 
 +++?image=http://orienteer.org/images/overview/Orienteer_DevTools_JS.png&size=contain
+@title[JavaScript]
 
 +++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=contain
+@title[SQL]
 
 ---
 
@@ -230,6 +248,7 @@ Specify OrientDB configuration, press "Run"...
 @fa[arrow-down]
 
 +++?image=http://orienteer.org/images/overview/Graph_viz.png&size=contain
+@title[Graph Visualization]
 
 ---
 ## Orienteer Logger Server
@@ -243,6 +262,7 @@ Specify OrientDB configuration, press "Run"...
 @fa[arrow-down]
 
 +++?image=http://orienteer.org/images/overview/Orienteer_Logger.png&size=contain
+@title[Logged Incident]
 
 ---
 ## Orienteer Pages
@@ -261,8 +281,10 @@ Specify OrientDB configuration, press "Run"...
 @fa[arrow-down]
 
 +++?image=http://orienteer.org/images/overview/pivottable.png&size=contain
+@title[Simple Pivot]
 
 +++?image=http://orienteer.org/images/overview/PivotTable_barcharts.png&size=contain
+@title[Barchart]
 
 ---
 ## Orienteer Taucharts
@@ -274,6 +296,7 @@ Specify OrientDB configuration, press "Run"...
 @fa[arrow-down]
 
 +++?image=http://orienteer.org/images/overview/Taucharts.png&size=contain
+@title[Taucharts]
 
 ---
 ## Orienteer Telegram
@@ -288,6 +311,7 @@ Specify OrientDB configuration, press "Run"...
 @fa[arrow-down]
 
 +++?image=http://orienteer.org/images/overview/otelebot.png&size=contain
+@title[Dialog]
 
 ---
 ## Resources
