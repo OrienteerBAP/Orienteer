@@ -50,6 +50,12 @@ Display DB Schema as grid...
 
 +++
 
+Dynamic dashboards and widgets
+
+![Orienteer filters](http://orienteer.org/images/overview/dashboard_widgets.png)
+
++++
+
 Filtering data out
 
 ![Orienteer filters](http://orienteer.org/images/overview/orienteer_filters.png)
