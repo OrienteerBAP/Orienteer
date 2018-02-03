@@ -8,13 +8,13 @@ Open Source Business Application Platform
 ## Key Features
 
 - Open Source
-- Dockerized/Cloud-based
+- Docker/Cloud ready
 - Rapid Application Development
 - Extreme performance
 - High integration capabilities
 - Pareto principle
-    - 80% Out Of the Box
-    - But there are configuration(!!!) capabilities for the last 20%
+    - 80% is Out Of the Box
+    - The REST 20% can be easily plugged
 
 ---
 
@@ -26,7 +26,7 @@ Open Source Business Application Platform
 ## Orienteer Core
 
 - Lightweight
-- Based on a multi-paradigm NoSQL DB: OrientDB
+- Based on OrientDB: multi-paradigm NoSQL DB
 - Powerful security model
 - Buil-in localization
 - Dashboards/Widgets-based UI
@@ -38,7 +38,7 @@ Open Source Business Application Platform
 
 +++
 
-Display DB Schema as grid...
+DB Schema as grid...
 
 ![Orienteer grid schema](http://orienteer.org/images/overview/Orienteer_Schema.png)
 
@@ -56,13 +56,13 @@ Dynamic dashboards and widgets
 
 +++
 
-Filtering data out
+Data filtering
 
 ![Orienteer filters](http://orienteer.org/images/overview/orienteer_filters.png)
 
 +++
 
-Runtime module loading
+Dynamic module loading
 
 ![Orienteer modules](http://orienteer.org/images/overview/orienteer_modules.png)
 
@@ -73,25 +73,25 @@ Runtime module loading
 - UML-based editor of data-models
     - Support  of Orienteer specific features
 - Rapid Application Development methodology
-- Support runtime DB change
+- Support runtime DB schema changes
 
 @fa[arrow-down]
 
 +++
 
-Can make you own UML-based diagram
+UML-like editor for data modeling
 
 ![Architect diagram](http://orienteer.org/images/overview/architect_own_diagram.png)
 
 +++
 
-Use exist or not exist classes
+New classes or reuse existing
 
 ![Architect use classes](http://orienteer.org/images/overview/architect_use_classes.png)
 
 +++
 
-And apply it to DB!
+Applying to DB
 
 ![Architect save](http://orienteer.org/images/overview/architect_save.png)
 
@@ -108,13 +108,13 @@ And apply it to DB!
 
 +++
 
-Can make report in Eclipse BIRT...
+Prepare report in Eclipse BIRT...
 
 ![Camel data](http://orienteer.org/images/overview/birt_eclipse_ss.png)
 
 +++
 
-...and use in Orienteer!
+...then upload and use it in Orienteer!
 
 ![Camel data](http://orienteer.org/images/overview/birt_orienteer_sn.png)
 
@@ -145,19 +145,19 @@ Can make report in Eclipse BIRT...
 
 +++
 
-We have some DB data and want to export to CSV
+Some data to export
 
 ![Camel data](http://orienteer.org/images/overview/camel_data_sn.png)
 
 +++
 
-We can write script, press "Run"...
+Specify simple camel configuration, press "Run"...
 
 ![Camel script](http://orienteer.org/images/overview/camel_script_sn.png)
 
 +++
 
-... wait some time ...
+... wait for a while ...
 ![Camel session](http://orienteer.org/images/overview/camel_session_sn.png)
 
 +++
@@ -178,25 +178,25 @@ We can write script, press "Run"...
 
 +++
 
-We have CSV file and want to import it to DB
+CSV file to import to DB
 
 ![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
 
 +++
 
-We can write script, press "Run"...
+Specify OrientDB configuration, press "Run"...
 
 ![ETL Script](http://orienteer.org/images/overview/etl_script_sn.png)
 
 +++
 
-... wait some time ...
+... wait for a while ...
 
 ![ETL Session](http://orienteer.org/images/overview/etl_session_sn.png)
 
 +++
 
-...and get DB data!
+...and get data in Orienteer!
 
 ![ETL result](http://orienteer.org/images/overview/etl_result_sn.png)
 
@@ -287,7 +287,12 @@ We can write script, press "Run"...
 +++?image=http://orienteer.org/images/overview/otelebot.png&size=contain
 
 ---
-## Documentation
+## Resources
 
+- [Official Site](https://orienteer.gitbooks.io/orienteer/content/)
+- [Demo Site](https://demo.orienteer.org)
+- [GitHub](https://github.com/OrienteerBAP/Orienteer)
+- [Blog](https://medium.com/orienteer)
 - [Guidebook](https://orienteer.gitbooks.io/orienteer/content/)
 - [Wiki](https://github.com/OrienteerBAP/Orienteer/wiki)
+- [Docker Image](https://hub.docker.com/r/orienteer/orienteer/)
