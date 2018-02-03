@@ -37,24 +37,27 @@ Open Source Business Application Platform
 @fa[arrow-down]
 
 +++
-
+@title[DB Schema]
 DB Schema as grid...
 
 ![Orienteer grid schema](http://orienteer.org/images/overview/Orienteer_Schema.png)
 
 +++
+@title[Schema UML]
 
 ...or as graph
 
 ![Orienteer graph schema](http://orienteer.org/images/overview/Schema.png)
 
 +++
+@title[Dashboards&Widgets]
 
 Dynamic dashboards and widgets
 
 ![Orienteer filters](http://orienteer.org/images/overview/dashboard_widgets.png)
 
 +++
+@title[Data filtering]
 
 Data filtering
 
@@ -62,7 +65,7 @@ Data filtering
 
 +++
 
-Dynamic module loading
+##### Dynamic module loading
 
 ![Orienteer modules](http://orienteer.org/images/overview/orienteer_modules.png)
 
