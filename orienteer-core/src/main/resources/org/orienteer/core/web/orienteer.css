@@ -99,16 +99,16 @@ footer div.powered
 	text-align:center
 }
 
-body {
-    padding-top: 100px;
-    background-color: #f8f8f8;
-}
+/*body {*/
+    /*padding-top: 100px;*/
+    /*background-color: #f8f8f8;*/
+/*}*/
 
-@media(min-width:768px) {
-    body {
-        padding-top: 50px;
-    }
-}
+/*@media(min-width:768px) {*/
+    /*body {*/
+        /*padding-top: 50px;*/
+    /*}*/
+/*}*/
 
 #wrapper {
     /*position:absolute;
@@ -248,4 +248,8 @@ li.fullscreen div.panel.panel-default div.panel-body{
 table.structure-table label.required:after {
 	color: red;
 	content: "*";
+}
+
+.app-header.navbar .navbar-brand {
+	background-image: url("logo.png");
 }

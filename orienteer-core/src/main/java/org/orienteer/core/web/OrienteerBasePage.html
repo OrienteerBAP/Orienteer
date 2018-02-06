@@ -1,84 +1,76 @@
-<wicket:extend>
-     <div id="wrapper">
+<wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
+  <header class="app-header navbar">
+    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand sidebar-toggler" href="#">
+      <div>
+        <img class="img-logo" src="logo.png"/>
+        <wicket:message key="application.name">Orienteer</wicket:message>
+      </div>
+    </a>
 
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/" wicket:id="home"><div><img class="img-logo" src="logo.png"/><wicket:message key="application.name">Orienteer</wicket:message></div></a>
-            </div>
-            <!-- /.navbar-header -->
-
-            <ul class="nav navbar-top-links navbar-right">
-            <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-cogs fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li wicket:id="perspectives"><a wicket:id="link"><i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span></a>
-                        </li>
-                    </ul>
-                    <!-- /.dropdown-user -->
-                </li>
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <wicket:enclosure child="logout">
-                        <li><a wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
-                        </li>
-                        <li class="divider"></li>
-                        	<li><a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a></li>
-                        <li class="divider"></li>
-                        </wicket:enclosure>
-                        <wicket:enclosure>
-                        	<li><a wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a></li>
-                        </wicket:enclosure>
-                    </ul>
-                    <!-- /.dropdown-user -->
-                </li>
-                <!-- /.dropdown -->
-            </ul>
-            <!-- /.navbar-top-links -->
-
-            <div class="navbar-default navbar-static-side" role="navigation">
-                <div class="collapse sidebar-collapse">
-                    <form wicket:id="searchForm" class="sidebar-search">
-	                    <div class="input-group custom-search-form">
-	                        <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
-	                        <span class="input-group-btn">
-	                        <button class="btn btn-default" type="button" wicket:id="search">
-	                            <i class="fa fa-search"></i>
-	                        </button>
-	                        </span>
-	                    </div>
-                    </form>
-                    <ul class="nav nav-pills nav-stacked metismenu" wicket:id="perspectiveItems"></ul>
-                    <!-- /#side-menu -->
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
-        </nav>
-
-        <div id="page-wrapper">
-            <div class="row">
-                <div class="col-lg-12">
-                	<div wicket:id="pageHeader"></div>
-                    <div wicket:id="feedbacks"></div>
-                    <wicket:child></wicket:child>
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
-            <!-- /.row -->
+    <ul class="nav navbar-nav d-md-down-none">
+      <li class="nav-item px-1">
+        <form wicket:id="searchForm" class="sidebar-search">
+          <div class="input-group custom-search-form">
+            <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" wicket:id="search">
+                <i class="fa fa-search"></i>
+              </button>
+            </span>
+          </div>
+        </form>
+      </li>
+    </ul>
+    <ul class="nav navbar-nav ml-auto px-2">
+      <li class="nav-item dropdown">
+        <button class="btn btn-secondary dropdown-toggle" wicket:id="perspectiveButton" type="button" id="perspectiveMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa-fw" wicket:id="icon"></i>
+          <span wicket:id="name"></span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="perspectiveMenuButton" wicket:id="perspectives">
+          <div class="dropdown-header text-center">
+            <strong><wicket:message key="menu.perspective">Perspective</wicket:message></strong>
+          </div>
+          <a wicket:id="link" class="dropdown-item"><i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span></a>
         </div>
-        <!-- /#modalWindowPage-wrapper -->
+      </li>
+      <li class="nav-item dropdown px-2">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="accountMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user fa-fw"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountMenuButton">
 
+          <div class="dropdown-header text-center">
+            <strong><wicket:message key="menu.settings">Settings</wicket:message></strong>
+          </div>
+          <wicket:enclosure child="logout">
+            <a class="dropdown-item" wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
+            <a class="dropdown-item" wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a>
+          </wicket:enclosure>
+          <wicket:enclosure>
+            <a class="dropdown-item" wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a>
+          </wicket:enclosure>
+        </div>
+      </li>
+    </ul>
+
+  </header>
+
+  <div class="app-body">
+    <div class="sidebar">
+      <nav class="sidebar-nav">
+        <ul class="nav" wicket:id="perspectiveItems"></ul>
+      </nav>
     </div>
-    <!-- /#wrapper -->
+    <main class="main">
+      <div wicket:id="pageHeader"></div>
+      <div class="container-fluid">
+        <div wicket:id="feedbacks"></div>
+        <wicket:child></wicket:child>
+      </div>
+    </main>
+  </div>
 </wicket:extend>

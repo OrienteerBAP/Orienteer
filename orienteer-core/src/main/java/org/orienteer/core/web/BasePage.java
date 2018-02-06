@@ -8,7 +8,10 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReferenc
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxClientInfoBehavior;
-import org.apache.wicket.markup.head.*;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -45,12 +48,18 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	private static final long serialVersionUID = 1L;
 	public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
 	public static final CssResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
-	public static final CssResourceReference METISMENU_CSS = new WebjarsCssResourceReference("metisMenu/current/metisMenu.min.css");
+	public static final CssResourceReference SIMPLE_LINE_ICONS_CSS = new WebjarsCssResourceReference("simple-line-icons/current/css/simple-line-icons.css");
+	public static final CssResourceReference COREUI_CSS = new WebjarsCssResourceReference("coreui__ajax/current/AJAX_Full_Project_GULP/src/css/style.min.css");
+//	public static final CssResourceReference METISMENU_CSS = new WebjarsCssResourceReference("metisMenu/current/metisMenu.min.css");
 	public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
 	public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
-	
+
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
-	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
+	public static final JavaScriptResourceReference TEATHER_JS = new WebjarsJavaScriptResourceReference("tether/current/js/tether.min.js");
+	public static final JavaScriptResourceReference PACE_JS = new WebjarsJavaScriptResourceReference("pace/current/pace.min.js");
+	public static final JavaScriptResourceReference POPER_JS = new WebjarsJavaScriptResourceReference("popper.js/current/dist/umd/popper.min.js");
+	public static final JavaScriptResourceReference COREUI_JS = new WebjarsJavaScriptResourceReference("coreui__ajax/current/Static_Starter_GULP/src/js/app.js");
+//	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
 
 
 	protected static final CssResourceReference BOOTSTRAP_DATE_PICKER_CSS       = new WebjarsCssResourceReference("bootstrap-datepicker/current/css/bootstrap-datepicker3.min.css");
@@ -124,19 +133,25 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public void renderHead(IHeaderResponse response) {
 		response.render(new PriorityHeaderItem(CssHeaderItem.forReference(BOOTSTRAP_CSS)));
 		response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
-		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
-		response.render(CssHeaderItem.forReference(METISMENU_CSS));
-		response.render(CssHeaderItem.forReference(ORIENTEER_CSS));
+//		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
+//		response.render(CssHeaderItem.forReference(METISMENU_CSS));
+		response.render(CssHeaderItem.forReference(SIMPLE_LINE_ICONS_CSS));
+		response.render(CssHeaderItem.forReference(COREUI_CSS));
+		response.render(CssHeaderItem.forReference(new CssResourceReference(BasePage.class, "orienteer-coreui.css")));
 		super.renderHead(response);
 		addBootstrapDatepicker(response);
-		JavaScriptLibrarySettings javaScriptSettings =          
+		JavaScriptLibrarySettings javaScriptSettings =
 				getApplication().getJavaScriptLibrarySettings();
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.
-				forReference(javaScriptSettings.getJQueryReference())));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem
+				.forReference(javaScriptSettings.getJQueryReference())));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
+        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(POPER_JS)));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TEATHER_JS)));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(COREUI_JS)));
+//		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
 		// enabling metisMenu for secondary level menus
-		response.render(OnDomReadyHeaderItem.forScript("$(\".metismenu\").metisMenu({toggle: true});"));
+//		response.render(OnDomReadyHeaderItem.forScript("$(\".metismenu\").metisMenu({toggle: true});"));
 	}
 
 	private void addBootstrapDatepicker(IHeaderResponse response) {
