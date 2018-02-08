@@ -30,11 +30,13 @@
           <i class="fa-fw" wicket:id="icon"></i>
           <span wicket:id="name"></span>
         </button>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="perspectiveMenuButton" wicket:id="perspectives">
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="perspectiveMenuButton">
           <div class="dropdown-header text-center">
             <strong><wicket:message key="menu.perspective">Perspective</wicket:message></strong>
           </div>
-          <a wicket:id="link" class="dropdown-item"><i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span></a>
+          <div wicket:id="perspectives">
+          	<a wicket:id="link" class="dropdown-item"><i class="fa-fw" wicket:id="icon"></i> <span wicket:id="name"></span></a>
+          </div>
         </div>
       </li>
       <li class="nav-item dropdown px-2">

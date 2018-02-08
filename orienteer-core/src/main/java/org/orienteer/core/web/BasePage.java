@@ -30,6 +30,7 @@ import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.AjaxIndicator;
 import org.orienteer.core.component.OModulesLoadFailedPanel;
+import org.orienteer.core.component.TabsPanel;
 import org.orienteer.core.module.PerspectivesModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
@@ -54,10 +55,9 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
 	public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
 
-	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
-	public static final JavaScriptResourceReference TEATHER_JS = new WebjarsJavaScriptResourceReference("tether/current/js/tether.min.js");
+	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.bundle.min.js");
+	public static final JavaScriptResourceReference TETHER_JS = new WebjarsJavaScriptResourceReference("tether/current/js/tether.min.js");
 	public static final JavaScriptResourceReference PACE_JS = new WebjarsJavaScriptResourceReference("pace/current/pace.min.js");
-	public static final JavaScriptResourceReference POPER_JS = new WebjarsJavaScriptResourceReference("popper.js/current/dist/umd/popper.min.js");
 	public static final JavaScriptResourceReference COREUI_JS = new WebjarsJavaScriptResourceReference("coreui__ajax/current/Static_Starter_GULP/src/js/app.js");
 //	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
 
@@ -145,8 +145,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem
 				.forReference(javaScriptSettings.getJQueryReference())));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
-        response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(POPER_JS)));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TEATHER_JS)));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TETHER_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(COREUI_JS)));
 //		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
