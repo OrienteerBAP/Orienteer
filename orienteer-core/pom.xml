@@ -127,10 +127,6 @@
         </dependency>
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
-			<artifactId>popper.js</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.npm</groupId>
 			<artifactId>codemirror</artifactId>
 			<version>5.27.4</version>
 		</dependency>
