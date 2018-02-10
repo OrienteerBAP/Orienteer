@@ -54,6 +54,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 //	public static final CssResourceReference METISMENU_CSS = new WebjarsCssResourceReference("metisMenu/current/metisMenu.min.css");
 	public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
 	public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
+	public static final CssResourceReference ORIENTEER_COREUI_CSS = new CssResourceReference(BasePage.class, "orienteer-coreui.css");
 
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.bundle.min.js");
 	public static final JavaScriptResourceReference TETHER_JS = new WebjarsJavaScriptResourceReference("tether/current/js/tether.min.js");
@@ -137,7 +138,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 //		response.render(CssHeaderItem.forReference(METISMENU_CSS));
 		response.render(CssHeaderItem.forReference(SIMPLE_LINE_ICONS_CSS));
 		response.render(CssHeaderItem.forReference(COREUI_CSS));
-		response.render(CssHeaderItem.forReference(new CssResourceReference(BasePage.class, "orienteer-coreui.css")));
+		response.render(CssHeaderItem.forReference(ORIENTEER_COREUI_CSS));
 		super.renderHead(response);
 		addBootstrapDatepicker(response);
 		JavaScriptLibrarySettings javaScriptSettings =

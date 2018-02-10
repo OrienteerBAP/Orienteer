@@ -10,3 +10,39 @@
 .navigatorLabel {
     text-align: center;
 }
+
+tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
+{
+	margin-right:0.5em;
+}
+
+td.checkbox-column
+{
+	width: 15px;
+}
+
+td.combobox-column
+{
+	width: 70px;
+}
+
+tr.commandstoolbar
+{
+	background: #f5f5f5;
+}
+
+tr.commandstoolbar div{
+	float:left;
+}
+
+.btn-with-whitespace11::after{
+	display:block;
+	clear:both;
+	content:" ";
+}
+
+footer div.powered
+{
+	text-align:center;
+	width:100%;
+}
