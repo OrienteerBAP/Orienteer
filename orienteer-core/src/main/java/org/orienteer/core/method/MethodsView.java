@@ -55,7 +55,7 @@ public class MethodsView implements Serializable{
 	
 	/**
 	 * Use it only before loadMethods
-	 * @param type
+	 * @param bootstrapType - {@link BootstrapType} to visualize
 	 */	
 	public MethodsView overrideBootstrapType(BootstrapType bootstrapType){
 		this.bootstrapType = bootstrapType;

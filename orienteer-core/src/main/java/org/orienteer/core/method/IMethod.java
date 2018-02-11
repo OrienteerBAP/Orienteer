@@ -20,7 +20,7 @@ public interface IMethod {
 	/**
 	 * Return display {@link Component} with assigned id
 	 * May be created every time or storages into method 
-	 * If you need to use integrated markup, see {@link ExampleMethodWithIntMarkup} for example
+	 * If you need to use integrated markup, see {@link org.orienteer.core.method.methods.ExampleMethodWithIntMarkup} for example
 	 * 
 	 * @return
 	 */

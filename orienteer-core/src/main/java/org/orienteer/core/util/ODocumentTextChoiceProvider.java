@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Provider for Select2MultiChoice which provides {@link Collection<ODocument>}.
- * Depends of {@link Collection<String>} of {@link OClass} names
+ * Provider for Select2MultiChoice which provides {@link Collection}.
+ * Depends of {@link Collection} of {@link OClass} names
  */
 public class ODocumentTextChoiceProvider extends ChoiceProvider<ODocument> {
 
@@ -30,7 +30,7 @@ public class ODocumentTextChoiceProvider extends ChoiceProvider<ODocument> {
 
     /**
      * Constructor
-     * @param classNamesModel {@link IModel<Collection<String>>} of class names which contains provides documents
+     * @param classNamesModel {@link IModel} of class names which contains provides documents
      */
     public ODocumentTextChoiceProvider(IModel<Collection<String>> classNamesModel) {
         this.classNamesModel = classNamesModel;

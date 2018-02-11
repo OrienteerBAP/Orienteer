@@ -28,8 +28,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReferenc
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
 /**
- * 
- * Panel for display chart from {@linkplain https://www.taucharts.com/}
+ * Panel for display chart from <a href="https://www.taucharts.com/">https://www.taucharts.com/</a>
  *
  */
 public class TauchartsPanel extends Panel{

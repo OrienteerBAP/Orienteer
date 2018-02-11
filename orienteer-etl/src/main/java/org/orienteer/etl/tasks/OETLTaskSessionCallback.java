@@ -1,6 +1,7 @@
 package org.orienteer.etl.tasks;
 
 import org.orienteer.core.tasks.ITaskSessionCallback;
+import org.orienteer.etl.component.OETLConfig;
 import org.orienteer.etl.component.OrienteerETLProcessor;
 
 /**

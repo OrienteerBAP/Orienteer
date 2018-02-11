@@ -13,29 +13,28 @@ import org.orienteer.core.widget.AbstractWidget;
 public interface IMethodEnvironmentData {
 	/**
 	 * {@link IModel} for current displayed object
-	 * @return
+	 * @return {@link IModel}
 	 */
 	public IModel<?> getDisplayObjectModel();
 	/**
 	 * Current displayed widget
-	 * @return
+	 * @return current widget
 	 */
 	public AbstractWidget<?> getCurrentWidget();
 	/**
 	 * Current displayed widget type
-	 * @return
+	 * @return widget type
 	 */
 	public String getCurrentWidgetType();
 	/**
 	 * Current place
-	 * 
-	 * @return
+	 * @return {@link MethodPlace}
 	 */
 	public MethodPlace getPlace();
 	/**
-	 * Current table object.Often with internal structure or additional data for {@link getDisplayObjectModel}
+	 * Current table object. Often with internal structure or additional data for {@link getDisplayObjectModel}
 	 * Not mandatory
-	 * @return
+	 * @return table object
 	 */
 	public Object getTableObject();
 	

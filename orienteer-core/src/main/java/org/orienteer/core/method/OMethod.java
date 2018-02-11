@@ -19,8 +19,8 @@ import org.orienteer.core.component.FAIconType;
  * 
  * Example:
  * 
- * @OMethod(order=10,filters = { 
- *			@OFilter(fClass = OClassBrowseFilter.class, fData = "OUser") 
+ * &#64;OMethod(order=10,filters = { 
+ *			&#64;OFilter(fClass = OClassBrowseFilter.class, fData = "OUser") 
  *		})
  *
  */

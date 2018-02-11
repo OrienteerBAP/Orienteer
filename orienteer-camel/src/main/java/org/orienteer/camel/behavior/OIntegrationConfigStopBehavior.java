@@ -10,7 +10,7 @@ import org.orienteer.camel.component.OIntegrationConfig;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 /**
- * Behavior for {@link OIntegrationConfig.stop} OMethod
+ * Behavior for {@link OIntegrationConfig#stop(org.orienteer.core.method.IMethodEnvironmentData)} OMethod
  *
  */
 public class OIntegrationConfigStopBehavior extends Behavior{

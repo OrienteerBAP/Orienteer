@@ -134,7 +134,7 @@ public class DateTimeBootstrapField extends DateTimeField {
 
     /**
      * Configure Bootstrap data picker
-     * @param params {@link Map<String, String>} which contains data picker params.
+     * @param params {@link Map} which contains data picker params.
      */
     protected void configureDatapickerParams(Map<String, String> params) {
 
@@ -160,7 +160,7 @@ public class DateTimeBootstrapField extends DateTimeField {
     }
 
     /**
-     * @return {@link Map<String, String>} with override toString() method which returns JavaScript object
+     * @return {@link Map} with override toString() method which returns JavaScript object
      */
     protected final Map<String, String> createParamsMap() {
         return new HashMap<String, String>() {

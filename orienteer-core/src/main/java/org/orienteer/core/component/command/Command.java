@@ -13,6 +13,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
+import org.orienteer.core.behavior.UpdateOnDashboardDisplayModeChangeBehavior;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
