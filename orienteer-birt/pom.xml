@@ -36,7 +36,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<orienteer.version>1.3</orienteer.version>
+		<orienteer.version>1.4-SNAPSHOT</orienteer.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
@@ -276,6 +276,6 @@
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
-		<version>1.3</version>
+		<version>1.4-SNAPSHOT</version>
 	</parent>
 </project>

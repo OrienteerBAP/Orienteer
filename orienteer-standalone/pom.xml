@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
-		<version>1.3</version>
+		<version>1.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-standalone</artifactId>
 	<packaging>jar</packaging>
