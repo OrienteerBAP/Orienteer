@@ -46,3 +46,13 @@ footer div.powered
 	text-align:center;
 	width:100%;
 }
+
+td.st-label
+{
+	width: 30%;
+}
+
+td.st-value textarea
+{
+	height: 12em;
+}
