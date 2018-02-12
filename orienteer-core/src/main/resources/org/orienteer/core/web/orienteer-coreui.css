@@ -46,3 +46,25 @@ footer div.powered
 	text-align:center;
 	width:100%;
 }
+
+td.st-label
+{
+	width: 30%;
+}
+
+td.st-value textarea
+{
+	height: 12em;
+}
+
+/*Only in widgets*/
+li.strict caption {
+	display: none;
+}
+
+.btn-xs {
+  line-height: .38rem;
+  padding :.1875rem .375rem;
+  font-size: .844rem; 
+  @include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);
+}
