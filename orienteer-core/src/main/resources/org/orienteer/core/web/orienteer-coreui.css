@@ -56,3 +56,8 @@ td.st-value textarea
 {
 	height: 12em;
 }
+
+/*Only in widgets*/
+li.strict caption {
+	display: none;
+}
