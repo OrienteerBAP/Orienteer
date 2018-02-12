@@ -61,3 +61,10 @@ td.st-value textarea
 li.strict caption {
 	display: none;
 }
+
+.btn-xs {
+  line-height: .38rem;
+  padding :.1875rem .375rem;
+  font-size: .844rem; 
+  @include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);
+}
