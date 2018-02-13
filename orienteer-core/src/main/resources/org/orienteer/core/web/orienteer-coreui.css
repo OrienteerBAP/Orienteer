@@ -68,3 +68,8 @@ li.strict caption {
   font-size: .844rem; 
   @include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);
 }
+
+/*widgets headers*/
+.ui-sortable:not(.ui-sortable-disabled) .card-header {
+    cursor: move;
+}
