@@ -132,7 +132,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	@Override
 	protected void onComponentTag(ComponentTag tag) {
 		checkComponentTag(tag, "table");
-		tag.append("class", "table table-condensed structure-table", " ");
+		tag.append("class", "table table-sm structure-table", " ");
 		super.onComponentTag(tag);
 	}
 	

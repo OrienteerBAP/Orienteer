@@ -1,0 +1,75 @@
+.app-header.navbar .navbar-brand {
+    background-image: none;
+}
+
+.img-logo {
+    width: 35px;
+    margin-right: 5px;
+}
+
+.navigatorLabel {
+    text-align: center;
+}
+
+tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
+{
+	margin-right:0.5em;
+}
+
+td.checkbox-column
+{
+	width: 15px;
+}
+
+td.combobox-column
+{
+	width: 70px;
+}
+
+tr.commandstoolbar
+{
+	background: #f5f5f5;
+}
+
+tr.commandstoolbar div{
+	float:left;
+}
+
+.btn-with-whitespace11::after{
+	display:block;
+	clear:both;
+	content:" ";
+}
+
+footer div.powered
+{
+	text-align:center;
+	width:100%;
+}
+
+td.st-label
+{
+	width: 30%;
+}
+
+td.st-value textarea
+{
+	height: 12em;
+}
+
+/*Only in widgets*/
+li.strict caption {
+	display: none;
+}
+
+.btn-xs {
+  line-height: .38rem;
+  padding :.1875rem .375rem;
+  font-size: .844rem; 
+  @include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);
+}
+
+/*widgets headers*/
+.ui-sortable:not(.ui-sortable-disabled) .card-header {
+    cursor: move;
+}

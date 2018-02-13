@@ -4,7 +4,7 @@
 }
 
 .dashboard {
-    margin: 0 auto;
+    /*margin: 0 auto;*/
     /*opacity: .8;*/
     background-color: #EFEFEF;
     padding: 5px 10px;
@@ -17,7 +17,6 @@
 .dashboard > ul.ui-sortable > li > .panel {
     margin-bottom: 0;
 }
-
 
 li.dashboard-placeholder {
 	background: red;
