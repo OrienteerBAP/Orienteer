@@ -13,6 +13,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -47,7 +48,17 @@ public class TabsPanel<T> extends GenericPanel<T>
 
 			@Override
 			protected void populateItem(final ListItem<T> item) {
-				item.add(new AttributeAppender("class", "active")
+				AbstractLink link = new AjaxLink<T>("link", item.getModel()) {
+					@Override
+					public void onClick(AjaxRequestTarget target) {
+						TabsPanel.this.setModelObject(item.getModelObject());
+						onTabClick(target);
+						target.add(TabsPanel.this);
+					}
+				}.setBody(newTabNameModel(item.getModel()));
+				item.add(link);
+				
+				link.add(new AttributeAppender("class", " active")
 				{
 					@Override
 					public boolean isEnabled(Component component) {
@@ -56,14 +67,6 @@ public class TabsPanel<T> extends GenericPanel<T>
 
 				});
 				
-				item.add(new AjaxLink<T>("link", item.getModel()) {
-					@Override
-					public void onClick(AjaxRequestTarget target) {
-						TabsPanel.this.setModelObject(item.getModelObject());
-						onTabClick(target);
-						target.add(TabsPanel.this);
-					}
-				}.setBody(newTabNameModel(item.getModel())));
 			}
 			
 			@Override
