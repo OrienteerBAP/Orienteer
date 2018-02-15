@@ -13,7 +13,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.Collection;
 
 /**
- * Provider for Select2MultiChoice which provides {@link Collection<String>} of {@link OClass} names
+ * Provider for Select2MultiChoice which provides {@link Collection} of {@link OClass} names
  */
 public class OClassCollectionTextChoiceProvider extends ChoiceProvider<String> {
 

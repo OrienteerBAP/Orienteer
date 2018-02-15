@@ -175,7 +175,7 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
     /**
      * Change color for filtered column
      * @param tag html tag of current column
-     * @param column {@link IColumn<T, S>} column for change color
+     * @param column {@link IColumn} column for change color
      */
     public void changeColorForFilteredColumn(ComponentTag tag, IColumn<T, S> column) {
         if (filteredColumnClass == null)

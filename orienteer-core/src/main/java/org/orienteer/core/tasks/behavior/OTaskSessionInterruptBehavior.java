@@ -8,7 +8,7 @@ import org.orienteer.core.tasks.OTaskSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 /**
  * 
- * Behavior for {@link OTaskSession.interrupt} OMethod 
+ * Behavior for {@link OTaskSession} interrupt OMethod 
  *
  */
 public class OTaskSessionInterruptBehavior extends Behavior{

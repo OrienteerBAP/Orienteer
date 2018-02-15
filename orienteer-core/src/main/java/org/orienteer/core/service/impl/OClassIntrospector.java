@@ -48,7 +48,7 @@ public class OClassIntrospector implements IOClassIntrospector
 	private static final Logger LOG = LoggerFactory.getLogger(OClassIntrospector.class);
 
 	/**
-	 * {@link OFilter} that checks displayable of an specified {@link OProperty}
+	 * {@link Predicate} that checks displayable of an specified {@link OProperty}
 	 */
 	public static class PropertyDisplayablePredicate implements Predicate<OProperty>
 	{

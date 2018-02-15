@@ -30,9 +30,9 @@ public abstract class JsonUtil implements IClusterable {
     private JsonUtil() {}
 
     /**
-     * Convert JSON string with array of classes to {@link List<OArchitectOClass>}
+     * Convert JSON string with array of classes to {@link List}
      * @param json JSON string which contains JSON array of OrientDB classes.
-     * @return {@link List<OArchitectOClass>}
+     * @return list of {@link OArchitectOClass}
      * @throws IllegalArgumentException if json is not JSON array
      */
     public static List<OArchitectOClass> fromJSON(String json) {
@@ -47,8 +47,8 @@ public abstract class JsonUtil implements IClusterable {
     }
 
     /**
-     * Convert {@link List<OArchitectOClass>} to JSON array string
-     * @param classes {@link List<OArchitectOClass>} classes for convert to JSON
+     * Convert list of {@link OArchitectOClass} to JSON array string
+     * @param classes list of {@link OArchitectOClass} to convert to JSON
      * @return JSON string which contains JSON array with classes
      * @throws IllegalArgumentException if classes is null
      */

@@ -95,7 +95,7 @@ public abstract class OrienteerClassLoaderUtil {
     /**
      * Resolve dependency (artifact). Download its dependencies
      * @param artifact - {@link Artifact} for resolve
-     * @return {@link List<Dependency>} - dependencies of artifact
+     * @return {@link List} - dependencies of artifact
      * @throws IllegalArgumentException if artifact is null
      */
     public static List<Artifact> resolveAndGetArtifactDependencies(Artifact artifact) {
@@ -116,8 +116,8 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Download artifacts
-     * @param artifacts {@link Set<Artifact>} for download
-     * @return {@link List<ArtifactResult>} of downloaded artifacts
+     * @param artifacts {@link Set} for download
+     * @return {@link List} of downloaded artifacts
      * @throws IllegalArgumentException if artifacts is null
      */
     public static List<Artifact> downloadArtifacts(Set<Artifact> artifacts) {
@@ -127,8 +127,8 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Resolve artifacts. Download its dependencies
-     * @param artifacts {@link Set<Artifact>} for resolve
-     * @return {@link List<ArtifactResult>} resolved dependencies of artifacts
+     * @param artifacts {@link Set} for resolve
+     * @return {@link List} resolved dependencies of artifacts
      * @throws IllegalArgumentException if artifacts is null
      */
     public static List<Artifact> resolveArtifacts(List<Artifact> artifacts) {
@@ -171,10 +171,9 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Read maven dependencies from pom.xml
-     * maven dependencies are pom.xml node: <dependencies></dependencies>
-     * maven dependency is pom.xml node: <dependency></dependency>
+     * maven dependencies are pom.xml node
      * @param pomXml {@link Path} of pom.xml
-     * @return {@link Set<Artifact>} of dependencies in pom.xml
+     * @return {@link Set} of dependencies in pom.xml
      * @throws IllegalArgumentException if pomXml is null
      */
     public static Set<Artifact> readDependencies(Path pomXml) {
@@ -217,7 +216,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Search jar files in artifact folder
-     * @return {@link Set<Path>} of jar files in artifacts folder
+     * @return {@link Set} of jar files {@link Path}s in artifacts folder
      */
     public static Set<Path> getJarsInArtifactsFolder() {
         return Sets.newHashSet(jarUtils.searchJarsInArtifactsFolder());
@@ -234,7 +233,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Read artifacts in metadata.xml as map
-     * @return {@link Map<Path,OArtifact>} of artifacts in metadata.xml
+     * @return {@link Map} of artifacts in metadata.xml
      */
     public static Map<Path, OArtifact> getOArtifactsMetadataInMap() {
         return metadataUtil.readOArtifactsAsMap();
@@ -242,7 +241,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Read artifacts for load in metadata.xml as map
-     * @return {@link Map<Path, OArtifact>} of artifacts for load in metadata.xml
+     * @return {@link Map} of artifacts for load in metadata.xml
      */
     public static Map<Path, OArtifact> getOArtifactsMetadataForLoadInMap() {
         return metadataUtil.readOArtifactsForLoadAsMap();
@@ -250,7 +249,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Create metadata.xml with oArtifacts
-     * @param oArtifacts {@link List<OArtifact>} of artifacts for write to metadata.xml
+     * @param oArtifacts {@link List} of artifacts for write to metadata.xml
      * @throws IllegalArgumentException if oArtifacts is null
      */
     public static void createOArtifactsMetadata(List<OArtifact> oArtifacts) {
@@ -270,7 +269,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Delete artifact from metadata.xml
-     * @param oArtifacts {@link List<OArtifact>} artifacts for delete from metadata.xml
+     * @param oArtifacts {@link List} artifacts for delete from metadata.xml
      * @throws IllegalArgumentException if oArtifacts is null
      */
     public static void deleteOArtifactsFromMetadata(List<OArtifact> oArtifacts) {
@@ -345,7 +344,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Update or create oArtifacts in metadata.xml
-     * @param oArtifacts {@link List<OArtifact>} for update or create in metadata.xml
+     * @param oArtifacts {@link List} for update or create in metadata.xml
      * @throws IllegalArgumentException if oArtifacts is null
      */
     public static void updateOArtifactsJarsInMetadata(List<OArtifact> oArtifacts) {
@@ -377,7 +376,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Update or create oArtifacts in metadata.xml
-     * @param oArtifacts {@link List<OArtifact>} for update or create in metadata.xml
+     * @param oArtifacts {@link List} for update or create in metadata.xml
      * @throws IllegalArgumentException if oArtifacts is null
      */
     public static void updateOArtifactsInMetadata(List<OArtifact> oArtifacts) {
@@ -387,7 +386,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Read and get artifacts from metadata.xml
-     * @return {@link List<OArtifact>} artifacts from metadata.xml
+     * @return {@link List} artifacts from metadata.xml
      */
     public static List<OArtifact> getOArtifactsMetadataAsList() {
         return metadataUtil.readOArtifactsAsList();
@@ -395,7 +394,7 @@ public abstract class OrienteerClassLoaderUtil {
 
     /**
      * Read and get artifacts for load from metadata.xml
-     * @return {@link List<OArtifact>} artifacts for load from metadata.xml
+     * @return {@link List} artifacts for load from metadata.xml
      */
     public static List<OArtifact> getOoArtifactsMetadataForLoadAsList() {
         return metadataUtil.readOArtifactsForLoadAsList();
