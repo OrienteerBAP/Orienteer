@@ -28,4 +28,7 @@ public class LoginPage extends BasePage<Object>
 		return new ResourceModel("login.title");
 	}
 
+	protected String getBodyAppSubClasses(){
+		return "flex-row align-items-center footer-fixed";
+	}	
 }

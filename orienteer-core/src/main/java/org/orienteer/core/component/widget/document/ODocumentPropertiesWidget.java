@@ -58,7 +58,7 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 			@Override
 			protected Component getLabelComponent(String id, final IModel<OProperty> rowModel, IModel<?> labelModel) {
 				Component ret = super.getLabelComponent(id, rowModel, labelModel);
-				ret.add(new AttributeAppender("class", "required"){
+				ret.add(new AttributeAppender("class", " required"){
 
 					@Override
 					public boolean isEnabled(Component component) {

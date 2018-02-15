@@ -11,6 +11,7 @@ import org.apache.wicket.ajax.AjaxClientInfoBehavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.WebPage;
@@ -128,6 +129,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		if(get("footer")==null) add(new Label("footer", new ODocumentPropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
 									.setEscapeModelStrings(false).setRenderBodyOnly(true));
 		if(get("indicator")==null) add(new AjaxIndicator("indicator"));
+		//add(new BodyTagAttributeModifier("class", Model.of("sidebar"), this));
 	}
 
 	@Override
@@ -152,8 +154,13 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 //		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
 		// enabling metisMenu for secondary level menus
 //		response.render(OnDomReadyHeaderItem.forScript("$(\".metismenu\").metisMenu({toggle: true});"));
+		response.render(OnDomReadyHeaderItem.forScript("document.body.setAttribute('class', 'app "+getBodyAppSubClasses()+"');"));
 	}
 
+	protected String getBodyAppSubClasses(){
+		return "header-fixed sidebar-fixed";
+	}
+	
 	private void addBootstrapDatepicker(IHeaderResponse response) {
 		response.render(CssHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_CSS));
 		response.render(JavaScriptHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_JS));
