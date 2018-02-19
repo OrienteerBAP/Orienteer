@@ -47,6 +47,7 @@ public class OTasksTest {
 		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
 		assertFalse(session.isInterruptable());
 		session.finish();
+		try { Thread.sleep(500);} catch (InterruptedException e) {}
 		assertEquals(Status.FINISHED, session.getStatus());
 		assertEquals(Status.FINISHED, session.getOTaskSessionPersisted().getStatus());
 		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
@@ -65,7 +66,7 @@ public class OTasksTest {
 			@Override
 			public void run() {
 				session.start();
-				try { Thread.sleep(250);} catch (InterruptedException e) {}
+				try { Thread.sleep(1000);} catch (InterruptedException e) {}
 				session.finish();
 			}
 		}).start();
@@ -75,7 +76,7 @@ public class OTasksTest {
 		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
 		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
 		assertFalse(session.isInterruptable());
-		try { Thread.sleep(250);} catch (InterruptedException e) {}
+		try { Thread.sleep(2000);} catch (InterruptedException e) {}
 		assertEquals(Status.FINISHED, session.getStatus());
 		assertEquals(Status.FINISHED, session.getOTaskSessionPersisted().getStatus());
 		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));

@@ -8,25 +8,25 @@ package org.orienteer.core.method;
 public interface IMethodDefinition {
 	/**
 	 * Returning method id. Should be unique.
-	 * @return
+	 * @return id for a method
 	 */
 	public String getMethodId();
 	/**
-	 * Return method instance by input data, using {@link IMethod.initialize} for init 
-	 * @param dataObject
-	 * @return
+	 * Return method instance by input data 
+	 * @param dataObject environment data object
+	 * @return {@link IMethod}
 	 */
 	public IMethod getMethod(IMethodEnvironmentData dataObject);
 	/**
 	 * Get method order in methods list
-	 * @return
+	 * @return method order
 	 */
 	public int getOrder();
 	/**
 	 * Check method for using in this environment by method filters
-	 * Calls before {@link IMethodDefinition.getMethod} 
+	 * Calls before {@link IMethodDefinition#getMethod(IMethodEnvironmentData)} 
 	 * @param dataObject
-	 * @return
+	 * @return true if method supported
 	 */
 	public boolean isSupportedMethod(IMethodEnvironmentData dataObject);
 

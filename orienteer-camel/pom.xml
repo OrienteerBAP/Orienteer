@@ -15,7 +15,7 @@
 	<parent>
 		<artifactId>orienteer-parent</artifactId>
 		<groupId>org.orienteer</groupId>
-		<version>1.3-SNAPSHOT</version>
+		<version>1.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-camel</artifactId>
 	<name>orienteer-camel</name>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.orienteer.camel.component</groupId>
 			<artifactId>camel-orientdb</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>

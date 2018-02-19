@@ -23,8 +23,8 @@ import static org.orienteer.core.component.editor.IEditorOptions.*;
 
 /**
  * Editor panel which uses <a href="http://codemirror.net">CodeMirror framework</a>  for creating code editor.
- * For configure editor params see {@link CodeEditorPanel#configureEditorParams(Map<String, String>)}
- * For configure editor keys binding see {@link CodeEditorPanel#configureEditorKeysBinding(Map<String, String>)}
+ * For configure editor params see {@link CodeEditorPanel#configureEditorParams(Map)}
+ * For configure editor keys binding see {@link CodeEditorPanel#configureEditorKeysBinding(Map)}
  */
 public abstract class CodeEditorPanel extends FormComponentPanel<String> {
 
@@ -152,7 +152,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      * Example:
      * params.put("mode", "'javascript'") - in JavaScript object it's will be like this: {mode: 'javascript'}
      * params.put("matchTags", "true") - in JavaScript object it's will be like this: {matchTags: true}
-     * @param params {@link Map<String, String>} which contains fields and values of JavaScript object
+     * @param params {@link Map} which contains fields and values of JavaScript object
      */
     protected void configureEditorParams(Map<String, String> params) {
 
@@ -163,7 +163,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
      * Example:
      * keysMap.put("'Ctrl-Space'", "'autocomplete'");
      * Use '' for put JavaScript object field in this case.
-     * @param keysMap {@link Map<String, String>} which contains fields and values of JavaScript object
+     * @param keysMap {@link Map} which contains fields and values of JavaScript object
      */
     protected void configureEditorKeysBinding(Map<String, String> keysMap) {
 
@@ -232,7 +232,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
     }
 
     /**
-     * @return {@link Map<String, String>} which has override method toString().
+     * @return {@link Map} which has override method toString().
      * toString() returns JavaScript object.
      */
     protected final Map<String, String> newParamsMap() {
