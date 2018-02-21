@@ -108,9 +108,9 @@ public class OTasksTest {
 			assertEquals(ITaskSession.Status.FINISHED,taskSession.getStatus());
 			assertNotNull(taskSessionDoc.field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
 			assertNotNull(taskSessionDoc.field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
-			assertEquals((int)TestTask.PROGRESS,taskSessionDoc.field(ITaskSession.Field.PROGRESS.fieldName()));
-			assertEquals((long)TestTask.PROGRESS_CURRENT,taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
-			assertEquals((long)TestTask.PROGRESS_FINAL,taskSessionDoc.field(ITaskSession.Field.PROGRESS_FINAL.fieldName()));
+			assertEquals(TestTask.PROGRESS, (Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS.fieldName()));
+			assertEquals(TestTask.PROGRESS_CURRENT,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
+			assertEquals(TestTask.PROGRESS_FINAL,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_FINAL.fieldName()));
 			assertEquals(false,taskSessionDoc.field(ITaskSession.Field.IS_STOPPABLE.fieldName()));
 			assertEquals(false,taskSessionDoc.field(ITaskSession.Field.DELETE_ON_FINISH.fieldName()));
 			assertNull(taskSessionDoc.field(ITaskSession.Field.ERROR_TYPE.fieldName()));
@@ -153,7 +153,7 @@ public class OTasksTest {
 			taskSessionDoc.load();
 			assertNull(taskSessionDoc.field(ITaskSession.Field.ERROR.fieldName()));
 			assertNotNull(taskSessionDoc.field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
-			assertEquals((long)12,taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
+			assertEquals(12L, (Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
 			assertEquals(ITaskSession.Status.INTERRUPTED,taskSession.getStatus());
 		} finally
 		{

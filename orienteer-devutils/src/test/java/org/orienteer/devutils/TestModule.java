@@ -40,6 +40,6 @@ public class TestModule
 	public void testSimpleSQL() {
 		ScriptExecutor se = ScriptExecutorHolder.get().getScriptExecutor();
 		assertEquals(tester.getSchema().getClass("OUser").count(), 
-							((OResultSet<ODocument>)se.executeWithoutHistory("SELECT count(1) from OUser","SQL",null).getResult()).get(0).field("count"));
+				(Object)  ((OResultSet<ODocument>)se.executeWithoutHistory("SELECT count(1) from OUser","SQL",null).getResult()).get(0).field("count"));
 	}
 }
