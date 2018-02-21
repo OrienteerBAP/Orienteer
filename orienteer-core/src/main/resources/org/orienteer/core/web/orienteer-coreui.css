@@ -52,6 +52,20 @@ td.st-label
 	width: 30%;
 }
 
+td.st-label label{
+	font-weight: 700;
+}
+
+.form-control {
+	/* width: auto; */
+	display: inline-block;
+}
+
+table.structure-table label.required:after {
+	color: red;
+	content: "*";
+}
+
 td.st-value textarea
 {
 	height: 12em;
@@ -63,7 +77,7 @@ li.strict caption {
 }
 
 .btn-xs {
-  line-height: .38rem;
+  line-height: .76rem;
   padding :.1875rem .375rem;
   font-size: .844rem; 
   @include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);
