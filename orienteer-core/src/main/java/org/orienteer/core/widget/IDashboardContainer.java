@@ -1,9 +1,12 @@
 package org.orienteer.core.widget;
 
-import java.io.Serializable;
-
 import org.apache.wicket.Component;
 
+/**
+ * 
+ * Object contains {@link IDashboard}
+ *
+ */
 public interface IDashboardContainer {
 
 	public void setCurrentDashboard(IDashboard dashboard);

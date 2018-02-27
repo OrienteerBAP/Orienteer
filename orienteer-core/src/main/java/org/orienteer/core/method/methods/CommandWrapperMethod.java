@@ -8,6 +8,11 @@ import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodConfig;
 import org.orienteer.core.method.IMethodEnvironmentData;
 
+/**
+ * 
+ * Orienteer {@link Command} wrapper
+ *
+ */
 public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
 	private Component displayComponent;

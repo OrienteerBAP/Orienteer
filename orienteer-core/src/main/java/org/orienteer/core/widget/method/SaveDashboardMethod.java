@@ -6,9 +6,16 @@ import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.methods.CommandWrapperMethod;
+import org.orienteer.core.widget.command.AddWidgetCommand;
 import org.orienteer.core.widget.command.SilentSaveDashboardCommand;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+/**
+ * 
+ * {@link SilentSaveDashboardCommand} wrapper
+ *
+ */
 
 @OMethod(order=3,filters={
 		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),

@@ -17,6 +17,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
+/**
+ * 
+ * Default breadcrumb menu
+ *
+ */
 public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 	private static final long serialVersionUID = 1L;
 	private Component configure;

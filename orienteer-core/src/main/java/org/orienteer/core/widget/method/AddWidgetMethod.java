@@ -9,6 +9,11 @@ import org.orienteer.core.method.methods.CommandWrapperMethod;
 import org.orienteer.core.widget.command.AddWidgetCommand;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * 
+ * {@link AddWidgetCommand} wrapper
+ *
+ */
 
 @OMethod(order=1,filters={
 		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
