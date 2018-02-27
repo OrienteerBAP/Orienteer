@@ -21,8 +21,6 @@ public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
 	public SilentSaveDashboardCommand(String id, IModel<ODocument> dashboardDocumentModel) {
 		super(id, "command.save", dashboardDocumentModel);
 		setIcon(FAIconType.save);
-		//setBootstrapType(BootstrapType.PRIMARY);
-		//setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 		setChangingDisplayMode(true);
 	}
 	

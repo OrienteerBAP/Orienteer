@@ -155,12 +155,4 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 	public Component getSelf(){
 		return this;
 	}
-	
-	@Override
-	public void onEvent(IEvent<?> event) {
-		if(event.getPayload() instanceof ActionPerformedEvent && Broadcast.BUBBLE.equals(event.getType())) {
-			IEvent<?> event1 = event;
-		}
-	}
-	
 }

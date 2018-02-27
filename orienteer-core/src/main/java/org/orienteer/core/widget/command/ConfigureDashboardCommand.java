@@ -21,8 +21,6 @@ public class ConfigureDashboardCommand extends AjaxCommand<ODocument> {
 	public ConfigureDashboardCommand(String id, IModel<ODocument> dashboardDocumentModel) {
 		super(id, "command.configure.widget", dashboardDocumentModel);
 		setIcon(FAIconType.gear);
-		//setBootstrapType(BootstrapType.DEFAULT);
-		//setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 		setChangingDisplayMode(true);
 	}
 

@@ -25,8 +25,6 @@ public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<ODocument
 	public UnhideWidgetCommand(String id, IModel<ODocument> dashboardDocumentModel) {
 		super(id, "command.unhide", dashboardDocumentModel);
 		setIcon(FAIconType.plus);
-		//setBootstrapType(BootstrapType.PRIMARY);
-		//setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 	}
 
 	@Override

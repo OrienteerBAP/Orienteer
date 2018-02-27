@@ -21,8 +21,6 @@ public class KeepUnsavedDashboardCommand extends AjaxCommand<ODocument> {
 	public KeepUnsavedDashboardCommand(String id, IModel<ODocument> dashboardDocumentModel) {
 		super(id, "command.keep.widget", dashboardDocumentModel);
 		setIcon(FAIconType.times);
-		//setBootstrapType(BootstrapType.DEFAULT);
-		//setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 		setChangingDisplayMode(true);
 	}
 	

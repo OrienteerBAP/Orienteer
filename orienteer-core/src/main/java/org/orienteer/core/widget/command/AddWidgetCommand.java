@@ -26,8 +26,6 @@ public class AddWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
 	public AddWidgetCommand(String id, IModel<ODocument> dashboardDocumentModel) {
 		super(id, "command.add.widget", dashboardDocumentModel);
 		setIcon(FAIconType.plus_circle);
-		//setBootstrapType(BootstrapType.SUCCESS);
-		//setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 	}
 
 	@Override
