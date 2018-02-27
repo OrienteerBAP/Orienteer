@@ -107,6 +107,7 @@ public class ODocumentPageHeader extends GenericPanel<ODocument>
 			}
 		});
 		add(UpdateOnActionPerformedEventBehavior.INSTANCE_CHANGING_CONTINUE);
+		add(new DefaultPageHeaderMenu("menu"));
 	}
 
 }

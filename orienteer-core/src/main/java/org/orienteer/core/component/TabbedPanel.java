@@ -68,6 +68,7 @@ public class TabbedPanel<T extends ITab> extends org.apache.wicket.extensions.ma
 			public void onClick(AjaxRequestTarget target) {
 				setSelectedTab(index);
 				target.add(TabbedPanel.this);
+				onLinkClick(target);
 			}
 
 			@Override
@@ -82,7 +83,11 @@ public class TabbedPanel<T extends ITab> extends org.apache.wicket.extensions.ma
 		};
 
 	}
-
+	
+	protected void onLinkClick(AjaxRequestTarget target){
+		
+	}
+	
 	@Override
 	protected WebMarkupContainer newTabsContainer(String id) {
 		return new WebMarkupContainer(id);

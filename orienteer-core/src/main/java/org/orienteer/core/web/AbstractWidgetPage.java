@@ -3,6 +3,8 @@ package org.orienteer.core.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
@@ -14,6 +16,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.TabbedPanel;
 import org.orienteer.core.event.ActionPerformedEvent;
+import org.orienteer.core.event.SwitchDashboardTabEvent;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardManager;
 import org.orienteer.core.widget.IWidgetFilter;
@@ -89,7 +92,13 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	@Override
 	public void initialize() {
 		super.initialize();
-		add(tabbedPanel = new TabbedPanel<DashboardTab>("dashboardTabs", getDashboardTabs()));
+		add(tabbedPanel = new TabbedPanel<DashboardTab>("dashboardTabs", getDashboardTabs()){
+			@Override
+			protected void onLinkClick(AjaxRequestTarget target) {
+				super.onLinkClick(target);
+				send(AbstractWidgetPage.this, Broadcast.DEPTH, new SwitchDashboardTabEvent(target));
+			}
+		});
 	}
 	
 	@Override

@@ -6,6 +6,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.event.Broadcast;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -24,8 +26,12 @@ import org.orienteer.core.component.DefaultPageHeader;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
+import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.widget.IDashboard;
+import org.orienteer.core.widget.IDashboardContainer;
+
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
@@ -35,10 +41,12 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
  *
  * @param <T> type of a main object for this page
  */
-public abstract class OrienteerBasePage<T> extends BasePage<T>
+public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashboardContainer
 {
 	private static final long serialVersionUID = 1L;
 	private OrienteerFeedbackPanel feedbacks;
+	private IDashboard curDashboard;
+	
 	public OrienteerBasePage()
 	{
 		super();
@@ -134,6 +142,25 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 
 	public OrienteerFeedbackPanel getFeedbacks() {
 		return feedbacks;
+	}
+	
+	public void setCurrentDashboard(IDashboard dashboard){
+		curDashboard = dashboard;
+	};
+	
+	public IDashboard getCurrentDashboard(){
+		return curDashboard;
+	};
+	
+	public Component getSelf(){
+		return this;
+	}
+	
+	@Override
+	public void onEvent(IEvent<?> event) {
+		if(event.getPayload() instanceof ActionPerformedEvent && Broadcast.BUBBLE.equals(event.getType())) {
+			IEvent<?> event1 = event;
+		}
 	}
 	
 }

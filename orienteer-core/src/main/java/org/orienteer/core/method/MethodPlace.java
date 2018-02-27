@@ -7,5 +7,5 @@ package org.orienteer.core.method;
  */
 
 public enum MethodPlace {
-	ACTIONS,DATA_TABLE,STRUCTURE_TABLE
+	ACTIONS,DATA_TABLE,STRUCTURE_TABLE,DASHBOARD_SETTINGS
 }

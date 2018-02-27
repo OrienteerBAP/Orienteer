@@ -8,13 +8,10 @@ import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
-import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
-import org.orienteer.core.widget.IDashboardManager;
 import org.orienteer.core.widget.command.modal.UnhideWidgetDialog;
 
-import com.google.inject.Inject;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -23,21 +20,20 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
 public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
-	
-	@Inject
-	private IDashboardManager dashboardManager;
+	private static final long serialVersionUID = 1L;
 	
 	public UnhideWidgetCommand(String id, IModel<ODocument> dashboardDocumentModel) {
 		super(id, "command.unhide", dashboardDocumentModel);
-		setIcon(FAIconType.plus_circle);
-		setBootstrapType(BootstrapType.PRIMARY);
-		setBootstrapSize(BootstrapSize.EXTRA_SMALL);
+		setIcon(FAIconType.plus);
+		//setBootstrapType(BootstrapType.PRIMARY);
+		//setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 	}
 
 	@Override
 	protected void initializeContent(final ModalWindow modal) {
 		modal.setTitle(new ResourceModel("command.unhide"));
 		modal.setContent(new UnhideWidgetDialog<T>(modal.getContentId()) {
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSelectWidget(AbstractWidget<T> widget,
