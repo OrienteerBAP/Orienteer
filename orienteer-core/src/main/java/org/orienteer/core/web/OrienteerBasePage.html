@@ -1,14 +1,16 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
   <header class="app-header navbar">
-    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <a class="navbar-brand sidebar-toggler" href="#">
-      <div>
+
+    <a class="navbar-brand" href="./home">
         <img class="img-logo" src="logo.png"/>
-        <wicket:message key="application.name">Orienteer</wicket:message>
-      </div>
+	    <div class="navbar-title">
+	      <wicket:message key="application.name">Orienteer</wicket:message>
+	    </div>
     </a>
+      
+    <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
+		<span class="navbar-toggler-icon"></span>
+	</button>
 
     <ul class="nav navbar-nav d-md-down-none ml-auto">
       <li class="nav-item px-1">
@@ -63,9 +65,10 @@
 
   <div class="app-body">
     <div class="sidebar">
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav open">
         <ul class="nav" wicket:id="perspectiveItems"></ul>
       </nav>
+      <button class="sidebar-minimizer brand-minimizer" type="button"></button>
     </div>
     <main class="main">
       <div wicket:id="pageHeader"></div>
