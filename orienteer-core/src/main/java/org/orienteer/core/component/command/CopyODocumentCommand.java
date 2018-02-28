@@ -53,7 +53,7 @@ public class CopyODocumentCommand extends AbstractCopyCommand<ODocument> impleme
     protected void perfromSingleAction(AjaxRequestTarget target, ODocument object) {
         ODocument copy = getDatabase().newInstance(object.getClassName());
         for (String fieldName : object.fieldNames()) {
-            copy.field(fieldName, object.field(fieldName));
+            copy.field(fieldName, (Object) object.field(fieldName));
         }
 
         setResponsePage(new ODocumentPage(new ODocumentModel(copy)).setModeObject(DisplayMode.EDIT));

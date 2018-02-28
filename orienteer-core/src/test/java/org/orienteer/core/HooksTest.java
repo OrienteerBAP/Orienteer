@@ -61,29 +61,29 @@ public class HooksTest
 			doc.field("b", 2);
 			doc.save();
 			doc.reload();
-			assertEquals(4, doc.field("c"));
-			assertEquals(4, doc.field("d"));
+			assertEquals(4, (Object) doc.field("c"));
+			assertEquals(4, (Object) doc.field("d"));
 			doc.field("a", 3);
 			doc.field("b", 3);
 			doc.save();
 			doc.reload();
-			assertEquals(6, doc.field("c"));
-			assertEquals(6, doc.field("d"));
+			assertEquals(6, (Object) doc.field("c"));
+			assertEquals(6, (Object) doc.field("d"));
 			db.begin();
 			doc.field("a", 4);
 			doc.field("b", 4);
 			doc.save();
 			doc.reload();
-			assertEquals(8, doc.field("c"));
-			assertEquals(8, doc.field("d"));
+			assertEquals(8, (Object) doc.field("c"));
+			assertEquals(8, (Object) doc.field("d"));
 			db.commit();
 			db.begin();
 			doc.field("a", 5);
 			doc.field("b", 5);
 			doc.save();
 			doc.reload();
-			assertEquals(10, doc.field("c"));
-			assertEquals(10, doc.field("d"));
+			assertEquals(10, (Object) doc.field("c"));
+			assertEquals(10, (Object) doc.field("d"));
 			db.commit();
 		} finally
 		{

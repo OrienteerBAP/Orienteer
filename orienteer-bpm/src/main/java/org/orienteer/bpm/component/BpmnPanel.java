@@ -79,7 +79,7 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 						pd.save();
 					}
 					resource.field("name", resourceName);
-					resource.field("deployment", pd.field("deployment"));
+					resource.field("deployment", (Object) pd.field("deployment"));
 				}
 				super.onClick(target);
 			}

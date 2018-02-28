@@ -159,16 +159,20 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 		db = null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void insertEntity(DbEntityOperation operation) {
 		db.activateOnCurrentThread();
-		HandlersManager.get().getHandler(operation.getEntityType()).create(operation.getEntity(), this);
+		((IEntityHandler<DbEntity>) HandlersManager.get().getHandler(operation.getEntityType()))
+											.create(operation.getEntity(), this);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void deleteEntity(DbEntityOperation operation) {
 		db.activateOnCurrentThread();
-		HandlersManager.get().getHandler(operation.getEntityType()).delete(operation.getEntity(), this);
+		((IEntityHandler<DbEntity>) HandlersManager.get().getHandler(operation.getEntityType()))
+											.delete(operation.getEntity(), this);
 	}
 
 	@Override
@@ -182,10 +186,12 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void updateEntity(DbEntityOperation operation) {
 		db.activateOnCurrentThread();
-		HandlersManager.get().getHandler(operation.getEntityType()).update(operation.getEntity(), this);
+		((IEntityHandler<DbEntity>) HandlersManager.get().getHandler(operation.getEntityType()))
+											.update(operation.getEntity(), this);
 	}
 
 	@Override
