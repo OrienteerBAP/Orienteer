@@ -2,6 +2,7 @@ package org.orienteer.core.web;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
@@ -32,9 +33,9 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
     public void renderHead(IHeaderResponse response) {
 		if(level<=1) {
             response.render(OnDomReadyHeaderItem.forScript(
-                    "var cur = $(\"#"+getMarkupId()+" li.active\");" +
+                    "var cur = $(\"#"+getMarkupId()+" a.active\");" +
                     "cur.parents('ul').collapse('show');" +
-                    "cur.parents('li').addClass(\"active\");"));
+                    "cur.parents('li').addClass(\"open\");"));
 		}
     }
 
@@ -56,7 +57,7 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
                         new WebMarkupContainer("menuLevelGlyph").setVisibilityAllowed(hasSubItems));
                 item.add(link);
                 if (isActiveItem(urlModel)) {
-                    item.add(new AttributeModifier("class", "active"));
+                	link.add(new AttributeAppender("class", " active"));
                 }
                 item.add(new RecursiveMenuPanel("subItems", itemModel));
             }

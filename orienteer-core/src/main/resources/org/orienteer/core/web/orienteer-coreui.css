@@ -1,10 +1,30 @@
+.app-header.navbar .navbar-brand .img-logo {
+    width: 30px;
+    margin-right: 5px;
+    overflow: hidden;
+	float: left;
+	margin-top:3px;
+}
+
+.brand-minimized .app-header.navbar .navbar-brand .img-logo {
+    display: none;
+}
+
+.brand-minimized .app-header.navbar .navbar-brand {
+    background-image:url(logo.png);
+}
+
+.brand-minimized .app-header.navbar .navbar-brand .navbar-title {
+    display: none;
+}
+
 .app-header.navbar .navbar-brand {
     background-image: none;
 }
 
-.img-logo {
-    width: 35px;
-    margin-right: 5px;
+.app-header.navbar .navbar-brand .navbar-title {
+	vertical-align: sub;
+	display: inline;
 }
 
 .navigatorLabel {
@@ -87,3 +107,4 @@ li.strict caption {
 .ui-sortable:not(.ui-sortable-disabled) .card-header {
     cursor: move;
 }
+
