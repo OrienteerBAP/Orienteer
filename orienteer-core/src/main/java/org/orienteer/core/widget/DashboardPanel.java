@@ -1,72 +1,32 @@
 package org.orienteer.core.widget;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
-import org.apache.wicket.ajax.json.JSONArray;
-import org.apache.wicket.ajax.json.JSONException;
-import org.apache.wicket.ajax.json.JSONObject;
-import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.resource.CssResourceReference;
-import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.util.template.PackageTextTemplate;
-import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.module.OWidgetsModule;
-import org.orienteer.core.widget.command.AddWidgetCommand;
-import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
-import org.orienteer.core.widget.command.ConfigureDashboardCommand;
-import org.orienteer.core.widget.command.SilentSaveDashboardCommand;
-import org.orienteer.core.widget.command.UnhideWidgetCommand;
 import org.orienteer.core.widget.support.IDashboardSupport;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
-import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import static org.orienteer.core.module.OWidgetsModule.*;
 
-import com.google.common.base.Predicate;
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
-import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
 /**
  * Dashboard is {@link Panel} to allow manipulation with a set of {@link AbstractWidget}s
  *
  * @param <T> the type of main data object
  */
-public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware {
-	
+public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware,IDashboard<T> {
+	private static final long serialVersionUID = 1L;
+
 	@Inject
 	protected IDashboardManager dashboardManager;
 	
@@ -80,13 +40,9 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	private String tab;
 	
-	private ConfigureDashboardCommand configureCommand;
-	
-	private RepeatingView commands;
-	
 	private RepeatingView widgets;
 	
-	private AbstractDefaultAjaxBehavior ajaxBehavior;
+	//private AbstractDefaultAjaxBehavior ajaxBehavior;
 	
 	private IModel<DisplayMode> dashboardModeModel = DisplayMode.VIEW.asModel();
 	
@@ -99,16 +55,6 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		this.domain = domain;
 		this.tab = tab;
 		this.widgetsFilter = widgetsFilter;
-		WebMarkupContainer commandsContainer = new WebMarkupContainer("commandsContainer");
-		OSecurityHelper.secureComponent(commandsContainer, OSecurityHelper.requireOClass(OWidgetsModule.OCLASS_DASHBOARD, OrientPermission.UPDATE));
-		commandsContainer.add(configureCommand = new ConfigureDashboardCommand("configure", dashboardDocumentModel));
-		commands = new RepeatingView("commands");
-		commands.add(new AddWidgetCommand<T>(commands.newChildId(), dashboardDocumentModel));
-		commands.add(new UnhideWidgetCommand<T>(commands.newChildId(), dashboardDocumentModel));
-		commands.add(new SilentSaveDashboardCommand(commands.newChildId(), dashboardDocumentModel));
-		commands.add(new KeepUnsavedDashboardCommand(commands.newChildId(), dashboardDocumentModel));
-		commandsContainer.add(commands);
-		add(commandsContainer);
 		widgets = new RepeatingView("widgets");
 		add(widgets);
 		setOutputMarkupId(true);
@@ -116,7 +62,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		loadDashboard();
 		dashboardSupport.initDashboardPanel(this);
 	}
-	
+
 	public ODocument loadDashboard() {
 		return loadDashboard(lookupDashboardDocument(domain, tab, getModel()));
 	}
@@ -243,11 +189,13 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return addWidget(description.instanciate(newWidgetId(), getModel(), widgetDoc));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public AbstractWidget<T> addWidget(String widgetId)
 	{
 		return addWidget((IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(widgetId));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public AbstractWidget<T> addWidget(String widgetId, ODocument widgetDoc)
 	{
 		return addWidget((IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(widgetId), widgetDoc);
@@ -268,13 +216,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		if(DisplayMode.EDIT.equals(dashboardModeModel.getObject())) {
-			commands.setVisibilityAllowed(true);
-			configureCommand.setVisibilityAllowed(false);
-		} else {
-			commands.setVisibilityAllowed(false);
-			configureCommand.setVisibilityAllowed(true);
-		}
+		findParent(IDashboardContainer.class).setCurrentDashboard(this);
 	}
 	
 	public String getDomain() {
@@ -320,4 +262,8 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return dashboardDocumentModel.getObject();
 	}
 
+	@Override
+	public DashboardPanel<T> getSelfComponent() {
+		return this;
+	}
 }

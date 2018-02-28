@@ -10,7 +10,7 @@ import org.orienteer.core.widget.AbstractWidget;
  * @param <T> the type of an entity to which this command can be applied
  */
 public class FullScreenCommand<T> extends AjaxCommand<T> {
-	
+	private static final long serialVersionUID = 1L;
 	private boolean expanded = false;
 	public FullScreenCommand(String commandId) {
 		super(commandId, Model.of());

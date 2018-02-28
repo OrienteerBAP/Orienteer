@@ -8,6 +8,7 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.DashboardPanel;
+import org.orienteer.core.widget.IDashboardContainer;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -15,18 +16,18 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * Command to cancel modification of a dashboard. State kept unsaved
  */
 public class KeepUnsavedDashboardCommand extends AjaxCommand<ODocument> {
+	private static final long serialVersionUID = 1L;
 
 	public KeepUnsavedDashboardCommand(String id, IModel<ODocument> dashboardDocumentModel) {
 		super(id, "command.keep.widget", dashboardDocumentModel);
 		setIcon(FAIconType.times);
-		setBootstrapType(BootstrapType.DEFAULT);
-		setBootstrapSize(BootstrapSize.EXTRA_SMALL);
 		setChangingDisplayMode(true);
 	}
 	
 	@Override
 	public void onClick(AjaxRequestTarget target) {
-		DashboardPanel<?> dashboard = findParent(DashboardPanel.class);
+		IDashboardContainer container = findParent(IDashboardContainer.class);
+		DashboardPanel<?> dashboard = container.getCurrentDashboard().getSelfComponent();
 		dashboard.getModeModel().setObject(DisplayMode.VIEW);
 		target.add(dashboard);
 	}
