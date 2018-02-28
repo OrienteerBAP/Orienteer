@@ -108,3 +108,12 @@ li.strict caption {
     cursor: move;
 }
 
+div.ajax-indicator {
+	padding: 1em 2em;
+	position: fixed;
+	top: 40%;
+	left: 48%;
+	background: white;
+	border: solid 1px #bbb;
+}
+
