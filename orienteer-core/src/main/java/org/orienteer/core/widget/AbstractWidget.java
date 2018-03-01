@@ -105,6 +105,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	@Override
 	public AbstractWidget<T> addCommand(Command<T> command) {
 		command.setBootstrapType(null);
+		command.setBtnCssClass("dropdown-item");
 		commands.add(command);
 		return this;
 	}

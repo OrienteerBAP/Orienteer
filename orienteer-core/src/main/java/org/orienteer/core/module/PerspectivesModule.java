@@ -111,7 +111,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 		for(ODocument doc : db.browseClass(className)) {
 			Object value = doc.field("name");
 			if(value instanceof String) {
-				doc.field("temp", doc.field("name"));
+				doc.field("temp", (Object) doc.field("name"));
 				doc.field("name", (String) null);
 				doc.save();
 			}

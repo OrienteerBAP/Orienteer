@@ -112,3 +112,23 @@ li.strict caption {
 div.wicket-modal h3.w_captionText {
     font-size: 16.3833px;
 }
+
+div.ajax-indicator {
+	padding: 1em 2em;
+	position: fixed;
+	top: 40%;
+	left: 48%;
+	background: white;
+	border: solid 1px #bbb;
+}
+
+li.fullscreen {
+	position: fixed;
+	top: 0; right:0; left:0; bottom:0;
+	margin: 0;
+	z-index: 99999;
+	background: white;
+	margin: 0 !important;
+	height: 100% !important;
+	width: 100% !important;
+}
