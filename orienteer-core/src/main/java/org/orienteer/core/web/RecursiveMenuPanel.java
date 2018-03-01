@@ -1,12 +1,8 @@
 package org.orienteer.core.web;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -28,16 +24,7 @@ import java.util.List;
 public class RecursiveMenuPanel extends GenericPanel<ODocument> {
 	
 	private int level = -1;
-
-    @Override
-    public void renderHead(IHeaderResponse response) {
-		if(level<=1) {
-            response.render(OnDomReadyHeaderItem.forScript(
-                    "var cur = $(\"#"+getMarkupId()+" a.active\");" +
-                    "cur.parents('ul').collapse('show');" +
-                    "cur.parents('li').addClass(\"open\");"));
-		}
-    }
+	//hasActive
 
     public RecursiveMenuPanel(String id, IModel<ODocument> itemModel) {
         super(id, itemModel);
@@ -53,11 +40,14 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
                 ExternalLink link = new ExternalLink("link", urlModel)
                         .setContextRelative(true);
                 link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
-                        new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true),
-                        new WebMarkupContainer("menuLevelGlyph").setVisibilityAllowed(hasSubItems));
+                        new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
                 item.add(link);
                 if (isActiveItem(urlModel)) {
-                	link.add(new AttributeAppender("class", " active"));
+                   	link.add(new AttributeAppender("class", " active"));
+                }
+                if (hasSubItems){
+                    item.add(new AttributeAppender("class", " nav-dropdown"));
+                	link.add(new AttributeAppender("class", " nav-dropdown-toggle"));
                 }
                 item.add(new RecursiveMenuPanel("subItems", itemModel));
             }
@@ -91,10 +81,13 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
     @Override
     protected void onComponentTag(ComponentTag tag) {
     	super.onComponentTag(tag);
+    	/*
     	String addClass = level==1?"nav-first-level":
     						(level==2?"nav-second-level":
     							(level==3?"nav-third-level":"nav-"+level+"-level"));
-    	tag.append("class", addClass, " ");
+    							
+    	tag.append("class", addClass, " ");*/
+    	//tag.append("class", "nav-dropdown-items", " ");
     }
     
     @Override
