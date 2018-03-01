@@ -19,6 +19,10 @@ import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.datetime.DateConverter;
 import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.filter.FilteringHeaderResponse;
+import org.apache.wicket.markup.head.filter.JavaScriptFilteredIntoFooterHeaderResponse;
+import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -225,6 +229,17 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
+		
+        setHeaderResponseDecorator(new IHeaderResponseDecorator()
+        {
+            @Override
+            public IHeaderResponse decorate(IHeaderResponse response)
+            {
+                // this header resource decorator to load JavaScript resources in the page
+                // footer (after </body>) or other resource separation
+            	return new FilteringHeaderResponse(response);
+            }
+        });
 	}
 
 

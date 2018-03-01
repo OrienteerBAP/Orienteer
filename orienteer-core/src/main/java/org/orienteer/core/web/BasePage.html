@@ -16,7 +16,7 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body class="app">
+  <body wicket:id="body" class="app">
     <div wicket:id="modulesFailed"></div>
 	  <wicket:child>
 	  </wicket:child>
@@ -26,5 +26,6 @@
 	    <div wicket:id="poweredBy" class="powered"></div>
     </footer>
     <div wicket:id="uiPlugins"></div>
+    <wicket:container wicket:id="footerJsLoad"></wicket:container>
   </body>
 </html>

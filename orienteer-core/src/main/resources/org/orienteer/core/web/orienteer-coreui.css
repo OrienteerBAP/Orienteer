@@ -108,3 +108,7 @@ li.strict caption {
     cursor: move;
 }
 
+/*wicket modal window header fix*/
+div.wicket-modal h3.w_captionText {
+    font-size: 16.3833px;
+}
