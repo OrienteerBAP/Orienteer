@@ -12,13 +12,17 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.model.ODocumentNameModel;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
+/**
+ * 
+ * Flat menu panel with dropdown support
+ *
+ */
 public class FlatMenuPanel extends GenericPanel<ODocument>{
 	private static final long serialVersionUID = 1L;
 	private String itemsFieldName;
