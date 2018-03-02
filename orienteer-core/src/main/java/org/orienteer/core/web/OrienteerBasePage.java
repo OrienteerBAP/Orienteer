@@ -79,6 +79,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 
 			@Override
 			protected void populateItem(final ListItem<ODocument> item) {
+				item.setRenderBodyOnly(true);
 				IModel<ODocument> itemModel = item.getModel();
 				Link<ODocument> link = new AjaxFallbackLink<ODocument>("link", itemModel) {
 					@Override
@@ -109,6 +110,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
 
 		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
+		add(new FlatMenuPanel("topMenu", perspectiveModel,"topMenu"));
 		
 		
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));

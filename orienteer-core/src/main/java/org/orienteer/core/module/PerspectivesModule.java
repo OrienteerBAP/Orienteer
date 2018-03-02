@@ -38,13 +38,15 @@ public class PerspectivesModule extends AbstractOrienteerModule
 	public static final String NAME = "perspectives";
 	public static final String OCLASS_PERSPECTIVE="OPerspective";
 	public static final String OCLASS_ITEM = "OPerspectiveItem";
+	public static final String OCLASS_TOP_ITEM = "OPerspectiveTopItem";
+	public static final String OCLASS_TOP_SUB_ITEM = "OPerspectiveTopSubItem";
 
 	public static final String DEFAULT_PERSPECTIVE = "Default";
 	
 
 	public PerspectivesModule()
 	{
-		super(NAME, 5);
+		super(NAME, 6);
 	}
 
 	@Override
@@ -58,9 +60,10 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("icon", OType.STRING)
 				.oProperty("homeUrl", OType.STRING)
 				.oProperty("menu", OType.LINKLIST).assignVisualization("table")
+				.oProperty("topMenu", OType.LINKLIST).assignVisualization("table")
 				.oProperty("footer", OType.STRING).assignVisualization("textarea")
 				.switchDisplayable(true, "name", "homeUrl")
-				.orderProperties("name", "icon", "homeUrl", "footer", "menu")
+				.orderProperties("name", "icon", "homeUrl", "footer", "menu","topMenu")
 			.oClass(OCLASS_ITEM)
 				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization").markAsDocumentName()
 				.oProperty("icon", OType.STRING)
@@ -75,7 +78,26 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE)
 			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_ITEM, "perspectiveItem")
 				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_ITEM)
-            .oClass(OIdentity.CLASS_NAME);
+            .oClass(OIdentity.CLASS_NAME)
+            
+			.oClass(OCLASS_TOP_ITEM)
+			.oClass(OCLASS_TOP_SUB_ITEM)
+				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization").markAsDocumentName()
+				.oProperty("url", OType.STRING)
+				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_TOP_ITEM).markAsLinkToParent()
+				.switchDisplayable(true, "name")
+				.orderProperties("name", "perspectiveItem","url")
+			.oClass(OCLASS_TOP_ITEM)
+				.oProperty("name", OType.EMBEDDEDMAP).assignVisualization("localization").markAsDocumentName()
+				.oProperty("url", OType.STRING)
+				.oProperty("perspective", OType.LINK).markAsLinkToParent()
+				.oProperty("subItems", OType.LINKLIST).assignVisualization("table")
+				.switchDisplayable(true, "name", "url")
+				.orderProperties("name", "perspective", "url")
+				.setupRelationship(OCLASS_PERSPECTIVE, "topMenu", OCLASS_TOP_ITEM, "perspective")
+				.setupRelationship(OCLASS_TOP_ITEM, "subItems", OCLASS_TOP_SUB_ITEM, "perspectiveItem")
+				;
+			
 		return null;
 	}
 	
@@ -99,6 +121,8 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				OSchemaHelper.bind(db)
 					.oClass(OIdentity.CLASS_NAME)
 					.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE);
+			case 6:
+				onInstall(app, db);
 			default:
 				break;
 		}
