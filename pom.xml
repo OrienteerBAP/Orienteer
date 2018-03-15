@@ -96,7 +96,8 @@
 		<module>orienteer-archetype-jar</module>
 		<module>orienteer-archetype-war</module>
 		<module>orienteer-architect</module>
-    </modules>
+    	<module>orienteer-mail</module>
+  	</modules>
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->
@@ -349,7 +350,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
