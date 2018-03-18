@@ -38,7 +38,7 @@ public abstract class ImportDialogPanel extends Panel
 		{
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				FileUpload file = inputFile.getFileUpload();
 				ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 				db.commit();

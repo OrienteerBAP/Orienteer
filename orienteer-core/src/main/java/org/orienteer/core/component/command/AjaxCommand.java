@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -64,14 +66,14 @@ public abstract class AjaxCommand<T> extends Command<T>
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void onClick(AjaxRequestTarget target) {
-				AjaxCommand.this.onClick(target);
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				AjaxCommand.this.onClick(targetOptional);
 				trySendActionPerformed();
 			}
         };
 	}
 	
-	public abstract void onClick(AjaxRequestTarget target);
+	public abstract void onClick(Optional<AjaxRequestTarget> targetOptional);
 
 	@Override
 	public final void onClick() {

@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
@@ -44,7 +46,7 @@ public abstract class AbstractFormModalWindowCommand<T> extends AjaxFormCommand<
 	protected abstract void initializeContent(ModalWindow modal);
 	
 	@Override
-	public void onClick(AjaxRequestTarget target) {
-		modal.show(target);
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+		targetOptional.ifPresent(modal::show);
 	}
 }

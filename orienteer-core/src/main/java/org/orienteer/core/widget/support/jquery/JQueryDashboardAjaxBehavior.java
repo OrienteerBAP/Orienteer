@@ -1,7 +1,10 @@
 package org.orienteer.core.widget.support.jquery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -9,9 +12,6 @@ import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
-import org.apache.wicket.ajax.json.JSONArray;
-import org.apache.wicket.ajax.json.JSONException;
-import org.apache.wicket.ajax.json.JSONObject;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -23,9 +23,13 @@ import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.component.ReorderableRepeatingView;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
+
+import com.github.openjson.JSONArray;
+import com.github.openjson.JSONException;
 
 class JQueryDashboardAjaxBehavior extends AbstractDefaultAjaxBehavior {
 	@Override
@@ -44,18 +48,14 @@ class JQueryDashboardAjaxBehavior extends AbstractDefaultAjaxBehavior {
 	public void updateDashboardByJson(DashboardPanel<?> dashboard, String data) {
 		try {
 			JSONArray jsonArray = new JSONArray(data);
-			RepeatingView widgetsContainer = dashboard.getWidgetsContainer();
-			for(int i=0; i<jsonArray.length();i++) {
-				String markupId = jsonArray.getString(i);
-				AbstractWidget<?> widget = (AbstractWidget<?>) widgetsContainer.get(i);
-				if(!widget.getMarkupId().equals(markupId)) {
-					for(int j=0; j<widgetsContainer.size(); j++) {
-						if(widgetsContainer.get(j).getMarkupId().equals(markupId)) {
-							widgetsContainer.swap(i, j);
-						}
-					}
-				}
+			ReorderableRepeatingView widgetsContainer = dashboard.getWidgetsContainer();
+			Map<String, String> markupIdsMap = widgetsContainer.stream().collect(Collectors.toMap(Component::getMarkupId, Component::getId));
+			List<String> requiredOrder = new ArrayList<>();
+			for(int i=0; i<jsonArray.length();i++) { 
+				String componentId = markupIdsMap.get(jsonArray.getString(i));
+				if(componentId!=null) requiredOrder.add(componentId);
 			}
+			widgetsContainer.setComponentOrderByIds(requiredOrder);
 		} catch (JSONException e) {
 			throw new WicketRuntimeException("Can't handle dashboard update", e);
 		}

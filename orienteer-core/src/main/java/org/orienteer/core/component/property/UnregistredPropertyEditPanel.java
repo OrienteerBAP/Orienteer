@@ -29,7 +29,7 @@ public class UnregistredPropertyEditPanel extends GenericPanel<OProperty> {
 	}
 	
 	protected Component makeRealizeButton() {
-		return new AjaxLink("realize") {
+		return new AjaxLink<OProperty>("realize") {
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				setResponsePage(new OPropertyPage(UnregistredPropertyEditPanel.this.getModel()).setModeObject(DisplayMode.EDIT));

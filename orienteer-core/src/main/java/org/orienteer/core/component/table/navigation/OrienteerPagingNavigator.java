@@ -32,7 +32,7 @@ public class OrienteerPagingNavigator extends AjaxPagingNavigator
 		@Override
 		protected void onComponentTag(ComponentTag tag) {
 			super.onComponentTag(tag);
-			if(!get(0).isEnabledInHierarchy()) tag.append("class", "disabled", " ");
+			if(!iterator().next().isEnabledInHierarchy()) tag.append("class", "disabled", " ");
 		}
 	}
 
@@ -77,7 +77,7 @@ public class OrienteerPagingNavigator extends AjaxPagingNavigator
 					{
 						@Override
 						public boolean isEnabled(Component component) {
-							return !((LoopItem)component).get(0).isEnabledInHierarchy();
+							return !((LoopItem)component).iterator().next().isEnabledInHierarchy();
 						}
 						
 					});

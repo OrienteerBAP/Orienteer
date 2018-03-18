@@ -26,6 +26,7 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Panel for user configuration of Orienteer module
@@ -46,18 +47,18 @@ public class UserOArtifactPanel extends GenericPanel<OArtifact> {
         final OrienteerStructureTable<OArtifact, OArtifactField> table = getStructureTable("table", feedback);
         table.addCommand(new SaveUserOArtifactCommand(table, displayMode, feedback) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
-                super.onClick(target);
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+                super.onClick(targetOptional);
                 if (getModelObject().isDownloaded()) {
-                    page.closeModalWindow(target);
+                    targetOptional.ifPresent(page::closeModalWindow);
                 }
             }
         });
         table.addCommand(new AjaxCommand<OArtifact>(new ResourceModel(SHOW_ORIENTEER_MODULES_BUT), table) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
                 page.showOrienteerModulesPanel(true);
-                target.add(page);
+                targetOptional.ifPresent(target -> target.add(page));
             }
 
             @Override

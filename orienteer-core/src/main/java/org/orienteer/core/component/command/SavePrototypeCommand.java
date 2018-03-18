@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.ICommandsSupportComponent;
@@ -28,7 +30,7 @@ public class SavePrototypeCommand<T> extends AbstractSaveCommand<T>
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		IModel<T> model = getModel();
 		T object = model!=null?model.getObject():null;
 		if(object instanceof IPrototype)
@@ -42,6 +44,6 @@ public class SavePrototypeCommand<T> extends AbstractSaveCommand<T>
 				if(isActiveTransaction) getDatabase().begin();
 			}
 		}
-		super.onClick(target);
+		super.onClick(targetOptional);
 	}
 }

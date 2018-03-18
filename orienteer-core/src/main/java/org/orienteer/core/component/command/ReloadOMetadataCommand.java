@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.model.ResourceModel;
@@ -38,7 +40,7 @@ public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> target) {
 		getDatabase().getMetadata().reload();
 	}
 

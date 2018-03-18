@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -36,7 +38,7 @@ public class TriggerCommand<T> extends AjaxCommand<T> {
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> target) {
 		Boolean current = triggerModel.getObject();
 		current = current!=null?!current:true;
 		triggerModel.setObject(current);

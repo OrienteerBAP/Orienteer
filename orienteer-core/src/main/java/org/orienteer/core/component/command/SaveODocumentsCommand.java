@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.visit.IVisit;
@@ -28,7 +30,7 @@ public class SaveODocumentsCommand extends AbstractSaveCommand<ODocument>
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		table.visitChildren(OrienteerDataTable.MetaContextItem.class, new IVisitor<OrienteerDataTable.MetaContextItem<ODocument, ?>, Void>() {
 
 			@Override
@@ -47,7 +49,7 @@ public class SaveODocumentsCommand extends AbstractSaveCommand<ODocument>
 			db.commit();
 			if(active) db.begin();
 		}
-		super.onClick(target);
+		super.onClick(targetOptional);
 	}
 	
 	public boolean isForceCommit() {

@@ -1,5 +1,7 @@
 package org.orienteer.core.widget.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.BootstrapSize;
@@ -25,10 +27,10 @@ public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
 	}
 	
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		DashboardPanel<?> dashboard = findParent(DashboardPanel.class);
 		dashboard.storeDashboard();
 		dashboard.getModeModel().setObject(DisplayMode.VIEW);
-		target.add(dashboard);
+		targetOptional.ifPresent(target -> target.add(dashboard));
 	}
 }

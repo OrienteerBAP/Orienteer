@@ -38,7 +38,7 @@ public abstract class AddRuleDialog extends AbstractDialog<Void> {
 		
 		addCommand(new AjaxFormCommand<Void>(newCommandId(), "command.submit") {
 			@Override
-			public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			public void onSubmit(AjaxRequestTarget target) {
 				onRuleEntered(target, resourceModel.getObject(), specificModel.getObject());
 			}
 		}.setBootstrapType(BootstrapType.PRIMARY));

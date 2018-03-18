@@ -33,6 +33,7 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Base class for widgets showing and modifying schema localizations.
@@ -69,7 +70,7 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
         		OSecurityHelper.secureComponent(this, OSecurityHelper.requireOClass(OrienteerLocalizationModule.OCLASS_LOCALIZATION, OrientPermission.CREATE));
         	}
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
                 ODocument newLocalization = new ODocument(OrienteerLocalizationModule.OCLASS_LOCALIZATION);
                 T schemaObject = AbstractSchemaLocalizationWidget.this.getModelObject();
                 newLocalization.field(OrienteerLocalizationModule.OPROPERTY_KEY, getLocalizationKey(schemaObject));
@@ -79,7 +80,7 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
                 newLocalization.field(OrienteerLocalizationModule.OPROPERTY_VALUE, "");
                 newLocalization.field(OrienteerLocalizationModule.OPROPERTY_ACTIVE, false);
                 getDatabase().save(newLocalization);
-                target.add(table);
+                targetOptional.ifPresent(target -> target.add(table));
             }
 
             @Override
@@ -95,7 +96,7 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
                 Object payload = event.getPayload();
                 if(payload instanceof ActionPerformedEvent) {
                     ajaxFormCommand.setVisibilityAllowed(getModeModel().getObject().equals(DisplayMode.EDIT));
-                    ((ActionPerformedEvent) payload).getTarget().add(ajaxFormCommand);
+                    ((ActionPerformedEvent<?>) payload).getTarget().ifPresent(target -> target.add(ajaxFormCommand));
                 } else if (payload instanceof AjaxRequestHandler) {
                     ((AjaxRequestHandler) payload).add(ajaxFormCommand);
                 }

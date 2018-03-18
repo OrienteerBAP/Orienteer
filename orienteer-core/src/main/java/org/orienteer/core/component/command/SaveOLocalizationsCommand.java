@@ -8,6 +8,8 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.visit.IVisit;
@@ -32,7 +34,7 @@ public class SaveOLocalizationsCommand extends AbstractSaveCommand<ODocument> {
     }
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
+    public void onClick(Optional<AjaxRequestTarget> targetOptional) {
         table.visitChildren(OrienteerDataTable.MetaContextItem.class, new IVisitor<OrienteerDataTable.MetaContextItem<ODocument, ?>, Void>() {
 
             @Override
@@ -52,6 +54,6 @@ public class SaveOLocalizationsCommand extends AbstractSaveCommand<ODocument> {
                 visit.dontGoDeeper();
             }
         });
-        super.onClick(target);
+        super.onClick(targetOptional);
     }
 }

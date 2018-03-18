@@ -1,6 +1,7 @@
 package org.orienteer.core.component.command;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
@@ -54,7 +55,7 @@ public class AbstractCheckBoxEnabledCommand<T> extends AjaxFormCommand<T>
 	}
 
 	@Override
-	public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+	public void onSubmit(AjaxRequestTarget target) {
 		performMultiAction(target, getSelected());
 		resetSelection();
 	}

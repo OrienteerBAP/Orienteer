@@ -15,8 +15,6 @@ import org.apache.wicket.*;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
-import org.apache.wicket.datetime.DateConverter;
-import org.apache.wicket.datetime.StyleDateConverter;
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
@@ -26,8 +24,8 @@ import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
+import org.apache.wicket.util.convert.converter.DateConverter;
 import org.apache.wicket.util.string.Strings;
-import org.joda.time.DateTimeZone;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.component.meta.WicketPropertyResolver;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
@@ -190,7 +188,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 					protected Boolean execute(ODatabaseDocument db) {
 						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
 						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
-						DateTimeZone.setDefault(DateTimeZone.forID(timeZoneId));
 						return true;
 					}
 				}.execute();

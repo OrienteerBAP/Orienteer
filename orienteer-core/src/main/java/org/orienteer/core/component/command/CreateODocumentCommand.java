@@ -1,6 +1,7 @@
 package org.orienteer.core.component.command;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -56,14 +57,14 @@ public class CreateODocumentCommand extends AbstractModalWindowCommand<ODocument
 	}
 	
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		OClass oClass = classModel.getObject();
 		Collection<OClass> subClasses = oClass.getSubclasses();
 		if(subClasses==null || subClasses.isEmpty()) {
 			//There is no subclasses, so no need to select particular subtype
 			redirectToCreateODocumentPage(null, oClass);
 		} else {
-			modal.show(target);
+			targetOptional.ifPresent(modal::show);
 		}
 	}
 	

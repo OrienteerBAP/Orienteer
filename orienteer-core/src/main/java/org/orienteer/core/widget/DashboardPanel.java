@@ -1,64 +1,40 @@
 package org.orienteer.core.widget;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import static org.orienteer.core.module.OWidgetsModule.OCLASS_DASHBOARD;
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_DOMAIN;
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_TAB;
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_TYPE_ID;
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_WIDGETS;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
-import org.apache.wicket.ajax.attributes.AjaxRequestAttributes.Method;
-import org.apache.wicket.ajax.json.JSONArray;
-import org.apache.wicket.ajax.json.JSONException;
-import org.apache.wicket.ajax.json.JSONObject;
-import org.apache.wicket.behavior.AbstractAjaxBehavior;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.resource.CssResourceReference;
-import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.util.template.PackageTextTemplate;
-import org.apache.wicket.util.template.TextTemplate;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.component.ReorderableRepeatingView;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.command.AddWidgetCommand;
-import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
 import org.orienteer.core.widget.command.ConfigureDashboardCommand;
+import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
 import org.orienteer.core.widget.command.SilentSaveDashboardCommand;
 import org.orienteer.core.widget.command.UnhideWidgetCommand;
 import org.orienteer.core.widget.support.IDashboardSupport;
 
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
-import static org.orienteer.core.module.OWidgetsModule.*;
-
-import com.google.common.base.Predicate;
-import com.google.common.reflect.TypeToken;
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
-import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 
 /**
  * Dashboard is {@link Panel} to allow manipulation with a set of {@link AbstractWidget}s
@@ -84,7 +60,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	private RepeatingView commands;
 	
-	private RepeatingView widgets;
+	private ReorderableRepeatingView widgets;
 	
 	private AbstractDefaultAjaxBehavior ajaxBehavior;
 	
@@ -109,7 +85,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		commands.add(new KeepUnsavedDashboardCommand(commands.newChildId(), dashboardDocumentModel));
 		commandsContainer.add(commands);
 		add(commandsContainer);
-		widgets = new RepeatingView("widgets");
+		widgets = new ReorderableRepeatingView("widgets");
 		add(widgets);
 		setOutputMarkupId(true);
 		
@@ -285,7 +261,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return tab;
 	}
 
-	public RepeatingView getWidgetsContainer() {
+	public ReorderableRepeatingView getWidgetsContainer() {
 		return widgets;
 	}
 	

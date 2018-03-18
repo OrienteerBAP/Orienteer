@@ -1,5 +1,7 @@
 package org.orienteer.core.widget.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.util.string.ComponentRenderer;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -42,11 +44,11 @@ public class AddWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
 
 			@Override
 			protected void onSelectWidgetType(IWidgetType<T> type,
-					AjaxRequestTarget target) {
-				modal.close(target);
+					Optional<AjaxRequestTarget> targetOptional) {
+				targetOptional.ifPresent(modal::close);
 				DashboardPanel<T> dashboard = getDashboardPanel();
 				AbstractWidget<T> widget = dashboard.addWidget(type);
-				dashboard.getDashboardSupport().ajaxAddWidget(widget, target);
+				targetOptional.ifPresent(target-> dashboard.getDashboardSupport().ajaxAddWidget(widget, target));
 			}
 		});
 		modal.setAutoSize(true);

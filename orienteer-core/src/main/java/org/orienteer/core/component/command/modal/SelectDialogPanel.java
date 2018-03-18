@@ -66,8 +66,8 @@ public abstract class SelectDialogPanel extends GenericPanel<String>
 		AjaxButton searchButton = new AjaxButton("search") {
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				super.onSubmit(target, form);
+			protected void onSubmit(AjaxRequestTarget target) {
+				super.onSubmit(target);
 				target.add(resultsContainer);
 			}
 		}; 

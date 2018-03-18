@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.markup.html.form.Form;
@@ -59,8 +61,8 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				AjaxFormCommand.this.onSubmit(target, form);
+			protected void onSubmit(AjaxRequestTarget target) {
+				AjaxFormCommand.this.onSubmit(target);
 				trySendActionPerformed();
 			}
 			
@@ -84,12 +86,12 @@ public class AjaxFormCommand<T> extends AjaxCommand<T>
 		return this;
 	}
 	
-	public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-		onClick(target);
+	public void onSubmit(AjaxRequestTarget target) {
+		onClick(Optional.of(target));
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 
 	}
 

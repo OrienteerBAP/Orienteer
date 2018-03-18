@@ -30,6 +30,8 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
 
+import java.util.Optional;
+
 /**
  * Abstract root class for widgets
  *
@@ -58,23 +60,23 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				ODocument doc = getWidgetDocument();
 				if(doc.getIdentity().isPersistent()) {
 					setResponsePage(new ODocumentPage(doc));
 				}
-				else {
+				else if(targetOptional.isPresent()){
 					String alert = "alert('"+JavaScriptUtils.escapeQuotes(getLocalizer().getString("warning.widget.nosettings", AbstractWidget.this))+"')";
-					target.appendJavaScript(alert);
+					targetOptional.get().appendJavaScript(alert);
 				}
 			}
 		});
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
 			
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
+				targetOptional.ifPresent(target->dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target));
 				setHidden(true);
 			}
 			
@@ -87,9 +89,9 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.delete") {
 
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
+				targetOptional.ifPresent(target -> dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target));
 				dashboard.deleteWidget(AbstractWidget.this);
 			}
 			

@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -33,13 +35,13 @@ public class SaveOArtifactCommand extends AbstractSaveOArtifactCommand {
     }
 
     @Override
-    public void onClick(final AjaxRequestTarget target) {
+    public void onClick(final Optional<AjaxRequestTarget> targetOptional) {
         final IModel<Boolean> failed = Model.of(Boolean.FALSE);
         table.visitChildren(MetaContextItem.class, new IVisitor<MetaContextItem<OArtifact, ?>,Void >() {
             @Override
             public void component(MetaContextItem<OArtifact, ?> rowItem, IVisit<Void> visit) {
                 OArtifact module = rowItem.getModelObject();
-                if (isUserArtifactValid(target, module)) {
+                if (isUserArtifactValid(targetOptional, module)) {
                     OArtifact moduleForUpdate = new OArtifact(module.getPreviousArtifactRefence());
                     moduleForUpdate.setLoad(module.isLoad())
                             .setTrusted(module.isTrusted());
@@ -50,8 +52,8 @@ public class SaveOArtifactCommand extends AbstractSaveOArtifactCommand {
         });
 
         if (!failed.getObject()) {
-            showFeedback(target, false);
-            super.onClick(target);
+            showFeedback(targetOptional, false);
+            super.onClick(targetOptional);
         }
     }
 
