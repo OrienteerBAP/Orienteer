@@ -38,7 +38,7 @@ public class OMailModule extends AbstractOrienteerModule{
 				.oProperty(OMail.SUBJECT, OType.STRING, 10)
 				.oProperty(OMail.FROM, OType.STRING, 20)
 				.oProperty(OMail.TEXT, OType.STRING, 30).assignVisualization("html")
-				.oProperty(OMail.SETTINGS, OType.LINK, 40).notNull();
+				.oProperty(OMail.SETTINGS, OType.LINK, 40).linkedClass(OMailSettings.CLASS_NAME).notNull();
 		return null;
 	}
 
