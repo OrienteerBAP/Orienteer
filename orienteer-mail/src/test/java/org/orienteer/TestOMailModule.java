@@ -14,6 +14,8 @@ import org.orienteer.service.IOMailService;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -74,6 +76,16 @@ public class TestOMailModule
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	@Test
+	public void testMacros() {
+		String str = "Hello, World!";
+		Map<Object, Object> macros = new HashMap<>(1);
+		macros.put("test", str);
+		OMail mail = new OMail().setText("${test}");
+		mail.setMacros(macros);
+		assertTrue(mail.getText().equals(str));
 	}
 
 	@Test

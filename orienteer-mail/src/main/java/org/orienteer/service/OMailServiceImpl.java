@@ -40,7 +40,7 @@ public class OMailServiceImpl implements IOMailService {
                 sendMail(to, mail);
                 success = true;
             } catch (Exception ex) {
-                // Nothing to do
+                ex.printStackTrace();
             } finally {
                 if (f != null) f.accept(success);
             }
