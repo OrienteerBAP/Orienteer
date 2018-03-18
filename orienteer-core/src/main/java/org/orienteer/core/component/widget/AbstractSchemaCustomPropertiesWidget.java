@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -120,7 +121,7 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 						form.add(new TextArea<String>("value", valueModel).setType(String.class).setRequired(true));
 						form.add(new AjaxButton("submit", form) {
 							@Override
-							protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+							protected void onSubmit(AjaxRequestTarget target) {
 								String key = keyModel.getObject();
 								String value = valueModel.getObject();
 								boolean isTransactionActive = getDatabase().getTransaction().isActive();
@@ -149,9 +150,9 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 				setBootstrapType(BootstrapType.WARNING);
 			}
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				hideSystem=!hideSystem;
-				target.add(AbstractSchemaCustomPropertiesWidget.this);
+				targetOptional.ifPresent(target -> target.add(AbstractSchemaCustomPropertiesWidget.this));
 			}
 		});
 		form.add(structureTable);

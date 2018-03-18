@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.OrienteerFilter;
@@ -33,7 +35,7 @@ public class ReloadOrienteerCommand extends AjaxCommand<OArtifact> {
     }
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
+    public void onClick(Optional<AjaxRequestTarget> target) {
         setResponsePage(new OrienteerReloadPage());
         OrienteerClassLoader.useDefaultClassLoaderProperties();
         OrienteerFilter.reloadOrienteer();

@@ -73,7 +73,7 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 	
 	protected void update(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
 		component.configure();
-		if(component.isVisibleInHierarchy()) event.getTarget().add(component);
+		if(component.isVisibleInHierarchy()) event.getTarget().ifPresent(target ->target.add(component));
 	}
 	
 	protected boolean match(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {

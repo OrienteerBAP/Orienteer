@@ -1,5 +1,7 @@
 package org.orienteer.core.widget.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -24,12 +26,15 @@ public class FullScreenCommand<T> extends AjaxCommand<T> {
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		expanded=!expanded;
 		configure();
-		target.add(this);
-		AbstractWidget<?> widget = findParent(AbstractWidget.class);
-		target.appendJavaScript("$('body').toggleClass('noscroll'); $('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
+		if(targetOptional.isPresent()) {
+			AjaxRequestTarget target = targetOptional.get();
+			target.add(this);
+			AbstractWidget<?> widget = findParent(AbstractWidget.class);
+			target.appendJavaScript("$('body').toggleClass('noscroll'); $('#"+widget.getMarkupId()+"').toggleClass('fullscreen');");
+		}
 	}
 
 }

@@ -27,6 +27,7 @@ import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * {@link GenericPanel} to edit list or set of links
@@ -63,7 +64,7 @@ public class LinksCollectionEditPanel<T extends OIdentifiable, M extends Collect
 							}
 
 							@Override
-							public void onClick(AjaxRequestTarget target) {
+							public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 								ODocument doc = documentModel.getObject();
 								Collection<ODocument> values = doc.field(propertyName);
 								if(values!=null)

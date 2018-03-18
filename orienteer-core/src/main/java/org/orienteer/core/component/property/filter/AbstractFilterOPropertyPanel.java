@@ -33,6 +33,7 @@ import org.orienteer.core.component.command.AjaxFormCommand;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Filter panel which contains draggable filter container and filter show button.
@@ -110,7 +111,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
                 return new AjaxSubmitLink(id, form) {
 
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         onOkSubmit(target, container);
                     }
                 };
@@ -133,7 +134,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
             protected AbstractLink newLink(String id) {
                 return new AjaxSubmitLink(id, form) {
                     @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    protected void onSubmit(AjaxRequestTarget target) {
                         for (AbstractFilterPanel panel : filterPanels) {
                             panel.clearInputs(target);
                         }
@@ -161,14 +162,17 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
     private AjaxFallbackLink<Void> newShowFilterButton(String id, final WebMarkupContainer container) {
         return new AjaxFallbackLink<Void>(id) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
                 boolean visible = !container.isVisible();
                 container.setVisible(visible);
-                target.add(container);
-                if (visible) {
-                    target.appendJavaScript(initFilterJs(containerId, currentTab != null ? currentTab.getMarkupId() : null));
-                    if (currentTab != null) currentTab.getPanel().focus(target);
-                } else target.appendJavaScript(removeFilterJs(containerId));
+                if(targetOptional.isPresent()) {
+                	AjaxRequestTarget target = targetOptional.get();
+	                target.add(container);
+	                if (visible) {
+	                    target.appendJavaScript(initFilterJs(containerId, currentTab != null ? currentTab.getMarkupId() : null));
+	                    if (currentTab != null) currentTab.getPanel().focus(target);
+	                } else target.appendJavaScript(removeFilterJs(containerId));
+                }
             }
         };
     }
@@ -268,10 +272,13 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
         }
 
         @Override
-        public void onClick(AjaxRequestTarget target) {
+        public void onClick(Optional<AjaxRequestTarget> targetOptional) {
             currentTab = this;
-            panel.focus(target);
-            target.appendJavaScript(showTabJs(containerId, currentTab.getMarkupId()));
+            if(targetOptional.isPresent()) {
+            	AjaxRequestTarget target = targetOptional.get();
+            	panel.focus(target);
+            	target.appendJavaScript(showTabJs(containerId, currentTab.getMarkupId()));
+            }
         }
 
         public AbstractFilterPanel getPanel() {

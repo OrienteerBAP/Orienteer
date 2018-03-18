@@ -1,6 +1,7 @@
 package org.orienteer.core.event;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -19,8 +20,7 @@ public class ActionPerformedEvent<T> {
 	
 	private final T object;
 	private final Command<T> command;
-	private AjaxRequestTarget target;
-	private boolean ajaxChecked=false;
+	private Optional<AjaxRequestTarget> targetOptional;
 	
 	public ActionPerformedEvent(Command<T> command) {
 		this(command.getModelObject(), command);
@@ -30,10 +30,10 @@ public class ActionPerformedEvent<T> {
 		this(object, command, null);
 	}
 	
-	public ActionPerformedEvent(T object, Command<T> command, AjaxRequestTarget target) {
+	public ActionPerformedEvent(T object, Command<T> command, Optional<AjaxRequestTarget> targetOptional) {
 		this.object = object;
 		this.command = command;
-		this.target = target;
+		this.targetOptional = targetOptional;
 	}
 
 	public Command<T> getCommand() {
@@ -48,12 +48,11 @@ public class ActionPerformedEvent<T> {
 		return object;
 	}
 
-	public AjaxRequestTarget getTarget() {
-		if(target==null && !ajaxChecked) {
-			target = RequestCycle.get().find(AjaxRequestTarget.class);
-			ajaxChecked=true;
+	public Optional<AjaxRequestTarget> getTarget() {
+		if(targetOptional==null) {
+			targetOptional = RequestCycle.get().find(AjaxRequestTarget.class);
 		}
-		return target;
+		return targetOptional;
 	}
 	
 	public boolean isAjax() {

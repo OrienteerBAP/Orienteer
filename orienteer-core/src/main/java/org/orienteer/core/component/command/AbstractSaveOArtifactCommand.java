@@ -1,6 +1,9 @@
 package org.orienteer.core.component.command;
 
 import com.google.common.base.Strings;
+
+import java.util.Optional;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
@@ -42,18 +45,18 @@ public abstract class AbstractSaveOArtifactCommand extends AbstractSaveCommand<O
      * @return true - if user OoArtifact is valid
      *         false - if user OoArtifact is not valid
      */
-    protected boolean isUserArtifactValid(AjaxRequestTarget target, OArtifact module) {
+    protected boolean isUserArtifactValid(Optional<AjaxRequestTarget> targetOptional, OArtifact module) {
         OArtifactReference artifact = module.getArtifactReference();
         if (Strings.isNullOrEmpty(artifact.getGroupId())) {
-            sendErrorFeedback(target, new ResourceModel(GROUP_NULL));
+            sendErrorFeedback(targetOptional, new ResourceModel(GROUP_NULL));
             return false;
         }
         if (Strings.isNullOrEmpty(artifact.getArtifactId())) {
-            sendErrorFeedback(target, new ResourceModel(ARTIFACT_NULL));
+            sendErrorFeedback(targetOptional, new ResourceModel(ARTIFACT_NULL));
             return false;
         }
         if (Strings.isNullOrEmpty(artifact.getVersion())) {
-            sendErrorFeedback(target, new ResourceModel(VERSION_NULL));
+            sendErrorFeedback(targetOptional, new ResourceModel(VERSION_NULL));
             return false;
         }
         if (Strings.isNullOrEmpty(artifact.getDescription())) {
@@ -65,20 +68,20 @@ public abstract class AbstractSaveOArtifactCommand extends AbstractSaveCommand<O
         return true;
     }
 
-    protected void showFeedback(AjaxRequestTarget target, boolean show) {
+    protected void showFeedback(Optional<AjaxRequestTarget> targetOptional, boolean show) {
         feedback.setVisible(show);
-        target.add(feedback);
+        targetOptional.ifPresent(target -> target.add(feedback));
     }
 
 
-    protected void sendErrorFeedback(AjaxRequestTarget target, IModel<String> message) {
-        showFeedback(target, true);
+    protected void sendErrorFeedback(Optional<AjaxRequestTarget> targetOptional, IModel<String> message) {
+        showFeedback(targetOptional, true);
         feedback.add(AttributeModifier.append(STYLE, ERROR_STYLE));
         feedback.setDefaultModel(message);
     }
 
-    protected void sendSuccessFeedback(AjaxRequestTarget target) {
-        showFeedback(target,true);
+    protected void sendSuccessFeedback(Optional<AjaxRequestTarget> targetOptional) {
+        showFeedback(targetOptional,true);
         feedback.add(AttributeModifier.append(STYLE, SUCCESS_STYLE));
         feedback.setDefaultModel(new ResourceModel(SUCCESS_MSG));
     }

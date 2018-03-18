@@ -26,6 +26,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Dialog for modal window to unhide a widgets
@@ -65,9 +66,9 @@ public abstract class UnhideWidgetDialog<T> extends Panel {
 				cellItem.add(new AjaxCommand<T>(componentId, "command.unhide") {
 
 					@Override
-					public void onClick(AjaxRequestTarget target) {
+					public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 						AbstractWidget<T> widget = (AbstractWidget<T>)getDashboardPanel().getWidgetsContainer().get(rowModel.getObject());
-						onSelectWidget(widget, target);
+						onSelectWidget(widget, targetOptional);
 					}
 				}.setIcon(FAIconType.play_circle_o).setBootstrapType(BootstrapType.INFO));
 				
@@ -79,7 +80,7 @@ public abstract class UnhideWidgetDialog<T> extends Panel {
 		add(tablePanel);
 	}
 	
-	protected abstract void onSelectWidget(AbstractWidget<T> widget, AjaxRequestTarget target);
+	protected abstract void onSelectWidget(AbstractWidget<T> widget, Optional<AjaxRequestTarget> targetOptional);
 	
 	public DashboardPanel<T> getDashboardPanel() {
 		DashboardPanel<T> dashboard = findParent(DashboardPanel.class);

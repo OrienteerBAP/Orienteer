@@ -54,25 +54,25 @@ public class GenericTablePanel<K> extends Panel {
                     (IFilterStateLocator<OQueryModel<K>>) provider) {
                 @Override
                 protected void onSubmit() {
-                    AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
-                    if(target!=null) {
-                        OQueryModel<K> filterState = getStateLocator().getFilterState();
-                        OrienteerHeadersToolbar<K, String> headersToolbar = dataTable.getHeadersToolbar();
-                        headersToolbar.clearFilteredColumns();
-                        for (IColumn<K, String> column : GenericTablePanel.this.getDataTable().getColumns()) {
-                            if (column instanceof OPropertyValueColumn) {
-                                OPropertyValueColumn propertyValueColumn = (OPropertyValueColumn) column;
-                                OProperty property = propertyValueColumn.getCriteryModel().getObject();
-                                if (property != null) {
-                                    IFilterCriteriaManager manager = filterState.getFilterCriteriaManager(property.getName());
-                                    if (manager != null && manager.isFilterApply()) {
-                                        headersToolbar.addFilteredColumn(property.getName());
-                                    }
-                                }
-                            }
-                        }
-                        target.add(dataTable);
-                    }
+                    RequestCycle.get().find(AjaxRequestTarget.class).ifPresent(target -> 
+		                    {
+		                        OQueryModel<K> filterState = getStateLocator().getFilterState();
+		                        OrienteerHeadersToolbar<K, String> headersToolbar = dataTable.getHeadersToolbar();
+		                        headersToolbar.clearFilteredColumns();
+		                        for (IColumn<K, String> column : GenericTablePanel.this.getDataTable().getColumns()) {
+		                            if (column instanceof OPropertyValueColumn) {
+		                                OPropertyValueColumn propertyValueColumn = (OPropertyValueColumn) column;
+		                                OProperty property = propertyValueColumn.getCriteryModel().getObject();
+		                                if (property != null) {
+		                                    IFilterCriteriaManager manager = filterState.getFilterCriteriaManager(property.getName());
+		                                    if (manager != null && manager.isFilterApply()) {
+		                                        headersToolbar.addFilteredColumn(property.getName());
+		                                    }
+		                                }
+		                            }
+		                        }
+		                        target.add(dataTable);
+		                    });
                 }
             };
             filterForm.setOutputMarkupPlaceholderTag(true);

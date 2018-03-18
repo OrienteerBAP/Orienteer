@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -56,15 +57,15 @@ public class OFunctionExecuteWidget extends AbstractWidget<ODocument> {
 		form.add(args);
 		form.add(new AjaxFormCommand<ODocument>("execute", "widget.document.function-executor.execute") {
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				result.setModelObject(execute());
-				target.add(result);
+				targetOptional.ifPresent(target -> target.add(result));
 			}
 		}.setIcon(FAIconType.play).setBootstrapType(BootstrapType.PRIMARY));
 		form.add(new AjaxCommand<ODocument>("refresh", "widget.document.function-executor.refresh") {
 			@Override
-			public void onClick(AjaxRequestTarget target) {
-				target.add(OFunctionExecuteWidget.this);
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				targetOptional.ifPresent(target -> target.add(OFunctionExecuteWidget.this));
 			}
 		}.setIcon(FAIconType.refresh).setBootstrapType(BootstrapType.WARNING));
 		

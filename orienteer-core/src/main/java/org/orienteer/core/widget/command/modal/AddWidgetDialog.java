@@ -25,6 +25,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Dialog for modal window to select and add new type of widget
@@ -57,8 +58,8 @@ public abstract class AddWidgetDialog<T> extends Panel {
 				cellItem.add(new AjaxCommand<T>(componentId, "command.add.widget") {
 
 					@Override
-					public void onClick(AjaxRequestTarget target) {
-						onSelectWidgetType(rowModel.getObject(), target);
+					public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+						onSelectWidgetType(rowModel.getObject(), targetOptional);
 					}
 				}.setIcon(FAIconType.play_circle_o).setBootstrapType(BootstrapType.INFO));
 				
@@ -70,7 +71,7 @@ public abstract class AddWidgetDialog<T> extends Panel {
 		add(tablePanel);
 	}
 	
-	protected abstract void onSelectWidgetType(IWidgetType<T> type, AjaxRequestTarget target);
+	protected abstract void onSelectWidgetType(IWidgetType<T> type, Optional<AjaxRequestTarget> targetOptional);
 	
 	public DashboardPanel<T> getDashboardPanel() {
 		DashboardPanel<T> dashboard = findParent(DashboardPanel.class);

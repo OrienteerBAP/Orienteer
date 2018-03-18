@@ -14,6 +14,7 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Save user configure of {@link OArtifact}
@@ -25,16 +26,16 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
     }
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
+    public void onClick(Optional<AjaxRequestTarget> targetOptional) {
         IModel<OArtifact> model = getModel();
         if (model == null) {
-            sendErrorFeedback(target, new ResourceModel(ERROR));
+            sendErrorFeedback(targetOptional, new ResourceModel(ERROR));
             return;
         }
         OArtifact artifact = model.getObject();
         File artifactFile = artifact.getArtifactReference().getFile();
         if (artifactFile != null) {
-            if (isUserArtifactValid(target, artifact)) {
+            if (isUserArtifactValid(targetOptional, artifact)) {
                 Path path = OrienteerClassLoaderUtil
                         .moveJarFileToArtifactsFolder(artifactFile.toPath(), artifactFile.getName());
                 if (path!=null) {
@@ -43,12 +44,12 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
                     artifact.setDownloaded(true);
                 }
             } else OrienteerClassLoaderUtil.deleteOArtifactFile(artifact);
-        } else if (isUserArtifactValid(target, artifact)) {
-            resolveUserArtifact(target, artifact);
+        } else if (isUserArtifactValid(targetOptional, artifact)) {
+            resolveUserArtifact(targetOptional, artifact);
         }
     }
 
-    private void resolveUserArtifact(AjaxRequestTarget target, OArtifact oArtifact) {
+    private void resolveUserArtifact(Optional<AjaxRequestTarget> targetOptional, OArtifact oArtifact) {
         String repository = oArtifact.getArtifactReference().getRepository();
         OArtifactReference artifactReference = oArtifact.getArtifactReference();
         Artifact artifact;
@@ -61,7 +62,7 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
             OrienteerClassLoaderUtil.updateOArtifactInMetadata(oArtifact);
             oArtifact.setDownloaded(true);
         } else {
-            sendErrorFeedback(target, new ResourceModel(DOWNLOAD_ERROR));
+            sendErrorFeedback(targetOptional, new ResourceModel(DOWNLOAD_ERROR));
         }
     }
 

@@ -2,11 +2,6 @@ package org.orienteer.core.component.property.date;
 
 import com.google.common.base.Strings;
 import org.apache.wicket.Component;
-import org.apache.wicket.datetime.PatternDateConverter;
-import org.apache.wicket.datetime.StyleDateConverter;
-import org.apache.wicket.datetime.markup.html.form.DateTextField;
-import org.apache.wicket.extensions.yui.calendar.DatePicker;
-import org.apache.wicket.extensions.yui.calendar.DateTimeField;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.Markup;
 import org.apache.wicket.markup.head.CssHeaderItem;

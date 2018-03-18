@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.ICommandsSupportComponent;
@@ -37,11 +39,11 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		boolean isActiveTransaction = getDatabase().getTransaction().isActive();
 		if(isActiveTransaction) getDatabase().commit(); // Schema changes should be done outside of transaction
 		try {
-			super.onClick(target);
+			super.onClick(targetOptional);
 			getDatabase().getMetadata().reload();
 		} finally {
 			if(isActiveTransaction) getDatabase().begin();
