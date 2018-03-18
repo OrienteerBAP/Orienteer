@@ -2,7 +2,12 @@ package org.orienteer.model;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.util.MapModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import java.util.Map;
 
 /**
  * Contains all information about E-mail for user
@@ -14,6 +19,8 @@ public class OMail extends ODocumentWrapper {
     public static final String FROM       = "from";
     public static final String TEXT       = "text";
     public static final String SETTINGS   = "settings";
+
+    private final IModel<Map<Object, Object>> macros = new MapModel<>();
 
     public OMail() {
         super(CLASS_NAME);
@@ -38,7 +45,7 @@ public class OMail extends ODocumentWrapper {
     }
 
     public String getSubject() {
-        return document.field(SUBJECT);
+        return applyMacros(document.field(SUBJECT));
     }
 
     public OMail setFrom(String from) {
@@ -56,7 +63,7 @@ public class OMail extends ODocumentWrapper {
     }
 
     public String getText() {
-        return document.field(TEXT);
+        return applyMacros(document.field(TEXT));
     }
 
     public OMail setMailSettings(OMailSettings settings) {
@@ -70,6 +77,22 @@ public class OMail extends ODocumentWrapper {
 
     public OMailSettings getMailSettings() {
         return new OMailSettings(document.field(SETTINGS));
+    }
+
+    private String applyMacros(String text) {
+        if (macros.getObject() != null) {
+            return new StringResourceModel("", macros).setDefaultValue(text).getString();
+        }
+        return text;
+    }
+
+    public OMail setMacros(Map<Object, Object> macros) {
+        this.macros.setObject(macros);
+        return this;
+    }
+
+    public IModel<Map<Object, Object>> getMacros() {
+        return macros;
     }
 
     /**
