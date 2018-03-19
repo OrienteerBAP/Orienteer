@@ -1,5 +1,9 @@
 package org.orienteer.service;
 
+import org.apache.wicket.ThreadContext;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.model.OMail;
 import org.orienteer.model.OMailSettings;
 
@@ -17,6 +21,7 @@ public class OMailServiceImpl implements IOMailService {
 
     @Override
     public void sendMail(String to, OMail mail) throws MessagingException, UnsupportedEncodingException {
+        mail.reload();
         final OMailSettings settings = mail.getMailSettings();
         final Session session = createSession(settings);
         final Message message = new MimeMessage(session);
@@ -34,9 +39,15 @@ public class OMailServiceImpl implements IOMailService {
 
     @Override
     public void sendMailAsync(String to, OMail mail, Consumer<Boolean> f) {
+        OrienteerWebSession session = OrienteerWebSession.get();
+        OrienteerWebApplication app = OrienteerWebApplication.get();
+        RequestCycle requestCycle = RequestCycle.get();
         new Thread(() -> {
             boolean success = false;
             try {
+                ThreadContext.setSession(session);
+                ThreadContext.setApplication(app);
+                ThreadContext.setRequestCycle(requestCycle);
                 sendMail(to, mail);
                 success = true;
             } catch (Exception ex) {
