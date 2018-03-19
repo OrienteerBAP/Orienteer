@@ -1,30 +1,44 @@
 package org.orienteer.core.component.property.date;
 
 import com.google.common.base.Strings;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.IMarkupFragment;
-import org.apache.wicket.markup.Markup;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.FormComponentPanel;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.request.Response;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.validation.validator.RangeValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.chrono.Chronology;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.FormatStyle;
+import java.util.*;
 
 /**
  * Bootstrap enabled date time field
  */
-public class DateTimeBootstrapField extends DateTimeField {
+public class DateTimeBootstrapField extends FormComponentPanel<Date> {
 
-    private static final Pattern YEAR_FORMAT = Pattern.compile("^[^y]*yyyy[^y]*$");
+    private static final Logger LOG = LoggerFactory.getLogger(DateTimeBootstrapField.class);
+
+    private static final String DATE            = "date";
+    private static final String HOURS           = "hours";
+    private static final String MINUTES         = "minutes";
+    private static final String AM_OR_PM_CHOICE = "amOrPmChoice";
 
     public DateTimeBootstrapField(String id) {
         super(id);
@@ -37,83 +51,91 @@ public class DateTimeBootstrapField extends DateTimeField {
     @Override
     protected void onInitialize() {
         super.onInitialize();
+        add(createDateField(DATE));
+        add(createHoursField(HOURS));
+        add(createMinutesField(MINUTES));
+        add(createChoice(AM_OR_PM_CHOICE));
+        add(AttributeModifier.append("class", "bootstrap-data-picker"));
         setOutputMarkupId(true);
-        get(DATE).setOutputMarkupId(true);
-        get(HOURS).setOutputMarkupId(true);
-        get(MINUTES).setOutputMarkupId(true);
     }
 
     @Override
-    protected DateTextField newDateTextField(String id, PropertyModel<Date> model) {
-        DateTextField dateTextField = new DateTextField(id, model, new PatternDateConverter(createJavaDateFormat(), false));
-        dateTextField.setOutputMarkupId(true);
-        return dateTextField;
+    @SuppressWarnings("unchecked")
+    public void convertInput() {
+        super.convertInput();
+        TextField<Date> dateTextField = (TextField<Date>) get(DATE);
+        Date date = dateTextField.getConvertedInput();
+        long millis = isSupportAmPm() ? getMillisOffset() : 0;
+        setConvertedInput(new Date(date.getTime() + millis));
+        LOG.info("converted input: {}", getConvertedInput());
+        LOG.info("current model:   {}", getModelObject());
     }
 
-    @Override
-    public IMarkupFragment getMarkup(Component child) {
-        if (child != null) {
-            switch (child.getId()) {
-                case DATE:
-                    return Markup.of("<input type='text' wicket:id='date' class='form-control'>");
-                case HOURS:
-                    return Markup.of(getMarkupForTime(HOURS, "hours"));
-                case MINUTES:
-                    return Markup.of(getMarkupForTime(MINUTES, "minutes"));
-                case AM_OR_PM_CHOICE:
-                    return Markup.of("<select wicket:id='amOrPmChoice' class='form-control am-or-pm-choice'></select>");
-                case "hoursSeparator":
-                    return Markup.of("<span wicket:id='hoursSeparator' class='time-separator'>" +
-                            "<i class='fa fa-square top-square' aria-hidden='true'></i>" +
-                            "<i class='fa fa-square bottom-square' aria-hidden='true'></i></span>");
-            }
+    @SuppressWarnings("unchecked")
+    private long getMillisOffset() {
+        long millis = 0;
+        int hours = ((TextField<Integer>) get(HOURS)).getConvertedInput();
+        int minutes = ((TextField<Integer>) get(MINUTES)).getConvertedInput();
+        DropDownChoice<String> amOrPm = (DropDownChoice<String>) get(AM_OR_PM_CHOICE);
+        Calendar calendar = Calendar.getInstance();
+        DateFormat format = new SimpleDateFormat("hh:mm aa");
+        try {
+            calendar.setTime(format.parse(hours + ":" + minutes + " " + amOrPm.getConvertedInput()));
+            millis = calendar.get(Calendar.HOUR_OF_DAY) * 60 * 60 * 60 + calendar.get(Calendar.MINUTE) * 60 * 60;
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
-        return super.getMarkup(child);
+        return millis;
     }
 
-    private String getMarkupForTime(String id, String cssClass) {
-        return String.format(
-                "<input type='text' wicket:id='%s' class='time form-control %s' size='2' maxlength='2'>", id, cssClass);
-    }
-
-    @Override
-    protected DatePicker newDatePicker() {
-        return new DatePicker() {
-
-            private final String datePickerId = getDateTextField().getMarkupId() + "-datepicker";
-
-            @Override
-            public void beforeRender(Component component) {
-                Response response = component.getResponse();
-                response.write(String.format(
-                        "<div id='%s' class='input-group date' data-provide='datepicker' style='width:200px;'>", datePickerId));
-            }
-
-            @Override
-            public void afterRender(Component component) {
-                Response response = component.getResponse();
-                response.write("<span class='input-group-addon date-btn'>" +
-                        "<span class='glyphicon glyphicon-th'></span></span>");
-                response.write("</div>");
-            }
-
+    private TextField createDateField(String id) {
+        TextField<Date> field = createField(id);
+        field.add(new Behavior() {
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
-                String jqueryInit = String.format("initJQDatepicker('%s', %s);", datePickerId,
-                        getDatePickerParams().toString());
-                response.render(OnDomReadyHeaderItem.forScript(jqueryInit));
+                super.renderHead(component, response);
+                response.render(OnDomReadyHeaderItem.forScript(String.format("initJQDatepicker('%s', %s)", component.getMarkupId(), getDatePickerParams().toString())));
             }
-        };
+        });
+        field.setType(Date.class);
+        return field;
     }
+
+    private TextField<Integer> createHoursField(String id) {
+        TextField<Integer> field = createField(id);
+        field.setType(Integer.class);
+        field.add(RangeValidator.range(0, isSupportAmPm() ? 11 : 23));
+        return field;
+    }
+
+    private TextField<Integer> createMinutesField(String id) {
+        TextField<Integer> field = createField(id);
+        field.setType(Integer.class);
+        field.add(RangeValidator.range(0, 59));
+        return field;
+    }
+
+    private <V extends Serializable> TextField<V> createField(String id) {
+        TextField<V> field = new TextField<>(id, new Model<>());
+        field.setOutputMarkupId(true);
+        return field;
+    }
+
+    private DropDownChoice<String> createChoice(String id) {
+        DropDownChoice<String> choice = new DropDownChoice<>(id, new Model<>(), Arrays.asList("AM", "PM"));
+        choice.setOutputMarkupId(true);
+        choice.setNullValid(false);
+        choice.setModelObject(choice.getChoices().get(0));
+        choice.setVisible(isSupportAmPm());
+        return choice;
+    }
+
 
     @Override
     public void renderHead(IHeaderResponse response) {
-
+        super.renderHead(response);
         response.render(JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(DateTimeBootstrapField.class, "datetime.js")));
         response.render(CssHeaderItem.forReference(new CssResourceReference(DateTimeBootstrapField.class, "datetime.css")));
-        super.renderHead(response);
-
-        response.render(OnDomReadyHeaderItem.forScript(String.format("initDateMarkup('%s')", getMarkupId())));
     }
 
     private Map<String, String> getDatePickerParams() {
@@ -122,36 +144,23 @@ public class DateTimeBootstrapField extends DateTimeField {
         params.put("language", "'" + getLocale().getLanguage() + "'");
         params.put("orientation", "'bottom'");
         params.put("weekStart", Integer.toString(1));
-        params.put("format", "'" + getDatepickerDateFormat() + "'");
-        configureDatapickerParams(params);
+        params.put("format", "'" + getJavaDatePattern() + "'");
         return params;
-    }
-
-    /**
-     * Configure Bootstrap data picker
-     * @param params {@link Map} which contains data picker params.
-     */
-    protected void configureDatapickerParams(Map<String, String> params) {
-
     }
 
     /**
      * @return Java date format as String
      */
-    private String createJavaDateFormat() {
-        StyleDateConverter converter = new StyleDateConverter(false);
-        String format = converter.getDatePattern(getLocale());
-        if (!YEAR_FORMAT.matcher(format).matches()) {
-            format = format.replaceAll("(y+)", "yyyy");
-        }
-        return format;
+    private String getJavaDatePattern() {
+        Locale locale = getLocale();
+        return DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null, Chronology.ofLocale(locale), locale).toLowerCase();
     }
 
-    /**
-     * @return date format for Bootstrap datepicker
-     */
-    private String getDatepickerDateFormat() {
-        return getDateTextField().getTextFormat().toLowerCase();
+    private boolean isSupportAmPm() {
+        Locale locale = getLocale();
+        String pattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.MEDIUM,
+                Chronology.ofLocale(locale), locale);
+        return pattern.contains("a");
     }
 
     /**

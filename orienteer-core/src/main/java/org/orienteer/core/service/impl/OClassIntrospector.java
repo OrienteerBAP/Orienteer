@@ -270,10 +270,10 @@ public class OClassIntrospector implements IOClassIntrospector
 					switch (type)
 					{
 						case DATE:
-							ret = OrienteerWebApplication.DATE_CONVERTER.convertToString((Date)value, locale);
+							ret = ((Date)value).toString();
 							break;
 						case DATETIME:
-							ret = OrienteerWebApplication.DATE_TIME_CONVERTER.convertToString((Date)value, locale);
+							ret = ((Date)value).toString();
 							break;
 						case LINK:
 							ret =  value instanceof ODocument?getDocumentName((ODocument)value):null;

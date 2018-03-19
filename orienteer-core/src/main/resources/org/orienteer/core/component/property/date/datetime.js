@@ -1,9 +1,8 @@
-function initJQDatepicker(inputId, options) {
-    $('#' + inputId).datepicker(options);
-}
+'use strict';
 
-function initDateMarkup(id) {
-    $('#' + id + " span:first")
-        .css('display', 'inline-flex')
-        .css('flex-wrap', 'nowrap');
+function initJQDatepicker(inputId, options) {
+    console.dir(options);
+    const $picker = $('#' + inputId);
+    $picker.datepicker(options);
+    $('#' + inputId + '+.input-group-addon').click(() => $picker.datepicker('show'));
 }
