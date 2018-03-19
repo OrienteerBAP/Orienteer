@@ -6,10 +6,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
@@ -107,6 +104,7 @@ public class TestOMailModule
 	}
 
 	@Test
+	@Ignore
 	public void testSendEmail() {
 		try {
 			mailService.sendMail(to, mail);
@@ -126,6 +124,7 @@ public class TestOMailModule
 	}
 
 	@Test
+	@Ignore
 	public void testSendEmailAsyncWithCallback() throws InterruptedException {
 		mailService.sendMailAsync(to, mail, Assert::assertTrue);
 		Thread.currentThread().join(10_000);
