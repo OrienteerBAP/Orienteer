@@ -10,7 +10,7 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.orienteer.core.component.property.date.DateTimeBootstrapField;
+import org.orienteer.core.component.property.date.ODateTimeField;
 import org.orienteer.core.service.IMarkupProvider;
 
 import java.io.Serializable;
@@ -139,8 +139,8 @@ class CollectionInputPanel<T extends Serializable> extends Panel {
     public List<String> getInputIds() {
         List<String> ids = Lists.newArrayList();
         //TODO: Get rid of this customization
-        if (inputComponent instanceof DateTimeBootstrapField) {
-            DateTimeBootstrapField dateTime = (DateTimeBootstrapField) inputComponent;
+        if (inputComponent instanceof ODateTimeField) {
+            ODateTimeField dateTime = (ODateTimeField) inputComponent;
             ids.add(dateTime.getDateMarkupId());
             if (dateTime.getHoursMarkupId() != null) ids.add(dateTime.getHoursMarkupId());
             if (dateTime.getMinutesMarkupId() != null) ids.add(dateTime.getMinutesMarkupId());
