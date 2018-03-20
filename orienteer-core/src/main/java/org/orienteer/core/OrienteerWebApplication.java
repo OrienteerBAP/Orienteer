@@ -37,6 +37,7 @@ import org.orienteer.core.module.*;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
+import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
@@ -58,8 +59,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 {
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerWebApplication.class);
 	
-//	public static final DateConverter DATE_CONVERTER = new StyleDateConverter("M-", false);
-//	public static final DateConverter DATE_TIME_CONVERTER = new StyleDateConverter("MM", true);
+	public static final DateConverter DATE_CONVERTER      = new ODateConverter(false);
+	public static final DateConverter DATE_TIME_CONVERTER = new ODateConverter(true);
 	
 	private LinkedHashMap<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	private boolean registeredModulesSorted = false;
