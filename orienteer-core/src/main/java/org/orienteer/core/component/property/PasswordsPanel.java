@@ -4,7 +4,6 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
-import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -34,6 +33,7 @@ public class PasswordsPanel extends FormComponentPanel<String>
 		password.setLabel(labelModel);
 		confirmPassword.add(new AttributeModifier("placeholder", new StringResourceModel("password.placeholder.confirm", labelModel)));
 		confirmPassword.setLabel(new StringResourceModel("password.confirm.label", labelModel));
+		confirmPassword.add(AttributeModifier.append("style", "margin-top: 5px;"));
 	}
 	
 	@Override
