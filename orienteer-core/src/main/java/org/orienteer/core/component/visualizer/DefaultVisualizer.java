@@ -62,9 +62,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 				case LINKSET:
 					return new LinksCollectionViewPanel<>(id, documentModel, property);
                 case DATE:
-                	return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_CONVERTER);
+                	return new Label(id, (IModel<Date>) valueModel);
                 case DATETIME:
-                	return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_TIME_CONVERTER);
+                	return new Label(id, (IModel<Date>) valueModel);
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
                 case EMBEDDED:
