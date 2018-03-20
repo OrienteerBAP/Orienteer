@@ -5,7 +5,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.orienteer.core.component.property.date.DateBootstrapField;
+import org.orienteer.core.component.property.date.ODateField;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
@@ -37,7 +37,7 @@ public class EmbeddedCollectionContainsFilterPanel<T extends Serializable> exten
                 component = new BooleanFilterPanel(getFilterId(), (IModel<Boolean>) model);
                 break;
             case DATETIME:
-                component = new DateBootstrapField(getFilterId(), (IModel<Date>) model);
+                component = new ODateField(getFilterId(), (IModel<Date>) model);
                 break;
             default:
                 component = new TextField<>(getFilterId(), model);

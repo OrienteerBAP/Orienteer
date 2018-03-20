@@ -16,8 +16,8 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.*;
-import org.orienteer.core.component.property.date.DateBootstrapField;
-import org.orienteer.core.component.property.date.DateTimeBootstrapField;
+import org.orienteer.core.component.property.date.ODateField;
+import org.orienteer.core.component.property.date.ODateTimeField;
 import org.orienteer.core.component.property.filter.*;
 import org.orienteer.core.service.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
@@ -94,9 +94,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 				case LINKSET:
 					return new LinksCollectionEditPanel<>(id, documentModel, property);
                 case DATE:
-					return new DateBootstrapField(id, (IModel<Date>) valueModel);
+					return new ODateField(id, (IModel<Date>) valueModel);
                 case DATETIME:
-                    return new DateTimeBootstrapField(id, (IModel<Date>) valueModel);
+                    return new ODateTimeField(id, (IModel<Date>) valueModel);
                 case EMBEDDED:
                 	return new EmbeddedDocumentPanel(id, (IModel<ODocument>)valueModel, new PropertyModel<OClass>(propertyModel, "linkedClass"), mode.asModel());
                 case EMBEDDEDLIST:

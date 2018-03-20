@@ -1,15 +1,8 @@
 <wicket:panel xmlns:wicket="http://www.w3.org/1999/xhtml">
-  <div>
-    <div class="input-group date">
-      <input type='text' wicket:id='date' class='form-control'/>
-      <div class="input-group-addon">
-        <span class="glyphicon glyphicon-th"></span>
-      </div>
-    </div>
-  </div>
+  <div wicket:id="datePanel"></div>
   <div class="time">
     <input type='text' wicket:id='hours' class='time form-control hours' size='2' maxlength='2' />
-    <span class='time-separator' wicket:id="timeSeparator">
+    <span class='time-separator'>
       <i class='fa fa-square top-square' aria-hidden='true'></i>
       <i class='fa fa-square bottom-square' aria-hidden='true'></i>
     </span>
