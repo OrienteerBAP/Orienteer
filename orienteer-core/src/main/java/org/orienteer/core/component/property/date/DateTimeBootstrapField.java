@@ -8,6 +8,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
@@ -16,8 +17,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.text.DateFormat;
@@ -32,13 +31,10 @@ import java.util.*;
  * Bootstrap enabled date time field
  */
 public class DateTimeBootstrapField extends FormComponentPanel<Date> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DateTimeBootstrapField.class);
-
-    private static final String DATE            = "date";
-    private static final String HOURS           = "hours";
-    private static final String MINUTES         = "minutes";
-    private static final String AM_OR_PM_CHOICE = "amOrPmChoice";
+    protected static final String DATE            = "date";
+    protected static final String HOURS           = "hours";
+    protected static final String MINUTES         = "minutes";
+    protected static final String AM_OR_PM_CHOICE = "amOrPmChoice";
 
     public DateTimeBootstrapField(String id) {
         super(id);
@@ -52,44 +48,61 @@ public class DateTimeBootstrapField extends FormComponentPanel<Date> {
     protected void onInitialize() {
         super.onInitialize();
         add(createDateField(DATE));
-        add(createHoursField(HOURS));
-        add(createMinutesField(MINUTES));
+        add(createHoursField(HOURS, Model.of(getTime(Calendar.HOUR_OF_DAY))));
+        add(createMinutesField(MINUTES, Model.of(getTime(Calendar.MINUTE))));
         add(createChoice(AM_OR_PM_CHOICE));
+        add(createTimeSeparator("timeSeparator"));
         add(AttributeModifier.append("class", "bootstrap-data-picker"));
         setOutputMarkupId(true);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+
     public void convertInput() {
         super.convertInput();
-        TextField<Date> dateTextField = (TextField<Date>) get(DATE);
-        Date date = dateTextField.getConvertedInput();
-        long millis = isSupportAmPm() ? getMillisOffset() : 0;
-        setConvertedInput(new Date(date.getTime() + millis));
-        LOG.info("converted input: {}", getConvertedInput());
-        LOG.info("current model:   {}", getModelObject());
+        convertTimeInput();
     }
 
     @SuppressWarnings("unchecked")
-    private long getMillisOffset() {
-        long millis = 0;
-        int hours = ((TextField<Integer>) get(HOURS)).getConvertedInput();
-        int minutes = ((TextField<Integer>) get(MINUTES)).getConvertedInput();
-        DropDownChoice<String> amOrPm = (DropDownChoice<String>) get(AM_OR_PM_CHOICE);
+    protected void convertTimeInput() {
+        TextField<Date> dateTextField = (TextField<Date>) get(DATE);
         Calendar calendar = Calendar.getInstance();
-        DateFormat format = new SimpleDateFormat("hh:mm aa");
+        Calendar time = parseHoursAndMinutes();
+        Date date = dateTextField.getConvertedInput();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, time.get(Calendar.HOUR_OF_DAY));
+        calendar.add(Calendar.MINUTE, time.get(Calendar.MINUTE));
+        setConvertedInput(calendar.getTime());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Calendar parseHoursAndMinutes() {
+        boolean isAmOrPm = isSupportAmPm();
+        DateFormat format = getDateFormat(isAmOrPm);
+        String timeAsString = getTimeAsString(isAmOrPm);
+        Calendar res = Calendar.getInstance();
         try {
-            calendar.setTime(format.parse(hours + ":" + minutes + " " + amOrPm.getConvertedInput()));
-            millis = calendar.get(Calendar.HOUR_OF_DAY) * 60 * 60 * 60 + calendar.get(Calendar.MINUTE) * 60 * 60;
+            res.setTime(format.parse(timeAsString));
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return millis;
+        return res;
+    }
+
+    private DateFormat getDateFormat(boolean isAmOrPm) {
+        return new SimpleDateFormat(isAmOrPm ? "hh:mm aa" : "hh:mm");
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getTimeAsString(boolean isAmOrPm) {
+        int hours = ((TextField<Integer>) get(HOURS)).getConvertedInput();
+        int minutes = ((TextField<Integer>) get(MINUTES)).getConvertedInput();
+        DropDownChoice<String> amOrPm = isAmOrPm ? (DropDownChoice<String>) get(AM_OR_PM_CHOICE) : null;
+        return isAmOrPm ? hours + ":" + minutes + " " + amOrPm.getConvertedInput() : hours + ":" + minutes;
     }
 
     private TextField createDateField(String id) {
-        TextField<Date> field = createField(id);
+        TextField<Date> field = createField(id, getModel());
         field.add(new Behavior() {
             @Override
             public void renderHead(Component component, IHeaderResponse response) {
@@ -101,22 +114,26 @@ public class DateTimeBootstrapField extends FormComponentPanel<Date> {
         return field;
     }
 
-    private TextField<Integer> createHoursField(String id) {
-        TextField<Integer> field = createField(id);
+    private TextField<Integer> createHoursField(String id, IModel<Integer> model) {
+        TextField<Integer> field = createField(id, model);
         field.setType(Integer.class);
         field.add(RangeValidator.range(0, isSupportAmPm() ? 11 : 23));
         return field;
     }
 
-    private TextField<Integer> createMinutesField(String id) {
-        TextField<Integer> field = createField(id);
+    private TextField<Integer> createMinutesField(String id, IModel<Integer> model) {
+        TextField<Integer> field = createField(id, model);
         field.setType(Integer.class);
         field.add(RangeValidator.range(0, 59));
         return field;
     }
 
-    private <V extends Serializable> TextField<V> createField(String id) {
-        TextField<V> field = new TextField<>(id, new Model<>());
+    protected WebMarkupContainer createTimeSeparator(String id) {
+        return new WebMarkupContainer(id);
+    }
+
+    private <V extends Serializable> TextField<V> createField(String id, IModel<V> model) {
+        TextField<V> field = new TextField<>(id, model);
         field.setOutputMarkupId(true);
         return field;
     }
@@ -201,5 +218,16 @@ public class DateTimeBootstrapField extends FormComponentPanel<Date> {
     public String getMinutesMarkupId() {
         Component minutes = get(MINUTES);
         return minutes.getMarkupId();
+    }
+
+    private int getTime(int type) {
+        int res = 0;
+        Date date = getModelObject();
+        if (date != null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+            res = calendar.get(type);
+        }
+        return res;
     }
 }
