@@ -17,6 +17,7 @@ import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.component.property.date.ODateField;
+import org.orienteer.core.component.property.date.ODateLabel;
 import org.orienteer.core.component.property.date.ODateTimeField;
 import org.orienteer.core.component.property.filter.*;
 import org.orienteer.core.service.IOClassIntrospector;
@@ -62,9 +63,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 				case LINKSET:
 					return new LinksCollectionViewPanel<>(id, documentModel, property);
                 case DATE:
-                	return new Label(id, (IModel<Date>) valueModel);
+                	return new ODateLabel(id, (IModel<Date>) valueModel);
                 case DATETIME:
-                	return new Label(id, (IModel<Date>) valueModel);
+                	return new ODateLabel(id, (IModel<Date>) valueModel, true);
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
                 case EMBEDDED:
