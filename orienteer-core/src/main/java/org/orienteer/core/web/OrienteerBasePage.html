@@ -1,4 +1,4 @@
-<wicket:extend>
+<wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
      <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom: 0">
@@ -30,11 +30,13 @@
                     </a>
                     <ul class="dropdown-menu">
                         <wicket:enclosure child="logout">
-                        <li><a wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
+                        <li>
+                            <a wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
                         </li>
                         <li class="divider"></li>
-                        	<li><a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a></li>
-                        <li class="divider"></li>
+                        <li>
+                            <a wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a>
+                        </li>
                         </wicket:enclosure>
                         <wicket:enclosure>
                         	<li><a wicket:id="login"><i class="fa fa-sign-in fa-fw"></i> <wicket:message key="menu.login"></wicket:message></a></li>
