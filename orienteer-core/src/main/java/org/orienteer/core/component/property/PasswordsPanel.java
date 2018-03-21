@@ -33,7 +33,6 @@ public class PasswordsPanel extends FormComponentPanel<String>
 		password.setLabel(labelModel);
 		confirmPassword.add(new AttributeModifier("placeholder", new StringResourceModel("password.placeholder.confirm", labelModel)));
 		confirmPassword.setLabel(new StringResourceModel("password.confirm.label", labelModel));
-		confirmPassword.add(AttributeModifier.append("style", "margin-top: 5px;"));
 	}
 	
 	@Override

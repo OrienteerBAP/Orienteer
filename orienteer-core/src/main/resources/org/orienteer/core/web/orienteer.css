@@ -249,3 +249,7 @@ table.structure-table label.required:after {
 	color: red;
 	content: "*";
 }
+
+.password-panel-field {
+	margin-bottom: 5px;
+}
