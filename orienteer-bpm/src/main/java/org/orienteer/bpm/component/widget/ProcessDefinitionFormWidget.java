@@ -2,6 +2,7 @@ package org.orienteer.bpm.component.widget;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -42,8 +43,9 @@ public class ProcessDefinitionFormWidget extends AbstractFormWidget {
 				setLabelModel(new ResourceModel("command.saveAndStart"));
 			};
 			
-			public void onClick(AjaxRequestTarget target) {
-				super.onClick(target);
+			@Override
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				super.onClick(targetOptional);
 				ODocument doc = formDocumentModel.getObject();
 				Map<String, Object> variables = new HashMap<>();
 				variables.put(formKey.getVariableName(), doc.getIdentity().toString());

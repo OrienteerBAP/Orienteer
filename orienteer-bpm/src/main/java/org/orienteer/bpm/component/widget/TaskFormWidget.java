@@ -3,6 +3,7 @@ package org.orienteer.bpm.component.widget;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -63,8 +64,9 @@ public class TaskFormWidget extends AbstractFormWidget {
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, getModeModel()));
 		propertiesStructureTable.addCommand(saveODocumentCommand 
 												= new SaveODocumentCommand(propertiesStructureTable, getModeModel()){
-			public void onClick(AjaxRequestTarget target) {
-				super.onClick(target);
+			@Override
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				super.onClick(targetOptional);
 				associateTaskWithDocument();
 			};
 		}.setForceCommit(true));

@@ -115,6 +115,7 @@
         <dependency>
             <groupId>org.eclipse.jetty.aggregate</groupId>
             <artifactId>jetty-all</artifactId>
+	    <classifier>uber</classifier>
             <version>${jetty.version}</version>
             <scope>test</scope>
         </dependency>
@@ -220,6 +221,7 @@
                 <dependency>
                     <groupId>org.eclipse.jetty.aggregate</groupId>
                     <artifactId>jetty-all</artifactId>
+		    <classifier>uber</classifier>
                     <version>${jetty.version}</version>
                 </dependency>
                 </dependencies>

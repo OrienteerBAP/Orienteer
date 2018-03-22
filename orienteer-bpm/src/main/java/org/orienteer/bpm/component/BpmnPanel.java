@@ -2,6 +2,7 @@ package org.orienteer.bpm.component;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -68,7 +69,7 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 		addCommand(new EditODocumentCommand(newCommandId(), resourceModel, modeModel));
 		addCommand(new SaveODocumentCommand(this, modeModel, resourceModel) {
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				ODocument resource = getModelObject();
 				if(resource.getIdentity().isNew()) {
 					ODocument pd = BpmnPanel.this.pdModel.getObject();
@@ -81,7 +82,7 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 					resource.field("name", resourceName);
 					resource.field("deployment", (Object) pd.field("deployment"));
 				}
-				super.onClick(target);
+				super.onClick(targetOptional);
 			}
 		});
 		addCommand(new Command<ODocument>(newCommandId(), new ResourceModel("command.download")) {
@@ -140,7 +141,7 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 		if(event.getPayload() instanceof ActionPerformedEvent && event.getType().equals(Broadcast.BUBBLE)) {
 			ActionPerformedEvent<?> apEvent = (ActionPerformedEvent<?>)event.getPayload();
 			if(apEvent.getCommand()!=null && apEvent.getCommand().isChangingDisplayMode() && apEvent.isAjax()) {
-				apEvent.getTarget().add(this);
+				apEvent.getTarget().get().add(this);
 			}
 		}
 	}

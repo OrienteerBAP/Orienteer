@@ -1,21 +1,10 @@
 package org.orienteer.birt;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.IResourceListener;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.handler.resource.ResourceRequestHandler;
-import org.apache.wicket.request.resource.ByteArrayResource;
 import org.apache.wicket.request.resource.IResource;
-import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.resource.FileSystemResourceReference;
 import org.apache.wicket.util.io.IClusterable;
-import org.eclipse.birt.report.engine.api.CachedImage;
 import org.eclipse.birt.report.engine.api.IHTMLImageHandler;
 import org.eclipse.birt.report.engine.api.IImage;
 import org.eclipse.birt.report.engine.api.script.IReportContext;

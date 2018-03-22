@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.IResourceListener;
+import org.apache.wicket.IRequestListener;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.navigation.paging.IPageable;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -18,14 +18,11 @@ import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.request.resource.IResource.Attributes;
 import org.eclipse.birt.data.engine.executor.cache.Md5Util;
 import org.eclipse.birt.report.engine.api.EngineException;
-import org.eclipse.birt.report.engine.api.HTMLServerImageHandler;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
 import org.eclipse.birt.report.engine.api.IHTMLImageHandler;
-import org.eclipse.birt.report.engine.api.IImage;
 import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IRenderOption;
 import org.eclipse.birt.report.engine.api.IRenderTask;
@@ -56,7 +53,7 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 /**
  *	Base panel for other BIRT reports panels
  */
-public abstract class AbstractBirtReportPanel extends Panel implements IPageable, IBirtReportData, IResourceListener {
+public abstract class AbstractBirtReportPanel extends Panel implements IPageable, IBirtReportData, IRequestListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractBirtHTMLImageHandler.class);
@@ -78,7 +75,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		
 		@Override
 		protected String urlFor(String id, BirtImage image) {
-			return AbstractBirtReportPanel.this.urlFor(IResourceListener.INTERFACE, new PageParameters().add(RESOURCE_IMAGE_ID, id)).toString();
+			return AbstractBirtReportPanel.this.urlForListener(new PageParameters().add(RESOURCE_IMAGE_ID, id)).toString();
 		}
 	};
 	
@@ -97,10 +94,13 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		
 	}
 	
-	
+	@Override
+	public boolean rendersPage() {
+		return false;
+	}
 	
 	@Override
-	public void onResourceRequested() {
+	public void onRequest() {
 		RequestCycle requestCycle = RequestCycle.get();
 		IRequestParameters params = requestCycle.getRequest().getRequestParameters();
 		String imageId = params.getParameterValue(RESOURCE_IMAGE_ID).toOptionalString();

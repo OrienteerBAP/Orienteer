@@ -96,7 +96,7 @@
 		<module>orienteer-archetype-jar</module>
 		<module>orienteer-archetype-war</module>
 		<module>orienteer-architect</module>
-    	<module>orienteer-mail</module>
+		<module>orienteer-mail</module>
   	</modules>
 	<dependencyManagement>
 	    <dependencies>
@@ -230,6 +230,7 @@
 		    <dependency>
 			    <groupId>org.eclipse.jetty.aggregate</groupId>
 			    <artifactId>jetty-all</artifactId>
+			    <classifier>uber</classifier>
 			    <version>${jetty.version}</version>
 			    <scope>provided</scope>
 		    </dependency>
