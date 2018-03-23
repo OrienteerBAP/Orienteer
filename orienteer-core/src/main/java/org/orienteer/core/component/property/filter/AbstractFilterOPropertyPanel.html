@@ -1,15 +1,15 @@
 <wicket:panel xmlns="http://wicket.apache.org" xmlns:wicket="http://www.w3.org/1999/xhtml">
   <a wicket:id="showFilters"><i class="fa fa-filter" aria-hidden="true"></i></a>
-  <div wicket:id="container" class="panel panel-default filter-bubble ui-widget-content">
+  <div wicket:id="container" class="card filter-bubble ui-widget-content">
 
-      <div class="panel-heading">
-        <div class="panel-title" wicket:id="panelTitle">[Panel title]</div>
+      <div class="card-header">
+        <div wicket:id="panelTitle">[Panel title]</div>
       </div>
 
       <div class="filter-bubble-content">
         <ul class="nav nav-tabs">
-          <li wicket:id="panelSwitches">
-            <a wicket:id="switch"></a>
+          <li wicket:id="panelSwitches" class="nav-item">
+            <a wicket:id="switch" class="nav-link"></a>
           </li>
         </ul>
         <div class="tab-content">
@@ -17,8 +17,10 @@
             <div wicket:id="panel"></div>
           </div>
         </div>
-        <div wicket:id="clearButton" class="filter-clear-button"></div>
-        <div wicket:id="okButton" class="filter-ok-button"></div>
+        <div class="filter-buttons">
+          <div wicket:id="clearButton" class="filter-clear-button"></div>
+          <div wicket:id="okButton" class="filter-ok-button"></div>
+        </div>
       </div>
 
   </div>
