@@ -69,6 +69,6 @@ public class GetNewChangesBehavior extends AbstractDefaultAjaxBehavior {
     public void renderHead(Component component, IHeaderResponse response) {
         super.renderHead(component, response);
         response.render(OnLoadHeaderItem.forScript(
-                String.format("; app.setChecksAboutClassesChanges('%s');", getCallbackUrl())));
+                String.format("app.setChecksAboutClassesChanges('%s');", getCallbackUrl())));
     }
 }

@@ -8,22 +8,32 @@
 .architect-editor {
   background: white url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2UwZTBlMCIgb3BhY2l0eT0iMC4yIiBzdHJva2Utd2lkdGg9IjEiLz48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTBlMGUwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=");
   overflow: hidden;
-  width: 100%;
-  height: 450px;
-  display: inline-block;
+  order: 2;
+  flex-grow: 2;
   border-right: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
 }
 
+.architect-editor > svg {
+  min-width: 100% !important;
+  width: 100% !important;
+  height: 500px !important;
+  min-height: 500px !important;
+}
+
 .architect-editor-fullscreen {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.architect-editor-fullscreen > svg {
+  height: 100% !important;
+  min-height: 100% !important;
 }
 
 .architect-editor-sidebar {
-  height: 450px;
-  position: absolute;
-  display: inline-block;
+  order: 1;
+  flex-grow: 1;
   background-color: whiteSmoke;
   border: 1px solid #e0e0e0;
   z-index: 1000;
@@ -35,7 +45,7 @@
 
 .architect-editor-toolbar {
   display: block;
-  width: 100%;
+  /*width: 100%;*/
   background-color: whiteSmoke;
   border: 1px solid #e0e0e0;
   z-index: 1000;
@@ -88,6 +98,8 @@
   width: 250px;
   height: 150px;
   display: none;
+  top: 120px !important;
+  right: 37px !important;
 }
 
 .modal-window-title {
@@ -101,6 +113,7 @@
 .popup-menu-icon {
   margin-left: 4px;
   margin-right: 2px;
+  color: black !important;
 }
 
 .popup-menu-label {
@@ -109,11 +122,27 @@
 }
 
 .fullscreen {
-  width: 100%;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.fullscreen > .widget {
   height: 100%;
-  position: fixed;
 }
 
 div.wicket-modal {
   z-index: 100000;
+}
+
+.modal-body {
+  padding: 0 !important;
+}
+
+.btn-danger, .btn-primary {
+  color: #ffffff !important;
+}
+
+.architect-editor-sidebar-container {
+  display: inline-flex;
+  width: 100%;
 }

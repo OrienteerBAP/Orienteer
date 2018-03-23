@@ -49,8 +49,8 @@ var OArchitectConstants = {
     ALERT: 'alert',
     ALERT_INFO: 'alert-info',
     ALERT_DANGER: 'alert-danger',
-    LIST_GROUP: 'list-group',
-    LIST_GROUP_ITEM: 'list-group-item',
+    DROPDOWN_MENU: 'dropdown-menu',
+    DROPDOWN_ITEM: 'dropdown-item',
 
     /**
      * Font Awesome icons classes

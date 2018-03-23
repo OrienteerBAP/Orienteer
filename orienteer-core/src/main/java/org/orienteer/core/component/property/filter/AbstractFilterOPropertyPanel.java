@@ -40,8 +40,8 @@ import java.util.List;
 public abstract class AbstractFilterOPropertyPanel extends Panel {
 
     private static final String ACTIVE            = "active";
-    private static final String TAB_PANE          = "tab-pane";
-    private static final String TAB_PANE_ACTIVE   = "tab-pane active";
+    private static final String TAB_PANE          = "tab-pane fade";
+    private static final String TAB_PANE_ACTIVE   = "tab-pane fade show active";
     private static final String FILTER_WIDTH      = "filter-width";
     private static final String TAB_NAME_TEMPLATE = "widget.document.filter.tab.%s";
     static final String TAB_FILTER_TEMPLATE       = "widget.document.filter.%s";
@@ -207,7 +207,7 @@ public abstract class AbstractFilterOPropertyPanel extends Panel {
             protected void populateItem(ListItem<FilterTab> item) {
                 if (first) {
                     first = false;
-                    item.add(AttributeModifier.append("class", ACTIVE));
+                    item.getModelObject().add(AttributeModifier.append("class", ACTIVE));
                 }
                 item.add(item.getModelObject());
             }
