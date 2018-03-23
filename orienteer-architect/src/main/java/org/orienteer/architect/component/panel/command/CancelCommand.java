@@ -1,6 +1,9 @@
 package org.orienteer.architect.component.panel.command;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.architect.component.panel.IOClassesModalManager;
@@ -28,9 +31,12 @@ public class CancelCommand extends AjaxFormCommand<OClass> {
     }
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
-        manager.executeCallback(target, "null");
-        manager.closeModalWindow(target);
+    public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+    	if(targetOptional.isPresent()){
+    		AjaxRequestTarget target = targetOptional.get();
+    		manager.executeCallback(target, "null");
+    		manager.closeModalWindow(target);
+    	}
     }
 
 }

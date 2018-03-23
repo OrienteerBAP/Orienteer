@@ -1,0 +1,7 @@
+.input-group-addon.date-btn {
+    text-decoration: none;
+}
+
+.input-group-addon.date-btn:hover {
+    background-color: #2BBBAD;
+}

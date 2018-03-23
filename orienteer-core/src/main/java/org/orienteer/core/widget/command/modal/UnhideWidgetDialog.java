@@ -10,7 +10,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDat
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -26,6 +25,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Dialog for modal window to unhide a widgets
@@ -46,13 +46,9 @@ public abstract class UnhideWidgetDialog<T> extends Panel {
 			@Override
 			public void populateItem(Item<ICellPopulator<String>> cellItem,
 					String componentId, final IModel<String> rowModel) {
-				cellItem.add(new Label(componentId, new SimpleNamingModel<String>("widget", new AbstractReadOnlyModel<String>() {
-
-					@Override
-					public String getObject() {
+				cellItem.add(new Label(componentId, new SimpleNamingModel<String>("widget", () -> {
 						AbstractWidget<T> widget = (AbstractWidget<T>)getDashboardPanel().getWidgetsContainer().get(rowModel.getObject());
 						return registry.lookupByWidgetClass((Class<? extends AbstractWidget<T>>)widget.getClass()).getId();
-					}
 				})));
 			}
 		});
@@ -65,9 +61,9 @@ public abstract class UnhideWidgetDialog<T> extends Panel {
 				cellItem.add(new AjaxCommand<T>(componentId, "command.unhide") {
 
 					@Override
-					public void onClick(AjaxRequestTarget target) {
+					public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 						AbstractWidget<T> widget = (AbstractWidget<T>)getDashboardPanel().getWidgetsContainer().get(rowModel.getObject());
-						onSelectWidget(widget, target);
+						onSelectWidget(widget, targetOptional);
 					}
 				}.setIcon(FAIconType.play_circle_o).setBootstrapType(BootstrapType.INFO));
 				
@@ -79,7 +75,7 @@ public abstract class UnhideWidgetDialog<T> extends Panel {
 		add(tablePanel);
 	}
 	
-	protected abstract void onSelectWidget(AbstractWidget<T> widget, AjaxRequestTarget target);
+	protected abstract void onSelectWidget(AbstractWidget<T> widget, Optional<AjaxRequestTarget> targetOptional);
 	
 	public DashboardPanel<T> getDashboardPanel() {
 		DashboardPanel<T> dashboard = findParent(DashboardPanel.class);

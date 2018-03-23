@@ -34,7 +34,7 @@ public class BpmnHook implements ORecordHook {
 	  protected ODatabaseDocument database;
 
 	  public BpmnHook() {
-	    this.database = ODatabaseRecordThreadLocal.INSTANCE.get();
+	    this.database = ODatabaseRecordThreadLocal.instance().get();
 	  }
 
 	  public BpmnHook(ODatabaseDocument database) {

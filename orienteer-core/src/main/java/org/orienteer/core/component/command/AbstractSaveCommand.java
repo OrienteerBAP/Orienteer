@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.model.IModel;
@@ -44,9 +46,9 @@ public class AbstractSaveCommand<T> extends AjaxFormCommand<T> {
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		if(displayModeModel!=null) displayModeModel.setObject(DisplayMode.VIEW);
-		if(target!=null) target.add(this);
+		targetOptional.ifPresent(target -> target.add(this));
 	}
 	
 

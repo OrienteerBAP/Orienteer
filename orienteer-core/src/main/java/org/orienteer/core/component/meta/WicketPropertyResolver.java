@@ -6,14 +6,13 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.WicketTag;
-import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.parser.filter.WicketTagIdentifier;
 import org.apache.wicket.markup.resolver.IComponentResolver;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.property.DisplayMode;
 
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
@@ -46,7 +45,7 @@ public class WicketPropertyResolver implements IComponentResolver {
 				
 				String objectExpression = tag.getAttribute("object");
 				IModel<?> model = container.getPage().getDefaultModel();
-				if(!Strings.isEmpty(objectExpression)) model = new ODocumentPropertyModel<ODocument>(model, objectExpression);
+				if(!Strings.isEmpty(objectExpression)) model = new PropertyModel<ODocument>(model, objectExpression);
 				
 				String property = tag.getAttribute("property");
 				if(Strings.isEmpty(property)) property = wTag.getId();

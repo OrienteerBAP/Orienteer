@@ -1,21 +1,22 @@
 package org.orienteer.core.component.property.filter;
 
+import com.github.openjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.json.JSONArray;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.orienteer.core.component.property.date.DateTimeBootstrapField;
+import org.orienteer.core.component.property.date.ODateTimeField;
 import org.orienteer.core.service.IMarkupProvider;
 
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Panel for collection filter
@@ -59,7 +60,7 @@ class CollectionInputPanel<T extends Serializable> extends Panel {
         inputComponent.setOutputMarkupPlaceholderTag(true);
         removeButton = new AjaxFallbackLink<Void>("removeButton") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
                 Iterator<CollectionInputPanel<T>> iterator = components.iterator();
                 while (iterator.hasNext()) {
                     Component next = iterator.next();
@@ -70,9 +71,12 @@ class CollectionInputPanel<T extends Serializable> extends Panel {
                 }
                 components.get(components.size() - 1).getAddButton().setVisible(true);
                 if (components.size() - 1 == 0) components.get(0).getRemoveButton().setVisible(false);
-                components.get(components.size() - 1).focus(target);
-                saveInput(target, components);
-                target.add(parent);
+                if(targetOptional.isPresent()) {
+                	AjaxRequestTarget target = targetOptional.get();
+	                components.get(components.size() - 1).focus(target);
+	                saveInput(target, components);
+	                target.add(parent);
+                }
             }
 
             @Override
@@ -84,7 +88,7 @@ class CollectionInputPanel<T extends Serializable> extends Panel {
         };
         addButton = new AjaxFallbackLink<Void>("addButton") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
                 CollectionInputPanel<T> filterInput = newItem();
                 components.add(filterInput);
                 for (CollectionInputPanel<T> input : components) {
@@ -92,9 +96,12 @@ class CollectionInputPanel<T extends Serializable> extends Panel {
                     if (but != null) but.setVisible(true);
                 }
                 setVisible(false);
-                saveInput(target, components);
-                target.add(parent);
-                filterInput.focus(target);
+                if(targetOptional.isPresent()) {
+                	AjaxRequestTarget target = targetOptional.get();
+	                saveInput(target, components);
+	                target.add(parent);
+	                filterInput.focus(target);
+                }
             }
 
             @Override
@@ -131,8 +138,9 @@ class CollectionInputPanel<T extends Serializable> extends Panel {
 
     public List<String> getInputIds() {
         List<String> ids = Lists.newArrayList();
-        if (inputComponent instanceof DateTimeBootstrapField) {
-            DateTimeBootstrapField dateTime = (DateTimeBootstrapField) inputComponent;
+        //TODO: Get rid of this customization
+        if (inputComponent instanceof ODateTimeField) {
+            ODateTimeField dateTime = (ODateTimeField) inputComponent;
             ids.add(dateTime.getDateMarkupId());
             if (dateTime.getHoursMarkupId() != null) ids.add(dateTime.getHoursMarkupId());
             if (dateTime.getMinutesMarkupId() != null) ids.add(dateTime.getMinutesMarkupId());

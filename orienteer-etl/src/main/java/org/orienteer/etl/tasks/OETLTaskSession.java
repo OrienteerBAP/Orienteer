@@ -48,7 +48,7 @@ public class OETLTaskSession extends OTaskSessionRuntime{
 	
 	public OETLTaskSession appendOut(String out){
 		String curOut = getOTaskSessionPersisted().getDocument().field(Field.OUTPUT.fieldName())+out+"\n";
-		getOTaskSessionPersisted().persist(Field.OUTPUT.fieldName(), curOut);
+		getOTaskSessionPersisted().setField(Field.OUTPUT.fieldName(), curOut);
 		return this;
 	}
 }

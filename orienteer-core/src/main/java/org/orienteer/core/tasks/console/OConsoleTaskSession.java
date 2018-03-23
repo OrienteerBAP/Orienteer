@@ -1,10 +1,7 @@
 package org.orienteer.core.tasks.console;
 
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
-import org.orienteer.core.util.OSchemaHelper;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
@@ -36,13 +33,13 @@ public class OConsoleTaskSession extends OTaskSessionRuntime{
 	}
 	
 	public OConsoleTaskSession setInput(String input){
-		getOTaskSessionPersisted().persist("in", input);
+		getOTaskSessionPersisted().setField("in", input);
 		return this;
 	}
 
 	public OConsoleTaskSession appendOut(String out){
 		out = getOTaskSessionPersisted().getDocument().field("out")+out+"\n";
-		getOTaskSessionPersisted().persist("out", out);
+		getOTaskSessionPersisted().setField("out", out);
 		return this;
 	}
 

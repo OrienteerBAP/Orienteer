@@ -11,16 +11,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.util.string.interpolator.MapVariableInterpolator;
-import org.apache.wicket.util.template.TextTemplate;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.widget.AbstractWidget;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import ru.ydn.wicket.wicketorientdb.model.ODocumentMapWrapper;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 /**
  * Abstract widget for all widgets that use free HTML/JS for display

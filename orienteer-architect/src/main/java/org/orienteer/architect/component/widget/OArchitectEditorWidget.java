@@ -36,6 +36,7 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Editor widget for OrientDB Schema
@@ -92,7 +93,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
                 @Override
                 protected void respond(AjaxRequestTarget target) {
                     fullscreen.setClickOnF11(true);
-                    fullscreen.onClick(target);
+                    fullscreen.onClick(Optional.of(target));
                     fullscreen.setClickOnF11(false);
                 }
 

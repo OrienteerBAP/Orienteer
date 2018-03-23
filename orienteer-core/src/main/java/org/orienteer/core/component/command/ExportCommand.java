@@ -48,7 +48,7 @@ public class ExportCommand <T> extends Command<T> {
 		IResource resource = new ResourceStreamResource()
 		{
 			@Override
-			protected IResourceStream getResourceStream()
+			protected IResourceStream getResourceStream(Attributes attrs)
 			{
 				return new DataExportResourceStreamWriter(dataExporter, table);
 			}

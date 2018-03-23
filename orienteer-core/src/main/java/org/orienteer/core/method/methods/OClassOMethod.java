@@ -1,5 +1,7 @@
 package org.orienteer.core.method.methods;
 
+import java.util.Optional;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -28,7 +30,7 @@ public class OClassOMethod extends AbstractOMethod{
 					applyVisualSettings(this);
 				}
 				@Override
-				public void onClick(AjaxRequestTarget target) {
+				public void onClick(Optional<AjaxRequestTarget> target) {
 					invoke();
 				}
 			};

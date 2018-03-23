@@ -1,6 +1,7 @@
 package org.orienteer.core.method.methods;
 
 import java.io.Serializable;
+import java.util.Optional;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -51,7 +52,7 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				public void onClick(AjaxRequestTarget target) {
+				public void onClick(Optional<AjaxRequestTarget> target) {
 				}
 				
 				@Override

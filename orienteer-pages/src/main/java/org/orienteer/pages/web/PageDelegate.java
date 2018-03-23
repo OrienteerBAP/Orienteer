@@ -10,25 +10,21 @@ import org.apache.wicket.markup.DefaultMarkupCacheKeyProvider;
 import org.apache.wicket.markup.DefaultMarkupResourceStreamProvider;
 import org.apache.wicket.markup.IMarkupCacheKeyProvider;
 import org.apache.wicket.markup.IMarkupResourceStreamProvider;
-import org.apache.wicket.markup.MarkupFactory;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IDetachable;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.util.SetModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.util.resource.AbstractStringResourceStream;
 import org.apache.wicket.util.resource.IFixedLocationResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
-import org.apache.wicket.util.resource.StringResourceStream;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.pages.OPageParametersEncoder;
 import org.orienteer.pages.module.PagesModule;
 
 import com.orientechnologies.common.concur.resource.OPartitionedObjectPool;
-import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.command.script.OScriptManager;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -38,7 +34,6 @@ import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 /**
  * Delegate for functions which commonly used in wrapped pages
@@ -146,7 +141,7 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 	}
 	
 	public IModel<String> getTitleModel() {
-		return new ODocumentPropertyModel<String>(pageDocumentModel, "title");
+		return new PropertyModel<String>(pageDocumentModel, "title");
 	}
 	
 }

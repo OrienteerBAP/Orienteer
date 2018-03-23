@@ -1,41 +1,25 @@
 package org.orienteer.core.component.meta;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
-import org.apache.wicket.extensions.yui.calendar.DateField;
-import org.apache.wicket.extensions.yui.calendar.DateTimeField;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponent;
-import org.apache.wicket.markup.html.form.NumberTextField;
-import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.validation.validator.RangeValidator;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 
-import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
-import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
-
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
+import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
 
 /**
  * Meta panel for {@link ODocument}

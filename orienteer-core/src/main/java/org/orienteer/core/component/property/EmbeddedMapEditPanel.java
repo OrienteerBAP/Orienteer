@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * {@link FormComponentPanel} to edit embedded {@link Map}
@@ -133,10 +134,10 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 				item.add(new AjaxFormCommand<Object>("remove", "command.remove")
 						{
 							@Override
-							public void onClick(AjaxRequestTarget target) {
+							public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 								convertToData();
 								getData().remove(item.getIndex());
-								target.add(EmbeddedMapEditPanel.this);
+								targetOptional.ifPresent(target -> target.add(EmbeddedMapEditPanel.this));
 								listView.removeAll();
 							}
 						}.setDefaultFormProcessing(false)
@@ -162,13 +163,13 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 		};
 		listView.setReuseItems(true);
 		add(listView);
-		add(new AjaxFormCommand("add", "command.add")
+		add(new AjaxFormCommand<Pair<V>>("add", "command.add")
 		{
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				convertToData();
 				getData().add(new Pair<V>());
-				target.add(EmbeddedMapEditPanel.this);
+				targetOptional.ifPresent(target -> target.add(EmbeddedMapEditPanel.this));
 				listView.removeAll();
 			}
 			

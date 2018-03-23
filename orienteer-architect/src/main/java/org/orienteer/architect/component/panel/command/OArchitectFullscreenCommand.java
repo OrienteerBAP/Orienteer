@@ -1,5 +1,7 @@
 package org.orienteer.architect.component.panel.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.widget.command.FullScreenCommand;
 
@@ -15,10 +17,10 @@ public class OArchitectFullscreenCommand extends FullScreenCommand<Void> {
     }
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
-        super.onClick(target);
-        if (!clickOnF11)
-            target.appendJavaScript("app.switchFullScreenMode(true);");
+    public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+        super.onClick(targetOptional);
+        if (!clickOnF11 && targetOptional.isPresent())
+            targetOptional.get().appendJavaScript("app.switchFullScreenMode(true);");
     }
 
     public void setClickOnF11(boolean clickOnF11) {

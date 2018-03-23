@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -14,6 +15,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
@@ -25,8 +27,6 @@ import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -44,7 +44,7 @@ public class OFunctionExecuteWidget extends AbstractWidget<ODocument> {
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		Form<ODocument> form = new Form<ODocument>("form");
-		args = new ListView<String>("args", new ODocumentPropertyModel<List<String>>(model, "parameters")) {
+		args = new ListView<String>("args", new PropertyModel<List<String>>(model, "parameters")) {
 
 			@Override
 			protected void populateItem(ListItem<String> item) {
@@ -56,15 +56,15 @@ public class OFunctionExecuteWidget extends AbstractWidget<ODocument> {
 		form.add(args);
 		form.add(new AjaxFormCommand<ODocument>("execute", "widget.document.function-executor.execute") {
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				result.setModelObject(execute());
-				target.add(result);
+				targetOptional.ifPresent(target -> target.add(result));
 			}
 		}.setIcon(FAIconType.play).setBootstrapType(BootstrapType.PRIMARY));
 		form.add(new AjaxCommand<ODocument>("refresh", "widget.document.function-executor.refresh") {
 			@Override
-			public void onClick(AjaxRequestTarget target) {
-				target.add(OFunctionExecuteWidget.this);
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				targetOptional.ifPresent(target -> target.add(OFunctionExecuteWidget.this));
 			}
 		}.setIcon(FAIconType.refresh).setBootstrapType(BootstrapType.WARNING));
 		

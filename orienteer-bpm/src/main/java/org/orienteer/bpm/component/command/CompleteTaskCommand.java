@@ -1,6 +1,7 @@
 package org.orienteer.bpm.component.command;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
@@ -45,8 +46,8 @@ public class CompleteTaskCommand extends SaveODocumentCommand{
 	}
 	
 	@Override
-	public void onClick(AjaxRequestTarget target) {
-		super.onClick(target);
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+		super.onClick(targetOptional);
 		ODocument doc = getModelObject();
 		ProcessEngine processEngine = BpmPlatform.getDefaultProcessEngine();
 		TaskService taskService = processEngine.getTaskService();

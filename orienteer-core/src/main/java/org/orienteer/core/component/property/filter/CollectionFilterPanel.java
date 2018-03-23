@@ -103,10 +103,8 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
     @Override
     protected void onAfterRender() {
         super.onAfterRender();
-        AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
-        if (target != null) {
-            target.appendJavaScript(String.format("restoreInput('%s');", getContainerId()));
-        }
+        RequestCycle.get().find(AjaxRequestTarget.class)
+        		.ifPresent(target -> target.appendJavaScript(String.format("restoreInput('%s');", getContainerId()))); 
     }
 
 }

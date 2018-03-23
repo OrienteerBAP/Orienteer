@@ -6,7 +6,6 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
-import org.apache.wicket.datetime.markup.html.basic.DateLabel;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -17,8 +16,9 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.*;
-import org.orienteer.core.component.property.date.DateBootstrapField;
-import org.orienteer.core.component.property.date.DateTimeBootstrapField;
+import org.orienteer.core.component.property.date.ODateField;
+import org.orienteer.core.component.property.date.ODateLabel;
+import org.orienteer.core.component.property.date.ODateTimeField;
 import org.orienteer.core.component.property.filter.*;
 import org.orienteer.core.service.IOClassIntrospector;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
@@ -63,9 +63,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 				case LINKSET:
 					return new LinksCollectionViewPanel<>(id, documentModel, property);
                 case DATE:
-                	return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_CONVERTER);
+                	return new ODateLabel(id, (IModel<Date>) valueModel);
                 case DATETIME:
-                	return new DateLabel(id, (IModel<Date>) valueModel, OrienteerWebApplication.DATE_TIME_CONVERTER);
+                	return new ODateLabel(id, (IModel<Date>) valueModel, true);
                 case BOOLEAN:
                 	return new BooleanViewPanel(id, (IModel<Boolean>)valueModel);
                 case EMBEDDED:
@@ -95,9 +95,9 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 				case LINKSET:
 					return new LinksCollectionEditPanel<>(id, documentModel, property);
                 case DATE:
-					return new DateBootstrapField(id, (IModel<Date>) valueModel);
+					return new ODateField(id, (IModel<Date>) valueModel);
                 case DATETIME:
-                    return new DateTimeBootstrapField(id, (IModel<Date>) valueModel);
+                    return new ODateTimeField(id, (IModel<Date>) valueModel);
                 case EMBEDDED:
                 	return new EmbeddedDocumentPanel(id, (IModel<ODocument>)valueModel, new PropertyModel<OClass>(propertyModel, "linkedClass"), mode.asModel());
                 case EMBEDDEDLIST:

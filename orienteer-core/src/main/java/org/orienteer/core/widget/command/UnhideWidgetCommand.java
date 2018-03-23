@@ -1,5 +1,7 @@
 package org.orienteer.core.widget.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
@@ -41,11 +43,11 @@ public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<ODocument
 
 			@Override
 			protected void onSelectWidget(AbstractWidget<T> widget,
-					AjaxRequestTarget target) {
-				modal.close(target);
+					Optional<AjaxRequestTarget> targetOptional) {
+				targetOptional.ifPresent(modal::close);
 				widget.setHidden(false);
 				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.getDashboardSupport().ajaxAddWidget(widget, target);
+				targetOptional.ifPresent(target -> dashboard.getDashboardSupport().ajaxAddWidget(widget, target));
 			}
 		});
 		modal.setAutoSize(true);

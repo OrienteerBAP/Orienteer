@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -26,9 +27,10 @@ import org.orienteer.core.widget.command.FullScreenCommand;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
 import ru.ydn.wicket.wicketorientdb.model.NvlModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
+
+import java.util.Optional;
 
 /**
  * Abstract root class for widgets
@@ -58,23 +60,23 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				ODocument doc = getWidgetDocument();
 				if(doc.getIdentity().isPersistent()) {
 					setResponsePage(new ODocumentPage(doc));
 				}
-				else {
+				else if(targetOptional.isPresent()){
 					String alert = "alert('"+JavaScriptUtils.escapeQuotes(getLocalizer().getString("warning.widget.nosettings", AbstractWidget.this))+"')";
-					target.appendJavaScript(alert);
+					targetOptional.get().appendJavaScript(alert);
 				}
 			}
 		});
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.hide") {
 			
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
+				targetOptional.ifPresent(target->dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target));
 				setHidden(true);
 			}
 			
@@ -87,9 +89,9 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.delete") {
 
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				DashboardPanel<T> dashboard = getDashboardPanel();
-				dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target);
+				targetOptional.ifPresent(target -> dashboard.getDashboardSupport().ajaxDeleteWidget(AbstractWidget.this, target));
 				dashboard.deleteWidget(AbstractWidget.this);
 			}
 			
@@ -140,7 +142,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected final IModel<String> getTitleModel() {
 		return new NvlModel<String>(new FunctionModel<Object, String>(
-												new ODocumentPropertyModel<Object>(getWidgetDocumentModel(), "title"), 
+												new PropertyModel<Object>(getWidgetDocumentModel(), "title"), 
 												LocalizeFunction.getInstance()), 
 											getDefaultTitleModel());
 	}

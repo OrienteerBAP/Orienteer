@@ -31,7 +31,7 @@ public abstract class AbstractUploadFilePanel extends Panel{
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+			protected void onSubmit(AjaxRequestTarget target) {
 				FileUpload file = inputFile.getFileUpload();
 				if (file!=null){
 					onLoadFile(file);

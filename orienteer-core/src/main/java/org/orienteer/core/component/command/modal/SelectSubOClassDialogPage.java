@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Dialog to show table of {@link OClass}es to select
@@ -56,8 +57,8 @@ public abstract class SelectSubOClassDialogPage extends GenericPanel<OClass> {
             	cellItem.add(new AjaxCommand<OClass>(componentId, new ResourceModel("command.select") ,rowModel) {
 
 					@Override
-					public void onClick(AjaxRequestTarget target) {
-						SelectSubOClassDialogPage.this.modal.close(target);
+					public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+						targetOptional.ifPresent(target -> SelectSubOClassDialogPage.this.modal.close(target));
 						SelectSubOClassDialogPage.this.modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
 							
 							@Override

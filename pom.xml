@@ -60,12 +60,12 @@
 		</license>
 	</licenses>
 	<properties>
-		<wicket.version>7.9.0</wicket.version>
-		<wicketstuff.version>7.9.0</wicketstuff.version>
+		<wicket.version>8.0.0-M9</wicket.version>
+		<wicketstuff.version>8.0.0-M9</wicketstuff.version>
 		<orientdb.version>2.2.30</orientdb.version>
 		<wicket.orientdb.version>1.4-SNAPSHOT</wicket.orientdb.version>
-		<jetty.version>9.2.11.v20150529</jetty.version>
-		<slf4j.version>1.7.21</slf4j.version>
+		<jetty.version>9.4.6.v20170531</jetty.version>
+		<slf4j.version>1.7.25</slf4j.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
@@ -96,7 +96,7 @@
 		<module>orienteer-archetype-jar</module>
 		<module>orienteer-archetype-war</module>
 		<module>orienteer-architect</module>
-    	<module>orienteer-mail</module>
+		<module>orienteer-mail</module>
   	</modules>
 	<dependencyManagement>
 	    <dependencies>
@@ -119,11 +119,6 @@
 			    <version>${wicket.version}</version>
 		    </dependency>
 		    <!--  WICKET DEPENDENCIES -->
-		    <dependency>
-			<groupId>org.apache.wicket</groupId>
-			<artifactId>wicket-datetime</artifactId>
-			<version>${wicket.version}</version>
-		    </dependency>
 		    <dependency>
 			    <groupId>org.apache.wicket</groupId>
 			    <artifactId>wicket-extensions</artifactId>
@@ -235,6 +230,7 @@
 		    <dependency>
 			    <groupId>org.eclipse.jetty.aggregate</groupId>
 			    <artifactId>jetty-all</artifactId>
+			    <classifier>uber</classifier>
 			    <version>${jetty.version}</version>
 			    <scope>provided</scope>
 		    </dependency>

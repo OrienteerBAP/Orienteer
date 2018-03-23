@@ -1,6 +1,8 @@
 package org.orienteer.core.component.command;
 
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
@@ -52,9 +54,9 @@ public class EditCommand<T> extends AjaxCommand<T>
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		displayModeModel.setObject(DisplayMode.EDIT);
-		target.add(this);
+		targetOptional.ifPresent(target -> target.add(this));
 	}
 
 	@Override

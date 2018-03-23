@@ -25,6 +25,7 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.converter.IdentityConverter;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Panel for representation of Orienteer cloud modules
@@ -45,9 +46,9 @@ public class OrienteerCloudOModulesConfigurationsPanel extends Panel {
         OrienteerDataTable<OArtifact, String> table = new OrienteerDataTable<>("availableModules", columns, provider, 10);
         table.addCommand(new AjaxCommand<OArtifact>(new ResourceModel(BACK_BUT), table) {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
                 windowPage.showOrienteerModulesPanel(false);
-                target.add(windowPage);
+                targetOptional.ifPresent(target->target.add(windowPage));
             }
 
             @Override

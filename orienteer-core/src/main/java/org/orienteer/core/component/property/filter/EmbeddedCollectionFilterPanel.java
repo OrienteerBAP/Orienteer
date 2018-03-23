@@ -102,14 +102,12 @@ public class EmbeddedCollectionFilterPanel extends AbstractFilterPanel<Collectio
         add(fieldFilter);
         createAndAddFiltersList(collectionInput);
     }
-
+    
     @Override
-    protected void onAfterRenderChildren() {
-        super.onAfterRenderChildren();
-        AjaxRequestTarget target = RequestCycle.get().find(AjaxRequestTarget.class);
-        if (target != null) {
-            target.appendJavaScript(String.format("restoreInput('%s');", getContainerId()));
-        }
+    protected void onAfterRender() {
+        super.onAfterRender();
+        RequestCycle.get().find(AjaxRequestTarget.class)
+        				.ifPresent(target -> target.appendJavaScript(String.format("restoreInput('%s');", getContainerId())));
     }
 
     private CollectionInputPanel.IInputComponentCreator<String> newCollectionComponentCreator(final String id) {

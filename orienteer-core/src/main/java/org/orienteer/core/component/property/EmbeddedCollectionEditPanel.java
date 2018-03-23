@@ -26,6 +26,7 @@ import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * {@link FormComponentPanel} to edit embedded collections
@@ -59,13 +60,13 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 				Component component = visualizer.createComponent("item", DisplayMode.EDIT, documentModel, propertyModel, oType, item.getModel());
 				if (embeddedView == null && component != null) embeddedView = (Class<FormComponent>) component.getClass();
 				item.add(component);
-				item.add(new AjaxFormCommand<Object>("remove", "command.remove")
+				item.add(new AjaxFormCommand<T>("remove", "command.remove")
 						{
 							@Override
-							public void onClick(AjaxRequestTarget target) {
+							public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 								convertToData();
 								getData().remove(item.getIndex());
-								target.add(EmbeddedCollectionEditPanel.this);
+								targetOptional.ifPresent(target ->target.add(EmbeddedCollectionEditPanel.this));
 								listView.removeAll();
 							}
 						}.setDefaultFormProcessing(false)
@@ -91,13 +92,13 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 		};
 		listView.setReuseItems(true);
 		add(listView);
-		add(new AjaxFormCommand("add", "command.add")
+		add(new AjaxFormCommand<T>("add", "command.add")
 		{
 			@Override
-			public void onClick(AjaxRequestTarget target) {
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				convertToData();
 				getData().add(null);
-				target.add(EmbeddedCollectionEditPanel.this);
+				targetOptional.ifPresent(target -> target.add(EmbeddedCollectionEditPanel.this));
 				listView.removeAll();
 			}
 			

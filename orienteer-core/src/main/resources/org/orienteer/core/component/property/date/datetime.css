@@ -1,3 +1,4 @@
+
 .hours {
     margin-left: 10px;
     margin-right: 5px;
@@ -30,12 +31,4 @@
 
 .bottom-square {
     margin-top: 2px;
-}
-
-.input-group-addon.date-btn {
-    text-decoration: none;
-}
-
-.input-group-addon.date-btn:hover {
-    background-color: #2BBBAD;
 }

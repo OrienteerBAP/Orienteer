@@ -72,7 +72,7 @@ public class LinkEditPanel extends FormComponentPanel<OIdentifiable> implements 
 			}
 		});
 		
-		add(new AjaxLink("select") {
+		add(new AjaxLink<OIdentifiable>("select") {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
@@ -80,7 +80,7 @@ public class LinkEditPanel extends FormComponentPanel<OIdentifiable> implements 
 			}
 		});
 		
-		add(new AjaxLink("release") {
+		add(new AjaxLink<OIdentifiable>("release") {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {

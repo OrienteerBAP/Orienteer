@@ -1,5 +1,7 @@
 package org.orienteer.core.component.command;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
@@ -48,7 +50,7 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 	}
 
 	@Override
-	public void onClick(AjaxRequestTarget target) {
+	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 		ODocument doc = getModelObject();
 		if(doc.getIdentity().isNew()) realizeMandatory(doc);
 		doc.save();
@@ -58,7 +60,7 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 			db.commit();
 			if(active) db.begin();
 		}
-        super.onClick(target);
+        super.onClick(targetOptional);
 	}
 	
 	public static void realizeMandatory(ODocument doc) {

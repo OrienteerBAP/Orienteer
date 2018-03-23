@@ -1,32 +1,19 @@
 package org.orienteer.core.component.meta;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.CheckBox;
-import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.IChoiceRenderer;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.validation.IValidator;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
@@ -39,30 +26,22 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.model.ListAvailableOTypesModel;
 import org.orienteer.core.model.ListOClassesModel;
 
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.model.AbstractNamingModel;
-import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
-import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
-import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
-import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
-import ru.ydn.wicket.wicketorientdb.utils.OClassChoiceRenderer;
-import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
-
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
-import com.orientechnologies.common.thread.OPollerThread;
 import com.orientechnologies.orient.core.collate.OCollate;
-import com.orientechnologies.orient.core.collate.OCollateFactory;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.sql.OSQLEngine;
+
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
+import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
+import ru.ydn.wicket.wicketorientdb.utils.OClassChoiceRenderer;
+import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
 /**
  * Meta panel for {@link OProperty}

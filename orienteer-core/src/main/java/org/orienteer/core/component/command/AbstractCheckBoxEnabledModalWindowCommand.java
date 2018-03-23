@@ -37,7 +37,7 @@ public abstract class AbstractCheckBoxEnabledModalWindowCommand<T> extends
 	protected abstract void initializeContent(ModalWindow modal);
 	
 	@Override
-	public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+	public void onSubmit(AjaxRequestTarget target) {
 		modal.show(target);
 	}
 

@@ -2,6 +2,9 @@ package org.orienteer.core.component.table;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.util.Optional;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -33,14 +36,14 @@ public class DeleteRowCommandColumn extends AbstractColumn<ODocument, String> {
 
 	@Override
 	public void populateItem(Item<ICellPopulator<ODocument>> cellItem, String componentId, final IModel<ODocument> rowModel) {
-		cellItem.add(new AjaxFormCommand(componentId, "command.remove") {
+		cellItem.add(new AjaxFormCommand<ODocument>(componentId, "command.remove") {
 
             @Override
-            public void onClick(AjaxRequestTarget target) {
-                super.onClick(target);
+            public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+                super.onClick(targetOptional);
                 rowModel.getObject().delete();
                 DataTable<?, ?> table = findParent(DataTable.class);
-                if(table!=null) target.add(table);
+                if(table!=null && targetOptional.isPresent()) targetOptional.get().add(table);
             }
 
             @Override
