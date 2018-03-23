@@ -6,6 +6,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -17,6 +18,9 @@ import java.time.format.FormatStyle;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * {@link FormComponent} to enter date
+ */
 public class ODateField extends FormComponentPanel<Date> {
 
     public static final JavaScriptResourceReference PICKER_JS = new JavaScriptResourceReference(ODateField.class, "picker.js");

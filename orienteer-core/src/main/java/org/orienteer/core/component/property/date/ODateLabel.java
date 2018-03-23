@@ -11,6 +11,9 @@ import java.util.Locale;
 import static org.orienteer.core.OrienteerWebApplication.DATE_CONVERTER;
 import static org.orienteer.core.OrienteerWebApplication.DATE_TIME_CONVERTER;
 
+/**
+ * {@link Label} for displaying dates 
+ */
 public class ODateLabel extends Label {
 
     private final boolean time;

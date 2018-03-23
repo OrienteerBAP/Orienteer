@@ -19,6 +19,9 @@ import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
+/**
+ * {@link RepeatingView} implementation with ability to reorder components
+ */
 public class ReorderableRepeatingView extends RepeatingView{
 
 	public ReorderableRepeatingView(String id, IModel<?> model) {
