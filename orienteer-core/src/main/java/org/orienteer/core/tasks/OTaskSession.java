@@ -88,18 +88,6 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 		sudoSave();
 	}
 	
-	/**
-	 * @deprecated use  {@link setField} instead
-	 */
-	@Deprecated
-	public <V> void persist(final String field, final V value) {
-		setField(field,value);
-		/*
-		document.field(field, value);
-		if(document.getIdentity().isPersistent()) {
-			sudoSave();
-		}*/
-	}
 	
 	private void sudoSave(){
 		new DBClosure<Boolean>() {

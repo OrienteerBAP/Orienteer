@@ -57,11 +57,11 @@ public class OrienteerTestModule extends AbstractModule
 	@Provides
 	public ODatabaseDocument getDatabaseRecord()
 	{
-		ODatabaseDocument db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+		ODatabaseDocument db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
 		if(db.isClosed())
 		{
-			ODatabaseRecordThreadLocal.INSTANCE.remove();
-			db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.INSTANCE.get().getDatabaseOwner());
+			ODatabaseRecordThreadLocal.instance().remove();
+			db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
 		}
 		return db;
 	}

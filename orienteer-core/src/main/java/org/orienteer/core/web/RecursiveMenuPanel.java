@@ -1,6 +1,6 @@
 package org.orienteer.core.web;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
@@ -11,21 +11,15 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
 
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
-
-import java.util.Collections;
-import java.util.List;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Panel to display recursive tree menu.
@@ -52,12 +46,12 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
             @Override
             protected void populateItem(ListItem<ODocument> item) {
                 IModel<ODocument> itemModel = item.getModel();
-                ODocumentPropertyModel<String> urlModel = new ODocumentPropertyModel<String>(itemModel, "url");
-                ODocumentPropertyModel<List<ODocument>> subItems = new ODocumentPropertyModel<List<ODocument>>(itemModel, "subItems");
+                IModel<String> urlModel = new PropertyModel<String>(itemModel, "url");
+                IModel<List<ODocument>> subItems = new PropertyModel<List<ODocument>>(itemModel, "subItems");
                 final boolean hasSubItems = subItems.getObject() != null && !subItems.getObject().isEmpty();
                 ExternalLink link = new ExternalLink("link", urlModel)
                         .setContextRelative(true);
-                link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
+                link.add(new FAIcon("icon", new PropertyModel<String>(itemModel, "icon")),
                         new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true),
                         new WebMarkupContainer("menuLevelGlyph").setVisibilityAllowed(hasSubItems));
                 item.add(link);
@@ -124,7 +118,7 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
     	level = parentMenuPanel==null?1:parentMenuPanel.getLevel()+1;
     }
 
-    private boolean isActiveItem(ODocumentPropertyModel<String> urlModel) {
+    private boolean isActiveItem(IModel<String> urlModel) {
         String currentUrl = RequestCycle.get().getRequest().getUrl().getPath();
         String url = urlModel.getObject();
         return url!=null && currentUrl.equals(url.replaceFirst("^/", ""));

@@ -5,46 +5,35 @@ package org.orienteer.core.component.widget.document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.command.EditODocumentCommand;
-import org.orienteer.core.component.command.EditSchemaCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
-import org.orienteer.core.component.command.SaveSchemaCommand;
-import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.AbstractModeMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.widget.oclass.OClassHooksWidget;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.util.ODocumentChoiceRenderer;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
-import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
-import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
@@ -122,7 +111,7 @@ public class ODocumentHooksWidget extends AbstractModeAwareWidget<ODocument> {
 
 					@Override
 					protected IModel<ODocument> resolveValueModel() {
-						return new ODocumentPropertyModel<>(getEntityModel(), getPropertyObject().getName());
+						return new PropertyModel<>(getEntityModel(), getPropertyObject().getName());
 					}
 				};
 			}

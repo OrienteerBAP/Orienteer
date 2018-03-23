@@ -13,6 +13,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -26,7 +27,6 @@ import org.orienteer.core.widget.command.FullScreenCommand;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
 import ru.ydn.wicket.wicketorientdb.model.NvlModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
 
@@ -142,7 +142,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected final IModel<String> getTitleModel() {
 		return new NvlModel<String>(new FunctionModel<Object, String>(
-												new ODocumentPropertyModel<Object>(getWidgetDocumentModel(), "title"), 
+												new PropertyModel<Object>(getWidgetDocumentModel(), "title"), 
 												LocalizeFunction.getInstance()), 
 											getDefaultTitleModel());
 	}

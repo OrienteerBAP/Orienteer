@@ -13,7 +13,6 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -175,12 +174,7 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	
 	public IModel<?> getMetaComponentEnteredValueModel(final C critery)
 	{
-		return new AbstractReadOnlyModel<Object>() {
-			@Override
-			public Object getObject() {
-				 return getMetaComponentEnteredValue(critery);
-			}
-		};
+		return () -> getMetaComponentEnteredValue(critery);
 	}
 	
 	@SuppressWarnings("unchecked")

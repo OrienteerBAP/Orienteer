@@ -52,12 +52,12 @@ public class OCamelTaskSession extends OTaskSessionRuntime {
 	
 	public OCamelTaskSession appendOut(String out){
 		out = getOTaskSessionPersisted().getDocument().field(Field.OUTPUT.fieldName())+out+"\n";
-		getOTaskSessionPersisted().persist(Field.OUTPUT.fieldName(), out);
+		getOTaskSessionPersisted().setField(Field.OUTPUT.fieldName(), out);
 		return this;
 	}
 	
 	public OCamelTaskSession setConfig(String configId){
-		getOTaskSessionPersisted().persist(Field.CONFIG.fieldName(), new ORecordId(configId));
+		getOTaskSessionPersisted().setField(Field.CONFIG.fieldName(), new ORecordId(configId));
 		return this;
 	}
 	

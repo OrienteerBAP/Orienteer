@@ -10,7 +10,6 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.ISortableDat
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -47,13 +46,9 @@ public abstract class UnhideWidgetDialog<T> extends Panel {
 			@Override
 			public void populateItem(Item<ICellPopulator<String>> cellItem,
 					String componentId, final IModel<String> rowModel) {
-				cellItem.add(new Label(componentId, new SimpleNamingModel<String>("widget", new AbstractReadOnlyModel<String>() {
-
-					@Override
-					public String getObject() {
+				cellItem.add(new Label(componentId, new SimpleNamingModel<String>("widget", () -> {
 						AbstractWidget<T> widget = (AbstractWidget<T>)getDashboardPanel().getWidgetsContainer().get(rowModel.getObject());
 						return registry.lookupByWidgetClass((Class<? extends AbstractWidget<T>>)widget.getClass()).getId();
-					}
 				})));
 			}
 		});

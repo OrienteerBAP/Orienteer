@@ -2,11 +2,9 @@ package org.orienteer.bpm.component.widget;
 
 import java.util.List;
 
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.util.string.Strings;
 import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.ResourceEntityHandler;
 import org.orienteer.bpm.component.BpmnPanel;
@@ -20,7 +18,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.model.AbstractConverterModel;
 import ru.ydn.wicket.wicketorientdb.model.NvlModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 /**
@@ -32,7 +29,7 @@ public class BpmnModelerWidget extends AbstractModeAwareWidget<ODocument> {
 	public BpmnModelerWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		OQueryModel<ODocument> resourcesModel = new OQueryModel<>("select from "+ResourceEntityHandler.OCLASS_NAME+" where name = :resourceName");
-		resourcesModel.setParameter("resourceName", new ODocumentPropertyModel<String>(model, "resourceName"));
+		resourcesModel.setParameter("resourceName", new PropertyModel<String>(model, "resourceName"));
 		IModel<ODocument> resourceModel = new NvlModel<ODocument>(new AbstractConverterModel<List<ODocument>, ODocument>(resourcesModel) {
 
 			@Override

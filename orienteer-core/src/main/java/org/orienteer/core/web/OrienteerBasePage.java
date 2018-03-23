@@ -24,7 +24,6 @@ import org.orienteer.core.component.OrienteerFeedbackPanel;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 /**
@@ -79,7 +78,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 							);
 					}
 				};
-				link.add(new FAIcon("icon", new ODocumentPropertyModel<String>(itemModel, "icon")),
+				link.add(new FAIcon("icon", new PropertyModel<String>(itemModel, "icon")),
 						 new Label("name",  new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
 				item.add(link);
 				item.add(highlightActivePerspective);

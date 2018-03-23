@@ -10,9 +10,9 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
-import ru.ydn.wicket.wicketorientdb.model.ODocumentPropertyModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -36,7 +36,7 @@ public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 	
 	public BinaryEditPanel(String id, final IModel<ODocument> docModel, final IModel<OProperty> propModel, IModel<byte[]> valueModel) {
 		this(id, valueModel);
-		nameModel = new ODocumentPropertyModel<String>(docModel, propModel.getObject().getName()+"$fileName");
+		nameModel = new PropertyModel<String>(docModel, propModel.getObject().getName()+"$fileName");
 	}
 
 	public BinaryEditPanel(String id, IModel<byte[]> model) {
