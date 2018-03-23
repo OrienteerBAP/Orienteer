@@ -44,7 +44,7 @@ OPropertyEditModalWindow.prototype.addButtonBlock = function (body, nameAndTypeB
 OPropertyEditModalWindow.prototype.createSelect = function (values) {
     var select = document.createElement('select');
     var modal = this;
-    select.classList.add('form-control');
+    select.classList.add('custom-select');
     OArchitectUtil.forEach(values, function (value) {
         select.appendChild(modal.createSelectOption(value));
     });

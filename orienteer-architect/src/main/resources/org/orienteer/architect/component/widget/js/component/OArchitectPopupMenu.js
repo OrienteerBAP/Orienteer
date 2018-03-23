@@ -54,7 +54,8 @@ OArchitectPopupMenu.prototype.addAction = function (action) {
  */
 OArchitectPopupMenu.prototype.createMenuElement = function (event) {
     var div = document.createElement('div');
-    div.classList.add(OArchitectConstants.LIST_GROUP);
+    div.classList.add(OArchitectConstants.DROPDOWN_MENU);
+    div.classList.add('show');
     div.style.position = 'absolute';
     div.style.left = event.getGraphX() + 'px';
     div.style.top = event.getGraphY() + 'px';
@@ -78,7 +79,7 @@ OArchitectPopupMenu.prototype.createMenuElement = function (event) {
  */
 OArchitectPopupMenu.prototype.createItemElement = function (action, cell, event) {
     var a = document.createElement('a');
-    a.classList.add(OArchitectConstants.LIST_GROUP_ITEM);
+    a.classList.add(OArchitectConstants.DROPDOWN_ITEM);
     a.style.cursor = 'pointer';
     a.appendChild(this.createIconElement(action.faIconCss));
     a.appendChild(this.createLabelElement(action.label));

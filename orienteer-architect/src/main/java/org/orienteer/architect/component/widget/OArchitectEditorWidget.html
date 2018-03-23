@@ -1,8 +1,12 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
     <div wicket:id="container">
+
         <div wicket:id="toolbar" class="architect-editor-toolbar"></div>
-        <div wicket:id="sidebar" class="architect-editor-sidebar"></div>
-        <div wicket:id="editor" class="architect-editor"></div>
+        <div class="architect-editor-sidebar-container">
+            <div wicket:id="sidebar" class="architect-editor-sidebar"></div>
+            <div wicket:id="editor" class="architect-editor"></div>
+        </div>
+
         <div wicket:id="outline" class="architect-editor-outline"></div>
         <div wicket:id="listClasses"></div>
     </div>
