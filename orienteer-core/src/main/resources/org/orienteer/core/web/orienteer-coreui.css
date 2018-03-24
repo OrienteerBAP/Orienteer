@@ -1,0 +1,134 @@
+.app-header.navbar .navbar-brand .img-logo {
+    width: 30px;
+    margin-right: 5px;
+    overflow: hidden;
+	float: left;
+	margin-top:3px;
+}
+
+.brand-minimized .app-header.navbar .navbar-brand .img-logo {
+    display: none;
+}
+
+.brand-minimized .app-header.navbar .navbar-brand {
+    background-image:url(logo.png);
+}
+
+.brand-minimized .app-header.navbar .navbar-brand .navbar-title {
+    display: none;
+}
+
+.app-header.navbar .navbar-brand {
+    background-image: none;
+}
+
+.app-header.navbar .navbar-brand .navbar-title {
+	vertical-align: sub;
+	display: inline;
+}
+
+.navigatorLabel {
+    text-align: center;
+}
+
+tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
+{
+	margin-right:0.5em;
+}
+
+td.checkbox-column
+{
+	width: 15px;
+}
+
+td.combobox-column
+{
+	width: 70px;
+}
+
+tr.commandstoolbar
+{
+	background: #f5f5f5;
+}
+
+tr.commandstoolbar div{
+	float:left;
+}
+
+.btn-with-whitespace11::after{
+	display:block;
+	clear:both;
+	content:" ";
+}
+
+footer div.powered
+{
+	text-align:center;
+	width:100%;
+}
+
+td.st-label
+{
+	width: 30%;
+}
+
+td.st-label label{
+	font-weight: 700;
+}
+
+.form-control {
+	/* width: auto; */
+	display: inline-block;
+}
+
+table.structure-table label.required:after {
+	color: red;
+	content: "*";
+}
+
+td.st-value textarea
+{
+	height: 12em;
+}
+
+/*Only in widgets*/
+li.strict caption {
+	display: none;
+}
+
+.btn-xs {
+  line-height: .76rem;
+  padding :.1875rem .375rem;
+  font-size: .844rem; 
+  @include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);
+}
+
+/*widgets headers*/
+.ui-sortable:not(.ui-sortable-disabled) .card-header {
+    cursor: move;
+}
+
+/*wicket modal window header fix*/
+div.wicket-modal h3.w_captionText {
+    font-size: 16.3833px;
+}
+
+div.ajax-indicator {
+	padding: 1em 2em;
+	position: fixed;
+	top: 40%;
+	left: 48%;
+	background: white;
+	border: solid 1px #bbb;
+}
+
+li.fullscreen {
+	position: fixed;
+	top: 0; right:0; left:0; bottom:0;
+	margin: 0;
+	z-index: 99999;
+	background: white;
+	margin: 0 !important;
+	height: 100% !important;
+	width: 100% !important;
+}

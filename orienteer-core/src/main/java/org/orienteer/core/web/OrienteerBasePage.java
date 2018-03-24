@@ -1,10 +1,18 @@
 package org.orienteer.core.web;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.util.Optional;
+
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.event.Broadcast;
+import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -21,8 +29,12 @@ import org.orienteer.core.component.DefaultPageHeader;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
+import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.widget.IDashboard;
+import org.orienteer.core.widget.IDashboardContainer;
+
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
@@ -31,10 +43,12 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
  *
  * @param <T> type of a main object for this page
  */
-public abstract class OrienteerBasePage<T> extends BasePage<T>
+public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashboardContainer
 {
 	private static final long serialVersionUID = 1L;
 	private OrienteerFeedbackPanel feedbacks;
+	private IDashboard curDashboard;
+	
 	public OrienteerBasePage()
 	{
 		super();
@@ -53,9 +67,9 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 	@Override
 	public void initialize() {
 		super.initialize();
-		add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
+//		add(new BookmarkablePageLink<T>("home", getApplication().getHomePage()));
 		
-		final AttributeAppender highlightActivePerspective = new AttributeAppender("class", "active")
+		final AttributeAppender highlightActivePerspective = new AttributeAppender("class", " disabled")
 		{
 			@Override
 			public boolean isEnabled(Component component) {
@@ -66,29 +80,36 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		add(new ListView<ODocument>("perspectives", new OQueryModel<ODocument>("select from "+PerspectivesModule.OCLASS_PERSPECTIVE)) {
 
 			@Override
-			protected void populateItem(ListItem<ODocument> item) {
+			protected void populateItem(final ListItem<ODocument> item) {
 				IModel<ODocument> itemModel = item.getModel();
-				Link<ODocument> link = new Link<ODocument>("link", itemModel) {
-
+				Link<ODocument> link = new AjaxFallbackLink<ODocument>("link", itemModel) {
 					@Override
-					public void onClick() {
-						OrienteerWebSession.get().setPerspecive(getModelObject());
-						OrienteerBasePage.this.info(
-								getLocalizer().getString("info.perspectivechanged", this, new ODocumentNameModel(getModel()))
+					public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+						if (!getModelObject().equals(getPerspective())) {
+							OrienteerWebSession.get().setPerspecive(getModelObject());
+							OrienteerBasePage.this.info(
+									getLocalizer().getString("info.perspectivechanged", this, new ODocumentNameModel(getModel()))
 							);
+						}
 					}
 				};
 				link.add(new FAIcon("icon", new PropertyModel<String>(itemModel, "icon")),
 						 new Label("name",  new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
 				item.add(link);
-				item.add(highlightActivePerspective);
+				link.add(highlightActivePerspective);
 			}
 		});
+		IModel<ODocument> perspectiveModel = new PropertyModel<>(this, "perspective");
+		Button perspectiveButton = new Button("perspectiveButton");
+
+		perspectiveButton.add(new FAIcon("icon", new PropertyModel<String>(perspectiveModel, "icon")));
+		perspectiveButton.add(new Label("name", new ODocumentNameModel(perspectiveModel)));
+		add(perspectiveButton);
 		
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
-		IModel<ODocument> perspectiveModel = new PropertyModel<ODocument>(this, "perspective");
+
 		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
 		
 		
@@ -125,4 +146,15 @@ public abstract class OrienteerBasePage<T> extends BasePage<T>
 		return feedbacks;
 	}
 	
+	public void setCurrentDashboard(IDashboard dashboard){
+		curDashboard = dashboard;
+	};
+	
+	public IDashboard getCurrentDashboard(){
+		return curDashboard;
+	};
+	
+	public Component getSelf(){
+		return this;
+	}
 }

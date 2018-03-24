@@ -433,7 +433,7 @@ OArchitectApplication.prototype.checksAboutClassesChanges = function (onCheckEnd
  * Calls from Wicket!
  * Create new instance {@link OArchitectApplication}.
  */
-var init = function (basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
+var initOrienteerArchitect = function (basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate) {
     app = new OArchitectApplication(basePath, config, localizer, widgetId, containerId, editorId, sidebarId, toolbarId, outlineId, canUpdate);
     app.init();
 };

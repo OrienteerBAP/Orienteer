@@ -1,17 +1,17 @@
 package org.orienteer.core.component;
 
-import java.util.List;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
+
+import java.util.List;
 
 /**
  * Bootstrap and AJAX enabled {@link org.apache.wicket.extensions.markup.html.tabs.TabbedPanel}
@@ -61,16 +61,35 @@ public class TabbedPanel<T extends ITab> extends org.apache.wicket.extensions.ma
 	
 	@Override
 	protected WebMarkupContainer newLink(String linkId, final int index) {
-			return new AjaxLink<Void>(linkId)
-			{
-				private static final long serialVersionUID = 1L;
+		return new AjaxLink<Void>(linkId) {
+			private static final long serialVersionUID = 1L;
 
-				@Override
-				public void onClick(AjaxRequestTarget target) {
-					setSelectedTab(index);
-					target.add(TabbedPanel.this);
-				}
-			};
+			@Override
+			public void onClick(AjaxRequestTarget target) {
+				setSelectedTab(index);
+				target.add(TabbedPanel.this);
+				onLinkClick(target);
+			}
+
+			@Override
+			protected void onComponentTag(ComponentTag tag) {
+				super.onComponentTag(tag);
+				String cssClass = tag.getAttribute("class");
+				if (getSelectedTab() == index) {
+					cssClass += " active";
+				} else cssClass = "nav-link";
+				tag.put("class", cssClass.trim());
+			}
+		};
+
 	}
 	
+	protected void onLinkClick(AjaxRequestTarget target){
+		
+	}
+	
+	@Override
+	protected WebMarkupContainer newTabsContainer(String id) {
+		return new WebMarkupContainer(id);
+	}
 }

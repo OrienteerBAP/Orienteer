@@ -1,10 +1,6 @@
 package org.orienteer.core.widget;
 
-import static org.orienteer.core.module.OWidgetsModule.OCLASS_DASHBOARD;
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_DOMAIN;
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_TAB;
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_TYPE_ID;
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_WIDGETS;
+import static org.orienteer.core.module.OWidgetsModule.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +37,9 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
  *
  * @param <T> the type of main data object
  */
-public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware {
-	
+public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware,IDashboard<T> {
+	private static final long serialVersionUID = 1L;
+
 	@Inject
 	protected IDashboardManager dashboardManager;
 	
@@ -56,13 +53,9 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	
 	private String tab;
 	
-	private ConfigureDashboardCommand configureCommand;
-	
-	private RepeatingView commands;
-	
 	private ReorderableRepeatingView widgets;
 	
-	private AbstractDefaultAjaxBehavior ajaxBehavior;
+	//private AbstractDefaultAjaxBehavior ajaxBehavior;
 	
 	private IModel<DisplayMode> dashboardModeModel = DisplayMode.VIEW.asModel();
 	
@@ -75,16 +68,6 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		this.domain = domain;
 		this.tab = tab;
 		this.widgetsFilter = widgetsFilter;
-		WebMarkupContainer commandsContainer = new WebMarkupContainer("commandsContainer");
-		OSecurityHelper.secureComponent(commandsContainer, OSecurityHelper.requireOClass(OWidgetsModule.OCLASS_DASHBOARD, OrientPermission.UPDATE));
-		commandsContainer.add(configureCommand = new ConfigureDashboardCommand("configure", dashboardDocumentModel));
-		commands = new RepeatingView("commands");
-		commands.add(new AddWidgetCommand<T>(commands.newChildId(), dashboardDocumentModel));
-		commands.add(new UnhideWidgetCommand<T>(commands.newChildId(), dashboardDocumentModel));
-		commands.add(new SilentSaveDashboardCommand(commands.newChildId(), dashboardDocumentModel));
-		commands.add(new KeepUnsavedDashboardCommand(commands.newChildId(), dashboardDocumentModel));
-		commandsContainer.add(commands);
-		add(commandsContainer);
 		widgets = new ReorderableRepeatingView("widgets");
 		add(widgets);
 		setOutputMarkupId(true);
@@ -92,7 +75,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		loadDashboard();
 		dashboardSupport.initDashboardPanel(this);
 	}
-	
+
 	public ODocument loadDashboard() {
 		return loadDashboard(lookupDashboardDocument(domain, tab, getModel()));
 	}
@@ -219,11 +202,13 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return addWidget(description.instanciate(newWidgetId(), getModel(), widgetDoc));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public AbstractWidget<T> addWidget(String widgetId)
 	{
 		return addWidget((IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(widgetId));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public AbstractWidget<T> addWidget(String widgetId, ODocument widgetDoc)
 	{
 		return addWidget((IWidgetType<T>)widgetTypesRegistry.lookupByTypeId(widgetId), widgetDoc);
@@ -244,13 +229,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		if(DisplayMode.EDIT.equals(dashboardModeModel.getObject())) {
-			commands.setVisibilityAllowed(true);
-			configureCommand.setVisibilityAllowed(false);
-		} else {
-			commands.setVisibilityAllowed(false);
-			configureCommand.setVisibilityAllowed(true);
-		}
+		findParent(IDashboardContainer.class).setCurrentDashboard(this);
 	}
 	
 	public String getDomain() {
@@ -296,4 +275,8 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return dashboardDocumentModel.getObject();
 	}
 
+	@Override
+	public DashboardPanel<T> getSelfComponent() {
+		return this;
+	}
 }

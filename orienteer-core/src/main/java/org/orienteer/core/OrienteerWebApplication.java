@@ -10,12 +10,17 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import de.agilecoders.wicket.webjars.WicketWebjars;
+import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
 import org.apache.wicket.*;
 import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.guice.GuiceInjectorHolder;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.filter.FilteringHeaderResponse;
+import org.apache.wicket.markup.head.filter.JavaScriptFilteredIntoFooterHeaderResponse;
+import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -220,6 +225,19 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
+
+		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
+		
+        setHeaderResponseDecorator(new IHeaderResponseDecorator()
+        {
+            @Override
+            public IHeaderResponse decorate(IHeaderResponse response)
+            {
+                // this header resource decorator to load JavaScript resources in the page
+                // footer (after </body>) or other resource separation
+            	return new FilteringHeaderResponse(response);
+            }
+        });
 	}
 
 

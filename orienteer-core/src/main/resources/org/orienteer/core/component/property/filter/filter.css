@@ -30,7 +30,7 @@
 }
 
 .filter-bubble {
-    position: absolute;
+    position: absolute !important;
     display: inline-block;
     margin: 5px;
     padding: 0;
@@ -45,7 +45,6 @@
     display: inline-block;
     position: relative;
     margin-left: 5px;
-    margin-bottom: 10px;
     float: right;
 }
 
@@ -71,4 +70,13 @@
 .link-filter-document-choice {
     width: 280px;
     margin-top: 5px;
+}
+
+.filter-buttons {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.filter-join {
+    margin-top: 10px;
 }

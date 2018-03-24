@@ -8,8 +8,16 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReferenc
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxClientInfoBehavior;
-import org.apache.wicket.markup.head.*;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.PriorityHeaderItem;
+import org.apache.wicket.markup.head.filter.FilteredHeaderItem;
+import org.apache.wicket.markup.head.filter.HeaderResponseContainer;
 import org.apache.wicket.markup.html.GenericWebPage;
+import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -42,14 +50,20 @@ import java.util.Locale;
 public abstract class BasePage<T> extends GenericWebPage<T>
 {
 	private static final long serialVersionUID = 1L;
+	public static final String JS_IN_FOOTER_FILTER_NAME = "footerJsLoad";
+
 	public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
 	public static final CssResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
-	public static final CssResourceReference METISMENU_CSS = new WebjarsCssResourceReference("metisMenu/current/metisMenu.min.css");
+	public static final CssResourceReference SIMPLE_LINE_ICONS_CSS = new WebjarsCssResourceReference("simple-line-icons/current/css/simple-line-icons.css");
+	public static final CssResourceReference COREUI_CSS = new WebjarsCssResourceReference("coreui__ajax/current/AJAX_Full_Project_GULP/src/css/style.min.css");
 	public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
 	public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
-	
-	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.min.js");
-	public static final JavaScriptResourceReference METISMENU_JS = new WebjarsJavaScriptResourceReference("metisMenu/current/metisMenu.min.js");
+	public static final CssResourceReference ORIENTEER_COREUI_CSS = new CssResourceReference(BasePage.class, "orienteer-coreui.css");
+
+	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.bundle.min.js");
+	public static final JavaScriptResourceReference TETHER_JS = new WebjarsJavaScriptResourceReference("tether/current/js/tether.min.js");
+	public static final JavaScriptResourceReference PACE_JS = new WebjarsJavaScriptResourceReference("pace/current/pace.min.js");
+	public static final JavaScriptResourceReference COREUI_JS = new WebjarsJavaScriptResourceReference("coreui__ajax/current/Static_Starter_GULP/src/js/app.js");
 
 
 	protected static final CssResourceReference BOOTSTRAP_DATE_PICKER_CSS       = new WebjarsCssResourceReference("bootstrap-datepicker/current/css/bootstrap-datepicker3.min.css");
@@ -104,11 +118,17 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		uiPlugins = new RepeatingView("uiPlugins");
 		add(uiPlugins);
 		if(!OrienteerWebSession.get().isClientInfoAvailable()) add(new AjaxClientInfoBehavior());
+		//footer JS loading support
+		add(new HeaderResponseContainer("footerJsLoad",JS_IN_FOOTER_FILTER_NAME));
 	}
 	
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
+		TransparentWebMarkupContainer body;
+		add(body = new TransparentWebMarkupContainer("body"));
+		body.add(new AttributeAppender("class", " "+getBodyAppSubClasses()));
+		
 		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS_FOR_CHANGING));
 		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(
 				OrienteerWebApplication.get().getVersion(), OrienteerWebSession.get().isSignedIn() ? OrienteerWebApplication.get().getLoadModeInfo() : "");
@@ -117,27 +137,36 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		if(get("footer")==null) add(new Label("footer", new PropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
 									.setEscapeModelStrings(false).setRenderBodyOnly(true));
 		if(get("indicator")==null) add(new AjaxIndicator("indicator"));
+		//add(new BodyTagAttributeModifier("class", Model.of("sidebar"), this));
 	}
 
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		response.render(new PriorityHeaderItem(CssHeaderItem.forReference(BOOTSTRAP_CSS)));
 		response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
-		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
-		response.render(CssHeaderItem.forReference(METISMENU_CSS));
-		response.render(CssHeaderItem.forReference(ORIENTEER_CSS));
+//		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
+//		response.render(CssHeaderItem.forReference(METISMENU_CSS));
+		response.render(CssHeaderItem.forReference(SIMPLE_LINE_ICONS_CSS));
+		response.render(CssHeaderItem.forReference(COREUI_CSS));
+		response.render(CssHeaderItem.forReference(ORIENTEER_COREUI_CSS));
 		super.renderHead(response);
 		addBootstrapDatepicker(response);
-		JavaScriptLibrarySettings javaScriptSettings =          
+		JavaScriptLibrarySettings javaScriptSettings =
 				getApplication().getJavaScriptLibrarySettings();
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.
-				forReference(javaScriptSettings.getJQueryReference())));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem
+				.forReference(javaScriptSettings.getJQueryReference())));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(METISMENU_JS)));
-		// enabling metisMenu for secondary level menus
-		response.render(OnDomReadyHeaderItem.forScript("$(\".metismenu\").metisMenu({toggle: true});"));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TETHER_JS)));
+		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
+		//CoreUI need to load self scripts in footer
+		response.render(new FilteredHeaderItem(JavaScriptHeaderItem.forReference(COREUI_JS),JS_IN_FOOTER_FILTER_NAME));
+		
 	}
 
+	protected String getBodyAppSubClasses(){
+		return "header-fixed sidebar-fixed";
+	}
+	
 	private void addBootstrapDatepicker(IHeaderResponse response) {
 		response.render(CssHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_CSS));
 		response.render(JavaScriptHeaderItem.forReference(BOOTSTRAP_DATE_PICKER_JS));

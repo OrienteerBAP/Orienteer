@@ -88,6 +88,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         if (command != null) {
             final OArchitectFullscreenCommand fullscreen = new OArchitectFullscreenCommand(command.getId());
             fullscreen.setBootstrapType(null);
+            fullscreen.setBtnCssClass("dropdown-item");
             commands.replace(fullscreen);
             add(new AbstractDefaultAjaxBehavior() {
                 @Override
@@ -151,7 +152,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         Map<String, Object> params = CommonUtils.toMap("basePath", baseUrl);
         String config = configTemplate.asString(params);
         boolean canUpdate = canUserUpdateEditor();
-        response.render(OnLoadHeaderItem.forScript(String.format("init('%s', %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', %s);",
+        response.render(OnLoadHeaderItem.forScript(String.format("initOrienteerArchitect('%s', %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', %s);",
                 baseUrl,
                 CommonUtils.escapeAndWrapAsJavaScriptString(config),
                 locale,

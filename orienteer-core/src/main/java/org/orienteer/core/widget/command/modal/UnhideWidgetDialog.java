@@ -19,6 +19,7 @@ import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
+import org.orienteer.core.widget.IDashboardContainer;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import ru.ydn.wicket.wicketorientdb.model.JavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
@@ -78,11 +79,12 @@ public abstract class UnhideWidgetDialog<T> extends Panel {
 	protected abstract void onSelectWidget(AbstractWidget<T> widget, Optional<AjaxRequestTarget> targetOptional);
 	
 	public DashboardPanel<T> getDashboardPanel() {
-		DashboardPanel<T> dashboard = findParent(DashboardPanel.class);
-		if(dashboard==null)
+		IDashboardContainer container = findParent(IDashboardContainer.class);
+		if(container.getCurrentDashboard()==null)
 		{
 			throw new WicketRuntimeException("No dashboard found for widget: "+this);
 		}
+		DashboardPanel<T> dashboard = container.getCurrentDashboard().getSelfComponent();
 		return dashboard;
 	}
 	

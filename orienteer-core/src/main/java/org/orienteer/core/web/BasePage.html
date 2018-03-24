@@ -16,15 +16,16 @@
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body wicket:id="body" class="app">
     <div wicket:id="modulesFailed"></div>
-	<wicket:child>
-	</wicket:child>
-	<div wicket:id="indicator"></div>
-	  <footer>
+	  <wicket:child>
+	  </wicket:child>
+	  <div wicket:id="indicator"></div>
+	  <footer class="app-footer">
 	    <div wicket:id="footer"></div>
 	    <div wicket:id="poweredBy" class="powered"></div>
-  	  </footer>
-  	  <div wicket:id="uiPlugins"></div>
+    </footer>
+    <div wicket:id="uiPlugins"></div>
+    <wicket:container wicket:id="footerJsLoad"></wicket:container>
   </body>
 </html>
