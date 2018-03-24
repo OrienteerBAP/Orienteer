@@ -16,6 +16,7 @@
     min-width: 70px;
     max-width: 70px;
     margin-left: 10px;
+    width: inherit;
 }
 
 .time-separator {
