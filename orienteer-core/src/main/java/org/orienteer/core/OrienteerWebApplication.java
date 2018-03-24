@@ -178,7 +178,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		}
 		WicketWebjars.install(this, webjarSettings);
 		mountPages("org.orienteer.core.web");
-		getResourceBundles().addCssBundle(BasePage.class, "orienteer.css", BasePage.SB_ADMIN_CSS, BasePage.ORIENTEER_CSS);
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
 		OContentShareResource.mount(this);
 		getMarkupSettings().setStripWicketTags(true);
@@ -227,17 +226,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
-		
-        setHeaderResponseDecorator(new IHeaderResponseDecorator()
-        {
-            @Override
-            public IHeaderResponse decorate(IHeaderResponse response)
-            {
-                // this header resource decorator to load JavaScript resources in the page
-                // footer (after </body>) or other resource separation
-            	return new FilteringHeaderResponse(response);
-            }
-        });
 	}
 
 

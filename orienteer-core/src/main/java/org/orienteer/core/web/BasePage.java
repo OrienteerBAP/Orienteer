@@ -50,14 +50,11 @@ import java.util.Locale;
 public abstract class BasePage<T> extends GenericWebPage<T>
 {
 	private static final long serialVersionUID = 1L;
-	public static final String JS_IN_FOOTER_FILTER_NAME = "footerJsLoad";
 
 	public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
 	public static final CssResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
 	public static final CssResourceReference SIMPLE_LINE_ICONS_CSS = new WebjarsCssResourceReference("simple-line-icons/current/css/simple-line-icons.css");
 	public static final CssResourceReference COREUI_CSS = new WebjarsCssResourceReference("coreui__ajax/current/AJAX_Full_Project_GULP/src/css/style.min.css");
-	public static final CssResourceReference SB_ADMIN_CSS = new CssResourceReference(BasePage.class, "sb-admin.css");
-	public static final CssResourceReference ORIENTEER_CSS = new CssResourceReference(BasePage.class, "orienteer.css");
 	public static final CssResourceReference ORIENTEER_COREUI_CSS = new CssResourceReference(BasePage.class, "orienteer-coreui.css");
 
 	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.bundle.min.js");
@@ -118,8 +115,6 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		uiPlugins = new RepeatingView("uiPlugins");
 		add(uiPlugins);
 		if(!OrienteerWebSession.get().isClientInfoAvailable()) add(new AjaxClientInfoBehavior());
-		//footer JS loading support
-		add(new HeaderResponseContainer("footerJsLoad",JS_IN_FOOTER_FILTER_NAME));
 	}
 	
 	@Override
@@ -158,9 +153,8 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TETHER_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
-		//CoreUI need to load self scripts in footer
-		response.render(new FilteredHeaderItem(JavaScriptHeaderItem.forReference(COREUI_JS),JS_IN_FOOTER_FILTER_NAME));
-		
+		response.render(JavaScriptHeaderItem.forReference(COREUI_JS).setDefer(true));
+
 	}
 
 	protected String getBodyAppSubClasses(){
