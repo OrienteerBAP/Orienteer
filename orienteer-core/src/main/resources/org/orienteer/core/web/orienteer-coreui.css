@@ -132,3 +132,11 @@ li.fullscreen {
 	height: 100% !important;
 	width: 100% !important;
 }
+
+.fullscreen > .widget {
+	height: 100%;
+}
+
+.noscroll {
+	overflow-y: hidden !important;
+}
