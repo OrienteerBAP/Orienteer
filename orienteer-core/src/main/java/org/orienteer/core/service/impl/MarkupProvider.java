@@ -31,7 +31,7 @@ public class MarkupProvider implements IMarkupProvider
 	
 	public MarkupProvider()
 	{
-		registerMarkupContent(DropDownChoice.class, "<select wicket:id=\"component\" class=\"form-control\"></select>");
+		registerMarkupContent(DropDownChoice.class, "<select wicket:id=\"component\" class=\"custom-select\"></select>");
 		registerMarkupContent(ListMultipleChoice.class, "<select wicket:id=\"component\" class=\"form-control\"></select>");
 		registerMarkupContent(CheckBox.class, "<input type=\"checkbox\" wicket:id=\"component\"/>");
 		registerMarkupContent(TextField.class, "<input type=\"text\" wicket:id=\"component\" class=\"form-control\"/>");
