@@ -140,3 +140,7 @@ li.fullscreen {
 .noscroll {
 	overflow-y: hidden !important;
 }
+
+.password-panel-field {
+	margin-bottom: 5px;
+}
