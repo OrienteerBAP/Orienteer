@@ -5,6 +5,7 @@ import com.google.common.collect.Ordering;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -86,7 +87,9 @@ public class SearchPage extends OrienteerBasePage<String>
 		selectedClassModel = new OClassModel(getClasses().get(0));
 		
 		Form<String> form = new Form<String>("form", getModel());
-		form.add(new TextField<String>("query", getModel()));
+		TextField<String> field = new TextField<>("query", getModel());
+		field.add(AttributeModifier.replace("placeholder", new ResourceModel("page.search.placeholder").getObject()));
+		form.add(field);
 		form.add(new AjaxButton("search") {
 
 			@Override
