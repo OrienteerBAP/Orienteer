@@ -153,7 +153,7 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 			AjaxRequestTarget target=null;
 			if(payload instanceof AjaxRequestTarget) target=(AjaxRequestTarget) payload;
 			else if(payload instanceof ActionPerformedEvent) {
-				target = ((ActionPerformedEvent<?>)payload).getTarget().get();
+//				target = ((ActionPerformedEvent<?>)payload).getTarget().get();
 				//This is work around: wicket sometimes invoke model.getObject() before action
 				//and if action change model table can display wrong information
 				getDataProvider().detach();
