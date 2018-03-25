@@ -1,25 +1,25 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
 <form wicket:id="form">
-	<div class = "row">
-		<div class="col-xs-9">
-        <div class="input-group-top">
-            <input wicket:id="query" type="text" class="form-control search-query"/>
-        </div>
-        </div>
-        <div class="col-xs-3">
-            <button type="submit" class="btn btn-primary" wicket:id="search">
-                <wicket:message key="search.searchbutton">Search</wicket:message>
-            </button>
-        </div>
+	<div class = "row mb-2 mx-auto no-gutters">
+    <div class="col mr-auto">
+      <div class="input-group-top">
+        <input wicket:id="query" type="text" class="form-control search-query"/>
+      </div>
     </div>
-    <div class="row">
-		<ul wicket:id="tabs">
-		</ul>
-	</div>
-	<div class="row">
-	<div wicket:id="resultsContainer">
-		<div wicket:id="results"></div>
-	</div>
-	</div>
+    <button type="submit" class="ml-2 btn btn-primary" wicket:id="search">
+      <wicket:message key="search.searchbutton">Search</wicket:message>
+    </button>
+  </div>
+  <div class="row mx-auto card">
+    <div class="card-header">
+      <ul wicket:id="tabs"></ul>
+    </div>
+    <div class="card-body">
+      <div wicket:id="resultsContainer">
+        <div wicket:id="results"></div>
+        <div wicket:id="resultsLabel" class="text-center"></div>
+      </div>
+    </div>
+  </div>
 </form>
 </wicket:extend>

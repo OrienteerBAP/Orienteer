@@ -1,16 +1,17 @@
 package org.orienteer.core.web;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
@@ -18,7 +19,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.TabsPanel;
 import org.orienteer.core.component.command.EditODocumentsCommand;
@@ -38,45 +38,35 @@ import java.util.List;
  * Page to search and display search results
  */
 @MountPath("/search")
-public class SearchPage extends OrienteerBasePage<String>
-{
-	public final static Ordering<OClass> CLASSES_ORDERING = Ordering.natural().nullsFirst().onResultOf(new Function<OClass, String>() {
+public class SearchPage extends OrienteerBasePage<String> {
 
-		@Override
-		public String apply(OClass input) {
-			return new OClassNamingModel(input).getObject();
-		}
-	});
+	public final static Ordering<OClass> CLASSES_ORDERING = Ordering.natural().nullsFirst().onResultOf(input -> new OClassNamingModel(input).getObject());
+
 	private WebMarkupContainer resultsContainer;
 	private IModel<OClass> selectedClassModel;
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 	
-	public SearchPage()
-	{
+	public SearchPage() {
 		super(Model.of(""));
 	}
 
-	public SearchPage(IModel<String> model)
-	{
+	public SearchPage(IModel<String> model) {
 		super(model);
 	}
 
-	public SearchPage(PageParameters parameters)
-	{
+	public SearchPage(PageParameters parameters) {
 		super(parameters);
 	}
 
 	@Override
-	protected IModel<String> resolveByPageParameters(
-			PageParameters pageParameters) {
-		String query = pageParameters.get("q").toOptionalString();
+	protected IModel<String> resolveByPageParameters(PageParameters params) {
+		String query = params.get("q").toOptionalString();
 		return Model.of(query);
 	}
 	
-	public List<OClass> getClasses()
-	{
+	public List<OClass> getClasses() {
 		return CLASSES_ORDERING.sortedCopy(getDatabase().getMetadata().getSchema().getClasses());
 	}
 
@@ -84,64 +74,80 @@ public class SearchPage extends OrienteerBasePage<String>
 	public void initialize() {
 		super.initialize();
 		selectedClassModel = new OClassModel(getClasses().get(0));
-		
-		Form<String> form = new Form<String>("form", getModel());
-		form.add(new TextField<String>("query", getModel()));
-		form.add(new AjaxButton("search") {
 
+		Form<String> form = new Form<>("form", getModel());
+		TextField<String> field = new TextField<>("query", getModel());
+		field.add(AttributeModifier.replace("placeholder", new ResourceModel("page.search.placeholder").getObject()));
+		form.add(field);
+		form.add(createSearchButton("search"));
+		form.add(createTabsPanel("tabs"));
+		form.add(resultsContainer = createResultsContainer("resultsContainer"));
+		add(form);
+		resultsContainer.add(createEmptyLabel("resultsLabel"));
+		prepareResults();
+	}
+	
+	private void prepareResults() {
+		prepareResults(selectedClassModel.getObject());
+	}
+	
+	private void prepareResults(OClass oClass) {
+		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
+		GenericTablePanel<ODocument> tablePanel = createTablePanel("results", oClass, modeModel);
+		OrienteerDataTable<ODocument, String> table =  tablePanel.getDataTable();
+		table.addCommand(new EditODocumentsCommand(table, modeModel, oClass));
+		table.addCommand(new SaveODocumentsCommand(table, modeModel));
+		resultsContainer.addOrReplace(tablePanel);
+	}
+
+	private AjaxButton createSearchButton(String id) {
+		return new AjaxButton(id) {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target) {
 				super.onSubmit(target);
 				target.add(resultsContainer);
 			}
-		});
-		
-		form.add(new TabsPanel<OClass>("tabs", selectedClassModel, new PropertyModel<List<OClass>>(this, "classes"))
-				{
+		};
+	}
 
-					@Override
-					public void onTabClick(AjaxRequestTarget target) {
-						prepareResults();
-						target.add(resultsContainer);
-					}
-			
-				});
-		
-		resultsContainer = new WebMarkupContainer("resultsContainer")
-		{
-			{
-				setOutputMarkupPlaceholderTag(true);
+	private TabsPanel<OClass> createTabsPanel(String id) {
+		return new TabsPanel<OClass>(id, selectedClassModel, new PropertyModel<>(this, "classes")) {
+			@Override
+			public void onTabClick(AjaxRequestTarget target) {
+				prepareResults();
+				target.add(resultsContainer);
 			}
+		};
+	}
 
+	private WebMarkupContainer createResultsContainer(String id) {
+		WebMarkupContainer container = new WebMarkupContainer(id);
+		container.setOutputMarkupId(true);
+		return container;
+	}
+
+	private GenericTablePanel<ODocument> createTablePanel(String id, OClass oClass, IModel<DisplayMode> modeModel) {
+		OQueryDataProvider<ODocument> provider = oClassIntrospector.getDataProviderForGenericSearch(oClass, getModel());
+		oClassIntrospector.defineDefaultSorting(provider, oClass);
+		return new GenericTablePanel<ODocument>(id, oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20) {
 			@Override
 			protected void onConfigure() {
 				super.onConfigure();
-				setVisible(!Strings.isEmpty(SearchPage.this.getModelObject()));
+				setVisible(provider.size() > 0);
 			}
-			
 		};
-		
-		prepareResults();
-		form.add(resultsContainer);
-		add(form);
 	}
-	
-	private void prepareResults()
-	{
-		prepareResults(selectedClassModel.getObject());
-	}
-	
-	private void prepareResults(OClass oClass)
-	{
-		OQueryDataProvider<ODocument> provider = oClassIntrospector.getDataProviderForGenericSearch(oClass, getModel());
-		oClassIntrospector.defineDefaultSorting(provider, oClass);
-		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-		GenericTablePanel<ODocument> tablePanel =
-				new GenericTablePanel<ODocument>("results", oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20);
-		OrienteerDataTable<ODocument, String> table =  tablePanel.getDataTable();
-		table.addCommand(new EditODocumentsCommand(table, modeModel, oClass));
-		table.addCommand(new SaveODocumentsCommand(table, modeModel));
-		resultsContainer.addOrReplace(tablePanel);
+
+	private Label createEmptyLabel(String id) {
+		return new Label(id, new ResourceModel("page.search.emptyLabel")) {
+			@Override
+			@SuppressWarnings("unchecked")
+			protected void onConfigure() {
+				super.onConfigure();
+				GenericTablePanel<ODocument> panel = (GenericTablePanel<ODocument>) resultsContainer.get("results");
+				setVisible(panel.getDataTable().getDataProvider().size() == 0);
+			}
+		};
 	}
 
 	@Override

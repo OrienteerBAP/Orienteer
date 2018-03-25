@@ -2,6 +2,7 @@
  * Tab drop for Bootstrap
  *
  * Copyright 2012 Stefan Petre
+ * Improvements by Jenna Schabdach
  * Licensed under the Apache License v2.0
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -9,4 +10,16 @@
 .nav-tabs,
 .nav-pills {
   position: relative;
+}
+
+/* adjust as needed so the tab text displays */
+.tabdrop{
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 150px !important;
+}
+
+/* hide any icons found in tabs not on first line */
+.nav-tabs li li i{
+  visibility: hidden;
 }
