@@ -1,0 +1,16 @@
+<wicket:panel xmlns:wicket="http://www.w3.org/1999/xhtml">
+  <div class="collapse navbar-collapse">
+	<ul class="navbar-nav">
+	    <li wicket:id="items" class="nav-item">
+	        <a href="#" class="nav-link" wicket:id="link">
+	            <span wicket:id="name"></span>
+	        </a>
+	        <div class="dropdown-menu">
+	        	<div wicket:id="subItems">
+			        <a wicket:id="subItemLink" class="dropdown-item" href="#"><span wicket:id="name"></span></a>
+	        	</div>
+	        </div>
+	    </li>
+	</ul>
+  </div>
+</wicket:panel>
