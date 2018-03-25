@@ -2,6 +2,8 @@ package org.orienteer.core.widget;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -15,6 +17,7 @@ import org.orienteer.core.widget.support.IDashboardSupport;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
@@ -157,17 +160,15 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return widgets.newChildId();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<AbstractWidget<T>> getWidgets()
 	{
 		final List<AbstractWidget<T>> ret = new ArrayList<AbstractWidget<T>>();
-		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<T>, Void>() {
-
-			@Override
-			public void component(AbstractWidget<T> object, IVisit<Void> visit) {
-				ret.add(object);
-				visit.dontGoDeeper();
-			}
-		});
+		Iterator<? extends Component> it = widgets.renderIterator();
+		while(it.hasNext()) {
+			Component comp = it.next();
+			if(comp instanceof AbstractWidget) ret.add((AbstractWidget<T>) comp);
+		}
 		return ret;
 	}
 	
