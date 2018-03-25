@@ -1,3 +1,11 @@
 .bootstrap-data-picker {
     display: inline-flex;
 }
+
+.input-group-addon {
+    text-decoration: none !important;
+}
+
+.input-group-addon:hover {
+    background-color: #4ebbb5 !important;
+}

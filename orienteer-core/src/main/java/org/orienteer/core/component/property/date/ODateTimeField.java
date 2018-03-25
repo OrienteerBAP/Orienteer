@@ -10,8 +10,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.validation.validator.RangeValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.chrono.Chronology;
 import java.time.format.DateTimeFormatterBuilder;
@@ -25,8 +23,6 @@ import java.util.Locale;
  * Bootstrap enabled date time field
  */
 public class ODateTimeField extends FormComponentPanel<Date> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ODateTimeField.class);
 
     public static final CssResourceReference ORIENTEER_DATE_FIELD_CSS = new CssResourceReference(ODateTimeField.class, "orienteer-date-field.css");
     public static final CssResourceReference DATETIME_CSS             = new CssResourceReference(ODateTimeField.class, "datetime.css");
