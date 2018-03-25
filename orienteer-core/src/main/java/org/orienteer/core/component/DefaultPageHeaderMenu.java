@@ -1,7 +1,6 @@
 package org.orienteer.core.component;
 
-import java.util.Optional;
-
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
@@ -14,10 +13,9 @@ import org.orienteer.core.method.MethodsView;
 import org.orienteer.core.widget.IDashboardContainer;
 import org.orienteer.core.widget.command.ConfigureDashboardCommand;
 import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+
+import java.util.Optional;
 
 /**
  * 
@@ -39,6 +37,12 @@ public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				super.onClick(targetOptional);
 				onEdit(targetOptional);
+			}
+
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+				setVisible(findParent(IDashboardContainer.class).getCurrentDashboard() != null);
 			}
 		});
 
