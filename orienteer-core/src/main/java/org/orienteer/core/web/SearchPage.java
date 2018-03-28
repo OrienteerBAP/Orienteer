@@ -1,6 +1,7 @@
 package org.orienteer.core.web;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
@@ -9,6 +10,10 @@ import org.danekja.java.util.function.serializable.SerializablePredicate;
 import org.danekja.java.util.function.serializable.SerializableSupplier;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.OClassSearchPanel;
+import org.orienteer.core.component.command.EditODocumentsCommand;
+import org.orienteer.core.component.command.SaveODocumentsCommand;
+import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.table.OrienteerDataTable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +48,13 @@ public class SearchPage extends OrienteerBasePage<String> {
 	public void initialize() {
 		super.initialize();
 		this.predicate = createPredicate();
-		add(new OClassSearchPanel("searchPanel", getModel(), createClassesGetter()));
+		add(new OClassSearchPanel("searchPanel", getModel(), createClassesGetter()) {
+			@Override
+			protected void onPrepareResults(OrienteerDataTable<ODocument, String> table, OClass oClass, IModel<DisplayMode> modeModel) {
+				table.addCommand(new EditODocumentsCommand(table, modeModel, oClass));
+				table.addCommand(new SaveODocumentsCommand(table, modeModel));
+			}
+		});
 	}
 
 	private SerializableSupplier<List<OClass>> createClassesGetter() {
