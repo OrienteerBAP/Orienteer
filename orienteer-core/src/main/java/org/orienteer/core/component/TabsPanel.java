@@ -5,10 +5,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -132,8 +129,8 @@ public class TabsPanel<T> extends GenericPanel<T> {
 		response.render(CssHeaderItem.forReference(TABDROP_CSS));
 		response.render(JavaScriptHeaderItem.forReference(TABDROP_JS));
 		response.render(OnDomReadyHeaderItem.forScript(
-				"$('#" + getMarkupId() + "').tabdrop({text: '<i class=\"fa fa-align-justify\" aria-hidden=\"true\"></i>" +
-				"<span class=\"ml-2\">" + getTabDropText() + "</span>'});"));
+				"setTimeout(function() {$('#" + getMarkupId() + "').tabdrop({text: '<i class=\"fa fa-align-justify\" aria-hidden=\"true\"></i>" +
+				"<span class=\"ml-2\">" + getTabDropText() + "</span>'});}, 5);"));
 	}
 
 	private String getTabDropText() {
