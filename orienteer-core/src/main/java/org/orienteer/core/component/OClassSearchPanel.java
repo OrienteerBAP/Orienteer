@@ -46,6 +46,8 @@ public class OClassSearchPanel extends GenericPanel<String> {
     private WebMarkupContainer resultsContainer;
     private IModel<OClass> selectedClassModel;
 
+    private boolean oneClass;
+
     private final SerializableSupplier<List<OClass>> classesGetter;
 
     public OClassSearchPanel(String id) {
@@ -65,7 +67,8 @@ public class OClassSearchPanel extends GenericPanel<String> {
     protected void onInitialize() {
         super.onInitialize();
         setOutputMarkupPlaceholderTag(true);
-        selectedClassModel = new OClassModel(classesGetter.get().get(0));
+        if (selectedClassModel != null && selectedClassModel.getObject() == null)
+            selectedClassModel = new OClassModel(classesGetter.get().get(1));
 
         Form<String> form = new Form<>("form", getModel());
         TextField<String> field = new TextField<>("query", getModel());
@@ -120,6 +123,12 @@ public class OClassSearchPanel extends GenericPanel<String> {
                 prepareResults();
                 target.add(resultsContainer);
             }
+
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(!oneClass);
+            }
         };
     }
 
@@ -153,8 +162,9 @@ public class OClassSearchPanel extends GenericPanel<String> {
         };
     }
 
-    public void setSelectedClassModel(IModel<OClass> model) {
+    public void setSelectedClassModel(IModel<OClass> model, boolean oneClass) {
         selectedClassModel = model;
+        this.oneClass = oneClass;
     }
 
     @SuppressWarnings("unchecked")

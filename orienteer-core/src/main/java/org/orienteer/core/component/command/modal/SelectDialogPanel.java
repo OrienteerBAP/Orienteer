@@ -31,6 +31,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String> {
 		super(id, Model.of(""));
 		this.modal = modal;
 		this.modal.setMinimalHeight(400);
+		this.modal.setMinimalWidth(800);
 
 		add(createSearchPanel("searchPanel", initialClass, isMultiValue));
 	}
@@ -50,7 +51,7 @@ public abstract class SelectDialogPanel extends GenericPanel<String> {
 				return oClassIntrospector.getColumnsFor(oClass, true, modeModel);
 			}
 		};
-		searchPanel.setSelectedClassModel(initialClass);
+		searchPanel.setSelectedClassModel(initialClass, initialClass.getObject() != null);
 		return searchPanel;
 	}
 
