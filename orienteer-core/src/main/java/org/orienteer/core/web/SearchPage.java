@@ -58,8 +58,10 @@ public class SearchPage extends OrienteerBasePage<String> {
 	}
 
 	private SerializableSupplier<List<OClass>> createClassesGetter() {
-		return () -> getDatabase().getMetadata().getSchema().getClasses().stream()
+		return () -> OClassSearchPanel.CLASSES_ORDERING.sortedCopy(getDatabase().getMetadata().getSchema().getClasses())
+				.stream()
 				.filter(predicate)
+				.sorted()
 				.collect(Collectors.toList());
 	}
 
