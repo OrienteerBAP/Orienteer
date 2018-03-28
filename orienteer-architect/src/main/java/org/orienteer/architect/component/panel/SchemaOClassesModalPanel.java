@@ -1,5 +1,6 @@
 package org.orienteer.architect.component.panel;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -16,6 +17,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.orienteer.architect.component.panel.command.AddOClassesCommand;
 import org.orienteer.architect.component.panel.command.CancelCommand;
 import org.orienteer.architect.util.OArchitectOClass;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.CheckBoxColumn;
@@ -23,7 +25,7 @@ import org.orienteer.core.component.table.OClassColumn;
 import org.orienteer.core.component.table.OClassMetaColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
-import org.orienteer.core.component.widget.schema.OClassesWidget;
+import org.orienteer.core.service.IFilterPredicateFactory;
 import ru.ydn.wicket.wicketorientdb.converter.OClassClassNameConverter;
 import ru.ydn.wicket.wicketorientdb.model.AbstractJavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
@@ -80,7 +82,9 @@ public class SchemaOClassesModalPanel extends Panel implements IOClassesModalMan
     }
 
     private AbstractJavaSortableDataProvider<OClass, String> getProvider() {
-        return new OClassesDataProvider(new OClassesWidget.FilterClassesPredicate(Model.of(false)));
+        Predicate<OClass> predicate = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class)
+                .getGuicePredicateForClassesView(Model.of(false));
+        return new OClassesDataProvider(predicate);
     }
 
     private List<IColumn<OClass, String>> getColumns() {
