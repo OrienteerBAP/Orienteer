@@ -36,7 +36,7 @@ public class ReorderableRepeatingView extends RepeatingView{
 	private List<String> orderedIds;
 	
 	@Override
-	protected Iterator<? extends Component> renderIterator() {
+	public Iterator<? extends Component> renderIterator() {
 		if(comparator!=null){
 			return iterator(comparator);
 		} else if(orderedIds!=null) {
