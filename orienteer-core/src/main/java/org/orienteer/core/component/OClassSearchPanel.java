@@ -7,6 +7,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
@@ -21,8 +22,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.danekja.java.util.function.serializable.SerializableSupplier;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.component.command.EditODocumentsCommand;
-import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
@@ -42,7 +41,7 @@ public class OClassSearchPanel extends GenericPanel<String> {
     public final static Ordering<OClass> CLASSES_ORDERING = Ordering.natural().nullsFirst().onResultOf(input -> new OClassNamingModel(input).getObject());
 
     @Inject
-    private IOClassIntrospector oClassIntrospector;
+    protected IOClassIntrospector oClassIntrospector;
 
     private WebMarkupContainer resultsContainer;
     private IModel<OClass> selectedClassModel;
@@ -65,10 +64,12 @@ public class OClassSearchPanel extends GenericPanel<String> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
+        setOutputMarkupPlaceholderTag(true);
         selectedClassModel = new OClassModel(classesGetter.get().get(0));
 
         Form<String> form = new Form<>("form", getModel());
         TextField<String> field = new TextField<>("query", getModel());
+        field.setOutputMarkupId(true);
         field.add(AttributeModifier.replace("placeholder", new ResourceModel("page.search.placeholder").getObject()));
         form.add(field);
         form.add(createSearchButton("search"));
@@ -83,6 +84,14 @@ public class OClassSearchPanel extends GenericPanel<String> {
         return classesGetter.get();
     }
 
+    protected void onPrepareResults(OrienteerDataTable<ODocument, String> table, OClass oClass, IModel<DisplayMode> modeModel) {
+
+    }
+
+    protected List<IColumn<ODocument, String>> getColumnsFor(OClass oClass, IModel<DisplayMode> modeModel) {
+        return oClassIntrospector.getColumnsFor(oClass, false, modeModel);
+    }
+
     private void prepareResults() {
         prepareResults(selectedClassModel.getObject());
     }
@@ -90,9 +99,7 @@ public class OClassSearchPanel extends GenericPanel<String> {
     private void prepareResults(OClass oClass) {
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         GenericTablePanel<ODocument> tablePanel = createTablePanel("results", oClass, modeModel);
-        OrienteerDataTable<ODocument, String> table =  tablePanel.getDataTable();
-        table.addCommand(new EditODocumentsCommand(table, modeModel, oClass));
-        table.addCommand(new SaveODocumentsCommand(table, modeModel));
+        onPrepareResults(tablePanel.getDataTable(), oClass, modeModel);
         resultsContainer.addOrReplace(tablePanel);
     }
 
@@ -125,7 +132,7 @@ public class OClassSearchPanel extends GenericPanel<String> {
     private GenericTablePanel<ODocument> createTablePanel(String id, OClass oClass, IModel<DisplayMode> modeModel) {
         OQueryDataProvider<ODocument> provider = oClassIntrospector.getDataProviderForGenericSearch(oClass, getModel());
         oClassIntrospector.defineDefaultSorting(provider, oClass);
-        return new GenericTablePanel<ODocument>(id, oClassIntrospector.getColumnsFor(oClass, false, modeModel), provider, 20) {
+        return new GenericTablePanel<ODocument>(id, getColumnsFor(oClass, modeModel), provider, 20) {
             @Override
             protected void onConfigure() {
                 super.onConfigure();
@@ -144,6 +151,15 @@ public class OClassSearchPanel extends GenericPanel<String> {
                 setVisible(panel.getDataTable().getDataProvider().size() == 0);
             }
         };
+    }
+
+    public void setSelectedClassModel(IModel<OClass> model) {
+        selectedClassModel = model;
+    }
+
+    @SuppressWarnings("unchecked")
+    public TextField<String> getQueryField() {
+        return (TextField<String>) get("form").get("query");
     }
 
     @Override
