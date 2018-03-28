@@ -67,7 +67,7 @@ public class OClassSearchPanel extends GenericPanel<String> {
     protected void onInitialize() {
         super.onInitialize();
         setOutputMarkupPlaceholderTag(true);
-        if (selectedClassModel != null && selectedClassModel.getObject() == null)
+        if (selectedClassModel == null || selectedClassModel.getObject() == null)
             selectedClassModel = new OClassModel(classesGetter.get().get(1));
 
         Form<String> form = new Form<>("form", getModel());
