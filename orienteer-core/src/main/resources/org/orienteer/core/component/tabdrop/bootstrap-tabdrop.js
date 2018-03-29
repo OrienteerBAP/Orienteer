@@ -55,10 +55,15 @@
         this.element = $(element);
         this.options = options;
 
-        if (options.align === "left")
-            this.dropdown = $('<li class="dropdown d-none pull-left tabdrop nav-item"><a class="dropdown-toggle nav-link" data-toggle="dropdown" href="javascript:;"><span class="display-tab"></span><b class="caret"></b></a><ul class="dropdown-menu"></ul></li>');
-        else
-            this.dropdown = $('<li class="dropdown d-none pull-right tabdrop nav-item"><a class="dropdown-toggle nav-link" data-toggle="dropdown" href="javascript:;"><span class="display-tab"></span><b class="caret"></b></a><ul class="dropdown-menu"></ul></li>');
+        if (options.align === "left") {
+            this.dropdown = $('<li class="dropdown d-none pull-left tabdrop nav-item">' +
+                '<a class="dropdown-toggle nav-link" data-toggle="dropdown" href="javascript:;">' +
+                '<span class="display-tab"></span><b class="caret"></b></a><ul class="dropdown-menu tabdrop-menu"></ul></li>');
+        } else {
+            this.dropdown = $('<li class="dropdown d-none pull-right tabdrop nav-item">' +
+                '<a class="dropdown-toggle nav-link" data-toggle="dropdown" href="javascript:;"><span class="display-tab">' +
+                '</span><b class="caret"></b></a><ul class="dropdown-menu tabdrop-menu"></ul></li>');
+        }
 
         this.dropdown.prependTo(this.element);
         if (this.element.parent().is('.tabs-below')) {
@@ -131,11 +136,10 @@
                     }
                     self.dropdown.find('ul').prepend(collection);
 
-                    if (self.dropdown.find('.active').length == 1) {
-                        console.dir(self.dropdown);
-                        console.dir(self.dropdown.find('.active').html());
-                        setDropdownText(self.dropdown.find('.active').html());
+                    var $active = self.dropdown.find('.active');
+                    if ($active.length > 0) {
                         self.dropdown.find('a').first().addClass('active');
+                        setDropdownText($active.html());
                     } else {
                         self.dropdown.find('a').first().removeClass('active');
                         setDropdownDefaultText(collection);
