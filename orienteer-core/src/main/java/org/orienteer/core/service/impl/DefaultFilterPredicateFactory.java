@@ -1,6 +1,7 @@
 package org.orienteer.core.service.impl;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.apache.wicket.model.IModel;
@@ -27,7 +28,8 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
     @Override
     public SerializablePredicate<OClass> getPredicateByOperation(int operation) {
         OSecurityUser user = OrienteerWebSession.get().getUser();
-        return (input) -> user.checkIfAllowed(ORule.ResourceGeneric.CLASS, input.getName(), operation) != null;
+        return user != null ? (input) -> user.checkIfAllowed(ORule.ResourceGeneric.CLASS, input.getName(), operation) != null 
+        		: (i) -> false;
     }
 
     @Override
@@ -40,5 +42,15 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
     @SuppressWarnings("unchecked")
     public SerializablePredicate<OClass> getPredicateForClassesSearch() {
         return compose(getPredicateByOperation(2), getPredicateByTarget(Model.of(false)));
+    }
+
+    @Override
+    public SerializablePredicate<OProperty> getPredicateForListProperties() {
+        return (prop) -> !CustomAttribute.HIDDEN.getValue(prop, false);
+    }
+
+    @Override
+    public SerializablePredicate<OProperty> getPredicateForTableProperties() {
+        return (prop) -> CustomAttribute.DISPLAYABLE.getValue(prop, true);
     }
 }

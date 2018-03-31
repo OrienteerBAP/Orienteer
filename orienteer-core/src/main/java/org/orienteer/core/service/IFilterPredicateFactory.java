@@ -3,6 +3,7 @@ package org.orienteer.core.service;
 import com.google.common.base.Predicate;
 import com.google.inject.ImplementedBy;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.io.IClusterable;
 import org.danekja.java.util.function.serializable.SerializablePredicate;
@@ -40,6 +41,10 @@ public interface IFilterPredicateFactory extends IClusterable {
      * @return {@link SerializablePredicate<OClass>}
      */
     public SerializablePredicate<OClass> getPredicateForClassesSearch();
+
+    public SerializablePredicate<OProperty> getPredicateForListProperties();
+
+    public SerializablePredicate<OProperty> getPredicateForTableProperties();
 
     /**
      * Compose predicates
@@ -79,6 +84,18 @@ public interface IFilterPredicateFactory extends IClusterable {
     public default IGuicePredicate<OClass> getGuicePredicateForClassesSearch() {
         SerializablePredicate<OClass> p = getPredicateForClassesSearch();
         return (IGuicePredicate<OClass>) p::test;
+    }
+
+    @Deprecated
+    public default IGuicePredicate<OProperty> getGuicePredicateForListProperties() {
+        SerializablePredicate<OProperty> p = getPredicateForListProperties();
+        return (IGuicePredicate<OProperty>) p::test;
+    }
+
+    @Deprecated
+    public default IGuicePredicate<OProperty> getGuicePredicateForTableProperties() {
+        SerializablePredicate<OProperty> p = getPredicateForTableProperties();
+        return (IGuicePredicate<OProperty>) p::test;
     }
 
     /**

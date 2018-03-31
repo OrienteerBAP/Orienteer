@@ -29,6 +29,7 @@ import org.orienteer.core.component.table.*;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.LocalizationVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.service.IFilterPredicateFactory;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
@@ -47,18 +48,6 @@ public class OClassIntrospector implements IOClassIntrospector
 {
 	private static final Logger LOG = LoggerFactory.getLogger(OClassIntrospector.class);
 
-	/**
-	 * {@link Predicate} that checks displayable of an specified {@link OProperty}
-	 */
-	public static class PropertyDisplayablePredicate implements Predicate<OProperty>
-	{
-		public static final PropertyDisplayablePredicate INSTANCE = new PropertyDisplayablePredicate();
-		@Override
-		public boolean apply(OProperty input) {
-			Boolean value = CustomAttribute.DISPLAYABLE.getValue(input);
-			return value!=null?value:false;
-		}
-	}
 	
 	/**
 	 * {@link Function} to take an order of an specified {@link OProperty}
@@ -78,7 +67,8 @@ public class OClassIntrospector implements IOClassIntrospector
 	@Override
 	public List<OProperty> getDisplayableProperties(OClass oClass) {
 		Collection<OProperty> properties =  oClass.properties();
-		Collection<OProperty> filteredProperties = Collections2.filter(properties, PropertyDisplayablePredicate.INSTANCE);
+		IFilterPredicateFactory factory = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class);
+		Collection<OProperty> filteredProperties = Collections2.filter(properties, factory.getGuicePredicateForTableProperties());
 		if(filteredProperties==null || filteredProperties.isEmpty()) filteredProperties = properties;
 		return ORDER_PROPERTIES_BY_ORDER.sortedCopy(filteredProperties);
 	}
@@ -177,24 +167,26 @@ public class OClassIntrospector implements IOClassIntrospector
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<OProperty> listProperties(OClass oClass, String tab, final Boolean extended) {
-		final String safeTab = tab!=null?tab:DEFAULT_TAB;
-		final UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
-		
-		return listProperties(oClass, new Predicate<OProperty>() {
+		String safeTab = tab!=null?tab:DEFAULT_TAB;
+		UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
+		Predicate<OProperty> predicate = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class)
+				.getGuicePredicateForListProperties();
 
-			@Override
-			public boolean apply(OProperty input) {
-				boolean ret = safeTab.equals(CustomAttribute.TAB.getValue(input, DEFAULT_TAB));
-				ret = ret && !CustomAttribute.HIDDEN.getValue(input, false);
-				if(!ret || extended==null) return ret;
-				else {
-					String component = CustomAttribute.VISUALIZATION_TYPE.getValue(input);
-					if(component==null) return !extended;
-					IVisualizer visualizer = registry.getComponentFactory(input.getType(), component);
-					return (visualizer!=null?visualizer.isExtended():false) == extended;
+		return listProperties(oClass, (Predicate<OProperty>) input -> {
+            boolean ret = safeTab.equals(CustomAttribute.TAB.getValue(input, DEFAULT_TAB));
+            ret = ret && predicate.apply(input);
+
+            if(!ret || extended == null) {
+            	return ret;
+			} else {
+                String component = CustomAttribute.VISUALIZATION_TYPE.getValue(input);
+                if(component == null) {
+                	return !extended;
 				}
-			}
-		});
+                IVisualizer visualizer = registry.getComponentFactory(input.getType(), component);
+                return visualizer!=null && visualizer.isExtended() == extended;
+            }
+        });
 	}
 	
 	@Override
