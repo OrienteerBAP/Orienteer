@@ -23,3 +23,8 @@
 .nav-tabs li li i{
   visibility: hidden;
 }
+
+.tabdrop-menu {
+  max-height: 400px;
+  overflow-y: scroll;
+}
