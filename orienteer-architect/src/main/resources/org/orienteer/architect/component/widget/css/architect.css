@@ -32,6 +32,7 @@
   background-color: whiteSmoke;
   border: 1px solid #e0e0e0;
   z-index: 1000;
+  max-width: 40px !important;
 }
 
 .architect-editor-toolbar {
