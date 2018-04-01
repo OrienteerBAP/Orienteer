@@ -46,11 +46,11 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
 
     @Override
     public SerializablePredicate<OProperty> getPredicateForListProperties() {
-        return (prop) -> !CustomAttribute.HIDDEN.getValue(prop, false);
+        return (prop) -> !(Boolean)CustomAttribute.HIDDEN.getValue(prop);
     }
 
     @Override
     public SerializablePredicate<OProperty> getPredicateForTableProperties() {
-        return (prop) -> CustomAttribute.DISPLAYABLE.getValue(prop, true);
+        return (prop) -> CustomAttribute.DISPLAYABLE.getValue(prop);
     }
 }
