@@ -1,6 +1,6 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
   <header class="app-header navbar">
-    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none" type="button">
+    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-auto" type="button">
       <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand" href="./home">
@@ -30,10 +30,16 @@
       </li>
     </ul>
     <ul class="nav navbar-nav px-2">
-      <li class="nav-item dropdown d-md-down-none">
+      <li class="nav-item d-lg-none">
+        <a class="nav-link" href="/search">
+          <i class="fa fa-search"></i>
+        </a>
+      </li>
+
+      <li class="nav-item dropdown">
         <button class="btn btn-secondary dropdown-toggle" wicket:id="perspectiveButton" type="button" id="perspectiveMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa-fw" wicket:id="icon"></i>
-          <span wicket:id="name"></span>
+          <span wicket:id="name" class="d-md-down-none"></span>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="perspectiveMenuButton">
           <div class="dropdown-header text-center">
@@ -63,9 +69,6 @@
         </div>
       </li>
     </ul>
-    <button class="navbar-toggler aside-menu-toggler d-lg-none" type="button">
-      <span class="navbar-toggler-icon"></span>
-    </button>
   </header>
 
   <div class="app-body">
@@ -82,7 +85,5 @@
         <wicket:child></wicket:child>
       </div>
     </main>
-    <aside class="aside-menu d-lg-none">
-    </aside>
   </div>
 </wicket:extend>
