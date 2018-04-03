@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -38,9 +39,9 @@ import java.util.Optional;
  *
  * @param <T> type of a main object for this page
  */
-public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashboardContainer
-{
+public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashboardContainer {
 	private static final long serialVersionUID = 1L;
+
 	private OrienteerFeedbackPanel feedbacks;
 	private IDashboard curDashboard;
 
@@ -159,5 +160,10 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 
 	public Component getSelf(){
 		return this;
+	}
+
+	@Override
+	public void renderHead(IHeaderResponse response) {
+		super.renderHead(response);
 	}
 }

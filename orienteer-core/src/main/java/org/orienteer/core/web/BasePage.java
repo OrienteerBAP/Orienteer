@@ -153,7 +153,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	}
 
 	protected String getBodyAppSubClasses(){
-		return "header-fixed sidebar-fixed";
+		return "header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden";
 	}
 	
 	private void addBootstrapDatepicker(IHeaderResponse response) {

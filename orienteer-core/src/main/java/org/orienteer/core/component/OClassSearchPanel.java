@@ -96,7 +96,7 @@ public class OClassSearchPanel extends GenericPanel<String> {
     }
 
     private void prepareResults() {
-        prepareResults(selectedClassModel.getObject());
+        if (selectedClassModel != null) prepareResults(selectedClassModel.getObject());
     }
 
     private void prepareResults(OClass oClass) {
