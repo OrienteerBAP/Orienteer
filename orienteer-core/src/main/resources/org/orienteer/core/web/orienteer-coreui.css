@@ -154,4 +154,34 @@ li.fullscreen {
 		padding-left: auto !important;
 		padding-right: auto !important;
 	}
+
+	.main > .container-fluid {
+		padding-left: .5rem !important;
+		padding-right: .5rem !important;
+	}
+}
+
+@media (max-width: 576px) {
+
+}
+
+@media (max-width: 450px) {
+	.navbar-brand {
+		width: auto !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+
+	.breadcrumb > .breadcrumb-menu > div > div > a {
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+	}
+}
+
+@media (max-width: 330px) {
+	.navbar-brand > .navbar-title {
+		display: none !important;
+	}
 }
