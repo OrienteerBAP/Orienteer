@@ -65,6 +65,7 @@ public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 	
 	@Override
 	protected void onConfigure() {
+		super.onConfigure();
 		getParent().setOutputMarkupId(true);
 	}
 	
