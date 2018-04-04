@@ -10,10 +10,14 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.event.SwitchDashboardTabEvent;
 import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.IDashboardContainer;
 import org.orienteer.core.widget.command.ConfigureDashboardCommand;
 import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import java.util.Optional;
 
@@ -22,6 +26,7 @@ import java.util.Optional;
  * Default breadcrumb menu
  *
  */
+@RequiredOrientResource(value = OSecurityHelper.CLASS, specific = OWidgetsModule.OCLASS_DASHBOARD, permissions = OrientPermission.UPDATE)
 public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 	private static final long serialVersionUID = 1L;
 	private Component configure;
