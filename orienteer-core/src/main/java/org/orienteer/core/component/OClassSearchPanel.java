@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -96,7 +97,9 @@ public class OClassSearchPanel extends GenericPanel<String> {
     }
 
     private void prepareResults() {
-        if (selectedClassModel != null) prepareResults(selectedClassModel.getObject());
+        if (selectedClassModel != null) {
+            prepareResults(selectedClassModel.getObject());
+        } else resultsContainer.addOrReplace(createEmptyResultContainer("results"));
     }
 
     private void prepareResults(OClass oClass) {
@@ -150,14 +153,24 @@ public class OClassSearchPanel extends GenericPanel<String> {
         };
     }
 
+    private WebMarkupContainer createEmptyResultContainer(String id) {
+        return new WebMarkupContainer(id) {
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setVisible(false);
+            }
+        };
+    }
+
     private Label createEmptyLabel(String id) {
         return new Label(id, new ResourceModel("page.search.emptyLabel")) {
             @Override
             @SuppressWarnings("unchecked")
             protected void onConfigure() {
                 super.onConfigure();
-                GenericTablePanel<ODocument> panel = (GenericTablePanel<ODocument>) resultsContainer.get("results");
-                setVisible(panel.getDataTable().getDataProvider().size() == 0);
+                Component component = resultsContainer.get("results");
+                setVisible(!component.isVisible());
             }
         };
     }
