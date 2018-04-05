@@ -145,6 +145,14 @@ li.fullscreen {
 	margin-bottom: 5px;
 }
 
+.ui-sortable {
+	margin-bottom: 0 !important;
+}
+
+.strict {
+	margin-bottom: 0 !important;
+}
+
 @media (max-width: 992px) {
 	.navbar-brand {
 		position: relative !important;
@@ -161,9 +169,7 @@ li.fullscreen {
 	}
 }
 
-@media (max-width: 576px) {
 
-}
 
 @media (max-width: 450px) {
 	.navbar-brand {
@@ -174,14 +180,90 @@ li.fullscreen {
 		padding-right: 0 !important;
 	}
 
+	.card-body {
+		padding: 0.5rem;
+	}
+
 	.breadcrumb > .breadcrumb-menu > div > div > a {
 		padding-left: 0.5em;
 		padding-right: 0.5em;
 	}
 }
 
-@media (max-width: 330px) {
+@media (min-width: 350px) and (max-width: 650px) {
+	.classes-table-panel > form > table > thead > .headers > th:last-child {
+		display: table-cell;
+	}
+
+	.classes-table-panel > form > table > tbody > tr > td:last-child {
+		display: table-cell;
+	}
+}
+
+@media (min-width: 576px) and (max-width: 650px) {
+	.classes-table-panel > form > table > thead > .headers > th+th+th+th+th {
+		display: none;
+	}
+
+	.classes-table-panel > form > table > tbody > tr > td+td+td+td+td {
+		display: none;
+	}
+}
+
+@media (min-width: 350px) and (max-width: 576px) {
+	.classes-table-panel > form > table > thead > .headers > th+th+th {
+		display: none;
+	}
+
+	.classes-table-panel > form > table > tbody > tr > td+td+td {
+		display: none;
+	}
+
+}
+
+@media (max-width: 349px) {
 	.navbar-brand > .navbar-title {
 		display: none !important;
+	}
+
+	.classes-table-panel > form > table > thead > .headers > th+th+th {
+		display: none;
+	}
+
+	.classes-table-panel > form > table > tbody > tr > td+td+td {
+		display: none;
+	}
+
+	.classes-table-panel > form > table > thead > .headers > th:last-child {
+		display: table-cell;
+	}
+
+	.classes-table-panel > form > table > tbody > tr > td:last-child {
+		display: table-cell;
+	}
+
+	.classes-table-panel > form > table > thead > .headers > th:first-child, tbody > tr > .checkbox-column {
+		display: none !important;
+	}
+
+}
+
+@media (max-width: 325px) {
+	.classes-table-panel > form > table > tbody > tr > td {
+		display: block;
+		text-align: center;
+	}
+
+	.classes-table-panel > form > table > thead > .headers > th {
+		text-align: center;
+	}
+
+	.classes-table-panel > form > table > thead > .headers > th:last-child {
+		display: none;
+	}
+
+	.classes-table-panel > form > table > tbody > tr > td:last-child {
+		border-top: none;
+		display: block;
 	}
 }
