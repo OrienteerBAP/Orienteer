@@ -39,6 +39,7 @@ public class TabsPanel<T> extends GenericPanel<T> {
 
 	public TabsPanel(String id, IModel<T> model, IModel<? extends List<T>> tabsModel) {
 		super(id, model);
+		if (model == null) setDefaultModel(Model.of());
 		setOutputMarkupPlaceholderTag(true);
 		tabs = new ListView<T>("tabs", tabsModel) {
 
