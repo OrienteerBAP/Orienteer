@@ -16,6 +16,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -99,7 +100,7 @@ public class OClassSearchPanel extends GenericPanel<String> {
     private void prepareResults() {
         if (selectedClassModel != null) {
             prepareResults(selectedClassModel.getObject());
-        } else resultsContainer.addOrReplace(createEmptyResultContainer("results"));
+        } else resultsContainer.addOrReplace(new EmptyPanel("results"));
     }
 
     private void prepareResults(OClass oClass) {
@@ -149,16 +150,6 @@ public class OClassSearchPanel extends GenericPanel<String> {
             protected void onConfigure() {
                 super.onConfigure();
                 setVisible(provider.size() > 0);
-            }
-        };
-    }
-
-    private WebMarkupContainer createEmptyResultContainer(String id) {
-        return new WebMarkupContainer(id) {
-            @Override
-            protected void onConfigure() {
-                super.onConfigure();
-                setVisible(false);
             }
         };
     }
