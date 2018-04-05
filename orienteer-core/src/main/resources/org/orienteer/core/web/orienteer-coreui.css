@@ -153,7 +153,7 @@ li.fullscreen {
 	margin-bottom: 0 !important;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 768px) {
 	.navbar-brand {
 		position: relative !important;
 		left: 0 !important;
@@ -169,26 +169,6 @@ li.fullscreen {
 	}
 }
 
-
-
-@media (max-width: 450px) {
-	.navbar-brand {
-		width: auto !important;
-		margin-left: 0 !important;
-		margin-right: 0 !important;
-		padding-left: 0 !important;
-		padding-right: 0 !important;
-	}
-
-	.card-body {
-		padding: 0.5rem;
-	}
-
-	.breadcrumb > .breadcrumb-menu > div > div > a {
-		padding-left: 0.5em;
-		padding-right: 0.5em;
-	}
-}
 
 @media (min-width: 350px) and (max-width: 650px) {
 	.classes-table-panel > form > table > thead > .headers > th:last-child {
@@ -218,7 +198,33 @@ li.fullscreen {
 	.classes-table-panel > form > table > tbody > tr > td+td+td {
 		display: none;
 	}
+}
 
+@media (max-width: 576px) {
+	.navbar-brand {
+		width: auto !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
+	}
+
+	.card-body {
+		padding: 0.5rem;
+	}
+}
+
+@media (max-width: 576px){
+	.breadcrumb > .breadcrumb-menu > div > div > a {
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+	}
+}
+
+@media (max-width: 430px) {
+	.breadcrumb > .breadcrumb-menu > .btn-group {
+		display: block;
+	}
 }
 
 @media (max-width: 349px) {
