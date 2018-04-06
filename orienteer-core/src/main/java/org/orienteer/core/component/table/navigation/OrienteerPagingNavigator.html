@@ -1,17 +1,27 @@
 <wicket:panel xmlns:wicket="http://www.w3.org/1999/xhtml">
 	<li wicket:id="firstLi">
-		<a wicket:id="first" class="page-item">&lt;&lt;</a>
+		<a wicket:id="first" class="page-item">
+			<span >&lt;&lt;</span>
+		</a>
 	</li>
-	<li wicket:id="prevLi">
-		<a wicket:id="prev" class="page-item"><wicket:message key="pagination.but.previous"></wicket:message></a>
+	<li wicket:id="prevLi" >
+		<a wicket:id="prev" class="page-item">
+			<span class="d-none d-sm-block"><wicket:message key="pagination.but.previous"></wicket:message></span>
+			<span class="d-block d-sm-none">&lt;</span>
+		</a>
 	</li>
 	<li wicket:id="navigation" class="page-item">
 		<a wicket:id="pageLink" href="#" class="page-link"><span wicket:id="pageNumber">5</span></a>
 	</li>
-	<li wicket:id="nextLi">
-		<a wicket:id="next" class="page-item"><wicket:message key="pagination.but.next"></wicket:message></a>
+	<li wicket:id="nextLi" class="navigation-next">
+		<a wicket:id="next" class="page-item">
+			<span class="d-none d-sm-block"><wicket:message key="pagination.but.next"></wicket:message></span>
+			<span class="d-block d-sm-none">&gt;</span>
+		</a>
 	</li>
 	<li wicket:id="lastLi">
-		<a wicket:id="last" class="page-item">&gt;&gt;</a>
+		<a wicket:id="last" class="page-item">
+			<span>&gt;&gt;</span>
+		</a>
 	</li>
 </wicket:panel>
