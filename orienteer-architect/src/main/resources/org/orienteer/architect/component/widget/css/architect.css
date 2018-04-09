@@ -130,10 +130,13 @@ div.wicket-modal {
 }
 
 .fullscreen {
-  height: 100%;
   width: 100%;
 }
 
 .fullscreen > .architect-editor-sidebar-container {
-  height: 90% !important;
+  height: 95% !important;
+}
+
+.fullscreen > .card > .card-body {
+  display: flex;
 }
