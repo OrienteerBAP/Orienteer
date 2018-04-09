@@ -120,7 +120,7 @@ OArchitectSidebar.prototype.makeDraggable = function (element, actionName) {
         mxDragSource.prototype.mouseDown.apply(this, arguments);
     };
     draggable.mouseUp = function () {
-        this.element.style.cursor = 'default';
+        this.element.style.cursor = null;
         mxDragSource.prototype.mouseUp.apply(this, arguments);
     }
 };
