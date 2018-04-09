@@ -77,7 +77,7 @@
 }
 
 .architect-message {
-  position: absolute;
+  position: absolute !important;
   right: 40%;
   top: 390px;
 }

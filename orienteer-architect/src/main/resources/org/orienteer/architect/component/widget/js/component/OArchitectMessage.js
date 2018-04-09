@@ -41,7 +41,7 @@ OArchitectMessage.prototype.markupId = null;
 OArchitectMessage.prototype.show = function () {
     var message = this;
     var container = message.createContainer();
-    $('#' + app.editorId).append(container);
+    $('.architect-editor-sidebar-container').append(container);
     var containerJquery = $('#' + this.markupId).hide();
     containerJquery.show(1000);
     setTimeout(function () {
