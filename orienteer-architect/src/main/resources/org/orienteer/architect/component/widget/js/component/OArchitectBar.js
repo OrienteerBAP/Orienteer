@@ -115,6 +115,7 @@ OArchitectSidebar.prototype.makeDraggable = function (element, actionName) {
         editor.execute(actionName, cell, mouseEvent);
     }, null, -mxConstants.TOOLTIP_VERTICAL_OFFSET, -mxConstants.TOOLTIP_VERTICAL_OFFSET);
     draggable.getDropTarget = this.getDropTarget(actionName);
+    draggable.dragElementZIndex = 99999999;
     draggable.mouseDown = function () {
         this.element.style.cursor = 'move';
         mxDragSource.prototype.mouseDown.apply(this, arguments);
