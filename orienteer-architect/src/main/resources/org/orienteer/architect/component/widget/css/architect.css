@@ -127,6 +127,7 @@ div.wicket-modal {
 .architect-editor-sidebar-container {
   display: inline-flex;
   width: 100%;
+  height: 50vh;
 }
 
 .fullscreen {
