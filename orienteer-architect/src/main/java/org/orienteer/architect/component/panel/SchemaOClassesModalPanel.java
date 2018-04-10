@@ -83,7 +83,7 @@ public class SchemaOClassesModalPanel extends Panel implements IOClassesModalMan
 
     private AbstractJavaSortableDataProvider<OClass, String> getProvider() {
         Predicate<OClass> predicate = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class)
-                .getGuicePredicateForClassesView(Model.of(false));
+                .getGuicePredicateForClassesView(Model.of(true));
         return new OClassesDataProvider(predicate);
     }
 

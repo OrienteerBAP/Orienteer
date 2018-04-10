@@ -161,7 +161,9 @@ public class OClassSearchPanel extends GenericPanel<String> {
             protected void onConfigure() {
                 super.onConfigure();
                 Component component = resultsContainer.get("results");
-                setVisible(!component.isVisible());
+                if (component instanceof GenericTablePanel) {
+                    setVisible(((GenericTablePanel)component).getDataTable().getDataProvider().size() == 0);
+                } else setVisible(true);
             }
         };
     }
