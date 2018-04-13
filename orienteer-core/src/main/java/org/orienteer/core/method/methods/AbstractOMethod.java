@@ -8,7 +8,7 @@ import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodConfig;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +25,13 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOMethod.class);
 
-	private IMethodEnvironmentData envData;
+	private IMethodContext methodContext;
 	private String id;
 	private IMethodConfig config;
 	
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
-		this.envData = envData;
+	public void methodInit(String id, IMethodContext methodContext,IMethodConfig config) {
+		this.methodContext = methodContext;
 		this.id = id;
 		this.config = config;
 	}
@@ -43,8 +43,8 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 		return new SimpleNamingModel<String>(id);
 	}
 	
-	protected IMethodEnvironmentData getEnvData() {
-		return envData;
+	protected IMethodContext getMethodContext() {
+		return methodContext;
 	}
 
 	protected String getId() {
@@ -78,6 +78,6 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	}
 	
 	protected void invoke(ODocument doc){
-		config.invokeLinkedFunction(getEnvData(), doc);
+		config.invokeLinkedFunction(getMethodContext(), doc);
 	}
 }

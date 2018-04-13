@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -47,7 +47,7 @@ public class OEntityFilter implements IMethodFilter {
 	}
 	
 	@Override
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
+	public boolean isSupportedMethod(IMethodContext dataObject) {
 		OClass oclass = getOClass(dataObject);
 		if (oclass!=null){
 			for (OClass oClass : getOClasses()) {
@@ -59,7 +59,7 @@ public class OEntityFilter implements IMethodFilter {
 		return false;
 	}
 	
-	private OClass getOClass(IMethodEnvironmentData dataObject){
+	private OClass getOClass(IMethodContext dataObject){
 		if (dataObject.getDisplayObjectModel()!=null){
 			Object obj = dataObject.getDisplayObjectModel().getObject();
 			if (obj instanceof OClass){

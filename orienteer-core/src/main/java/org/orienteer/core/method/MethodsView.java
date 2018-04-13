@@ -8,7 +8,6 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.IBootstrapAware;
-import org.orienteer.core.method.data.MethodBaseData;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**
@@ -41,7 +40,7 @@ public class MethodsView implements Serializable{
 	
 	public void loadMethods(){
 		AbstractWidget<?> widget = externalList.findParent(AbstractWidget.class);
-		methods = MethodManager.get().getMethods(new MethodBaseData(displayObjectModel,widget,place,table));
+		methods = MethodManager.get().getMethods(new MethodContext(displayObjectModel,widget,place,table));
 		for ( IMethod method : methods) {
 			Component component = method.getDisplayComponent(); 
 			if (component !=null){

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodDefinitionStorage;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.MethodStorage;
 /**
  * 
@@ -29,7 +29,7 @@ public abstract class AbstractMethodDefinitionStorage implements IMethodDefiniti
 	}
 
 	@Override
-	public List<IMethodDefinition> getMethodsDefinitions(IMethodEnvironmentData dataObject) {
+	public List<IMethodDefinition> getMethodsDefinitions(IMethodContext dataObject) {
 		ArrayList<IMethodDefinition> result = new ArrayList<IMethodDefinition>();
 		for (IMethodDefinition iMethodDefinition : definitions) {
 			if (iMethodDefinition.isSupportedMethod(dataObject)){

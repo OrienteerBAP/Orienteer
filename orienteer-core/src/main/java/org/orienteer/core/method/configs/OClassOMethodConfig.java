@@ -10,7 +10,7 @@ import org.apache.wicket.behavior.Behavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +80,7 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 	}
 
 	@Override
-	public void invokeLinkedFunction(IMethodEnvironmentData dataObject,ODocument doc) {
+	public void invokeLinkedFunction(IMethodContext dataObject,ODocument doc) {
 		try {
 			Constructor<?> constructor=null;
 			try {
@@ -89,7 +89,7 @@ public class OClassOMethodConfig extends AbstractOMethodConfig{
 				// TODO it is correct catch block with muffling
 			}
 			
-			Method javaMethod = javaClass.getMethod(javaMethodName, IMethodEnvironmentData.class);
+			Method javaMethod = javaClass.getMethod(javaMethodName, IMethodContext.class);
 			Object inputDoc = doc!=null?doc:dataObject.getDisplayObjectModel().getObject();
 			if (constructor!=null && inputDoc instanceof ODocument){
 				Object newInstance = constructor.newInstance(inputDoc);

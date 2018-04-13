@@ -10,7 +10,7 @@ import org.apache.wicket.model.Model;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
@@ -36,7 +36,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 		},
 		behaviors={OTaskSessionInterruptBehavior.class}
 	)
-	public void interrupt( IMethodEnvironmentData data){
+	public void interrupt( IMethodContext data){
 		try {
 			interrupt();
 		} catch (Exception e) {

@@ -1,6 +1,6 @@
 package org.orienteer.core.method.filters;
 
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -40,7 +40,7 @@ public class PermissionFilter implements IMethodFilter{
 	}
 
 	@Override
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
+	public boolean isSupportedMethod(IMethodContext dataObject) {
 		if (orientPermission!=null){
 			Object obj = dataObject.getDisplayObjectModel().getObject();
 			if(obj instanceof ODocument){

@@ -26,8 +26,8 @@ public interface IMethodFilter{
 	/**
 	 * Checks linked method for using in assigned environment
 	 * This method calls often - do not use hard calculation into 
-	 * @param dataObject
+	 * @param context method context
 	 * @return true if method supported
 	 */
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject);
+	public boolean isSupportedMethod(IMethodContext context);
 }

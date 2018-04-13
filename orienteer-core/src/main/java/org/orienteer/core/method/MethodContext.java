@@ -1,21 +1,19 @@
-package org.orienteer.core.method.data;
+package org.orienteer.core.method;
 
 import java.io.Serializable;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.method.IMethodEnvironmentData;
-import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
- * Base OMethod environment data.
+ * Base OMethod context object.
  * Any input parameters may be null.
  *
  */
-public class MethodBaseData implements Serializable,IMethodEnvironmentData{
+public class MethodContext implements Serializable,IMethodContext{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -25,7 +23,7 @@ public class MethodBaseData implements Serializable,IMethodEnvironmentData{
 	private MethodPlace place;
 	private Object tableObject;
 	
-	public MethodBaseData(IModel<?> objModel,AbstractWidget<?> widget,MethodPlace place,Object tableObject) {
+	public MethodContext(IModel<?> objModel,AbstractWidget<?> widget,MethodPlace place,Object tableObject) {
 		this.objModel = objModel;
 		this.widget = widget;
 		if (widget!=null){

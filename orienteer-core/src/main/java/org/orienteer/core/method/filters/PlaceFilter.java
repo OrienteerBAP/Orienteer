@@ -3,7 +3,7 @@ package org.orienteer.core.method.filters;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.MethodPlace;
 
@@ -32,7 +32,7 @@ public class PlaceFilter implements IMethodFilter{
 	}
 
 	@Override
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
+	public boolean isSupportedMethod(IMethodContext dataObject) {
 		if (places!=null && dataObject.getPlace()!=null){
 			for (MethodPlace methodPlace : places) {
 				if (methodPlace.equals(dataObject.getPlace())){

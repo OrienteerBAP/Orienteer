@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.wicket.behavior.Behavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.OMethod;
 
@@ -66,7 +66,7 @@ public class OMethodConfig extends AbstractOMethodConfig {
 		return behaviors;
 	}
 	@Override
-	public void invokeLinkedFunction(IMethodEnvironmentData dataObject,ODocument doc) {
+	public void invokeLinkedFunction(IMethodContext dataObject,ODocument doc) {
 		//here we have no linked function		
 	}
 }

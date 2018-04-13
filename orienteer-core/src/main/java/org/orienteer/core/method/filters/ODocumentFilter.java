@@ -1,7 +1,7 @@
 package org.orienteer.core.method.filters;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -12,7 +12,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class ODocumentFilter extends AbstractStringFilter{
 	
 	@Override
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
+	public boolean isSupportedMethod(IMethodContext dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
 		if (model!=null && model.getObject()!=null && model.getObject() instanceof ODocument){
 			return ((ODocument) (model.getObject())).getSchemaClass().isSubClassOf(this.filterData);

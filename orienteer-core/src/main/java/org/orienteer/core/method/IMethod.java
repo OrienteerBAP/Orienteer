@@ -15,12 +15,12 @@ public interface IMethod {
 	 * 
 	 * @param envData
 	 */
-	public void methodInit(String id,IMethodEnvironmentData envData,IMethodConfig config);
+	public void methodInit(String id,IMethodContext envData,IMethodConfig config);
 	
 	/**
 	 * Return display {@link Component} with assigned id
 	 * May be created every time or storages into method 
-	 * If you need to use integrated markup, see {@link org.orienteer.core.method.methods.ExampleMethodWithIntMarkup} for example
+	 * If you need to use integrated markup, see {@link org.orienteer.core.method.ExampleMethodWithIntMarkup} for example
 	 * 
 	 * @return
 	 */

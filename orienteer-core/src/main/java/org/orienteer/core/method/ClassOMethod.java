@@ -22,9 +22,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * 
  * Java Class with this method SHOULD be named equals same OClass 
  * 
- * That method should have only one input {@link IMethodEnvironmentData} parameter
+ * That method should have only one input {@link IMethodContext} parameter
  * He should be marked as "public static" or have constructor with single {@link ODocument} input parameter
- * That constructor using just in case {@link IMethodEnvironmentData#getDisplayObjectModel()}.getObject() instance of {@link ODocument}       
+ * That constructor using just in case {@link IMethodContext#getDisplayObjectModel()}.getObject() instance of {@link ODocument}       
  *
  */
 @Retention(RetentionPolicy.RUNTIME)

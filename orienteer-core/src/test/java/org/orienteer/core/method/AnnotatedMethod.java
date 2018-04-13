@@ -14,7 +14,7 @@ import org.apache.wicket.Component;
 public class AnnotatedMethod implements IMethod{
 
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
+	public void methodInit(String id, IMethodContext envData,IMethodConfig config) {
 		// TODO Auto-generated method stub
 		
 	}

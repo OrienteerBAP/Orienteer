@@ -59,7 +59,7 @@ public class MethodManager {
 	} 
 
 	
-	public List<IMethod> getMethods(IMethodEnvironmentData dataObject){
+	public List<IMethod> getMethods(IMethodContext dataObject){
 		//sort support
 		TreeMultiset<IMethodDefinition> sortlist = TreeMultiset.create(new Comparator<IMethodDefinition>() {
 			@Override

@@ -6,7 +6,7 @@ import org.apache.wicket.Component;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodConfig;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 
 /**
  * 
@@ -17,12 +17,12 @@ public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
 	private Component displayComponent;
 	private String id;
-	private IMethodEnvironmentData envData;
+	private IMethodContext methodContext;
 
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
+	public void methodInit(String id, IMethodContext methodContext,IMethodConfig config) {
 		this.id = id;
-		this.envData = envData;
+		this.methodContext = methodContext;
 	}
 
 	@Override
@@ -33,8 +33,8 @@ public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 		return displayComponent;
 	}
 	
-	public IMethodEnvironmentData getEnvData(){
-		return envData;
+	public IMethodContext getEnvData(){
+		return methodContext;
 	}
 	
 	public String getId(){

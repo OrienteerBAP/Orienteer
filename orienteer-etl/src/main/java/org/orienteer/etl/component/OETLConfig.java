@@ -5,7 +5,7 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.method.ClassOMethod;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
@@ -41,7 +41,7 @@ public class OETLConfig extends OTask {
 //					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE|DATA_TABLE"),
 		}
 	)
-	public void run(IMethodEnvironmentData data){
+	public void run(IMethodContext data){
 		OTaskSessionRuntime newSession = startNewSession();
 		AbstractWidgetDisplayModeAwarePage<ODocument> page = new ODocumentPage(new ODocumentModel(newSession.getOTaskSessionPersisted().getDocument())).setModeObject(DisplayMode.VIEW);
 		

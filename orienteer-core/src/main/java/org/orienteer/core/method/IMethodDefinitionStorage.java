@@ -10,6 +10,6 @@ import java.util.List;
 public interface IMethodDefinitionStorage {
 	public void reload();
 	public void setMethodStorage(MethodStorage methodStorage);
-	public List<IMethodDefinition> getMethodsDefinitions(IMethodEnvironmentData dataObject);
+	public List<IMethodDefinition> getMethodsDefinitions(IMethodContext dataObject);
 
 }

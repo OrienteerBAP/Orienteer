@@ -25,6 +25,6 @@ public interface IMethodConfig extends Serializable{
 	List<IMethodFilter> filters();
 	public List<Class<? extends Behavior>> behaviors();
 	
-	public void invokeLinkedFunction(IMethodEnvironmentData dataObject,ODocument doc);
+	public void invokeLinkedFunction(IMethodContext dataObject,ODocument doc);
 	
 }

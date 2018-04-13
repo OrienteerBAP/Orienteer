@@ -1,16 +1,15 @@
 package org.orienteer.core.method;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.method.data.MethodBaseData;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**
  * 
  * Interface for setting method environment data.
- * We recommend using {@link MethodBaseData} instead your implementation of this interface.  
+ * We recommend using {@link MethodContext} instead your implementation of this interface.  
  *
  */
-public interface IMethodEnvironmentData {
+public interface IMethodContext {
 	/**
 	 * {@link IModel} for current displayed object
 	 * @return {@link IModel}

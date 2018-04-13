@@ -8,7 +8,7 @@ import java.nio.charset.Charset;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.method.ClassOMethod;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
@@ -44,7 +44,7 @@ public class OConsoleTask extends OTask {
 			},
 			behaviors={}
 		)
-	public void startNewSession( IMethodEnvironmentData data){
+	public void startNewSession( IMethodContext data){
 		startNewSession();
 	}
 	///////////////////////////////////////////////////////////////////////////////////

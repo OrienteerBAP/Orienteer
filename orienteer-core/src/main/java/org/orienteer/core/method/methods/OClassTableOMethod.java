@@ -24,12 +24,12 @@ public class OClassTableOMethod extends AbstractOMethod{
 	@Override
 	public Component getDisplayComponent() {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
-		if (displayComponent == null && getEnvData().getTableObject()!=null && getEnvData().getTableObject() instanceof OrienteerDataTable){
+		if (displayComponent == null && getMethodContext().getTableObject()!=null && getMethodContext().getTableObject() instanceof OrienteerDataTable){
 			String titleKey = getConfig().titleKey();
 			if (titleKey.isEmpty()){
 				titleKey = getId();
 			}			
-			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getEnvData().getTableObject();
+			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getMethodContext().getTableObject();
 			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(getTitleModel(),table){
 				private static final long serialVersionUID = 1L;
 				

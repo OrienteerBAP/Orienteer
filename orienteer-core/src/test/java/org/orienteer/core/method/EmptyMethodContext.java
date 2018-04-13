@@ -1,17 +1,10 @@
-package org.orienteer.core.method.data;
+package org.orienteer.core.method;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.method.IMethodEnvironmentData;
-import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.widget.AbstractWidget;
 
-/**
- * 
- * Empty OMethod environment data. Not parameterized, always return null or false  
- *
- */
-public class MethodEmptyData implements IMethodEnvironmentData{
-
+public class EmptyMethodContext implements IMethodContext {
+	
 	@Override
 	public IModel<?> getDisplayObjectModel() {
 		return null;

@@ -16,7 +16,7 @@ public interface IMethodDefinition {
 	 * @param dataObject environment data object
 	 * @return {@link IMethod}
 	 */
-	public IMethod getMethod(IMethodEnvironmentData dataObject);
+	public IMethod getMethod(IMethodContext dataObject);
 	/**
 	 * Get method order in methods list
 	 * @return method order
@@ -24,10 +24,10 @@ public interface IMethodDefinition {
 	public int getOrder();
 	/**
 	 * Check method for using in this environment by method filters
-	 * Calls before {@link IMethodDefinition#getMethod(IMethodEnvironmentData)} 
+	 * Calls before {@link IMethodDefinition#getMethod(IMethodContext)} 
 	 * @param dataObject
 	 * @return true if method supported
 	 */
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject);
+	public boolean isSupportedMethod(IMethodContext dataObject);
 
 }
