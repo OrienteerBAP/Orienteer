@@ -17,20 +17,20 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  */
 public interface IMethodConfig extends Serializable{
-	public String titleKey();
-	public FAIconType icon();
-	public BootstrapType bootstrap();
-	public boolean changingDisplayMode();
-	public boolean changingModel();	
-	public int order();
-	public String selector();
-	public String permission();
-	public Class<? extends IMethod> methodClass();
-	public Class<? extends IMethod> oClassTableMethodClass();
-	public boolean resetSelection();
+	public String getTitleKey();
+	public FAIconType getIcon();
+	public BootstrapType getBootstrapType();
+	public boolean isChangingDisplayMode();
+	public boolean isChangingModel();	
+	public int getOrder();
+	public String getSelector();
+	public String getPermission();
+	public Class<? extends IMethod> getIMethodClass();
+	public Class<? extends IMethod> getTableIMethodClass();
+	public boolean isResetSelection();
 	
-	List<IMethodFilter> filters();
-	public List<Class<? extends Behavior>> behaviors();
+	List<IMethodFilter> getFilters();
+	public List<Class<? extends Behavior>> getBehaviors();
 	
 	public String getMethodId();
 	

@@ -25,7 +25,7 @@ public class OClassTableOMethod extends AbstractOMethod{
 	public Component getDisplayComponent() {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
 		if (displayComponent == null && getMethodContext().getTableObject()!=null && getMethodContext().getTableObject() instanceof OrienteerDataTable){
-			String titleKey = getConfig().titleKey();
+			String titleKey = getConfig().getTitleKey();
 			if (titleKey.isEmpty()){
 				titleKey = getId();
 			}			
@@ -44,7 +44,7 @@ public class OClassTableOMethod extends AbstractOMethod{
 					for (ODocument curDoc : objects) {
 						invoke(curDoc);
 					}
-					if (getConfig().resetSelection()){
+					if (getConfig().isResetSelection()){
 						resetSelection();
 					}
 				}

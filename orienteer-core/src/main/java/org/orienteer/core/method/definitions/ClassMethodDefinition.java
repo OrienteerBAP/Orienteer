@@ -27,12 +27,12 @@ public class ClassMethodDefinition implements IMethodDefinition{
 	public ClassMethodDefinition(java.lang.reflect.Method javaMethod) throws InstantiationException, IllegalAccessException {
 		config = new JavaMethodOMethodConfig(javaMethod);
 
-		config.filters().add(new SelectorFilter().setFilterData(config.selector().isEmpty()
+		config.getFilters().add(new SelectorFilter().setFilterData(config.getSelector().isEmpty()
 																	?config.getJavaClass().getSimpleName()
-																	:config.selector()));
+																	:config.getSelector()));
 		
-		if (!config.permission().isEmpty()){
-			config.filters().add(new PermissionFilter().setFilterData(config.permission()));
+		if (!config.getPermission().isEmpty()){
+			config.getFilters().add(new PermissionFilter().setFilterData(config.getPermission()));
 		}
 	}
 
@@ -46,9 +46,9 @@ public class ClassMethodDefinition implements IMethodDefinition{
 		try {
 			IMethod newMethod=null;
 			if(MethodPlace.DATA_TABLE.equals(dataObject.getPlace())){
-				newMethod = config.oClassTableMethodClass().newInstance();
+				newMethod = config.getTableIMethodClass().newInstance();
 			}else{
-				newMethod = config.methodClass().newInstance();
+				newMethod = config.getIMethodClass().newInstance();
 			}
 			if (newMethod!=null){
 				newMethod.methodInit(getMethodId(), dataObject, config);
@@ -62,13 +62,13 @@ public class ClassMethodDefinition implements IMethodDefinition{
 
 	@Override
 	public int getOrder() {
-		return config.order();
+		return config.getOrder();
 	}
 
 	@Override
 	public boolean isSupportedMethod(IMethodContext dataObject) {
-		if (config.filters()!=null){
-			for (IMethodFilter iMethodFilter : config.filters()) {
+		if (config.getFilters()!=null){
+			for (IMethodFilter iMethodFilter : config.getFilters()) {
 				if (!iMethodFilter.isSupportedMethod(dataObject)){
 					return false;
 				}

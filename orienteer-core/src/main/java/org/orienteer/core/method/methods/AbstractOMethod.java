@@ -37,8 +37,8 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	}
 
 	protected SimpleNamingModel<String> getTitleModel(){
-		if (!Strings.isEmpty(config.titleKey())){
-			return new SimpleNamingModel<String>(config.titleKey());			
+		if (!Strings.isEmpty(config.getTitleKey())){
+			return new SimpleNamingModel<String>(config.getTitleKey());			
 		}
 		return new SimpleNamingModel<String>(id);
 	}
@@ -56,7 +56,7 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	}
 	
 	protected void applyBehaviors(Component component){
-		for ( Class<? extends Behavior> behavior : getConfigInterface().behaviors()) {
+		for ( Class<? extends Behavior> behavior : getConfigInterface().getBehaviors()) {
 			try {
 				component.add(behavior.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -67,10 +67,10 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	
 	@SuppressWarnings("rawtypes")
 	protected void applyVisualSettings(Command commandComponent){
-		commandComponent.setIcon(getConfigInterface().icon());
-		commandComponent.setBootstrapType(getConfigInterface().bootstrap());
-		commandComponent.setChangingDisplayMode(getConfigInterface().changingDisplayMode());	
-		commandComponent.setChandingModel(getConfigInterface().changingModel());		
+		commandComponent.setIcon(getConfigInterface().getIcon());
+		commandComponent.setBootstrapType(getConfigInterface().getBootstrapType());
+		commandComponent.setChangingDisplayMode(getConfigInterface().isChangingDisplayMode());	
+		commandComponent.setChandingModel(getConfigInterface().isChangingModel());		
 	}
 	
 	protected void invoke(){

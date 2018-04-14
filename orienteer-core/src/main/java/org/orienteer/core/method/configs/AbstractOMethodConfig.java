@@ -41,50 +41,50 @@ public abstract class AbstractOMethodConfig implements IMethodConfig {
 		behaviors = Arrays.asList(oMethod.behaviors());
 	}
 	@Override
-	public String titleKey() {
+	public String getTitleKey() {
 		return oMethod.titleKey();
 	}
 	@Override
-	public FAIconType icon() {
+	public FAIconType getIcon() {
 		return oMethod.icon();
 	}
 	@Override
-	public BootstrapType bootstrap() {
+	public BootstrapType getBootstrapType() {
 		return oMethod.bootstrap();
 	}
 	@Override
-	public boolean changingDisplayMode() {
+	public boolean isChangingDisplayMode() {
 		return oMethod.changingDisplayMode();
 	}
 	@Override
-	public boolean changingModel() {
+	public boolean isChangingModel() {
 		return oMethod.changingModel();
 	}
 	@Override
-	public int order() {
+	public int getOrder() {
 		return oMethod.order();
 	}
 	
 	@Override
-	public boolean resetSelection(){
+	public boolean isResetSelection(){
 		return oMethod.resetSelection();
 	}
 	
 	@Override
-	public String selector() {
+	public String getSelector() {
 		return oMethod.selector();
 	}
 	@Override
-	public String permission() {
+	public String getPermission() {
 		return oMethod.permission();
 	}
 	@Override
-	public Class<? extends IMethod> methodClass() {
+	public Class<? extends IMethod> getIMethodClass() {
 		return oMethod.methodClass();
 	}
 	
 	@Override
-	public Class<? extends IMethod> oClassTableMethodClass() {
+	public Class<? extends IMethod> getTableIMethodClass() {
 		return oMethod.oClassTableMethodClass();
 	}
 	
@@ -94,14 +94,14 @@ public abstract class AbstractOMethodConfig implements IMethodConfig {
 	}
 	
 	@Override
-	public List<IMethodFilter> filters() {
+	public List<IMethodFilter> getFilters() {
 		if (filters == null){
 			filters = makeFilters(oMethod.filters()); 
 		}
 		return filters;
 	}
 	@Override
-	public List<Class<? extends Behavior>> behaviors() {
+	public List<Class<? extends Behavior>> getBehaviors() {
 		return behaviors;
 	}
 	@Override

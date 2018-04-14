@@ -33,11 +33,11 @@ public class SourceMethodDefinition implements IMethodDefinition{
 		this.methodClass = methodClass;
 		config = new JavaClassOMethodConfig(methodClass);
 		
-		if (!config.selector().isEmpty()){
-			config.filters().add(new SelectorFilter().setFilterData(config.selector()));
+		if (!config.getSelector().isEmpty()){
+			config.getFilters().add(new SelectorFilter().setFilterData(config.getSelector()));
 		}
-		if (!config.permission().isEmpty()){
-			config.filters().add(new PermissionFilter().setFilterData(config.permission()));
+		if (!config.getPermission().isEmpty()){
+			config.getFilters().add(new PermissionFilter().setFilterData(config.getPermission()));
 		}
 	}
 
@@ -55,8 +55,8 @@ public class SourceMethodDefinition implements IMethodDefinition{
 
 	@Override
 	public boolean isSupportedMethod(IMethodContext dataObject) {
-		if (config.filters()!=null){
-			for (IMethodFilter iMethodFilter : config.filters()) {
+		if (config.getFilters()!=null){
+			for (IMethodFilter iMethodFilter : config.getFilters()) {
 				if (!iMethodFilter.isSupportedMethod(dataObject)){
 					return false;
 				}
@@ -72,7 +72,7 @@ public class SourceMethodDefinition implements IMethodDefinition{
 
 	@Override
 	public int getOrder() {
-		return config.order();
+		return config.getOrder();
 	}
 
 }
