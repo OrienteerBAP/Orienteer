@@ -35,8 +35,9 @@ public class MethodStorage {
 												  new TypeElementsScanner(),
 												  new MethodAnnotationsScanner(),
 												  new SubTypesScanner());
-		methodFields = reflections.getMethodsAnnotatedWith(ClassOMethod.class);
+		methodFields = reflections.getMethodsAnnotatedWith(OMethod.class);
 		methodClasses = reflections.getSubTypesOf(IMethod.class);
+		methodClasses.removeIf(c -> !c.isAnnotationPresent(OMethod.class));
 	}
 	
 	public void addPath(String path) {

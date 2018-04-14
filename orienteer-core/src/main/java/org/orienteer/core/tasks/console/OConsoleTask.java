@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.method.ClassOMethod;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
@@ -37,7 +37,7 @@ public class OConsoleTask extends OTask {
 	}
 	///////////////////////////////////////////////////////////////////////////////////
 	//OMethods
-	@ClassOMethod(
+	@OMethod(
 			icon = FAIconType.play, bootstrap=BootstrapType.SUCCESS,titleKey="task.command.start",
 			filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
 					@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),		

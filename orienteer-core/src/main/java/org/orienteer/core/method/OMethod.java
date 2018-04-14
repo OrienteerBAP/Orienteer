@@ -8,10 +8,12 @@ import java.lang.annotation.Target;
 import org.apache.wicket.behavior.Behavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.method.methods.OClassOMethod;
+import org.orienteer.core.method.methods.OClassTableOMethod;
 
 /**
  * 
- * All methods should implement {@link IMethod} 
+ * Annotation for classes and methods to designate them for representing as commands buttons in UI
  * 
  * OMethod will display only if all filters passed
  * 
@@ -26,7 +28,7 @@ import org.orienteer.core.component.FAIconType;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.TYPE, ElementType.METHOD})
 public @interface OMethod{
 
 	//visuals
@@ -46,4 +48,22 @@ public @interface OMethod{
 	OFilter[] filters() default {};
 	
 	public Class<? extends Behavior>[] behaviors() default {};
+	
+	/**
+	 * For single call
+	 * Using if displayed NOT in {@link MethodPlace}.DATA_TABLE
+	 * @return class which implementing {@link IMethod}
+	 */
+	public Class<? extends IMethod> methodClass() default OClassOMethod.class;
+	/**
+	 * For multiple calls
+	 * Using if displayed in {@link MethodPlace}.DATA_TABLE   
+	 * @return class which implementing {@link IMethod}
+	 */
+	public Class<? extends IMethod> oClassTableMethodClass() default OClassTableOMethod.class;
+	/**
+	 * Should selection on a table be reset or not
+	 * @return true - if reset is needed
+	 */
+	public boolean resetSelection() default true;
 }

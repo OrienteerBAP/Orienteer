@@ -5,7 +5,8 @@ import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.OMethod;
-import org.orienteer.core.method.configs.OMethodConfig;
+import org.orienteer.core.method.configs.AbstractOMethodConfig;
+import org.orienteer.core.method.configs.JavaClassOMethodConfig;
 import org.orienteer.core.method.filters.PermissionFilter;
 import org.orienteer.core.method.filters.SelectorFilter;
 import org.slf4j.Logger;
@@ -21,9 +22,7 @@ public class SourceMethodDefinition implements IMethodDefinition{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(SourceMethodDefinition.class);
 	private Class<? extends IMethod> methodClass;
-	private int order;
-	private String methodId;
-	private OMethodConfig config;
+	private JavaClassOMethodConfig config;
 	
 	
 	public static boolean isSupportedClass(Class<? extends IMethod> methodClass){
@@ -32,17 +31,14 @@ public class SourceMethodDefinition implements IMethodDefinition{
 	
 	public SourceMethodDefinition(Class<? extends IMethod> methodClass) throws InstantiationException, IllegalAccessException {
 		this.methodClass = methodClass;
-		OMethod methodAnnotation = methodClass.getAnnotation(OMethod.class);
-		config = new OMethodConfig(methodAnnotation);
+		config = new JavaClassOMethodConfig(methodClass);
 		
-		if (!methodAnnotation.selector().isEmpty()){
-			config.filters().add(new SelectorFilter().setFilterData(methodAnnotation.selector()));
+		if (!config.selector().isEmpty()){
+			config.filters().add(new SelectorFilter().setFilterData(config.selector()));
 		}
-		if (!methodAnnotation.permission().isEmpty()){
-			config.filters().add(new PermissionFilter().setFilterData(methodAnnotation.permission()));
+		if (!config.permission().isEmpty()){
+			config.filters().add(new PermissionFilter().setFilterData(config.permission()));
 		}
-		order = methodAnnotation.order();
-		methodId = methodClass.getSimpleName();
 	}
 
 	@Override
@@ -71,12 +67,12 @@ public class SourceMethodDefinition implements IMethodDefinition{
 
 	@Override
 	public String getMethodId() {
-		return methodId;
+		return config.getMethodId();
 	}
 
 	@Override
 	public int getOrder() {
-		return order;
+		return config.order();
 	}
 
 }

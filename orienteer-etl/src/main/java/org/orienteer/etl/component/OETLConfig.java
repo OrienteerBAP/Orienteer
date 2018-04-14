@@ -4,7 +4,7 @@ import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.method.ClassOMethod;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
@@ -32,7 +32,7 @@ public class OETLConfig extends OTask {
 		super(iDocument);
 	}
 	
-	@ClassOMethod(
+	@OMethod(
 		order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
 		permission="EXECUTE",
 		filters={

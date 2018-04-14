@@ -6,7 +6,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.method.configs.OClassOMethodConfig;
+import org.orienteer.core.method.configs.JavaMethodOMethodConfig;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
@@ -55,7 +55,7 @@ public class OClassTableOMethod extends AbstractOMethod{
 		return displayComponent;
 	}
 	
-	protected OClassOMethodConfig getConfig(){
-		return (OClassOMethodConfig) this.getConfigInterface();
+	protected JavaMethodOMethodConfig getConfig(){
+		return (JavaMethodOMethodConfig) this.getConfigInterface();
 	}
 }

@@ -1,14 +1,15 @@
 package org.orienteer.core.method.definitions;
 
-import org.orienteer.core.method.ClassOMethod;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 import org.orienteer.core.method.MethodPlace;
-import org.orienteer.core.method.configs.OClassOMethodConfig;
+import org.orienteer.core.method.OMethod;
+import org.orienteer.core.method.configs.JavaMethodOMethodConfig;
 import org.orienteer.core.method.filters.OEntityFilter;
 import org.orienteer.core.method.filters.PermissionFilter;
+import org.orienteer.core.method.filters.SelectorFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,34 +22,23 @@ public class ClassMethodDefinition implements IMethodDefinition{
 
 	private static final Logger LOG = LoggerFactory.getLogger(ClassMethodDefinition.class);
 	
-	private int order;
-	private String methodId;
-	private Class<? extends IMethod> methodClass;
-	private Class<? extends IMethod> groupMethodClass;
-	private String oClassName;
-	private OClassOMethodConfig config;
+	private JavaMethodOMethodConfig config;
 	
 	public ClassMethodDefinition(java.lang.reflect.Method javaMethod) throws InstantiationException, IllegalAccessException {
-		ClassOMethod methodAnnotation = javaMethod.getAnnotation(ClassOMethod.class);
-		order = methodAnnotation.order();
-		methodId = javaMethod.getDeclaringClass().getSimpleName()+"."+javaMethod.getName();
-		methodClass = methodAnnotation.methodClass();
-		groupMethodClass = methodAnnotation.oClassTableMethodClass();
-		oClassName = javaMethod.getDeclaringClass().getSimpleName();
-		
-		config = new OClassOMethodConfig(methodAnnotation,javaMethod);
-		
+		config = new JavaMethodOMethodConfig(javaMethod);
 
-		config.filters().add(new OEntityFilter().setFilterData(oClassName));
+		config.filters().add(new SelectorFilter().setFilterData(config.selector().isEmpty()
+																	?config.getJavaClass().getSimpleName()
+																	:config.selector()));
 		
-		if (!methodAnnotation.permission().isEmpty()){
-			config.filters().add(new PermissionFilter().setFilterData(methodAnnotation.permission()));
+		if (!config.permission().isEmpty()){
+			config.filters().add(new PermissionFilter().setFilterData(config.permission()));
 		}
 	}
 
 	@Override
 	public String getMethodId() {
-		return methodId;
+		return config.getMethodId();
 	}
 
 	@Override
@@ -56,9 +46,9 @@ public class ClassMethodDefinition implements IMethodDefinition{
 		try {
 			IMethod newMethod=null;
 			if(MethodPlace.DATA_TABLE.equals(dataObject.getPlace())){
-				newMethod = groupMethodClass.newInstance();
+				newMethod = config.oClassTableMethodClass().newInstance();
 			}else{
-				newMethod = methodClass.newInstance();
+				newMethod = config.methodClass().newInstance();
 			}
 			if (newMethod!=null){
 				newMethod.methodInit(getMethodId(), dataObject, config);
@@ -72,7 +62,7 @@ public class ClassMethodDefinition implements IMethodDefinition{
 
 	@Override
 	public int getOrder() {
-		return order;
+		return config.order();
 	}
 
 	@Override
