@@ -7,7 +7,7 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
-import org.orienteer.core.method.IMethodConfig;
+import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +27,10 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 
 	private IMethodContext methodContext;
 	private String id;
-	private IMethodConfig config;
+	private IMethodDefinition config;
 	
 	@Override
-	public void methodInit(String id, IMethodContext methodContext,IMethodConfig config) {
+	public void methodInit(String id, IMethodContext methodContext,IMethodDefinition config) {
 		this.methodContext = methodContext;
 		this.id = id;
 		this.config = config;
@@ -51,7 +51,7 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 		return id;
 	}
 	
-	protected IMethodConfig getConfigInterface(){
+	protected IMethodDefinition getConfigInterface(){
 		return config;
 	}
 	

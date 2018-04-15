@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * Storage for {@link IMethodDefinition}'s loaded from source
+ * Storage for {@link IMethodDefinition}'s loaded from java classes
  *
  */
 public class SourceMethodDefinitionStorage extends AbstractMethodDefinitionStorage{
@@ -24,12 +24,8 @@ public class SourceMethodDefinitionStorage extends AbstractMethodDefinitionStora
 	public void reload() {
 		definitions = new HashSet<IMethodDefinition>();
 		for (Class<? extends IMethod> class1 : methodStorage.getMethodClasses()) {
-			if (SourceMethodDefinition.isSupportedClass(class1)){
-				try {
-					definitions.add(new SourceMethodDefinition(class1));
-				} catch (InstantiationException | IllegalAccessException e) {
-					LOG.error("Error during methods reloading", e);
-				}
+			if (JavaClassOMethodDefinition.isSupportedClass(class1)){
+					definitions.add(new JavaClassOMethodDefinition(class1));
 			}
 		}
 	}

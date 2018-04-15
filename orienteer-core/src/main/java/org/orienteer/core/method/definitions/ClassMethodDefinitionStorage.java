@@ -8,12 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Storage for {@link ClassMethodDefinition} 
- *
+ * Storage for {@link JavaMethodOMethodDefinition} 
  */
 public class ClassMethodDefinitionStorage extends AbstractMethodDefinitionStorage{
 	
-	private static final Logger LOG = LoggerFactory.getLogger(ClassMethodDefinition.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ClassMethodDefinitionStorage.class);
 
 	public ClassMethodDefinitionStorage(MethodStorage storage) {
 		super(storage);
@@ -23,11 +22,7 @@ public class ClassMethodDefinitionStorage extends AbstractMethodDefinitionStorag
 	public void reload() {
 		definitions = new HashSet<IMethodDefinition>();
 		for (java.lang.reflect.Method f : methodStorage.getMethodFields()) {
-			try {
-				definitions.add(new ClassMethodDefinition(f));
-			} catch (InstantiationException | IllegalAccessException e) {
-				LOG.error("Error during methods reloading", e);
-			}
+			definitions.add(new JavaMethodOMethodDefinition(f));
 		}
 	}
 

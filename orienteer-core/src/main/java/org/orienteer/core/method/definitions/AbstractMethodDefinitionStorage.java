@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodDefinitionStorage;
+import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.MethodStorage;
 /**

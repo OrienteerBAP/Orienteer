@@ -1,7 +1,5 @@
 package org.orienteer.core.method;
 
-import org.orienteer.core.method.definitions.SourceMethodDefinition;
-
 /**
  * 
  * Interface for all method filters
@@ -11,7 +9,7 @@ import org.orienteer.core.method.definitions.SourceMethodDefinition;
 public interface IMethodFilter{
 	/**
 	 * Init data from filter definition
-	 * Example for {@link SourceMethodDefinition} :
+	 * Example :
 	 * <pre>
 	 *  &#64;OMethod(order=10,filters = { 
 	 *			&#64;OFilter(fClass = OClassBrowseFilter.class, fData = "OUser") 

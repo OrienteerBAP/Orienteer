@@ -24,8 +24,7 @@ public class EmptyMethodContext implements IMethodContext {
 
 	@Override
 	public MethodPlace getPlace() {
-		// TODO Auto-generated method stub
-		return null;
+		return MethodPlace.DASHBOARD_SETTINGS;
 	}
 
 	@Override

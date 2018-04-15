@@ -15,7 +15,7 @@ public interface IMethod {
 	 * 
 	 * @param envData
 	 */
-	public void methodInit(String id,IMethodContext envData,IMethodConfig config);
+	public void methodInit(String id,IMethodContext context,IMethodDefinition config);
 	
 	/**
 	 * Return display {@link Component} with assigned id

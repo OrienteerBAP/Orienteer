@@ -1,33 +1,43 @@
 package org.orienteer.core.method;
 
+import java.io.Serializable;
+import java.util.List;
+
+import org.apache.wicket.behavior.Behavior;
+import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.method.methods.OClassOMethod;
+import org.orienteer.core.method.methods.OClassTableOMethod;
+
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 /**
  * 
- * Precise method definition with filters and other things 
+ * Wrapper interface for OMethod, ClassOMethod annotations and other type of configuration
  *
  */
-public interface IMethodDefinition {
-	/**
-	 * Returning method id. Should be unique.
-	 * @return id for a method
-	 */
-	public String getMethodId();
-	/**
-	 * Return method instance by input data 
-	 * @param dataObject environment data object
-	 * @return {@link IMethod}
-	 */
-	public IMethod getMethod(IMethodContext dataObject);
-	/**
-	 * Get method order in methods list
-	 * @return method order
-	 */
+public interface IMethodDefinition extends Serializable{
+	public String getTitleKey();
+	public FAIconType getIcon();
+	public BootstrapType getBootstrapType();
+	public boolean isChangingDisplayMode();
+	public boolean isChangingModel();	
 	public int getOrder();
-	/**
-	 * Check method for using in this environment by method filters
-	 * Calls before {@link IMethodDefinition#getMethod(IMethodContext)} 
-	 * @param dataObject
-	 * @return true if method supported
-	 */
-	public boolean isSupportedMethod(IMethodContext dataObject);
-
+	public String getSelector();
+	public String getPermission();
+	public Class<? extends IMethod> getIMethodClass();
+	public Class<? extends IMethod> getTableIMethodClass();
+	public boolean isResetSelection();
+	
+	List<IMethodFilter> getFilters();
+	public List<Class<? extends Behavior>> getBehaviors();
+	
+	public String getMethodId();
+	
+	public boolean isSupportedMethod(IMethodContext context);
+	
+	public IMethod getMethod(IMethodContext context);
+	
+	public void invokeLinkedFunction(IMethodContext context,ODocument doc);
+	
 }

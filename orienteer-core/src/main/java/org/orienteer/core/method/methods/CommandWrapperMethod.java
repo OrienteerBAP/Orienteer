@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.apache.wicket.Component;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
-import org.orienteer.core.method.IMethodConfig;
+import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodContext;
 
 /**
@@ -20,7 +20,7 @@ public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 	private IMethodContext methodContext;
 
 	@Override
-	public void methodInit(String id, IMethodContext methodContext,IMethodConfig config) {
+	public void methodInit(String id, IMethodContext methodContext,IMethodDefinition config) {
 		this.id = id;
 		this.methodContext = methodContext;
 	}

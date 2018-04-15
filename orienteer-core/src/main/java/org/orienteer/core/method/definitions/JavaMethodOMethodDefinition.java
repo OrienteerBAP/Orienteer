@@ -1,11 +1,17 @@
-package org.orienteer.core.method.configs;
+package org.orienteer.core.method.definitions;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
+import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodContext;
+import org.orienteer.core.method.IMethodFilter;
+import org.orienteer.core.method.MethodPlace;
+import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.OMethod;
+import org.orienteer.core.method.filters.SelectorFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,18 +22,41 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * {@link OMethod} wrapper for annotations on java methods 
  *
  */
-public class JavaMethodOMethodConfig extends AbstractOMethodConfig{
+public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(JavaMethodOMethodConfig.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JavaMethodOMethodDefinition.class);
 	
 	private String javaMethodName;
 	private Class<?> javaClass;
+	
+	public static boolean isSupportedClass(Class<? extends IMethod> methodClass){
+		return methodClass.isAnnotationPresent(OMethod.class);
+	}
 
-	public JavaMethodOMethodConfig(Method javaMethod){
+	public JavaMethodOMethodDefinition(Method javaMethod){
 		super(javaMethod.getDeclaringClass().getSimpleName()+"."+javaMethod.getName(), 
 													javaMethod.getAnnotation(OMethod.class));
 		this.javaMethodName = javaMethod.getName();
 		this.javaClass = javaMethod.getDeclaringClass();
+	}
+	
+	@Override
+	public IMethod getMethod(IMethodContext dataObject) {
+		try {
+			IMethod newMethod=null;
+			if(MethodPlace.DATA_TABLE.equals(dataObject.getPlace())){
+				newMethod = getTableIMethodClass().newInstance();
+			}else{
+				newMethod = getIMethodClass().newInstance();
+			}
+			if (newMethod!=null){
+				newMethod.methodInit(getMethodId(), dataObject, this);
+				return newMethod;
+			}
+		} catch (InstantiationException | IllegalAccessException e) {
+			LOG.error("Can't obtain a method", e);
+		}
+		return null;
 	}
 	
 	@Override
@@ -61,6 +90,14 @@ public class JavaMethodOMethodConfig extends AbstractOMethodConfig{
 
 	public Class<?> getJavaClass() {
 		return javaClass;
+	}
+	
+	@Override
+	protected List<IMethodFilter> makeFilters(OFilter[] filters) {
+		List<IMethodFilter> ret = super.makeFilters(filters);
+		if(getSelector().isEmpty()) 
+			ret.add(new SelectorFilter().setFilterData(javaClass.getSimpleName()));
+		return ret;
 	}
 
 }
