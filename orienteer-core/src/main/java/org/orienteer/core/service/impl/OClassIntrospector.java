@@ -21,6 +21,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
+import org.danekja.java.util.function.serializable.SerializablePredicate;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
@@ -40,7 +41,6 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link IOClassIntrospector}
@@ -156,12 +156,18 @@ public class OClassIntrospector implements IOClassIntrospector
 	@Override
 	public List<String> listTabs(OClass oClass) {
 		IFilterPredicateFactory factory = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class);
-		return oClass.properties().stream()
-				.filter(factory.getPredicateForListProperties())
-				.map(p -> (String) CustomAttribute.TAB.getValue(p))
-				.map(tab -> tab != null ? tab : DEFAULT_TAB)
-				.distinct()
-				.collect(Collectors.toList());
+		SerializablePredicate<OProperty> predicate = factory.getPredicateForListProperties();
+		Set<String> tabs = new HashSet<>();
+		for (OProperty prop : oClass.properties()) {
+			if (predicate.test(prop)) {
+				String tab = CustomAttribute.TAB.getValue(prop);
+				if (tab == null) tab = DEFAULT_TAB;
+				tabs.add(tab);
+			}
+		}
+		List<String> tabsList = new ArrayList<>(tabs);
+		tabsList.sort(Comparator.naturalOrder());
+		return tabsList;
 	}
 
 	@Override
