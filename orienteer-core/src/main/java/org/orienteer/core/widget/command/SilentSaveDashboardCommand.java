@@ -6,6 +6,9 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.OMethod;
+import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardContainer;
 
@@ -14,6 +17,9 @@ import java.util.Optional;
 /**
  * Command to save silently current dashboard
  */
+@OMethod(order=3,filters={
+		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
+})
 public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
 	private static final long serialVersionUID = 1L;
 

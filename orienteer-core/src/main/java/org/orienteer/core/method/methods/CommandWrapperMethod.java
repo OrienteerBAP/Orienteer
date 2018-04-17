@@ -16,12 +16,12 @@ import org.orienteer.core.method.IMethodDefinition;
 public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
 	private Command<?> displayComponent;
-	private String id;
+	private IMethodDefinition methodDefinition;
 	private IMethodContext methodContext;
 
 	@Override
-	public void init(IMethodDefinition definition, IMethodContext methodContext) {
-		this.id = definition.getMethodId();
+	public void init(IMethodDefinition methodDefinition, IMethodContext methodContext) {
+		this.methodDefinition = methodDefinition;
 		this.methodContext = methodContext;
 	}
 
@@ -33,12 +33,12 @@ public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 		return displayComponent;
 	}
 	
-	public IMethodContext getEnvData(){
+	public IMethodContext getContext(){
 		return methodContext;
 	}
 	
 	public String getId(){
-		return id;
+		return methodDefinition.getMethodId();
 	}
 	
 	public abstract Command<?> getWrappedCommand();

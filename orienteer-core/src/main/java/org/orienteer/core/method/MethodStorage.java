@@ -4,9 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
+import org.orienteer.core.component.command.Command;
+import org.orienteer.core.widget.IWidgetFilter;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.scanners.TypeElementsScanner;
 
 /**
@@ -18,7 +21,7 @@ public class MethodStorage {
 	
 	private static final String CORE_PATH = "org.orienteer.core";
 
-	private Set<Class<? extends IMethod>> methodClasses;
+	private Set<Class<?>> methodClasses;
 	private Set<String> paths;
 
 	private Set<java.lang.reflect.Method> methodFields;
@@ -32,12 +35,13 @@ public class MethodStorage {
 	public void reload(){
 		Reflections reflections = new Reflections(paths,
 												  OrienteerClassLoader.getClassLoader(),
-												  new TypeElementsScanner(),
 												  new MethodAnnotationsScanner(),
+												  new TypeAnnotationsScanner(),
 												  new SubTypesScanner());
 		methodFields = reflections.getMethodsAnnotatedWith(OMethod.class);
-		methodClasses = reflections.getSubTypesOf(IMethod.class);
-		methodClasses.removeIf(c -> !c.isAnnotationPresent(OMethod.class));
+		
+		methodClasses = reflections.getTypesAnnotatedWith(OMethod.class);
+		methodClasses.removeIf(c -> !IMethod.class.isAssignableFrom(c) && !Command.class.isAssignableFrom(c));
 	}
 	
 	public void addPath(String path) {
@@ -48,7 +52,7 @@ public class MethodStorage {
 		paths.remove(path);
 	}
 	
-	public Set<Class<? extends IMethod>> getMethodClasses() {
+	public Set<Class<?>> getMethodClasses() {
 		return methodClasses;
 	}
 

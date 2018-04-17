@@ -23,7 +23,7 @@ public class JavaClassOMethodDefinitionStorage extends AbstractOMethodDefinition
 	@Override
 	public void reload() {
 		definitions = new HashSet<IMethodDefinition>();
-		for (Class<? extends IMethod> class1 : methodStorage.getMethodClasses()) {
+		for (Class<?> class1 : methodStorage.getMethodClasses()) {
 			if (JavaClassOMethodDefinition.isSupportedClass(class1)){
 					definitions.add(new JavaClassOMethodDefinition(class1));
 			}
