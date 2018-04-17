@@ -57,6 +57,7 @@ public final class CustomAttribute implements Serializable
 	/**
 	 * Contains list of roles separated by comma from which property is hidden
 	 */
+	// TODO: should be reworked after implementation in OrientDB field based security: https://github.com/orientechnologies/orientdb/issues/4157
 	public static final CustomAttribute PROP_HIDDEN_FROM = create("orienteer.prop.hidden.from", OType.LINK, OProperty.class, null, false, true);
 	/**
 	 * Name of a visualization that should be used for property visualization
