@@ -25,7 +25,7 @@ public class SaveDashboardMethod extends CommandWrapperMethod{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Command<?> getCommand() {
+	public Command<?> getWrappedCommand() {
 		return new SilentSaveDashboardCommand(getId(),(IModel<ODocument>) getEnvData().getDisplayObjectModel());
 	}
 }

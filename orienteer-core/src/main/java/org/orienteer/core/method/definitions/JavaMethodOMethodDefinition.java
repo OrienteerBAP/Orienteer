@@ -50,7 +50,7 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 				newMethod = getIMethodClass().newInstance();
 			}
 			if (newMethod!=null){
-				newMethod.methodInit(getMethodId(), dataObject, this);
+				newMethod.init(this, dataObject);
 				return newMethod;
 			}
 		} catch (InstantiationException | IllegalAccessException e) {

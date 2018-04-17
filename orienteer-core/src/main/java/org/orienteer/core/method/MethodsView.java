@@ -8,6 +8,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.IBootstrapAware;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.widget.AbstractWidget;
 
 /**
@@ -26,12 +27,12 @@ public class MethodsView implements Serializable{
 	private MethodPlace place;
 	private RepeatingView externalList;
 	private IModel<?> displayObjectModel;
-	private Object table;
+	private Component table;
 
 	private BootstrapType bootstrapType;
 	private boolean bootstrapTypeOverriden = false;
 	
-	public MethodsView(RepeatingView externalList, IModel<?> displayObjectModel,MethodPlace place,Object table) {
+	public MethodsView(RepeatingView externalList, IModel<?> displayObjectModel,MethodPlace place, Component table) {
 		this.externalList = externalList;
 		this.displayObjectModel = displayObjectModel;
 		this.place = place;
@@ -42,7 +43,7 @@ public class MethodsView implements Serializable{
 		AbstractWidget<?> widget = externalList.findParent(AbstractWidget.class);
 		methods = MethodManager.get().getMethods(new MethodContext(displayObjectModel,widget,place,table));
 		for ( IMethod method : methods) {
-			Component component = method.getDisplayComponent(); 
+			Command<?> component = method.createCommand(); 
 			if (component !=null){
 				if (component instanceof IBootstrapAware && bootstrapTypeOverriden){
 					((IBootstrapAware)component).setBootstrapType(bootstrapType);

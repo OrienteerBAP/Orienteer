@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.method.definitions.JavaMethodOMethodDefinition;
 
@@ -18,18 +19,18 @@ public class OClassTableOMethod extends AbstractOMethod{
 
 
 	private static final long serialVersionUID = 1L;
-	private Component displayComponent;
+	private Command<?> displayComponent;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand() {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
-		if (displayComponent == null && getMethodContext().getTableObject()!=null && getMethodContext().getTableObject() instanceof OrienteerDataTable){
+		if (displayComponent == null && getMethodContext().getRelatedComponent()!=null && getMethodContext().getRelatedComponent() instanceof OrienteerDataTable){
 			String titleKey = getConfig().getTitleKey();
 			if (titleKey.isEmpty()){
 				titleKey = getId();
 			}			
-			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getMethodContext().getTableObject();
+			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getMethodContext().getRelatedComponent();
 			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(getTitleModel(),table){
 				private static final long serialVersionUID = 1L;
 				

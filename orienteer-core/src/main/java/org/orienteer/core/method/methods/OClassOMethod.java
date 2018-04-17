@@ -6,6 +6,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.Command;
 
 /**
  * 
@@ -14,12 +15,12 @@ import org.orienteer.core.component.command.AjaxCommand;
  */
 public class OClassOMethod extends AbstractOMethod{
 
-	private Component displayComponent;
+	private Command<?> displayComponent;
 	private static final long serialVersionUID = 1L;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand() {
 		if (displayComponent==null){
 			IModel<Object> model = (IModel<Object>) getMethodContext().getDisplayObjectModel();
 			displayComponent = new AjaxCommand<Object>(getId(), getTitleModel(),model) {

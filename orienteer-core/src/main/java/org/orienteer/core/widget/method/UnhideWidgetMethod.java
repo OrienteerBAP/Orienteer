@@ -24,7 +24,7 @@ public class UnhideWidgetMethod extends CommandWrapperMethod{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Command<?> getCommand() {
+	public Command<?> getWrappedCommand() {
 		return new UnhideWidgetCommand<Object>(getId(),(IModel<ODocument>) getEnvData().getDisplayObjectModel());
 	}
 }

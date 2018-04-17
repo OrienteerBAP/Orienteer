@@ -4,6 +4,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
+import org.orienteer.core.component.command.Command;
 /**
  * 
  *  Modal windows support for OMethod
@@ -16,7 +17,7 @@ public abstract class AbstractModalOMethod extends AbstractOMethod{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand() {
 		if (displayComponent==null){
 			IModel<Object> model = (IModel<Object>) getMethodContext().getDisplayObjectModel();
 

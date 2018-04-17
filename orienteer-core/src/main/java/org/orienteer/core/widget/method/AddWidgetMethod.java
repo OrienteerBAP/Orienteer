@@ -23,7 +23,7 @@ public class AddWidgetMethod extends CommandWrapperMethod{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Command<?> getCommand() {
+	public Command<?> getWrappedCommand() {
 		return new AddWidgetCommand<Object>(getId(),(IModel<ODocument>) getEnvData().getDisplayObjectModel());
 	}
 }

@@ -2,6 +2,7 @@ package org.orienteer.core.method;
 
 import java.io.Serializable;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
@@ -21,9 +22,9 @@ public class MethodContext implements Serializable,IMethodContext{
 	private AbstractWidget<?> widget;
 	private String widgetType;
 	private MethodPlace place;
-	private Object tableObject;
+	private Component relatedComponent;
 	
-	public MethodContext(IModel<?> objModel,AbstractWidget<?> widget,MethodPlace place,Object tableObject) {
+	public MethodContext(IModel<?> objModel,AbstractWidget<?> widget,MethodPlace place, Component relatedComponent) {
 		this.objModel = objModel;
 		this.widget = widget;
 		if (widget!=null){
@@ -31,7 +32,7 @@ public class MethodContext implements Serializable,IMethodContext{
 			if(widgetDoc!=null) this.widgetType = widgetDoc.field(OWidgetsModule.OPROPERTY_TYPE_ID);
 		}
 		this.place = place;
-		this.tableObject = tableObject;
+		this.relatedComponent = relatedComponent;
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class MethodContext implements Serializable,IMethodContext{
 	}
 
 	@Override
-	public Object getTableObject() {
-		return tableObject;
+	public Component getRelatedComponent() {
+		return relatedComponent;
 	}
 }

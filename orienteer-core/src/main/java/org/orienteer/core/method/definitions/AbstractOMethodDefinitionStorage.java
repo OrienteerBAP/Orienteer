@@ -13,12 +13,12 @@ import org.orienteer.core.method.MethodStorage;
  * Abstract class for {@link IMethodDefinitionStorage}
  *
  */
-public abstract class AbstractMethodDefinitionStorage implements IMethodDefinitionStorage{
+public abstract class AbstractOMethodDefinitionStorage implements IMethodDefinitionStorage{
 
 	protected MethodStorage methodStorage;
 	protected Set<IMethodDefinition> definitions;
 
-	public AbstractMethodDefinitionStorage(MethodStorage storage) {
+	public AbstractOMethodDefinitionStorage(MethodStorage storage) {
 		setMethodStorage(storage);
 	}
 

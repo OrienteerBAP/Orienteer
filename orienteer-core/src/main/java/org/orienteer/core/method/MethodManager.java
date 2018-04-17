@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.orienteer.core.method.definitions.ClassMethodDefinitionStorage;
-import org.orienteer.core.method.definitions.SourceMethodDefinitionStorage;
+import org.orienteer.core.method.definitions.JavaMethodOMethodDefinitionStorage;
+import org.orienteer.core.method.definitions.JavaClassOMethodDefinitionStorage;
 import org.orienteer.core.module.IOrienteerModule;
 import com.google.common.collect.TreeMultiset;
 
@@ -33,8 +33,8 @@ public class MethodManager {
 	private MethodManager() {
 		methodStorage = new MethodStorage();
 		definitionsStorages = new HashSet<IMethodDefinitionStorage>();
-		addDefinitionsStorage(new SourceMethodDefinitionStorage(methodStorage));
-		addDefinitionsStorage(new ClassMethodDefinitionStorage(methodStorage));
+		addDefinitionsStorage(new JavaClassOMethodDefinitionStorage(methodStorage));
+		addDefinitionsStorage(new JavaMethodOMethodDefinitionStorage(methodStorage));
 	}
 	
 	public void reload(){
@@ -63,8 +63,6 @@ public class MethodManager {
 
 	
 	public List<IMethod> getMethods(IMethodContext context){
-		
-		
 		return definitionsStorages.stream()
 				.flatMap(s -> s.getMethodsDefinitions(context).stream())
 				.sorted((c1, c2) -> {

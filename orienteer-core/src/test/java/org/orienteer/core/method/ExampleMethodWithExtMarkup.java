@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodDefinition;
@@ -33,16 +34,16 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
 
 	
-	private Component displayComponent;
+	private Command<?> displayComponent;
 	private String id;
 
 	@Override
-	public void methodInit(String id, IMethodContext envData,IMethodDefinition config) {
-		this.id = id;
+	public void init(IMethodDefinition config, IMethodContext envData) {
+		this.id = config.getMethodId();
 	}
 
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand() {
 		if (displayComponent==null){
 			displayComponent = new AjaxCommand<Object>(id, "command.settings") {
 				

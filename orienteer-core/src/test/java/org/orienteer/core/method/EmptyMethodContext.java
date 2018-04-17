@@ -1,5 +1,6 @@
 package org.orienteer.core.method;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.widget.AbstractWidget;
 
@@ -28,7 +29,7 @@ public class EmptyMethodContext implements IMethodContext {
 	}
 
 	@Override
-	public Object getTableObject() {
+	public Component getRelatedComponent() {
 		// TODO Auto-generated method stub
 		return null;
 	}

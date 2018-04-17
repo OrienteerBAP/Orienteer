@@ -26,13 +26,11 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOMethod.class);
 
 	private IMethodContext methodContext;
-	private String id;
 	private IMethodDefinition config;
 	
 	@Override
-	public void methodInit(String id, IMethodContext methodContext,IMethodDefinition config) {
+	public void init(IMethodDefinition config, IMethodContext methodContext) {
 		this.methodContext = methodContext;
-		this.id = id;
 		this.config = config;
 	}
 
@@ -40,7 +38,7 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 		if (!Strings.isEmpty(config.getTitleKey())){
 			return new SimpleNamingModel<String>(config.getTitleKey());			
 		}
-		return new SimpleNamingModel<String>(id);
+		return new SimpleNamingModel<String>(config.getMethodId());
 	}
 	
 	protected IMethodContext getMethodContext() {
@@ -48,7 +46,7 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	}
 
 	protected String getId() {
-		return id;
+		return config.getMethodId();
 	}
 	
 	protected IMethodDefinition getConfigInterface(){

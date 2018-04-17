@@ -30,7 +30,7 @@ public class JavaClassOMethodDefinition extends AbstractOMethodDefinition{
 	public IMethod getMethod(IMethodContext context) {
 		try {
 			IMethod newMethod = javaClass.newInstance();
-			newMethod.methodInit(getMethodId(),context, this);
+			newMethod.init(this,context);
 			return newMethod;
 		} catch (InstantiationException | IllegalAccessException e) {
 			LOG.error("Can't obtain a method", e);

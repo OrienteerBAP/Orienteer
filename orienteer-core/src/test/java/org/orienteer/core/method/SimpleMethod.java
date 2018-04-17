@@ -1,24 +1,24 @@
 package org.orienteer.core.method;
 
-import org.apache.wicket.Component;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.definitions.JavaClassOMethodDefinition;
 
 /**
  * 
- * This method annotated NOT as {@link JavaClassOMethodDefinition} and NOT loaded into {@link SourceMethodDefinitionStorage} 
+ * This method annotated NOT as {@link JavaClassOMethodDefinition} and NOT loaded into {@link JavaClassOMethodDefinitionStorage} 
  *
  */
 
 public class SimpleMethod implements IMethod {
 
 	@Override
-	public void methodInit(String id, IMethodContext envData,IMethodDefinition config) {
+	public void init(IMethodDefinition config, IMethodContext envData) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand() {
 		// TODO Auto-generated method stub
 		return null;
 	}

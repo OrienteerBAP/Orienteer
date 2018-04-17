@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
  * Storage for {@link IMethodDefinition}'s loaded from java classes
  *
  */
-public class SourceMethodDefinitionStorage extends AbstractMethodDefinitionStorage{
+public class JavaClassOMethodDefinitionStorage extends AbstractOMethodDefinitionStorage{
 	
-	private static final Logger LOG = LoggerFactory.getLogger(SourceMethodDefinitionStorage.class);
+	private static final Logger LOG = LoggerFactory.getLogger(JavaClassOMethodDefinitionStorage.class);
 
-	public SourceMethodDefinitionStorage(MethodStorage storage) {
+	public JavaClassOMethodDefinitionStorage(MethodStorage storage) {
 		super(storage);
 	}
 
