@@ -87,15 +87,19 @@ public class OMethodsManager {
 		populateInternal(commandSupport, place, mainObjectModel, null, null, false);
 	}
 	
-	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel, Component relatedComponent) {
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel,
+									Component relatedComponent) {
 		populateInternal(commandSupport, place, mainObjectModel, relatedComponent, null, false);
 	}
 	
-	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel, Component relatedComponent, BootstrapType bootstrapType) {
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel,
+									Component relatedComponent, BootstrapType bootstrapType) {
 		populateInternal(commandSupport, place, mainObjectModel, relatedComponent, bootstrapType, true);
 	}
 	
-	private <T> void populateInternal(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel, Component relatedComponent, BootstrapType bootstrapType, boolean overrideBootstrapType) {
+	private <T> void populateInternal(ICommandsSupportComponent<T> commandSupport, MethodPlace place, 
+										IModel<?> mainObjectModel, Component relatedComponent, 
+										BootstrapType bootstrapType, boolean overrideBootstrapType) {
 		AbstractWidget<?> widget = commandSupport.getComponent().findParent(AbstractWidget.class);
 		List<IMethod> methods = getMethods(new MethodContext(mainObjectModel,widget,place,relatedComponent));
 		for ( IMethod method : methods) {

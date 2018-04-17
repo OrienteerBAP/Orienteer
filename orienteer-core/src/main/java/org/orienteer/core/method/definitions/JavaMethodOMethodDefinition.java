@@ -19,7 +19,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * 
- * {@link OMethod} wrapper for annotations on java methods 
+ * {@link OMethod} definition for annotations on java methods.
+ * Class name should be equal to class name in DB or selector should be provided on every method 
  *
  */
 public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{

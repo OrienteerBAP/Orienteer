@@ -17,6 +17,14 @@ import org.orienteer.core.method.methods.CommandWrapperMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+
+/**
+ * 
+ * {@link OMethod} definition for annotations on java classes.
+ * Only classes inherited from {@link IMethod} or {@link OClass} are supported 
+ *
+ */
 public class JavaClassOMethodDefinition extends AbstractOMethodDefinition{
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JavaClassOMethodDefinition.class);
