@@ -36,7 +36,8 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 		super.performMultiAction(target, objects);
-		getDatabase().commit(true);
+		getDatabase().commit(true)
+				.begin();
 		DBClosure.sudoConsumer(db -> db.getMetadata().reload());
 	}
 
