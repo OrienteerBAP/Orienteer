@@ -9,9 +9,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.wicket.Component;
+import org.apache.wicket.model.IModel;
 import org.orienteer.core.method.definitions.JavaMethodOMethodDefinitionStorage;
+import org.orienteer.core.component.BootstrapType;
+import org.orienteer.core.component.IBootstrapAware;
+import org.orienteer.core.component.ICommandsSupportComponent;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.definitions.JavaClassOMethodDefinitionStorage;
 import org.orienteer.core.module.IOrienteerModule;
+import org.orienteer.core.widget.AbstractWidget;
+
 import com.google.common.collect.TreeMultiset;
 
 /**
@@ -19,18 +27,18 @@ import com.google.common.collect.TreeMultiset;
  * Core method manager
  *
  */
-public class MethodManager {
+public class OMethodsManager {
 	
 	private MethodStorage methodStorage;
 	private Set<IMethodDefinitionStorage> definitionsStorages;
 	
-	private static final MethodManager INSTANCE = new MethodManager();
+	private static final OMethodsManager INSTANCE = new OMethodsManager();
 
-	public static final MethodManager get() {
+	public static final OMethodsManager get() {
 		return INSTANCE;
 	}
 	
-	private MethodManager() {
+	private OMethodsManager() {
 		methodStorage = new MethodStorage();
 		definitionsStorages = new HashSet<IMethodDefinitionStorage>();
 		addDefinitionsStorage(new JavaClassOMethodDefinitionStorage(methodStorage));
@@ -73,6 +81,32 @@ public class MethodManager {
 				.map(c -> c.getMethod(context))
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
+	}
+	
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel) {
+		populateInternal(commandSupport, place, mainObjectModel, null, null, false);
+	}
+	
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel, Component relatedComponent) {
+		populateInternal(commandSupport, place, mainObjectModel, relatedComponent, null, false);
+	}
+	
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel, Component relatedComponent, BootstrapType bootstrapType) {
+		populateInternal(commandSupport, place, mainObjectModel, relatedComponent, bootstrapType, true);
+	}
+	
+	private <T> void populateInternal(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel, Component relatedComponent, BootstrapType bootstrapType, boolean overrideBootstrapType) {
+		AbstractWidget<?> widget = commandSupport.getComponent().findParent(AbstractWidget.class);
+		List<IMethod> methods = getMethods(new MethodContext(mainObjectModel,widget,place,relatedComponent));
+		for ( IMethod method : methods) {
+			Command<T> component = (Command<T>) method.createCommand(); 
+			if (component !=null){
+				if (overrideBootstrapType){
+					component.setBootstrapType(bootstrapType);
+				}
+				commandSupport.addCommand(component);
+			}
+		}
 	}
 
 }

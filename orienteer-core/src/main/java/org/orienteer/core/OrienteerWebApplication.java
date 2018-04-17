@@ -37,7 +37,7 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
-import org.orienteer.core.method.MethodManager;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
@@ -284,17 +284,17 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		M module = getServiceInstance(moduleClass);
 		registeredModules.put(module.getName(), getServiceInstance(moduleClass));
 		registeredModulesSorted = false;
-		MethodManager.get().addModule(moduleClass);
-		MethodManager.get().reload();
+		OMethodsManager.get().addModule(moduleClass);
+		OMethodsManager.get().reload();
 		return module;
 	}
 
 	public synchronized <M extends IOrienteerModule> M unregisterModule(Class<M> moduleClass) {
 		M module = getServiceInstance(moduleClass);
 		if (registeredModules.containsKey(module.getName())) {
-			MethodManager.get().removeModule(moduleClass);
+			OMethodsManager.get().removeModule(moduleClass);
 			registeredModules.remove(module.getName());
-			MethodManager.get().reload();
+			OMethodsManager.get().reload();
 			return module;
 		} else LOG.info("Orienteer application does not already registered module: " + module.getName());
 		return null;

@@ -11,7 +11,7 @@ import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.method.MethodPlace;
 
 /**
@@ -59,8 +59,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	@Override
     protected void onInitialize() {
     	super.onInitialize();
-		MethodsView methods = new MethodsView(commands, getDefaultModel(),MethodPlace.DATA_TABLE,getTable());
-		methods.loadMethods();
+    	OMethodsManager.get().populate(this, MethodPlace.DATA_TABLE, getDefaultModel(), getTable());
     }
 
 	@Override

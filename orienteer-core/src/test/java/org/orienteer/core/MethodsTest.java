@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.method.AnnotatedMethod;
 import org.orienteer.core.method.IMethod;
-import org.orienteer.core.method.MethodManager;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.method.SimpleMethod;
 import org.orienteer.core.method.EmptyMethodContext;
 import org.orienteer.junit.OrienteerTestRunner;
@@ -24,7 +24,7 @@ public class MethodsTest {
 	@Test
 	public void baseTest() throws Exception{
 //		MethodManager.get().reload();
-		List<IMethod> methods = MethodManager.get().getMethods(new EmptyMethodContext());
+		List<IMethod> methods = OMethodsManager.get().getMethods(new EmptyMethodContext());
 		assertTrue(methods.size()>0);
 		int equals = 0;
 		for (IMethod iMethod : methods) {
