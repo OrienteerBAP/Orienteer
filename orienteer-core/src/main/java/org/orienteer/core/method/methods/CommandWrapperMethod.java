@@ -26,9 +26,9 @@ public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 	}
 
 	@Override
-	public Command<?> createCommand() {
+	public Command<?> createCommand(String id) {
 		if (displayComponent==null){
-			displayComponent = getWrappedCommand();
+			displayComponent = getWrappedCommand(id);
 		}
 		return displayComponent;
 	}
@@ -37,9 +37,9 @@ public abstract class CommandWrapperMethod  implements Serializable,IMethod{
 		return methodContext;
 	}
 	
-	public String getId(){
-		return methodDefinition.getMethodId();
+	public IMethodDefinition getDefinition(){
+		return methodDefinition;
 	}
 	
-	public abstract Command<?> getWrappedCommand();
+	public abstract Command<?> getWrappedCommand(String id);
 }

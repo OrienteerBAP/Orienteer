@@ -20,10 +20,10 @@ public class OClassOMethod extends AbstractOMethod{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Command<?> createCommand() {
+	public Command<?> createCommand(String id) {
 		if (displayComponent==null){
-			IModel<Object> model = (IModel<Object>) getMethodContext().getDisplayObjectModel();
-			displayComponent = new AjaxCommand<Object>(getId(), getTitleModel(),model) {
+			IModel<Object> model = (IModel<Object>) getContext().getDisplayObjectModel();
+			displayComponent = new AjaxCommand<Object>(id, getTitleModel(),model) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				protected void onInitialize() {

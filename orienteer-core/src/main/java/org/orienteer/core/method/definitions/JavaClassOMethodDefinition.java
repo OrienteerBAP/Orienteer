@@ -43,10 +43,10 @@ public class JavaClassOMethodDefinition extends AbstractOMethodDefinition{
 				newMethod = new CommandWrapperMethod() {
 					
 					@Override
-					public Command<?> getWrappedCommand() {
+					public Command<?> getWrappedCommand(String id) {
 						try {
 							Constructor<?> c = javaClass.getConstructor(String.class, IModel.class);
-							return (Command<?>) c.newInstance(getId(), getContext().getDisplayObjectModel());
+							return (Command<?>) c.newInstance(id, getContext().getDisplayObjectModel());
 						} catch (Exception e) {
 							LOG.error("Can't create a command", e);
 							return null;

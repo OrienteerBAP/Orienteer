@@ -23,14 +23,14 @@ public class OClassTableOMethod extends AbstractOMethod{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Command<?> createCommand() {
+	public Command<?> createCommand(String id) {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
-		if (displayComponent == null && getMethodContext().getRelatedComponent()!=null && getMethodContext().getRelatedComponent() instanceof OrienteerDataTable){
+		if (displayComponent == null && getContext().getRelatedComponent()!=null && getContext().getRelatedComponent() instanceof OrienteerDataTable){
 			String titleKey = getConfig().getTitleKey();
 			if (titleKey.isEmpty()){
-				titleKey = getId();
+				titleKey = getConfig().getMethodId();
 			}			
-			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getMethodContext().getRelatedComponent();
+			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getContext().getRelatedComponent();
 			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(getTitleModel(),table){
 				private static final long serialVersionUID = 1L;
 				
@@ -57,6 +57,6 @@ public class OClassTableOMethod extends AbstractOMethod{
 	}
 	
 	protected JavaMethodOMethodDefinition getConfig(){
-		return (JavaMethodOMethodDefinition) this.getConfigInterface();
+		return (JavaMethodOMethodDefinition) this.getDefinition();
 	}
 }

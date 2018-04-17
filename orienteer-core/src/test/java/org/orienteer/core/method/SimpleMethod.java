@@ -18,7 +18,7 @@ public class SimpleMethod implements IMethod {
 	}
 
 	@Override
-	public Command<?> createCommand() {
+	public Command<?> createCommand(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

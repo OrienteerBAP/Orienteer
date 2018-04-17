@@ -26,35 +26,31 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOMethod.class);
 
 	private IMethodContext methodContext;
-	private IMethodDefinition config;
+	private IMethodDefinition methodDefinition;
 	
 	@Override
 	public void init(IMethodDefinition config, IMethodContext methodContext) {
 		this.methodContext = methodContext;
-		this.config = config;
+		this.methodDefinition = config;
 	}
 
 	protected SimpleNamingModel<String> getTitleModel(){
-		if (!Strings.isEmpty(config.getTitleKey())){
-			return new SimpleNamingModel<String>(config.getTitleKey());			
+		if (!Strings.isEmpty(methodDefinition.getTitleKey())){
+			return new SimpleNamingModel<String>(methodDefinition.getTitleKey());			
 		}
-		return new SimpleNamingModel<String>(config.getMethodId());
+		return new SimpleNamingModel<String>(methodDefinition.getMethodId());
 	}
 	
-	protected IMethodContext getMethodContext() {
+	protected IMethodContext getContext() {
 		return methodContext;
 	}
 
-	protected String getId() {
-		return config.getMethodId();
-	}
-	
-	protected IMethodDefinition getConfigInterface(){
-		return config;
+	protected IMethodDefinition getDefinition(){
+		return methodDefinition;
 	}
 	
 	protected void applyBehaviors(Component component){
-		for ( Class<? extends Behavior> behavior : getConfigInterface().getBehaviors()) {
+		for ( Class<? extends Behavior> behavior : getDefinition().getBehaviors()) {
 			try {
 				component.add(behavior.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -65,10 +61,10 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	
 	@SuppressWarnings("rawtypes")
 	protected void applyVisualSettings(Command commandComponent){
-		commandComponent.setIcon(getConfigInterface().getIcon());
-		commandComponent.setBootstrapType(getConfigInterface().getBootstrapType());
-		commandComponent.setChangingDisplayMode(getConfigInterface().isChangingDisplayMode());	
-		commandComponent.setChandingModel(getConfigInterface().isChangingModel());		
+		commandComponent.setIcon(getDefinition().getIcon());
+		commandComponent.setBootstrapType(getDefinition().getBootstrapType());
+		commandComponent.setChangingDisplayMode(getDefinition().isChangingDisplayMode());	
+		commandComponent.setChandingModel(getDefinition().isChangingModel());		
 	}
 	
 	protected void invoke(){
@@ -76,6 +72,6 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	}
 	
 	protected void invoke(ODocument doc){
-		config.invokeLinkedFunction(getMethodContext(), doc);
+		methodDefinition.invokeLinkedFunction(getContext(), doc);
 	}
 }

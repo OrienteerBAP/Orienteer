@@ -35,15 +35,13 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 
 	
 	private Command<?> displayComponent;
-	private String id;
 
 	@Override
 	public void init(IMethodDefinition config, IMethodContext envData) {
-		this.id = config.getMethodId();
 	}
 
 	@Override
-	public Command<?> createCommand() {
+	public Command<?> createCommand(String id) {
 		if (displayComponent==null){
 			displayComponent = new AjaxCommand<Object>(id, "command.settings") {
 				

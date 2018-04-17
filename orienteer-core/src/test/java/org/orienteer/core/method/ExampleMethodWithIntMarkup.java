@@ -41,7 +41,7 @@ public class ExampleMethodWithIntMarkup<T> extends Command<T> implements IMethod
 	}
 
 	@Override
-	public Command<?> createCommand() {
+	public Command<?> createCommand(String id) {
 		return this;
 	}
 	

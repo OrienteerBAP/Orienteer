@@ -99,7 +99,7 @@ public class OMethodsManager {
 		AbstractWidget<?> widget = commandSupport.getComponent().findParent(AbstractWidget.class);
 		List<IMethod> methods = getMethods(new MethodContext(mainObjectModel,widget,place,relatedComponent));
 		for ( IMethod method : methods) {
-			Command<T> component = (Command<T>) method.createCommand(); 
+			Command<T> component = (Command<T>) method.createCommand(commandSupport.newCommandId()); 
 			if (component !=null){
 				if (overrideBootstrapType){
 					component.setBootstrapType(bootstrapType);

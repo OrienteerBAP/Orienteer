@@ -17,11 +17,11 @@ public abstract class AbstractModalOMethod extends AbstractOMethod{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Command<?> createCommand() {
+	public Command<?> createCommand(String id) {
 		if (displayComponent==null){
-			IModel<Object> model = (IModel<Object>) getMethodContext().getDisplayObjectModel();
+			IModel<Object> model = (IModel<Object>) getContext().getDisplayObjectModel();
 
-			displayComponent = new AbstractModalWindowCommand<Object>(getId(), getTitleModel(),model) {
+			displayComponent = new AbstractModalWindowCommand<Object>(id, getTitleModel(),model) {
 				private static final long serialVersionUID = 1L;
 				@Override
 				protected void onInitialize() {
