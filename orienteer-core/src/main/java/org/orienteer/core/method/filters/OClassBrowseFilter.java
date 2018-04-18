@@ -1,7 +1,7 @@
 package org.orienteer.core.method.filters;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodContext;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
@@ -14,7 +14,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 public class OClassBrowseFilter extends AbstractStringFilter{
 
 	@Override
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject) {
+	public boolean isSupportedMethod(IMethodContext dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
 		if (model!=null && model.getObject()!=null && model.getObject() instanceof OClass){
 			return ((OClass) (model.getObject())).isSubClassOf(this.filterData);

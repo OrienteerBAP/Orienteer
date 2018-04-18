@@ -2,7 +2,7 @@ package org.orienteer.core.method;
 
 /**
  * 
- * {@link IMethodEnvironmentData} variable for setting where is visual and logical place of methods
+ * {@link IMethodContext} variable for setting where is visual and logical place of methods
  *
  */
 

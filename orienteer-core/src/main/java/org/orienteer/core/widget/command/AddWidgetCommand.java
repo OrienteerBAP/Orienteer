@@ -10,6 +10,9 @@ import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
+import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.OMethod;
+import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetType;
@@ -22,6 +25,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
+@OMethod(order=1,filters={
+		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
+})
 public class AddWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
 	private static final long serialVersionUID = 1L;
 

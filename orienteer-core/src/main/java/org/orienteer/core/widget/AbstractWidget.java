@@ -20,7 +20,7 @@ import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.method.MethodPlace;
-import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.core.widget.command.FullScreenCommand;
@@ -47,16 +47,12 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private IModel<ODocument> widgetDocumentModel;
 
-	private MethodsView methods;
-	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
 		this.widgetDocumentModel = widgetDocumentModel;
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
 		add(commands = new RepeatingView("commands"));
-		methods = new MethodsView(commands, model,MethodPlace.ACTIONS,null);
-		methods.overrideBootstrapType(null);
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override
@@ -188,7 +184,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		add(new Label("title", getTitleModel()));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
-		methods.loadMethods();
+		OMethodsManager.get().populate(this, MethodPlace.ACTIONS, getDefaultModel(), null, null);
 	}
 	
 	@Override

@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodDefinitionStorage;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodDefinition;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.MethodStorage;
 /**
  * 
  * Abstract class for {@link IMethodDefinitionStorage}
  *
  */
-public abstract class AbstractMethodDefinitionStorage implements IMethodDefinitionStorage{
+public abstract class AbstractOMethodDefinitionStorage implements IMethodDefinitionStorage{
 
 	protected MethodStorage methodStorage;
 	protected Set<IMethodDefinition> definitions;
 
-	public AbstractMethodDefinitionStorage(MethodStorage storage) {
+	public AbstractOMethodDefinitionStorage(MethodStorage storage) {
 		setMethodStorage(storage);
 	}
 
@@ -29,7 +29,7 @@ public abstract class AbstractMethodDefinitionStorage implements IMethodDefiniti
 	}
 
 	@Override
-	public List<IMethodDefinition> getMethodsDefinitions(IMethodEnvironmentData dataObject) {
+	public List<IMethodDefinition> getMethodsDefinitions(IMethodContext dataObject) {
 		ArrayList<IMethodDefinition> result = new ArrayList<IMethodDefinition>();
 		for (IMethodDefinition iMethodDefinition : definitions) {
 			if (iMethodDefinition.isSupportedMethod(dataObject)){

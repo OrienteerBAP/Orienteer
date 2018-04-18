@@ -7,8 +7,8 @@ import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
-import org.orienteer.core.method.IMethodConfig;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodDefinition;
+import org.orienteer.core.method.IMethodContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,38 +25,32 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractOMethod.class);
 
-	private IMethodEnvironmentData envData;
-	private String id;
-	private IMethodConfig config;
+	private IMethodContext methodContext;
+	private IMethodDefinition methodDefinition;
 	
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
-		this.envData = envData;
-		this.id = id;
-		this.config = config;
+	public void init(IMethodDefinition config, IMethodContext methodContext) {
+		this.methodContext = methodContext;
+		this.methodDefinition = config;
 	}
 
 	protected SimpleNamingModel<String> getTitleModel(){
-		if (!Strings.isEmpty(config.titleKey())){
-			return new SimpleNamingModel<String>(config.titleKey());			
+		if (!Strings.isEmpty(methodDefinition.getTitleKey())){
+			return new SimpleNamingModel<String>(methodDefinition.getTitleKey());			
 		}
-		return new SimpleNamingModel<String>(id);
+		return new SimpleNamingModel<String>(methodDefinition.getMethodId());
 	}
 	
-	protected IMethodEnvironmentData getEnvData() {
-		return envData;
+	protected IMethodContext getContext() {
+		return methodContext;
 	}
 
-	protected String getId() {
-		return id;
-	}
-	
-	protected IMethodConfig getConfigInterface(){
-		return config;
+	protected IMethodDefinition getDefinition(){
+		return methodDefinition;
 	}
 	
 	protected void applyBehaviors(Component component){
-		for ( Class<? extends Behavior> behavior : getConfigInterface().behaviors()) {
+		for ( Class<? extends Behavior> behavior : getDefinition().getBehaviors()) {
 			try {
 				component.add(behavior.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
@@ -67,10 +61,10 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	
 	@SuppressWarnings("rawtypes")
 	protected void applyVisualSettings(Command commandComponent){
-		commandComponent.setIcon(getConfigInterface().icon());
-		commandComponent.setBootstrapType(getConfigInterface().bootstrap());
-		commandComponent.setChangingDisplayMode(getConfigInterface().changingDisplayMode());	
-		commandComponent.setChandingModel(getConfigInterface().changingModel());		
+		commandComponent.setIcon(getDefinition().getIcon());
+		commandComponent.setBootstrapType(getDefinition().getBootstrapType());
+		commandComponent.setChangingDisplayMode(getDefinition().isChangingDisplayMode());	
+		commandComponent.setChandingModel(getDefinition().isChangingModel());		
 	}
 	
 	protected void invoke(){
@@ -78,6 +72,6 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	}
 	
 	protected void invoke(ODocument doc){
-		config.invokeLinkedFunction(getEnvData(), doc);
+		methodDefinition.invokeLinkedFunction(getContext(), doc);
 	}
 }

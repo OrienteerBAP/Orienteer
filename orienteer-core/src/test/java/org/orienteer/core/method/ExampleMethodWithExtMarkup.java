@@ -1,4 +1,4 @@
-package org.orienteer.core.method.methods;
+package org.orienteer.core.method;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -6,10 +6,11 @@ import java.util.Optional;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AjaxCommand;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.IMethod;
-import org.orienteer.core.method.IMethodConfig;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodDefinition;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.DisallowFilter;
 
@@ -33,16 +34,14 @@ public class ExampleMethodWithExtMarkup implements Serializable,IMethod{
 	private static final long serialVersionUID = 1L;
 
 	
-	private Component displayComponent;
-	private String id;
+	private Command<?> displayComponent;
 
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
-		this.id = id;
+	public void init(IMethodDefinition config, IMethodContext envData) {
 	}
 
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand(String id) {
 		if (displayComponent==null){
 			displayComponent = new AjaxCommand<Object>(id, "command.settings") {
 				

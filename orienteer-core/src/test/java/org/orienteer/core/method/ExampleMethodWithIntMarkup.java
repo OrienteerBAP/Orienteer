@@ -1,12 +1,12 @@
-package org.orienteer.core.method.methods;
-
-import org.apache.wicket.Component;
+package org.orienteer.core.method;
 
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.method.OFilter;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
-import org.orienteer.core.method.IMethodConfig;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.IMethodDefinition;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.DisallowFilter;
 
@@ -23,7 +23,7 @@ import org.orienteer.core.method.filters.DisallowFilter;
 		//@OFilter(fClass = OEntityFilter.class, fData = "OUser")
 		//@OFilter(fClass = PlaceFilter.class, fData = "DATA_TABLE|STRUCTURE_TABLE")
 })
-public class ExampleMethodWithIntMarkup extends Panel implements IMethod{
+public class ExampleMethodWithIntMarkup<T> extends Command<T> implements IMethod{
 	/**
 	 * 
 	 */
@@ -31,19 +31,24 @@ public class ExampleMethodWithIntMarkup extends Panel implements IMethod{
 	
 	public ExampleMethodWithIntMarkup() {
 		//Wicket components should be own unique id`s  
-		super("method"+Math.random());
+		super("method"+Math.random(), "");
 	}
 
 	@Override
-	public void methodInit(String id, IMethodEnvironmentData envData,IMethodConfig config) {
-		setMarkupId(id);
+	public void init(IMethodDefinition config, IMethodContext envData) {
+		setMarkupId(config.getMethodId());
+		setLabelModel(new ResourceModel(config.getTitleKey()));
 	}
 
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand(String id) {
 		return this;
 	}
-
+	
+	@Override
+	public void onClick() {
+		
+	}
 
 
 }
