@@ -26,6 +26,7 @@ import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * {@link Command} to delete an {@link ODocument}
@@ -52,7 +53,7 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 		ODatabaseDocument db = getDatabase();
 		db.commit(true);
 		db.begin();
-		db.getMetadata().reload();
+		DBClosure.sudoConsumer(sudoDb -> sudoDb.getMetadata().reload());
 	}
 
 	@Override

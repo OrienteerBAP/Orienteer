@@ -149,7 +149,7 @@ li.fullscreen {
 	margin-bottom: 0 !important;
 }
 
-.strict {
+.strict, .ui-sortable > li:last-child {
 	margin-bottom: 0 !important;
 }
 
