@@ -3,6 +3,7 @@ package org.orienteer.core.service.impl;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ORule;
+import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -11,6 +12,11 @@ import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.service.IFilterPredicateFactory;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation for {@link IFilterPredicateFactory}
@@ -45,12 +51,23 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SerializablePredicate<OProperty> getPredicateForListProperties() {
-        return (prop) -> !(Boolean)CustomAttribute.HIDDEN.getValue(prop);
+        OSecurityUser user = OrienteerWebSession.get().getEffectiveUser();
+        Set<String> userRoles = user.getRoles().stream().map(OSecurityRole::getName).collect(Collectors.toSet());
+
+        return compose(
+                prop -> !(Boolean)CustomAttribute.HIDDEN.getValue(prop),
+                prop -> user.checkIfAllowed(ORule.ResourceGeneric.CLASS, prop.getOwnerClass().getName(), OrientPermission.READ.getPermissionFlag()) != null,
+                prop -> {
+                    String hiddenRoles = CustomAttribute.PROP_HIDDEN_FROM.getValue(prop);
+                    return hiddenRoles == null || Arrays.stream(hiddenRoles.split("\\,")).noneMatch(userRoles::contains);
+                }
+        );
     }
 
     @Override
     public SerializablePredicate<OProperty> getPredicateForTableProperties() {
-        return (prop) -> CustomAttribute.DISPLAYABLE.getValue(prop);
+        return CustomAttribute.DISPLAYABLE::getValue;
     }
 }
