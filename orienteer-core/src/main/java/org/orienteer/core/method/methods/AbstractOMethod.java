@@ -1,20 +1,19 @@
 package org.orienteer.core.method.methods;
 
-import java.io.Serializable;
-
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.IMethod;
-import org.orienteer.core.method.IMethodDefinition;
 import org.orienteer.core.method.IMethodContext;
+import org.orienteer.core.method.IMethodDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -34,7 +33,7 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 		this.methodDefinition = config;
 	}
 
-	protected SimpleNamingModel<String> getTitleModel(){
+	protected IModel<String> getTitleModel() {
 		if (!Strings.isEmpty(methodDefinition.getTitleKey())){
 			return new SimpleNamingModel<String>(methodDefinition.getTitleKey());			
 		}
