@@ -165,9 +165,7 @@ public class OClassIntrospector implements IOClassIntrospector
 				tabs.add(tab);
 			}
 		}
-		List<String> tabsList = new ArrayList<>(tabs);
-		tabsList.sort(Comparator.naturalOrder());
-		return tabsList;
+		return new ArrayList<>(tabs);
 	}
 
 	@Override
