@@ -21,6 +21,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
+import org.danekja.java.util.function.serializable.SerializablePredicate;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
@@ -154,14 +155,19 @@ public class OClassIntrospector implements IOClassIntrospector
 
 	@Override
 	public List<String> listTabs(OClass oClass) {
-		Set<String> tabs = new HashSet<String>();
-		for(OProperty property: oClass.properties())
-		{
-			String tab = CustomAttribute.TAB.getValue(property);
-			if(tab==null) tab = DEFAULT_TAB;
-			tabs.add(tab);
+		IFilterPredicateFactory factory = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class);
+		SerializablePredicate<OProperty> predicate = factory.getPredicateForListProperties();
+		Set<String> tabs = new HashSet<>();
+		for (OProperty prop : oClass.properties()) {
+			if (predicate.test(prop)) {
+				String tab = CustomAttribute.TAB.getValue(prop);
+				if (tab == null) tab = DEFAULT_TAB;
+				tabs.add(tab);
+			}
 		}
-		return new ArrayList<String>(tabs);
+		List<String> tabsList = new ArrayList<>(tabs);
+		tabsList.sort(Comparator.naturalOrder());
+		return tabsList;
 	}
 
 	@Override
