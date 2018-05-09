@@ -28,9 +28,9 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
 import ru.ydn.wicket.wicketorientdb.model.NvlModel;
 
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
-
 import java.util.Optional;
+
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
 
 /**
  * Abstract root class for widgets
@@ -184,7 +184,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		add(new Label("title", getTitleModel()));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
-		OMethodsManager.get().populate(this, MethodPlace.ACTIONS, getDefaultModel(), null, null);
+		OMethodsManager.get().populate(this, MethodPlace.ACTIONS, getModel(), null, null);
 	}
 	
 	@Override
