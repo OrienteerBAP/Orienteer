@@ -92,6 +92,10 @@ public final class CustomAttribute implements Serializable
 	 * Domain of a class
 	 */
 	public static final CustomAttribute DOMAIN = create("orienteer.domain", OType.STRING, OClassDomain.class, OClassDomain.BUSINESS, false, true);
+	/**
+	 * Feature ID for a property
+	 */
+	public static final CustomAttribute FEATURE = create("orienteer.feature",OType.STRING,null,true, true);
 
 	private final String name;
 	private final OType type;

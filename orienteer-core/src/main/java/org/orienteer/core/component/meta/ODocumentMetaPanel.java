@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.crypt.StringUtils;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
@@ -19,6 +20,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
 
 /**
@@ -29,6 +32,7 @@ import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
 public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> implements IDisplayModeAware {
 	
 	private static final long serialVersionUID = 1L;
+	private String featureSpecification;
 	
 	public ODocumentMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<ODocument> entityModel, IModel<OProperty> propertyModel,
@@ -63,10 +67,20 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 	}
 	
 	@Override
+	protected void onConfigure() {
+		featureSpecification = CustomAttribute.FEATURE.getValue(getPropertyObject());
+		super.onConfigure();
+		setVisible(Strings.isEmpty(featureSpecification)
+					|| OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, featureSpecification, OrientPermission.READ));
+	}
+	
+	@Override
 	protected DisplayMode getEffectiveMode(DisplayMode mode, OProperty property) {
 		if(mode.canModify() && property!= null
-                && (property.isReadonly() || (Boolean)CustomAttribute.UI_READONLY.getValue(property))
-                && !(property.isMandatory() && !getEntityObject().containsField(property.getName())))
+                && ((property.isReadonly() || (Boolean)CustomAttribute.UI_READONLY.getValue(property))
+                		&& !(property.isMandatory() && !getEntityObject().containsField(property.getName())))
+                	|| (!Strings.isEmpty(featureSpecification) 
+                		&& !OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, featureSpecification, OrientPermission.UPDATE)))
 		{
 			return DisplayMode.VIEW;
 		}
