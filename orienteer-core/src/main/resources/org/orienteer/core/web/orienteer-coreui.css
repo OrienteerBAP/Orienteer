@@ -153,6 +153,14 @@ li.fullscreen {
 	margin-bottom: 0 !important;
 }
 
+li.strict caption {
+	display: none;
+}
+
+li.strict div.panel-body {
+    padding: 0;
+}
+
 @media (max-width: 768px) {
 	.navbar-brand {
 		position: relative !important;
