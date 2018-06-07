@@ -30,6 +30,7 @@ import com.orientechnologies.orient.core.index.OIndex;
  */
 @MountPath("/index/${indexName}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = OSecurityHelper.FEATURE, specific=SchemaPage.SCHEMA_FEATURE, permissions=OrientPermission.READ)
 public class OIndexPage extends
 		AbstractWidgetDisplayModeAwarePage<OIndex<?>> {
 

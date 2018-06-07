@@ -29,6 +29,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
  */
 @MountPath("/class/${className}/#{mode}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = OSecurityHelper.FEATURE, specific=SchemaPage.SCHEMA_FEATURE, permissions=OrientPermission.READ)
 public class OClassPage extends AbstractWidgetDisplayModeAwarePage<OClass> {
 
 	public OClassPage(IModel<OClass> model) {

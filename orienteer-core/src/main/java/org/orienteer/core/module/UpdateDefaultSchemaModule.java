@@ -6,6 +6,7 @@ import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.PasswordVisualizer;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.core.web.schema.SchemaPage;
 
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -15,6 +16,9 @@ import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.OSecurity;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 /**
  * {@link IOrienteerModule} to fix existing OrientDB schema to make it more Orienteer friendly
@@ -31,7 +35,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	
 	public UpdateDefaultSchemaModule()
 	{
-		super(NAME, 2);
+		super(NAME, 3);
 	}
 
 	@Override
@@ -54,6 +58,8 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 				//Related issue: https://github.com/orientechnologies/orientdb/issues/7549
 				app.fixOrientDBRights(db);
 				break;
+			case 3:
+				assignSchemaFeature(app, db); //By default schema was available to everyone, so lets keep it
 			default:
 				break;
 		}
@@ -101,6 +107,16 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 				.orderProperties("name", "rule", "status", "start", "starttime", "arguments", "function")
 				.assignNameAndParent("name", null)
 				.switchDisplayable(true, "name", "status", "rule");
+		}
+	}
+	
+	private void assignSchemaFeature(OrienteerWebApplication app, ODatabaseDocument db) {
+		for(ODocument oRoleDoc : db.getMetadata().getSecurity().getAllRoles()) {
+			ORole oRole = new ORole(oRoleDoc);
+			if(oRole.getParentRole()==null) {
+				oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, OrientPermission.READ.getPermissionFlag());
+				oRole.save();
+			}
 		}
 	}
 	

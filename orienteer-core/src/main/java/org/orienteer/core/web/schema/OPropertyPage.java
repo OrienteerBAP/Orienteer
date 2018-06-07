@@ -30,6 +30,7 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
  */
 @MountPath("/property/${className}/${propertyName}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = OSecurityHelper.FEATURE, specific=SchemaPage.SCHEMA_FEATURE, permissions=OrientPermission.READ)
 public class OPropertyPage extends AbstractWidgetDisplayModeAwarePage<OProperty> {
 
 	public OPropertyPage() {
