@@ -48,16 +48,30 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SerializablePredicate<OProperty> getPredicateForListProperties() {
-        return (prop) -> !(Boolean)CustomAttribute.HIDDEN.getValue(prop);
+        return compose(
+                (prop) -> !(Boolean)CustomAttribute.HIDDEN.getValue(prop),
+                getPredicateByFeatureProp(OrientPermission.READ));
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public SerializablePredicate<OProperty> getPredicateForTableProperties() {
-        return (prop) -> CustomAttribute.DISPLAYABLE.getValue(prop);
+        return compose(
+                CustomAttribute.DISPLAYABLE::getValue,
+                getPredicateByFeatureProp(OrientPermission.READ)
+        );
     }
 
     private SerializablePredicate<OClass> getPredicateByFeature(OrientPermission permission) {
+        return (input) -> {
+            String feature = CustomAttribute.FEATURE.getValue(input);
+            return Strings.isNullOrEmpty(feature) || OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, feature, permission);
+        };
+    }
+
+    private SerializablePredicate<OProperty> getPredicateByFeatureProp(OrientPermission permission) {
         return (input) -> {
             String feature = CustomAttribute.FEATURE.getValue(input);
             return Strings.isNullOrEmpty(feature) || OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, feature, permission);
