@@ -1,5 +1,6 @@
 package org.orienteer.core.service.impl;
 
+import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ORule;
@@ -11,6 +12,8 @@ import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.service.IFilterPredicateFactory;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 /**
  * Default implementation for {@link IFilterPredicateFactory}
@@ -41,7 +44,7 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
     @Override
     @SuppressWarnings("unchecked")
     public SerializablePredicate<OClass> getPredicateForClassesSearch() {
-        return compose(getPredicateByOperation(2), getPredicateByTarget(Model.of(false)));
+        return compose(getPredicateByOperation(2), getPredicateByTarget(Model.of(false)), getPredicateByFeature(OrientPermission.READ));
     }
 
     @Override
@@ -52,5 +55,12 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
     @Override
     public SerializablePredicate<OProperty> getPredicateForTableProperties() {
         return (prop) -> CustomAttribute.DISPLAYABLE.getValue(prop);
+    }
+
+    private SerializablePredicate<OClass> getPredicateByFeature(OrientPermission permission) {
+        return (input) -> {
+            String feature = CustomAttribute.FEATURE.getValue(input);
+            return Strings.isNullOrEmpty(feature) || OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, feature, permission);
+        };
     }
 }
