@@ -68,7 +68,8 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 	
 	@Override
 	protected void onConfigure() {
-		featureSpecification = CustomAttribute.FEATURE.getValue(getPropertyObject());
+		OProperty property = getPropertyObject();
+		featureSpecification = property!=null?CustomAttribute.FEATURE.getValue(property):null;
 		super.onConfigure();
 		setVisible(Strings.isEmpty(featureSpecification)
 					|| OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, featureSpecification, OrientPermission.READ));
