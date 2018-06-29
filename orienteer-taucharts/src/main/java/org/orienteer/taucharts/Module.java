@@ -94,7 +94,7 @@ public class Module extends AbstractOrienteerModule{
 			doc.field("alias",alias);
 			doc.save();		
 		} catch (ORecordDuplicatedException e) {
-			// TODO: ignore duplication
+			//ignore duplication
 		}
 	}
 }

@@ -13,13 +13,11 @@ public class EmptyMethodContext implements IMethodContext {
 
 	@Override
 	public AbstractWidget<?> getCurrentWidget() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getCurrentWidgetType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -30,7 +28,6 @@ public class EmptyMethodContext implements IMethodContext {
 
 	@Override
 	public Component getRelatedComponent() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

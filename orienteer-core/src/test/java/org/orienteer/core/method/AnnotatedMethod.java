@@ -16,13 +16,11 @@ public class AnnotatedMethod implements IMethod{
 
 	@Override
 	public void init(IMethodDefinition config, IMethodContext envData) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public Command<?> createCommand(String id) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
