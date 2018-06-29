@@ -67,7 +67,12 @@ public class Module extends AbstractOrienteerModule implements IComponentInitial
 		if(component instanceof BasePage) {
 			BasePage<?> page = (BasePage<?>)component;
 			page.addUiPlugin(new DebugBar(page.nextUiPluginComponentId())
-									.add(new AttributeAppender("style", "position: fixed; left: 0; bottom: 0; top: inherit;", "; ")));
+									.add(new AttributeAppender("style", "position: fixed; "
+																	  + "left: 0; "
+																	  + "bottom: 0; "
+																	  + "top: inherit; "
+																	  + "z-index: 99999", 
+																	  "; ")));
 		}
 	}
 	
