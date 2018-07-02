@@ -16,11 +16,13 @@ import org.orienteer.junit.OrienteerTester;
 import org.orienteer.model.OMail;
 import org.orienteer.model.OMailSettings;
 import org.orienteer.service.IOMailService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+import javax.mail.BodyPart;
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMultipart;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
@@ -36,10 +38,7 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(OrienteerTestRunner.class)
 @Singleton
-public class TestOMailModule
-{
-	private static final Logger LOG = LoggerFactory.getLogger(TestOMailModule.class);
-
+public class TestOMailModule {
 	@Inject
 	private OrienteerTester tester;
 
@@ -47,6 +46,7 @@ public class TestOMailModule
 	private IOMailService mailService;
 
 	private OMail mail;
+	private OMailSettings settings;
 	private String to;
 
 	@Before
@@ -57,15 +57,17 @@ public class TestOMailModule
 		to = "to@gmail.com";
 		Function<String, OMail> query = (name) -> {
 			List<ODocument> docs  = OrienteerWebSession.get().getDatabase().query(new OSQLSynchQuery<>("select from "
-					+ OMail.CLASS_NAME + " where " + OMail.NAME + " = ?", 1), name);
+					+ OMail.CLASS_NAME + " where " + OMail.OPROPERTY_NAME + " = ?", 1), name);
 			return docs != null && !docs.isEmpty() ? new OMail(docs.get(0)) : null;
 		};
 		Consumer<String> create = (name) -> {
-			OMailSettings settings = new OMailSettings()
+			settings = new OMailSettings()
 					.setEmail(email)
 					.setPassword(password)
 					.setSmtpHost("smtp.gmail.com")
 					.setSmtpPort(587)
+					.setImapHost("imap.gmail.com")
+					.setImapPort(993)
 					.setTlsSsl(true);
 			OMail mail = new OMail()
 					.setMailSettings(settings)
@@ -94,8 +96,7 @@ public class TestOMailModule
 	}
 
 	@Test
-	public void testModuleLoaded()
-	{
+	public void testModuleLoaded() {
 	    OrienteerWebApplication app = tester.getApplication();
 	    assertNotNull(app);
 	    IOrienteerModule module = app.getModuleByName("orienteer-mail");
@@ -104,7 +105,6 @@ public class TestOMailModule
 	}
 
 	@Test
-	@Ignore
 	public void testSendEmail() {
 		try {
 			mailService.sendMail(to, mail);
@@ -121,6 +121,26 @@ public class TestOMailModule
 		OMail mail = new OMail().setText("${test}");
 		mail.setMacros(macros);
 		assertTrue(mail.getText().equals(str));
+	}
+
+	@Test
+	public void testCheckEmailAsync() throws InterruptedException {
+        mailService.fetchMailsAsync(settings, "inbox", message -> {
+            try {
+                InternetAddress from = (InternetAddress) message.getFrom()[0];
+                String subject = message.getSubject();
+                MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+                assertNotNull(from.getAddress());
+                assertNotNull(subject);
+				for (int i = 0; i < mimeMultipart.getCount(); i++) {
+					BodyPart part = mimeMultipart.getBodyPart(i);
+					assertNotNull(part.getContent());
+				}
+            } catch (MessagingException | IOException e) {
+                throw new IllegalStateException(e);
+            }
+		});
+        Thread.currentThread().join(10_000);
 	}
 
 	@Test

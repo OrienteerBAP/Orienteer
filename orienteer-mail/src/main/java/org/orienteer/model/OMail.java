@@ -1,5 +1,6 @@
 package org.orienteer.model;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.model.IModel;
@@ -14,11 +15,12 @@ import java.util.Map;
  */
 public class OMail extends ODocumentWrapper {
     public static final String CLASS_NAME = "OMail";
-    public static final String NAME       = "name";
-    public static final String SUBJECT    = "subject";
-    public static final String FROM       = "from";
-    public static final String TEXT       = "text";
-    public static final String SETTINGS   = "settings";
+
+    public static final String OPROPERTY_NAME     = "name";
+    public static final String OPROPERTY_SUBJECT  = "subject";
+    public static final String OPROPERTY_FROM     = "from";
+    public static final String OPROPERTY_TEXT     = "text";
+    public static final String OPROPERTY_SETTINGS = "settings";
 
     private final IModel<Map<Object, Object>> macros = new MapModel<>();
 
@@ -31,39 +33,39 @@ public class OMail extends ODocumentWrapper {
     }
 
     public OMail setName(String name) {
-        document.field(NAME, name);
+        document.field(OPROPERTY_NAME, name);
         return this;
     }
 
     public String getName() {
-        return document.field(NAME);
+        return document.field(OPROPERTY_NAME);
     }
 
     public OMail setSubject(String subject) {
-        document.field(SUBJECT, subject);
+        document.field(OPROPERTY_SUBJECT, subject);
         return this;
     }
 
     public String getSubject() {
-        return applyMacros(document.field(SUBJECT));
+        return applyMacros(document.field(OPROPERTY_SUBJECT));
     }
 
     public OMail setFrom(String from) {
-        document.field(FROM, from);
+        document.field(OPROPERTY_FROM, from);
         return this;
     }
 
     public String getFrom() {
-        return document.field(FROM);
+        return document.field(OPROPERTY_FROM);
     }
 
     public OMail setText(String text) {
-        document.field(TEXT, text);
+        document.field(OPROPERTY_TEXT, text);
         return this;
     }
 
     public String getText() {
-        return applyMacros(document.field(TEXT));
+        return applyMacros(document.field(OPROPERTY_TEXT));
     }
 
     public OMail setMailSettings(OMailSettings settings) {
@@ -71,12 +73,14 @@ public class OMail extends ODocumentWrapper {
     }
 
     public OMail setMailSettings(ODocument doc) {
-        document.field(SETTINGS, doc);
+        document.field(OPROPERTY_SETTINGS, doc.getIdentity());
         return this;
     }
 
     public OMailSettings getMailSettings() {
-        return new OMailSettings(document.field(SETTINGS));
+        OIdentifiable identifiable = document.field(OPROPERTY_SETTINGS);
+        ODocument doc = identifiable != null ? identifiable.getRecord() : null;
+        return doc != null ? new OMailSettings(doc) : null;
     }
 
     private String applyMacros(String text) {

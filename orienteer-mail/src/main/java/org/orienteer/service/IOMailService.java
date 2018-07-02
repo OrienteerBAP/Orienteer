@@ -2,10 +2,13 @@ package org.orienteer.service;
 
 import com.google.inject.ImplementedBy;
 import org.orienteer.model.OMail;
+import org.orienteer.model.OMailSettings;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -67,4 +70,23 @@ public interface IOMailService {
      *                                   false - sending mail failed
      */
     public void sendMailAsync(List<String> to, OMail mail, Consumer<Boolean> f);
+
+    /**
+     * Fetch mails from mail address. Call callback on each mail
+     * Uses IMAP.
+     * @param settings {@link OMailSettings} mail settings
+     * @param folderName {@link String} folder which contains mails
+     * @param consumer {@link Consumer<Message>} callback
+     * @throws MessagingException
+     */
+    public void fetchMails(OMailSettings settings, String folderName, Consumer<Message> consumer) throws MessagingException;
+
+    /**
+     * Fetch mails from mail address asynchronous. Call callback on each mail
+     * Uses IMAP.
+     * @param settings {@link OMailSettings} mail settings
+     * @param folderName {@link String} folder which contains mails
+     * @param consumer {@link Consumer<Message>} callback
+     */
+    public CompletableFuture<Void> fetchMailsAsync(OMailSettings settings, String folderName, Consumer<Message> consumer);
 }
