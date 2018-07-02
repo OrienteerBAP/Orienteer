@@ -105,6 +105,7 @@ public class TestOMailModule {
 	}
 
 	@Test
+	@Ignore
 	public void testSendEmail() {
 		try {
 			mailService.sendMail(to, mail);
@@ -124,6 +125,7 @@ public class TestOMailModule {
 	}
 
 	@Test
+	@Ignore
 	public void testCheckEmailAsync() throws InterruptedException {
         mailService.fetchMailsAsync(settings, "inbox", message -> {
             try {
