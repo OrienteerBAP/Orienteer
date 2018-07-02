@@ -11,10 +11,12 @@ import javax.mail.*;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.search.FlagTerm;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
@@ -29,9 +31,8 @@ public class OMailServiceImpl implements IOMailService {
 
     @Override
     public void sendMail(List<String> to, OMail mail) throws MessagingException, UnsupportedEncodingException {
-        mail.reload();
         final OMailSettings settings = mail.getMailSettings();
-        final Session session = createSession(settings);
+        final Session session = createSession(settings, createSendMailProperties(settings));
         final Message message = new MimeMessage(session);
         message.setFrom(createFrom(mail, settings));
         message.setRecipients(Message.RecipientType.TO, toAddressArray(to));
@@ -76,12 +77,45 @@ public class OMailServiceImpl implements IOMailService {
         }).start();
     }
 
+    @Override
+    public void fetchMails(OMailSettings settings, String folderName, Consumer<Message> consumer) throws MessagingException {
+        Session session = createSession(settings, createCheckMailProperties(settings));
+        Store store = session.getStore("imaps");
+        store.connect();
+        Folder folder = store.getFolder(folderName);
+        folder.open(Folder.READ_WRITE);
+        Message [] messages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+        for (int i = messages.length - 1; i >= 0; i--) {
+            Message message = messages[i];
+            consumer.accept(message);
+            message.setFlag(Flags.Flag.SEEN, true);
+        }
+        folder.close(false);
+        store.close();
+    }
+
+    @Override
+    public CompletableFuture<Void> fetchMailsAsync(OMailSettings settings, String folderName, Consumer<Message> consumer) {
+        OrienteerWebSession session = OrienteerWebSession.get();
+        OrienteerWebApplication app = OrienteerWebApplication.get();
+        RequestCycle requestCycle = RequestCycle.get();
+        return CompletableFuture.runAsync(() -> {
+            ThreadContext.setSession(session);
+            ThreadContext.setApplication(app);
+            ThreadContext.setRequestCycle(requestCycle);
+            try {
+                fetchMails(settings, folderName, consumer);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
     private InternetAddress createFrom(OMail mail, OMailSettings settings) throws UnsupportedEncodingException {
         return new InternetAddress(settings.getEmail(), mail.getFrom());
     }
 
-    private Session createSession(OMailSettings settings) {
-        Properties properties = createProperties(settings);
+    private Session createSession(OMailSettings settings, Properties properties) {
         return Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -90,12 +124,20 @@ public class OMailServiceImpl implements IOMailService {
         });
     }
 
-    private Properties createProperties(OMailSettings settings) {
+    private Properties createSendMailProperties(OMailSettings settings) {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", settings.isTlsSsl());
         properties.put("mail.smtp.host", settings.getSmtpHost());
         properties.put("mail.smtp.port", settings.getSmtpPort());
+        return properties;
+    }
+
+    private Properties createCheckMailProperties(OMailSettings settings) {
+        Properties properties = new Properties();
+        properties.put("mail.store.protocol", "imaps");
+        properties.put("mail.imaps.host", settings.getImapHost());
+        properties.put("mail.imaps.port", settings.getImapPort());
         return properties;
     }
 

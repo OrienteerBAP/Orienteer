@@ -9,11 +9,14 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
  */
 public class OMailSettings extends ODocumentWrapper {
     public static final String CLASS_NAME = "OMailSettings";
-    public static final String EMAIL      = "email";
-    public static final String PASSWORD   = "password";
-    public static final String SMTP_HOST  = "smtpHost";
-    public static final String SMTP_PORT  = "smtpPort";
-    public static final String TLS_SSL    = "tlsSsl";
+
+    public static final String OPROPERTY_EMAIL     = "email";
+    public static final String OPROPERTY_PASSWORD  = "password";
+    public static final String OPROPERTY_SMTP_HOST = "smtpHost";
+    public static final String OPROPERTY_SMTP_PORT = "smtpPort";
+    public static final String OPROPERTY_IMAP_HOST = "imapHost";
+    public static final String OPROPERTY_IMAP_PORT = "imapPort";
+    public static final String OPROPERTY_TLS_SSL   = "tlsSsl";
 
     public OMailSettings() {
         super(CLASS_NAME);
@@ -24,16 +27,16 @@ public class OMailSettings extends ODocumentWrapper {
     }
 
     public OMailSettings setEmail(String email) {
-        document.field(EMAIL, email);
+        document.field(OPROPERTY_EMAIL, email);
         return this;
     }
 
     public String getEmail() {
-        return document.field(EMAIL);
+        return document.field(OPROPERTY_EMAIL);
     }
 
     public OMailSettings setPassword(String password) {
-        document.field(PASSWORD, password);
+        document.field(OPROPERTY_PASSWORD, password);
         return this;
     }
 
@@ -41,34 +44,52 @@ public class OMailSettings extends ODocumentWrapper {
      * @return {@link String} password hash
      */
     public String getPassword() {
-        return document.field(PASSWORD);
+        return document.field(OPROPERTY_PASSWORD);
     }
 
     public OMailSettings setSmtpHost(String host) {
-        document.field(SMTP_HOST, host);
+        document.field(OPROPERTY_SMTP_HOST, host);
         return this;
     }
 
     public String getSmtpHost() {
-        return document.field(SMTP_HOST);
+        return document.field(OPROPERTY_SMTP_HOST);
     }
 
     public OMailSettings setSmtpPort(int port) {
-        document.field(SMTP_PORT, port);
+        document.field(OPROPERTY_SMTP_PORT, port);
         return this;
     }
 
     public int getSmtpPort() {
-        return document.field(SMTP_PORT);
+        return document.field(OPROPERTY_SMTP_PORT);
     }
 
     public OMailSettings setTlsSsl(boolean enable) {
-        document.field(TLS_SSL, enable);
+        document.field(OPROPERTY_TLS_SSL, enable);
         return this;
     }
 
     public boolean isTlsSsl() {
-        return document.field(TLS_SSL);
+        return document.field(OPROPERTY_TLS_SSL);
+    }
+
+    public String getImapHost() {
+        return document.field(OPROPERTY_IMAP_HOST);
+    }
+
+    public OMailSettings setImapHost(String host) {
+        document.field(OPROPERTY_IMAP_HOST, host);
+        return this;
+    }
+
+    public int getImapPort() {
+        return document.field(OPROPERTY_IMAP_PORT);
+    }
+
+    public OMailSettings setImapPort(int port) {
+        document.field(OPROPERTY_IMAP_PORT, port);
+        return this;
     }
 
     /**
