@@ -39,7 +39,7 @@ public class ODateTimeField extends FormComponentPanel<Date> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        add(picker = new ODateField("datePanel", getModel()));
+        add(picker = new ODateField("datePanel", Model.of(getModelObject())));
         addTimeComponents();
         add(AttributeModifier.append("class", "bootstrap-data-picker"));
         setOutputMarkupId(true);
@@ -65,7 +65,6 @@ public class ODateTimeField extends FormComponentPanel<Date> {
 
     @Override
     public void convertInput() {
-        super.convertInput();
         boolean supportAmOrPm = isSupportAmPm();
         int hours = Optional.ofNullable(hoursField.getConvertedInput()).orElse(0);
         int minutes = Optional.ofNullable(minutesField.getConvertedInput()).orElse(0);
@@ -79,7 +78,7 @@ public class ODateTimeField extends FormComponentPanel<Date> {
                 calendar.set(Calendar.AM_PM, amOrPmChoice.getConvertedInput().equals(AM) ? Calendar.AM : Calendar.PM);
             }
             setConvertedInput(calendar.getTime());
-        }
+        } else setConvertedInput(null);
     }
 
     private TextField<Integer> createHoursField(String id, int hours) {
