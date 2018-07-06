@@ -49,7 +49,6 @@ public final class OrienteerFilter implements Filter {
     	this.filterConfig = filterConfig;
     	Properties properties = StartupPropertiesLoader.retrieveProperties();
     	classLoader = initClassLoader(properties);
-    	//TODO: Implement classloading here
     	Thread.currentThread().setContextClassLoader(classLoader);
         LOG.info("Start initialization: " + this.getClass().getName());
         ServletContext context = filterConfig.getServletContext();

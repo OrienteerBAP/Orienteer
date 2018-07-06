@@ -21,9 +21,9 @@ public interface IMethod {
 	 * Return display {@link Command} with assigned id
 	 * May be created every time or storages into method 
 	 * If you need to use integrated markup, see {@link org.orienteer.core.method.ExampleMethodWithIntMarkup} for example
-	 * @param id TODO
+	 * @param id identification of the {@link Command} to be created 
 	 * 
-	 * @return
+	 * @return created {@link Command}
 	 */
 	public Command<?> createCommand(String id);
 }

@@ -96,7 +96,7 @@ orientdb.admin.password=admin    //Password for OrientDB user used for administr
 ### Setup of development environment 
 
 #### Prerequisites
-1. java 7+
+1. java 8+
 2. git
 3. maven
 4. OrientDB, if you want to use OrientDB remotely
