@@ -14,10 +14,7 @@ import org.apache.wicket.validation.validator.RangeValidator;
 import java.time.chrono.Chronology;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Bootstrap enabled date time field
@@ -42,7 +39,7 @@ public class ODateTimeField extends FormComponentPanel<Date> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        add(picker = new ODateField("datePanel", getModel()));
+        add(picker = new ODateField("datePanel", Model.of(getModelObject())));
         addTimeComponents();
         add(AttributeModifier.append("class", "bootstrap-data-picker"));
         setOutputMarkupId(true);
@@ -68,10 +65,9 @@ public class ODateTimeField extends FormComponentPanel<Date> {
 
     @Override
     public void convertInput() {
-        super.convertInput();
         boolean supportAmOrPm = isSupportAmPm();
-        int hours = hoursField.getConvertedInput();
-        int minutes = minutesField.getConvertedInput();
+        int hours = Optional.ofNullable(hoursField.getConvertedInput()).orElse(0);
+        int minutes = Optional.ofNullable(minutesField.getConvertedInput()).orElse(0);
         Date date = picker.getConvertedInput();
         if (date != null) {
             Calendar calendar = Calendar.getInstance(getLocale());
@@ -82,7 +78,7 @@ public class ODateTimeField extends FormComponentPanel<Date> {
                 calendar.set(Calendar.AM_PM, amOrPmChoice.getConvertedInput().equals(AM) ? Calendar.AM : Calendar.PM);
             }
             setConvertedInput(calendar.getTime());
-        }
+        } else setConvertedInput(null);
     }
 
     private TextField<Integer> createHoursField(String id, int hours) {

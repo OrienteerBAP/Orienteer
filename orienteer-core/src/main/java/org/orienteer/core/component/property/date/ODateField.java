@@ -44,7 +44,6 @@ public class ODateField extends FormComponentPanel<Date> {
 
     @Override
     public void convertInput() {
-        super.convertInput();
         setConvertedInput(dateField.getConvertedInput());
     }
 
