@@ -1,6 +1,7 @@
 package org.orienteer.core.component.property.date;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Session;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -8,12 +9,15 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.validation.validator.RangeValidator;
 
+import java.time.*;
 import java.time.chrono.Chronology;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoField;
 import java.util.*;
 
 /**
@@ -32,32 +36,43 @@ public class ODateTimeField extends FormComponentPanel<Date> {
     private DropDownChoice<String> amOrPmChoice;
     private ODateField picker;
 
+    private final ZoneId clientZone;
+
     public ODateTimeField(String id, IModel<Date> model) {
         super(id, model);
+        clientZone = ((WebClientInfo)Session.get().getClientInfo()).getProperties().getTimeZone().toZoneId();
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        add(picker = new ODateField("datePanel", Model.of(getModelObject())));
-        addTimeComponents();
+        Date date = getModelObject();
+        Instant instant = date != null ? date.toInstant() : null;
+        Date pickerDate = null;
+        ZonedDateTime zonedDateTime = null;
+        if (instant != null) {
+            zonedDateTime = instant.atZone(clientZone);
+            pickerDate = Date.from(zonedDateTime.toInstant());
+        }
+        add(picker = new ODateField("datePanel", Model.of(pickerDate), clientZone));
+        addTimeComponents(zonedDateTime);
         add(AttributeModifier.append("class", "bootstrap-data-picker"));
         setOutputMarkupId(true);
     }
 
-    private void addTimeComponents() {
-        Date date = getModelObject();
-        Calendar calendar = Calendar.getInstance(getLocale());
+    private void addTimeComponents(ZonedDateTime dateTime) {
         int hours = 0;
         int minutes = 0;
         int mode = -1;
-        if (date != null) {
-            boolean support = isSupportAmPm();
-            calendar.setTime(getModelObject());
-            hours = support ? calendar.get(Calendar.HOUR) : calendar.get(Calendar.HOUR_OF_DAY);
-            minutes = calendar.get(Calendar.MINUTE);
-            mode = support ? calendar.get(Calendar.AM_PM) : -1;
+
+        if (dateTime != null) {
+            if (isSupportAmPm()) {
+                mode = dateTime.get(ChronoField.AMPM_OF_DAY);
+            }
+            hours = mode == -1 ? dateTime.getHour() : dateTime.get(ChronoField.HOUR_OF_AMPM);
+            minutes = dateTime.getMinute();
         }
+
         add(hoursField = createHoursField("hours", hours));
         add(minutesField = createMinutesField("minutes", minutes));
         add(amOrPmChoice = createChoice("amOrPmChoice", mode));
@@ -70,14 +85,14 @@ public class ODateTimeField extends FormComponentPanel<Date> {
         int minutes = Optional.ofNullable(minutesField.getConvertedInput()).orElse(0);
         Date date = picker.getConvertedInput();
         if (date != null) {
-            Calendar calendar = Calendar.getInstance(getLocale());
-            calendar.setTime(date);
-            calendar.set(Calendar.MINUTE, minutes);
-            calendar.set(supportAmOrPm ? Calendar.HOUR : Calendar.HOUR_OF_DAY, hours);
+            LocalDate localDate = date.toInstant().atZone(clientZone).toLocalDate();
+            LocalTime localTime = LocalTime.of(hours, minutes);
+            ZonedDateTime dateTime = ZonedDateTime.of(localDate, localTime, clientZone);
             if (supportAmOrPm) {
-                calendar.set(Calendar.AM_PM, amOrPmChoice.getConvertedInput().equals(AM) ? Calendar.AM : Calendar.PM);
+                int amPm = amOrPmChoice.getConvertedInput().equals(AM) ? 0 : 1;
+                dateTime = dateTime.with(ChronoField.AMPM_OF_DAY, amPm);
             }
-            setConvertedInput(calendar.getTime());
+            setConvertedInput(Date.from(dateTime.toInstant()));
         } else setConvertedInput(null);
     }
 
@@ -110,7 +125,7 @@ public class ODateTimeField extends FormComponentPanel<Date> {
     private boolean isSupportAmPm() {
         Locale locale = getLocale();
         String pattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(null, FormatStyle.MEDIUM,
-                Chronology.ofLocale(locale), locale);
+                Chronology.ofLocale(locale), locale).toLowerCase();
         return pattern.contains("a");
     }
 
