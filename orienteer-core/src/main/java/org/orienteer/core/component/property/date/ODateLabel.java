@@ -1,11 +1,10 @@
 package org.orienteer.core.component.property.date;
 
-import org.apache.wicket.Session;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.orienteer.core.OrienteerWebSession;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -35,7 +34,7 @@ public class ODateLabel extends Label {
         Date date = (Date) getDefaultModelObject();
         String formattedDate = "";
         if (date != null) {
-            ZoneId zoneId = ((WebClientInfo) Session.get().getClientInfo()).getProperties().getTimeZone().toZoneId();
+            ZoneId zoneId = OrienteerWebSession.get().getClientZoneId();
             ZonedDateTime zonedDateTime = date.toInstant().atZone(zoneId);
             formattedDate = zonedDateTime.format(getFormatter(zoneId));
         }

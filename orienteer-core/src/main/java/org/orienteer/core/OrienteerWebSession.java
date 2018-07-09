@@ -11,7 +11,9 @@ import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.core.module.UserOnlineModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+import java.time.ZoneId;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Orienteer's {@link WebSession} class.
@@ -96,5 +98,10 @@ public class OrienteerWebSession extends OrientDbWebSession
 	public void detach() {
 		if(perspective!=null) perspective = perspective.getIdentity();
 		super.detach();
+	}
+
+	public ZoneId getClientZoneId() {
+		TimeZone timeZone = getClientInfo().getProperties().getTimeZone();
+		return timeZone != null ? timeZone.toZoneId() : ZoneId.systemDefault();
 	}
 }

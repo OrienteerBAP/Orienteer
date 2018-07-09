@@ -1,7 +1,6 @@
 package org.orienteer.core.component.property.date;
 
 import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.Session;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -9,9 +8,9 @@ import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.validation.validator.RangeValidator;
+import org.orienteer.core.OrienteerWebSession;
 
 import java.time.*;
 import java.time.chrono.Chronology;
@@ -40,7 +39,7 @@ public class ODateTimeField extends FormComponentPanel<Date> {
 
     public ODateTimeField(String id, IModel<Date> model) {
         super(id, model);
-        clientZone = ((WebClientInfo)Session.get().getClientInfo()).getProperties().getTimeZone().toZoneId();
+        clientZone = OrienteerWebSession.get().getClientZoneId();
     }
 
     @Override
