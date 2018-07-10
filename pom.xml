@@ -97,7 +97,8 @@
 		<module>orienteer-archetype-war</module>
 		<module>orienteer-architect</module>
 		<module>orienteer-mail</module>
-  	</modules>
+        <module>orienteer-users</module>
+    </modules>
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->
