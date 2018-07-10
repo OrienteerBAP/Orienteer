@@ -1,14 +1,19 @@
 package org.orienteer.core.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.wicket.WicketRuntimeException;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Common for Orienteer utility methods
@@ -68,5 +73,40 @@ public class CommonUtils {
 			content = Strings.replaceAll(content, "\n", "\" + \n\"");
 			return content;
 		}
+	}
+
+	public static <T> List<T> mapIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> f) {
+		if (identifiables == null) {
+			return Collections.emptyList();
+		}
+		return identifiables.stream()
+				.map(i -> (ODocument) i.getRecord())
+				.map(f)
+				.collect(Collectors.toList());
+	}
+
+	public static <T> T getFromIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> f) {
+		return isNotEmpty(identifiables) ? f.apply(identifiables.get(0).getRecord()) : null;
+	}
+
+
+	public static <T> T getFromIdentifiable(OIdentifiable identifiable, Function<ODocument, T> f) {
+		if (identifiable != null) {
+			ODocument doc = identifiable.getRecord();
+			return f.apply(doc);
+		}
+		return null;
+	}
+
+	public static boolean isNotEmpty(List<OIdentifiable> identifiables) {
+		return identifiables != null && !identifiables.isEmpty();
+	}
+
+	/**
+	 * @param identifiables {@link List <OIdentifiable>}
+	 * @return get first document or null
+	 */
+	public static ODocument getDocument(List<OIdentifiable> identifiables) {
+		return isNotEmpty(identifiables) ? identifiables.get(0).getRecord() : null;
 	}
 }
