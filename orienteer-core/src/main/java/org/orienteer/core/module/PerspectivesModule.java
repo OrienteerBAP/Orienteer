@@ -9,23 +9,17 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OIdentity;
-import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
-import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
-import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
-
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.inject.Singleton;
-
 import java.util.List;
 import java.util.Set;
 
@@ -33,14 +27,14 @@ import java.util.Set;
  * {@link IOrienteerModule} for "perspectives" feature of Orienteer
  */
 @Singleton
-public class PerspectivesModule extends AbstractOrienteerModule
-{
+public class PerspectivesModule extends AbstractOrienteerModule {
 	public static final String NAME = "perspectives";
 	public static final String OCLASS_PERSPECTIVE="OPerspective";
 	public static final String OCLASS_ITEM = "OPerspectiveItem";
 
 	public static final String DEFAULT_PERSPECTIVE = "Default";
-	
+
+	public static final String PROP_PERSPECTIVE = "perspective";
 
 	public PerspectivesModule()
 	{
@@ -72,7 +66,7 @@ public class PerspectivesModule extends AbstractOrienteerModule
 				.orderProperties("name", "perspective", "icon", "url")
 				.setupRelationship(OCLASS_PERSPECTIVE, "menu", OCLASS_ITEM, "perspective")
 			.oClass(OIdentity.CLASS_NAME)
-				.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE)
+				.oProperty(PROP_PERSPECTIVE, OType.LINK).linkedClass(OCLASS_PERSPECTIVE)
 			.setupRelationship(OCLASS_ITEM, "subItems", OCLASS_ITEM, "perspectiveItem")
 				.oProperty("perspectiveItem", OType.LINK).linkedClass(OCLASS_ITEM)
             .oClass(OIdentity.CLASS_NAME);
