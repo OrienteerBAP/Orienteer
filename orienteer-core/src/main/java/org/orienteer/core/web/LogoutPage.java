@@ -2,8 +2,7 @@ package org.orienteer.core.web;
 
 import org.orienteer.core.MountPath;
 import org.orienteer.core.OrienteerWebApplication;
-
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import org.orienteer.core.OrienteerWebSession;
 
 /**
  * Logout page. Invalidates current session
@@ -12,9 +11,8 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 public class LogoutPage extends BasePage<Object> {
 	private static final long serialVersionUID = 1L;
 
-	public LogoutPage()
-	{
-		OrientDbWebSession.get().invalidate();
+	public LogoutPage() {
+		OrienteerWebSession.get().signOut();
 		setResponsePage(OrienteerWebApplication.get().getHomePage());
 	}
 }
