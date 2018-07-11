@@ -4,11 +4,10 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.metadata.security.ORestrictedOperation;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
-import org.orienteer.users.service.IOUsersDBService;
+import org.orienteer.users.util.OUsersDbUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,17 +22,15 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
 
     @Override
     public RESULT onRecordBeforeCreate(ODocument doc) {
-        IOUsersDBService dbService = OrienteerWebApplication.lookupApplication().getServiceInstance(IOUsersDBService.class);
-
         doc.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
 
         if (doc.field(PerspectivesModule.PROP_PERSPECTIVE) == null) {
-            doc.field(PerspectivesModule.PROP_PERSPECTIVE, dbService.getDefaultOrienteerUserPerspective());
+            doc.field(PerspectivesModule.PROP_PERSPECTIVE, OUsersDbUtils.getDefaultOrienteerUserPerspective());
         }
 
         List<ODocument> roles = doc.field("roles");
         if (roles == null || roles.isEmpty()) {
-            ODocument roleDoc = dbService.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE).getDocument();
+            ODocument roleDoc = OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE).getDocument();
             doc.field("roles", Collections.singleton(roleDoc));
         }
 
