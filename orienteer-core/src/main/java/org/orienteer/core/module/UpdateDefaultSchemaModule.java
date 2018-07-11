@@ -1,24 +1,17 @@
 package org.orienteer.core.module;
 
-import javax.inject.Singleton;
-
-import org.orienteer.core.CustomAttribute;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.security.ORole;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.PasswordVisualizer;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
-
-import com.orientechnologies.orient.core.Orient;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.metadata.security.ORole;
-import com.orientechnologies.orient.core.metadata.security.OSecurity;
-import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+
+import javax.inject.Singleton;
 
 /**
  * {@link IOrienteerModule} to fix existing OrientDB schema to make it more Orienteer friendly
@@ -115,6 +108,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 			ORole oRole = new ORole(oRoleDoc);
 			if(oRole.getParentRole()==null) {
 				oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, OrientPermission.READ.getPermissionFlag());
+				oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, OrientPermission.READ.getPermissionFlag());
 				oRole.save();
 			}
 		}
