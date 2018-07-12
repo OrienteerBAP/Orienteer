@@ -30,6 +30,9 @@ import java.util.Set;
 import static com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 
 
+/**
+ * Orienteer module to setup DB model 
+ */
 public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     public static final String ORIENTEER_USER_ROLE = "orienteerUser";

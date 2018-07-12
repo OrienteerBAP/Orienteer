@@ -6,6 +6,9 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import java.time.Instant;
 import java.util.Date;
 
+/**
+ * DocumentWrapper for more specialized work with OrienteerUser 
+ */
 public class OrienteerUser extends OUser {
     private static final long serialVersionUID = 1L;
 

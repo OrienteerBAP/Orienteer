@@ -9,6 +9,9 @@ import org.orienteer.users.module.OrienteerUsersModule;
 
 import java.util.List;
 
+/**
+ * {@link IInitializer} for Orienteer Users module 
+ */
 public class Initializer implements IInitializer {
     @Override
     public void init(Application application) {

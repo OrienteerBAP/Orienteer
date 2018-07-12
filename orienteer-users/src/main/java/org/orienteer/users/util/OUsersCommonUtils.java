@@ -15,7 +15,14 @@ import java.util.*;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
 
+/**
+ * Specialized utils for users security 
+ */
 public final class OUsersCommonUtils {
+	
+	private OUsersCommonUtils() {
+		
+	}
 
     public static void setRestricted(ODatabaseDocument db, OClass oClass) {
         OClass restricted = db.getMetadata().getSchema().getClass("ORestricted");

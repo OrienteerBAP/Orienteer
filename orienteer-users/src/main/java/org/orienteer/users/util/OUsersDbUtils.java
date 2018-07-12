@@ -13,7 +13,14 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Specialized utils for DB
+ */
 public final class OUsersDbUtils {
+	
+	private OUsersDbUtils() {
+		
+	}
 
     public static ODocument getDefaultOrienteerUserPerspective() {
         return DBClosure.sudo(db -> {

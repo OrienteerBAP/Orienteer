@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Hook to initialize OUser 
+ */
 public class OrienteerUserHook extends ODocumentHookAbstract {
 
     public OrienteerUserHook(ODatabaseDocument database) {
