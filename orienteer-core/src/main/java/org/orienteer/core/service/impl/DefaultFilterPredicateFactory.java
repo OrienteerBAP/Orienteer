@@ -30,9 +30,8 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
 
     @Override
     public SerializablePredicate<OClass> getPredicateByOperation(int operation) {
-        OSecurityUser user = OrienteerWebSession.get().getUser();
-        return user != null ? (input) -> user.checkIfAllowed(ORule.ResourceGeneric.CLASS, input.getName(), operation) != null 
-        		: (i) -> false;
+        OSecurityUser user = OrienteerWebSession.get().getEffectiveUser();
+        return (input) -> user.checkIfAllowed(ORule.ResourceGeneric.CLASS, input.getName(), operation) != null;
     }
 
     @Override

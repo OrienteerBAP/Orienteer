@@ -15,6 +15,9 @@ import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.service.IFilterPredicateFactory;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -24,8 +27,10 @@ import java.util.stream.Collectors;
  * Page to search and display search results
  */
 @MountPath("/search")
+@RequiredOrientResource(value = OSecurityHelper.FEATURE, specific=SearchPage.SEARCH_FEATURE, permissions=OrientPermission.READ)
 public class SearchPage extends OrienteerBasePage<String> {
 
+	public static final String SEARCH_FEATURE = "search";
 	
 	public SearchPage() {
 		super(Model.of(""));
