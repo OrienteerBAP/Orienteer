@@ -50,7 +50,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
-        helper.oClass(OrienteerUser.CLASS_NAME, OUser.CLASS_NAME)
+        helper.oClass(OUser.CLASS_NAME)
                 .oProperty(OrienteerUser.PROP_ID, OType.STRING).notNull().oIndex(OClass.INDEX_TYPE.UNIQUE)
                 .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
                 .oProperty(OrienteerUser.PROP_RESTORE_ID, OType.STRING)

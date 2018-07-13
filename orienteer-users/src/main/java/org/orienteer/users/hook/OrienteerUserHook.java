@@ -3,6 +3,7 @@ package org.orienteer.users.hook;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.metadata.security.ORestrictedOperation;
+import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
@@ -20,7 +21,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
 
     public OrienteerUserHook(ODatabaseDocument database) {
         super(database);
-        setIncludeClasses(OrienteerUser.CLASS_NAME);
+        setIncludeClasses(OUser.CLASS_NAME);
     }
 
     @Override
