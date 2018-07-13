@@ -12,8 +12,6 @@ import java.util.Date;
 public class OrienteerUser extends OUser {
     private static final long serialVersionUID = 1L;
 
-    public static final String CLASS_NAME = "OrienteerUser";
-
     public static final String PROP_ID                = "id";
     public static final String PROP_RESTORE_ID        = "restoreId";
     public static final String PROP_RESTORE_ID_CREATED = "restoreIdCreated";
