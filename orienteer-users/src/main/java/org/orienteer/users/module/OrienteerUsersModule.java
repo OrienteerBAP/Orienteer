@@ -87,8 +87,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, OrientPermission.READ.getPermissionFlag());
 
-        role.grant(ResourceGeneric.CLASS, OrienteerUser.CLASS_NAME, OrientPermission.UPDATE.getPermissionFlag());
-        role.grant(ResourceGeneric.DATABASE, "cluster", OrientPermission.UPDATE.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, OrienteerUser.CLASS_NAME, 6);
+        role.grant(ResourceGeneric.DATABASE, "cluster", 6);
 
 
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
