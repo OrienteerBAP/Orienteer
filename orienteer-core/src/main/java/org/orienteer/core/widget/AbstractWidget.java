@@ -10,7 +10,9 @@ import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -182,6 +184,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		super.onInitialize();
 		add(newIcon("icon"));
 		add(new Label("title", getTitleModel()));
+		add(createFooterPanel("widgetFooter"));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
 		OMethodsManager.get().populate(this, MethodPlace.ACTIONS, getModel(), null, null);
@@ -228,5 +231,11 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected OSchema getSchema() {
 		return OrientDbWebSession.get().getSchema();
+	}
+
+	protected Panel createFooterPanel(String id) {
+		Panel panel = new EmptyPanel(id);
+		panel.setVisible(false);
+		return panel;
 	}
 }

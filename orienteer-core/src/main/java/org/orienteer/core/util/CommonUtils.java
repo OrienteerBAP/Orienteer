@@ -85,6 +85,10 @@ public class CommonUtils {
 				.collect(Collectors.toList());
 	}
 
+	public static List<ODocument> getDocuments(List<OIdentifiable> identifiables) {
+		return mapIdentifiables(identifiables, d -> d);
+	}
+
 	public static <T> T getFromIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> f) {
 		return isNotEmpty(identifiables) ? f.apply(identifiables.get(0).getRecord()) : null;
 	}

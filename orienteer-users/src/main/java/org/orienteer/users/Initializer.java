@@ -5,6 +5,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.IInitializer;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.users.hook.OrienteerUserHook;
+import org.orienteer.users.hook.OrienteerUserRoleHook;
 import org.orienteer.users.module.OrienteerUsersModule;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class Initializer implements IInitializer {
         app.registerModule(OrienteerUsersModule.class);
         List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
         hooks.add(OrienteerUserHook.class);
+        hooks.add(OrienteerUserRoleHook.class);
     }
 
     @Override
