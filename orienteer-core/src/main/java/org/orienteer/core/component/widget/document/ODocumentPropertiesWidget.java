@@ -1,8 +1,10 @@
 package org.orienteer.core.component.widget.document;
 
-import java.util.List;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
@@ -14,31 +16,34 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.BookmarkablePageLinkCommand;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
-import org.orienteer.core.component.meta.IDisplayModeAware;
+import org.orienteer.core.component.event.IComponentEventBus;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
-import org.orienteer.core.widget.AbstractWidget;
-import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.Widget;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
+import java.util.Optional;
+
+import static org.orienteer.core.component.event.IDefaultEvent.ODOCUMENT_PROPERTIES_EDIT;
+import static org.orienteer.core.component.event.IDefaultEvent.ODOCUMENT_PROPERTIES_SAVE;
 
 /**
  * Widget to show registered parameters for a document on particular tab
  */
 @Widget(domain="document", id = ODocumentPropertiesWidget.WIDGET_TYPE_ID, autoEnable=true)
 public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument>{
-	
+
 	public static final String WIDGET_TYPE_ID = "parameters";
 	
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
+
+	@Inject
+	private IComponentEventBus eventBus;
 	
 	private OrienteerStructureTable<ODocument, OProperty> propertiesStructureTable;
 	private SaveODocumentCommand saveODocumentCommand;
@@ -89,8 +94,8 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, getModeModel()));
-		propertiesStructureTable.addCommand(saveODocumentCommand = new SaveODocumentCommand(propertiesStructureTable, getModeModel()));
+		propertiesStructureTable.addCommand(createEditCommand());
+		propertiesStructureTable.addCommand(saveODocumentCommand = createSaveCommand());
 	}
 	
 	@Override
@@ -107,6 +112,26 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 				setModeObject(DisplayMode.VIEW);
 			}
 		}
+	}
+
+	private EditODocumentCommand createEditCommand() {
+		return new EditODocumentCommand(propertiesStructureTable, getModeModel()) {
+			@Override
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				super.onClick(targetOptional);
+				targetOptional.ifPresent(t -> eventBus.onEvent(ODOCUMENT_PROPERTIES_EDIT, t));
+			}
+		};
+	}
+
+	private SaveODocumentCommand createSaveCommand() {
+		return new SaveODocumentCommand(propertiesStructureTable, getModeModel()) {
+			@Override
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				super.onClick(targetOptional);
+				targetOptional.ifPresent(t -> eventBus.onEvent(ODOCUMENT_PROPERTIES_SAVE, t));
+			}
+		};
 	}
 
 	@Override
