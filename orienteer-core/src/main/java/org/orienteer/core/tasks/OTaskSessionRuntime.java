@@ -1,17 +1,18 @@
 package org.orienteer.core.tasks;
 
-import java.util.Date;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import java.util.Date;
 
 /**
  * Runtime object to hold and manage session status
+ * @param <T> task session type
  */
-public class OTaskSessionRuntime implements ITaskSession{
+public class OTaskSessionRuntime<T extends OTaskSession> implements ITaskSession<T> {
 	
-	private OTaskSession persistedSession;
+	private T persistedSession;
 	private ITaskSessionCallback callback;
 	private Status status = Status.NOT_STARTED;
 	
@@ -23,11 +24,20 @@ public class OTaskSessionRuntime implements ITaskSession{
 		this(sessionClass,false);
 	}
 
+	@SuppressWarnings("unchecked")
 	public OTaskSessionRuntime(String sessionClass, boolean forceSave) {
-		persistedSession = new OTaskSession(new ODocument(sessionClass));
+		this((T) new OTaskSession(new ODocument(sessionClass)), forceSave);
+	}
+
+	public OTaskSessionRuntime(T persistedSession) {
+		this(persistedSession, false);
+	}
+
+	public OTaskSessionRuntime(T persistedSession, boolean forceSave) {
+		this.persistedSession = persistedSession;
 		setStatus(Status.NOT_STARTED);
 		if (forceSave){
-			persistedSession.persist();
+			this.persistedSession.persist();
 		}
 	}
 	
@@ -115,7 +125,7 @@ public class OTaskSessionRuntime implements ITaskSession{
 	}
 
 	@Override
-	public OTaskSession getOTaskSessionPersisted() {
+	public T getOTaskSessionPersisted() {
 		return persistedSession;
 	}
 
