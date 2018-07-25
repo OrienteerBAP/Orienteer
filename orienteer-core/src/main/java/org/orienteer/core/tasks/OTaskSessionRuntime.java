@@ -8,11 +8,10 @@ import java.util.Date;
 
 /**
  * Runtime object to hold and manage session status
- * @param <T> task session type
  */
-public class OTaskSessionRuntime<T extends OTaskSession> implements ITaskSession<T> {
+public class OTaskSessionRuntime implements ITaskSession {
 	
-	private T persistedSession;
+	private OTaskSession persistedSession;
 	private ITaskSessionCallback callback;
 	private Status status = Status.NOT_STARTED;
 	
@@ -26,14 +25,14 @@ public class OTaskSessionRuntime<T extends OTaskSession> implements ITaskSession
 
 	@SuppressWarnings("unchecked")
 	public OTaskSessionRuntime(String sessionClass, boolean forceSave) {
-		this((T) new OTaskSession(new ODocument(sessionClass)), forceSave);
+		this(new OTaskSession(new ODocument(sessionClass)), forceSave);
 	}
 
-	public OTaskSessionRuntime(T persistedSession) {
+	public OTaskSessionRuntime(OTaskSession persistedSession) {
 		this(persistedSession, false);
 	}
 
-	public OTaskSessionRuntime(T persistedSession, boolean forceSave) {
+	public OTaskSessionRuntime(OTaskSession persistedSession, boolean forceSave) {
 		this.persistedSession = persistedSession;
 		setStatus(Status.NOT_STARTED);
 		if (forceSave){
@@ -125,7 +124,7 @@ public class OTaskSessionRuntime<T extends OTaskSession> implements ITaskSession
 	}
 
 	@Override
-	public T getOTaskSessionPersisted() {
+	public OTaskSession getOTaskSessionPersisted() {
 		return persistedSession;
 	}
 
