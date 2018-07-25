@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
+import static ru.ydn.wicket.wicketorientdb.security.OrientPermission.READ;
+import static ru.ydn.wicket.wicketorientdb.security.OrientPermission.UPDATE;
 
 
 /**
@@ -82,13 +84,13 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
             role = security.createRole(ORIENTEER_USER_ROLE, reader, OSecurityRole.ALLOW_MODES.DENY_ALL_BUT);
         }
 
-        role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_WIDGET, OrientPermission.READ.getPermissionFlag());
-        role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, OrientPermission.READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_WIDGET, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, READ.getPermissionFlag());
 
-        role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, OrientPermission.READ.getPermissionFlag());
+        role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, READ.getPermissionFlag());
 
-        role.grant(ResourceGeneric.CLASS, OrienteerUser.CLASS_NAME, 6);
-        role.grant(ResourceGeneric.DATABASE, "cluster", 6);
+        role.grant(ResourceGeneric.CLASS, OrienteerUser.CLASS_NAME, OrientPermission.combinedPermission(READ, UPDATE));
+        role.grant(ResourceGeneric.DATABASE, "cluster", OrientPermission.combinedPermission(READ, UPDATE));
 
 
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
@@ -97,8 +99,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     private void updateReaderPermissions(ODatabaseDocument db, ODocument reader, ODocument perspective) {
         ORole role = db.getMetadata().getSecurity().getRole("reader");
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, OrientPermission.READ.getPermissionFlag());
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, OrientPermission.READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, null, 0);
         role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, 0);
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, 0);
