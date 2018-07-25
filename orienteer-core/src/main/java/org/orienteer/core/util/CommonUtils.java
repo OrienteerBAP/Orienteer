@@ -8,10 +8,7 @@ import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -81,6 +78,7 @@ public class CommonUtils {
 		}
 		return identifiables.stream()
 				.map(i -> (ODocument) i.getRecord())
+				.filter(Objects::nonNull)
 				.map(f)
 				.collect(Collectors.toList());
 	}
