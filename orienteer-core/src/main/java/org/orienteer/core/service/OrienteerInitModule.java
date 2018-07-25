@@ -1,7 +1,6 @@
 package org.orienteer.core.service;
 
 import com.google.common.collect.Iterables;
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
@@ -9,21 +8,16 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.google.inject.util.Modules;
-
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WicketFilter;
-import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.util.LookupResourceHelper;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.vyarus.guice.persist.orient.OrientModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.*;
 
 
@@ -100,9 +94,13 @@ public class OrienteerInitModule extends ServletModule {
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 
-		install(loadFromClasspath(new OrienteerModule()));
+		String orientUrl = System.getProperty("url");
+		String username = System.getProperty("admin.username");
+		String password = System.getProperty("admin.password");
+
+		install(loadFromClasspath(new OrienteerModule(), new OrientModule(orientUrl, username, password)));
 	}
-	
+
 	protected void bindOrientDbProperties(Properties properties) {
 		for(String key : properties.stringPropertyNames()) {
 			if(key.startsWith(ORIENTDB_KEY_PREFIX)) {

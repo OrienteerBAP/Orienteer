@@ -127,6 +127,22 @@
 			<version>5.27.4</version>
 		</dependency>
 
+		<dependency>
+			<groupId>ru.vyarus</groupId>
+			<artifactId>guice-persist-orient</artifactId>
+			<version>3.3.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.orientechnologies</groupId>
+					<artifactId>orientdb-graphdb</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.orientechnologies</groupId>
+					<artifactId>orientdb-object</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<!-- ECLIPSE AETHER -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
