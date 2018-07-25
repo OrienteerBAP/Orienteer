@@ -171,12 +171,13 @@ public class CommonUtils {
 	}
 
 	/**
-	 * Check if given list is not empty
-	 * @param identifiables {@link List<OIdentifiable>} identifiables list
-	 * @return true if list is not empty
+	 * Check if given collection is not empty
+	 * @param collection {@link Collection<T>} collection
+	 * @param <T> type of collection
+	 * @return true if collection is not empty
 	 */
-	public static boolean isNotEmpty(List<OIdentifiable> identifiables) {
-		return identifiables != null && !identifiables.isEmpty();
+	public static <T> boolean isNotEmpty(Collection<T> collection) {
+		return collection != null && !collection.isEmpty();
 	}
 
 	/**
