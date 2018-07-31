@@ -3,12 +3,11 @@ package org.orienteer.model;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.model.util.MapModel;
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.orienteer.core.util.CommonUtils.mapIdentifiables;
 
 /**
  * Contains all information about E-mail for user
@@ -21,15 +20,18 @@ public class OMail extends ODocumentWrapper {
     public static final String OPROPERTY_FROM     = "from";
     public static final String OPROPERTY_TEXT     = "text";
     public static final String OPROPERTY_SETTINGS = "settings";
-
-    private final IModel<Map<Object, Object>> macros = new MapModel<>();
+    public static final String PROP_ATTACHMENTS   = "attachments";
 
     public OMail() {
-        super(CLASS_NAME);
+        this(CLASS_NAME);
     }
 
     public OMail(ODocument iDocument) {
         super(iDocument);
+    }
+
+    protected OMail(String iClassName) {
+        super(iClassName);
     }
 
     public OMail setName(String name) {
@@ -47,7 +49,7 @@ public class OMail extends ODocumentWrapper {
     }
 
     public String getSubject() {
-        return applyMacros(document.field(OPROPERTY_SUBJECT));
+        return document.field(OPROPERTY_SUBJECT);
     }
 
     public OMail setFrom(String from) {
@@ -65,7 +67,7 @@ public class OMail extends ODocumentWrapper {
     }
 
     public String getText() {
-        return applyMacros(document.field(OPROPERTY_TEXT));
+        return document.field(OPROPERTY_TEXT);
     }
 
     public OMail setMailSettings(OMailSettings settings) {
@@ -83,28 +85,17 @@ public class OMail extends ODocumentWrapper {
         return doc != null ? new OMailSettings(doc) : null;
     }
 
-    private String applyMacros(String text) {
-        if (macros.getObject() != null) {
-            return new StringResourceModel("", macros).setDefaultValue(text).getString();
-        }
-        return text;
+
+    public List<OMailAttachment> getAttachments() {
+        return mapIdentifiables(document.field(PROP_ATTACHMENTS), OMailAttachment::new);
     }
 
-    public OMail setMacros(Map<Object, Object> macros) {
-        this.macros.setObject(macros);
-        return this;
+    public OMail setAttachments(List<OMailAttachment> attachments) {
+        return setAttachmentsAsDocuments(attachments.stream().map(ODocumentWrapper::getDocument).collect(Collectors.toList()));
     }
 
-    public IModel<Map<Object, Object>> getMacros() {
-        return macros;
-    }
-
-    /**
-     * Save document from admin user
-     * @return {@link OMail} this instance
-     */
-    public OMail sudoSave() {
-        DBClosure.sudoSave(this);
+    public OMail setAttachmentsAsDocuments(List<ODocument> attachments) {
+        document.field(PROP_ATTACHMENTS, attachments);
         return this;
     }
 }

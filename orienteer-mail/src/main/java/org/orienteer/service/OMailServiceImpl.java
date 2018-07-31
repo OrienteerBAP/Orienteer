@@ -4,16 +4,18 @@ import org.apache.wicket.ThreadContext;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.model.OMail;
+import org.orienteer.model.OMailAttachment;
 import org.orienteer.model.OMailSettings;
+import org.orienteer.model.OPreparedMail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.*;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import javax.mail.internet.*;
 import javax.mail.search.FlagTerm;
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
@@ -24,57 +26,59 @@ import java.util.function.Consumer;
  */
 public class OMailServiceImpl implements IOMailService {
 
-    @Override
-    public void sendMail(String to, OMail mail) throws MessagingException, UnsupportedEncodingException {
-        sendMail(Collections.singletonList(to), mail);
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(OMailServiceImpl.class);
+
 
     @Override
-    public void sendMail(List<String> to, OMail mail) throws MessagingException, UnsupportedEncodingException {
+    public void sendMail(OPreparedMail mail) throws MessagingException, UnsupportedEncodingException {
         final OMailSettings settings = mail.getMailSettings();
         final Session session = createSession(settings, createSendMailProperties(settings));
         final Message message = new MimeMessage(session);
+        message.setRecipients(Message.RecipientType.TO, toAddressArray(mail.getRecipients()));
+        message.setRecipients(Message.RecipientType.BCC, toAddressArray(mail.getBcc()));
+
         message.setFrom(createFrom(mail, settings));
-        message.setRecipients(Message.RecipientType.TO, toAddressArray(to));
         message.setSubject(mail.getSubject());
-        message.setContent(mail.getText(), "text/html;charset=UTF-8");
+        message.setContent(createMessageContent(mail));
         Transport.send(message);
     }
 
     @Override
-    public void sendMailAsync(String to, OMail mail) {
-        sendMailAsync(to, mail, null);
+    public void sendMails(List<OPreparedMail> mails) throws MessagingException, UnsupportedEncodingException {
+        for (OPreparedMail mail : mails) {
+            sendMail(mail);
+        }
     }
 
     @Override
-    public void sendMailAsync(List<String> to, OMail mail) {
-        sendMailAsync(to, mail, null);
+    public void sendMailAsync(OPreparedMail mail) {
+        sendMailAsync(mail, null);
     }
 
     @Override
-    public void sendMailAsync(String to, OMail mail, Consumer<Boolean> f) {
-        sendMailAsync(Collections.singletonList(to), mail, f);
+    public void sendMailsAsync(List<OPreparedMail> mails) {
+        executeInNewThread(() -> {
+            try {
+                sendMails(mails);
+            } catch (Exception e) {
+                LOG.error("Error occurred during sending mails: {}", mails, e);
+            }
+        });
     }
 
     @Override
-    public void sendMailAsync(List<String> to, OMail mail, Consumer<Boolean> f) {
-        OrienteerWebSession session = OrienteerWebSession.get();
-        OrienteerWebApplication app = OrienteerWebApplication.get();
-        RequestCycle requestCycle = RequestCycle.get();
-        new Thread(() -> {
+    public void sendMailAsync(OPreparedMail mail, Consumer<Boolean> f) {
+        executeInNewThread(() -> {
             boolean success = false;
             try {
-                ThreadContext.setSession(session);
-                ThreadContext.setApplication(app);
-                ThreadContext.setRequestCycle(requestCycle);
-                sendMail(to, mail);
+                sendMail(mail);
                 success = true;
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                LOG.error("Error occurred during sending mail: {}", mail, e);
             } finally {
                 if (f != null) f.accept(success);
             }
-        }).start();
+        });
     }
 
     @Override
@@ -106,12 +110,41 @@ public class OMailServiceImpl implements IOMailService {
             try {
                 fetchMails(settings, folderName, consumer);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LOG.error("Error during fetching mails: {}", settings, ex);
             }
         });
     }
 
-    private InternetAddress createFrom(OMail mail, OMailSettings settings) throws UnsupportedEncodingException {
+    private Multipart createMessageContent(OPreparedMail mail) throws MessagingException {
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(createTextPart(mail));
+        addMailAttachments(multipart, mail);
+        return multipart;
+    }
+
+    private void addMailAttachments(Multipart multipart, OPreparedMail mail) throws MessagingException {
+        List<OMailAttachment> attachments = mail.getAttachments();
+        if (!attachments.isEmpty()) {
+            for (OMailAttachment attachment : attachments) {
+                multipart.addBodyPart(createDataPart(attachment.toDataSource()));
+            }
+        }
+    }
+
+    private MimeBodyPart createTextPart(OPreparedMail mail) throws MessagingException {
+        MimeBodyPart bodyPart = new MimeBodyPart();
+        bodyPart.setContent(mail.getText(), "text/html;charset=UTF-8");
+        return bodyPart;
+    }
+
+    private BodyPart createDataPart(DataSource dataSource) throws MessagingException {
+        MimeBodyPart bodyPart = new MimeBodyPart();
+        bodyPart.setDataHandler(new DataHandler(dataSource));
+        bodyPart.setFileName(dataSource.getName());
+        return bodyPart;
+    }
+
+    private InternetAddress createFrom(OPreparedMail mail, OMailSettings settings) throws UnsupportedEncodingException {
         return new InternetAddress(settings.getEmail(), mail.getFrom());
     }
 
@@ -147,5 +180,18 @@ public class OMailServiceImpl implements IOMailService {
             addresses[i] = new InternetAddress(recipients.get(i));
         }
         return addresses;
+    }
+
+    private void executeInNewThread(Runnable runnable) {
+        OrienteerWebSession session = OrienteerWebSession.get();
+        OrienteerWebApplication app = OrienteerWebApplication.get();
+        RequestCycle requestCycle = RequestCycle.get();
+
+        new Thread(() -> {
+            ThreadContext.setSession(session);
+            ThreadContext.setApplication(app);
+            ThreadContext.setRequestCycle(requestCycle);
+            runnable.run();
+        }).start();
     }
 }

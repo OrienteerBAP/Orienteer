@@ -3,19 +3,18 @@ package org.orienteer;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.model.OMail;
 import org.orienteer.model.OMailSettings;
+import org.orienteer.model.OPreparedMail;
 import org.orienteer.service.IOMailService;
+import org.orienteer.util.OMailUtils;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.mail.BodyPart;
@@ -24,11 +23,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -55,31 +52,25 @@ public class TestOMailModule {
 		String password = "qwerty";
 		String mailName = "test";
 		to = "to@gmail.com";
-		Function<String, OMail> query = (name) -> {
-			List<ODocument> docs  = OrienteerWebSession.get().getDatabase().query(new OSQLSynchQuery<>("select from "
-					+ OMail.CLASS_NAME + " where " + OMail.OPROPERTY_NAME + " = ?", 1), name);
-			return docs != null && !docs.isEmpty() ? new OMail(docs.get(0)) : null;
-		};
-		Consumer<String> create = (name) -> {
-			settings = new OMailSettings()
-					.setEmail(email)
-					.setPassword(password)
-					.setSmtpHost("smtp.gmail.com")
-					.setSmtpPort(587)
-					.setImapHost("imap.gmail.com")
-					.setImapPort(993)
-					.setTlsSsl(true);
-			OMail mail = new OMail()
-					.setMailSettings(settings)
-					.setName(name)
-					.setFrom("orienteer-mail-test")
-					.setSubject("Test module 'orienteer-mail'")
-					.setText("<h1>Hello, World!</h1>");
-			settings.sudoSave();
-			mail.sudoSave();
-		};
-		create.accept(mailName);
-		mail = query.apply(mailName);
+
+		settings = new OMailSettings()
+				.setEmail(email)
+				.setPassword(password)
+				.setSmtpHost("smtp.gmail.com")
+				.setSmtpPort(587)
+				.setImapHost("imap.gmail.com")
+				.setImapPort(993)
+				.setTlsSsl(true);
+		mail = new OMail()
+				.setMailSettings(settings)
+				.setName(mailName)
+				.setFrom("orienteer-mail-test")
+				.setSubject("Test module 'orienteer-mail'")
+				.setText("<h1>Hello, World!</h1>");
+
+		DBClosure.sudoSave(settings, mail);
+
+		mail = OMailUtils.getOMailByName(mailName);
 		assertNotNull(mail);
 	}
 
@@ -108,7 +99,9 @@ public class TestOMailModule {
 	@Ignore
 	public void testSendEmail() {
 		try {
-			mailService.sendMail(to, mail);
+            OPreparedMail preparedMail = new OPreparedMail(mail);
+            preparedMail.setRecipients(Collections.singletonList(to));
+			mailService.sendMail(preparedMail);
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			throw new IllegalStateException(e);
 		}
@@ -119,9 +112,7 @@ public class TestOMailModule {
 		String str = "Hello, World!";
 		Map<Object, Object> macros = new HashMap<>(1);
 		macros.put("test", str);
-		OMail mail = new OMail().setText("${test}");
-		mail.setMacros(macros);
-		assertTrue(mail.getText().equals(str));
+		assertTrue(OMailUtils.applyMacros("${test}", macros).equals(str));
 	}
 
 	@Test
@@ -148,7 +139,9 @@ public class TestOMailModule {
 	@Test
 	@Ignore
 	public void testSendEmailAsyncWithCallback() throws InterruptedException {
-		mailService.sendMailAsync(to, mail, Assert::assertTrue);
+		OPreparedMail preparedMail = new OPreparedMail(mail);
+		preparedMail.setRecipients(Collections.singletonList(to));
+		mailService.sendMailAsync(preparedMail, Assert::assertTrue);
 		Thread.currentThread().join(10_000);
 	}
 }

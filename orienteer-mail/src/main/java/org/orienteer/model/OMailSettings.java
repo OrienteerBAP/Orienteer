@@ -2,7 +2,6 @@ package org.orienteer.model;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * Contains settings for sending E-mail
@@ -89,15 +88,6 @@ public class OMailSettings extends ODocumentWrapper {
 
     public OMailSettings setImapPort(int port) {
         document.field(OPROPERTY_IMAP_PORT, port);
-        return this;
-    }
-
-    /**
-     * Save document from admin user
-     * @return {@link OMailSettings} this instance
-     */
-    public OMailSettings sudoSave() {
-        DBClosure.sudoSave(this);
         return this;
     }
 }
