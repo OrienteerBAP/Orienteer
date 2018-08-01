@@ -12,17 +12,64 @@ import java.util.stream.Collectors;
 import static org.orienteer.core.util.CommonUtils.getFromIdentifiable;
 import static org.orienteer.core.util.CommonUtils.mapIdentifiables;
 
+/**
+ * Prepared mail for send it via {@link org.orienteer.service.IOMailService}
+ * Contains information about mail with applied macros and adjusted recipients, bcc.
+ * Can be used for analyze generated and send mails
+ */
 public class OPreparedMail extends ODocumentWrapper {
 
+    /**
+     * OrientDB class name
+     */
     public static final String CLASS_NAME = "OPreparedMail";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Name of prepared mail
+     */
     public static final String PROP_NAME        = "name";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Subject of prepared mail
+     */
     public static final String PROP_SUBJECT     = "subject";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Mail from
+     */
     public static final String PROP_FROM        = "from";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Mail text content
+     */
     public static final String PROP_TEXT        = "text";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#LINK}
+     * Link to {@link OMailSettings} which was used for send this mail
+     */
     public static final String PROP_SETTINGS    = "settings";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#LINKLIST}
+     * List of link to attachments which was send in this mail
+     */
     public static final String PROP_ATTACHMENTS = "attachments";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#EMBEDDEDLIST}
+     * String list of recipients for this mail
+     */
     public static final String PROP_RECIPIENTS  = "recipients";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#EMBEDDEDLIST}
+     * String list of bcc for this mail
+     */
     public static final String PROP_BCC         = "bcc";
 
     public OPreparedMail() {
@@ -40,6 +87,7 @@ public class OPreparedMail extends ODocumentWrapper {
     public OPreparedMail(OMail mail, Map<Object, Object> macros) {
         this();
         setName(mail.getName())
+                .setFrom(OMailUtils.applyMacros(mail.getFrom(), macros))
                 .setSubject(OMailUtils.applyMacros(mail.getSubject(), macros))
                 .setText(OMailUtils.applyMacros(mail.getText(), macros))
                 .setAttachments(mail.getAttachments())

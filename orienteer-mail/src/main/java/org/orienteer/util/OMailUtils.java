@@ -12,14 +12,28 @@ import java.util.Map;
 
 import static org.orienteer.core.util.CommonUtils.getFromIdentifiables;
 
+/**
+ * Utility class for 'orienteer-mail'
+ */
 public final class OMailUtils {
 
     private OMailUtils() {}
 
+    /**
+     * Apply macros for given string
+     * @param str {@link String} string
+     * @param macros {@link Map<Object, Object>} macros
+     * @return string with applied macros
+     */
     public static String applyMacros(String str, Map<Object, Object> macros) {
         return new StringResourceModel("", new MapModel<>(macros)).setDefaultValue(str).getString();
     }
 
+    /**
+     * Search {@link OMail} by given name
+     * @param name {@link String} mail name
+     * @return {@link OMail} or null if mail with given name doesn't exists
+     */
     public static OMail getOMailByName(String name) {
         return DBClosure.sudo(db -> {
             String sql = String.format("select from %s where %s = ?", OMail.CLASS_NAME, OMail.OPROPERTY_NAME);
@@ -28,11 +42,4 @@ public final class OMailUtils {
         });
     }
 
-//    public static OPreparedMail getOPreparedMailByName(String name) {
-//        return DBClosure.sudo(db -> {
-//            String sql = String.format("select from %s where %s = ?", OPreparedMail.CLASS_NAME, OPreparedMail.PROP_NAME);
-//            List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), name);
-//            return getFromIdentifiables(identifiables, OPreparedMail::new);
-//        });
-//    }
 }

@@ -7,12 +7,32 @@ import org.apache.tika.Tika;
 import javax.activation.DataSource;
 import javax.mail.util.ByteArrayDataSource;
 
+/**
+ * Contains information about mail attachment
+ */
 public class OMailAttachment extends ODocumentWrapper {
 
+    /**
+     * OrientDB class name
+     */
     public static final String CLASS_NAME = "OMailAttachment";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Unique name of attachment
+     */
     public static final String PROP_NAME   = "name";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#BINARY}
+     * Binary data
+     */
     public static final String PROP_DATA   = "data";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#BOOLEAN}
+     * true if this attachment is static, not generated during application lifecycle
+     */
     public static final String PROP_STATIC = "static";
 
     public OMailAttachment() {

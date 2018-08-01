@@ -10,16 +10,49 @@ import java.util.stream.Collectors;
 import static org.orienteer.core.util.CommonUtils.mapIdentifiables;
 
 /**
- * Contains all information about E-mail for user
+ * Contains template information about E-mail for user
  */
 public class OMail extends ODocumentWrapper {
+
+    /**
+     * OrientDB class name
+     */
     public static final String CLASS_NAME = "OMail";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Unique name of mail template
+     */
     public static final String OPROPERTY_NAME     = "name";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Mail subject. Can be used Wicket string macros
+     */
     public static final String OPROPERTY_SUBJECT  = "subject";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Mail from. Can be used Wicket string macros
+     */
     public static final String OPROPERTY_FROM     = "from";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Mail text content. Can be used Wicket string macros
+     */
     public static final String OPROPERTY_TEXT     = "text";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#LINK}
+     * Link to {@link OMailSettings} which will be used for send mail
+     */
     public static final String OPROPERTY_SETTINGS = "settings";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#LINKLIST}.
+     * Contains links to {@link OMailAttachment} which represents mail attachments
+     */
     public static final String PROP_ATTACHMENTS   = "attachments";
 
     public OMail() {

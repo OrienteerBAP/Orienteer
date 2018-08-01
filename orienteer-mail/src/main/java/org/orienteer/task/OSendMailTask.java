@@ -16,12 +16,21 @@ import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+/**
+ * Task which sends list of {@link OPreparedMail} from prepared {@link OSendMailTaskSession}.
+ * Can be used for prepare mails during application lifecycle and send batch of mails in one place via this task
+ */
 public class OSendMailTask extends OTask {
 
     private static final Logger LOG = LoggerFactory.getLogger(OSendMailTask.class);
 
     private final OSendMailTaskSession session;
 
+    /**
+     * Constructor
+     * @param oTask {@link ODocument} document of task
+     * @param session {@link OSendMailTaskSession} prepared session for use in task
+     */
     public OSendMailTask(ODocument oTask, OSendMailTaskSession session) {
         super(oTask);
         this.session = session;

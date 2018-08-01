@@ -10,10 +10,20 @@ import java.util.stream.Collectors;
 
 import static org.orienteer.core.util.CommonUtils.mapIdentifiables;
 
+/**
+ * Task session which prepared during application lifecycle and then used in {@link OSendMailTask} for send mails
+ */
 public class OSendMailTaskSession extends OTaskSession {
 
+    /**
+     * OrientDB class name
+     */
     public static final String CLASS_NAME = "OSendMailTaskSession";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#LINKLIST}
+     * Link list of {@link OPreparedMail} which need send
+     */
     public static final String PROP_MAILS = "mails";
 
     public OSendMailTaskSession() {
@@ -24,12 +34,22 @@ public class OSendMailTaskSession extends OTaskSession {
         super(sessionDoc);
     }
 
+    /**
+     * Add new {@link OPreparedMail} to this session
+     * @param mail {@link OPreparedMail} mail for add
+     * @return link to this session instance
+     */
     public OSendMailTaskSession addMail(OPreparedMail mail) {
         List<OPreparedMail> mails = new LinkedList<>(getMails());
         mails.add(mail);
         return setMails(mails);
     }
 
+    /**
+     * Remove {@link OPreparedMail} from this session
+     * @param mail {@link OPreparedMail} mail for remove
+     * @return link to this session instance
+     */
     public OSendMailTaskSession removeMail(OPreparedMail mail) {
         List<OPreparedMail> mails = new LinkedList<>(getMails());
         if (mails.remove(mail)) {
