@@ -8,7 +8,9 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.model.OMail;
+import org.orienteer.model.OMailAttachment;
 import org.orienteer.model.OMailSettings;
+import org.orienteer.model.OPreparedMail;
 
 import static com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 
@@ -18,7 +20,7 @@ import static com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYP
 public class OMailModule extends AbstractOrienteerModule{
 
 	protected OMailModule() {
-		super("orienteer-mail", 4);
+		super("orienteer-mail", 5);
 	}
 	
 	@Override
@@ -35,12 +37,29 @@ public class OMailModule extends AbstractOrienteerModule{
 				.oProperty(OMailSettings.OPROPERTY_IMAP_PORT, OType.INTEGER, 50).notNull()
 				.oProperty(OMailSettings.OPROPERTY_TLS_SSL, OType.BOOLEAN, 60).defaultValue("true").notNull();
 
+        helper.oClass(OMailAttachment.CLASS_NAME)
+                .oProperty(OMailAttachment.PROP_NAME, OType.STRING, 0).markAsDocumentName().notNull().oIndex(INDEX_TYPE.UNIQUE)
+                .oProperty(OMailAttachment.PROP_DATA, OType.BINARY, 10).notNull();
+
 		helper.oClass(OMail.CLASS_NAME)
 				.oProperty(OMail.OPROPERTY_NAME, OType.STRING, 0).notNull().markAsDocumentName().oIndex(INDEX_TYPE.UNIQUE)
 				.oProperty(OMail.OPROPERTY_SUBJECT, OType.STRING, 10)
 				.oProperty(OMail.OPROPERTY_FROM, OType.STRING, 20)
 				.oProperty(OMail.OPROPERTY_TEXT, OType.STRING, 30).assignVisualization("html")
-				.oProperty(OMail.OPROPERTY_SETTINGS, OType.LINK, 40).linkedClass(OMailSettings.CLASS_NAME).notNull();
+		        .oProperty(OMail.PROP_ATTACHMENTS, OType.LINKLIST, 40).linkedClass(OMailAttachment.CLASS_NAME)
+				.oProperty(OMail.OPROPERTY_SETTINGS, OType.LINK, 50).linkedClass(OMailSettings.CLASS_NAME).notNull();
+
+		helper.oClass(OPreparedMail.CLASS_NAME)
+                .oProperty(OPreparedMail.PROP_NAME, OType.STRING, 0).notNull().markAsDocumentName()
+                .oProperty(OPreparedMail.PROP_SUBJECT, OType.STRING, 10).notNull()
+                .oProperty(OPreparedMail.PROP_TEXT, OType.STRING, 20).notNull().assignVisualization("html")
+                .oProperty(OPreparedMail.PROP_RECIPIENTS, OType.EMBEDDEDLIST, 30).notNull().linkedType(OType.STRING)
+                .oProperty(OPreparedMail.PROP_FROM, OType.STRING, 40).notNull()
+                .oProperty(OPreparedMail.PROP_BCC, OType.EMBEDDEDLIST, 50).linkedType(OType.STRING)
+                .oProperty(OPreparedMail.PROP_ATTACHMENTS, OType.LINKLIST, 60).linkedClass(OMailAttachment.CLASS_NAME)
+                .oProperty(OPreparedMail.PROP_MAIL, OType.LINK, 70).notNull().linkedClass(OMail.CLASS_NAME)
+                .oProperty(OPreparedMail.PROP_SETTINGS, OType.LINK, 80).notNull().linkedClass(OMailSettings.CLASS_NAME);
+
 		return null;
 	}
 

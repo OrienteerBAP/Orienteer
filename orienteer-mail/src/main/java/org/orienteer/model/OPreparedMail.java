@@ -72,6 +72,12 @@ public class OPreparedMail extends ODocumentWrapper {
      */
     public static final String PROP_BCC         = "bcc";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#LINK}
+     * Link to mail template
+     */
+    public static final String PROP_MAIL        = "mail";
+
     public OPreparedMail() {
         super(CLASS_NAME);
     }
@@ -173,6 +179,19 @@ public class OPreparedMail extends ODocumentWrapper {
 
     public OPreparedMail setBcc(List<String> bcc) {
         document.field(PROP_BCC, bcc);
+        return this;
+    }
+
+    public OMail getMailTemplate() {
+        return getFromIdentifiable(document.field(PROP_MAIL), OMail::new);
+    }
+
+    public OPreparedMail setMailTemplate(OMail mailTemplate) {
+        return setMailTemplateAsDocument(mailTemplate.getDocument());
+    }
+
+    public OPreparedMail setMailTemplateAsDocument(ODocument mail) {
+        document.field(PROP_MAIL, mail);
         return this;
     }
 }
