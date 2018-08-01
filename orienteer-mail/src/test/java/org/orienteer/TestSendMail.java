@@ -82,7 +82,7 @@ public class TestSendMail {
     }
 
     private OPreparedMail prepareMail(OMail mail) {
-        Map<Object, Object> macros = new HashMap<>();
+        Map<String, Object> macros = new HashMap<>();
         macros.put("text", "Test text");
         macros.put("subject", "Test subject");
         return new OPreparedMail(mail, macros)

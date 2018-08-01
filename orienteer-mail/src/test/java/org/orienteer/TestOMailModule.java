@@ -110,7 +110,7 @@ public class TestOMailModule {
 	@Test
 	public void testMacros() {
 		String str = "Hello, World!";
-		Map<Object, Object> macros = new HashMap<>(1);
+		Map<String, Object> macros = new HashMap<>(1);
 		macros.put("test", str);
 		assertTrue(OMailUtils.applyMacros("${test}", macros).equals(str));
 	}

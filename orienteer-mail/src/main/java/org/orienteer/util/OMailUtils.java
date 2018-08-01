@@ -23,10 +23,10 @@ public final class OMailUtils {
     /**
      * Apply macros for given string
      * @param str {@link String} string
-     * @param macros {@link Map<Object, Object>} macros
+     * @param macros {@link Map<String, Object>} macros
      * @return string with applied macros
      */
-    public static String applyMacros(String str, Map<Object, Object> macros) {
+    public static String applyMacros(String str, Map<String, Object> macros) {
         return new StringResourceModel("", new MapModel<>(macros)).setDefaultValue(str).getString();
     }
 

@@ -91,7 +91,7 @@ public class OPreparedMail extends ODocumentWrapper {
         this(mail, Collections.emptyMap());
     }
 
-    public OPreparedMail(OMail mail, Map<Object, Object> macros) {
+    public OPreparedMail(OMail mail, Map<String, Object> macros) {
         this();
         setName(mail.getName())
                 .setFrom(OMailUtils.applyMacros(mail.getFrom(), macros))
