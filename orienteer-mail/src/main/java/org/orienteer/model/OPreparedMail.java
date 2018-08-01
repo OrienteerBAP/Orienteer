@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.orienteer.util.OMailUtils;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -97,7 +98,8 @@ public class OPreparedMail extends ODocumentWrapper {
                 .setSubject(OMailUtils.applyMacros(mail.getSubject(), macros))
                 .setText(OMailUtils.applyMacros(mail.getText(), macros))
                 .setAttachments(mail.getAttachments())
-                .setMailSettings(mail.getMailSettings());
+                .setMailSettings(mail.getMailSettings())
+                .setMailTemplate(mail);
     }
 
     public String getName() {
@@ -167,6 +169,20 @@ public class OPreparedMail extends ODocumentWrapper {
         return recipients != null ? recipients : Collections.emptyList();
     }
 
+    public OPreparedMail addRecipient(String recipient) {
+        List<String> recipients = new LinkedList<>(getRecipients());
+        recipients.add(recipient);
+        return setRecipients(recipients);
+    }
+
+    public OPreparedMail removeRecipient(String recipient) {
+        List<String> recipients = new LinkedList<>(getRecipients());
+        if (recipients.remove(recipient)) {
+            setRecipients(recipients);
+        }
+        return this;
+    }
+
     public OPreparedMail setRecipients(List<String> recipients) {
         document.field(PROP_RECIPIENTS, recipients);
         return this;
@@ -175,6 +191,20 @@ public class OPreparedMail extends ODocumentWrapper {
     public List<String> getBcc() {
         List<String> bcc = document.field(PROP_BCC);
         return bcc != null ? bcc : Collections.emptyList();
+    }
+
+    public OPreparedMail addBcc(String bcc) {
+        List<String> bccList = new LinkedList<>(getBcc());
+        bccList.add(bcc);
+        return setBcc(bccList);
+    }
+
+    public OPreparedMail removeBcc(String bcc) {
+        List<String> bccList = new LinkedList<>(getBcc());
+        if (bccList.remove(bcc)) {
+            setBcc(bccList);
+        }
+        return this;
     }
 
     public OPreparedMail setBcc(List<String> bcc) {
