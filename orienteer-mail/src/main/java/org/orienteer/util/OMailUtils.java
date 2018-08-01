@@ -9,6 +9,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.orienteer.core.util.CommonUtils.getFromIdentifiables;
 
@@ -32,13 +33,13 @@ public final class OMailUtils {
     /**
      * Search {@link OMail} by given name
      * @param name {@link String} mail name
-     * @return {@link OMail} or null if mail with given name doesn't exists
+     * @return {@link Optional<OMail>} mail or empty optional if mail with given name doesn't exists
      */
-    public static OMail getOMailByName(String name) {
+    public static Optional<OMail> getOMailByName(String name) {
         return DBClosure.sudo(db -> {
             String sql = String.format("select from %s where %s = ?", OMail.CLASS_NAME, OMail.OPROPERTY_NAME);
             List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), name);
-            return getFromIdentifiables(identifiables, OMail::new);
+            return Optional.ofNullable(getFromIdentifiables(identifiables, OMail::new));
         });
     }
 

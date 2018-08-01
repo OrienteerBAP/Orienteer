@@ -70,7 +70,7 @@ public class TestOMailModule {
 
 		DBClosure.sudoSave(settings, mail);
 
-		mail = OMailUtils.getOMailByName(mailName);
+		mail = OMailUtils.getOMailByName(mailName).orElseThrow(IllegalAccessError::new);
 		assertNotNull(mail);
 	}
 
