@@ -40,7 +40,7 @@ public class OMailServiceImpl implements IOMailService {
         message.setFrom(createFrom(mail, settings));
         message.setSubject(mail.getSubject());
         message.setContent(createMessageContent(mail));
-        Transport.send(message);
+        sendMessage(message);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class OMailServiceImpl implements IOMailService {
         return new InternetAddress(settings.getEmail(), mail.getFrom());
     }
 
-    private Session createSession(OMailSettings settings, Properties properties) {
+    protected Session createSession(OMailSettings settings, Properties properties) {
         return Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -193,5 +193,9 @@ public class OMailServiceImpl implements IOMailService {
             ThreadContext.setRequestCycle(requestCycle);
             runnable.run();
         }).start();
+    }
+
+    protected void sendMessage(Message message) throws MessagingException {
+        Transport.send(message);
     }
 }
