@@ -38,7 +38,7 @@ public class OMailModule extends AbstractOrienteerModule{
 				.oProperty(OMailSettings.OPROPERTY_TLS_SSL, OType.BOOLEAN, 60).defaultValue("true").notNull();
 
         helper.oClass(OMailAttachment.CLASS_NAME)
-                .oProperty(OMailAttachment.PROP_NAME, OType.STRING, 0).markAsDocumentName().notNull().oIndex(INDEX_TYPE.UNIQUE)
+                .oProperty(OMailAttachment.PROP_NAME, OType.STRING, 0).markAsDocumentName().notNull()
                 .oProperty(OMailAttachment.PROP_DATA, OType.BINARY, 10).notNull();
 
 		helper.oClass(OMail.CLASS_NAME)
