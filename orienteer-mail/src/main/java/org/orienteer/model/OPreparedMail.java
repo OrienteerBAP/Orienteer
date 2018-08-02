@@ -139,7 +139,7 @@ public class OPreparedMail extends ODocumentWrapper {
     }
 
     public OMailSettings getMailSettings() {
-        return getFromIdentifiable(document.field(PROP_SETTINGS), OMailSettings::new);
+        return getFromIdentifiable(document.field(PROP_SETTINGS), OMailSettings::new).orElse(null);
     }
 
     public OPreparedMail setMailSettings(OMailSettings settings) {
@@ -213,7 +213,7 @@ public class OPreparedMail extends ODocumentWrapper {
     }
 
     public OMail getMailTemplate() {
-        return getFromIdentifiable(document.field(PROP_MAIL), OMail::new);
+        return getFromIdentifiable(document.field(PROP_MAIL), OMail::new).orElse(null);
     }
 
     public OPreparedMail setMailTemplate(OMail mailTemplate) {

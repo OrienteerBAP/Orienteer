@@ -39,7 +39,7 @@ public final class OMailUtils {
         return DBClosure.sudo(db -> {
             String sql = String.format("select from %s where %s = ?", OMail.CLASS_NAME, OMail.OPROPERTY_NAME);
             List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), name);
-            return Optional.ofNullable(getFromIdentifiables(identifiables, OMail::new));
+            return getFromIdentifiables(identifiables, OMail::new);
         });
     }
 
