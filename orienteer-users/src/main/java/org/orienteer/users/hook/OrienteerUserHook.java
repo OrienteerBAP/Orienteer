@@ -3,6 +3,7 @@ package org.orienteer.users.hook;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.metadata.security.ORestrictedOperation;
+import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.module.PerspectivesModule;
@@ -39,13 +40,19 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
         doc.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
 
         if (doc.field(PerspectivesModule.PROP_PERSPECTIVE) == null) {
-            doc.field(PerspectivesModule.PROP_PERSPECTIVE, OUsersDbUtils.getDefaultOrienteerUserPerspective());
+            OUsersDbUtils.getDefaultOrienteerUserPerspective()
+                    .ifPresent(
+                            perspective -> doc.field(PerspectivesModule.PROP_PERSPECTIVE, perspective)
+                    );
         }
 
         List<ODocument> roles = doc.field("roles");
         if (roles == null || roles.isEmpty()) {
-            ODocument roleDoc = OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE).getDocument();
-            doc.field("roles", Collections.singleton(roleDoc));
+            OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
+                    .map(ORole::getDocument)
+                    .ifPresent(
+                            role -> doc.field("roles", Collections.singleton(role))
+                    );
         }
 
         doc.field(ORestrictedOperation.ALLOW_READ.getFieldName(), doc);
