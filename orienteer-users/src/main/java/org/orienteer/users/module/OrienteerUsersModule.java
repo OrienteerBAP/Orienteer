@@ -91,11 +91,11 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE);
         helper.oIndex(user.getProperty(OrienteerUser.PROP_EMAIL).getFullName(), OClass.INDEX_TYPE.UNIQUE);
 
-        ODocument perspective = createOrienteerUsersPerspective(db);
-        ODocument readerPerspective = createReaderPespective(db);
-
         OUsersCommonUtils.setRestricted(db, helper.oClass(OIdentity.CLASS_NAME).getOClass());
         OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OCLASS_PERSPECTIVE).getOClass());
+
+        ODocument perspective = createOrienteerUsersPerspective(db);
+        ODocument readerPerspective = createReaderPespective(db);
 
         ODocument reader = updateAndGetUserReader(db);
         updateReaderPermissions(db, reader, readerPerspective);
