@@ -12,9 +12,10 @@ import java.util.Date;
 public class OrienteerUser extends OUser {
     private static final long serialVersionUID = 1L;
 
-    public static final String PROP_ID                = "id";
-    public static final String PROP_RESTORE_ID        = "restoreId";
+    public static final String PROP_ID                 = "id";
+    public static final String PROP_RESTORE_ID         = "restoreId";
     public static final String PROP_RESTORE_ID_CREATED = "restoreIdCreated";
+    public static final String PROP_EMAIL              = "email";
 
     public OrienteerUser(String className) {
         this(new ODocument(className));
@@ -36,10 +37,9 @@ public class OrienteerUser extends OUser {
         return document.field(PROP_RESTORE_ID);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends OrienteerUser> T setRestoreId(String restoreId) {
+    public OrienteerUser setRestoreId(String restoreId) {
         document.field(PROP_RESTORE_ID, restoreId);
-        return (T) this;
+        return this;
     }
 
     public Instant getRestoreIdCreated() {
@@ -47,13 +47,21 @@ public class OrienteerUser extends OUser {
         return date != null ? date.toInstant() : null;
     }
 
-    public <T extends OrienteerUser> T setRestoreIdCreated(Instant instant) {
-        return setRestoreIdCreated(Date.from(instant));
+    public OrienteerUser setRestoreIdCreated(Instant instant) {
+        return setRestoreIdCreatedAsDate(instant != null ? Date.from(instant) : null);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends OrienteerUser> T setRestoreIdCreated(Date date) {
+    public OrienteerUser setRestoreIdCreatedAsDate(Date date) {
         document.field(PROP_RESTORE_ID_CREATED, date);
-        return (T) this;
+        return this;
+    }
+
+    public String getEmail() {
+        return document.field(PROP_EMAIL);
+    }
+
+    public OrienteerUser setEmail(String email) {
+        document.field(PROP_EMAIL, email);
+        return this;
     }
 }
