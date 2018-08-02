@@ -2,7 +2,6 @@ package org.orienteer.mail;
 
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,8 +10,8 @@ import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.mail.model.OMail;
 import org.orienteer.mail.model.OMailSettings;
 import org.orienteer.mail.model.OPreparedMail;
-import org.orienteer.mail.service.OMailServiceTest;
 import org.orienteer.mail.service.IOMailService;
+import org.orienteer.mail.service.OMailServiceTest;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.mail.MessagingException;
@@ -21,6 +20,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static junit.framework.TestCase.assertEquals;
 
 @RunWith(OrienteerTestRunner.class)
 public class TestSendMail {
@@ -56,7 +57,7 @@ public class TestSendMail {
 
     @Test
     public void testSendSingleMail() throws UnsupportedEncodingException, MessagingException {
-        testService.onSendMail(mail -> Assert.assertEquals(preparedMail, mail))
+        testService.onSendMail(mail -> assertEquals(preparedMail, mail))
                 .sendMail(preparedMail);
     }
 
