@@ -12,9 +12,28 @@ import java.util.Date;
 public class OrienteerUser extends OUser {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Unique user id
+     */
     public static final String PROP_ID                 = "id";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Restore id which uses for restore user password. Contains null if user doesn't restore password
+     */
     public static final String PROP_RESTORE_ID         = "restoreId";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#DATETIME}
+     * Timestamp when {@link OrienteerUser#PROP_RESTORE_ID} was created
+     */
     public static final String PROP_RESTORE_ID_CREATED = "restoreIdCreated";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Unique user email
+     */
     public static final String PROP_EMAIL              = "email";
 
     public OrienteerUser(String className) {

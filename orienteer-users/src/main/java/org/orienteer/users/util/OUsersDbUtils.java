@@ -23,10 +23,11 @@ import static org.orienteer.core.util.CommonUtils.getFromIdentifiables;
  */
 public final class OUsersDbUtils {
 	
-	private OUsersDbUtils() {
-		
-	}
+	private OUsersDbUtils() {}
 
+    /**
+     * @return {@link Optional<ODocument>} which contains perspective {@link OrienteerUsersModule#ORIENTEER_USER_PERSPECTIVE}
+     */
     public static Optional<ODocument> getDefaultOrienteerUserPerspective() {
         return DBClosure.sudo(db -> {
             String sql = String.format("select from %s where name.en = ?", PerspectivesModule.OCLASS_PERSPECTIVE);
@@ -36,28 +37,53 @@ public final class OUsersDbUtils {
         });
     }
 
+    /**
+     * @param name {@link String} role name
+     * @return {@link Optional<ORole>} role
+     */
     public static Optional<ORole> getRoleByName(String name) {
         return DBClosure.sudo(db -> ofNullable(db.getMetadata().getSecurity().getRole(name)));
     }
 
-    public static Optional<OrienteerUser> getUserByRestoreId(String id) {
-	    return getUserBy(OrienteerUser.PROP_RESTORE_ID, id);
+    /**
+     * Search user by given restore id
+     * @param restoreId {@link String} restore id
+     * @return {@link Optional<OrienteerUser>} user with given restore id
+     */
+    public static Optional<OrienteerUser> getUserByRestoreId(String restoreId) {
+	    return getUserBy(OrienteerUser.PROP_RESTORE_ID, restoreId);
     }
 
+    /**
+     * Search user by given id
+     * @param id {@link String} user id
+     * @return {@link Optional<OrienteerUser>} user with given id
+     */
     public static Optional<OrienteerUser> getUserById(String id) {
 	    return getUserBy(OrienteerUser.PROP_ID, id);
     }
 
-    public static boolean isUserExistsWithRestoreId(String id) {
+    /**
+     * Check if user exists with given restore id
+     * @param restoreId {@link String} user restore id
+     * @return true if user with given restoreId exists in database
+     */
+    public static boolean isUserExistsWithRestoreId(String restoreId) {
 	    return DBClosure.sudo(db -> {
 	        String sql = String.format("select count(*) from %s where %s = ?", OrienteerUser.CLASS_NAME, OrienteerUser.PROP_RESTORE_ID);
-	        List<OIdentifiable> documents = db.query(new OSQLSynchQuery<>(sql, 1), id);
+	        List<OIdentifiable> documents = db.query(new OSQLSynchQuery<>(sql, 1), restoreId);
 	        return getDocument(documents)
                     .map(d -> (boolean) d.field("count"))
                     .orElse(false);
         });
     }
 
+    /**
+     * Search user by given field and value
+     * @param field {@link String} field
+     * @param value {@link String} value
+     * @return {@link Optional<OrienteerUser>} user which field contains given value
+     */
     private static Optional<OrienteerUser> getUserBy(String field, String value) {
         return DBClosure.sudo(db -> {
             String sql = String.format("select from %s where %s = ?", OrienteerUser.CLASS_NAME, field);

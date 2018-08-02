@@ -27,6 +27,9 @@ import java.util.UUID;
 
 import static org.orienteer.users.module.OrienteerUsersModule.*;
 
+/**
+ * Default implementation of {@link IOrienteerUsersService}
+ */
 @Singleton
 public class OrienteerUsersService implements IOrienteerUsersService {
 

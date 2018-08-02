@@ -5,6 +5,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.users.model.OrienteerUser;
 
+/**
+ * Default restore page which can be overridden in subclasses
+ */
 public class DefaultRestorePasswordPage extends BasePage<OrienteerUser> {
 
     public DefaultRestorePasswordPage(PageParameters parameters) {

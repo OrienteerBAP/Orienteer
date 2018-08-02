@@ -15,6 +15,12 @@ import org.orienteer.users.util.OUsersDbUtils;
 
 import java.io.IOException;
 
+/**
+ * Registration resource which handles users which opens this resource.
+ * Redirect user to {@link IOrienteerUsersService#getRegistrationPage()} with parameters which contains user id
+ * if user exists in system but account status is {@link com.orientechnologies.orient.core.metadata.security.OUser.STATUSES#SUSPENDED}.
+ * Otherwise redirect user to {@link IOrienteerUsersService#getRegistrationPage()}
+ */
 public class RegistrationResource extends AbstractResource {
 
     public static final String MOUNT_PATH = "/offerai/registration";
