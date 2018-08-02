@@ -18,6 +18,11 @@ import org.orienteer.users.util.OUsersDbUtils;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Restore resource which handles users which opens this resource.
+ * Redirect user to {@link IOrienteerUsersService#getRestorePasswordPage()} if user with given restore id exists in system.
+ * Otherwise redirect user to {@link OrienteerWebApplication#getHomePage()}
+ */
 public class RestorePasswordResource extends AbstractResource {
 
     public static final String MOUNT_PATH = "/restore/${id}/";
@@ -57,8 +62,8 @@ public class RestorePasswordResource extends AbstractResource {
                 PageParameters params = new PageParameters();
                 if (!Strings.isNullOrEmpty(id) && OUsersDbUtils.isUserExistsWithRestoreId(id)) {
                     params.add(RES_KEY, id);
-                }
-                RequestCycle.get().setResponsePage(service.getRestorePasswordPage(), params);
+                    RequestCycle.get().setResponsePage(service.getRestorePasswordPage(), params);
+                } else RequestCycle.get().setResponsePage(OrienteerWebApplication.lookupApplication().getHomePage());
             }
         };
     }
