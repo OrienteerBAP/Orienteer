@@ -2,9 +2,8 @@ package org.orienteer.core.tasks;
 
 /**
  * Interface for task sessions
- * @param <T> task session type
  */
-public interface ITaskSession<T extends OTaskSession> {
+public interface ITaskSession {
 	
 	/**
 	 * Statuses of task session
@@ -52,7 +51,7 @@ public interface ITaskSession<T extends OTaskSession> {
 	public Status getStatus();
 	
 	public OTaskSessionRuntime getOTaskSessionRuntime();
-	public T getOTaskSessionPersisted();
+	public OTaskSession getOTaskSessionPersisted();
 	
 	public ITaskSession setCallback(ITaskSessionCallback callback);
 	public ITaskSessionCallback getCallback();
