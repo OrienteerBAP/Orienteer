@@ -67,7 +67,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String MAIL_MACROS_LINK = "link";
 
     protected OrienteerUsersModule() {
-        super(MODULE_NAME, 4,  PerspectivesModule.NAME, OMailModule.NAME);
+        super(MODULE_NAME, 7,  PerspectivesModule.NAME, OMailModule.NAME);
     }
 
     @Override
@@ -122,6 +122,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         // TODO: remove this after release with fix for roles in OrientDB: https://github.com/orientechnologies/orientdb/issues/8338
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.SCHEMA, null, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLUSTER, "internal", READ.getPermissionFlag());
         role.grant(ResourceGeneric.RECORD_HOOK, "", READ.getPermissionFlag());
         role.grant(ResourceGeneric.DATABASE, null, READ.getPermissionFlag());
@@ -134,9 +136,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, OrienteerUser.CLASS_NAME, OrientPermission.combinedPermission(READ, UPDATE));
         role.grant(ResourceGeneric.DATABASE, "cluster", OrientPermission.combinedPermission(READ, UPDATE));
 
-
+        role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
         role.save();
+
+        perspective.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
+        perspective.save();
     }
 
     private void updateReaderPermissions(ODatabaseDocument db, ODocument reader, ODocument perspective) {
@@ -144,12 +149,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, null, 0);
-        role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, 0);
+        role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, 0);
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, 0);
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, 0);
 
-        role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Arrays.asList(reader, perspective));
+        role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(reader));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
 
         role.save();
