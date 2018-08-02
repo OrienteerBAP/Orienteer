@@ -270,7 +270,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         RegistrationResource.mount(app);
         RestorePasswordResource.mount(app);
 
-        app.mountPages("org.orienteer.web");
+        app.mountPages("org.orienteer.users.web");
 
         OScheduler scheduler = db.getMetadata().getScheduler();
         Collection<OScheduledEvent> events = scheduler.getEvents().values(); // TODO: remove after fix issue https://github.com/orientechnologies/orientdb/issues/8368
@@ -288,6 +288,6 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         RegistrationResource.unmount(app);
         RestorePasswordResource.mount(app);
 
-        app.unmountPages("org.orienteer.web");
+        app.unmountPages("org.orienteer.users.web");
     }
 }
