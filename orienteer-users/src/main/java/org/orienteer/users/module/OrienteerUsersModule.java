@@ -3,10 +3,15 @@ package org.orienteer.users.module;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.hook.ORecordHook;
+import com.orientechnologies.orient.core.metadata.function.OFunction;
+import com.orientechnologies.orient.core.metadata.function.OFunctionLibrary;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.*;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.schedule.OScheduledEvent;
+import com.orientechnologies.orient.core.schedule.OScheduler;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
@@ -17,15 +22,17 @@ import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
+import org.orienteer.mail.OMailModule;
+import org.orienteer.users.resource.RegistrationResource;
+import org.orienteer.users.resource.RestorePasswordResource;
+import org.orienteer.users.hook.OrienteerUserHook;
+import org.orienteer.users.hook.OrienteerUserRoleHook;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.util.OUsersCommonUtils;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import static ru.ydn.wicket.wicketorientdb.security.OrientPermission.READ;
@@ -42,34 +49,59 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String ORIENTEER_USER_PERSPECTIVE = "orienteerUserPerspective";
     public static final String READER_PERSPECTIVE         = "readerPerspective";
 
+    public static final String EVENT_RESTORE_PASSWORD_PREFIX = "removeUserRestoreId";
+
+    public static final String FUN_REMOVE_RESTORE_ID = "removeRestoreId";
+    public static final String PARAM_RESTORE_ID      = "restoreId";
+    public static final String PARAM_EVENT_NAME      = "eventName";
+    public static final String PARAM_TIMEOUT         = "timeout";
+
     public static final String MODULE_NAME = "orienteer-users";
 
+    public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
+    public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
+
+    public static final String MAIL_RESTORE      = "restore";
+    public static final String MAIL_REGISTRATION = "registration";
+
+    public static final String MAIL_MACROS_LINK = "link";
+
     protected OrienteerUsersModule() {
-        super(MODULE_NAME, 1,  PerspectivesModule.NAME);
+        super(MODULE_NAME, 7,  PerspectivesModule.NAME, OMailModule.NAME);
     }
 
     @Override
     public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
-        helper.oClass(OUser.CLASS_NAME)
-                .oProperty(OrienteerUser.PROP_ID, OType.STRING).notNull().oIndex(OClass.INDEX_TYPE.UNIQUE)
-                .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
+        OClass user = helper.oClass(OUser.CLASS_NAME)
+                .oProperty(OrienteerUser.PROP_ID, OType.STRING).notNull()
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
                 .oProperty(OrienteerUser.PROP_RESTORE_ID, OType.STRING)
-                .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
+                    .updateCustomAttribute(REMOVE_CRON_RULE, "0 0/1 * * * ?")
+                    .updateCustomAttribute(REMOVE_SCHEDULE_START_TIMEOUT, "86400000")
                 .oProperty(OrienteerUser.PROP_RESTORE_ID_CREATED, OType.DATETIME)
-                .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
+                .oProperty(OrienteerUser.PROP_EMAIL, OType.STRING).notNull()
                 .getOClass();
 
-        ODocument perspective = createOrienteerUsersPerspective(db);
-        ODocument readerPerspective = createReaderPespective(db);
+        updateDefaultOrienteerUsers(db);
+
+        helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE);
+        helper.oIndex(user.getProperty(OrienteerUser.PROP_EMAIL).getFullName(), OClass.INDEX_TYPE.UNIQUE);
 
         OUsersCommonUtils.setRestricted(db, helper.oClass(OIdentity.CLASS_NAME).getOClass());
         OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OCLASS_PERSPECTIVE).getOClass());
 
+        ODocument perspective = createOrienteerUsersPerspective(db);
+        ODocument readerPerspective = createReaderPespective(db);
+
         ODocument reader = updateAndGetUserReader(db);
         updateReaderPermissions(db, reader, readerPerspective);
         updateOrienteerUserRoleDoc(db, perspective);
+
+        createRemoveRestoreIdFunction(helper);
 
 
         return null;
@@ -87,14 +119,29 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_WIDGET, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, READ.getPermissionFlag());
 
+        // TODO: remove this after release with fix for roles in OrientDB: https://github.com/orientechnologies/orientdb/issues/8338
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.SCHEMA, null, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLUSTER, "internal", READ.getPermissionFlag());
+        role.grant(ResourceGeneric.RECORD_HOOK, "", READ.getPermissionFlag());
+        role.grant(ResourceGeneric.DATABASE, null, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.DATABASE, "systemclusters", READ.getPermissionFlag());
+        role.grant(ResourceGeneric.DATABASE, "function", READ.getPermissionFlag());
+        role.grant(ResourceGeneric.DATABASE, "command", READ.getPermissionFlag());
+
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, READ.getPermissionFlag());
 
         role.grant(ResourceGeneric.CLASS, OrienteerUser.CLASS_NAME, OrientPermission.combinedPermission(READ, UPDATE));
         role.grant(ResourceGeneric.DATABASE, "cluster", OrientPermission.combinedPermission(READ, UPDATE));
 
-
+        role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
         role.save();
+
+        perspective.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
+        perspective.save();
     }
 
     private void updateReaderPermissions(ODatabaseDocument db, ODocument reader, ODocument perspective) {
@@ -102,12 +149,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, null, 0);
-        role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, 0);
+        role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, 0);
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, 0);
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, 0);
 
-        role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Arrays.asList(reader, perspective));
+        role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(reader));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
 
         role.save();
@@ -158,8 +205,94 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         return reader;
     }
 
+    /**
+     * Create function which will remove user restoreId by scheduler
+     * @param helper {@link OSchemaHelper} Orienteer helper
+     */
+    private void createRemoveRestoreIdFunction(OSchemaHelper helper) {
+        OFunctionLibrary lib = helper.getDatabase().getMetadata().getFunctionLibrary();
+        if (lib.getFunction(FUN_REMOVE_RESTORE_ID) != null) {
+            lib.dropFunction(FUN_REMOVE_RESTORE_ID);
+        }
+        OFunction function = lib.createFunction(FUN_REMOVE_RESTORE_ID);
+        function.setName(FUN_REMOVE_RESTORE_ID);
+        function.setLanguage("javascript");
+        function.setCode(createCodeForRemoveRestoreIdFunction());
+        function.setParameters(createParamsForRemoveRestoreIdFunction());
+        function.save();
+    }
+
+    private String createCodeForRemoveRestoreIdFunction() {
+        return String.format("var res = db.command('UPDATE %s SET %s = null, %s = null WHERE %s = ? AND %s <= (sysdate() - ?)', %s, %s);\n"
+                        + "if (res > 0) db.command('DELETE FROM OSchedule WHERE name = ?', %s);",
+                OrienteerUser.CLASS_NAME, OrienteerUser.PROP_RESTORE_ID, OrienteerUser.PROP_RESTORE_ID_CREATED,
+                OrienteerUser.PROP_RESTORE_ID,
+                OrienteerUser.PROP_RESTORE_ID_CREATED,
+                PARAM_RESTORE_ID,
+                PARAM_TIMEOUT,
+                PARAM_EVENT_NAME
+        );
+    }
+
+    private List<String> createParamsForRemoveRestoreIdFunction() {
+        List<String> params = new LinkedList<>();
+        params.add(PARAM_RESTORE_ID);
+        params.add(PARAM_EVENT_NAME);
+        params.add(PARAM_TIMEOUT);
+        return params;
+    }
+
+    private void updateDefaultOrienteerUsers(ODatabaseDocument db) {
+        OSecurity security = db.getMetadata().getSecurity();
+
+        final ODocument admin = security.getUser("admin").getDocument();
+        admin.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
+        admin.field(OrienteerUser.PROP_EMAIL, "admin@gmail.com");
+        admin.save();
+
+        final ODocument reader = security.getUser("reader").getDocument();
+        reader.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
+        reader.field(OrienteerUser.PROP_EMAIL, "reader@gmail.com");
+        reader.save();
+
+        final ODocument writer = security.getUser("writer").getDocument();
+        writer.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
+        writer.field(OrienteerUser.PROP_EMAIL, "writer@gmail.com");
+        writer.save();
+    }
+
     @Override
     public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
         onInstall(app, db);
+    }
+
+    @Override
+    public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
+        hooks.add(OrienteerUserHook.class);
+        hooks.add(OrienteerUserRoleHook.class);
+
+        RegistrationResource.mount(app);
+        RestorePasswordResource.mount(app);
+
+        app.mountPages("org.orienteer.users.web");
+
+        OScheduler scheduler = db.getMetadata().getScheduler();
+        Collection<OScheduledEvent> events = scheduler.getEvents().values(); // TODO: remove after fix issue https://github.com/orientechnologies/orientdb/issues/8368
+        for (OScheduledEvent event : events) {
+            scheduler.updateEvent(event);
+        }
+    }
+
+    @Override
+    public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
+        hooks.remove(OrienteerUserHook.class);
+        hooks.remove(OrienteerUserRoleHook.class);
+
+        RegistrationResource.unmount(app);
+        RestorePasswordResource.mount(app);
+
+        app.unmountPages("org.orienteer.users.web");
     }
 }
