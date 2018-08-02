@@ -1,4 +1,4 @@
 /**
  * Contains models for 'orienteer-mail' module
  */
-package org.orienteer.model;
+package org.orienteer.mail.model;

@@ -1,14 +1,14 @@
-package org.orienteer.task;
+package org.orienteer.mail.task;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.orienteer.mail.model.OPreparedMail;
+import org.orienteer.mail.service.IOMailService;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
-import org.orienteer.model.OPreparedMail;
-import org.orienteer.service.IOMailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

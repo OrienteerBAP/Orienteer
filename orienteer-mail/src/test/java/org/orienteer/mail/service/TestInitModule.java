@@ -1,4 +1,4 @@
-package org.orienteer.service;
+package org.orienteer.mail.service;
 
 import com.google.inject.AbstractModule;
 

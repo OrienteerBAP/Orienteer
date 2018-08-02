@@ -1,4 +1,4 @@
-package org.orienteer.model;
+package org.orienteer.mail.model;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;

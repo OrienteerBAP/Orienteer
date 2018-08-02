@@ -1,12 +1,12 @@
-package org.orienteer.service;
+package org.orienteer.mail.service;
 
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.model.OMailAttachment;
-import org.orienteer.model.OMailSettings;
-import org.orienteer.model.OPreparedMail;
+import org.orienteer.mail.model.OMailAttachment;
+import org.orienteer.mail.model.OMailSettings;
+import org.orienteer.mail.model.OPreparedMail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

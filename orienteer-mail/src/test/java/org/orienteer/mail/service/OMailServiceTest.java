@@ -1,6 +1,6 @@
-package org.orienteer.service;
+package org.orienteer.mail.service;
 
-import org.orienteer.model.OPreparedMail;
+import org.orienteer.mail.model.OPreparedMail;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;

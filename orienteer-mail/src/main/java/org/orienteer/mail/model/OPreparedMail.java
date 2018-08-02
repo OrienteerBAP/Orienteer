@@ -1,8 +1,9 @@
-package org.orienteer.model;
+package org.orienteer.mail.model;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
-import org.orienteer.util.OMailUtils;
+import org.orienteer.mail.service.IOMailService;
+import org.orienteer.mail.util.OMailUtils;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,7 +15,7 @@ import static org.orienteer.core.util.CommonUtils.getFromIdentifiable;
 import static org.orienteer.core.util.CommonUtils.mapIdentifiables;
 
 /**
- * Prepared mail for send it via {@link org.orienteer.service.IOMailService}
+ * Prepared mail for send it via {@link IOMailService}
  * Contains information about mail with applied macros and adjusted recipients, bcc.
  * Can be used for analyze generated and send mails
  */

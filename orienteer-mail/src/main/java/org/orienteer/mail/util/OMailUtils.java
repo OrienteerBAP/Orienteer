@@ -1,10 +1,10 @@
-package org.orienteer.util;
+package org.orienteer.mail.util;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.MapModel;
-import org.orienteer.model.OMail;
+import org.orienteer.mail.model.OMail;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.List;

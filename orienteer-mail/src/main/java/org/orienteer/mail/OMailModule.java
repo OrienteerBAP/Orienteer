@@ -1,26 +1,28 @@
-package org.orienteer;
+package org.orienteer.mail;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.mail.model.OMailAttachment;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.model.OMail;
-import org.orienteer.model.OMailAttachment;
-import org.orienteer.model.OMailSettings;
-import org.orienteer.model.OPreparedMail;
+import org.orienteer.mail.model.OMail;
+import org.orienteer.mail.model.OMailSettings;
+import org.orienteer.mail.model.OPreparedMail;
 
 import static com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 
 /**
  * {@link IOrienteerModule} for 'orienteer-mail' module
  */
-public class OMailModule extends AbstractOrienteerModule{
+public class OMailModule extends AbstractOrienteerModule {
+
+    public static final String NAME = "orienteer-mail";
 
 	protected OMailModule() {
-		super("orienteer-mail", 5);
+		super(NAME, 5);
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package org.orienteer.task;
+package org.orienteer.mail.task;
 
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 

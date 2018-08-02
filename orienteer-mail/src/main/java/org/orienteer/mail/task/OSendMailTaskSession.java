@@ -1,8 +1,8 @@
-package org.orienteer.task;
+package org.orienteer.mail.task;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.core.tasks.OTaskSession;
-import org.orienteer.model.OPreparedMail;
 
 import java.util.LinkedList;
 import java.util.List;

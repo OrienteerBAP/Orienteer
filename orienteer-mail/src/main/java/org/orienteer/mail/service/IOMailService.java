@@ -1,8 +1,8 @@
-package org.orienteer.service;
+package org.orienteer.mail.service;
 
 import com.google.inject.ImplementedBy;
-import org.orienteer.model.OMailSettings;
-import org.orienteer.model.OPreparedMail;
+import org.orienteer.mail.model.OMailSettings;
+import org.orienteer.mail.model.OPreparedMail;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;

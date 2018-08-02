@@ -1,4 +1,4 @@
 /**
  * Main package for 'orienteer-mail' module
  */
-package org.orienteer;
+package org.orienteer.mail;

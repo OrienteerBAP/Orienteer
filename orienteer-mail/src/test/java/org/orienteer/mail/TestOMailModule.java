@@ -1,4 +1,4 @@
-package org.orienteer;
+package org.orienteer.mail;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -10,11 +10,11 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
-import org.orienteer.model.OMail;
-import org.orienteer.model.OMailSettings;
-import org.orienteer.model.OPreparedMail;
-import org.orienteer.service.IOMailService;
-import org.orienteer.util.OMailUtils;
+import org.orienteer.mail.model.OMail;
+import org.orienteer.mail.model.OMailSettings;
+import org.orienteer.mail.model.OPreparedMail;
+import org.orienteer.mail.service.IOMailService;
+import org.orienteer.mail.util.OMailUtils;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.mail.BodyPart;
