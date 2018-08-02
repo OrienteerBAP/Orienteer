@@ -65,7 +65,7 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
      * @param model {@link IModel<OrienteerUser>} model which contains filled user
      */
     protected void onRegister(AjaxRequestTarget target, IModel<OrienteerUser> model) {
-
+        // Override in subclass
     }
 
     private EmailTextField createEmailField(String id, IModel<String> model) {
