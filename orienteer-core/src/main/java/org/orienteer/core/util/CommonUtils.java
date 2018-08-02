@@ -12,6 +12,9 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
+
 /**
  * Common for Orienteer utility methods
  */
@@ -148,10 +151,11 @@ public class CommonUtils {
 	 * @param identifiables {@link List<OIdentifiable>} identifiables
 	 * @param mapFunc {@link Function<ODocument, T>} map function which will by apply for record from first item in identifiables
 	 * @param <T> type of return value by mapFunc
-	 * @return {@link T} mapped record from first item in identifiables or null if identifiable is empty or can't load record from first identifiable
+	 * @return {@link Optional<T>} mapped record from first item in identifiables or {@link Optional#empty()}
+	 * if identifiable is empty or can't load record from first identifiable
 	 */
-	public static <T> T getFromIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> mapFunc) {
-		return isNotEmpty(identifiables) ? getFromIdentifiable(identifiables.get(0), mapFunc) : null;
+	public static <T> Optional<T> getFromIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> mapFunc) {
+		return isNotEmpty(identifiables) ? getFromIdentifiable(identifiables.get(0), mapFunc) : empty();
 	}
 
 	/**
@@ -160,14 +164,14 @@ public class CommonUtils {
 	 * @param identifiable {@link OIdentifiable} identifiable for map
 	 * @param mapFunc {@link Function<ODocument, T>} map function which will be apply for record loaded from identifiable
 	 * @param <T> type of return value by mapFunc
-	 * @return {@link T} mapped record of null if identifiable is null, or can't load record
+	 * @return {@link Optional<T>} mapped record or {@link Optional#empty()} if identifiable is null, or can't load record
 	 */
-	public static <T> T getFromIdentifiable(OIdentifiable identifiable, Function<ODocument, T> mapFunc) {
+	public static <T> Optional<T> getFromIdentifiable(OIdentifiable identifiable, Function<ODocument, T> mapFunc) {
 		if (identifiable != null) {
 			ODocument doc = identifiable.getRecord();
-			return doc != null ? mapFunc.apply(doc) : null;
+			return doc != null ? ofNullable(mapFunc.apply(doc)) : empty();
 		}
-		return null;
+		return empty();
 	}
 
 	/**
@@ -183,9 +187,9 @@ public class CommonUtils {
 	/**
 	 * Load record and cast it to {@link ODocument} from first ite in identifiables
 	 * @param identifiables {@link List <OIdentifiable>} identifiables
-	 * @return get first document or null
+	 * @return {@link Optional<ODocument>} get first document or {@link Optional#empty()}
 	 */
-	public static ODocument getDocument(List<OIdentifiable> identifiables) {
-		return isNotEmpty(identifiables) ? identifiables.get(0).getRecord() : null;
+	public static Optional<ODocument> getDocument(List<OIdentifiable> identifiables) {
+		return isNotEmpty(identifiables) ? ofNullable(identifiables.get(0).getRecord()) : empty();
 	}
 }
