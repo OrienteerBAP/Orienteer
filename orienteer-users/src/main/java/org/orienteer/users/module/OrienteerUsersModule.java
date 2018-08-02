@@ -3,6 +3,7 @@ package org.orienteer.users.module;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.function.OFunction;
 import com.orientechnologies.orient.core.metadata.function.OFunctionLibrary;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -21,6 +22,8 @@ import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
+import org.orienteer.users.hook.OrienteerUserHook;
+import org.orienteer.users.hook.OrienteerUserRoleHook;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.resource.RegistrationResource;
 import org.orienteer.users.resource.RestorePasswordResource;
@@ -249,6 +252,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     @Override
     public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
+        hooks.add(OrienteerUserHook.class);
+        hooks.add(OrienteerUserRoleHook.class);
+
         RegistrationResource.mount(app);
         RestorePasswordResource.mount(app);
 
@@ -261,6 +268,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     @Override
     public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
+        hooks.remove(OrienteerUserHook.class);
+        hooks.remove(OrienteerUserRoleHook.class);
+
         RegistrationResource.unmount(app);
         RestorePasswordResource.mount(app);
     }
