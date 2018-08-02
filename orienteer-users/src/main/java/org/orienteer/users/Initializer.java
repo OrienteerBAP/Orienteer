@@ -24,7 +24,11 @@ public class Initializer implements IInitializer {
     }
 
     @Override
-    public void destroy(Application app) {
-
+    public void destroy(Application application) {
+        OrienteerWebApplication app = (OrienteerWebApplication) application;
+        app.unregisterModule(OrienteerUsersModule.class);
+        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
+        hooks.remove(OrienteerUserHook.class);
+        hooks.remove(OrienteerUserRoleHook.class);
     }
 }
