@@ -44,7 +44,11 @@
 		    <artifactId>orientdb-core</artifactId>
 		    <type>bundle</type>
 	    </dependency>
-	    <dependency>
+        <dependency>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-object</artifactId>
+        </dependency>
+        <dependency>
 		    <groupId>com.orientechnologies</groupId>
 		    <artifactId>orientdb-server</artifactId>
 		    <version>${orientdb.version}</version>
@@ -62,6 +66,18 @@
 		    <groupId>com.google.inject.extensions</groupId>
 		    <artifactId>guice-servlet</artifactId>
 	    </dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-multibindings</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-persist</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
@@ -130,17 +146,6 @@
 		<dependency>
 			<groupId>ru.vyarus</groupId>
 			<artifactId>guice-persist-orient</artifactId>
-			<version>3.3.2</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.orientechnologies</groupId>
-					<artifactId>orientdb-graphdb</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.orientechnologies</groupId>
-					<artifactId>orientdb-object</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- ECLIPSE AETHER -->

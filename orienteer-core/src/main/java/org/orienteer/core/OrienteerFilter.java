@@ -166,16 +166,12 @@ public final class OrienteerFilter implements Filter {
      */
     public static void reloadOrienteer(long delay, final long wait) {
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
-        executor.schedule(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-                    instance.reload(wait);
-				} catch (ServletException e) {
-					LOG.error("Can't reload Orienteer", e); 
-				}
-			}
-		}, delay, TimeUnit.MILLISECONDS);
+        executor.schedule(() -> {
+            try {
+                instance.reload(wait);
+            } catch (ServletException e) {
+                LOG.error("Can't reload Orienteer", e);
+            }
+        }, delay, TimeUnit.MILLISECONDS);
     }
 }

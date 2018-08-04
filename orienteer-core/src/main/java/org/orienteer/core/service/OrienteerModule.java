@@ -5,7 +5,6 @@ import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.server.OServer;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -64,12 +63,6 @@ public class OrienteerModule extends AbstractModule {
 	public ODatabaseDocument getDatabaseRecord()
 	{
 		return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
-	}
-	
-	@Provides
-	@RequestScoped
-	public ODatabaseDocumentTx getDatabaseDocumentTx(ODatabaseDocument db) {
-		return (ODatabaseDocumentTx)db;
 	}
 
 	@Provides

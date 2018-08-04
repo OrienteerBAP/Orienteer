@@ -16,6 +16,7 @@ import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vyarus.guice.persist.orient.OrientModule;
+import ru.vyarus.guice.persist.orient.RepositoryModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 import java.util.*;
@@ -55,8 +56,6 @@ public class OrienteerInitModule extends ServletModule {
 	public OrienteerInitModule(Properties properties) {
 		this.properties = properties;
 	}
-	
-	
 	
 	@Override
 	protected void configureServlets() {
@@ -98,7 +97,15 @@ public class OrienteerInitModule extends ServletModule {
 		String username = System.getProperty("admin.username");
 		String password = System.getProperty("admin.password");
 
-		install(loadFromClasspath(new OrienteerModule(), new OrientModule(orientUrl, username, password)));
+
+		install(
+				loadFromClasspath(
+						new OrienteerModule(),
+						new OrientModule(orientUrl, username, password),
+                        new OrienteerAutoScanSchemeModule(),
+                        new RepositoryModule()
+				)
+		);
 	}
 
 	protected void bindOrientDbProperties(Properties properties) {
@@ -110,16 +117,16 @@ public class OrienteerInitModule extends ServletModule {
 		}
 	}
 	
-	
-	
     public Module loadFromClasspath(Module... initModules) {
     	List<Module> allModules = new LinkedList<Module>();
         List<Module> runtime = new LinkedList<Module>();
         List<Module> overrides = new LinkedList<Module>();
         
-        if(initModules!=null && initModules.length>0) allModules.addAll(Arrays.asList(initModules));
+        if(initModules != null && initModules.length > 0) {
+            allModules.addAll(Arrays.asList(initModules));
+        }
+
         Iterables.addAll(allModules, ServiceLoader.load(Module.class));
-        
         
         for (Module module : allModules) {
             if (module.getClass().isAnnotationPresent(OverrideModule.class))

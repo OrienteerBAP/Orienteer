@@ -47,9 +47,9 @@
 	</distributionManagement>
 	<developers>
 	    <developer>
-		<id>owner</id>
-		<name>Ilia Naryzhny</name>
-		<email>phantom@ydn.ru</email>
+            <id>owner</id>
+            <name>Ilia Naryzhny</name>
+            <email>phantom@ydn.ru</email>
 	    </developer>
 	</developers>
 	<licenses>
@@ -62,7 +62,10 @@
 	<properties>
 		<wicket.version>8.0.0</wicket.version>
 		<wicketstuff.version>8.0.0</wicketstuff.version>
-		<orientdb.version>2.2.30</orientdb.version>
+		<orientdb.version>2.2.36</orientdb.version>
+		<guice.version>4.2.0</guice.version>
+        <guice.orient.persist.version>3.3.2</guice.orient.persist.version>
+        <lombok.version>1.18.2</lombok.version>
 		<wicket.orientdb.version>1.4-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.4.6.v20170531</jetty.version>
 		<slf4j.version>1.7.25</slf4j.version>
@@ -141,7 +144,12 @@
 			    <version>${orientdb.version}</version>
 			    <type>bundle</type>
 		    </dependency>
-		    <dependency>
+            <dependency>
+                <groupId>com.orientechnologies</groupId>
+                <artifactId>orientdb-object</artifactId>
+                <version>${orientdb.version}</version>
+            </dependency>
+            <dependency>
 			    <groupId>com.orientechnologies</groupId>
 			    <artifactId>orientdb-server</artifactId>
 			    <version>${orientdb.version}</version>
@@ -164,13 +172,44 @@
 		    <dependency>
 			    <groupId>com.google.inject</groupId>
 			    <artifactId>guice</artifactId>
-			    <version>4.1.0</version>
+			    <version>${guice.version}</version>
 		    </dependency>
 		    <dependency>
 			    <groupId>com.google.inject.extensions</groupId>
 			    <artifactId>guice-servlet</artifactId>
-			    <version>4.1.0</version>
+			    <version>${guice.version}</version>
 		    </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-persist</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.vyarus</groupId>
+                <artifactId>guice-persist-orient</artifactId>
+                <version>${guice.orient.persist.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.orientechnologies</groupId>
+                        <artifactId>orientdb-graphdb</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.orientechnologies</groupId>
+                        <artifactId>orientdb-object</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
 		    <!-- WEB JARS -->
 		    <dependency>
 			    <groupId>de.agilecoders.wicket.webjars</groupId>
