@@ -133,6 +133,7 @@ public class RegistrationComponentTest {
         OrienteerWebSession session = (OrienteerWebSession) tester.getSession();
         assertNotNull(session.getUser());
         assertEquals(user.getName(), session.getUser().getName());
+        session.signOut();
     }
 
     private ResourceReference getRegistrationResourceReference() {
