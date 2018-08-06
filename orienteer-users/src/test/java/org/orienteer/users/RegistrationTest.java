@@ -21,8 +21,6 @@ import org.orienteer.users.resource.RegistrationResource;
 import org.orienteer.users.service.IOrienteerUsersService;
 import org.orienteer.users.util.OUsersDbUtils;
 import org.orienteer.users.web.DefaultRegistrationPage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -33,8 +31,6 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(OrienteerTestRunner.class)
 public class RegistrationTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(RegistrationTest.class);
 
     @Inject
     private WicketTester tester;
