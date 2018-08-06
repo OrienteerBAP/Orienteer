@@ -67,7 +67,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String MAIL_MACROS_LINK = "link";
 
     protected OrienteerUsersModule() {
-        super(MODULE_NAME, 7,  PerspectivesModule.NAME, OMailModule.NAME);
+        super(MODULE_NAME, 8,  PerspectivesModule.NAME, OMailModule.NAME);
     }
 
     @Override
@@ -84,6 +84,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                 .oProperty(OrienteerUser.PROP_RESTORE_ID_CREATED, OType.DATETIME)
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
                 .oProperty(OrienteerUser.PROP_EMAIL, OType.STRING).notNull()
+                .oProperty(OrienteerUser.PROP_FIRST_NAME, OType.STRING)
+                .oProperty(OrienteerUser.PROP_LAST_NAME, OType.STRING)
                 .getOClass();
 
         updateDefaultOrienteerUsers(db);

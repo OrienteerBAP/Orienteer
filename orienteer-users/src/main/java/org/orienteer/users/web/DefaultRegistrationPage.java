@@ -115,11 +115,10 @@ public class DefaultRegistrationPage extends BasePage<OrienteerUser> {
             @Override
             protected void onRegister(AjaxRequestTarget target, IModel<OrienteerUser> model) {
                 OrienteerUser user = model.getObject();
-                user.setName(user.getEmail());
-                user.setAccountStatus(OSecurityUser.STATUSES.SUSPENDED);
+
                 DBClosure.sudoSave(user);
-                
                 service.notifyUserAboutRegistration(user);
+
                 target.add(container);
             }
 
