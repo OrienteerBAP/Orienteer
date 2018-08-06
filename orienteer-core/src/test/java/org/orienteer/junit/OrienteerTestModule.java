@@ -1,7 +1,6 @@
 package org.orienteer.junit;
 
 import com.google.inject.*;
-import com.google.inject.multibindings.Multibinder;
 import com.google.inject.name.Names;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
@@ -29,23 +28,16 @@ public class OrienteerTestModule extends AbstractModule
 			@Override
 			public <I> void hear(TypeLiteral<I> type, final TypeEncounter<I> encounter) {
 				final Provider<Injector> injectorProvider = encounter.getProvider(Injector.class);
-				encounter.register(new InjectionListener<Object>() {
-
-					@Override
-					public void afterInjection(Object injectee) {
-						WebApplication app = (WebApplication)injectee;
-						app.getComponentInstantiationListeners().add(new GuiceComponentInjector(app, injectorProvider.get()));
-					}
-				});
+				encounter.register((InjectionListener<Object>) injected -> {
+                    WebApplication app = (WebApplication) injected;
+                    app.getComponentInstantiationListeners().add(new GuiceComponentInjector(app, injectorProvider.get()));
+                });
 			}
 		});
 		bind(OrienteerTester.class).asEagerSingleton();
 		Provider<OrienteerTester> provider = binder().getProvider(OrienteerTester.class);
 		bind(WicketTester.class).toProvider(provider);
 		bind(WicketOrientDbTester.class).toProvider(provider);
-
-		Multibinder<String> binder = Multibinder.newSetBinder(binder(), String.class, Names.named("orient.model.packages"));
-		binder.addBinding().toInstance("org.orienteer.core.persist");
 	}
 	
 	@Provides

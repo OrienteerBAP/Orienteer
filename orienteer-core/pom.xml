@@ -45,10 +45,6 @@
 		    <type>bundle</type>
 	    </dependency>
         <dependency>
-            <groupId>com.orientechnologies</groupId>
-            <artifactId>orientdb-object</artifactId>
-        </dependency>
-        <dependency>
 		    <groupId>com.orientechnologies</groupId>
 		    <artifactId>orientdb-server</artifactId>
 		    <version>${orientdb.version}</version>
@@ -66,18 +62,6 @@
 		    <groupId>com.google.inject.extensions</groupId>
 		    <artifactId>guice-servlet</artifactId>
 	    </dependency>
-		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-multibindings</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-persist</artifactId>
-		</dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
@@ -113,10 +97,6 @@
 			<groupId>org.webjars</groupId>
 			<artifactId>jquery-ui</artifactId>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.webjars</groupId>-->
-			<!--<artifactId>metisMenu</artifactId>-->
-		<!--</dependency>-->
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
@@ -141,11 +121,6 @@
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>codemirror</artifactId>
 			<version>5.27.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ru.vyarus</groupId>
-			<artifactId>guice-persist-orient</artifactId>
 		</dependency>
 
 		<!-- ECLIPSE AETHER -->
@@ -199,6 +174,10 @@
 			<artifactId>plexus-utils</artifactId>
 			<version>3.0.24</version>
 		</dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
 
         <!-- NEED FOR LOAD TELEGRAM BOT-->
 		<dependency>
@@ -224,28 +203,12 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
 		<!-- ORIENTDB SQL GENERATOR DEPENDENCY-->
 		<dependency>
 			<groupId>com.github.raymanrt</groupId>
 			<artifactId>orientqb</artifactId>
 			<version>0.2.0</version>
 		</dependency>
-
-        <!-- MARKDOWN DEPENDENCY -->
-        <!--<dependency>
-            <groupId>org.pegdown</groupId>
-            <artifactId>pegdown</artifactId>
-            <version>1.4.2</version>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>3.1</version>
-        </dependency>-->
 	</dependencies>
 
 	<build>

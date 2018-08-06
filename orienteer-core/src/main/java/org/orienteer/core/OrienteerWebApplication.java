@@ -5,7 +5,6 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
-import com.google.inject.persist.PersistService;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
@@ -91,9 +90,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orienteer.version")
 	private String version;
-
-	@Inject
-	private PersistService persistService;
 
 
 	@Inject(optional=true)
@@ -225,13 +221,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
-		persistService.start();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		persistService.stop();
 	}
 
 	@Override

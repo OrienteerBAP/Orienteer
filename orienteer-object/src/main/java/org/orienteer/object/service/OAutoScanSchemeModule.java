@@ -1,4 +1,4 @@
-package org.orienteer.core.service;
+package org.orienteer.object.service;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
@@ -32,7 +32,7 @@ import java.util.Set;
  * @see <a href="https://github.com/google/guice/wiki/Multibindings">Guice Multibindings</a>
  * @see <a href="https://github.com/xvik/guice-persist-orient#scheme-initialization">Schema initialization</a>
  */
-public class OrienteerAutoScanSchemeModule extends AbstractModule {
+public class OAutoScanSchemeModule extends AbstractModule {
 
     /**
      * Configure module.
@@ -50,6 +50,13 @@ public class OrienteerAutoScanSchemeModule extends AbstractModule {
         bind(ExtensionsDescriptorFactory.class);
     }
 
+    /**
+     * Join set of packages by ','.
+     * Need for provide {@link SchemeInitializer} in {@link OAutoScanSchemeModule#provideSchemaInitializer(String, Provider, ObjectSchemeInitializer)}
+     * For inject packages used Guice Multibindings
+     * @param packages {@link Set<String>} packages
+     * @return string which contains packages separated by ',' or empty string if packages are empty
+     */
     @Provides
     @Singleton
     @Named("orient.model.package")
@@ -57,6 +64,13 @@ public class OrienteerAutoScanSchemeModule extends AbstractModule {
         return packages.isEmpty() ? "" : Joiner.on(',').join(packages);
     }
 
+    /**
+     * Create {@link SchemeInitializer} depends on appPkgs.
+     * @param appPkgs {@link String} string which contains packages with OrientDB models, separated by ','
+     * @param dbProvider {@link Provider<OObjectDatabaseTx>} provider for {@link OObjectDatabaseTx}
+     * @param schemeInitializer {@link ObjectSchemeInitializer}
+     * @return {@link SchemeInitializer} if appPkgs is not empty returns {@link AutoScanSchemeInitializer} otherwise {@link NoOpSchemeInitializer}
+     */
     @Provides
     @Singleton
     public SchemeInitializer provideSchemaInitializer(@Named("orient.model.package") final String appPkgs,

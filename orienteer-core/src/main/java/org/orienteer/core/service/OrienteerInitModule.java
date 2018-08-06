@@ -15,8 +15,6 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.vyarus.guice.persist.orient.OrientModule;
-import ru.vyarus.guice.persist.orient.RepositoryModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 import java.util.*;
@@ -93,19 +91,9 @@ public class OrienteerInitModule extends ServletModule {
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 
-		String orientUrl = System.getProperty("url");
-		String username = System.getProperty("admin.username");
-		String password = System.getProperty("admin.password");
-
-
 		install(
-				loadFromClasspath(
-						new OrienteerModule(),
-						new OrientModule(orientUrl, username, password),
-                        new OrienteerAutoScanSchemeModule(),
-                        new RepositoryModule()
-				)
-		);
+		        loadFromClasspath(new OrienteerModule())
+        );
 	}
 
 	protected void bindOrientDbProperties(Properties properties) {
@@ -116,7 +104,19 @@ public class OrienteerInitModule extends ServletModule {
 			}
 		}
 	}
-	
+
+    /**
+     * <p>
+     *  Load modules from classpath.
+     * </p>
+     * <p>
+     *  For load modules {@link Module} from classpath uses {@link ServiceLoader}
+     *  If present module with annotation {@link OverrideModule}, so will be used {@link Modules#override(Module...)}
+     *  for override runtime bindings (bindings created in modules without annotation {@link OverrideModule})
+     * </p>
+     * @param initModules default modules for init
+     * @return {@link Module} created by {@link Modules#combine(Module...)} or {@link Modules#override(Module...)} if need override module
+     */
     public Module loadFromClasspath(Module... initModules) {
     	List<Module> allModules = new LinkedList<Module>();
         List<Module> runtime = new LinkedList<Module>();

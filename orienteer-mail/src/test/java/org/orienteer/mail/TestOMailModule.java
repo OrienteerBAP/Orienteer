@@ -36,6 +36,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(OrienteerTestRunner.class)
 @Singleton
 public class TestOMailModule {
+
 	@Inject
 	private OrienteerTester tester;
 

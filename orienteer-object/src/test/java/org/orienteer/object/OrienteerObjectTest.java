@@ -1,4 +1,4 @@
-package org.orienteer.core.persist;
+package org.orienteer.object;
 
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
@@ -7,15 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.object.model.OProject;
 import ru.vyarus.guice.persist.orient.db.PersistentContext;
 
 import java.util.List;
 
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 @RunWith(OrienteerTestRunner.class)
 @Slf4j
-public class TestGuicePersistOrient {
+public class OrienteerObjectTest {
 
     @Inject
     private PersistentContext<OObjectDatabaseTx> context;
@@ -32,7 +34,7 @@ public class TestGuicePersistOrient {
         saveProject(project);
 
         List<OProject> projects = repository.getProjects();
-        assertTrue(!projects.isEmpty());
+        assertFalse(projects.isEmpty());
 
         deleteProjects(projects);
 
@@ -40,12 +42,12 @@ public class TestGuicePersistOrient {
     }
 
     @Transactional
-    void saveProject(OProject project) {
+    protected void saveProject(OProject project) {
         context.getConnection().save(project);
     }
 
     @Transactional
-    void deleteProjects(List<OProject> projects) {
+    protected void deleteProjects(List<OProject> projects) {
         OObjectDatabaseTx connection = context.getConnection();
         projects.forEach(connection::delete);
     }

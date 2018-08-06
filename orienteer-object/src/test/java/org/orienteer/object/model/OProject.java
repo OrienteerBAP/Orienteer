@@ -1,4 +1,4 @@
-package org.orienteer.core.persist;
+package org.orienteer.object.model;
 
 import com.orientechnologies.orient.core.annotation.OVersion;
 import lombok.Data;
