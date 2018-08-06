@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(OrienteerTestRunner.class)
-public class RegistrationTest {
+public class RegistrationComponentTest {
 
     @Inject
     private WicketTester tester;
