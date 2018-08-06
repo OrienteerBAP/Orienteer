@@ -154,7 +154,6 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, 0);
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, 0);
-        role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, 0);
 
         role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(reader));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
