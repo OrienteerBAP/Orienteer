@@ -91,10 +91,11 @@ public class RestorePasswordComponentTest {
 
     private void login(String password) {
         tester.startPage(HomePage.class);
-        FormTester formTester = tester.newFormTester("signInPanel:signInForm");
+        FormTester formTester = tester.newFormTester("container:loginPanel:form");
         formTester.setValue("username", testUser.getName());
         formTester.setValue("password", password);
-        formTester.submit();
+
+        tester.clickLink("container:loginPanel:form:loginButtonsPanel:loginButton:command", true);
 
         OrienteerWebSession session = (OrienteerWebSession) tester.getSession();
         assertNotNull(session.getUser());

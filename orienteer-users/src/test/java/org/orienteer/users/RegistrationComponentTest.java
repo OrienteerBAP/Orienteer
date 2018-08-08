@@ -126,10 +126,12 @@ public class RegistrationComponentTest {
 
     private void login(OrienteerUser user) {
         tester.startPage(HomePage.class);
-        FormTester formTester = tester.newFormTester("signInPanel:signInForm");
+        FormTester formTester = tester.newFormTester("container:loginPanel:form");
         formTester.setValue("username", user.getName());
         formTester.setValue("password", testUser.getPassword());
-        formTester.submit();
+
+        tester.clickLink("container:loginPanel:form:loginButtonsPanel:loginButton:command", true);
+
         OrienteerWebSession session = (OrienteerWebSession) tester.getSession();
         assertNotNull(session.getUser());
         assertEquals(user.getName(), session.getUser().getName());

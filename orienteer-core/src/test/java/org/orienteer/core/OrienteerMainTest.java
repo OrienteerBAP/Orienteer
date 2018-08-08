@@ -1,9 +1,12 @@
 package org.orienteer.core;
 
-import static org.junit.Assert.*;
-
-import java.util.Collection;
-
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.apache.wicket.util.tester.WicketTester;
@@ -24,17 +27,13 @@ import org.orienteer.junit.OrienteerTester;
 import org.orienteer.testenv.TestEnvOrienteerWebApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.index.OIndex;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.Collection;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
@@ -59,11 +58,11 @@ public class OrienteerMainTest
 		tester.startPage(SchemaPage.class);
 		if(tester.getLastRenderedPage() instanceof LoginPage)
 		{
-			FormTester formTester = tester.newFormTester("signInPanel:signInForm");
+			FormTester formTester = tester.newFormTester("container:loginPanel:form");
 			IOrientDbSettings settings = ((OrienteerWebApplication)tester.getApplication()).getOrientDbSettings();
             formTester.setValue("username", settings.getAdminUserName());
             formTester.setValue("password", settings.getAdminPassword());
-            formTester.submit();
+            tester.clickLink("container:loginPanel:form:loginButtonsPanel:loginButton:command", true);
 		}
 		tester.assertRenderedPage(SchemaPage.class);
 	}
