@@ -111,12 +111,10 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-		<!--  JETTY DEPENDENCIES FOR TESTING  -->
         <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all</artifactId>
-	    <classifier>uber</classifier>
-            <version>${jetty.version}</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
 	</dependencies>
@@ -206,40 +204,34 @@
 				</configuration>
 			</plugin>
 			<!--
-			//Uncomment for quick inplace tests 
+			//Uncomment for quick inplace tests
 			<plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                <systemProperties>
-					<systemProperty>
-						<name>orienteer.loader.repository.local</name>
-						<value>${settings.localRepository}</value>
-					</systemProperty>
-				</systemProperties>
-                <webApp>
-                    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-                    <resourceBase>src/main/resources</resourceBase>
-                    <contextPath>/</contextPath>
-                </webApp>
-                <connectors>
-                    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                        <port>8080</port>
-                        <maxIdleTime>3600000</maxIdleTime>
-                    </connector>
-                </connectors>
-                </configuration>
-                <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.jetty.aggregate</groupId>
-                    <artifactId>jetty-all</artifactId>
-		    <classifier>uber</classifier>
-                    <version>${jetty.version}</version>
-                </dependency>
-                </dependencies>
-            </plugin>
-             -->
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<systemProperties>
+						<systemProperty>
+							<name>orienteer.loader.repository.local</name>
+							<value>${settings.localRepository}</value>
+						</systemProperty>
+					</systemProperties>
+					<httpConnector>
+						<name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
+						<port>8080</port>
+						<idleTimeout>3600000</idleTimeout>
+					</httpConnector>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.jetty.aggregate</groupId>
+						<artifactId>jetty-all</artifactId>
+						<classifier>uber</classifier>
+						<version>${jetty.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			-->
 		</plugins>
 	</build>
 
