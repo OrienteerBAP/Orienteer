@@ -74,4 +74,9 @@ public class RestorePasswordResource extends AbstractResource {
         app.getSharedResources().add(RES_KEY, app.getServiceInstance(RestorePasswordResource.class));
         app.mountResource(MOUNT_PATH, new SharedResourceReference(RES_KEY));
     }
+
+    public static void unmount(OrienteerWebApplication app) {
+        app.getSharedResources().remove(app.getSharedResources().get(RES_KEY).getKey());
+        app.unmount(MOUNT_PATH);
+    }
 }

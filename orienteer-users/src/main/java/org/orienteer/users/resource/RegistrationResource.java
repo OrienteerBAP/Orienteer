@@ -79,7 +79,7 @@ public class RegistrationResource extends AbstractResource {
     }
 
     public static void unmount(OrienteerWebApplication app) {
-        app.unmount(MOUNT_PATH);
         app.getSharedResources().remove(app.getSharedResources().get(RES_KEY).getKey());
+        app.unmount(MOUNT_PATH);
     }
 }
