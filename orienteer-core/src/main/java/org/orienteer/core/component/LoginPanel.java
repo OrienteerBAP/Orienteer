@@ -12,8 +12,10 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.OrienteerWebSession;
 
+/**
+ * Custom login panel
+ */
 public class LoginPanel extends Panel {
-
 
     private final IModel<String> name;
     private final IModel<String> passwordModel;
@@ -39,14 +41,29 @@ public class LoginPanel extends Panel {
         setOutputMarkupPlaceholderTag(true);
     }
 
+    /**
+     * Create feedback.
+     * @param id {@link String} component id
+     * @return {@link FeedbackPanel}
+     */
     protected FeedbackPanel createFeedbackPanel(String id) {
         return new OrienteerFeedbackPanel(id);
     }
 
+    /**
+     * Create panel which contains buttons
+     * @param id {@link String} component id
+     * @return {@link LoginButtonsPanel}
+     */
     protected LoginButtonsPanel createButtonsPanel(String id) {
         return new LoginButtonsPanel(id, this::onLoginButtonClick);
     }
 
+    /**
+     * Calls when login button was clicked.
+     * @see LoginButtonsPanel#loginConsumer
+     * @param target {@link AjaxRequestTarget}
+     */
     protected void onLoginButtonClick(AjaxRequestTarget target) {
         IAuthenticationStrategy strategy = getApplication().getSecuritySettings()
                 .getAuthenticationStrategy();
