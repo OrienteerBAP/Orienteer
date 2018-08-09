@@ -1,0 +1,28 @@
+<wicket:panel xmlns:wicket="http://www.w3.org/1999/xhtml">
+    <div wicket:id="feedback"></div>
+
+    <form wicket:id="form">
+        <div class="form-group row mx-auto">
+            <label class="col-md-5 ml-0 pl-0">
+                <wicket:message key="login.panel.label.username"></wicket:message>
+            </label>
+            <input type="text" class="form-control col-md-7" wicket:id="username"/>
+        </div>
+        <div class="form-group row mx-auto">
+            <label class="col-md-5 ml-0 pl-0">
+                <wicket:message key="login.panel.label.password"></wicket:message>
+            </label>
+            <input type="password" class="form-control col-md-7" wicket:id="password"/>
+        </div>
+        <div class="form-group row mx-auto">
+            <div class="offset-md-5 custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="rememberMe" wicket:id="rememberMe" />
+                <label class="custom-control-label" for="rememberMe">
+                    <wicket:message key="login.panel.label.remember.me"></wicket:message>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row" wicket:id="loginButtonsPanel">
+        </div>
+    </form>
+</wicket:panel>

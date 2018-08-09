@@ -23,11 +23,11 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
 import org.orienteer.mail.OMailModule;
-import org.orienteer.users.resource.RegistrationResource;
-import org.orienteer.users.resource.RestorePasswordResource;
 import org.orienteer.users.hook.OrienteerUserHook;
 import org.orienteer.users.hook.OrienteerUserRoleHook;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.resource.RegistrationResource;
+import org.orienteer.users.resource.RestorePasswordResource;
 import org.orienteer.users.util.OUsersCommonUtils;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -67,7 +67,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String MAIL_MACROS_LINK = "link";
 
     protected OrienteerUsersModule() {
-        super(MODULE_NAME, 7,  PerspectivesModule.NAME, OMailModule.NAME);
+        super(MODULE_NAME, 1,  PerspectivesModule.NAME, OMailModule.NAME);
     }
 
     @Override
@@ -84,12 +84,14 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                 .oProperty(OrienteerUser.PROP_RESTORE_ID_CREATED, OType.DATETIME)
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
                 .oProperty(OrienteerUser.PROP_EMAIL, OType.STRING).notNull()
+                .oProperty(OrienteerUser.PROP_FIRST_NAME, OType.STRING)
+                .oProperty(OrienteerUser.PROP_LAST_NAME, OType.STRING)
                 .getOClass();
 
         updateDefaultOrienteerUsers(db);
 
-        helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE);
-        helper.oIndex(user.getProperty(OrienteerUser.PROP_EMAIL).getFullName(), OClass.INDEX_TYPE.UNIQUE);
+        helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE, OrienteerUser.PROP_ID);
+        helper.oIndex(user.getProperty(OrienteerUser.PROP_EMAIL).getFullName(), OClass.INDEX_TYPE.UNIQUE, OrienteerUser.PROP_EMAIL);
 
         OUsersCommonUtils.setRestricted(db, helper.oClass(OIdentity.CLASS_NAME).getOClass());
         OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OCLASS_PERSPECTIVE).getOClass());
@@ -152,7 +154,6 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, 0);
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, 0);
-        role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, 0);
 
         role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(reader));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
@@ -291,7 +292,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         hooks.remove(OrienteerUserRoleHook.class);
 
         RegistrationResource.unmount(app);
-        RestorePasswordResource.mount(app);
+        RestorePasswordResource.unmount(app);
 
         app.unmountPages("org.orienteer.users.web");
     }

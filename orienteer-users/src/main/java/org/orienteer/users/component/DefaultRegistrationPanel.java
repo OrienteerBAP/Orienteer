@@ -1,5 +1,6 @@
 package org.orienteer.users.component;
 
+import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.EmailTextField;
 import org.apache.wicket.markup.html.form.Form;
@@ -92,7 +93,9 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
             public void onSubmit(AjaxRequestTarget target) {
                 super.onSubmit(target);
                 OrienteerUser user = DefaultRegistrationPanel.this.getModelObject();
+                user.setName(user.getEmail());
                 user.setPassword(passwordModel.getObject());
+                user.setAccountStatus(OSecurityUser.STATUSES.SUSPENDED);
                 onRegister(target, DefaultRegistrationPanel.this.getModel());
             }
         };

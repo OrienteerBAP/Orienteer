@@ -64,6 +64,15 @@ public final class OUsersDbUtils {
     }
 
     /**
+     * Search user by given email
+     * @param email {@link String} user email
+     * @return {@link Optional<OrienteerUser>} user with given email
+     */
+    public static Optional<OrienteerUser> getUserByEmail(String email) {
+        return getUserBy(OrienteerUser.PROP_EMAIL, email);
+    }
+
+    /**
      * Check if user exists with given restore id
      * @param restoreId {@link String} user restore id
      * @return true if user with given restoreId exists in database

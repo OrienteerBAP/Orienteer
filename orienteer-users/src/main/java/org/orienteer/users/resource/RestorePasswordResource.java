@@ -28,6 +28,8 @@ public class RestorePasswordResource extends AbstractResource {
     public static final String MOUNT_PATH = "/restore/${id}/";
     public static final String RES_KEY    = RestorePasswordResource.class.getName();
 
+    public static final String PARAMETER_ID = "id";
+
     @Inject
     private IOrienteerUsersService service;
 
@@ -38,7 +40,7 @@ public class RestorePasswordResource extends AbstractResource {
     public static String getLinkForUser(ODocument doc) {
         String id = doc.field(OrienteerUser.PROP_RESTORE_ID);
         PageParameters params = new PageParameters();
-        params.add("id", id);
+        params.add(PARAMETER_ID, id);
         CharSequence url = RequestCycle.get().urlFor(new SharedResourceReference(RES_KEY), params);
         return RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
     }
@@ -71,5 +73,10 @@ public class RestorePasswordResource extends AbstractResource {
     public static void mount(OrienteerWebApplication app) {
         app.getSharedResources().add(RES_KEY, app.getServiceInstance(RestorePasswordResource.class));
         app.mountResource(MOUNT_PATH, new SharedResourceReference(RES_KEY));
+    }
+
+    public static void unmount(OrienteerWebApplication app) {
+        app.getSharedResources().remove(app.getSharedResources().get(RES_KEY).getKey());
+        app.unmount(MOUNT_PATH);
     }
 }

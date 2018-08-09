@@ -17,10 +17,6 @@ import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.guice.GuiceInjectorHolder;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.filter.FilteringHeaderResponse;
-import org.apache.wicket.markup.head.filter.JavaScriptFilteredIntoFooterHeaderResponse;
-import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -43,7 +39,6 @@ import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.util.converter.ODateConverter;
-import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
@@ -228,6 +223,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
 
 	@Override
 	protected Class<? extends WebPage> getSignInPageClass() {

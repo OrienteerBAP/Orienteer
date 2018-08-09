@@ -61,15 +61,15 @@ public class OrienteerModule extends AbstractModule {
 
 	@Provides
 	@RequestScoped
+	public ODatabaseDocumentTx getDatabaseDocumentTx(ODatabaseDocument db) {
+		return (ODatabaseDocumentTx)db;
+	}
+
+	@Provides
+	@RequestScoped
 	public ODatabaseDocument getDatabaseRecord()
 	{
 		return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
-	}
-	
-	@Provides
-	@RequestScoped
-	public ODatabaseDocumentTx getDatabaseDocumentTx(ODatabaseDocument db) {
-		return (ODatabaseDocumentTx)db;
 	}
 
 	@Provides

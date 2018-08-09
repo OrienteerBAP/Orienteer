@@ -36,6 +36,18 @@ public class OrienteerUser extends OUser {
      */
     public static final String PROP_EMAIL              = "email";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * User first name
+     */
+    public static final String PROP_FIRST_NAME         = "firstName";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * User last name
+     */
+    public static final String PROP_LAST_NAME          = "lastName";
+
     public OrienteerUser(String className) {
         this(new ODocument(className));
     }
@@ -46,6 +58,24 @@ public class OrienteerUser extends OUser {
 
     public OrienteerUser(ODocument iSource) {
         super(iSource);
+    }
+
+    public String getFirstName() {
+        return document.field(PROP_FIRST_NAME);
+    }
+
+    public OrienteerUser setFirstName(String firstName) {
+        document.field(PROP_FIRST_NAME, firstName);
+        return this;
+    }
+
+    public String getLastName() {
+        return document.field(PROP_LAST_NAME);
+    }
+
+    public OrienteerUser setLastName(String lastName) {
+        document.field(PROP_LAST_NAME, lastName);
+        return this;
     }
 
     public String getId() {
