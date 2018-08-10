@@ -17,6 +17,7 @@ import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.resource.RestorePasswordResource;
 import org.orienteer.users.util.OUsersDbUtils;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * Default restore page which can be overridden in subclasses.
@@ -88,7 +89,7 @@ public class DefaultRestorePasswordPage extends BasePage<OrienteerUser> {
             @Override
             protected void onConfigure() {
                 super.onConfigure();
-                setVisible(getModelObject() != null);
+                setVisible(DBClosure.sudo(db -> getModelObject()) != null);
             }
 
             @Override
@@ -109,7 +110,7 @@ public class DefaultRestorePasswordPage extends BasePage<OrienteerUser> {
             @Override
             protected void onConfigure() {
                 super.onConfigure();
-                setVisible(DefaultRestorePasswordPage.this.getModelObject() == null);
+                setVisible(DBClosure.sudo(db -> getModelObject()) == null);
             }
 
             @Override
