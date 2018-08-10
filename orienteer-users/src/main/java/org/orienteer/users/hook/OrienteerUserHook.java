@@ -46,7 +46,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
                     );
         }
 
-        List<ODocument> roles = doc.field("roles");
+        List<ODocument> roles = doc.field("roles", List.class);
         if (roles == null || roles.isEmpty()) {
             OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
                     .map(ORole::getDocument)
