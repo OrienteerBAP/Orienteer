@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.junit.OrienteerTester;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.resource.RestorePasswordResource;
 import org.orienteer.users.service.IOrienteerUsersService;
@@ -33,7 +34,7 @@ public class RestorePasswordComponentTest {
     private IOrienteerUsersService usersService;
 
     @Inject
-    private WicketTester tester;
+    private OrienteerTester tester;
 
     private OrienteerUser testUser;
 
@@ -58,6 +59,7 @@ public class RestorePasswordComponentTest {
         DBClosure.sudoConsumer(db -> {
             db.command(new OCommandSQL("delete from ?")).execute(testUser.getDocument());
         });
+        tester.signOut();
     }
 
     @Test

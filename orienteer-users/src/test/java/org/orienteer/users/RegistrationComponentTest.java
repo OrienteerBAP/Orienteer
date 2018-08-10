@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.junit.OrienteerTester;
 import org.orienteer.users.component.DefaultRegistrationPanel;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.resource.RegistrationResource;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertNotNull;
 public class RegistrationComponentTest {
 
     @Inject
-    private WicketTester tester;
+    private OrienteerTester tester;
 
     @Inject
     private IOrienteerUsersService usersService;
@@ -58,6 +59,7 @@ public class RegistrationComponentTest {
             String sql = String.format("delete from %s where %s = ?", OUser.CLASS_NAME, OrienteerUser.PROP_EMAIL);
             db.command(new OCommandSQL(sql)).execute(testUser.getEmail());
         });
+        tester.signOut();
     }
     
     @Test

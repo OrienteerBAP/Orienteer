@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.junit.OrienteerTester;
 import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.service.IOrienteerUsersService;
 import org.orienteer.users.model.OrienteerUser;
@@ -26,6 +27,9 @@ public class RestorePasswordTest {
 
     @Inject
     private IOrienteerUsersService usersService;
+    
+    @Inject
+    private OrienteerTester tester;
 
     private OrienteerUser user;
 
@@ -50,6 +54,7 @@ public class RestorePasswordTest {
         DBClosure.sudoConsumer(db ->
             db.command(new OCommandSQL("delete from ?")).execute(user.getDocument())
         );
+        tester.signOut();
     }
 
     @Test
