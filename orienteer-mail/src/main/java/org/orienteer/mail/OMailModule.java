@@ -3,6 +3,8 @@ package org.orienteer.mail;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.OTaskSession;
 import org.orienteer.mail.model.OMailAttachment;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
@@ -11,6 +13,8 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.mail.model.OMail;
 import org.orienteer.mail.model.OMailSettings;
 import org.orienteer.mail.model.OPreparedMail;
+import org.orienteer.mail.task.OSendMailTask;
+import org.orienteer.mail.task.OSendMailTaskSession;
 
 import static com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 
@@ -22,7 +26,7 @@ public class OMailModule extends AbstractOrienteerModule {
     public static final String NAME = "orienteer-mail";
 
 	protected OMailModule() {
-		super(NAME, 5);
+		super(NAME, 7);
 	}
 	
 	@Override
@@ -61,6 +65,11 @@ public class OMailModule extends AbstractOrienteerModule {
                 .oProperty(OPreparedMail.PROP_ATTACHMENTS, OType.LINKLIST, 60).linkedClass(OMailAttachment.CLASS_NAME)
                 .oProperty(OPreparedMail.PROP_MAIL, OType.LINK, 70).notNull().linkedClass(OMail.CLASS_NAME)
                 .oProperty(OPreparedMail.PROP_SETTINGS, OType.LINK, 80).notNull().linkedClass(OMailSettings.CLASS_NAME);
+
+		helper.oClass(OSendMailTask.CLASS_NAME, OTask.TASK_CLASS);
+
+		helper.oClass(OSendMailTaskSession.CLASS_NAME, OTaskSession.TASK_SESSION_CLASS)
+                .oProperty(OSendMailTaskSession.PROP_MAILS, OType.LINKLIST).linkedClass(OPreparedMail.CLASS_NAME);
 
 		return null;
 	}

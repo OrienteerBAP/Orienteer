@@ -3,14 +3,15 @@ package org.orienteer.mail.task;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ThreadContext;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.orienteer.mail.model.OPreparedMail;
-import org.orienteer.mail.service.IOMailService;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
+import org.orienteer.mail.model.OPreparedMail;
+import org.orienteer.mail.service.IOMailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +24,8 @@ import java.util.List;
 public class OSendMailTask extends OTask {
 
     private static final Logger LOG = LoggerFactory.getLogger(OSendMailTask.class);
+
+    public static final String CLASS_NAME = "OSendMailTask";
 
     private final OSendMailTaskSession session;
 
@@ -40,6 +43,9 @@ public class OSendMailTask extends OTask {
     public OTaskSessionRuntime startNewSession() {
         OSendMailTaskSessionRuntime runtime = new OSendMailTaskSessionRuntime(session);
         runtime.setDeleteOnFinish(isAutodeleteSessions());
+        runtime.setOTask(this);
+        runtime.start().setProgress(0);
+
         performTask(runtime);
         return runtime;
     }
@@ -50,18 +56,19 @@ public class OSendMailTask extends OTask {
         RequestCycle requestCycle = RequestCycle.get();
 
         new Thread(() -> {
-            try {
-                ThreadContext.setSession(session);
-                ThreadContext.setApplication(app);
-                ThreadContext.setRequestCycle(requestCycle);
-                runtime.start();
-                runtime.setProgress(0);
-                sendMails(runtime);
-            } catch (Exception ex) {
-                LOG.error("Error occurred during perform task {}", OSendMailTask.this, ex);
-            } finally {
-                runtime.finish();
-            }
+            ThreadContext.setSession(session);
+            ThreadContext.setApplication(app);
+            ThreadContext.setRequestCycle(requestCycle);
+
+            DBClosure.sudoConsumer(db -> {
+                try {
+                    sendMails(runtime);
+                } catch (Exception ex) {
+                    LOG.error("Error occurred during perform task {}", OSendMailTask.this, ex);
+                } finally {
+                    runtime.finish();
+                }
+            });
         }).start();
     }
 
