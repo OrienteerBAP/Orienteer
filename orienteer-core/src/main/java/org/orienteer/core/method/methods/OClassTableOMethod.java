@@ -5,8 +5,9 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.method.configs.OClassOMethodConfig;
+import org.orienteer.core.method.definitions.JavaMethodOMethodDefinition;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
@@ -18,18 +19,18 @@ public class OClassTableOMethod extends AbstractOMethod{
 
 
 	private static final long serialVersionUID = 1L;
-	private Component displayComponent;
+	private Command<?> displayComponent;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Component getDisplayComponent() {
+	public Command<?> createCommand(String id) {
 		//displays only if getTableObject assigned and it is "OrienteerDataTable"
-		if (displayComponent == null && getEnvData().getTableObject()!=null && getEnvData().getTableObject() instanceof OrienteerDataTable){
-			String titleKey = getConfig().titleKey();
+		if (displayComponent == null && getContext().getRelatedComponent()!=null && getContext().getRelatedComponent() instanceof OrienteerDataTable){
+			String titleKey = getConfig().getTitleKey();
 			if (titleKey.isEmpty()){
-				titleKey = getId();
+				titleKey = getConfig().getMethodId();
 			}			
-			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getEnvData().getTableObject();
+			OrienteerDataTable<ODocument, ?> table=(OrienteerDataTable<ODocument, ?>) getContext().getRelatedComponent();
 			displayComponent = new AbstractCheckBoxEnabledCommand<ODocument>(getTitleModel(),table){
 				private static final long serialVersionUID = 1L;
 				
@@ -44,7 +45,7 @@ public class OClassTableOMethod extends AbstractOMethod{
 					for (ODocument curDoc : objects) {
 						invoke(curDoc);
 					}
-					if (getConfig().resetSelection()){
+					if (getConfig().isResetSelection()){
 						resetSelection();
 					}
 				}
@@ -55,7 +56,7 @@ public class OClassTableOMethod extends AbstractOMethod{
 		return displayComponent;
 	}
 	
-	protected OClassOMethodConfig getConfig(){
-		return (OClassOMethodConfig) this.getConfigInterface();
+	protected JavaMethodOMethodDefinition getConfig(){
+		return (JavaMethodOMethodDefinition) this.getDefinition();
 	}
 }

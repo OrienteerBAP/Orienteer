@@ -10,7 +10,9 @@ import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
@@ -20,7 +22,7 @@ import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.method.MethodPlace;
-import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.util.LocalizeFunction;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.core.widget.command.FullScreenCommand;
@@ -28,9 +30,9 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
 import ru.ydn.wicket.wicketorientdb.model.NvlModel;
 
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
-
 import java.util.Optional;
+
+import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
 
 /**
  * Abstract root class for widgets
@@ -47,16 +49,12 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private IModel<ODocument> widgetDocumentModel;
 
-	private MethodsView methods;
-	
 	public AbstractWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model);
 		this.widgetDocumentModel = widgetDocumentModel;
 		setOutputMarkupId(true);
 //		setOutputMarkupPlaceholderTag(true);
 		add(commands = new RepeatingView("commands"));
-		methods = new MethodsView(commands, model,MethodPlace.ACTIONS,null);
-		methods.overrideBootstrapType(null);
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override
@@ -186,9 +184,10 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		super.onInitialize();
 		add(newIcon("icon"));
 		add(new Label("title", getTitleModel()));
+		add(createFooterPanel("widgetFooter"));
 		getDashboardPanel().getDashboardSupport().initWidget(this);
 		loadSettings();
-		methods.loadMethods();
+		OMethodsManager.get().populate(this, MethodPlace.ACTIONS, getModel(), null, null);
 	}
 	
 	@Override
@@ -232,5 +231,11 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	protected OSchema getSchema() {
 		return OrientDbWebSession.get().getSchema();
+	}
+
+	protected Panel createFooterPanel(String id) {
+		Panel panel = new EmptyPanel(id);
+		panel.setVisible(false);
+		return panel;
 	}
 }

@@ -1,22 +1,13 @@
 package org.orienteer.core.tasks;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.orienteer.core.CustomAttribute;
-import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass.ATTRIBUTES;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
+import java.lang.reflect.Constructor;
 
 /**
  * Base task for tasks
@@ -69,5 +60,13 @@ public abstract class OTask extends ODocumentWrapper {
 
 	
 	public abstract OTaskSessionRuntime startNewSession();
-	
+
+	public boolean isAutodeleteSessions() {
+		Boolean delete = document.field(Field.AUTODELETE_SESSIONS.fieldName());
+		return delete != null && delete;
+	}
+
+	public String getName() {
+		return document.field(Field.NAME.fieldName());
+	}
 }

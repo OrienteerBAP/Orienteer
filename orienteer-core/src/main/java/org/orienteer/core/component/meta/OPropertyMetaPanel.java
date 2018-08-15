@@ -64,6 +64,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.LINKED_TYPE);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.LINKED_CLASS);
 		OPROPERTY_ATTRS.add(CustomAttribute.PROP_INVERSE.getName());
+		OPROPERTY_ATTRS.add(CustomAttribute.FEATURE.getName());
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.MANDATORY);
 		OPROPERTY_ATTRS.add(OPropertyPrototyper.READONLY);
 		OPROPERTY_ATTRS.add(CustomAttribute.UI_READONLY.getName());
@@ -269,7 +270,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 						return new TextArea<V>(id, getModel());
 					} else if(customAttr.equals(CustomAttribute.ORDER)) {
 						return new TextField<V>(id, getModel()).setType(Integer.class);
-					} else if(customAttr.equals(CustomAttribute.TAB)) {
+					} else if(customAttr.matchAny(CustomAttribute.TAB, CustomAttribute.FEATURE)) {
 						return new TextField<V>(id, getModel());
 					} else if(customAttr.equals(CustomAttribute.VISUALIZATION_TYPE)) {
 						return new DropDownChoice<String>(id,  (IModel<String>)getModel(), new LoadableDetachableModel<List<String>>() {

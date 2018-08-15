@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @MountPath("/cluster/${clusterName}/#{mode}")
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = OSecurityHelper.FEATURE, specific=SchemaPage.SCHEMA_FEATURE, permissions=OrientPermission.READ)
 public class OClusterPage extends AbstractWidgetDisplayModeAwarePage<OCluster> {
 
     public OClusterPage(PageParameters parameters) {

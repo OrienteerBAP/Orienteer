@@ -1,48 +1,45 @@
 package org.orienteer.core.component;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Panel for bootstrap's tabs with "tabdrop" feature.
  *
  * @param <T> type of entities for tabs
  */
-public class TabsPanel<T> extends GenericPanel<T>
-{
-	public static final CssResourceReference TABDROP_CSS = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");
+public class TabsPanel<T> extends GenericPanel<T> {
+	public static final CssResourceReference TABDROP_CSS       = new CssResourceReference(TabsPanel.class, "tabdrop/tabdrop.css");
 	public static final JavaScriptResourceReference TABDROP_JS = new JavaScriptResourceReference(TabsPanel.class, "tabdrop/bootstrap-tabdrop.js");
 	
 	private ListView<T> tabs;
+
 	private IModel<T> defaultTabModel;
-	public TabsPanel(String id, IModel<T> model, List<T> tabs)
-	{
+
+	public TabsPanel(String id, IModel<T> model, List<T> tabs) {
 		this(id, model, Model.ofList(tabs));
 	}
-	public TabsPanel(String id, IModel<T> model, IModel<? extends List<T>> tabsModel)
-	{
+
+	public TabsPanel(String id, IModel<T> model, IModel<? extends List<T>> tabsModel) {
 		super(id, model);
+		if (model == null) setDefaultModel(Model.of());
 		setOutputMarkupPlaceholderTag(true);
 		tabs = new ListView<T>("tabs", tabsModel) {
 
@@ -103,13 +100,13 @@ public class TabsPanel<T> extends GenericPanel<T>
 	public void setDefaultTabModel(IModel<T> defaultTabModel) {
 		this.defaultTabModel = defaultTabModel;
 	}
-	protected IModel<String> newTabNameModel(IModel<T> tabModel)
-	{
+
+	@SuppressWarnings("unchecked")
+	protected IModel<String> newTabNameModel(IModel<T> tabModel) {
 		return new SimpleNamingModel(tabModel);
 	}
 	
-	public void onTabClick(AjaxRequestTarget target)
-	{
+	public void onTabClick(AjaxRequestTarget target) {
 		
 	}
 	
@@ -132,8 +129,12 @@ public class TabsPanel<T> extends GenericPanel<T>
 		super.renderHead(response);
 		response.render(CssHeaderItem.forReference(TABDROP_CSS));
 		response.render(JavaScriptHeaderItem.forReference(TABDROP_JS));
-		response.render(OnDomReadyHeaderItem.forScript("$('#"+getMarkupId()+"').tabdrop({text: '<i class=\"glyphicon glyphicon-align-justify\"></i>'});"));
+		response.render(OnDomReadyHeaderItem.forScript(
+				"setTimeout(function() {$('#" + getMarkupId() + "').tabdrop({text: '<i class=\"fa fa-align-justify\" aria-hidden=\"true\"></i>" +
+				"<span class=\"ml-2\">" + getTabDropText() + "</span>'});}, 5);"));
 	}
 
-
+	private String getTabDropText() {
+		return new ResourceModel("panel.tab.otherClasses").getObject();
+	}
 }

@@ -1,7 +1,5 @@
 package org.orienteer.core.method;
 
-import org.orienteer.core.method.definitions.SourceMethodDefinition;
-
 /**
  * 
  * Interface for all method filters
@@ -11,7 +9,7 @@ import org.orienteer.core.method.definitions.SourceMethodDefinition;
 public interface IMethodFilter{
 	/**
 	 * Init data from filter definition
-	 * Example for {@link SourceMethodDefinition} :
+	 * Example :
 	 * <pre>
 	 *  &#64;OMethod(order=10,filters = { 
 	 *			&#64;OFilter(fClass = OClassBrowseFilter.class, fData = "OUser") 
@@ -26,8 +24,8 @@ public interface IMethodFilter{
 	/**
 	 * Checks linked method for using in assigned environment
 	 * This method calls often - do not use hard calculation into 
-	 * @param dataObject
+	 * @param context method context
 	 * @return true if method supported
 	 */
-	public boolean isSupportedMethod(IMethodEnvironmentData dataObject);
+	public boolean isSupportedMethod(IMethodContext context);
 }

@@ -1,0 +1,36 @@
+<wicket:panel xmlns:wicket="http://www.w3.org/1999/xhtml">
+    <div wicket:id="feedback"></div>
+    <form wicket:id="form">
+        <div class="form-group row mx-auto">
+            <label class="col-md-5 ml-0 pl-0">
+                <wicket:message key="panel.registration.first.name"></wicket:message>
+            </label>
+            <input wicket:id="firstName" type="text" class="col-md-7 form-control"/>
+        </div>
+        <div class="form-group row mx-auto">
+            <label class="col-md-5 ml-0 pl-0">
+                <wicket:message key="panel.registration.last.name"></wicket:message>
+            </label>
+            <input wicket:id="lastName" type="text" class="col-md-7 form-control"/>
+        </div>
+        <div class="form-group row mx-auto">
+            <label class="col-md-5 ml-0 pl-0">
+                <wicket:message key="panel.registration.mail"></wicket:message>
+            </label>
+            <input wicket:id="email" type="email" class="col-md-7 form-control"/>
+        </div>
+        <div class="form-group row mx-auto">
+            <label class="col-md-5 ml-0 pl-0">
+                <wicket:message key="panel.registration.password"></wicket:message>
+            </label>
+            <input wicket:id="password" type="password" class="col-md-7 form-control"/>
+        </div>
+        <div class="form-group row mx-auto">
+            <label class="col-md-5 ml-0 pl-0">
+                <wicket:message key="panel.registration.confirm.password"></wicket:message>
+            </label>
+            <input wicket:id="confirmPassword" type="password" class="col-md-7 form-control"/>
+        </div>
+        <div wicket:id="registerButton" class="form-group text-center"></div>
+    </form>
+</wicket:panel>

@@ -1,7 +1,7 @@
 package org.orienteer.core.tasks;
 
 /**
- * Interface for task sessions 
+ * Interface for task sessions
  */
 public interface ITaskSession {
 	

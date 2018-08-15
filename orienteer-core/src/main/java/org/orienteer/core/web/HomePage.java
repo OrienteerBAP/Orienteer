@@ -1,18 +1,16 @@
 package org.orienteer.core.web;
 
-import org.apache.wicket.markup.html.pages.RedirectPage;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.OrienteerWebSession;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 /**
  * Page that redirects to concrete home page according to current perspective
  */
 @MountPath("/home")
-public class HomePage extends BasePage
+public class HomePage extends BasePage<Object>
 {
 	public static final String FROM_HOME_PARAM = "_fh";
 	public HomePage()

@@ -1,36 +1,26 @@
 package org.orienteer.core.widget;
 
-import static org.orienteer.core.module.OWidgetsModule.*;
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ReorderableRepeatingView;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.module.OWidgetsModule;
-import org.orienteer.core.widget.command.AddWidgetCommand;
-import org.orienteer.core.widget.command.ConfigureDashboardCommand;
-import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
-import org.orienteer.core.widget.command.SilentSaveDashboardCommand;
-import org.orienteer.core.widget.command.UnhideWidgetCommand;
 import org.orienteer.core.widget.support.IDashboardSupport;
-
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
-import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.orienteer.core.module.OWidgetsModule.*;
 
 /**
  * Dashboard is {@link Panel} to allow manipulation with a set of {@link AbstractWidget}s
@@ -111,9 +101,7 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	protected void buildDashboard() {
 		
 		List<IWidgetType<T>> widgets = widgetTypesRegistry.lookupByDomainAndTab(domain, tab, getWidgetsFilter());
-		for(int i=0;i<widgets.size();i++)
-		{
-			IWidgetType<T> type = widgets.get(i);
+		for (IWidgetType<T> type : widgets) {
 			if(type.isAutoEnable()) {
 				AbstractWidget<T> widget = type.instanciate(newWidgetId(), getModel(), dashboardManager.createWidgetDocument(type));
 				addWidget(widget);
@@ -172,17 +160,15 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return widgets.newChildId();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<AbstractWidget<T>> getWidgets()
 	{
 		final List<AbstractWidget<T>> ret = new ArrayList<AbstractWidget<T>>();
-		visitChildren(AbstractWidget.class, new IVisitor<AbstractWidget<T>, Void>() {
-
-			@Override
-			public void component(AbstractWidget<T> object, IVisit<Void> visit) {
-				ret.add(object);
-				visit.dontGoDeeper();
-			}
-		});
+		Iterator<? extends Component> it = widgets.renderIterator();
+		while(it.hasNext()) {
+			Component comp = it.next();
+			if(comp instanceof AbstractWidget) ret.add((AbstractWidget<T>) comp);
+		}
 		return ret;
 	}
 	

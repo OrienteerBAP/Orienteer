@@ -1,15 +1,15 @@
 package org.orienteer.core.tasks;
 
-import java.util.Date;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import java.util.Date;
 
 /**
  * Runtime object to hold and manage session status
  */
-public class OTaskSessionRuntime implements ITaskSession{
+public class OTaskSessionRuntime implements ITaskSession {
 	
 	private OTaskSession persistedSession;
 	private ITaskSessionCallback callback;
@@ -23,11 +23,20 @@ public class OTaskSessionRuntime implements ITaskSession{
 		this(sessionClass,false);
 	}
 
+	@SuppressWarnings("unchecked")
 	public OTaskSessionRuntime(String sessionClass, boolean forceSave) {
-		persistedSession = new OTaskSession(new ODocument(sessionClass));
+		this(new OTaskSession(new ODocument(sessionClass)), forceSave);
+	}
+
+	public OTaskSessionRuntime(OTaskSession persistedSession) {
+		this(persistedSession, false);
+	}
+
+	public OTaskSessionRuntime(OTaskSession persistedSession, boolean forceSave) {
+		this.persistedSession = persistedSession;
 		setStatus(Status.NOT_STARTED);
 		if (forceSave){
-			persistedSession.persist();
+			this.persistedSession.persist();
 		}
 	}
 	

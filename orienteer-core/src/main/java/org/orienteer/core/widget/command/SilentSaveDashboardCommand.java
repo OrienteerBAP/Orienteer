@@ -1,22 +1,25 @@
 package org.orienteer.core.widget.command;
 
-import java.util.Optional;
-
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.BootstrapSize;
-import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.OMethod;
+import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardContainer;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.Optional;
 
 /**
  * Command to save silently current dashboard
  */
+@OMethod(order=3,filters={
+		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
+})
 public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
 	private static final long serialVersionUID = 1L;
 
@@ -32,6 +35,9 @@ public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
 		DashboardPanel<?> dashboard = container.getCurrentDashboard().getSelfComponent();
 		dashboard.storeDashboard();
 		dashboard.getModeModel().setObject(DisplayMode.VIEW);
-		targetOptional.ifPresent(target -> target.add(dashboard));
+		targetOptional.ifPresent(target -> {
+			target.add(container.getSelf().get("pageHeader"));
+			target.add(dashboard);
+		});
 	}
 }

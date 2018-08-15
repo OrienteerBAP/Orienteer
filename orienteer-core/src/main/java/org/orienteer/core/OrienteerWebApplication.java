@@ -17,10 +17,6 @@ import org.apache.wicket.core.request.mapper.BookmarkableMapper;
 import org.apache.wicket.core.request.mapper.HomePageMapper;
 import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.guice.GuiceInjectorHolder;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.filter.FilteringHeaderResponse;
-import org.apache.wicket.markup.head.filter.JavaScriptFilteredIntoFooterHeaderResponse;
-import org.apache.wicket.markup.html.IHeaderResponseDecorator;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -37,13 +33,12 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.hook.CalculablePropertiesHook;
 import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
-import org.orienteer.core.method.MethodManager;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.util.converter.ODateConverter;
-import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
@@ -96,6 +91,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Named("orienteer.version")
 	private String version;
 
+	@Inject
+	@Named("orientdb.server.config")
+	private String dbConfig;
 
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
@@ -141,7 +139,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		Reflections.log = null; // Disable logging in reflections lib everywhere
 		if(embedded)
 		{
-			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
+			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(dbConfig)
 			{
 
 				@Override
@@ -228,6 +226,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
 
 	@Override
 	protected Class<? extends WebPage> getSignInPageClass() {
@@ -284,17 +286,17 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		M module = getServiceInstance(moduleClass);
 		registeredModules.put(module.getName(), getServiceInstance(moduleClass));
 		registeredModulesSorted = false;
-		MethodManager.get().addModule(moduleClass);
-		MethodManager.get().reload();
+		OMethodsManager.get().addModule(moduleClass);
+		OMethodsManager.get().reload();
 		return module;
 	}
 
 	public synchronized <M extends IOrienteerModule> M unregisterModule(Class<M> moduleClass) {
 		M module = getServiceInstance(moduleClass);
 		if (registeredModules.containsKey(module.getName())) {
-			MethodManager.get().removeModule(moduleClass);
+			OMethodsManager.get().removeModule(moduleClass);
 			registeredModules.remove(module.getName());
-			MethodManager.get().reload();
+			OMethodsManager.get().reload();
 			return module;
 		} else LOG.info("Orienteer application does not already registered module: " + module.getName());
 		return null;

@@ -12,10 +12,7 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.head.PriorityHeaderItem;
-import org.apache.wicket.markup.head.filter.FilteredHeaderItem;
-import org.apache.wicket.markup.head.filter.HeaderResponseContainer;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -139,8 +136,6 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public void renderHead(IHeaderResponse response) {
 		response.render(new PriorityHeaderItem(CssHeaderItem.forReference(BOOTSTRAP_CSS)));
 		response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
-//		response.render(CssHeaderItem.forReference(SB_ADMIN_CSS));
-//		response.render(CssHeaderItem.forReference(METISMENU_CSS));
 		response.render(CssHeaderItem.forReference(SIMPLE_LINE_ICONS_CSS));
 		response.render(CssHeaderItem.forReference(COREUI_CSS));
 		response.render(CssHeaderItem.forReference(ORIENTEER_COREUI_CSS));
@@ -158,7 +153,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	}
 
 	protected String getBodyAppSubClasses(){
-		return "header-fixed sidebar-fixed";
+		return "header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden";
 	}
 	
 	private void addBootstrapDatepicker(IHeaderResponse response) {

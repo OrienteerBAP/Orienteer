@@ -1,6 +1,7 @@
 package org.orienteer.core.component.property.date;
 
 import com.github.openjson.JSONObject;
+import com.google.common.base.Strings;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -10,9 +11,14 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.chrono.Chronology;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.FormatStyle;
 import java.util.Date;
@@ -25,18 +31,24 @@ public class ODateField extends FormComponentPanel<Date> {
 
     public static final JavaScriptResourceReference PICKER_JS = new JavaScriptResourceReference(ODateField.class, "picker.js");
 
-    private TextField<Date> dateField;
+    private TextField<String> dateField;
+
+    private final ZoneId clientZone;
 
     public ODateField(String id, IModel<Date> model) {
+        this(id, model, ZoneId.systemDefault());
+    }
+
+    public ODateField(String id, IModel<Date> model, ZoneId clientZone) {
         super(id, model);
+        this.clientZone = clientZone;
     }
 
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        dateField = new TextField<>("date", getModel());
+        dateField = new TextField<>("date", getDateAsString(getModel()));
         dateField.setOutputMarkupId(true);
-        dateField.setType(Date.class);
         add(dateField);
         setOutputMarkupId(true);
         add(AttributeModifier.append("class", "bootstrap-data-picker"));
@@ -44,8 +56,12 @@ public class ODateField extends FormComponentPanel<Date> {
 
     @Override
     public void convertInput() {
-        super.convertInput();
-        setConvertedInput(dateField.getConvertedInput());
+        String date = dateField.getConvertedInput();
+        if (!Strings.isNullOrEmpty(date)) {
+            LocalDate localDate = LocalDate.parse(date, getDateFormatter());
+            Date from = Date.from(localDate.atStartOfDay(clientZone).toInstant());
+            setConvertedInput(from);
+        } else setConvertedInput(null);
     }
 
     @Override
@@ -78,4 +94,20 @@ public class ODateField extends FormComponentPanel<Date> {
         Locale locale = getLocale();
         return DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null, Chronology.ofLocale(locale), locale).toLowerCase();
     }
+
+    private IModel<String> getDateAsString(IModel<Date> model) {
+        Date date = model.getObject();
+        if (date == null) {
+            return Model.of();
+        }
+        Instant instant = date.toInstant();
+        LocalDate localDate = instant.atZone(clientZone).toLocalDate();
+        return Model.of(localDate.format(getDateFormatter()));
+    }
+
+    private DateTimeFormatter getDateFormatter() {
+        return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+                .withLocale(getLocale());
+    }
+
 }

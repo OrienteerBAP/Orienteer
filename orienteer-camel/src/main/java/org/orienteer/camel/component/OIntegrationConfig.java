@@ -19,8 +19,8 @@ import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.method.ClassOMethod;
-import org.orienteer.core.method.IMethodEnvironmentData;
+import org.orienteer.core.method.OMethod;
+import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
@@ -49,7 +49,7 @@ public class OIntegrationConfig extends OTask {
 		private static final long serialVersionUID = 1L;
 	};
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
-	@ClassOMethod(
+	@OMethod(
 			order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
 			filters={
 					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
@@ -58,7 +58,7 @@ public class OIntegrationConfig extends OTask {
 
 			}
 	)
-	public void start(IMethodEnvironmentData data){
+	public void start(IMethodContext data){
 		final CamelContext context = getOrMakeContextByRid(getDocument().getIdentity().toString(),data.getCurrentWidget());
 		new Thread(new Runnable() {
 			@Override
@@ -83,14 +83,14 @@ public class OIntegrationConfig extends OTask {
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
 	
-	@ClassOMethod(
+	@OMethod(
 			order = 30,bootstrap=BootstrapType.DANGER,icon = FAIconType.stop,
 			filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
 					@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),		
 			},
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
-	public void stop(IMethodEnvironmentData data){
+	public void stop(IMethodContext data){
 
 		CamelContext context = getOrMakeContextByRid(getDocument().getIdentity().toString(),data.getCurrentWidget());
 		try {
@@ -101,7 +101,7 @@ public class OIntegrationConfig extends OTask {
 		waitingRefresh(context);		
 	} 
 /////////////////////////////////////////////////////////////////////////////////////////////////////	
-	@ClassOMethod(
+	@OMethod(
 			order = 20,bootstrap=BootstrapType.WARNING,icon = FAIconType.pause,
 			filters={
 					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
@@ -109,7 +109,7 @@ public class OIntegrationConfig extends OTask {
 					},
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
-	public void suspend(IMethodEnvironmentData data){
+	public void suspend(IMethodContext data){
 			final CamelContext context = getOrMakeContext(data.getCurrentWidget());
 			new Thread(new Runnable() {
 				@Override

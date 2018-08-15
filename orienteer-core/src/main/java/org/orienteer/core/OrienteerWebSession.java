@@ -1,21 +1,19 @@
 package org.orienteer.core;
 
 import com.google.common.base.Strings;
-import com.orientechnologies.orient.core.metadata.security.OUser;
-import org.apache.wicket.ISessionListener;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
 import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.module.PerspectivesModule;
-
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import org.orienteer.core.module.UserOnlineModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+import java.time.ZoneId;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Orienteer's {@link WebSession} class.
@@ -84,7 +82,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 			{
 				OrienteerWebApplication app = OrienteerWebApplication.get();
 				PerspectivesModule perspectiveModule = app.getServiceInstance(PerspectivesModule.class);
-				perspective = perspectiveModule.getDefaultPerspective(getDatabase(), getUser());
+				perspective = perspectiveModule.getDefaultPerspective(getDatabase(), getEffectiveUser());
 			}
 			return (ODocument)perspective;
 			
@@ -100,5 +98,10 @@ public class OrienteerWebSession extends OrientDbWebSession
 	public void detach() {
 		if(perspective!=null) perspective = perspective.getIdentity();
 		super.detach();
+	}
+
+	public ZoneId getClientZoneId() {
+		TimeZone timeZone = getClientInfo().getProperties().getTimeZone();
+		return timeZone != null ? timeZone.toZoneId() : ZoneId.systemDefault();
 	}
 }

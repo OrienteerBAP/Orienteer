@@ -1,35 +1,38 @@
 package org.orienteer.core.component;
 
-import java.util.Optional;
-
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.event.SwitchDashboardTabEvent;
 import org.orienteer.core.method.MethodPlace;
-import org.orienteer.core.method.MethodsView;
+import org.orienteer.core.method.OMethodsManager;
+import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.IDashboardContainer;
 import org.orienteer.core.widget.command.ConfigureDashboardCommand;
 import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+
+import java.util.Optional;
 
 /**
  * 
  * Default breadcrumb menu
  *
  */
-public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
+@RequiredOrientResource(value = OSecurityHelper.CLASS, specific = OWidgetsModule.OCLASS_DASHBOARD, permissions = OrientPermission.UPDATE)
+public class DefaultPageHeaderMenu extends GenericPanel<ODocument> implements ICommandsSupportComponent<ODocument> {
 	private static final long serialVersionUID = 1L;
 	private Component configure;
 	private Component close;
 	private RepeatingView commands;
-	private MethodsView methods;
 
 	public DefaultPageHeaderMenu(String id) {
 		super(id,new ODocumentModel());
@@ -39,6 +42,12 @@ public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
 				super.onClick(targetOptional);
 				onEdit(targetOptional);
+			}
+
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+				setVisible(findParent(IDashboardContainer.class).getCurrentDashboard() != null);
 			}
 		});
 
@@ -55,12 +64,12 @@ public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 		add(commands = new RepeatingView("commands"));
 		commands.setVisible(true);
 		commands.setVisibilityAllowed(false);
-		methods = new MethodsView(commands, getModel(),MethodPlace.DASHBOARD_SETTINGS,null);
 		//methods.overrideBootstrapType(null);
 	}
 	
 	@Override
 	protected void onConfigure() {
+		super.onConfigure();
 		getParent().setOutputMarkupId(true);
 	}
 	
@@ -80,7 +89,7 @@ public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		methods.loadMethods();
+		OMethodsManager.get().populate(this, MethodPlace.DASHBOARD_SETTINGS, getModel());
 	}
 	
 	private void onEdit(Optional<AjaxRequestTarget> targetOptional){
@@ -110,4 +119,22 @@ public class DefaultPageHeaderMenu extends GenericPanel<ODocument> {
 			((SwitchDashboardTabEvent)event.getPayload()).getTarget().add(getParent());
 		}
 	}
+
+	@Override
+	public DefaultPageHeaderMenu addCommand(Command<ODocument> command) {
+		commands.add(command);
+		return this;
+	}
+
+	@Override
+	public DefaultPageHeaderMenu removeCommand(Command<ODocument> command) {
+		commands.remove(command);
+		return this;
+	}
+
+	@Override
+	public String newCommandId() {
+		return commands.newChildId();
+	}
+	
 }

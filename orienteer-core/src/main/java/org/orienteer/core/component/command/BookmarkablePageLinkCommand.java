@@ -5,6 +5,7 @@ import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
@@ -50,6 +51,13 @@ public class BookmarkablePageLinkCommand<T> extends Command<T> {
 			IModel<T> model, final Class<C> pageClass) {
 		super(commandId, labelModel, model);
 		this.pageClass = pageClass;
+	}
+	
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+		setVisibilityAllowed(OrienteerWebApplication.get().getSecuritySettings()
+								.getAuthorizationStrategy().isInstantiationAuthorized(pageClass));
 	}
 	
 	@Override

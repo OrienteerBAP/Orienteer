@@ -1,8 +1,8 @@
 package org.orienteer.core.service;
 
-import java.util.Random;
-
 import com.google.inject.AbstractModule;
+
+import java.util.Random;
 
 public class CustomTestModule extends AbstractModule {
 	

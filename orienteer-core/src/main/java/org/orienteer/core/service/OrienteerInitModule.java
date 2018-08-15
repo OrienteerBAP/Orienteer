@@ -1,7 +1,6 @@
 package org.orienteer.core.service;
 
 import com.google.common.collect.Iterables;
-import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
@@ -9,21 +8,15 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.google.inject.util.Modules;
-
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WicketFilter;
-import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.util.LookupResourceHelper;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.*;
 
 
@@ -62,8 +55,6 @@ public class OrienteerInitModule extends ServletModule {
 		this.properties = properties;
 	}
 	
-	
-	
 	@Override
 	protected void configureServlets() {
 		Map<String, String> params = new HashMap<String, String>();    
@@ -100,9 +91,11 @@ public class OrienteerInitModule extends ServletModule {
 
 		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 
-		install(loadFromClasspath(new OrienteerModule()));
+		install(
+		        loadFromClasspath(new OrienteerModule())
+        );
 	}
-	
+
 	protected void bindOrientDbProperties(Properties properties) {
 		for(String key : properties.stringPropertyNames()) {
 			if(key.startsWith(ORIENTDB_KEY_PREFIX)) {
@@ -111,17 +104,29 @@ public class OrienteerInitModule extends ServletModule {
 			}
 		}
 	}
-	
-	
-	
+
+    /**
+     * <p>
+     *  Load modules from classpath.
+     * </p>
+     * <p>
+     *  For load modules {@link Module} from classpath uses {@link ServiceLoader}
+     *  If present module with annotation {@link OverrideModule}, so will be used {@link Modules#override(Module...)}
+     *  for override runtime bindings (bindings created in modules without annotation {@link OverrideModule})
+     * </p>
+     * @param initModules default modules for init
+     * @return {@link Module} created by {@link Modules#combine(Module...)} or {@link Modules#override(Module...)} if need override module
+     */
     public Module loadFromClasspath(Module... initModules) {
     	List<Module> allModules = new LinkedList<Module>();
         List<Module> runtime = new LinkedList<Module>();
         List<Module> overrides = new LinkedList<Module>();
         
-        if(initModules!=null && initModules.length>0) allModules.addAll(Arrays.asList(initModules));
+        if(initModules != null && initModules.length > 0) {
+            allModules.addAll(Arrays.asList(initModules));
+        }
+
         Iterables.addAll(allModules, ServiceLoader.load(Module.class));
-        
         
         for (Module module : allModules) {
             if (module.getClass().isAnnotationPresent(OverrideModule.class))
