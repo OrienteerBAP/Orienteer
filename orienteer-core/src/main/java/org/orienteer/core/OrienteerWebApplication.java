@@ -91,6 +91,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Named("orienteer.version")
 	private String version;
 
+	@Inject
+	@Named("orientdb.server.config")
+	private String dbConfig;
 
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
@@ -136,7 +139,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		Reflections.log = null; // Disable logging in reflections lib everywhere
 		if(embedded)
 		{
-			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
+			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(dbConfig)
 			{
 
 				@Override
