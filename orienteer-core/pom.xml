@@ -288,7 +288,6 @@
 				<version>${jetty.version}</version>
 				<configuration>
 					<contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
-					<jettyXml>../orienteer-war/src/main/webapp/WEB-INF/jetty-web.xml, ../orienteer-war/src/main/webapp/WEB-INF/jetty.xml</jettyXml>
 					<systemProperties>
 						<systemProperty>
 							<name>orienteer.loader.repository.local</name>

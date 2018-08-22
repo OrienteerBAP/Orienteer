@@ -19,6 +19,7 @@ import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.pageStore.IDataStore;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
@@ -42,6 +43,7 @@ import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
+import org.orienteer.core.wicket.pageStore.OrienteerDataStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -129,6 +131,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return OrienteerWebSession.class;
 	}
 
+
 	/**
 	 * @see org.apache.wicket.Application#init()
 	 */
@@ -215,7 +218,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
 		registerModule(OConsoleTasksModule.class);
-		registerModule(JettySesssionModule.class);
+		registerModule(OrienteerClusterModule.class);
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
@@ -225,6 +228,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
+
+        setPageManagerProvider(createPageManagerProvider());
 	}
 
 	@Override
@@ -424,4 +429,17 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		this.loadWithoutModules = loadWithoutModules;
 		this.loadModeInfo = null;
 	}
+
+    /**
+     * Create page manager provider for application
+     * @return {@link IPageManagerProvider} default - {@link DefaultPageManagerProvider}
+     */
+	protected IPageManagerProvider createPageManagerProvider() {
+	    return new DefaultPageManagerProvider(this) {
+            @Override
+            protected IDataStore newDataStore() {
+                return new OrienteerDataStore();
+            }
+        };
+    }
 }
