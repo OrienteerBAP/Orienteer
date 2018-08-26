@@ -1,5 +1,6 @@
 package org.orienteer.core.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -103,6 +104,9 @@ public class OrienteerInitModule extends ServletModule {
 				System.setProperty(subKey, properties.getProperty(key));
 			}
 		}
+		if (Strings.isNullOrEmpty(System.getProperty("ORIENTDB_HOME"))) {
+		    System.setProperty("ORIENTDB_HOME", "runtime/");
+        }
 	}
 
     /**

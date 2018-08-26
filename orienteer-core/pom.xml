@@ -214,13 +214,6 @@
 			<artifactId>orientqb</artifactId>
 			<version>0.2.0</version>
 		</dependency>
-
-        <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-jetty</artifactId>
-            <version>1.4-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
 	</dependencies>
 
 	<build>
@@ -307,19 +300,6 @@
 						<idleTimeout>3600000</idleTimeout>
 					</httpConnector>
 				</configuration>
-				<dependencies>
-					<!--<dependency>-->
-						<!--<groupId>org.eclipse.jetty.aggregate</groupId>-->
-						<!--<artifactId>jetty-all</artifactId>-->
-						<!--<classifier>uber</classifier>-->
-						<!--<version>${jetty.version}</version>-->
-					<!--</dependency>-->
-                    <dependency>
-                        <groupId>org.orienteer</groupId>
-                        <artifactId>orienteer-jetty</artifactId>
-                        <version>1.4-SNAPSHOT</version>
-                    </dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
