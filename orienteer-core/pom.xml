@@ -191,6 +191,11 @@
 			<version>4.5.4</version>
 		</dependency>
 
+        <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orientdb-jetty</artifactId>
+            <version>1.4-SNAPSHOT</version>
+        </dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
@@ -281,6 +286,7 @@
 				<version>${jetty.version}</version>
 				<configuration>
 					<contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
+                    <jettyXml>../orienteer-war/src/main/webapp/WEB-INF/jetty-web.xml, ../orienteer-war/src/main/webapp/WEB-INF/jetty.xml</jettyXml>
 					<systemProperties>
 						<systemProperty>
 							<name>orienteer.loader.repository.local</name>
@@ -300,6 +306,14 @@
 						<idleTimeout>3600000</idleTimeout>
 					</httpConnector>
 				</configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.orienteer</groupId>
+                        <artifactId>orientdb-jetty</artifactId>
+                        <version>1.4-SNAPSHOT</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
 			</plugin>
 		</plugins>
 	</build>

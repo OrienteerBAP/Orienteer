@@ -43,12 +43,12 @@ import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
-import org.orienteer.core.wicket.pageStore.OrienteerDataStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.*;
+import ru.ydn.wicket.wicketorientdb.pageStore.OrientDbDataStore;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
@@ -438,7 +438,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	    return new DefaultPageManagerProvider(this) {
             @Override
             protected IDataStore newDataStore() {
-                return new OrienteerDataStore();
+                return new OrientDbDataStore();
             }
         };
     }

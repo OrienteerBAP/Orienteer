@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <Call id="sh" name="getSessionHandler">
+        <Set name="sessionCache">
+            <New class="org.eclipse.jetty.server.session.DefaultSessionCache">
+                <Arg><Ref id="sh"/></Arg>
+                <Set name="sessionDataStore">
+                    <New class="org.orienteer.jetty.OrientDbSessionDataStore"/>
+                </Set>
+            </New>
+        </Set>
+    </Call>
+</Configure>
