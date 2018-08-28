@@ -11,6 +11,7 @@ release.properties
 .settings/
 build.cmd
 databases/
+*/runtime/
 /Orienteer/
 /*/Orienteer/
 /*/libs/
