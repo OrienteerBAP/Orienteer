@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 if [ -z $WORK_DIR ]; then
-    WORK_DIR="runtime/$NODE"
+    WORK_DIR="runtime/"
 fi
 
-if [ $SKIP_TESTS -eq true ]; then
+if [ ! -z $SKIP_TESTS ]; then
     tests="-DskipTests"
 fi
 
