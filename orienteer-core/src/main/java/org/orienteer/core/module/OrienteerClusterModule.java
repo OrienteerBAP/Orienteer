@@ -5,9 +5,9 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.pageStore.OWicketData;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.jetty.OrientDbJettyModule;
-import ru.ydn.wicket.wicketorientdb.pageStore.OWicketData;
 
 /**
  * Module which create data model for run Orienteer in cluster mode

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 if [ -z $WORK_DIR ]; then
-    WORK_DIR="runtime/"
+    WORK_DIR="app/"
 fi
 
-if [ ! -z $SKIP_TESTS ]; then
+#if [ ! -z $SKIP_TESTS ]; then
     tests="-DskipTests"
-fi
+#fi
 
 if [ -f "/usr/share/maven/ref/settings-docker.xml" ]; then
     docker_settings="-s /usr/share/maven/ref/settings-docker.xml"
@@ -28,8 +28,4 @@ mkdir -p $WORK_DIR
 cp orienteer-war/target/orienteer.war $WORK_DIR
 cp target/jetty-runner.jar $WORK_DIR
 cp orienteer.properties $WORK_DIR
-
-
-if [ ! -d $config_dir ]; then
-   cp -r orienteer-core/config $WORK_DIR
-fi
+cp -r orienteer-core/config $WORK_DIR

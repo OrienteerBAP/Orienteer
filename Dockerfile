@@ -5,12 +5,15 @@ MAINTAINER Ilia Naryzhny (phantom@ydn.ru)
 WORKDIR /tmp/src/
 ADD . /tmp/src/
 
-ENV WORK_DIR /app/runtime
+ENV WORK_DIR /app/
+
+VOLUME ["~/.m2/", "/root/.m2/"]
 
 RUN ./build.sh \
-    && cp run.sh /app/runtime/ \
+    && cp ./run.sh /app/run.sh \
     && rm -rf /tmp/src/
 
-WORKDIR /app/runtime/
-VOLUME ["/app/runtime/"]
+WORKDIR /app/
+VOLUME ["/app/"]
+
 CMD ["./run.sh"]

@@ -5,14 +5,14 @@ if [ ! -z $BUILD ]; then
 fi
 
 if [ -z $WORK_DIR ];then
-    WORK_DIR="runtime"
+    WORK_DIR="app"
     if [ ! -d $WORK_DIR ]; then
         ./build.sh
     fi
 fi
 
 if [ -z $NODE ]; then
-    NODE="node_"$RANDOM
+    NODE="node_$HOSTNAME"
 fi
 
 if [ -z $PORT ]; then
@@ -40,22 +40,20 @@ if [ -z $LOADER_LOCAL_REPOSITORY ]; then
     LOADER_LOCAL_REPOSITORY="~/.m2/repository"
 fi
 
+cd $WORK_DIR
 
-node_dir="$WORK_DIR/$NODE"
+node_dir="runtime/$NODE"
 mkdir -p $node_dir
-cp -r "$WORK_DIR/config" "$node_dir/config"
-cp "$WORK_DIR/orienteer.properties" $node_dir
-cd $node_dir
 
-echo "Run Orienteer with node name \"$NODE\" on port \"$PORT\"."
 
 java -server \
-    -DORIENTDB_HOME=./ \
-    -Dorientdb.url=plocal:databases/Orienteer \
+    -DORIENTDB_HOME=$node_dir \
+    -Dorientdb.url="plocal:$node_dir/databases/Orienteer" \
     -Dorientdb.remote.url=remote:localhost/Orienteer \
     -Dorientdb.distributed=$DISTRIBUTED \
     -Dorientdb.node.name=$NODE \
     -Dorienteer.loader.repository.local=$LOADER_LOCAL_REPOSITORY \
+    $JAVA_OPTS \
     -Xmx$MAX_MEMORY \
     -XX:MaxDirectMemorySize=$MAX_DIRECT_MEMORY \
-    -jar "../jetty-runner.jar" --port $PORT "../orienteer.war"
+    -jar ./jetty-runner.jar --port $PORT ./orienteer.war

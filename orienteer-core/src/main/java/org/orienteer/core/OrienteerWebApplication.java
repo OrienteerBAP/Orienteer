@@ -36,6 +36,7 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
+import org.orienteer.core.pageStore.OrientDbDataStore;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
@@ -48,7 +49,6 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.*;
-import ru.ydn.wicket.wicketorientdb.pageStore.OrientDbDataStore;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
