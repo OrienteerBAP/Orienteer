@@ -4,9 +4,9 @@ if [ -z $WORK_DIR ]; then
     WORK_DIR="app/"
 fi
 
-#if [ "$SKIP_TESTS" = true ]; then
+if [ "$SKIP_TESTS" = true ]; then
     tests="-DskipTests"
-#fi
+fi
 
 if [ -f "/usr/share/maven/ref/settings-docker.xml" ]; then
     docker_settings="-s /usr/share/maven/ref/settings-docker.xml"
