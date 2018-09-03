@@ -15,6 +15,7 @@ databases/
 /Orienteer/
 /*/Orienteer/
 /*/libs/
+*/app/
 .idea/
 *.iml
 *.log

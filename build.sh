@@ -4,7 +4,7 @@ if [ -z $WORK_DIR ]; then
     WORK_DIR="app/"
 fi
 
-#if [ ! -z $SKIP_TESTS ]; then
+#if [ "$SKIP_TESTS" = true ]; then
     tests="-DskipTests"
 #fi
 

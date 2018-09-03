@@ -16,13 +16,16 @@
 		<password>orientdb</password>
 	</group>
 	<network>
-		<port auto-increment="true">2434</port>
+		<port auto-increment="true">5701</port>
 		<join>
 			<multicast enabled="true">
 				<multicast-group>235.1.1.1</multicast-group>
-				<multicast-port>2434</multicast-port>
+				<multicast-port>5701</multicast-port>
 			</multicast>
 		</join>
+        <interfaces enabled="false">
+            <interface>10.0.0.*</interface>
+        </interfaces>
 	</network>
 	<executor-service>
 		<pool-size>16</pool-size>

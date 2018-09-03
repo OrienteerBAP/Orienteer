@@ -40,11 +40,25 @@ if [ -z $LOADER_LOCAL_REPOSITORY ]; then
     LOADER_LOCAL_REPOSITORY="~/.m2/repository"
 fi
 
+if [ "$DOCKER_SWARM" = true ];
+then
+    if [ -z $HAZELCAST_PUBLIC_ADRESS ]; then
+        HAZELCAST_PUBLIC_ADRESS="$HOSTNAME:5701"
+    fi
+    JAVA_OPTS="$JAVA_OPTS -Dorientdb.ip.address=$HOSTNAME -Dhazelcast.local.publicAddress=$HAZELCAST_PUBLIC_ADRESS"
+else
+    if [ ! -z $HAZELCAST_PUBLIC_ADRESS ]; then
+        JAVA_OPTS="$JAVA_OPTS -Dhazelcast.local.publicAddress=$HAZELCAST_PUBLIC_ADRESS"
+    fi
+    if [ ! -z $ORIENTDB_PUBLIC_ADDRESS ]; then
+        JAVA_OPTS="$JAVA_OPTS -Dorientdb.ip.address=$ORIENTDB_PUBLIC_ADDRESS"
+    fi
+fi
+
 cd $WORK_DIR
 
 node_dir="runtime/$NODE"
 mkdir -p $node_dir
-
 
 java -server \
     -DORIENTDB_HOME=$node_dir \

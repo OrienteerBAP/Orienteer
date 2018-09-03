@@ -116,6 +116,7 @@ public class OrienteerModule extends AbstractModule {
             config = config.replaceAll("\\$\\{configuration.db.default\\}", System.getProperty("configuration.db.default"));
             config = config.replaceAll("\\$\\{configuration.hazelcast\\}", System.getProperty("configuration.hazelcast"));
             config = config.replaceAll("\\$\\{node.name\\}", System.getProperty("node.name"));
+            config = config.replaceAll("\\$\\{ip.address\\}", System.getProperty("ip.address"));
         }
         return config;
 	}
