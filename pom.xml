@@ -75,12 +75,20 @@
 		<hz.version>3.9.4</hz.version>
 	</properties>
      <repositories>
-       <repository>
-         <id>snapshots-repo</id>
-         <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-         <releases><enabled>false</enabled></releases>
-         <snapshots><enabled>true</enabled></snapshots>
-       </repository>
+           <repository>
+             <id>snapshots-repo</id>
+             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+             <releases><enabled>false</enabled></releases>
+             <snapshots><enabled>true</enabled></snapshots>
+           </repository>
+         <repository>
+             <snapshots>
+                 <enabled>false</enabled>
+             </snapshots>
+             <id>central</id>
+             <name>bintray</name>
+             <url>http://jcenter.bintray.com</url>
+         </repository>
      </repositories>
 	<modules>
 		<module>orienteer-birt</module>
@@ -247,6 +255,11 @@
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
                 <version>${hz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bitsofinfo</groupId>
+                <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
+                <version>1.0-RC8</version>
             </dependency>
 
 		    <!--  JUNIT DEPENDENCY FOR TESTING -->
