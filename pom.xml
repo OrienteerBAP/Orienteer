@@ -73,6 +73,7 @@
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
 		<hz.version>3.9.4</hz.version>
+		<mockito.version>2.22.0</mockito.version>
 	</properties>
      <repositories>
            <repository>
@@ -284,7 +285,14 @@
 			    <version>3.0.1</version>
 			    <scope>provided</scope>
 		    </dependency>
-	    </dependencies>
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+		</dependencies>
 	</dependencyManagement>
 	<build>
 		<plugins>

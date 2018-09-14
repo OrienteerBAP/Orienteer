@@ -20,7 +20,10 @@ public class OArtifactReference implements Serializable {
     private String description = ""; // optional need only for Orienteer default modules
     private String repository  = "";
     private List<String> availableVersions;
-    private File file;
+
+    private transient File file;
+
+    private byte [] jarBytes;
 
     public OArtifactReference(String groupId, String artifactId, String version) {
         this(groupId, artifactId, version, null);
@@ -45,6 +48,18 @@ public class OArtifactReference implements Serializable {
         if (!Strings.isNullOrEmpty(description)) this.description = description;
         this.file = file;
         this.availableVersions = Lists.newArrayList();
+    }
+
+    public OArtifactReference(OArtifactReference ref) {
+        this(
+                ref.groupId,
+                ref.artifactId,
+                ref.version,
+                ref.repository,
+                ref.description,
+                ref.file
+        );
+        setJarBytes(ref.getJarBytes());
     }
 
     public static OArtifactReference valueOf(Artifact artifact) {
@@ -77,6 +92,11 @@ public class OArtifactReference implements Serializable {
 
     public OArtifactReference setRepository(String repository) {
         this.repository = repository;
+        return this;
+    }
+
+    public OArtifactReference setJarBytes(byte[] jarBytes) {
+        this.jarBytes = jarBytes;
         return this;
     }
 
@@ -127,6 +147,10 @@ public class OArtifactReference implements Serializable {
 
     public List<String> getAvailableVersions() {
         return availableVersions;
+    }
+
+    public byte[] getJarBytes() {
+        return jarBytes;
     }
 
     @Override

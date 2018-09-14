@@ -11,9 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utility class for work with contents in metadata.xml
@@ -50,7 +48,7 @@ class MetadataUtil {
      * @return list with {@link OArtifact} which are in metadata.xml or empty list when metadata.xml is empty or don't exists
      */
     public List<OArtifact> readOArtifactsAsList() {
-        if (!metadataExists()) {
+        if (!isMetadataExists()) {
             createOArtifactsMetadata(Collections.<OArtifact>emptyList());
             return Lists.newArrayList();
         }
@@ -58,12 +56,16 @@ class MetadataUtil {
         return reader.readAllOoArtifacts();
     }
 
+    public Set<OArtifact> readOArtifactsAsSet() {
+        return new LinkedHashSet<>(readOArtifactsAsList());
+    }
+
     /**
      * Read artifacts for load from metadata.xml
      * @return list with {@link OArtifact} for load from metadata.xml or empty list when metadata.xml is empty or don't exists
      */
     public List<OArtifact> readOArtifactsForLoadAsList() {
-        if (!metadataExists()) {
+        if (!isMetadataExists()) {
             createOArtifactsMetadata(Collections.<OArtifact>emptyList());
             return Lists.newArrayList();
         }
@@ -98,7 +100,7 @@ class MetadataUtil {
      * @return {@link Map<Path, OArtifact>} with artifacts from metadata.xml or empty map when metadata.xml is empty or don't exists
      */
     private Map<Path, OArtifact> readOArtifactsAsMap(boolean all, boolean load) {
-        if (!metadataExists()) {
+        if (!isMetadataExists()) {
             createOArtifactsMetadata(Collections.<OArtifact>emptyList());
             return Maps.newHashMap();
         }
@@ -123,7 +125,7 @@ class MetadataUtil {
      */
     public void updateOArtifactMetadata(OArtifact oArtifact) {
         Args.notNull(oArtifact, "oArtifact");
-        if (!metadataExists()) {
+        if (!isMetadataExists()) {
             createOArtifactsMetadata(Lists.newArrayList(oArtifact));
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
@@ -141,7 +143,7 @@ class MetadataUtil {
     public void updateOArtifactMetadata(OArtifact artifactForUpdate, OArtifact newArtifact) {
         Args.notNull(artifactForUpdate, "artifactForUpdate");
         Args.notNull(newArtifact, "newArtifactConfig");
-        if (!metadataExists()) {
+        if (!isMetadataExists()) {
             return;
         }
 
@@ -157,7 +159,7 @@ class MetadataUtil {
      */
     public void updateOArtifactsMetadata(List<OArtifact> oArtifacts) {
         Args.notNull(oArtifacts, "oArtifacts");
-        if (!metadataExists()) {
+        if (!isMetadataExists()) {
             createOArtifactsMetadata(oArtifacts);
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
@@ -172,7 +174,7 @@ class MetadataUtil {
      */
     public void updateJarsInOArtifactsMetadata(List<OArtifact> oArtifacts) {
         Args.notNull(oArtifacts, "oArtifacts");
-        if (!metadataExists()) {
+        if (!isMetadataExists()) {
             createOArtifactsMetadata(oArtifacts);
         } else {
             OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
@@ -199,7 +201,7 @@ class MetadataUtil {
      */
     public void deleteOArtifactsFromMetadata(List<OArtifact> oArtifacts) {
         Args.notNull(oArtifacts, "oArtifacts");
-        if (!metadataExists()) return;
+        if (!isMetadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.delete(oArtifacts);
     }
@@ -211,7 +213,7 @@ class MetadataUtil {
      */
     public void deleteOArtifactFromMetadata(OArtifact oArtifact) {
         Args.notNull(oArtifact, "oArtifact");
-        if (!metadataExists()) return;
+        if (!isMetadataExists()) return;
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.delete(oArtifact);
     }
@@ -221,7 +223,7 @@ class MetadataUtil {
      * @return true - if metadata.xml exists
      *         false - if metadata.xml does not exists
      */
-    public boolean metadataExists() {
+    public boolean isMetadataExists() {
         return Files.exists(metadataPath);
     }
 }

@@ -10,7 +10,6 @@ import org.apache.wicket.util.io.IOUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.resolution.ArtifactResult;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
@@ -228,7 +227,7 @@ public abstract class OrienteerClassLoaderUtil {
      *         false - if metadata.xml does not exists
      */
     public static boolean metadataExists() {
-    	return metadataUtil.metadataExists();
+    	return metadataUtil.isMetadataExists();
     }
 
     /**
@@ -275,6 +274,10 @@ public abstract class OrienteerClassLoaderUtil {
     public static void deleteOArtifactsFromMetadata(List<OArtifact> oArtifacts) {
         Args.notNull(oArtifacts, "oArtifacts");
         metadataUtil.deleteOArtifactsFromMetadata(oArtifacts);
+    }
+
+    public static void deleteOArtifactFiles(List<OArtifact> artifacts) {
+        artifacts.forEach(OrienteerClassLoaderUtil::deleteOArtifactFile);
     }
 
     /**
@@ -392,6 +395,10 @@ public abstract class OrienteerClassLoaderUtil {
         return metadataUtil.readOArtifactsAsList();
     }
 
+    public static Set<OArtifact> getOArtifactsMetadataAsSet() {
+        return metadataUtil.readOArtifactsAsSet();
+    }
+
     /**
      * Read and get artifacts for load from metadata.xml
      * @return {@link List} artifacts for load from metadata.xml
@@ -483,5 +490,22 @@ public abstract class OrienteerClassLoaderUtil {
                     path.toAbsolutePath(), newFilePath.toAbsolutePath(), e);
         }
         return null;
+    }
+
+    public static File createJarFile(byte[] jarBytes, String fileName) {
+        Args.notNull(jarBytes, "jarBytes");
+        Args.notNull(fileName, "fileName");
+
+        if (!fileName.endsWith(".jar")) {
+            fileName += ".jar";
+        }
+
+        Path artifactsFolder = getArtifactsFolder();
+        Path path = artifactsFolder.resolve(fileName);
+        try {
+            return Files.write(path, jarBytes).toFile();
+        } catch (IOException ex) {
+            throw new IllegalStateException("Can't write jar bytes to file: " + fileName, ex);
+        }
     }
 }
