@@ -55,9 +55,54 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${dollar}{orienteer.version}</version>
 		</dependency>
-		<!-- <dependency>
+        <!--<dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-architect</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-birt</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-bpm</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-camel</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-devutils</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-etl</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+	<!-- <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-graph</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-logger-server</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-mail</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-object</artifactId>
             <version>${dollar}{orienteer.version}</version>
         </dependency>-->
         <!-- <dependency>
@@ -72,22 +117,12 @@
         </dependency>-->
         <!-- <dependency>
             <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-bpm</artifactId>
+            <artifactId>orienteer-taucharts</artifactId>
             <version>${dollar}{orienteer.version}</version>
         </dependency>-->
         <!-- <dependency>
             <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-devutils</artifactId>
-            <version>${dollar}{orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-logger-server</artifactId>
-            <version>${dollar}{orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-camel</artifactId>
+            <artifactId>orienteer-users</artifactId>
             <version>${dollar}{orienteer.version}</version>
         </dependency>-->
 		<!-- ORIENTEER TESTS for TESTING -->
