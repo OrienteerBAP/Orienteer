@@ -6,6 +6,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.boot.loader.distributed.DeleteMetadataTask;
 import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
 import org.orienteer.core.boot.loader.distributed.UpdateMetadataTask;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
@@ -51,12 +52,15 @@ public class ModuleManager implements IModuleManager {
 
     @Override
     public void updateArtifacts(Set<OArtifact> artifacts) {
-        LOG.info("update artifacts: ", artifacts);
+        LOG.info("update artifacts: {}", artifacts);
     }
 
     @Override
     public void deleteArtifacts(Set<OArtifact> artifacts) {
-        LOG.info("delete artifacts: ", artifacts);
+        LOG.info("delete artifacts: {}", artifacts);
+        OrienteerClassLoaderUtil.deleteOArtifactsFromMetadata(artifacts);
+        getHazelcast()
+                .ifPresent(hz -> distributedDeleteArtifacts(hz, artifacts));
     }
 
     private void distributedAddArtifacts(HazelcastInstance hz, Set<OArtifact> artifacts) {
@@ -64,6 +68,14 @@ public class ModuleManager implements IModuleManager {
         executeOnOtherMembers(hz, member -> {
             Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
             executor.executeOnMember(new UpdateMetadataTask(copy), member);
+        });
+    }
+
+    private void distributedDeleteArtifacts(HazelcastInstance hz, Set<OArtifact> artifacts) {
+        IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
+        executeOnOtherMembers(hz, member -> {
+            Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
+            executor.executeOnMember(new DeleteMetadataTask(copy), member);
         });
     }
 

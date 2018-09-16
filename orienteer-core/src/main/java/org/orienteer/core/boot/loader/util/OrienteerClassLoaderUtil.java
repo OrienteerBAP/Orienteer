@@ -274,6 +274,10 @@ public final class OrienteerClassLoaderUtil {
         metadataUtil.deleteOArtifactsFromMetadata(oArtifacts);
     }
 
+    public static void deleteOArtifactsFromMetadata(Set<OArtifact> artifacts) {
+        deleteOArtifactsFromMetadata(new LinkedList<>(artifacts));
+    }
+
     public static void deleteOArtifactFiles(List<OArtifact> artifacts) {
         artifacts.forEach(OrienteerClassLoaderUtil::deleteOArtifactFile);
     }
