@@ -1,7 +1,5 @@
 package org.orienteer.core.boot.loader.distributed;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.HazelcastInstanceAware;
 import org.apache.wicket.util.file.Files;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
@@ -17,20 +15,14 @@ import java.util.stream.Stream;
 /**
  * Task for download artifacts from one node to another
  */
-public class DownloadArtifactsTask implements Callable<Set<OArtifact>>, Serializable, HazelcastInstanceAware {
+public class DownloadArtifactsTask implements Callable<Set<OArtifact>>, Serializable {
 
     public static final String EXECUTOR_NAME = "download.task";
 
     private final Set<OArtifact> artifacts;
-    private transient HazelcastInstance hz;
 
     public DownloadArtifactsTask(Set<OArtifact> artifacts) {
         this.artifacts = artifacts;
-    }
-
-    @Override
-    public void setHazelcastInstance(HazelcastInstance hz) {
-        this.hz = hz;
     }
 
     private Set<OArtifact> createResult() {

@@ -7,11 +7,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
@@ -19,15 +21,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Path;
 
 /**
  * Abstract utility class for work with xml
  */
-class AbstractXmlUtil implements Serializable {
+abstract class AbstractXmlHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlUtil.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractXmlHandler.class);
 
     /**
      * Create {@link Document} from {@link Path}

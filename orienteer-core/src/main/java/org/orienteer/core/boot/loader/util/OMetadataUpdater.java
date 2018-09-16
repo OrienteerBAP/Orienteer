@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Utility class for update metadata.xml
  */
-class OMetadataUpdater extends AbstractXmlUtil {
+class OMetadataUpdater extends AbstractXmlHandler {
 
     private final Path pathToMetadata;
 

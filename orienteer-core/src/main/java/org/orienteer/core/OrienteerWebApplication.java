@@ -5,8 +5,12 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
+import com.hazelcast.core.HazelcastInstance;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.server.distributed.impl.ODistributedStorage;
+import com.orientechnologies.orient.server.hazelcast.OHazelcastPlugin;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -55,6 +59,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
 import java.util.*;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -224,6 +231,19 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	{
 		return OrientDbWebSession.get().getDatabase();
 	}
+
+ 	public boolean isDistributedMode() {
+        ODatabaseDocumentTx db = (ODatabaseDocumentTx) getDatabase();
+        return db.getStorage() instanceof ODistributedStorage;
+	}
+
+	public Optional<HazelcastInstance> getHazelcast() {
+	    if (isDistributedMode()) {
+            OHazelcastPlugin plugin = getServer().getPluginByClass(OHazelcastPlugin.class);
+            return of(plugin.getHazelcastInstance());
+        }
+        return empty();
+    }
 
 	public synchronized List<IOrienteerModule> getRegisteredModules() {
 		if(!registeredModulesSorted){

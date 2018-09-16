@@ -9,6 +9,7 @@ import org.eclipse.aether.artifact.DefaultArtifact;
 import java.io.File;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class which contains information about maven coordinates and jar file.
@@ -157,20 +158,15 @@ public class OArtifactReference implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        OArtifactReference artifact = (OArtifactReference) o;
-
-        if (groupId != null ? !groupId.equals(artifact.groupId) : artifact.groupId != null) return false;
-        if (artifactId != null ? !artifactId.equals(artifact.artifactId) : artifact.artifactId != null) return false;
-        return version != null ? version.equals(artifact.version) : artifact.version == null;
+        OArtifactReference reference = (OArtifactReference) o;
+        return Objects.equals(groupId, reference.groupId) &&
+                Objects.equals(artifactId, reference.artifactId) &&
+                Objects.equals(version, reference.version);
     }
 
     @Override
     public int hashCode() {
-        int result = groupId != null ? groupId.hashCode() : 0;
-        result = 31 * result + (artifactId != null ? artifactId.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
-        return result;
+        return Objects.hash(groupId, artifactId, version);
     }
 
     @Override

@@ -26,7 +26,6 @@ import ru.ydn.wicket.wicketorientdb.converter.IdentityConverter;
 import ru.ydn.wicket.wicketorientdb.model.AbstractListModel;
 import ru.ydn.wicket.wicketorientdb.model.JavaSortableDataProvider;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -65,8 +64,8 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
 			protected Collection<OArtifact> getData() {
 				if(downloadedModules==null || downloadedModules.isEmpty()) {
 					try {
-						downloadedModules = OrienteerClassLoaderUtil.getOrienteerArtifactsFromServer();
-					} catch (IOException e) {
+						downloadedModules = OrienteerClassLoaderUtil.getOrienteerModules();
+					} catch (Exception e) {
 						LOG.error("It's not possible to download modules file from the internet", e);
 						error(e.getMessage());
 					}

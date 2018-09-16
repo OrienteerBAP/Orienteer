@@ -39,6 +39,7 @@ class MetadataUtil {
      */
     public void createOArtifactsMetadata(List<OArtifact> artifacts) {
         Args.notNull(artifacts, "artifacts");
+        OrienteerClassLoaderUtil.createArtifactsFolderIfNotExists();
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.create(artifacts);
     }

@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Class for work with pom.xml which is located in artifact jar file.
  */
-class PomXmlUtils extends AbstractXmlUtil {
+class PomXmlUtils extends AbstractXmlHandler {
 
     private static final String PROJECT                     = "project";
     private static final String PARENT                      = "parent";

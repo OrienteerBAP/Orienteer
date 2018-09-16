@@ -60,19 +60,12 @@ class InitUtils {
      * @return {@link Path} of file metadata.xml
      */
     public Path getMetadataPath() {
-        Path modulesFolder = getPathToModulesFolder();
+        Path modulesFolder = getOrCreateModulesFolder();
         return modulesFolder.resolve(METADATA_FILE);
     }
 
-    /**
-     * @return {@link Path} of modules folder
-     */
-    public Path getPathToModulesFolder() {
-        if (PROPERTIES == null)
-            return createDirectory(Paths.get(DEFAULT_LIBS_FOLDER));
-        String folder = PROPERTIES.getProperty(LIBS_FOLDER);
-        Path pathToModules = folder == null ? Paths.get(DEFAULT_LIBS_FOLDER) : Paths.get(folder);
-        return createDirectory(pathToModules);
+    public Path getOrCreateModulesFolder() {
+        return createIfNotExistsDirectory(resolvePathToModulesFolder());
     }
 
     /**
@@ -80,7 +73,7 @@ class InitUtils {
      * @param pathToDir {@link Path} of creating directory
      * @return {@link Path} of created directory
      */
-    private Path createDirectory(Path pathToDir) {
+    private Path createIfNotExistsDirectory(Path pathToDir) {
         try {
             if (!Files.exists(pathToDir))
                 Files.createDirectory(pathToDir);
@@ -88,6 +81,13 @@ class InitUtils {
             LOG.error("Cannot create folder: " + pathToDir.toAbsolutePath(), e);
         }
         return pathToDir;
+    }
+
+    private Path resolvePathToModulesFolder() {
+        if (PROPERTIES == null)
+            return Paths.get(DEFAULT_LIBS_FOLDER);
+        String folder = PROPERTIES.getProperty(LIBS_FOLDER);
+        return folder == null ? Paths.get(DEFAULT_LIBS_FOLDER) : Paths.get(folder);
     }
 
     /**

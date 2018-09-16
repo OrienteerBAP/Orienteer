@@ -23,7 +23,7 @@ class JarUtils {
     private final Path modulesFolder;
 
     JarUtils(InitUtils initUtils) {
-        this.modulesFolder = initUtils.getPathToModulesFolder();
+        this.modulesFolder = initUtils.getOrCreateModulesFolder();
     }
 
     /**

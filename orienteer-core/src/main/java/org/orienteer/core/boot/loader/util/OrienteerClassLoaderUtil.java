@@ -6,17 +6,17 @@ import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.util.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
-import org.apache.wicket.util.io.IOUtils;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.boot.loader.service.IOrienteerModulesResolver;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -26,11 +26,12 @@ import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
 import java.util.jar.Manifest;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for OrienteerClassLoader
  */
-public abstract class OrienteerClassLoaderUtil {
+public final class OrienteerClassLoaderUtil {
     private static final Logger LOG = LoggerFactory.getLogger(OrienteerClassLoaderUtil.class);
 
     public static final String WITHOUT_JAR          = "WITHOUT_JAR";
@@ -56,39 +57,36 @@ public abstract class OrienteerClassLoaderUtil {
      * @return list of {@link OArtifact} from server
      * @throws IOException 
      */
-    public static List<OArtifact> getOrienteerArtifactsFromServer() throws IOException  {
-    	
-    	URL website = new URL(initUtils.getOrienteerModulesUrl());
-    	File localFile = new File(initUtils.getPathToModulesFolder().toFile(), "modules.xml");
-    	FileOutputStream fos = new FileOutputStream(localFile);
-    	try {
-    		IOUtils.copy(website.openStream(), fos);
-    	} finally {
-			fos.close();
-		}
-    	
-        OrienteerArtifactsReader reader = new OrienteerArtifactsReader(localFile.toPath());
-        List<OArtifact> ooArtifacts = reader.readArtifacts();
-        List<OArtifact> metadataModules = getOArtifactsMetadataAsList();
-        for (OArtifact metadataModule : metadataModules) {
-            for (OArtifact module : ooArtifacts) {
-                OArtifactReference metadataArtifact = metadataModule.getArtifactReference();
-                OArtifactReference moduleArtifact = module.getArtifactReference();
-                if (metadataArtifact.getGroupId().equals(moduleArtifact.getGroupId()) &&
-                        metadataArtifact.getArtifactId().equals(moduleArtifact.getArtifactId())) {
-                    module.setDownloaded(true);
-                }
-            }
+    public static List<OArtifact> getOrienteerModules() {
+        OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+        if (app == null) {
+            throw new IllegalStateException("Can't retrieve Orienteer modules if Orienteer application doesn't exists!");
         }
-        addAvailableVersions(ooArtifacts);
-        return ooArtifacts;
+        IOrienteerModulesResolver resolver = app.getServiceInstance(IOrienteerModulesResolver.class);
+        return resolver.resolveOrienteerModules();
     }
 
-    private static void addAvailableVersions(List<OArtifact> artifacts) {
-        for (OArtifact artifact : artifacts) {
-            OArtifactReference reference = artifact.getArtifactReference();
-            reference.addAvailableVersions(requestArtifactVersions(reference.getGroupId(), reference.getArtifactId()));
+    public static Set<OArtifact> getOrienteerModulesAsSet() {
+        return new LinkedHashSet<>(getOrienteerModules());
+    }
+
+    public static Set<OArtifact> getNonOrienteerArtifacts(Set<OArtifact> artifacts) throws IllegalStateException {
+        Set<OArtifact> orienteerArtifacts = getOrienteerModulesAsSet();
+        if (orienteerArtifacts.isEmpty()) {
+            throw new IllegalStateException("Can't retrieve Orienteer artifacts from server.");
         }
+        return Sets.difference(artifacts, orienteerArtifacts);
+    }
+
+    public static Set<OArtifact> getOrienteerArtifacts(Set<OArtifact> artifacts) throws IllegalStateException {
+        Set<OArtifact> orienteerArtifacts = getOrienteerModulesAsSet();
+        if (orienteerArtifacts.isEmpty()) {
+            throw new IllegalStateException("Can't retrieve Orienteer artifacts from server.");
+        }
+//        return artifacts.stream()
+//                .filter(orienteerArtifacts::contains)
+//                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return Sets.intersection(artifacts, orienteerArtifacts);
     }
 
     /**
@@ -387,6 +385,11 @@ public abstract class OrienteerClassLoaderUtil {
         metadataUtil.updateOArtifactsMetadata(oArtifacts);
     }
 
+    public static void updateOArtifactsInMetadata(Set<OArtifact> artifacts) {
+        Args.notNull(artifacts, "artifacts");
+        updateOArtifactsInMetadata(new LinkedList<>(artifacts));
+    }
+
     /**
      * Read and get artifacts from metadata.xml
      * @return {@link List} artifacts from metadata.xml
@@ -447,9 +450,12 @@ public abstract class OrienteerClassLoaderUtil {
      * @return {@link Path} of modules folder
      */
     static Path getArtifactsFolder() {
-        return initUtils.getPathToModulesFolder();
+        return initUtils.getOrCreateModulesFolder();
     }
 
+    static void createArtifactsFolderIfNotExists() {
+        getArtifactsFolder();
+    }
 
     /**
      * Add artifact jar file to temp folder
@@ -507,5 +513,11 @@ public abstract class OrienteerClassLoaderUtil {
         } catch (IOException ex) {
             throw new IllegalStateException("Can't write jar bytes to file: " + fileName, ex);
         }
+    }
+
+    public static Set<OArtifact> deepCopy(Set<OArtifact> artifacts) {
+        return artifacts.stream()
+                .map(OArtifact::new)
+                .collect(Collectors.toSet());
     }
 }

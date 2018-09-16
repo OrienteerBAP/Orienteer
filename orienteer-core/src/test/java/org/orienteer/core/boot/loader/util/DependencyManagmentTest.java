@@ -6,8 +6,10 @@ import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.junit.OrienteerTestRunner;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(OrienteerTestRunner.class)
 public class DependencyManagmentTest {
 
     @Test
@@ -33,7 +36,7 @@ public class DependencyManagmentTest {
 
     @Test
     public void downloadAndResolveOrienteerModules() throws IOException {
-        List<OArtifact> modules = OrienteerClassLoaderUtil.getOrienteerArtifactsFromServer();
+        List<OArtifact> modules = OrienteerClassLoaderUtil.getOrienteerModules();
         for (OArtifact artifact : modules) {
             assertNotNull("Module from server can't be null", artifact);
         }
@@ -92,7 +95,7 @@ public class DependencyManagmentTest {
     }
 
     private List<OArtifact> downloadAllOrienteerModulesFromServer() throws IOException {
-        List<OArtifact> modules = OrienteerClassLoaderUtil.getOrienteerArtifactsFromServer();
+        List<OArtifact> modules = OrienteerClassLoaderUtil.getOrienteerModules();
         List<OArtifact> result = Lists.newArrayList();
         for (OArtifact artifact : modules) {
             assertNotNull("Module from server can't be null", artifact);

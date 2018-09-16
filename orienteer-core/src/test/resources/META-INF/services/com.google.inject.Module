@@ -1,2 +1,3 @@
 org.orienteer.junit.OrienteerTestModule
 org.orienteer.core.service.CustomTestModule
+org.orienteer.core.distributed.boot.loader.service.DistributedTestInitModule

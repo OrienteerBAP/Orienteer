@@ -7,6 +7,8 @@ import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 //TODO: create tests
 public class ResolveMetadataConflictTask implements Runnable, Serializable, HazelcastInstanceAware {
     private static final long serialVersionUID = 3699246504123452884L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(ResolveMetadataConflictTask.class);
 
     public static final String EXECUTOR_NAME = "resolve.metadata.conflict.executor";
 
@@ -52,6 +56,8 @@ public class ResolveMetadataConflictTask implements Runnable, Serializable, Haze
         Set<OArtifact> localArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
         Set<OArtifact> remoteDifference = Sets.difference(remoteArtifacts, localArtifacts);
         Set<OArtifact> localDifference = Sets.difference(localArtifacts, remoteDifference);
+
+        LOG.info("Resolve conflict between modules. Local unique modules: {}, remote unique modules: {}", localDifference.size(), remoteDifference.size());
 
         IExecutorService executor = hz.getExecutorService(DownloadArtifactsTask.EXECUTOR_NAME);
         Set<OArtifact> artifacts = downloadArtifacts(executor, createClone(remoteDifference));

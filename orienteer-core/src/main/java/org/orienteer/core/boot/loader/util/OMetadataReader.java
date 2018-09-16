@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Class for read {@link OArtifact} from metadata.xml
  */
-class OMetadataReader extends AbstractXmlUtil {
+class OMetadataReader extends AbstractXmlHandler {
 
     private final Path pathToMetadata;
 

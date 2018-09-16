@@ -1,6 +1,5 @@
 package org.orienteer.core.boot.loader.util;
 
-import com.google.common.collect.Lists;
 import org.apache.http.util.Args;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
@@ -10,12 +9,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.nio.file.Path;
-import java.util.List;
+import java.util.*;
 
 /**
  * Read Orienteer artifacts from modules.xml
  */
-class OrienteerArtifactsReader extends AbstractXmlUtil {
+public class OrienteerArtifactsReader extends AbstractXmlHandler {
 
     private final Path pathToFile;
 
@@ -24,7 +23,7 @@ class OrienteerArtifactsReader extends AbstractXmlUtil {
      * @param pathToFile {@link Path} of modules.xml
      * @throws IllegalArgumentException if pathToFile is null
      */
-    OrienteerArtifactsReader(Path pathToFile) {
+    public OrienteerArtifactsReader(Path pathToFile) {
         Args.notNull(pathToFile, "pathToFile");
         this.pathToFile = pathToFile;
     }
@@ -35,8 +34,8 @@ class OrienteerArtifactsReader extends AbstractXmlUtil {
      * @throws IllegalStateException if document can't be created
      */
     @SuppressWarnings("unchecked")
-    List<OArtifact> readArtifacts() {
-        List<OArtifact> artifacts = Lists.newArrayList();
+    public List<OArtifact> readArtifacts() {
+        List<OArtifact> artifacts = new LinkedList<>();
         Document document = readDocumentFromFile(pathToFile);
         if (document == null) documentCannotReadException(pathToFile);
         String expression = String.format("/%s/*", MetadataTag.METADATA.get());
@@ -50,7 +49,7 @@ class OrienteerArtifactsReader extends AbstractXmlUtil {
                 }
             }
         }
-        return artifacts;
+        return Collections.unmodifiableList(artifacts);
     }
 
     /**
