@@ -1,4 +1,4 @@
-package org.orienteer.core.distributed.boot.loader;
+package org.orienteer.core.boot.loader.distributed;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
@@ -6,9 +6,6 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.orienteer.core.boot.loader.distributed.DownloadArtifactsTask;
-import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
-import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;

@@ -1,4 +1,4 @@
-package org.orienteer.core.distributed.boot.loader;
+package org.orienteer.core.boot.loader.distributed;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;

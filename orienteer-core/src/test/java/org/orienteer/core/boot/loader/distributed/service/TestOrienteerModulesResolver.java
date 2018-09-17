@@ -1,8 +1,8 @@
-package org.orienteer.core.distributed.boot.loader.service;
+package org.orienteer.core.boot.loader.distributed.service;
 
 import org.orienteer.core.boot.loader.service.OrienteerModulesResolver;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.distributed.boot.loader.TestModuleManager;
+import org.orienteer.core.boot.loader.distributed.TestModuleManager;
 
 import java.io.File;
 import java.net.URL;

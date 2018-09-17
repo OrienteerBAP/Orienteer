@@ -1,4 +1,4 @@
-package org.orienteer.core.distributed.boot.loader.service;
+package org.orienteer.core.boot.loader.distributed.service;
 
 import com.hazelcast.core.*;
 import com.hazelcast.monitor.LocalExecutorStats;

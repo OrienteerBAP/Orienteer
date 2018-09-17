@@ -1,4 +1,4 @@
-package org.orienteer.core.distributed.boot.loader.service;
+package org.orienteer.core.boot.loader.distributed.service;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -13,7 +13,7 @@ import org.orienteer.core.boot.loader.service.IModuleManager;
 import org.orienteer.core.boot.loader.service.IOrienteerModulesResolver;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.distributed.boot.loader.TestAddModulesToMetadataTasks;
+import org.orienteer.core.boot.loader.distributed.TestAddModulesToMetadataTasks;
 import org.orienteer.core.service.OverrideModule;
 
 import java.io.File;
