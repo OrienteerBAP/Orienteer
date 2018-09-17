@@ -19,6 +19,7 @@ public class DeleteMetadataTask implements Runnable, Serializable {
 
     @Override
     public void run() {
+        OrienteerClassLoaderUtil.deleteOArtifactFiles(artifacts);
         OrienteerClassLoaderUtil.deleteOArtifactsFromMetadata(artifacts);
     }
 }

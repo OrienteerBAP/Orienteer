@@ -5,6 +5,9 @@ import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 
 import java.util.List;
 
+/**
+ * Resolver for Orienteer modules which download information about Orienteer modules if need
+ */
 @ImplementedBy(OrienteerModulesResolver.class)
 public interface IOrienteerModulesResolver {
 

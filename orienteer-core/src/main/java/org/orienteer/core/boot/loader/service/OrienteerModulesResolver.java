@@ -14,6 +14,9 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Default implementation of {@link IOrienteerModulesResolver}
+ */
 public class OrienteerModulesResolver implements IOrienteerModulesResolver {
 
     @Inject

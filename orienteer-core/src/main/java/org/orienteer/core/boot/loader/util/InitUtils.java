@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,14 +35,18 @@ class InitUtils {
 
     private static final String DEFAULT_LIBS_FOLDER          = "libs/";
     private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_LIBS_FOLDER + "deps/";
-    private static final Properties PROPERTIES                 = StartupPropertiesLoader.retrieveProperties();
 
+    private final Properties properties;
+
+    InitUtils(Properties properties) {
+        this.properties = properties;
+    }
 
     /**
      * @return maven local repository
      */
     public String getMavenLocalRepository() {
-        String path = PROPERTIES.getProperty(MAVEN_LOCAL_REPOSITORY);
+        String path = properties.getProperty(MAVEN_LOCAL_REPOSITORY);
         return path == null ? DEFAULT_MAVEN_LOCAL_REPOSITORY : path;
     }
 
@@ -51,9 +54,9 @@ class InitUtils {
      * @return recursively resolving dependencies property
      */
     public boolean resolvingDependenciesRecursively() {
-        if (PROPERTIES == null)
+        if (properties == null)
             return Boolean.FALSE;
-        return Boolean.valueOf(PROPERTIES.getProperty(RECURSIVELY_RESOLVING_DEPS));
+        return Boolean.valueOf(properties.getProperty(RECURSIVELY_RESOLVING_DEPS));
     }
 
     /**
@@ -84,9 +87,9 @@ class InitUtils {
     }
 
     private Path resolvePathToModulesFolder() {
-        if (PROPERTIES == null)
+        if (properties == null)
             return Paths.get(DEFAULT_LIBS_FOLDER);
-        String folder = PROPERTIES.getProperty(LIBS_FOLDER);
+        String folder = properties.getProperty(LIBS_FOLDER);
         return folder == null ? Paths.get(DEFAULT_LIBS_FOLDER) : Paths.get(folder);
     }
 
@@ -95,14 +98,14 @@ class InitUtils {
      * @return list of {@link RemoteRepository}
      */
     public List<RemoteRepository> getRemoteRepositories() {
-        if (PROPERTIES == null)
+        if (properties == null)
             return getDefaultRepositories();
 
         List<RemoteRepository> repositories = Lists.newArrayList();
         String repository;
         int i = 1;
-        while ((repository = (String) PROPERTIES.get(MAVEN_REMOTE_REPOSITORY + i)) != null) {
-            String id  = (String) PROPERTIES.get(String.format(MAVEN_REMOTE_REPOSITORY_ID, i));
+        while ((repository = (String) properties.get(MAVEN_REMOTE_REPOSITORY + i)) != null) {
+            String id  = (String) properties.get(String.format(MAVEN_REMOTE_REPOSITORY_ID, i));
             if (id == null) id = "" + i;
             repositories.add(new RemoteRepository.Builder(id, DEFAULT, repository).build());
             i++;
@@ -135,22 +138,22 @@ class InitUtils {
      * @return url to modules.xml which contains descriptions of Orienteer modules in cloud
      */
     public String getOrienteerModulesUrl() {
-        return PROPERTIES.getProperty(ORIENTEER_MODULES_URL);
+        return properties.getProperty(ORIENTEER_MODULES_URL);
     }
 
     public String getCurrentOrienteerGroupId() {
-        return PROPERTIES.getProperty(ORIENTEER_GROUP_ID);
+        return properties.getProperty(ORIENTEER_GROUP_ID);
     }
 
     public String getCurrentOrienteerArtifactId() {
-        return PROPERTIES.getProperty(ORIENTEER_ARTIFACT_ID);
+        return properties.getProperty(ORIENTEER_ARTIFACT_ID);
     }
 
     /**
      * @return current Orienteer version
      */
     public String getOrienteerVersion() {
-        String version = PROPERTIES.getProperty(ORIENTEER_VERSION);
+        String version = properties.getProperty(ORIENTEER_VERSION);
         return Strings.isEmpty(version)?OrienteerWebApplication.class.getPackage().getImplementationVersion():version;
     }
 }

@@ -84,7 +84,7 @@ public class ModuleManager implements IModuleManager {
 
         cluster.getMembers()
                 .stream()
-                .filter(m -> m.getUuid().equals(cluster.getLocalMember().getUuid()))
+                .filter(m -> !m.getUuid().equals(cluster.getLocalMember().getUuid()))
                 .forEach(consumer);
     }
 

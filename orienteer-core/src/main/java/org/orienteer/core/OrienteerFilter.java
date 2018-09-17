@@ -83,6 +83,7 @@ public final class OrienteerFilter implements Filter {
     }
     
     private ClassLoader initClassLoader(Properties properties) {
+        OrienteerClassLoaderUtil.reindex(properties);
         OrienteerClassLoader.initOrienteerClassLoaders(OrienteerFilter.class.getClassLoader());
         OrienteerClassLoader.enable();
     	return OrienteerClassLoader.getClassLoader();
@@ -125,11 +126,10 @@ public final class OrienteerFilter implements Filter {
 	        reloading = true;
 	        destroy();
 	        try {
-				Thread.currentThread().sleep(wait);
+				Thread.sleep(wait);
 			} catch (InterruptedException e) {
 				/*NOP*/
 			}
-            OrienteerClassLoaderUtil.reindex();
 	        init(filterConfig);
 	        WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
 	        reloading = false;

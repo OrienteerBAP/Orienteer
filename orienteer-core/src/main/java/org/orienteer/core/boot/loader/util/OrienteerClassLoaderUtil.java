@@ -37,10 +37,10 @@ public final class OrienteerClassLoaderUtil {
     public static final String WITHOUT_JAR          = "WITHOUT_JAR";
 
     private static PomXmlUtils pomXmlUtils   = new PomXmlUtils();
-    private static InitUtils initUtils       = new InitUtils();
-    private static JarUtils jarUtils         = new JarUtils(initUtils);
-    private static MetadataUtil metadataUtil = new MetadataUtil(initUtils.getMetadataPath());
-    private static AetherUtils aetherUtils   = new AetherUtils(initUtils);
+    private static InitUtils initUtils;
+    private static JarUtils jarUtils;
+    private static MetadataUtil metadataUtil;
+    private static AetherUtils aetherUtils;
 
     private static final String POM_XM       = "pom.xml";
     private static final String MODULES      = "modules.xml";
@@ -48,7 +48,10 @@ public final class OrienteerClassLoaderUtil {
 
     private OrienteerClassLoaderUtil() {}
 
-    public static void reindex() {
+    public static void reindex(Properties properties) {
+        initUtils = new InitUtils(properties);
+        jarUtils = new JarUtils(initUtils);
+        metadataUtil = new MetadataUtil(initUtils.getMetadataPath());
         aetherUtils = new AetherUtils(initUtils);
     }
 
@@ -276,6 +279,10 @@ public final class OrienteerClassLoaderUtil {
 
     public static void deleteOArtifactsFromMetadata(Set<OArtifact> artifacts) {
         deleteOArtifactsFromMetadata(new LinkedList<>(artifacts));
+    }
+
+    public static void deleteOArtifactFiles(Set<OArtifact> artifacts) {
+        deleteOArtifactFiles(new LinkedList<>(artifacts));
     }
 
     public static void deleteOArtifactFiles(List<OArtifact> artifacts) {
