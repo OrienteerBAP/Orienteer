@@ -6,15 +6,18 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
 import org.orienteer.core.boot.loader.distributed.DeleteMetadataTask;
 import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
-import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
+import org.orienteer.core.boot.loader.distributed.UpdateModulesInMetadata;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -33,8 +36,8 @@ public class ModuleManager implements IModuleManager {
     }
 
     @Override
-    public void updateArtifact(OArtifact artifact) {
-        updateArtifacts(Collections.singleton(artifact));
+    public void updateArtifact(OArtifact previous, OArtifact artifact) {
+        updateArtifacts(CommonUtils.toMap(previous, artifact));
     }
 
     @Override
@@ -59,8 +62,20 @@ public class ModuleManager implements IModuleManager {
     }
 
     @Override
-    public void updateArtifacts(Set<OArtifact> artifacts) {
+    public void updateArtifacts(Map<OArtifact, OArtifact> artifacts) {
         LOG.info("update artifacts: {}", artifacts);
+
+        Optional<HazelcastInstance> opt = getHazelcast();
+        if (opt.isPresent()) {
+            HazelcastInstance hz = opt.get();
+            IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
+            executeOnEveryMember(hz, member -> {
+                Map<OArtifact, OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
+                executor.executeOnMember(new UpdateModulesInMetadata(copy), member);
+            });
+        } else {
+            new UpdateModulesInMetadata(artifacts).run();
+        }
     }
 
     @Override

@@ -545,6 +545,12 @@ public final class OrienteerClassLoaderUtil {
     public static Set<OArtifact> deepCopy(Set<OArtifact> artifacts) {
         return artifacts.stream()
                 .map(OArtifact::new)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public static Map<OArtifact, OArtifact> deepCopy(Map<OArtifact, OArtifact> artifacts) {
+        Map<OArtifact, OArtifact> result = new LinkedHashMap<>(artifacts.size());
+        artifacts.forEach((k, v) -> result.put(new OArtifact(k), new OArtifact(v)));
+        return result;
     }
 }
