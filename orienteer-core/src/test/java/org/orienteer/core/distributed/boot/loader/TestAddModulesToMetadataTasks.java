@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.boot.loader.distributed.DownloadArtifactsTask;
 import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
-import org.orienteer.core.boot.loader.distributed.UpdateMetadataTask;
+import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
@@ -21,7 +21,7 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 @RunWith(OrienteerTestRunner.class)
-public class TestUpdateMetadataTasks extends AbstractModulesTest {
+public class TestAddModulesToMetadataTasks extends AbstractModulesTest {
 
 
     @Inject
@@ -64,7 +64,7 @@ public class TestUpdateMetadataTasks extends AbstractModulesTest {
     private void updateArtifacts() {
         updateJarBytes();
         IExecutorService service = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-        UpdateMetadataTask task = new UpdateMetadataTask(artifacts);
+        AddModulesToMetadataTask task = new AddModulesToMetadataTask(artifacts);
         service.execute(task);
     }
 

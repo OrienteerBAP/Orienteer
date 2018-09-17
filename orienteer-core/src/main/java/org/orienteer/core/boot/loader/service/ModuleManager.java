@@ -8,7 +8,7 @@ import com.hazelcast.core.Member;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.distributed.DeleteMetadataTask;
 import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
-import org.orienteer.core.boot.loader.distributed.UpdateMetadataTask;
+import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
 import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.slf4j.Logger;
@@ -51,10 +51,10 @@ public class ModuleManager implements IModuleManager {
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
             executeOnEveryMember(hz, member -> {
                 Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
-                executor.executeOnMember(new UpdateMetadataTask(copy), member);
+                executor.executeOnMember(new AddModulesToMetadataTask(copy), member);
             });
         } else {
-            new UpdateMetadataTask(artifacts).run();
+            new AddModulesToMetadataTask(artifacts).run();
         }
     }
 

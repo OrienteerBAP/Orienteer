@@ -16,15 +16,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Task for update metadata.xml on node
+ * Task for add modules to metadata.xml on node
  */
-public class UpdateMetadataTask implements Runnable, Serializable {
+public class AddModulesToMetadataTask implements Runnable, Serializable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateMetadataTask.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AddModulesToMetadataTask.class);
 
     private final Set<OArtifact> artifacts;
 
-    public UpdateMetadataTask(Set<OArtifact> artifacts) {
+    public AddModulesToMetadataTask(Set<OArtifact> artifacts) {
         this.artifacts = artifacts.stream()
                 .map(OArtifact::new)
                 .collect(Collectors.toCollection(LinkedHashSet::new));

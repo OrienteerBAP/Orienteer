@@ -61,7 +61,7 @@ public class ResolveMetadataConflictTask implements Runnable, Serializable, Haze
 
         IExecutorService executor = hz.getExecutorService(DownloadArtifactsTask.EXECUTOR_NAME);
         Set<OArtifact> artifacts = downloadArtifacts(executor, createClone(remoteDifference));
-        executor.executeOnMember(new UpdateMetadataTask(artifacts), hz.getCluster().getLocalMember());
+        executor.executeOnMember(new AddModulesToMetadataTask(artifacts), hz.getCluster().getLocalMember());
 
         if (!localDifference.isEmpty() && inverse) {
             resolveConflictOnOtherNodes(createClone(localDifference), executor);

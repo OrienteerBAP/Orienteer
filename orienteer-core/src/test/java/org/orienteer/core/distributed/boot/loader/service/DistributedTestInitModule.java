@@ -13,7 +13,7 @@ import org.orienteer.core.boot.loader.service.IModuleManager;
 import org.orienteer.core.boot.loader.service.IOrienteerModulesResolver;
 import org.orienteer.core.boot.loader.util.artifact.OArtifact;
 import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
-import org.orienteer.core.distributed.boot.loader.TestUpdateMetadataTasks;
+import org.orienteer.core.distributed.boot.loader.TestAddModulesToMetadataTasks;
 import org.orienteer.core.service.OverrideModule;
 
 import java.io.File;
@@ -104,7 +104,7 @@ public class DistributedTestInitModule extends AbstractModule {
 
     private Optional<OArtifact> createArtifact(String groupId, String artifactId, String version, String jarName) {
         OArtifactReference reference = new OArtifactReference(groupId, artifactId, version);
-        Optional<File> file = getTestJarFile(TestUpdateMetadataTasks.class, jarName);
+        Optional<File> file = getTestJarFile(TestAddModulesToMetadataTasks.class, jarName);
         return file.map(f -> {
             reference.setFile(f);
             OArtifact artifact = new OArtifact();
