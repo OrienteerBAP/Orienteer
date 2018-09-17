@@ -45,9 +45,17 @@ public class ModuleManager implements IModuleManager {
     @Override
     public void addArtifacts(Set<OArtifact> artifacts) {
         LOG.info("add artifacts: {}", artifacts);
-        OrienteerClassLoaderUtil.updateOArtifactsInMetadata(artifacts);
-        getHazelcast()
-                .ifPresent(hz -> distributedAddArtifacts(hz, artifacts));
+        Optional<HazelcastInstance> opt = getHazelcast();
+        if (opt.isPresent()) {
+            HazelcastInstance hz = opt.get();
+            IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
+            executeOnEveryMember(hz, member -> {
+                Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
+                executor.executeOnMember(new UpdateMetadataTask(copy), member);
+            });
+        } else {
+            new UpdateMetadataTask(artifacts).run();
+        }
     }
 
     @Override
@@ -58,34 +66,23 @@ public class ModuleManager implements IModuleManager {
     @Override
     public void deleteArtifacts(Set<OArtifact> artifacts) {
         LOG.info("delete artifacts: {}", artifacts);
-        OrienteerClassLoaderUtil.deleteOArtifactsFromMetadata(artifacts);
-        getHazelcast()
-                .ifPresent(hz -> distributedDeleteArtifacts(hz, artifacts));
+        Optional<HazelcastInstance> opt = getHazelcast();
+        if (opt.isPresent()) {
+            HazelcastInstance hz = opt.get();
+            IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
+            executeOnEveryMember(hz, member -> {
+                Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
+                executor.executeOnMember(new DeleteMetadataTask(copy), member);
+            });
+        } else {
+            new DeleteMetadataTask(artifacts).run();
+        }
     }
 
-    private void distributedAddArtifacts(HazelcastInstance hz, Set<OArtifact> artifacts) {
-        IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-        executeOnOtherMembers(hz, member -> {
-            Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
-            executor.executeOnMember(new UpdateMetadataTask(copy), member);
-        });
-    }
 
-    private void distributedDeleteArtifacts(HazelcastInstance hz, Set<OArtifact> artifacts) {
-        IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-        executeOnOtherMembers(hz, member -> {
-            Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
-            executor.executeOnMember(new DeleteMetadataTask(copy), member);
-        });
-    }
-
-    private void executeOnOtherMembers(HazelcastInstance hz, Consumer<Member> consumer) {
+    private void executeOnEveryMember(HazelcastInstance hz, Consumer<Member> consumer) {
         Cluster cluster = hz.getCluster();
-
-        cluster.getMembers()
-                .stream()
-                .filter(m -> !m.getUuid().equals(cluster.getLocalMember().getUuid()))
-                .forEach(consumer);
+        cluster.getMembers().forEach(consumer);
     }
 
     protected Optional<HazelcastInstance> getHazelcast() {

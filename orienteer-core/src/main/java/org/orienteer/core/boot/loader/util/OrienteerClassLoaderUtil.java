@@ -86,10 +86,26 @@ public final class OrienteerClassLoaderUtil {
         if (orienteerArtifacts.isEmpty()) {
             throw new IllegalStateException("Can't retrieve Orienteer artifacts from server.");
         }
-//        return artifacts.stream()
-//                .filter(orienteerArtifacts::contains)
-//                .collect(Collectors.toCollection(LinkedHashSet::new));
-        return Sets.intersection(artifacts, orienteerArtifacts);
+        return artifacts.stream()
+                .filter(artifact -> isOrienteerArtifact(orienteerArtifacts, artifact))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public static boolean isOrienteerArtifact(Set<OArtifact> orietneerArtifacts, OArtifact testedArtifact) {
+        OArtifactReference testedRef = testedArtifact.getArtifactReference();
+
+        for (OArtifact artifact : orietneerArtifacts) {
+            OArtifactReference orienteerRef = artifact.getArtifactReference();
+            boolean groupEq = orienteerRef.getGroupId().equals(testedRef.getGroupId());
+            boolean artifactEq = orienteerRef.getArtifactId().equals(testedRef.getArtifactId());
+            boolean isOrienteerVersion = orienteerRef.getAvailableVersions().contains(testedRef.getVersion());
+
+            if (groupEq && artifactEq && isOrienteerVersion) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
