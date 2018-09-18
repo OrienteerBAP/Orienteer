@@ -58,43 +58,15 @@ public class OrienteerInitModule extends ServletModule {
 	
 	@Override
 	protected void configureServlets() {
-		Map<String, String> params = new HashMap<String, String>();    
-        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");  
-        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
-        params.put("injectorContextAttribute", Injector.class.getName());
-        bind(WicketFilter.class).in(Singleton.class);
-        filter("/*").through(WicketFilter.class, params);  
-		
-		Names.bindProperties(binder(), properties);
-		bindOrientDbProperties(properties);
-		String applicationClass = properties.getProperty("orienteer.application");
-		Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
-		if (applicationClass != null) {
-			try {
-				Class<?> customAppClass = Class.forName(applicationClass);
+        bindProperties();
+        bindWicket();
+		installModules();
+	}
 
-				if (OrienteerWebApplication.class.isAssignableFrom(appClass)) {
-					appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
-				} else {
-					LOG.error("Orienteer application class '" + applicationClass + "' is not child class of '" + OrienteerWebApplication.class + "'. Using default.");
-				}
-			} catch (ClassNotFoundException e) {
-				LOG.error("Orienteer application class '" + applicationClass + "' was not found. Using default.");
-			}
-		}
-		bind(appClass).asEagerSingleton();
-		Provider<? extends OrienteerWebApplication> appProvider = binder().getProvider(appClass);
-		if (!OrienteerWebApplication.class.equals(appClass)) {
-			bind(OrienteerWebApplication.class).toProvider(appProvider);
-		}
-		bind(OrientDbWebApplication.class).toProvider(appProvider);
-		bind(WebApplication.class).toProvider(appProvider);
-
-		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
-
-		install(
-		        loadFromClasspath(new OrienteerModule())
-        );
+	protected void bindProperties() {
+        Names.bindProperties(binder(), properties);
+        bindOrientDbProperties(properties);
+        bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 	}
 
 	protected void bindOrientDbProperties(Properties properties) {
@@ -108,6 +80,52 @@ public class OrienteerInitModule extends ServletModule {
 		    System.setProperty("ORIENTDB_HOME", "runtime/");
         }
 	}
+
+	protected void bindWicket() {
+	    bindFilter();
+	    bindApplication();
+    }
+
+    protected void bindFilter() {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");
+        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
+        params.put("injectorContextAttribute", Injector.class.getName());
+        bind(WicketFilter.class).in(Singleton.class);
+        filter("/*").through(WicketFilter.class, params);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void bindApplication() {
+        String applicationClass = properties.getProperty("orienteer.application");
+        Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
+        if (applicationClass != null) {
+            try {
+                Class<?> customAppClass = Class.forName(applicationClass);
+
+                if (OrienteerWebApplication.class.isAssignableFrom(appClass)) {
+                    appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
+                } else {
+                    LOG.error("Orienteer application class '" + applicationClass + "' is not child class of '" + OrienteerWebApplication.class + "'. Using default.");
+                }
+            } catch (ClassNotFoundException e) {
+                LOG.error("Orienteer application class '" + applicationClass + "' was not found. Using default.");
+            }
+        }
+        bind(appClass).asEagerSingleton();
+        Provider<? extends OrienteerWebApplication> appProvider = binder().getProvider(appClass);
+        if (!OrienteerWebApplication.class.equals(appClass)) {
+            bind(OrienteerWebApplication.class).toProvider(appProvider);
+        }
+        bind(OrientDbWebApplication.class).toProvider(appProvider);
+        bind(WebApplication.class).toProvider(appProvider);
+    }
+
+	protected void installModules() {
+        install(
+                loadFromClasspath(new OrienteerModule(), new OrientDbConfigModule())
+        );
+    }
 
     /**
      * <p>

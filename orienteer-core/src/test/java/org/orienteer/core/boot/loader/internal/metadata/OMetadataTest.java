@@ -1,15 +1,18 @@
-package org.orienteer.core.boot.loader.util.metadata;
+package org.orienteer.core.boot.loader.internal.metadata;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import org.apache.http.util.Args;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.junit.runner.RunWith;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
+import org.orienteer.junit.OrienteerTestRunner;
 
 import java.io.File;
 import java.util.List;
@@ -20,26 +23,30 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test work with metadata.xml
  */
+@RunWith(OrienteerTestRunner.class)
 public class OMetadataTest {
-    private static OArtifact metadata;
+    private OArtifact metadata;
 
-    @BeforeClass
-    public static void init() {
-        OrienteerClassLoaderUtil.deleteMetadataFile();
+    @Inject
+    private InternalOModuleManager moduleManager;
+
+    @Before
+    public void init() {
+        moduleManager.deleteMetadataFile();
         Artifact artifact = new DefaultArtifact("org.company:artifact:1.0");
         artifact = artifact.setFile(new File("module.jar"));
         metadata = new OArtifact();
         metadata.setArtifactReference(OArtifactReference.valueOf(artifact));
         metadata.setLoad(true);
         metadata.setTrusted(true);
-        OrienteerClassLoaderUtil.createOArtifactsMetadata(Lists.newArrayList(metadata));
-        OArtifact oArtifact = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList().get(0);
+        moduleManager.createOArtifactsMetadata(Lists.newArrayList(metadata));
+        OArtifact oArtifact = moduleManager.getOArtifactsMetadataAsList().get(0);
         testArtifact(metadata, oArtifact);
     }
 
     @Test
     public void readMetadata() {
-        List<OArtifact> list = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
+        List<OArtifact> list = moduleManager.getOArtifactsMetadataAsList();
         assertTrue("list.size > 0", list.size() > 0);
     }
 
@@ -47,8 +54,8 @@ public class OMetadataTest {
     public void update() throws Exception {
         metadata.setLoad(false);
         metadata.setTrusted(true);
-        OrienteerClassLoaderUtil.updateOArtifactInMetadata(metadata);
-        OArtifact oArtifact = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList().get(0);
+        moduleManager.updateOArtifactInMetadata(metadata);
+        OArtifact oArtifact = moduleManager.getOArtifactsMetadataAsList().get(0);
         testArtifact(metadata, oArtifact);
     }
 
@@ -68,23 +75,23 @@ public class OMetadataTest {
         oArtifact2.setLoad(true);
         oArtifact2.setTrusted(true);
         List<OArtifact> list = Lists.newArrayList(metadata, oArtifact1, oArtifact2);
-        OrienteerClassLoaderUtil.updateOArtifactsJarsInMetadata(list);
-        List<OArtifact> result = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
+        moduleManager.updateOArtifactsJarsInMetadata(list);
+        List<OArtifact> result = moduleManager.getOArtifactsMetadataAsList();
 
         testArtifact(metadata, result.get(0));
         testArtifact(oArtifact1, result.get(1));
         testArtifact(oArtifact2, result.get(2));
 
-        OrienteerClassLoaderUtil.deleteOArtifactsFromMetadata(Lists.newArrayList(oArtifact1, oArtifact2));
-        List<OArtifact> metadataAsList = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
+        moduleManager.deleteOArtifactsFromMetadata(Lists.newArrayList(oArtifact1, oArtifact2));
+        List<OArtifact> metadataAsList = moduleManager.getOArtifactsMetadataAsList();
 
         assertTrue("metadata size must be 1", metadataAsList.size() == 1);
     }
 
-    @AfterClass
-    public static void delete() throws Exception {
-        OrienteerClassLoaderUtil.deleteOArtifactFromMetadata(metadata);
-        List<OArtifact> list = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
+    @After
+    public void delete() throws Exception {
+        moduleManager.deleteOArtifactFromMetadata(metadata);
+        List<OArtifact> list = moduleManager.getOArtifactsMetadataAsList();
         assertTrue("metadata must be empty", list.size() == 0);
     }
 

@@ -1,8 +1,8 @@
 package org.orienteer.core.boot.loader.distributed;
 
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -23,12 +23,13 @@ public class UpdateModulesInMetadata implements Runnable, Serializable {
 
     @Override
     public void run() {
-        updateInfoAboutFiles();
-        modulesForUpdate.forEach(OrienteerClassLoaderUtil::updateOArtifactInMetadata);
+        InternalOModuleManager manager = InternalOModuleManager.get();
+        updateInfoAboutFiles(manager);
+        modulesForUpdate.forEach(manager::updateOArtifactInMetadata);
     }
 
-    private void updateInfoAboutFiles() {
-        List<OArtifact> metadataArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
+    private void updateInfoAboutFiles(InternalOModuleManager manager) {
+        List<OArtifact> metadataArtifacts = manager.getOArtifactsMetadataAsList();
         Set<OArtifact> previousArtifacts = modulesForUpdate.keySet();
 
         for (OArtifact prev : previousArtifacts) {

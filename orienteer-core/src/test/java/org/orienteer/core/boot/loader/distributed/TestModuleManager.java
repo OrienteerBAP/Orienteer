@@ -6,8 +6,8 @@ import com.google.inject.name.Named;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.boot.loader.service.IModuleManager;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.junit.OrienteerTestRunner;
 
 import java.util.Set;
@@ -30,11 +30,14 @@ public class TestModuleManager extends AbstractModulesTest {
     @Named("user.artifacts.test")
     private Set<OArtifact> userArtifacts;
 
+    @Inject
+    private InternalOModuleManager moduleManager;
+
     @Test
     public void testAddArtifact() {
         OArtifact artifact = artifacts.iterator().next();
         manager.addArtifact(artifact);
-        Set<OArtifact> artifactsInMetadata = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        Set<OArtifact> artifactsInMetadata = moduleManager.getOArtifactsMetadataAsSet();
         assertEquals(1, artifactsInMetadata.size());
         assertEquals(artifact, artifactsInMetadata.iterator().next());
     }
@@ -42,7 +45,7 @@ public class TestModuleManager extends AbstractModulesTest {
     @Test
     public void testAddArtifacts() {
         manager.addArtifacts(artifacts);
-        Set<OArtifact> artifactsInMetadata = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        Set<OArtifact> artifactsInMetadata = moduleManager.getOArtifactsMetadataAsSet();
         assertFalse(artifactsInMetadata.isEmpty());
         assertEquals(artifacts, artifactsInMetadata);
     }
@@ -51,12 +54,12 @@ public class TestModuleManager extends AbstractModulesTest {
     public void testDeleteArtifact() {
         manager.addArtifacts(artifacts);
 
-        Set<OArtifact> metadata = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        Set<OArtifact> metadata = moduleManager.getOArtifactsMetadataAsSet();
         assertEquals(artifacts, metadata);
 
         manager.deleteArtifact(userArtifacts.iterator().next());
 
-        metadata = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        metadata = moduleManager.getOArtifactsMetadataAsSet();
         assertTrue(metadata.size() < artifacts.size());
 
         Set<OArtifact> diff = Sets.difference(artifacts, metadata);
@@ -68,12 +71,12 @@ public class TestModuleManager extends AbstractModulesTest {
     public void testDeleteArtifacts() {
         manager.addArtifacts(artifacts);
 
-        Set<OArtifact> metadata = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        Set<OArtifact> metadata = moduleManager.getOArtifactsMetadataAsSet();
         assertEquals(artifacts, metadata);
 
         manager.deleteArtifacts(userArtifacts);
 
-        metadata = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        metadata = moduleManager.getOArtifactsMetadataAsSet();
         assertTrue(metadata.size() < artifacts.size());
         assertEquals(userArtifacts, Sets.difference(artifacts, metadata));
     }

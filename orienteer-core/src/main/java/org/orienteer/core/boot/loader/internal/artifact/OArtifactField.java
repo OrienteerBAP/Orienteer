@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util.artifact;
+package org.orienteer.core.boot.loader.internal.artifact;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;

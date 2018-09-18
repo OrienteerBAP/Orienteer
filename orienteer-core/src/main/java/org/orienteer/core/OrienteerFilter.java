@@ -1,12 +1,14 @@
 package org.orienteer.core;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceFilter;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.OModulesMicroFrameworkConfig;
+import org.orienteer.core.boot.loader.internal.service.OModulesInitModule;
+import org.orienteer.core.boot.loader.internal.service.OModulesStaticInjector;
 import org.orienteer.core.component.OModulesLoadFailedPanel;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
@@ -48,11 +50,15 @@ public final class OrienteerFilter implements Filter {
     	instance = this;
     	this.filterConfig = filterConfig;
     	Properties properties = StartupPropertiesLoader.retrieveProperties();
-    	classLoader = initClassLoader(properties);
+    	Injector injector = OModulesStaticInjector.init(new OModulesInitModule(properties));
+    	classLoader = initClassLoader(injector.getInstance(InternalOModuleManager.class), properties);
+
     	Thread.currentThread().setContextClassLoader(classLoader);
+
         LOG.info("Start initialization: " + this.getClass().getName());
+
         ServletContext context = filterConfig.getServletContext();
-        Injector injector = Guice.createInjector(new OrienteerInitModule(properties));
+        injector = injector.createChildInjector(new OrienteerInitModule(properties));
         context.setAttribute(Injector.class.getName(), injector);
         initFilter(filterConfig);
     }
@@ -82,9 +88,9 @@ public final class OrienteerFilter implements Filter {
         }
     }
     
-    private ClassLoader initClassLoader(Properties properties) {
-        OrienteerClassLoaderUtil.reindex(properties);
-        OrienteerClassLoader.initOrienteerClassLoaders(OrienteerFilter.class.getClassLoader());
+    private ClassLoader initClassLoader(InternalOModuleManager manager, Properties properties) {
+        manager.reindex(new OModulesMicroFrameworkConfig(properties));
+        OrienteerClassLoader.initOrienteerClassLoaders(manager, OrienteerFilter.class.getClassLoader());
         OrienteerClassLoader.enable();
     	return OrienteerClassLoader.getClassLoader();
     }
@@ -130,6 +136,7 @@ public final class OrienteerFilter implements Filter {
 			} catch (InterruptedException e) {
 				/*NOP*/
 			}
+            OModulesStaticInjector.destroy();
 	        init(filterConfig);
 	        WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
 	        reloading = false;

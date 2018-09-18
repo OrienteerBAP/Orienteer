@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util.artifact;
+package org.orienteer.core.boot.loader.internal.artifact;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util.artifact;
+package org.orienteer.core.boot.loader.internal.artifact;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

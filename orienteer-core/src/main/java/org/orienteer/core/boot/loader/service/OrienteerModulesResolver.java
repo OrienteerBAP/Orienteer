@@ -3,9 +3,9 @@ package org.orienteer.core.boot.loader.service;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.commons.io.IOUtils;
-import org.orienteer.core.boot.loader.util.OrienteerArtifactsReader;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.OrienteerArtifactsReader;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,7 +44,7 @@ public class OrienteerModulesResolver implements IOrienteerModulesResolver {
         artifacts.stream()
                 .map(OArtifact::getArtifactReference)
                 .forEach(ref -> {
-                    List<String> versions = OrienteerClassLoaderUtil.requestArtifactVersions(ref.getGroupId(), ref.getArtifactId());
+                    List<String> versions = InternalOModuleManager.get().requestArtifactVersions(ref.getGroupId(), ref.getArtifactId());
                     ref.addAvailableVersions(versions);
                 });
     }

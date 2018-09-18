@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util;
+package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.collect.Lists;
 import org.apache.wicket.util.string.Strings;
@@ -18,27 +18,27 @@ import java.util.Properties;
  * Utility class for initialization resources for load outside Orienteer modules.
  * Contains all information for starting Orienteer loader micro-framework.
  */
-class InitUtils {
-    private final static Logger LOG = LoggerFactory.getLogger(InitUtils.class);
+public class OModulesMicroFrameworkConfig {
+    private final static Logger LOG = LoggerFactory.getLogger(OModulesMicroFrameworkConfig.class);
 
-    private static final String MAVEN_REMOTE_REPOSITORY      = "orienteer.loader.repository.remote.";
-    private static final String MAVEN_REMOTE_REPOSITORY_ID   = "orienteer.loader.repository.remote.%d.id";
-    private static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
-    private static final String DEFAULT                      = "default";
-    private static final String LIBS_FOLDER 	             = "orienteer.loader.libs.folder";
-    private static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
-    private static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
-    private static final String ORIENTEER_GROUP_ID           = "orienteer.groupId";
-    private static final String ORIENTEER_ARTIFACT_ID        = "orienteer.artifactId";
-    private static final String ORIENTEER_VERSION            = "orienteer.version";
-    private static final String METADATA_FILE                = "metadata.xml";
+    protected static final String MAVEN_REMOTE_REPOSITORY      = "orienteer.loader.repository.remote.";
+    protected static final String MAVEN_REMOTE_REPOSITORY_ID   = "orienteer.loader.repository.remote.%d.id";
+    protected static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
+    protected static final String DEFAULT                      = "default";
+    protected static final String LIBS_FOLDER 	             = "orienteer.loader.libs.folder";
+    protected static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
+    protected static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
+    protected static final String ORIENTEER_GROUP_ID           = "orienteer.groupId";
+    protected static final String ORIENTEER_ARTIFACT_ID        = "orienteer.artifactId";
+    protected static final String ORIENTEER_VERSION            = "orienteer.version";
+    protected static final String METADATA_FILE                = "metadata.xml";
 
-    private static final String DEFAULT_LIBS_FOLDER          = "libs/";
-    private static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_LIBS_FOLDER + "deps/";
+    protected static final String DEFAULT_LIBS_FOLDER          = "libs/";
+    protected static final String DEFAULT_MAVEN_LOCAL_REPOSITORY = DEFAULT_LIBS_FOLDER + "deps/";
 
-    private final Properties properties;
+    protected final Properties properties;
 
-    InitUtils(Properties properties) {
+    public OModulesMicroFrameworkConfig(Properties properties) {
         this.properties = properties;
     }
 
@@ -53,7 +53,7 @@ class InitUtils {
     /**
      * @return recursively resolving dependencies property
      */
-    public boolean resolvingDependenciesRecursively() {
+    public boolean isResolvingDependenciesRecursively() {
         if (properties == null)
             return Boolean.FALSE;
         return Boolean.valueOf(properties.getProperty(RECURSIVELY_RESOLVING_DEPS));
@@ -86,7 +86,7 @@ class InitUtils {
         return pathToDir;
     }
 
-    private Path resolvePathToModulesFolder() {
+    protected Path resolvePathToModulesFolder() {
         if (properties == null)
             return Paths.get(DEFAULT_LIBS_FOLDER);
         String folder = properties.getProperty(LIBS_FOLDER);

@@ -1,7 +1,7 @@
 package org.orienteer.core.boot.loader.distributed;
 
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 
 import java.io.Serializable;
 import java.util.LinkedHashSet;
@@ -21,11 +21,12 @@ public class DeleteMetadataTask implements Runnable, Serializable {
 
     @Override
     public void run() {
-        Set<OArtifact> metadataArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        InternalOModuleManager manager = InternalOModuleManager.get();
+        Set<OArtifact> metadataArtifacts = manager.getOArtifactsMetadataAsSet();
         Set<OArtifact> artifactsForDelete = metadataArtifacts.stream()
                 .filter(artifacts::contains)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        OrienteerClassLoaderUtil.deleteOArtifactsFromMetadata(artifactsForDelete);
+        manager.deleteOArtifactsFromMetadata(artifactsForDelete);
     }
 }

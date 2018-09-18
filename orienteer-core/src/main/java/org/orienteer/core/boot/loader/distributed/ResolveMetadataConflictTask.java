@@ -5,8 +5,8 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class ResolveMetadataConflictTask implements Runnable, Serializable, Haze
 
     @Override
     public void run() {
-        Set<OArtifact> localArtifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        Set<OArtifact> localArtifacts = InternalOModuleManager.get().getOArtifactsMetadataAsSet();
         Set<OArtifact> remoteDifference = Sets.difference(remoteArtifacts, localArtifacts);
         Set<OArtifact> localDifference = Sets.difference(localArtifacts, remoteDifference);
 

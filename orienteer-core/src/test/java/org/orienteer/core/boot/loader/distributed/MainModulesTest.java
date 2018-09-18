@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.junit.OrienteerTestRunner;
 
 import java.util.Optional;
@@ -30,10 +30,13 @@ public class MainModulesTest {
     @Named("user.artifacts.test")
     private Set<OArtifact> userArtifacts;
 
+    @Inject
+    private InternalOModuleManager moduleManager;
+
 
     @Test
     public void testGetOrienteerArtifacts() {
-        Set<OArtifact> difference = OrienteerClassLoaderUtil.getOrienteerArtifacts(artifacts);
+        Set<OArtifact> difference = moduleManager.getOrienteerArtifacts(artifacts);
         assertFalse(difference.isEmpty());
         assertFalse(difference.containsAll(userArtifacts));
         assertTrue(difference.containsAll(orienteerArtifacts));
@@ -50,21 +53,21 @@ public class MainModulesTest {
     @Test
     public void testReadOrienteerArtifacts() {
         OArtifact devutils = orienteerArtifacts.iterator().next();
-        Set<OArtifact> artifacts = OrienteerClassLoaderUtil.getOrienteerModulesAsSet();
+        Set<OArtifact> artifacts = moduleManager.getOrienteerModulesAsSet();
         assertTrue(artifacts.contains(devutils));
     }
 
     @Test
     public void testGetOrienteerModules() {
-        assertTrue(OrienteerClassLoaderUtil.getOrienteerModulesAsSet().size() > 0);
-        assertTrue(OrienteerClassLoaderUtil.getOrienteerModules().size() > 0);
+        assertTrue(moduleManager.getOrienteerModulesAsSet().size() > 0);
+        assertTrue(moduleManager.getOrienteerModules().size() > 0);
     }
 
     @Test
     public void testHashArtifactCode() {
         OArtifact devutils = orienteerArtifacts.iterator().next();
 
-        Optional<OArtifact> orienteerDevutilsOpt = OrienteerClassLoaderUtil.getOrienteerModulesAsSet()
+        Optional<OArtifact> orienteerDevutilsOpt = moduleManager.getOrienteerModulesAsSet()
                 .stream()
                 .filter(artifact -> artifact.getArtifactReference().getArtifactId().equals("orienteer-devutils"))
                 .findFirst();

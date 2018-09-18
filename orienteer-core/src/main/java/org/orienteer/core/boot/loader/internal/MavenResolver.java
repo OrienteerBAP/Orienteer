@@ -1,54 +1,44 @@
-package org.orienteer.core.boot.loader.util;
+package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.resolution.ArtifactDescriptorException;
-import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResolutionException;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
-import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.resolvingDependenciesRecursively;
-
 /**
  * Utility class for download maven dependencies.
  */
-public class MavenResolver {
+public class MavenResolver implements IReindexSupport {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MavenResolver.class);
 
-    private static MavenResolver resolver;
-    private final boolean resolvingRecursively;
+    private boolean resolvingRecursively;
 
     private static final String UNKNOWN_GROUP_ID    = "UNKNOWN_GROUP_ID_";
     private static final String UNKNOWN_ARTIFACT_ID = "UNKNOWN_ARTIFACT_ID_";
     private static final String UNKNOWN_VERSION     = "UNKNOWN_VERSION_";
 
-    private MavenResolver(boolean resolvingRecursively) {
+
+
+    MavenResolver(boolean resolvingRecursively) {
         this.resolvingRecursively = resolvingRecursively;
     }
 
-    /**
-     * Getter for MavenResolver class. Singleton.
-     * @return new instance of MavenResolver
-     */
-    public static MavenResolver get() {
-        if (resolver == null) {
-            resolver = new MavenResolver(resolvingDependenciesRecursively());
-        }
-        return resolver;
+    @Override
+    public void reindex(OModulesMicroFrameworkConfig config) {
+        resolvingRecursively = config.isResolvingDependenciesRecursively();
     }
 
     /**
@@ -59,7 +49,7 @@ public class MavenResolver {
     public List<OArtifact> setDependencies(List<OArtifact> oArtifacts) {
         for (OArtifact artifact : oArtifacts) {
             OArtifactReference artifactReference = artifact.getArtifactReference();
-            List<Artifact> dependencies = OrienteerClassLoaderUtil.resolveAndGetArtifactDependencies(artifactReference.toAetherArtifact());
+            List<Artifact> dependencies = InternalOModuleManager.get().resolveAndGetArtifactDependencies(artifactReference.toAetherArtifact());
             if (dependencies.size() != 0) {
                 artifact.setDependencies(toOArtifactDependencies(dependencies));
             } else resolveDependenciesFromPomXml(getPomXml(artifactReference.getFile().toPath()));
@@ -91,7 +81,7 @@ public class MavenResolver {
         Path pomXml = getPomXml(file);
         if (pomXml == null) return getNoNameOArtifact(file);
 
-        Artifact dependency = OrienteerClassLoaderUtil.readGroupArtifactVersionInPomXml(pomXml);
+        Artifact dependency = InternalOModuleManager.get().readGroupArtifactVersionInPomXml(pomXml);
         if (dependency == null) return getNoNameOArtifact(file);
 
         return getOArtifact(
@@ -140,7 +130,7 @@ public class MavenResolver {
     }
 
     private List<Artifact> resolveDependenciesFromPomXml(Path pomXml) {
-        Set<Artifact> dependencies = OrienteerClassLoaderUtil.readDependencies(pomXml);
+        Set<Artifact> dependencies = InternalOModuleManager.get().readDependencies(pomXml);
         return resolveDependencies(dependencies);
     }
 
@@ -149,21 +139,21 @@ public class MavenResolver {
         if (Strings.isNullOrEmpty(groupArtifactVersion)) return Lists.newArrayList();
 
         Artifact artifact = new DefaultArtifact(groupArtifactVersion);
-        return OrienteerClassLoaderUtil.resolveAndGetArtifactDependencies(artifact);
+        return InternalOModuleManager.get().resolveAndGetArtifactDependencies(artifact);
     }
 
     private List<Artifact> resolveDependencies(Set<Artifact> dependencies) {
         if (dependencies == null) return Lists.newArrayList();
         List<Artifact> results = Lists.newArrayList();
-        results.addAll(OrienteerClassLoaderUtil.downloadArtifacts(dependencies));
+        results.addAll(InternalOModuleManager.get().downloadArtifacts(dependencies));
         if (resolvingRecursively)
-            results.addAll(OrienteerClassLoaderUtil.resolveArtifacts(results));
+            results.addAll(InternalOModuleManager.get().resolveArtifacts(results));
         return results;
     }
 
     private OArtifactReference resolveAndGetArtifactReference(String groupArtifactVersion) {
         Artifact artifact = new DefaultArtifact(groupArtifactVersion);
-        Artifact downloadedArtifact = OrienteerClassLoaderUtil.downloadArtifact(artifact);
+        Artifact downloadedArtifact = InternalOModuleManager.get().downloadArtifact(artifact);
         return downloadedArtifact!=null ? OArtifactReference.valueOf(downloadedArtifact) : null;
     }
 
@@ -172,7 +162,7 @@ public class MavenResolver {
         if (file.toString().endsWith(".xml")) {
             pomXml = file;
         } else if (file.toString().endsWith(".jar")) {
-            pomXml = OrienteerClassLoaderUtil.getPomFromJar(file);
+            pomXml = InternalOModuleManager.get().getPomFromJar(file);
         }
         return pomXml;
     }

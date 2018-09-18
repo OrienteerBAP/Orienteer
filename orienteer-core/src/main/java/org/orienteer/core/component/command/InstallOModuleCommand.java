@@ -7,9 +7,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
 import org.orienteer.core.boot.loader.service.IModuleManager;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -55,8 +55,9 @@ public class InstallOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtif
         Set<OArtifact> preparedArtifacts = new LinkedHashSet<>();
 
         for (OArtifact availableArtifact : availableArtifacts) {
-            Artifact artifact = OrienteerClassLoaderUtil.downloadArtifact(
-                    availableArtifact.getArtifactReference().toAetherArtifact());
+            Artifact artifact = InternalOModuleManager.get().downloadArtifact(
+                    availableArtifact.getArtifactReference().toAetherArtifact()
+            );
             if (artifact!=null) {
                 availableArtifact.setDownloaded(true);
                 OArtifact preparedArtifact = prepareOArtifact(artifact, availableArtifact.getArtifactReference());

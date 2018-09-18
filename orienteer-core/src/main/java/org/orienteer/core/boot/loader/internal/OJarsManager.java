@@ -1,7 +1,9 @@
-package org.orienteer.core.boot.loader.util;
+package org.orienteer.core.boot.loader.internal;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.http.util.Args;
+import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +20,73 @@ import java.util.jar.JarFile;
  * Utility class for work with jar contents.
  * Reads from jar file, search jars in folder
  */
-class JarUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(JarUtils.class);
-    private final Path modulesFolder;
+public class OJarsManager implements IReindexSupport {
+    private static final Logger LOG = LoggerFactory.getLogger(OJarsManager.class);
+    private Path modulesFolder;
 
-    JarUtils(InitUtils initUtils) {
-        this.modulesFolder = initUtils.getOrCreateModulesFolder();
+    public OJarsManager(Path modulesFolder) {
+        this.modulesFolder = modulesFolder;
+    }
+
+    @Override
+    public void reindex(OModulesMicroFrameworkConfig config) {
+        modulesFolder = config.getOrCreateModulesFolder();
+    }
+
+    /**
+     * Add artifact jar file to temp folder
+     * @param artifactName artifact name
+     * @param fileUpload {@link FileUpload} of artifact's jar
+     * @return {@link File} of artifact's jar file or Optional.absent() if can't add artifact's jar file to folder
+     * @throws IllegalArgumentException if artifactName is null or empty. Or when fileUpload is null.
+     */
+    public File createJarTempFile(String artifactName, FileUpload fileUpload) {
+        Args.notEmpty(artifactName, "artifactName");
+        Args.notNull(fileUpload, "fileUpload");
+        String fileName = fileUpload.getClientFileName();
+        try {
+            File file = File.createTempFile(fileName.replaceAll("\\.jar", ""), ".jar");
+            fileUpload.writeTo(file);
+            return file;
+        } catch (Exception e) {
+            LOG.error("Cannot upload file: {}", fileName, e);
+        }
+        return null;
+    }
+
+    /**
+     * Move file to artifact's folder
+     * @param path - {@link Path} of file to move
+     * @param newFileName - new name of file. If newFileName is null or empty uses {@link Path} file name.
+     * @throws IllegalArgumentException if file is null
+     */
+    public Path moveJarFileToArtifactsFolder(Path path, String newFileName) {
+        Args.notNull(path, "file");
+        Path newFilePath = Strings.isNullOrEmpty(newFileName) ? modulesFolder.resolve(path.getFileName())
+                : modulesFolder.resolve(newFileName);
+        try {
+            return Files.move(path, newFilePath);
+        } catch (IOException e) {
+            LOG.error("Can't move file! Old path: {} \n new path: {}",
+                    path.toAbsolutePath(), newFilePath.toAbsolutePath(), e);
+        }
+        return null;
+    }
+
+    public File createJarFile(byte[] jarBytes, String fileName) {
+        Args.notNull(jarBytes, "jarBytes");
+        Args.notNull(fileName, "fileName");
+
+        if (!fileName.endsWith(".jar")) {
+            fileName += ".jar";
+        }
+
+        Path path = modulesFolder.resolve(fileName);
+        try {
+            return Files.write(path, jarBytes).toFile();
+        } catch (IOException ex) {
+            throw new IllegalStateException("Can't write jar bytes to file: " + fileName, ex);
+        }
     }
 
     /**
@@ -218,5 +281,4 @@ class JarUtils {
         }
         return ret;
     }
-
 }

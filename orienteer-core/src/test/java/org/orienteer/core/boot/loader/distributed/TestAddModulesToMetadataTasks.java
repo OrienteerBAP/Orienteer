@@ -6,9 +6,9 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.junit.OrienteerTestRunner;
 
 import java.io.IOException;
@@ -32,6 +32,9 @@ public class TestAddModulesToMetadataTasks extends AbstractModulesTest {
     @Inject
     @Named("orienteer.artifacts.test")
     private Set<OArtifact> orienteerArtifacts;
+
+    @Inject
+    private InternalOModuleManager moduleManager;
 
     @Test
     public void testUpdateTask() throws IOException {
@@ -78,7 +81,7 @@ public class TestAddModulesToMetadataTasks extends AbstractModulesTest {
     }
 
     private void assertMetadataUpdated() {
-        Set<OArtifact> artifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        Set<OArtifact> artifacts = moduleManager.getOArtifactsMetadataAsSet();
         assertFalse(artifacts.isEmpty());
         assertEquals(this.artifacts, artifacts);
 

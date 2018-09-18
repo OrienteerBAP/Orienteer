@@ -1,9 +1,9 @@
 package org.orienteer.core.boot.loader.distributed;
 
 import org.apache.wicket.util.file.Files;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,7 +34,8 @@ public class DownloadArtifactsTask implements Callable<Set<OArtifact>>, Serializ
     }
 
     private Stream<OArtifact> getLocalArtifactsStream() {
-        return OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet()
+        return InternalOModuleManager.get()
+                .getOArtifactsMetadataAsSet()
                 .stream();
     }
 

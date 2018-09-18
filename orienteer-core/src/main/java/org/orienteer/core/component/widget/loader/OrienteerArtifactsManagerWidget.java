@@ -8,9 +8,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactField;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.*;
@@ -39,6 +39,7 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
 
     private static final String RELOAD_ORIENTEER = "reload.title";
 
+
     public OrienteerArtifactsManagerWidget(String id, IModel<OArtifact> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
         Form form = new Form("form");
@@ -51,7 +52,7 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
 
 			@Override
 			protected Collection<OArtifact> getData() {
-				return OrienteerClassLoaderUtil.getOArtifactsMetadataAsList();
+				return InternalOModuleManager.get().getOArtifactsMetadataAsList();
 			}
 		};
 		
@@ -64,7 +65,7 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
 			protected Collection<OArtifact> getData() {
 				if(downloadedModules==null || downloadedModules.isEmpty()) {
 					try {
-						downloadedModules = OrienteerClassLoaderUtil.getOrienteerModules();
+						downloadedModules = InternalOModuleManager.get().getOrienteerModules();
 					} catch (Exception e) {
 						LOG.error("It's not possible to download modules file from the internet", e);
 						error(e.getMessage());
@@ -88,7 +89,7 @@ public class OrienteerArtifactsManagerWidget extends AbstractWidget<OArtifact> {
 
     private List<IColumn<OArtifact, String>> getColumns(IModel<DisplayMode> modeModel) {
         List<IColumn<OArtifact, String>> columns = Lists.newArrayList();
-        columns.add(new CheckBoxColumn<OArtifact, OArtifact, String>(new IdentityConverter<OArtifact>()));
+        columns.add(new CheckBoxColumn<>(new IdentityConverter<>()));
         columns.add(new OArtifactColumn(OArtifactField.GROUP.asModel(), modeModel));
         columns.add(new OArtifactColumn(OArtifactField.ARTIFACT.asModel(), modeModel));
         columns.add(new OArtifactColumn(OArtifactField.VERSION.asModel(), modeModel));

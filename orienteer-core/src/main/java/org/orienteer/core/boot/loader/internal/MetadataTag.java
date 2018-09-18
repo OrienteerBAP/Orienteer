@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util;
+package org.orienteer.core.boot.loader.internal;
 
 import org.apache.http.util.Args;
 

@@ -1,15 +1,14 @@
 package org.orienteer.junit;
 
+import com.google.inject.Injector;
+import com.google.inject.Provider;
 import org.apache.wicket.util.tester.WicketTester;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
+import org.orienteer.core.boot.loader.internal.service.OModulesInitModule;
+import org.orienteer.core.boot.loader.internal.service.OModulesStaticInjector;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
 
 import java.util.Properties;
 
@@ -27,8 +26,9 @@ public class StaticInjectorProvider implements Provider<Injector>
 	{
 		LOG.info("Using embedded mode");
 		Properties properties = StartupPropertiesLoader.retrieveProperties();
-		OrienteerClassLoaderUtil.reindex(properties);
-		STATIC_INJECTOR = Guice.createInjector(new OrienteerInitModule(properties));
+        Injector injector = OModulesStaticInjector.init(new OModulesInitModule(properties));
+        STATIC_INJECTOR = injector.createChildInjector(new OrienteerInitModule(properties));
+
 		Runtime.getRuntime().addShutdownHook(new Thread()
 		{
 			@Override

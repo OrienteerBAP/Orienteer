@@ -2,8 +2,8 @@ package org.orienteer.core.service.listener;
 
 import com.hazelcast.core.*;
 import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class OrienteerClusterListener implements MembershipListener {
 
     private void executeResolvingMetadataConflict(Member member) {
         IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-        Set<OArtifact> artifacts = OrienteerClassLoaderUtil.getOArtifactsMetadataAsSet();
+        Set<OArtifact> artifacts = InternalOModuleManager.get().getOArtifactsMetadataAsSet();
         Member localMember = hz.getCluster().getLocalMember();
         executor.executeOnMember(new ResolveMetadataConflictTask(artifacts, localMember.getUuid(), true), member);
     }

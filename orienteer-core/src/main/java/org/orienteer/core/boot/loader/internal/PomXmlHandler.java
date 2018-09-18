@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util;
+package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Class for work with pom.xml which is located in artifact jar file.
  */
-class PomXmlUtils extends AbstractXmlHandler {
+class PomXmlHandler extends AbstractXmlHandler {
 
     private static final String PROJECT                     = "project";
     private static final String PARENT                      = "parent";

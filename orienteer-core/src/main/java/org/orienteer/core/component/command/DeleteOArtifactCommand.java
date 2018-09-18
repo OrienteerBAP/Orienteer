@@ -3,7 +3,7 @@ package org.orienteer.core.component.command;
 import com.google.inject.Inject;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.boot.loader.service.IModuleManager;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;

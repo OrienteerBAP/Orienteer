@@ -1,9 +1,9 @@
-package org.orienteer.core.boot.loader.util;
+package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.http.util.Args;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +17,10 @@ import java.util.*;
  * Utility class for work with contents in metadata.xml
  * Read, write, update metadata.xml
  */
-class MetadataUtil {
+class MetadataUtil implements IReindexSupport {
     private static final Logger LOG = LoggerFactory.getLogger(MetadataUtil.class);
 
-    private final Path metadataPath;
+    private Path metadataPath;
 
     /**
      * Constructor
@@ -32,6 +32,11 @@ class MetadataUtil {
         this.metadataPath = metadataPath;
     }
 
+    @Override
+    public void reindex(OModulesMicroFrameworkConfig config) {
+        metadataPath = config.getMetadataPath();
+    }
+
     /**
      * Create metadata.xml with artifacts
      * @param artifacts artifact for write in metadata.xml
@@ -39,11 +44,22 @@ class MetadataUtil {
      */
     public void createOArtifactsMetadata(List<OArtifact> artifacts) {
         Args.notNull(artifacts, "artifacts");
-        OrienteerClassLoaderUtil.createArtifactsFolderIfNotExists();
+        createIfNotExistsDirectory(metadataPath.getParent());
         OMetadataUpdater updater = new OMetadataUpdater(metadataPath);
         updater.create(artifacts);
     }
-    
+
+    private Path createIfNotExistsDirectory(Path pathToDir) {
+        try {
+            if (!Files.exists(pathToDir))
+                Files.createDirectory(pathToDir);
+        } catch (IOException e) {
+            LOG.error("Cannot create folder: " + pathToDir.toAbsolutePath(), e);
+        }
+        return pathToDir;
+    }
+
+
     /**
      * Read artifacts from metadata.xml
      * @return list with {@link OArtifact} which are in metadata.xml or empty list when metadata.xml is empty or don't exists
@@ -112,7 +128,7 @@ class MetadataUtil {
         int id = 0;
         for (OArtifact module : modules) {
             if (module.getArtifactReference().getFile() == null) {
-                result.put(Paths.get(OrienteerClassLoaderUtil.WITHOUT_JAR + id), module);
+                result.put(Paths.get(InternalOModuleManager.WITHOUT_JAR + id), module);
                 id++;
             } else result.put(module.getArtifactReference().getFile().toPath(), module);
         }

@@ -11,8 +11,8 @@ import com.hazelcast.core.Member;
 import org.mockito.internal.util.collections.Sets;
 import org.orienteer.core.boot.loader.service.IModuleManager;
 import org.orienteer.core.boot.loader.service.IOrienteerModulesResolver;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.distributed.TestAddModulesToMetadataTasks;
 import org.orienteer.core.service.OverrideModule;
 
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @OverrideModule
-public class DistributedTestInitModule extends AbstractModule {
+public class DistributedModulesInitModule extends AbstractModule {
 
     @Override
     protected void configure() {

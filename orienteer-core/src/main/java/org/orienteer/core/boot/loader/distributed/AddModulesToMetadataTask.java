@@ -2,9 +2,9 @@ package org.orienteer.core.boot.loader.distributed;
 
 import com.google.common.collect.Sets;
 import org.eclipse.aether.artifact.Artifact;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,43 +33,44 @@ public class AddModulesToMetadataTask implements Runnable, Serializable {
     @Override
     public void run() {
         LOG.info("Update metadata.xml with new artifacts: {}", artifacts.size());
-        Set<OArtifact> orienteerArtifacts = OrienteerClassLoaderUtil.getOrienteerArtifacts(artifacts);
+        InternalOModuleManager manager = InternalOModuleManager.get();
+        Set<OArtifact> orienteerArtifacts = manager.getOrienteerArtifacts(artifacts);
         Set<OArtifact> userArtifacts = Sets.difference(artifacts, orienteerArtifacts);
 
-        updateOrienteerArtifacts(orienteerArtifacts);
-        updateUserArtifacts(userArtifacts);
+        updateOrienteerArtifacts(manager, orienteerArtifacts);
+        updateUserArtifacts(manager, userArtifacts);
 
     }
 
-    private void updateOrienteerArtifacts(Set<OArtifact> artifacts) {
+    private void updateOrienteerArtifacts(InternalOModuleManager manager, Set<OArtifact> artifacts) {
         Set<OArtifact> preparedArtifacts = artifacts.stream()
-                .peek(this::downloadArtifact)
+                .peek(a -> downloadArtifact(manager, a))
                 .filter(artifact -> artifact.getArtifactReference().getFile() != null)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        OrienteerClassLoaderUtil.updateOArtifactsInMetadata(preparedArtifacts);
+        manager.updateOArtifactsInMetadata(preparedArtifacts);
     }
 
 
-    private void updateUserArtifacts(Set<OArtifact> artifacts) {
+    private void updateUserArtifacts(InternalOModuleManager manager, Set<OArtifact> artifacts) {
         artifacts.stream()
                 .map(OArtifact::getArtifactReference)
                 .filter(a -> a.getJarBytes() != null && a.getJarBytes().length > 0)
-                .forEach(this::createArtifactFile);
-        OrienteerClassLoaderUtil.updateOArtifactsJarsInMetadata(new LinkedList<>(artifacts));
+                .forEach(a -> createArtifactFile(manager, a));
+        manager.updateOArtifactsJarsInMetadata(new LinkedList<>(artifacts));
     }
 
-    private void downloadArtifact(OArtifact artifact) {
+    private void downloadArtifact(InternalOModuleManager manager, OArtifact artifact) {
         OArtifactReference ref = artifact.getArtifactReference();
-        Artifact downloaded = OrienteerClassLoaderUtil.downloadArtifact(ref.toAetherArtifact());
+        Artifact downloaded = manager.downloadArtifact(ref.toAetherArtifact());
         if (downloaded != null) {
             ref.setFile(downloaded.getFile());
         }
     }
 
-    private void createArtifactFile(OArtifactReference reference) {
+    private void createArtifactFile(InternalOModuleManager manager, OArtifactReference reference) {
         String name = reference.getArtifactId() + "-" + reference.getVersion();
-        File jarFile = OrienteerClassLoaderUtil.createJarFile(reference.getJarBytes(), name);
+        File jarFile = manager.getJarsManager().createJarFile(reference.getJarBytes(), name);
         reference.setFile(jarFile);
     }
 }

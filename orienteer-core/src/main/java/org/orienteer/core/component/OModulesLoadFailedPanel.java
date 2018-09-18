@@ -15,8 +15,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactField;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OArtifactColumn;
 import org.orienteer.core.component.table.component.GenericTablePanel;
@@ -39,12 +39,7 @@ public class OModulesLoadFailedPanel extends Panel {
         final ModalWindow modal = new ModalWindow("modal");
         modal.setTitle(new ResourceModel("application.load.feedback.title.error"));
         modal.setContent(newContent(modal.getContentId()));
-        modal.setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
-            @Override
-            public void onClose(AjaxRequestTarget target) {
-                showsForUsers.add(OrienteerWebSession.get().getUsername());
-            }
-        });
+        modal.setWindowClosedCallback((ModalWindow.WindowClosedCallback) target -> showsForUsers.add(OrienteerWebSession.get().getUsername()));
         add(new AbstractDefaultAjaxBehavior() {
             @Override
             protected void respond(AjaxRequestTarget target) {

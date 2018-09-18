@@ -1,4 +1,4 @@
-package org.orienteer.core.boot.loader.util;
+package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -34,21 +34,28 @@ import java.util.Set;
 /**
  * Utility class for work with Eclipse Aether.
  */
-class AetherUtils {
+class AetherUtils implements IReindexSupport {
 
     private static final Logger LOG = LoggerFactory.getLogger(AetherUtils.class);
 
     private static final String JAR_EXTENSION     = "jar";
     private static final String ARTIFACT_TEMPLATE = "%s:%s:%s:%s";
 
-    private final RepositorySystem system;
-    private final RepositorySystemSession session;
-    private final List<RemoteRepository> repositories;
+    private RepositorySystem system;
+    private RepositorySystemSession session;
+    private List<RemoteRepository> repositories;
 
-    AetherUtils(InitUtils initUtils) {
+    AetherUtils(String mavenLocalRepository, List<RemoteRepository> remoteRepositories) {
         this.system = getRepositorySystem();
-        this.session = getRepositorySystemSession(system, initUtils.getMavenLocalRepository());
-        this.repositories = initUtils.getRemoteRepositories();
+        this.session = getRepositorySystemSession(system, mavenLocalRepository);
+        this.repositories = remoteRepositories;
+    }
+
+    @Override
+    public void reindex(OModulesMicroFrameworkConfig config) {
+        system = getRepositorySystem();
+        session = getRepositorySystemSession(system, config.getMavenLocalRepository());
+        repositories = config.getRemoteRepositories();
     }
 
     /**

@@ -10,17 +10,14 @@ import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
 import org.orienteer.core.boot.loader.distributed.DeleteMetadataTask;
 import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
 import org.orienteer.core.boot.loader.distributed.UpdateModulesInMetadata;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation for {@link IModuleManager}
@@ -53,7 +50,7 @@ public class ModuleManager implements IModuleManager {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
             executeOnEveryMember(hz, member -> {
-                Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
+                Set<OArtifact> copy = deepCopy(artifacts);
                 executor.executeOnMember(new AddModulesToMetadataTask(copy), member);
             });
         } else {
@@ -70,7 +67,7 @@ public class ModuleManager implements IModuleManager {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
             executeOnEveryMember(hz, member -> {
-                Map<OArtifact, OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
+                Map<OArtifact, OArtifact> copy = deepCopy(artifacts);
                 executor.executeOnMember(new UpdateModulesInMetadata(copy), member);
             });
         } else {
@@ -86,7 +83,7 @@ public class ModuleManager implements IModuleManager {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
             executeOnEveryMember(hz, member -> {
-                Set<OArtifact> copy = OrienteerClassLoaderUtil.deepCopy(artifacts);
+                Set<OArtifact> copy = deepCopy(artifacts);
                 executor.executeOnMember(new DeleteMetadataTask(copy), member);
             });
         } else {
@@ -106,5 +103,17 @@ public class ModuleManager implements IModuleManager {
 
     private OrienteerWebApplication getApp() {
         return OrienteerWebApplication.lookupApplication();
+    }
+
+    public Set<OArtifact> deepCopy(Set<OArtifact> artifacts) {
+        return artifacts.stream()
+                .map(OArtifact::new)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+    }
+
+    public Map<OArtifact, OArtifact> deepCopy(Map<OArtifact, OArtifact> artifacts) {
+        Map<OArtifact, OArtifact> result = new LinkedHashMap<>(artifacts.size());
+        artifacts.forEach((k, v) -> result.put(new OArtifact(k), new OArtifact(v)));
+        return result;
     }
 }
