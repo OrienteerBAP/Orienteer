@@ -64,6 +64,7 @@ public class ResolveMetadataConflictTask extends AbstractTask implements Runnabl
         if (!localDifference.isEmpty() && inverse) {
             resolveConflictOnOtherNodes(createClone(localDifference), executor);
         }
+        executeCallback();
     }
 
     private Set<OArtifact> downloadArtifacts(IExecutorService executor, Set<OArtifact> artifacts) {

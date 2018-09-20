@@ -37,7 +37,7 @@ public class AddModulesToMetadataTask extends AbstractTask implements Runnable {
 
         updateOrienteerArtifacts(manager, orienteerArtifacts);
         updateUserArtifacts(manager, userArtifacts);
-
+        executeCallback();
     }
 
     private void updateOrienteerArtifacts(InternalOModuleManager manager, Set<OArtifact> artifacts) {

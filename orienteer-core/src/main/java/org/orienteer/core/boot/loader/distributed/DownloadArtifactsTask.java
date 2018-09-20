@@ -51,6 +51,8 @@ public class DownloadArtifactsTask extends AbstractTask implements Callable<Set<
 
     @Override
     public Set<OArtifact> call() throws Exception {
-        return createResult();
+        Set<OArtifact> result = createResult();
+        executeCallback();
+        return result;
     }
 }

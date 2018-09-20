@@ -27,5 +27,6 @@ public class DeleteMetadataTask extends AbstractTask implements Runnable {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         manager.deleteOArtifactsFromMetadata(artifactsForDelete);
+        executeCallback();
     }
 }

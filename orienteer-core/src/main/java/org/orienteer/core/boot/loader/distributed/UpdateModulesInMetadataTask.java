@@ -26,6 +26,7 @@ public class UpdateModulesInMetadataTask extends AbstractTask implements Runnabl
         InternalOModuleManager manager = getModuleManager();
         updateInfoAboutFiles(manager);
         modulesForUpdate.forEach(manager::updateOArtifactInMetadata);
+        executeCallback();
     }
 
     private void updateInfoAboutFiles(InternalOModuleManager manager) {

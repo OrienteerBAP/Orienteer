@@ -5,6 +5,7 @@ import com.hazelcast.core.Cluster;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
+import org.danekja.java.misc.serializable.SerializableRunnable;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
 import org.orienteer.core.boot.loader.distributed.DeleteMetadataTask;
@@ -29,81 +30,108 @@ public class ModuleManager implements IModuleManager {
 
     @Override
     public void addArtifact(OArtifact artifact) {
-        addArtifacts(Collections.singleton(artifact));
+        addArtifact(artifact, null);
+    }
+
+    @Override
+    public void addArtifact(OArtifact artifact, SerializableRunnable callback) {
+        addArtifacts(Collections.singleton(artifact), callback);
     }
 
     @Override
     public void updateArtifact(OArtifact previous, OArtifact artifact) {
-        updateArtifacts(CommonUtils.toMap(previous, artifact));
+        updateArtifact(previous, artifact, null);
+    }
+
+    @Override
+    public void updateArtifact(OArtifact previous, OArtifact artifact, SerializableRunnable callback) {
+        updateArtifacts(CommonUtils.toMap(previous, artifact), callback);
     }
 
     @Override
     public void deleteArtifact(OArtifact artifact) {
-        deleteArtifacts(Collections.singleton(artifact));
+        deleteArtifact(artifact, null);
+    }
+
+    @Override
+    public void deleteArtifact(OArtifact artifact, SerializableRunnable callback) {
+        deleteArtifacts(Collections.singleton(artifact), callback);
     }
 
     @Override
     public void addArtifacts(Set<OArtifact> artifacts) {
+        addArtifacts(artifacts, null);
+    }
+
+    @Override
+    public void addArtifacts(Set<OArtifact> artifacts, SerializableRunnable callback) {
         LOG.info("add artifacts: {}", artifacts);
         Optional<HazelcastInstance> opt = getHazelcast();
+
+        AddModulesToMetadataTask task = createAddModulesTask(null, artifacts);
+        task.setCallback(callback);
+        task.run();
+
         if (opt.isPresent()) {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-            createAddModulesTask(hz.getCluster().getLocalMember(), artifacts).run();
 
             executeOnOtherMember(hz, member -> {
                 Set<OArtifact> copy = deepCopy(artifacts);
                 executor.executeOnMember(createAddModulesTask(member, copy), member);
             });
-        } else {
-            createAddModulesTask(null, artifacts).run();
         }
     }
 
     @Override
     public void updateArtifacts(Map<OArtifact, OArtifact> artifacts) {
+        updateArtifacts(artifacts, null);
+    }
+
+    @Override
+    public void updateArtifacts(Map<OArtifact, OArtifact> artifacts, SerializableRunnable callback) {
         LOG.info("update artifacts: {}", artifacts);
 
         Optional<HazelcastInstance> opt = getHazelcast();
+
+        UpdateModulesInMetadataTask task = createUpdateModulesTask(null, artifacts);
+        task.setCallback(callback);
+        task.run();
+
         if (opt.isPresent()) {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-
-            createUpdateModulesTask(hz.getCluster().getLocalMember(), artifacts).run();
 
             executeOnOtherMember(hz, member -> {
                 Map<OArtifact, OArtifact> copy = deepCopy(artifacts);
                 executor.executeOnMember(createUpdateModulesTask(member, copy), member);
             });
-        } else {
-            createUpdateModulesTask(null, artifacts).run();
         }
     }
 
     @Override
     public void deleteArtifacts(Set<OArtifact> artifacts) {
+        deleteArtifacts(artifacts, null);
+    }
+
+    @Override
+    public void deleteArtifacts(Set<OArtifact> artifacts, SerializableRunnable callback) {
         LOG.info("delete artifacts: {}", artifacts);
         Optional<HazelcastInstance> opt = getHazelcast();
+
+        DeleteMetadataTask task = createDeleteModulesTask(null, artifacts);
+        task.setCallback(callback);
+        task.run();
 
         if (opt.isPresent()) {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
 
-            createDeleteModulesTask(hz.getCluster().getLocalMember(), artifacts).run();
-
             executeOnOtherMember(hz, member -> {
                 Set<OArtifact> copy = deepCopy(artifacts);
                 executor.executeOnMember(createDeleteModulesTask(member, copy), member);
             });
-        } else {
-            createDeleteModulesTask(null, artifacts).run();
         }
-    }
-
-
-    private void executeOnEveryMember(HazelcastInstance hz, Consumer<Member> consumer) {
-        Cluster cluster = hz.getCluster();
-        cluster.getMembers().forEach(consumer);
     }
 
     private void executeOnOtherMember(HazelcastInstance hz, Consumer<Member> consumer) {
@@ -113,6 +141,10 @@ public class ModuleManager implements IModuleManager {
         cluster.getMembers().stream()
                 .filter(m -> !m.equals(localMember))
                 .forEach(consumer);
+    }
+
+    private Member getLocalMember(HazelcastInstance hz) {
+        return hz != null ? hz.getCluster().getLocalMember() : null;
     }
 
     protected Optional<HazelcastInstance> getHazelcast() {
