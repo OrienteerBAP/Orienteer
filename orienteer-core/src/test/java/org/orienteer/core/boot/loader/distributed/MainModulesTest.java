@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
-import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.junit.OrienteerTestRunner;
 
 import java.util.Optional;
@@ -42,12 +41,7 @@ public class MainModulesTest {
         assertTrue(difference.containsAll(orienteerArtifacts));
         assertTrue(artifacts.containsAll(difference));
 
-        assertEquals(1, difference.size());
-
-        OArtifact artifact = difference.iterator().next();
-        OArtifactReference ref = artifact.getArtifactReference();
-        assertEquals("org.orienteer", ref.getGroupId());
-        assertEquals("orienteer-devutils", ref.getArtifactId());
+        assertEquals(2, difference.size());
     }
 
     @Test

@@ -1,20 +1,22 @@
 package org.orienteer.core.boot.loader.distributed.service;
 
-import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.hazelcast.core.HazelcastInstance;
 import org.orienteer.core.boot.loader.service.ModuleManager;
 
 import java.util.Optional;
 
-public class TestModuleManagerImpl extends ModuleManager {
+import static java.util.Optional.of;
 
-    @Inject
-    @Named("hazelcast.test")
-    private HazelcastInstance hz;
+public class TestModulesManagerImpl extends ModuleManager {
+
+    private final HazelcastInstance hz;
+
+    public TestModulesManagerImpl(HazelcastInstance hz) {
+        this.hz = hz;
+    }
 
     @Override
     protected Optional<HazelcastInstance> getHazelcast() {
-        return Optional.of(hz);
+        return of(hz);
     }
 }

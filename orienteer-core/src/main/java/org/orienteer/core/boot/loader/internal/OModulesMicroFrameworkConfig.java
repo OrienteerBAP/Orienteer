@@ -25,9 +25,10 @@ public class OModulesMicroFrameworkConfig {
     protected static final String MAVEN_REMOTE_REPOSITORY_ID   = "orienteer.loader.repository.remote.%d.id";
     protected static final String MAVEN_LOCAL_REPOSITORY       = "orienteer.loader.repository.local";
     protected static final String DEFAULT                      = "default";
-    protected static final String LIBS_FOLDER 	             = "orienteer.loader.libs.folder";
+    protected static final String LIBS_FOLDER 	               = "orienteer.loader.libs.folder";
     protected static final String RECURSIVELY_RESOLVING_DEPS   = "orienteer.loader.resolve.dependencies.recursively";
     protected static final String ORIENTEER_MODULES_URL        = "orienteer.loader.orienteer.modules.list.url";
+    protected static final String ORIENTEER_MODULES_FILE       = "orienteer.loader.orienteer.modules.metadata";
     protected static final String ORIENTEER_GROUP_ID           = "orienteer.groupId";
     protected static final String ORIENTEER_ARTIFACT_ID        = "orienteer.artifactId";
     protected static final String ORIENTEER_VERSION            = "orienteer.version";
@@ -147,6 +148,10 @@ public class OModulesMicroFrameworkConfig {
 
     public String getCurrentOrienteerArtifactId() {
         return properties.getProperty(ORIENTEER_ARTIFACT_ID);
+    }
+
+    public String getOrienteerModulesFile() {
+        return properties.getProperty(ORIENTEER_MODULES_FILE);
     }
 
     /**

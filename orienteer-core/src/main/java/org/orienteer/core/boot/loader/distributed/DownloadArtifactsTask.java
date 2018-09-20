@@ -1,12 +1,10 @@
 package org.orienteer.core.boot.loader.distributed;
 
 import org.apache.wicket.util.file.Files;
-import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -15,7 +13,7 @@ import java.util.stream.Stream;
 /**
  * Task for download artifacts from one node to another
  */
-public class DownloadArtifactsTask implements Callable<Set<OArtifact>>, Serializable {
+public class DownloadArtifactsTask extends AbstractTask implements Callable<Set<OArtifact>> {
 
     public static final String EXECUTOR_NAME = "download.task";
 
@@ -34,7 +32,7 @@ public class DownloadArtifactsTask implements Callable<Set<OArtifact>>, Serializ
     }
 
     private Stream<OArtifact> getLocalArtifactsStream() {
-        return InternalOModuleManager.get()
+        return getModuleManager()
                 .getOArtifactsMetadataAsSet()
                 .stream();
     }

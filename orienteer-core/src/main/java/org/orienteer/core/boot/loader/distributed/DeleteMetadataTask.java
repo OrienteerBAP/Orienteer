@@ -3,7 +3,6 @@ package org.orienteer.core.boot.loader.distributed;
 import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 
-import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * Delete Orienteer module task
  */
-public class DeleteMetadataTask implements Runnable, Serializable {
+public class DeleteMetadataTask extends AbstractTask implements Runnable {
 
     private final Set<OArtifact> artifacts;
 
@@ -21,7 +20,7 @@ public class DeleteMetadataTask implements Runnable, Serializable {
 
     @Override
     public void run() {
-        InternalOModuleManager manager = InternalOModuleManager.get();
+        InternalOModuleManager manager = getModuleManager();
         Set<OArtifact> metadataArtifacts = manager.getOArtifactsMetadataAsSet();
         Set<OArtifact> artifactsForDelete = metadataArtifacts.stream()
                 .filter(artifacts::contains)

@@ -1,3 +1,3 @@
 org.orienteer.junit.OrienteerTestModule
 org.orienteer.core.service.CustomTestModule
-org.orienteer.core.boot.loader.distributed.service.DistributedModulesInitModule
+org.orienteer.core.boot.loader.distributed.service.FakeHazelcastInitModule

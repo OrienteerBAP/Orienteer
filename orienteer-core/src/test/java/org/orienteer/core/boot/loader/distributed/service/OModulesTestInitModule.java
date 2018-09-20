@@ -2,66 +2,30 @@ package org.orienteer.core.boot.loader.distributed.service;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.hazelcast.core.Cluster;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IExecutorService;
-import com.hazelcast.core.Member;
-import org.mockito.internal.util.collections.Sets;
-import org.orienteer.core.boot.loader.service.IModuleManager;
-import org.orienteer.core.boot.loader.service.IOrienteerModulesResolver;
+import org.apache.wicket.util.file.Files;
+import org.orienteer.core.boot.loader.distributed.TestAddModulesToMetadataTasks;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
-import org.orienteer.core.boot.loader.distributed.TestAddModulesToMetadataTasks;
-import org.orienteer.core.service.OverrideModule;
+import org.orienteer.core.boot.loader.service.IOrienteerModulesResolver;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@OverrideModule
-public class DistributedModulesInitModule extends AbstractModule {
+public class OModulesTestInitModule extends AbstractModule {
 
     @Override
     protected void configure() {
         super.configure();
-        bind(IModuleManager.class).to(TestModuleManagerImpl.class);
         bind(IOrienteerModulesResolver.class).to(TestOrienteerModulesResolver.class);
-    }
-
-    @Provides
-    @Named("hazelcast.test.executor.service")
-    public IExecutorService provideExecutorService() {
-        return new TestExecutorService();
-    }
-
-    @Provides
-    @Singleton
-    @Named("hazelcast.test")
-    public HazelcastInstance provideTestHazelcast(@Named("hazelcast.test.executor.service") IExecutorService service) {
-        HazelcastInstance hz = mock(HazelcastInstance.class);
-
-        Member localMember = mock(Member.class);
-        when(localMember.getUuid()).thenReturn(UUID.randomUUID().toString());
-
-        Member remoteMember = mock(Member.class);
-        when(remoteMember.getUuid()).thenReturn(UUID.randomUUID().toString());
-
-        Cluster cluster = mock(Cluster.class);
-        when(cluster.getLocalMember()).thenReturn(localMember);
-        when(cluster.getMembers()).thenReturn(Sets.newSet(localMember, remoteMember));
-
-        when(hz.getExecutorService(anyString())).thenReturn(service);
-        when(hz.getCluster()).thenReturn(cluster);
-
-        return hz;
     }
 
     @Provides
@@ -73,21 +37,33 @@ public class DistributedModulesInitModule extends AbstractModule {
                 "1.4-SNAPSHOT",
                 "orienteer-pages.jar"
         );
-        return artifact.map(Collections::singleton)
+        return artifact
+                .map(this::updateArtifactBytes)
+                .map(Collections::singleton)
                 .orElseThrow(IllegalStateException::new);
     }
 
     @Provides
     @Named("orienteer.artifacts.test")
     public Set<OArtifact> provideOrienteerTestArtifacts() {
-        Optional<OArtifact> artifact = createArtifact(
+        OArtifact artifact1 = createArtifact(
                 "org.orienteer",
                 "orienteer-devutils",
                 "1.4-SNAPSHOT",
                 "orienteer-devutils.jar"
-        );
-        return artifact.map(Collections::singleton)
-                .orElseThrow(IllegalStateException::new);
+        ).orElseThrow(IllegalStateException::new);
+
+        OArtifact artifact2 = createArtifact(
+                "org.orienteer",
+                "orienteer-birt",
+                "1.4-SNAPSHOT",
+                null
+        ).orElseThrow(IllegalStateException::new);
+
+        Set<OArtifact> artifacts = new LinkedHashSet<>(2);
+        artifacts.add(artifact1);
+        artifacts.add(artifact2);
+        return artifacts;
     }
 
     @Provides
@@ -104,6 +80,13 @@ public class DistributedModulesInitModule extends AbstractModule {
 
     private Optional<OArtifact> createArtifact(String groupId, String artifactId, String version, String jarName) {
         OArtifactReference reference = new OArtifactReference(groupId, artifactId, version);
+
+        if (jarName == null) {
+            OArtifact artifact = new OArtifact();
+            artifact.setArtifactReference(reference);
+            return of(artifact);
+        }
+
         Optional<File> file = getTestJarFile(TestAddModulesToMetadataTasks.class, jarName);
         return file.map(f -> {
             reference.setFile(f);
@@ -111,6 +94,16 @@ public class DistributedModulesInitModule extends AbstractModule {
             artifact.setArtifactReference(reference);
             return artifact;
         });
+    }
+
+    private OArtifact updateArtifactBytes(OArtifact artifact) {
+        try {
+            OArtifactReference ref = artifact.getArtifactReference();
+            ref.setJarBytes(Files.readBytes(ref.getFile()));
+            return artifact;
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private Optional<File> getTestJarFile(Class<?> clazz, String name) {

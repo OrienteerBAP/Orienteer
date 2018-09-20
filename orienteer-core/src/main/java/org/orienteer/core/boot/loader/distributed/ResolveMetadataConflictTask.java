@@ -5,12 +5,10 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
 import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
-import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -23,7 +21,7 @@ import java.util.stream.Collectors;
  * Task for resolve modules conflicts between nodes
  */
 //TODO: create tests
-public class ResolveMetadataConflictTask implements Runnable, Serializable, HazelcastInstanceAware {
+public class ResolveMetadataConflictTask extends AbstractTask implements Runnable, HazelcastInstanceAware {
     private static final long serialVersionUID = 3699246504123452884L;
 
     private static final Logger LOG = LoggerFactory.getLogger(ResolveMetadataConflictTask.class);
@@ -53,7 +51,7 @@ public class ResolveMetadataConflictTask implements Runnable, Serializable, Haze
 
     @Override
     public void run() {
-        Set<OArtifact> localArtifacts = InternalOModuleManager.get().getOArtifactsMetadataAsSet();
+        Set<OArtifact> localArtifacts = getModuleManager().getOArtifactsMetadataAsSet();
         Set<OArtifact> remoteDifference = Sets.difference(remoteArtifacts, localArtifacts);
         Set<OArtifact> localDifference = Sets.difference(localArtifacts, remoteDifference);
 
@@ -61,7 +59,7 @@ public class ResolveMetadataConflictTask implements Runnable, Serializable, Haze
 
         IExecutorService executor = hz.getExecutorService(DownloadArtifactsTask.EXECUTOR_NAME);
         Set<OArtifact> artifacts = downloadArtifacts(executor, createClone(remoteDifference));
-        executor.executeOnMember(new AddModulesToMetadataTask(artifacts), hz.getCluster().getLocalMember());
+        executor.executeOnMember(createAddModulesTask(artifacts), hz.getCluster().getLocalMember());
 
         if (!localDifference.isEmpty() && inverse) {
             resolveConflictOnOtherNodes(createClone(localDifference), executor);
@@ -70,7 +68,7 @@ public class ResolveMetadataConflictTask implements Runnable, Serializable, Haze
 
     private Set<OArtifact> downloadArtifacts(IExecutorService executor, Set<OArtifact> artifacts) {
         Member remoteMember = getRemoteMember();
-        Future<Set<OArtifact>> futureArtifacts = executor.submitToMember(new DownloadArtifactsTask(artifacts), remoteMember);
+        Future<Set<OArtifact>> futureArtifacts = executor.submitToMember(createDownloadTask(artifacts), remoteMember);
         try {
             return futureArtifacts.get(5, TimeUnit.MINUTES);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -103,5 +101,13 @@ public class ResolveMetadataConflictTask implements Runnable, Serializable, Haze
                 .stream()
                 .filter(predicate)
                 .collect(Collectors.toSet());
+    }
+
+    protected AddModulesToMetadataTask createAddModulesTask(Set<OArtifact> artifacts) {
+        return new AddModulesToMetadataTask(artifacts);
+    }
+
+    protected DownloadArtifactsTask createDownloadTask(Set<OArtifact> artifacts) {
+        return new DownloadArtifactsTask(artifacts);
     }
 }

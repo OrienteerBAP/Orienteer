@@ -9,16 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
  * Task for add modules to metadata.xml on node
  */
-public class AddModulesToMetadataTask implements Runnable, Serializable {
+public class AddModulesToMetadataTask extends AbstractTask implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(AddModulesToMetadataTask.class);
 
@@ -33,7 +31,7 @@ public class AddModulesToMetadataTask implements Runnable, Serializable {
     @Override
     public void run() {
         LOG.info("Update metadata.xml with new artifacts: {}", artifacts.size());
-        InternalOModuleManager manager = InternalOModuleManager.get();
+        InternalOModuleManager manager = getModuleManager();
         Set<OArtifact> orienteerArtifacts = manager.getOrienteerArtifacts(artifacts);
         Set<OArtifact> userArtifacts = Sets.difference(artifacts, orienteerArtifacts);
 
@@ -53,11 +51,12 @@ public class AddModulesToMetadataTask implements Runnable, Serializable {
 
 
     private void updateUserArtifacts(InternalOModuleManager manager, Set<OArtifact> artifacts) {
-        artifacts.stream()
-                .map(OArtifact::getArtifactReference)
-                .filter(a -> a.getJarBytes() != null && a.getJarBytes().length > 0)
-                .forEach(a -> createArtifactFile(manager, a));
-        manager.updateOArtifactsJarsInMetadata(new LinkedList<>(artifacts));
+        Set<OArtifact> prepared = artifacts.stream()
+                .filter(a -> a.getArtifactReference().isContainsJarBytes())
+                .peek(a -> createArtifactFile(manager, a.getArtifactReference()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        manager.updateOArtifactsInMetadata(prepared);
     }
 
     private void downloadArtifact(InternalOModuleManager manager, OArtifact artifact) {

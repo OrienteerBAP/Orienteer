@@ -9,7 +9,6 @@ import org.apache.http.util.Args;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.core.boot.loader.internal.service.OModulesStaticInjector;
@@ -20,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 /**
  * Utility class for OrienteerClassLoader
  */
-public class InternalOModuleManager implements IReindexSupport {
+public class InternalOModuleManager implements IReindexSupport, Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(InternalOModuleManager.class);
 
     public static final String WITHOUT_JAR          = "WITHOUT_JAR";
@@ -80,11 +80,7 @@ public class InternalOModuleManager implements IReindexSupport {
      * @throws IOException 
      */
     public List<OArtifact> getOrienteerModules() {
-        OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
-        if (app == null) {
-            throw new IllegalStateException("Can't retrieve Orienteer modules if Orienteer application doesn't exists!");
-        }
-        IOrienteerModulesResolver resolver = app.getServiceInstance(IOrienteerModulesResolver.class);
+        IOrienteerModulesResolver resolver = getInjector().getInstance(IOrienteerModulesResolver.class);
         return resolver.resolveOrienteerModules();
     }
 
@@ -483,5 +479,9 @@ public class InternalOModuleManager implements IReindexSupport {
 			LOG.error("Can't list available artifacts", e);
 		}
     	return ret;
+    }
+
+    protected Injector getInjector() {
+        return OModulesStaticInjector.getInjector();
     }
 }

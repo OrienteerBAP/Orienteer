@@ -9,7 +9,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
 import org.orienteer.core.boot.loader.distributed.DeleteMetadataTask;
 import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
-import org.orienteer.core.boot.loader.distributed.UpdateModulesInMetadata;
+import org.orienteer.core.boot.loader.distributed.UpdateModulesInMetadataTask;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
@@ -49,12 +49,14 @@ public class ModuleManager implements IModuleManager {
         if (opt.isPresent()) {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-            executeOnEveryMember(hz, member -> {
+            createAddModulesTask(hz.getCluster().getLocalMember(), artifacts).run();
+
+            executeOnOtherMember(hz, member -> {
                 Set<OArtifact> copy = deepCopy(artifacts);
-                executor.executeOnMember(new AddModulesToMetadataTask(copy), member);
+                executor.executeOnMember(createAddModulesTask(member, copy), member);
             });
         } else {
-            new AddModulesToMetadataTask(artifacts).run();
+            createAddModulesTask(null, artifacts).run();
         }
     }
 
@@ -66,12 +68,15 @@ public class ModuleManager implements IModuleManager {
         if (opt.isPresent()) {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-            executeOnEveryMember(hz, member -> {
+
+            createUpdateModulesTask(hz.getCluster().getLocalMember(), artifacts).run();
+
+            executeOnOtherMember(hz, member -> {
                 Map<OArtifact, OArtifact> copy = deepCopy(artifacts);
-                executor.executeOnMember(new UpdateModulesInMetadata(copy), member);
+                executor.executeOnMember(createUpdateModulesTask(member, copy), member);
             });
         } else {
-            new UpdateModulesInMetadata(artifacts).run();
+            createUpdateModulesTask(null, artifacts).run();
         }
     }
 
@@ -79,15 +84,19 @@ public class ModuleManager implements IModuleManager {
     public void deleteArtifacts(Set<OArtifact> artifacts) {
         LOG.info("delete artifacts: {}", artifacts);
         Optional<HazelcastInstance> opt = getHazelcast();
+
         if (opt.isPresent()) {
             HazelcastInstance hz = opt.get();
             IExecutorService executor = hz.getExecutorService(ResolveMetadataConflictTask.EXECUTOR_NAME);
-            executeOnEveryMember(hz, member -> {
+
+            createDeleteModulesTask(hz.getCluster().getLocalMember(), artifacts).run();
+
+            executeOnOtherMember(hz, member -> {
                 Set<OArtifact> copy = deepCopy(artifacts);
-                executor.executeOnMember(new DeleteMetadataTask(copy), member);
+                executor.executeOnMember(createDeleteModulesTask(member, copy), member);
             });
         } else {
-            new DeleteMetadataTask(artifacts).run();
+            createDeleteModulesTask(null, artifacts).run();
         }
     }
 
@@ -95,6 +104,15 @@ public class ModuleManager implements IModuleManager {
     private void executeOnEveryMember(HazelcastInstance hz, Consumer<Member> consumer) {
         Cluster cluster = hz.getCluster();
         cluster.getMembers().forEach(consumer);
+    }
+
+    private void executeOnOtherMember(HazelcastInstance hz, Consumer<Member> consumer) {
+        Cluster cluster = hz.getCluster();
+        Member localMember = cluster.getLocalMember();
+
+        cluster.getMembers().stream()
+                .filter(m -> !m.equals(localMember))
+                .forEach(consumer);
     }
 
     protected Optional<HazelcastInstance> getHazelcast() {
@@ -105,13 +123,25 @@ public class ModuleManager implements IModuleManager {
         return OrienteerWebApplication.lookupApplication();
     }
 
-    public Set<OArtifact> deepCopy(Set<OArtifact> artifacts) {
+    protected UpdateModulesInMetadataTask createUpdateModulesTask(Member target, Map<OArtifact, OArtifact> map) {
+        return new UpdateModulesInMetadataTask(map);
+    }
+
+    protected AddModulesToMetadataTask createAddModulesTask(Member target, Set<OArtifact> artifacts) {
+        return new AddModulesToMetadataTask(artifacts);
+    }
+
+    protected DeleteMetadataTask createDeleteModulesTask(Member target, Set<OArtifact> artifacts) {
+        return new DeleteMetadataTask(artifacts);
+    }
+
+    private Set<OArtifact> deepCopy(Set<OArtifact> artifacts) {
         return artifacts.stream()
                 .map(OArtifact::new)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    public Map<OArtifact, OArtifact> deepCopy(Map<OArtifact, OArtifact> artifacts) {
+    private Map<OArtifact, OArtifact> deepCopy(Map<OArtifact, OArtifact> artifacts) {
         Map<OArtifact, OArtifact> result = new LinkedHashMap<>(artifacts.size());
         artifacts.forEach((k, v) -> result.put(new OArtifact(k), new OArtifact(v)));
         return result;

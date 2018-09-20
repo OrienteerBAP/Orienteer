@@ -69,15 +69,17 @@ public class TestAddModulesToMetadataTasks extends AbstractModulesTest {
     }
 
     private void updateJarBytes() {
-        artifacts.forEach(artifact -> {
-            try {
-                OArtifactReference artifactReference = artifact.getArtifactReference();
-                byte[] bytes = Files.readAllBytes(artifactReference.getFile().toPath());
-                artifactReference.setJarBytes(bytes);
-            } catch (IOException ex) {
-                throw new IllegalStateException(ex);
-            }
-        });
+        artifacts.stream()
+                .filter(a -> a.getArtifactReference().isContainsJarBytes())
+                .forEach(artifact -> {
+                    try {
+                        OArtifactReference artifactReference = artifact.getArtifactReference();
+                        byte[] bytes = Files.readAllBytes(artifactReference.getFile().toPath());
+                        artifactReference.setJarBytes(bytes);
+                    } catch (IOException ex) {
+                        throw new IllegalStateException(ex);
+                    }
+                });
     }
 
     private void assertMetadataUpdated() {

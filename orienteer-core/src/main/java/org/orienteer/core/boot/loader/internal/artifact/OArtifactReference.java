@@ -154,6 +154,10 @@ public class OArtifactReference implements Serializable {
         return jarBytes;
     }
 
+    public boolean isContainsJarBytes() {
+        return jarBytes != null && jarBytes.length > 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

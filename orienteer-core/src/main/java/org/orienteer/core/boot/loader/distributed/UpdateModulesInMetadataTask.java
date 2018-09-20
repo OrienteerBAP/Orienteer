@@ -13,17 +13,17 @@ import java.util.Set;
 /**
  * Task for update modules in metadata.xml
  */
-public class UpdateModulesInMetadata implements Runnable, Serializable {
+public class UpdateModulesInMetadataTask extends AbstractTask implements Runnable, Serializable {
 
     public final Map<OArtifact, OArtifact> modulesForUpdate;
 
-    public UpdateModulesInMetadata(Map<OArtifact, OArtifact> modulesForUpdate) {
+    public UpdateModulesInMetadataTask(Map<OArtifact, OArtifact> modulesForUpdate) {
         this.modulesForUpdate = modulesForUpdate;
     }
 
     @Override
     public void run() {
-        InternalOModuleManager manager = InternalOModuleManager.get();
+        InternalOModuleManager manager = getModuleManager();
         updateInfoAboutFiles(manager);
         modulesForUpdate.forEach(manager::updateOArtifactInMetadata);
     }

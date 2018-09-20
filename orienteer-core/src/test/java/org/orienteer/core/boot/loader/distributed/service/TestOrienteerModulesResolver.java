@@ -1,18 +1,29 @@
 package org.orienteer.core.boot.loader.distributed.service;
 
-import org.orienteer.core.boot.loader.service.OrienteerModulesResolver;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
-import org.orienteer.core.boot.loader.distributed.TestModuleManager;
+import org.orienteer.core.boot.loader.service.IOrienteerModulesResolver;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-public class TestOrienteerModulesResolver extends OrienteerModulesResolver {
+public class TestOrienteerModulesResolver implements IOrienteerModulesResolver {
+
+    @Inject
+    @Named("orienteer.artifacts.test")
+    private Set<OArtifact> orienteerArtifacts;
 
     @Override
+    public List<OArtifact> resolveOrienteerModules() {
+        LinkedList<OArtifact> oArtifacts = new LinkedList<>(orienteerArtifacts);
+        setAvailableVersions(oArtifacts);
+        return oArtifacts;
+    }
+
+
     protected void setAvailableVersions(List<OArtifact> artifacts) {
         List<String> versions = Collections.singletonList("1.4-SNAPSHOT");
 
@@ -22,15 +33,5 @@ public class TestOrienteerModulesResolver extends OrienteerModulesResolver {
                     ref.setVersion(versions.get(0));
                     ref.addAvailableVersions(versions);
                 });
-    }
-
-    @Override
-    protected Path downloadMetadata() {
-        URL resource = TestModuleManager.class.getResource("modules.xml");
-        try {
-            return new File(resource.toURI()).toPath();
-        } catch (Exception ex) {
-            throw new IllegalStateException("Can't retrieve test modules.xml", ex);
-        }
     }
 }
