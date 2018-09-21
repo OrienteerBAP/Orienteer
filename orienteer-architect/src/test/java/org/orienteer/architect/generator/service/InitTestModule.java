@@ -7,7 +7,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.orienteer.architect.model.OArchitectOClass;
 import org.orienteer.architect.model.OArchitectOProperty;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -23,7 +23,7 @@ public class InitTestModule extends AbstractModule {
      * WorkPlace
      * name - String
      * id - Integer
-     * employees - LinkedList (inverse with Employee.workPlace)
+     * employees - LinkList (inverse with Employee.workPlace)
      *
      * EmployeeRole
      * name - String
@@ -34,12 +34,31 @@ public class InitTestModule extends AbstractModule {
     @Singleton
     public List<OArchitectOClass> provideTestClasses() {
         OArchitectOClass employee = new OArchitectOClass("Employee");
+        OArchitectOClass workPlace = new OArchitectOClass("WorkPlace");
+
+        OArchitectOProperty workPlaceProp = new OArchitectOProperty("workPlace", OType.LINK);
+        OArchitectOProperty employees = new OArchitectOProperty("employees", OType.LINKLIST);
+
+        workPlaceProp.setLinkedClass("WorkPlace")
+                .setInversePropertyEnable(true)
+                .setInverseProperty(employees);
+
+        employees.setLinkedClass("Employee")
+                .setInversePropertyEnable(true)
+                .setInverseProperty(workPlaceProp);
 
         employee.setProperties(asList(
                 new OArchitectOProperty("name", OType.STRING).setOrder(0),
-                new OArchitectOProperty("id", OType.INTEGER).setOrder(10)
+                new OArchitectOProperty("id", OType.INTEGER).setOrder(10),
+                workPlaceProp.setOrder(20)
         ));
 
-        return Collections.singletonList(employee);
+        workPlace.setProperties(asList(
+                new OArchitectOProperty("name", OType.STRING).setOrder(0),
+                new OArchitectOProperty("id", OType.INTEGER).setOrder(10),
+                employees.setOrder(20)
+        ));
+
+        return Arrays.asList(employee, workPlace);
     }
 }

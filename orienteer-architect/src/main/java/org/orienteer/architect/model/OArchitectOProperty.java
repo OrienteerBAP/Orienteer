@@ -133,8 +133,9 @@ public class OArchitectOProperty implements IClusterable {
         return inversePropertyEnable;
     }
 
-    public void setInversePropertyEnable(boolean inversePropertyEnable) {
+    public OArchitectOProperty setInversePropertyEnable(boolean inversePropertyEnable) {
         this.inversePropertyEnable = inversePropertyEnable;
+        return this;
     }
 
     @Override

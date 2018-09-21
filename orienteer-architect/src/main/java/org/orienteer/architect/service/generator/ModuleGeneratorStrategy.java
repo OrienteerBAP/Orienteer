@@ -1,10 +1,12 @@
 package org.orienteer.architect.service.generator;
 
 import org.orienteer.architect.model.OArchitectOClass;
+import org.orienteer.architect.model.OArchitectOProperty;
 import org.orienteer.architect.model.generator.GeneratorMode;
 import org.orienteer.architect.model.generator.OModuleSource;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
@@ -23,9 +25,13 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         StringBuilder sb = new StringBuilder();
         appendConstants(sb, classes);
 
-        sb.append("\n\n\n\n");
+        sb.append("\n\n\n");
 
         appendSchemaHelperActions(sb, classes);
+
+        sb.append("\n\n\n");
+
+        appendSchemaSetupRelationShips(sb, classes);
         return sb.toString();
     }
 
@@ -39,6 +45,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
                 sb.append("\n")
                         .append(staticFieldOProperty(name, property.getName()))
             );
+            sb.append('\n');
         });
     }
 
@@ -60,6 +67,53 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         });
     }
 
+    private void appendSchemaSetupRelationShips(StringBuilder sb, List<OArchitectOClass> classes) {
+        Map<OArchitectOClass, List<OArchitectOProperty>> inverseClasses = getInverseEnabledClasses(classes);
+
+        inverseClasses.forEach((oClass, properties) -> {
+            String name = oClass.getName();
+
+            properties.forEach(property ->
+                sb.append(
+                        helperSetupRelationship(
+                                name,
+                                property.getName(),
+                                property.getLinkedClass(),
+                                property.getInverseProperty().getName()
+                        )
+                )
+            );
+        });
+    }
+
+    private Map<OArchitectOClass, List<OArchitectOProperty>> getInverseEnabledClasses(List<OArchitectOClass> classes) {
+        Map<OArchitectOClass, List<OArchitectOProperty>> inverseClasses = new LinkedHashMap<>();
+        Set<String> alreadyLinked = new HashSet<>();
+
+        classes.stream()
+                .filter(oClass -> !alreadyLinked.contains(oClass.getName()))
+                .forEach(oClass -> {
+                    List<OArchitectOProperty> properties = getInverseProperties(oClass.getProperties());
+                    if (!properties.isEmpty()) {
+                        inverseClasses.put(oClass, properties);
+                        alreadyLinked.addAll(getClassNamesFromInverseProperties(properties));
+                    }
+                });
+        return inverseClasses;
+    }
+
+    private List<OArchitectOProperty> getInverseProperties(List<OArchitectOProperty> properties) {
+        return properties.stream()
+                .filter(OArchitectOProperty::isInversePropertyEnable)
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    private Set<String> getClassNamesFromInverseProperties(List<OArchitectOProperty> properties) {
+        return properties.stream()
+                .map(OArchitectOProperty::getLinkedClass)
+                .collect(Collectors.toSet());
+    }
+
     private String staticFieldOClass(String name) {
         return String.format("public static final String %s = \"%s\";", constantOClass(name), name);
     }
@@ -75,6 +129,17 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     private String helperOProperty(String className, String property, String type, int order) {
         return String.format(".oProperty(%s, OType.%s, %s)", constantOProperty(className, property), type, order);
+    }
+
+    private String helperSetupRelationship(String class1, String prop1, String class2, String prop2) {
+        return String.format(
+                "%s.setupRelationship(%s, %s, %s, %s);",
+                helper(),
+                constantOClass(class1),
+                constantOProperty(class1, prop1),
+                constantOClass(class2),
+                constantOProperty(class2, prop2)
+        );
     }
 
     private String constantOClass(String name) {
