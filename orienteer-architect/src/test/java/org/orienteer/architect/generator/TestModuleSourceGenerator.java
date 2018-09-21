@@ -53,6 +53,7 @@ public class TestModuleSourceGenerator {
         assertNextLine("public static final String EMPLOYEE_PROP_NAME = \"name\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_WORKPLACE = \"workPlace\";", reader);
+        assertNextLine("public static final String EMPLOYEE_PROP_TESTLINK = \"testLink\";", reader);
         assertNextLine("", reader);
         assertNextLine("public static final String WORKPLACE_CLASS_NAME = \"WorkPlace\";", reader);
         assertNextLine("public static final String WORKPLACE_PROP_NAME = \"name\";", reader);
@@ -65,7 +66,8 @@ public class TestModuleSourceGenerator {
         assertNextLine("helper.oClass(EMPLOYEE_CLASS_NAME)", reader);
         assertNextLine(".oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 0)", reader);
         assertNextLine(".oProperty(EMPLOYEE_PROP_ID, OType.INTEGER, 10)", reader);
-        assertNextLine(".oProperty(EMPLOYEE_PROP_WORKPLACE, OType.LINK, 20);", reader);
+        assertNextLine(".oProperty(EMPLOYEE_PROP_WORKPLACE, OType.LINK, 20)", reader);
+        assertNextLine(".oProperty(EMPLOYEE_PROP_TESTLINK, OType.LINK, 30).linkedClass(WORKPLACE_CLASS_NAME);", reader);
         assertNextLine("", reader);
         assertNextLine("helper.oClass(WORKPLACE_CLASS_NAME)", reader);
         assertNextLine(".oProperty(WORKPLACE_PROP_NAME, OType.STRING, 0)", reader);

@@ -50,7 +50,8 @@ public class InitTestModule extends AbstractModule {
         employee.setProperties(asList(
                 new OArchitectOProperty("name", OType.STRING).setOrder(0),
                 new OArchitectOProperty("id", OType.INTEGER).setOrder(10),
-                workPlaceProp.setOrder(20)
+                workPlaceProp.setOrder(20),
+                new OArchitectOProperty("testLink", OType.LINK).setOrder(30).setLinkedClass("WorkPlace")
         ));
 
         workPlace.setProperties(asList(
