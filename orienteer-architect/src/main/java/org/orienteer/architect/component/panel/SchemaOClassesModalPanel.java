@@ -16,7 +16,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.architect.component.panel.command.AddOClassesCommand;
 import org.orienteer.architect.component.panel.command.CancelCommand;
-import org.orienteer.architect.util.OArchitectOClass;
+import org.orienteer.architect.model.OArchitectOClass;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.DisplayMode;

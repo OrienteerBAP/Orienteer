@@ -3,7 +3,7 @@ package org.orienteer.architect.component.panel;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.util.io.IClusterable;
-import org.orienteer.architect.util.OArchitectOClass;
+import org.orienteer.architect.model.OArchitectOClass;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
 import java.util.List;

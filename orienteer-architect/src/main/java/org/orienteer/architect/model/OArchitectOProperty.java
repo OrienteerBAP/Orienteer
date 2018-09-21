@@ -1,4 +1,4 @@
-package org.orienteer.architect.util;
+package org.orienteer.architect.model;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;

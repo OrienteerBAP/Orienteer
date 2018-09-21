@@ -6,7 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.architect.component.panel.IOClassesModalManager;
 import org.orienteer.architect.util.JsonUtil;
-import org.orienteer.architect.util.OArchitectOClass;
+import org.orienteer.architect.model.OArchitectOClass;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;

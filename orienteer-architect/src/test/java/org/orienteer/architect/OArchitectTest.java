@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.junit.Test;
 import org.orienteer.architect.util.JsonUtil;
-import org.orienteer.architect.util.OArchitectOClass;
-import org.orienteer.architect.util.OArchitectOProperty;
+import org.orienteer.architect.model.OArchitectOClass;
+import org.orienteer.architect.model.OArchitectOProperty;
 
 import java.util.List;
 
