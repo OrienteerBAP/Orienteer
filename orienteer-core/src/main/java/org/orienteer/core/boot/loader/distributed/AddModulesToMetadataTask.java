@@ -63,6 +63,7 @@ public class AddModulesToMetadataTask extends AbstractTask implements Runnable {
         OArtifactReference ref = artifact.getArtifactReference();
         Artifact downloaded = manager.downloadArtifact(ref.toAetherArtifact());
         if (downloaded != null) {
+            artifact.setDownloaded(true);
             ref.setFile(downloaded.getFile());
         }
     }

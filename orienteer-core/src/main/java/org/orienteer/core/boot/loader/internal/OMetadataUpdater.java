@@ -231,6 +231,10 @@ class OMetadataUpdater extends AbstractXmlHandler {
         trusted.appendChild(document.createTextNode(Boolean.toString(oArtifact.isTrusted())));
         module.appendChild(trusted);
 
+        Element downloaded = document.createElement(MetadataTag.DOWNLOADED.get());
+        downloaded.appendChild(document.createTextNode(Boolean.toString(oArtifact.isDownloaded())));
+        module.appendChild(downloaded);
+
         module.appendChild(createMavenDependency(oArtifact.getArtifactReference(), document));
     }
 
@@ -253,6 +257,9 @@ class OMetadataUpdater extends AbstractXmlHandler {
                         break;
                     case TRUSTED:
                         element.setTextContent(Boolean.toString(oArtifact.isTrusted()));
+                        break;
+                    case DOWNLOADED:
+                        element.setTextContent(Boolean.toString(oArtifact.isDownloaded()));
                         break;
                     case DEPENDENCY:
                         changeMavenDependency(element, oArtifact.getArtifactReference());

@@ -11,6 +11,7 @@ enum MetadataTag {
     MODULES("modules"),
     LOAD("load"),
     TRUSTED("trusted"),
+    DOWNLOADED("downloaded"),
     GROUP_ID("groupId"),
     ARTIFACT_ID("artifactId"),
     VERSION("version"),

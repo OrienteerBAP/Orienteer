@@ -1,5 +1,6 @@
 package org.orienteer.core.boot.loader.service;
 
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import org.apache.commons.io.IOUtils;
 import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
@@ -12,7 +13,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Default implementation of {@link IOrienteerModulesResolver}
@@ -22,12 +25,16 @@ public class OrienteerModulesResolver implements IOrienteerModulesResolver {
     @Inject
     private OModulesMicroFrameworkConfig config;
 
+    @Inject
+    private InternalOModuleManager moduleManager;
+
     @Override
     public List<OArtifact> resolveOrienteerModules() {
         Path metadata = downloadMetadata();
         OrienteerArtifactsReader reader = new OrienteerArtifactsReader(metadata);
         List<OArtifact> artifacts = reader.readArtifacts();
         setAvailableVersions(artifacts);
+        updateDownloadedArtifacts(new LinkedHashSet<>(artifacts));
         return artifacts;
     }
 
@@ -50,5 +57,11 @@ public class OrienteerModulesResolver implements IOrienteerModulesResolver {
             throw new IllegalStateException("Error during download metadata", ex);
         }
         return localFile.toPath();
+    }
+
+    private void updateDownloadedArtifacts(Set<OArtifact> artifacts) {
+        Set<OArtifact> metadatArtifacts = moduleManager.getOArtifactsMetadataAsSet();
+        Sets.intersection(metadatArtifacts, artifacts)
+            .forEach(art -> art.setDownloaded(true));
     }
 }

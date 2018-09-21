@@ -101,6 +101,9 @@ class OMetadataReader extends AbstractXmlHandler {
                     case TRUSTED:
                         module.setTrusted(Boolean.valueOf(element.getTextContent()));
                         break;
+                    case DOWNLOADED:
+                        module.setDownloaded(Boolean.valueOf(element.getTextContent()));
+                        break;
                     case DEPENDENCY:
                         module.setArtifactReference(getMavenDependency(element));
                         break;
