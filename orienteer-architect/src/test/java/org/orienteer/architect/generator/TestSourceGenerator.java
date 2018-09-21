@@ -1,0 +1,58 @@
+package org.orienteer.architect.generator;
+
+import com.google.inject.Inject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.orienteer.architect.model.OArchitectOClass;
+import org.orienteer.architect.model.generator.GeneratorMode;
+import org.orienteer.architect.model.generator.OModuleSource;
+import org.orienteer.architect.model.generator.OSourceGeneratorConfig;
+import org.orienteer.architect.service.ISourceGenerator;
+import org.orienteer.junit.OrienteerTestRunner;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.orienteer.architect.generator.util.GeneratorAssertUtil.assertNextLine;
+
+@RunWith(OrienteerTestRunner.class)
+public class TestSourceGenerator {
+
+    @Inject
+    private List<OArchitectOClass> classes;
+
+    @Inject
+    private ISourceGenerator generator;
+
+    @Test
+    public void testGenerateModuleSource() throws IOException {
+        OSourceGeneratorConfig config = new OSourceGeneratorConfig();
+        config.setMode(GeneratorMode.MODULE);
+        config.setClasses(classes);
+
+        Optional<OModuleSource> optSource = generator.generateSource(config);
+        assertTrue("Generated source not present", optSource.isPresent());
+
+        OModuleSource source = optSource.get();
+        assertEquals(GeneratorMode.MODULE.getName(), source.getName());
+
+
+        BufferedReader reader = new BufferedReader(new StringReader(source.getSrc()));
+        assertNextLine("public static final String EMPLOYEE_CLASS_NAME = \"Employee\";", reader);
+        assertNextLine("public static final String EMPLOYEE_PROP_NAME = \"name\";", reader);
+        assertNextLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
+        assertNextLine("", reader);
+        assertNextLine("", reader);
+        assertNextLine("", reader);
+        assertNextLine("OSchemaHelper helper = OSchemaHelper.bind(db);", reader);
+        assertNextLine("helper.oClass(EMPLOYEE_CLASS_NAME)", reader);
+        assertNextLine(".oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 0)", reader);
+        assertNextLine(".oProperty(EMPLOYEE_PROP_ID, OType.STRING, 10);", reader);
+    }
+
+}
