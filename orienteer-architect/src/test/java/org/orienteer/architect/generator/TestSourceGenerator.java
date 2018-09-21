@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.orienteer.architect.generator.util.GeneratorAssertUtil.assertNextLine;
+import static org.orienteer.architect.generator.util.GeneratorAssertUtil.assertNextPrettyLine;
 
 @RunWith(OrienteerTestRunner.class)
 public class TestSourceGenerator {
@@ -42,7 +43,12 @@ public class TestSourceGenerator {
         assertEquals(GeneratorMode.MODULE.getName(), source.getName());
 
 
-        BufferedReader reader = new BufferedReader(new StringReader(source.getSrc()));
+        assertNotPrettyPrint(new BufferedReader(new StringReader(source.getSrc())));
+        assertPrettyPrint(new BufferedReader(new StringReader(source.getSrc())));
+    }
+
+    private void assertNotPrettyPrint(BufferedReader reader) throws IOException {
+        assertNextLine("", reader);
         assertNextLine("public static final String EMPLOYEE_CLASS_NAME = \"Employee\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_NAME = \"name\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
@@ -52,7 +58,20 @@ public class TestSourceGenerator {
         assertNextLine("OSchemaHelper helper = OSchemaHelper.bind(db);", reader);
         assertNextLine("helper.oClass(EMPLOYEE_CLASS_NAME)", reader);
         assertNextLine(".oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 0)", reader);
-        assertNextLine(".oProperty(EMPLOYEE_PROP_ID, OType.STRING, 10);", reader);
+        assertNextLine(".oProperty(EMPLOYEE_PROP_ID, OType.INTEGER, 10);", reader);
     }
 
+    private void assertPrettyPrint(BufferedReader reader) throws IOException {
+        assertNextPrettyLine("", reader);
+        assertNextPrettyLine("public static final String EMPLOYEE_CLASS_NAME = \"Employee\";", reader);
+        assertNextPrettyLine("public static final String EMPLOYEE_PROP_NAME = \"name\";", reader);
+        assertNextPrettyLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
+        assertNextPrettyLine("", reader);
+        assertNextPrettyLine("", reader);
+        assertNextPrettyLine("", reader);
+        assertNextPrettyLine("OSchemaHelper helper = OSchemaHelper.bind(db);", reader);
+        assertNextPrettyLine("helper.oClass(EMPLOYEE_CLASS_NAME)", reader);
+        assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 0)", reader);
+        assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_ID, OType.INTEGER, 10);", reader);
+    }
 }

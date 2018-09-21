@@ -61,64 +61,72 @@ public class OArchitectOProperty implements IClusterable {
         return name;
     }
 
-    public void setName(String name) {
+    public OArchitectOProperty setName(String name) {
         this.name = name;
+        return this;
     }
 
     public OType getType() {
         return type;
     }
 
-    public void setType(OType type) {
+    public OArchitectOProperty setType(OType type) {
         this.type = type;
+        return this;
     }
 
     public boolean isSubClassProperty() {
         return subClassProperty;
     }
 
-    public void setSubClassProperty(boolean subClassProperty) {
+    public OArchitectOProperty setSubClassProperty(boolean subClassProperty) {
         this.subClassProperty = subClassProperty;
+        return this;
     }
 
     public String getLinkedClass() {
         return linkedClass;
     }
 
-    public void setLinkedClass(String linkedClass) {
+    public OArchitectOProperty setLinkedClass(String linkedClass) {
         this.linkedClass = linkedClass;
+        return this;
     }
 
     public String getPageUrl() {
         return pageUrl;
     }
 
-    public void setPageUrl(String pageUrl) {
+    public OArchitectOProperty setPageUrl(String pageUrl) {
         this.pageUrl = pageUrl;
+        return this;
     }
 
     public OArchitectOProperty getInverseProperty() {
         return inverseProperty;
     }
 
-    public void setInverseProperty(OArchitectOProperty inverseProperty) {
+    public OArchitectOProperty setInverseProperty(OArchitectOProperty inverseProperty) {
         this.inverseProperty = inverseProperty;
+        return this;
     }
 
     public boolean isExistsInDb() {
         return existsInDb;
     }
 
-    public void setExistsInDb(boolean existsInDb) {
+    public OArchitectOProperty setExistsInDb(boolean existsInDb) {
         this.existsInDb = existsInDb;
+        return this;
     }
 
     public int getOrder() {
         return order;
     }
 
-    public void setOrder(int order) {
+    public OArchitectOProperty setOrder(int order) {
         this.order = order;
+        return this;
     }
 
     public boolean isInversePropertyEnable() {

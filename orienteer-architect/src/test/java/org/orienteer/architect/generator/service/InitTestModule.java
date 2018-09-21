@@ -36,7 +36,8 @@ public class InitTestModule extends AbstractModule {
         OArchitectOClass employee = new OArchitectOClass("Employee");
 
         employee.setProperties(asList(
-                new OArchitectOProperty("name", OType.STRING),  new OArchitectOProperty("id", OType.INTEGER)
+                new OArchitectOProperty("name", OType.STRING).setOrder(0),
+                new OArchitectOProperty("id", OType.INTEGER).setOrder(10)
         ));
 
         return Collections.singletonList(employee);

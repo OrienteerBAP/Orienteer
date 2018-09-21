@@ -10,12 +10,20 @@ public final class GeneratorAssertUtil {
     private GeneratorAssertUtil() {}
 
     public static void assertNextLine(String expected, BufferedReader reader) throws IOException {
-        String actual = readLine(reader);
+        String actual = readLine(reader, true);
         assertEquals("Lines are not equals", expected, actual);
     }
 
-    public static String readLine(BufferedReader reader) throws IOException {
+    public static void assertNextPrettyLine(String expected, BufferedReader reader) throws IOException {
+        String actual = readLine(reader, false);
+        assertEquals("Lines are not equals", expected, actual);
+    }
+
+    public static String readLine(BufferedReader reader, boolean trim) throws IOException {
         String line = reader.readLine();
-        return line != null ? line.trim() : null;
+        if (line != null) {
+            return trim ? line.trim() : line;
+        }
+        return null;
     }
 }
