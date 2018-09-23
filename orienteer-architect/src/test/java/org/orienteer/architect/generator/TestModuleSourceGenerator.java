@@ -9,6 +9,8 @@ import org.orienteer.architect.model.generator.OModuleSource;
 import org.orienteer.architect.model.generator.OSourceGeneratorConfig;
 import org.orienteer.architect.service.ISourceGenerator;
 import org.orienteer.junit.OrienteerTestRunner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,6 +25,8 @@ import static org.orienteer.architect.generator.util.GeneratorAssertUtil.assertN
 
 @RunWith(OrienteerTestRunner.class)
 public class TestModuleSourceGenerator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TestModuleSourceGenerator.class);
 
     @Inject
     private List<OArchitectOClass> classes;
@@ -85,6 +89,7 @@ public class TestModuleSourceGenerator {
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_NAME = \"name\";", reader);
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_WORKPLACE = \"workPlace\";", reader);
+        assertNextPrettyLine("public static final String EMPLOYEE_PROP_TESTLINK = \"testLink\";", reader);
         assertNextPrettyLine("", reader);
         assertNextPrettyLine("public static final String WORKPLACE_CLASS_NAME = \"WorkPlace\";", reader);
         assertNextPrettyLine("public static final String WORKPLACE_PROP_NAME = \"name\";", reader);
@@ -97,7 +102,8 @@ public class TestModuleSourceGenerator {
         assertNextPrettyLine("helper.oClass(EMPLOYEE_CLASS_NAME)", reader);
         assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 0)", reader);
         assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_ID, OType.INTEGER, 10)", reader);
-        assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_WORKPLACE, OType.LINK, 20);", reader);
+        assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_WORKPLACE, OType.LINK, 20)", reader);
+        assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_TESTLINK, OType.LINK, 30).linkedClass(WORKPLACE_CLASS_NAME);", reader);
         assertNextPrettyLine("", reader);
         assertNextPrettyLine("helper.oClass(WORKPLACE_CLASS_NAME)", reader);
         assertNextPrettyLine("    .oProperty(WORKPLACE_PROP_NAME, OType.STRING, 0)", reader);

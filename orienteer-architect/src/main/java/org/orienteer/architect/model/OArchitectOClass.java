@@ -9,10 +9,7 @@ import org.apache.wicket.util.io.IClusterable;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.model.ExtendedOPropertiesDataProvider;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Utility class which represents {@link com.orientechnologies.orient.core.metadata.schema.OClass} from JSON
@@ -118,7 +115,7 @@ public class OArchitectOClass implements IClusterable {
     }
 
     public List<String> getSuperClasses() {
-        return superClasses;
+        return superClasses != null ? superClasses : Collections.emptyList();
     }
 
     public List<String> getSubClasses() {

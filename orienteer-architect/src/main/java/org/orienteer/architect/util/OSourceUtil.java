@@ -19,4 +19,8 @@ public final class OSourceUtil {
         }
         return sb;
     }
+
+    public static String wrapString(String str) {
+        return "\"" + str + "\"";
+    }
 }
