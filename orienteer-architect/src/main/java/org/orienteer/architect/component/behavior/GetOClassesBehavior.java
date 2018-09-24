@@ -16,6 +16,7 @@ import org.orienteer.architect.event.OpenModalWindowEvent;
 import org.orienteer.architect.model.OArchitectOClass;
 import org.orienteer.architect.util.JsonUtil;
 import org.orienteer.architect.util.OArchitectClassesUtils;
+import org.orienteer.architect.util.OArchitectJsUtils;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class GetOClassesBehavior extends AbstractDefaultAjaxBehavior {
         if (classesList) {
             target.appendJavaScript(String.format("app.executeCallback('%s');", getAllClassesAsJson()));
         } else {
+            target.prependJavaScript(OArchitectJsUtils.switchPageScroll(true));
             widget.onModalWindowEvent(
                     new OpenModalWindowEvent(
                             target,

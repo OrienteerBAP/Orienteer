@@ -11,6 +11,7 @@ var OArchitectActionNames = {
     DELETE_CELL_ACTION:          'deleteCell',
     SAVE_EDITOR_CONFIG_ACTION:   'saveEditorConfig',
     APPLY_EDITOR_CHANGES_ACTION: 'applyChanges',
+    GENERATE_JAVA_SRC_ACTION:    'generateJavaSrc',
     FULL_SCREEN_MODE:            'fullScreenMode',
     ADD_OPROPERTY_LINK_ACTION:   'addOPropertyLinkAction'
 };
@@ -133,8 +134,8 @@ var OArchitectAction = {
         var pt = graph.getPointForEvent(evt.evt);
 
         var action = function (json) {
-            const START_X = pt.x;
-            const START_Y = pt.y;
+            var START_X = pt.x;
+            var START_Y = pt.y;
             var x = START_X;
             var counterX = 1;
             var jsonClasses = JSON.parse(json);
@@ -348,6 +349,15 @@ var OArchitectAction = {
             app.editor.toolbar.elementExecuted = false;
             editor.clearCommandHistory();
         });
+    },
+
+    generateJavaSrcAction: function (editor) {
+        console.dir('generateJavaSrcAction');
+        app.editor.toolbar.elementExecuted = true;
+        app.generateJavaSources(OArchitectUtil.getOClassesAsJSON(editor.graph), function (response) {
+
+        });
+        app.editor.toolbar.elementExecuted = false;
     },
 
     /**

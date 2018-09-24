@@ -117,6 +117,11 @@ OArchitectApplication.prototype.checkChangesRequestCallbackUrl = null;
 OArchitectApplication.prototype.switchFullScreenModeCallbackUrl = null;
 
 /**
+ * string url to Wicket behavior which generates Java sources
+ */
+OArchitectApplication.prototype.generateJavaSourcesCallbackUrl = null;
+
+/**
  * Contains callback function which executes every time after Wicket behavior response
  */
 OArchitectApplication.prototype.callback = null;
@@ -156,6 +161,7 @@ OArchitectApplication.prototype.configureEditorToolbar = function (editor) {
     var toolbar = new OArchitectToolbar(editor, this.getToolbarContainer());
     toolbar.addAction(localizer.saveDataModel, OArchitectActionNames.SAVE_EDITOR_CONFIG_ACTION, OArchitectAction.saveEditorConfigAction);
     toolbar.addAction(localizer.applyChanges, OArchitectActionNames.APPLY_EDITOR_CHANGES_ACTION, OArchitectAction.applyEditorChangesAction);
+    toolbar.addAction(localizer.generateSources, OArchitectActionNames.GENERATE_JAVA_SRC_ACTION, OArchitectAction.generateJavaSrcAction);
     editor.toolbar = toolbar;
 };
 
@@ -258,6 +264,10 @@ OArchitectApplication.prototype.setChecksAboutClassesChanges = function (callbac
     this.checkChangesRequestCallbackUrl = callbackUrl;
 };
 
+OArchitectApplication.prototype.setGenerateJavaSources = function (callbackUrl) {
+    this.generateJavaSourcesCallbackUrl = callbackUrl;
+};
+
 /**
  * Save editor config in database
  * @param xml config which will be saved
@@ -314,6 +324,13 @@ OArchitectApplication.prototype.switchPageScrolling = function () {
 OArchitectApplication.prototype.applyEditorChanges = function (json, callback) {
     this.callback = callback;
     this.sendPostRequest(this.applyEditorChangesCallbackUrl, {
+        "json": json
+    });
+};
+
+OArchitectApplication.prototype.generateJavaSources = function (json, callback) {
+    this.callback = callback;
+    this.sendPostRequest(this.generateJavaSourcesCallbackUrl, {
         "json": json
     });
 };

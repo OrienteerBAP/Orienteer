@@ -26,6 +26,7 @@ import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.*;
 import org.orienteer.architect.component.panel.command.OArchitectFullscreenCommand;
 import org.orienteer.architect.event.AbstractModalWindowEvent;
+import org.orienteer.architect.util.OArchitectJsUtils;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.util.CommonUtils;
@@ -77,7 +78,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         add(new ApplyEditorChangesBehavior());
         add(new GetOClassesBehavior(this));
         add(new ExistsOClassBehavior());
-        add(new GenerateJavaSourcesBehavior());
+        add(new GenerateJavaSourcesBehavior(this));
         add(modalWindow);
         addFullScreenCommand();
     }
@@ -123,6 +124,7 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         modal.setInitialHeight(510);
         modal.setMinimalWidth(670);
         modal.setMinimalHeight(510);
+        modal.setWindowClosedCallback(t -> t.appendJavaScript(OArchitectJsUtils.switchPageScroll(false)));
         return modal;
     }
 
