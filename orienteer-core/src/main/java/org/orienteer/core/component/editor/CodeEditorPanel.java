@@ -32,6 +32,9 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
 
     private String convertedInput;
 
+    private TextArea<String> codeArea;
+    private WebMarkupContainer handle;
+
     public CodeEditorPanel(String id, IModel<String> model, IModel<DisplayMode> displayModel) {
         super(id, model);
         this.displayModel = displayModel;
@@ -50,13 +53,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
     protected void onInitialize() {
         super.onInitialize();
         setOutputMarkupPlaceholderTag(true);
-        final WebMarkupContainer handle = new WebMarkupContainer("handle");
-//        {
-//            @Override
-//            public boolean isVisible() {
-//                return displayModel.getObject() == DisplayMode.EDIT;
-//            }
-//        };
+        handle = new WebMarkupContainer("handle");
         handle.setOutputMarkupId(true);
         WebMarkupContainer container = new WebMarkupContainer("container") {
             @Override
@@ -67,24 +64,22 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
             }
         };
         container.add(handle);
-        container.add(createTextArea("editor", handle.getMarkupId()));
+        container.add(codeArea = createTextArea("editor"));
         add(container);
     }
 
-    private Component createTextArea(String id, final String handleId) {
-        TextArea<String> textArea = new TextArea<String>(id, getModel()) {
+    private TextArea<String> createTextArea(String id) {
+        return new TextArea<String>(id, CodeEditorPanel.this.getModel()) {
             @Override
             public void renderHead(IHeaderResponse response) {
                 super.renderHead(response);
-                Map<String, String> params = newParamsMap();
-                Map<String, String> keysMap = newParamsMap();
-                configureCustomEditorParams(params);
-                configureCustomEditorKeysBinding(keysMap);
-                configureEditorParams(params);
-                configureEditorKeysBinding(keysMap);
-                if (displayModel.getObject() == DisplayMode.EDIT) params.put(EXTRAKEYS, keysMap.toString());
-                response.render(OnLoadHeaderItem.forScript(String.format(";editorInit('%s', '%s', %s);",
-                        getMarkupId(), handleId, params.toString())));
+
+            }
+
+            @Override
+            protected void onInitialize() {
+                super.onInitialize();
+                setOutputMarkupPlaceholderTag(true);
             }
 
             @Override
@@ -93,7 +88,6 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
                 CodeEditorPanel.this.setNewConvertedInput(getConvertedInput());
             }
         };
-        return textArea;
     }
 
     /**
@@ -175,6 +169,18 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
         super.renderHead(response);
         setCustomEditorDependencies(response);
         setEditorDependencies(response);
+        initCodeMirror(response);
+    }
+
+    private void initCodeMirror(IHeaderResponse response) {
+        Map<String, String> params = newParamsMap();
+        Map<String, String> keysMap = newParamsMap();
+        configureCustomEditorParams(params);
+        configureCustomEditorKeysBinding(keysMap);
+        configureEditorParams(params);
+        configureEditorKeysBinding(keysMap);
+        if (displayModel.getObject() == DisplayMode.EDIT) params.put(EXTRAKEYS, keysMap.toString());
+        response.render(OnLoadHeaderItem.forScript(getInitJsCode(params)));
     }
 
     private void setCustomEditorDependencies(IHeaderResponse response) {
@@ -229,6 +235,11 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
     @Override
     public boolean isEnabled() {
         return displayModel.getObject() == DisplayMode.EDIT;
+    }
+
+    private String getInitJsCode(Map<String, String> params) {
+        return String.format("setTimeout(function() {editorInit('%s', '%s', %s);}, 0);",
+                codeArea.getMarkupId(), handle.getMarkupId(), params.toString());
     }
 
     /**
