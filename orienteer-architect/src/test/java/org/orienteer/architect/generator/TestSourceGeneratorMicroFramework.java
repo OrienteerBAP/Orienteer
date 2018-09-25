@@ -2,16 +2,12 @@ package org.orienteer.architect.generator;
 
 import org.junit.Test;
 import org.orienteer.architect.service.generator.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 public class TestSourceGeneratorMicroFramework {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TestSourceGeneratorMicroFramework.class);
 
     @Test
     public void testNewInstance() {
@@ -37,7 +33,7 @@ public class TestSourceGeneratorMicroFramework {
     @Test
     public void testChainCall() {
         ISource callChainTest = new OSourceChainCall("test", asList("1", "2", "3"));
-        assertEquals("    .test(1, 2, 3)", callChainTest.toJavaSrc());
+        assertEquals(".test(1, 2, 3)", callChainTest.toJavaSrc());
     }
 
     @Test
