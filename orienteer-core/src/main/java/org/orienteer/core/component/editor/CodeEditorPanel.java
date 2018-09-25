@@ -32,7 +32,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
 
     private String convertedInput;
 
-    private TextArea<String> codeArea;
+    private TextArea<String> editorArea;
     private WebMarkupContainer handle;
 
     public CodeEditorPanel(String id, IModel<String> model, IModel<DisplayMode> displayModel) {
@@ -64,7 +64,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
             }
         };
         container.add(handle);
-        container.add(codeArea = createTextArea("editor"));
+        container.add(editorArea = createTextArea("editor"));
         add(container);
     }
 
@@ -239,7 +239,11 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
 
     private String getInitJsCode(Map<String, String> params) {
         return String.format("setTimeout(function() {editorInit('%s', '%s', %s);}, 0);",
-                codeArea.getMarkupId(), handle.getMarkupId(), params.toString());
+                editorArea.getMarkupId(), handle.getMarkupId(), params.toString());
+    }
+
+    public TextArea<String> getEditorArea() {
+        return editorArea;
     }
 
     /**
