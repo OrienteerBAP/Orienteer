@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Represents Code fragment in Java Sources
+ */
 public class OSourceFragment implements ISource {
 
     private final List<ISource> sources;

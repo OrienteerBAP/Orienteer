@@ -1,5 +1,8 @@
 package org.orienteer.architect.service.generator;
 
+/**
+ * Represents Java constant
+ */
 public class OSourceConstant extends OSourceVariableDeclaration {
 
     private final OSourceNewInstance instance;

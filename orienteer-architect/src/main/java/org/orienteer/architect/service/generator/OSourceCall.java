@@ -6,6 +6,9 @@ import java.util.List;
 
 import static org.orienteer.architect.util.OSourceUtil.appendArgs;
 
+/**
+ * Represents call method in Java sources
+ */
 public class OSourceCall implements ISource {
 
     private final String instanceName;

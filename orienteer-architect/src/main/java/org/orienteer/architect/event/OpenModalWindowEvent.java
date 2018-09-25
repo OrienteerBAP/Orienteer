@@ -9,6 +9,9 @@ import org.danekja.java.util.function.serializable.SerializableFunction;
 
 import java.util.function.Function;
 
+/**
+ * Event which represents open modal window
+ */
 public class OpenModalWindowEvent extends AbstractModalWindowEvent {
 
     private final IModel<String> titleModel;

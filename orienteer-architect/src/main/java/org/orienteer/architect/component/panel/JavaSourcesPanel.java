@@ -22,9 +22,12 @@ import org.orienteer.core.web.BasePage;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Panel which contains Java source code generated from given classes
+ */
 public class JavaSourcesPanel extends GenericPanel<List<OArchitectOClass>> {
 
-    public JavaScriptResourceReference COPY_JS = new JavaScriptResourceReference(JavaSourcesPanel.class, "copy.js");
+    public static final JavaScriptResourceReference COPY_JS = new JavaScriptResourceReference(JavaSourcesPanel.class, "copy.js");
 
     @Inject
     private ISourceGenerator sourceGenerator;

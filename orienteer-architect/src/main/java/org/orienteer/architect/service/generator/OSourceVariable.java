@@ -1,5 +1,8 @@
 package org.orienteer.architect.service.generator;
 
+/**
+ * Represents variable in Java sources
+ */
 public class OSourceVariable extends OSourceVariableDeclaration {
 
     private final OSourceNewInstance instance;

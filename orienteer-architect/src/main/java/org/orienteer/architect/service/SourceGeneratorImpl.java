@@ -13,6 +13,9 @@ import java.util.concurrent.CompletableFuture;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
+/**
+ * Default implementation of {@link ISourceGenerator}
+ */
 public class SourceGeneratorImpl implements ISourceGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(SourceGeneratorImpl.class);

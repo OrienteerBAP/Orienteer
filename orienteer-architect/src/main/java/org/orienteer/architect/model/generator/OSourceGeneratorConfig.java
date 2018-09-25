@@ -6,6 +6,9 @@ import org.orienteer.architect.model.OArchitectOClass;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Config for {@link org.orienteer.architect.service.ISourceGenerator}
+ */
 public class OSourceGeneratorConfig implements IClusterable {
     private static final long serialVersionUID = 7183875210913118263L;
 

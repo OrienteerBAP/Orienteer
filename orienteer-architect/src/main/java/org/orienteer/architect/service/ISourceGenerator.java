@@ -8,6 +8,9 @@ import org.orienteer.architect.model.generator.OSourceGeneratorConfig;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Interface for generate Java sources from given config
+ */
 @ImplementedBy(SourceGeneratorImpl.class)
 public interface ISourceGenerator {
 

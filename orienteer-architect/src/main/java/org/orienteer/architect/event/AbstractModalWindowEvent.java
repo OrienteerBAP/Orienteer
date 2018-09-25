@@ -6,6 +6,9 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
 import java.io.Serializable;
 
+/**
+ * Abstract event for modal window
+ */
 public abstract class AbstractModalWindowEvent implements Serializable {
 
     protected final AjaxRequestTarget target;

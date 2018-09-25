@@ -1,5 +1,8 @@
 package org.orienteer.architect.service.generator;
 
+/**
+ * Represents blank line in Java soources
+ */
 public class OSourceBlankLine implements ISource {
 
     private final int num;
@@ -8,6 +11,11 @@ public class OSourceBlankLine implements ISource {
         this(1);
     }
 
+    /**
+     * 1 - one blank lines
+     * 2 - two blank lines
+     * @param num number of blank lines
+     */
     public OSourceBlankLine(int num) {
         this.num = num;
     }

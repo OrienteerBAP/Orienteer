@@ -9,6 +9,9 @@ import org.orienteer.core.component.property.DisplayMode;
 
 import java.util.Map;
 
+/**
+ * Panel for display Java sources
+ */
 public class JavaCodeEditorPanel extends CodeEditorPanel {
 
     public JavaCodeEditorPanel(String id, IModel<String> model, IModel<DisplayMode> displayModel) {

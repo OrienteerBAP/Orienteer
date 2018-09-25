@@ -5,6 +5,9 @@ import java.util.List;
 
 import static org.orienteer.architect.util.OSourceUtil.appendArgs;
 
+/**
+ * Represents chain call in Java sources
+ */
 public class OSourceChainCall extends OSourceCall {
     public OSourceChainCall(String methodName) {
         this(null, methodName);

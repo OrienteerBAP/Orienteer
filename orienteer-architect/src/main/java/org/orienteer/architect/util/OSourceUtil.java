@@ -2,6 +2,9 @@ package org.orienteer.architect.util;
 
 import java.util.List;
 
+/**
+ * Utils for {@link org.orienteer.architect.service.ISourceGenerator}
+ */
 public final class OSourceUtil {
 
     private OSourceUtil() {}

@@ -6,6 +6,9 @@ import java.util.List;
 
 import static org.orienteer.architect.util.OSourceUtil.appendArgs;
 
+/**
+ * Represents create new instance of object in Java sources
+ */
 public class OSourceNewInstance implements ISource {
 
     private final String className;

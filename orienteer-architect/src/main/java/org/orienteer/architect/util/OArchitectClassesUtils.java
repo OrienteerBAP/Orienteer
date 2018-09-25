@@ -16,6 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utils for work with {@link OArchitectOClass}
+ */
 public final class OArchitectClassesUtils {
 
     private OArchitectClassesUtils() {}

@@ -12,6 +12,38 @@ import java.util.stream.Stream;
 
 import static org.orienteer.architect.util.OSourceUtil.wrapString;
 
+/**
+ * Implementation of {@link IGeneratorStrategy} which generates source code for Orienteer module.
+ * Example:
+ * {@code
+ * public static final String EMPLOYEE_CLASS_NAME = "Employee";
+ * public static final String EMPLOYEE_PROP_ID = "id";
+ * public static final String EMPLOYEE_PROP_NAME = "name";
+ * public static final String EMPLOYEE_PROP_WORKPLACE = "workPlace";
+ *
+ * public static final String WORKPLACE_CLASS_NAME = "WorkPlace";
+ * public static final String WORKPLACE_PROP_ID = "id";
+ * public static final String WORKPLACE_PROP_NAME = "name";
+ * public static final String WORKPLACE_PROP_EMPLOYEES = "employees";
+ *
+ *
+ *
+ * OSchemaHelper helper = OSchemaHelper.bind(db);
+ * helper.oClass(EMPLOYEE_CLASS_NAME)
+ *     .oProperty(EMPLOYEE_PROP_ID, OType.INTEGER, 0)
+ *     .oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 10)
+ *     .oProperty(EMPLOYEE_PROP_WORKPLACE, OType.LINK, 20);
+ *
+ * helper.oClass(WORKPLACE_CLASS_NAME)
+ *    .oProperty(WORKPLACE_PROP_ID, OType.INTEGER, 0)
+ *    .oProperty(WORKPLACE_PROP_NAME, OType.STRING, 10)
+ *    .oProperty(WORKPLACE_PROP_EMPLOYEES, OType.LINKLIST, 20);
+ *
+ *
+ *
+ * helper.setupRelationship(EMPLOYEE_CLASS_NAME, EMPLOYEE_PROP_WORKPLACE, WORKPLACE_CLASS_NAME, WORKPLACE_PROP_EMPLOYEES);
+ * }
+ */
 public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     public ModuleGeneratorStrategy() {

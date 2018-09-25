@@ -3,18 +3,14 @@ package org.orienteer.architect.model.generator;
 import org.apache.http.util.Args;
 import org.orienteer.architect.service.generator.IGeneratorStrategy;
 import org.orienteer.architect.service.generator.ModuleGeneratorStrategy;
-import org.orienteer.architect.service.generator.ProjectGeneratorStrategy;
 
 /**
  * Mode for generated sources.
  * {@link GeneratorMode#MODULE} - generate fragment of module file based on this config
- * {@link GeneratorMode#PROJECT} - generate Orienteer module project based on this config
  */
 public class GeneratorMode {
 
     public static final GeneratorMode MODULE = new GeneratorMode("module", ModuleGeneratorStrategy.class);
-
-    public static final GeneratorMode PROJECT = new GeneratorMode("project", ProjectGeneratorStrategy.class);
 
     private final String name;
     private final Class<? extends IGeneratorStrategy> strategyClass;

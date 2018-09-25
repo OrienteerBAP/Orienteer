@@ -2,6 +2,9 @@ package org.orienteer.architect.model.generator;
 
 import org.apache.wicket.util.io.IClusterable;
 
+/**
+ * Represents source code for Orienteer module
+ */
 public class OModuleSource implements IClusterable {
     private static final long serialVersionUID = -2187816826212209880L;
 
@@ -37,12 +40,5 @@ public class OModuleSource implements IClusterable {
 
     public boolean isPackage() {
         return false;
-    }
-
-    public OModulePackage asPackage() {
-        if (isPackage()) {
-            return (OModulePackage) this;
-        }
-        throw new IllegalStateException("Current source object is not a package");
     }
 }

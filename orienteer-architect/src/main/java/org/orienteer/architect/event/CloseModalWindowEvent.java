@@ -6,6 +6,9 @@ import org.danekja.java.util.function.serializable.SerializableConsumer;
 
 import java.util.function.Consumer;
 
+/**
+ * Event which represents close modal window
+ */
 public class CloseModalWindowEvent extends AbstractModalWindowEvent {
 
     private final Consumer<AjaxRequestTarget> callback;

@@ -6,6 +6,9 @@ import java.util.List;
 
 import static org.orienteer.architect.util.OSourceUtil.appendArgs;
 
+/**
+ * Represents create new instance of object by using static method
+ */
 public class OSourceStaticNewInstance extends OSourceNewInstance {
 
     private final String methodName;

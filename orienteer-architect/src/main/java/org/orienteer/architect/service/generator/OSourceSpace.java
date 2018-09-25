@@ -1,5 +1,8 @@
 package org.orienteer.architect.service.generator;
 
+/**
+ * Represents space in Java sources
+ */
 public class OSourceSpace implements ISource {
 
     private final int num;

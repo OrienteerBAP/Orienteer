@@ -15,6 +15,9 @@ import org.orienteer.architect.event.OpenModalWindowEvent;
 import org.orienteer.architect.util.JsonUtil;
 import org.orienteer.architect.util.OArchitectJsUtils;
 
+/**
+ * Behavior for generate Java sources from given classes
+ */
 public class GenerateJavaSourcesBehavior extends AbstractDefaultAjaxBehavior {
 
     private static final String JSON_VAR = "json";

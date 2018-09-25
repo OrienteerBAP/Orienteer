@@ -1,5 +1,8 @@
 package org.orienteer.architect.service.generator;
 
+/**
+ * Represents variable declaration in Java sources
+ */
 public class OSourceVariableDeclaration implements ISource {
 
     private final String modifier;
