@@ -51,6 +51,9 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     private static final CssResourceReference MXGRAPH_CSS       = new WebjarsCssResourceReference("mxgraph/current/javascript/src/css/common.css");
     private static final CssResourceReference OARCHITECT_CSS    = new CssResourceReference(OArchitectEditorWidget.class, "css/architect.css");
 
+    public static final int MODAL_WINDOW_HEIGHT = 510;
+    public static final int MODAL_WINDOW_WIDTH  = 670;
+
     private WebMarkupContainer container;
     private WebMarkupContainer editor;
     private WebMarkupContainer toolbar;
@@ -120,10 +123,10 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     private ModalWindow createModalWindow(String id) {
         ModalWindow modal = new ModalWindow(id);
         modal.setOutputMarkupId(true);
-        modal.setInitialWidth(670);
-        modal.setInitialHeight(510);
-        modal.setMinimalWidth(670);
-        modal.setMinimalHeight(510);
+        modal.setInitialWidth(MODAL_WINDOW_WIDTH);
+        modal.setInitialHeight(MODAL_WINDOW_HEIGHT);
+        modal.setMinimalWidth(MODAL_WINDOW_WIDTH);
+        modal.setMinimalHeight(MODAL_WINDOW_HEIGHT);
         modal.setWindowClosedCallback(t -> t.appendJavaScript(OArchitectJsUtils.switchPageScroll(false)));
         return modal;
     }

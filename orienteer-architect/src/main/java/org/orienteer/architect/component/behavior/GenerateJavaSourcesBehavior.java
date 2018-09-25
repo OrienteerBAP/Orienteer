@@ -14,12 +14,8 @@ import org.orienteer.architect.component.widget.OArchitectEditorWidget;
 import org.orienteer.architect.event.OpenModalWindowEvent;
 import org.orienteer.architect.util.JsonUtil;
 import org.orienteer.architect.util.OArchitectJsUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GenerateJavaSourcesBehavior extends AbstractDefaultAjaxBehavior {
-
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateJavaSourcesBehavior.class);
 
     private static final String JSON_VAR = "json";
 
