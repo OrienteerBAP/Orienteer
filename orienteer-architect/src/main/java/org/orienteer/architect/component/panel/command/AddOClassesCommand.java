@@ -4,12 +4,13 @@ import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.orienteer.architect.component.panel.IOClassesModalManager;
+import org.orienteer.architect.model.OArchitectOClass;
 import org.orienteer.architect.util.JsonUtil;
-import org.orienteer.architect.util.OArchitectOClass;
+import org.orienteer.architect.util.OArchitectClassesUtils;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
+import org.orienteer.core.component.table.OrienteerDataTable;
 
 import java.util.List;
 
@@ -18,11 +19,8 @@ import java.util.List;
  */
 public class AddOClassesCommand extends AbstractCheckBoxEnabledCommand<OClass> {
 
-    private final IOClassesModalManager manager;
-
-    public AddOClassesCommand(IModel<String> labelModel, IOClassesModalManager manager) {
-        super(labelModel, manager.getTable());
-        this.manager = manager;
+    public AddOClassesCommand(IModel<String> labelModel, OrienteerDataTable<OClass, String> table) {
+        super(labelModel, table);
     }
 
     @Override
@@ -33,11 +31,16 @@ public class AddOClassesCommand extends AbstractCheckBoxEnabledCommand<OClass> {
     }
 
     @Override
-    protected void performMultiAction(AjaxRequestTarget target, List<OClass> classes) {
-        List<OArchitectOClass> architectOClasses = manager.toOArchitectOClasses(classes);
+    protected final void performMultiAction(AjaxRequestTarget target, List<OClass> classes) {
+        List<OArchitectOClass> architectOClasses = OArchitectClassesUtils.toOArchitectClasses(classes);
         String json = JsonUtil.toJSON(architectOClasses);
-        if (Strings.isNullOrEmpty(json)) json = "[]";
-        manager.executeCallback(target, json);
-        manager.closeModalWindow(target);
+        if (Strings.isNullOrEmpty(json)) {
+            json = "[]";
+        }
+        performAction(target, json);
+    }
+
+    protected void performAction(AjaxRequestTarget target, String json) {
+
     }
 }

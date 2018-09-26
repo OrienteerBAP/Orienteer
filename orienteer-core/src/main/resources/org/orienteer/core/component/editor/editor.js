@@ -11,7 +11,7 @@ function editorInit(id, handleId, config) {
 }
 
 function enableChangeHeight(handleId, cm) {
-    const MIN_HEIGHT = 200;
+    var MIN_HEIGHT = 200;
     var handle = $('#' + handleId);
 
     var mouseStartY;

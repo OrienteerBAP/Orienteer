@@ -21,6 +21,7 @@ var en = {
     editProperty: 'Edit property',
     saveDataModel: 'Save Data Model',
     applyChanges: 'Apply Changes',
+    generateSources: 'Generate sources',
     classEmptyName: 'Class name can\'t be empty',
     classNameForbidden: 'Class name contains forbidden characters',
     classExistsInDatabase: 'Class already exists in database',
