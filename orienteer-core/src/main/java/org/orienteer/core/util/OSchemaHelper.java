@@ -1,5 +1,6 @@
 package org.orienteer.core.util;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.orienteer.core.OClassDomain;
@@ -12,6 +13,8 @@ import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * Enhanced {@link ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper} from wicket-orientdb library to allow Orienteer specific things
@@ -280,6 +283,30 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 
 		if (!Objects.equals(property.getLinkedClass(), class2)) property.setLinkedClass(class2);
 
+		return this;
+	}
+
+	@Override
+	public OSchemaHelper oDocument() {
+		super.oDocument();
+		return this;
+	}
+
+	@Override
+	public OSchemaHelper oDocument(String pkField, Object pkValue) {
+		super.oDocument(pkField, pkValue);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper saveDocument() {
+		super.saveDocument();
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper field(String field, Object value) {
+		super.field(field, value);
 		return this;
 	}
 	
