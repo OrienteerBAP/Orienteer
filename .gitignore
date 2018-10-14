@@ -12,10 +12,13 @@ release.properties
 build.cmd
 databases/
 /Orienteer/
+/Orienteer.*/
 /*/Orienteer/
+/*/Orienteer.*/
 /*/libs/
 .idea/
 *.iml
 *.log
+*.tar.gz
 orienteer.properties
 orienteer-test.properties
