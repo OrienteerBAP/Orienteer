@@ -10,6 +10,7 @@ import org.orienteer.core.OrienteerWebSession;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.empty;
@@ -191,5 +192,49 @@ public class CommonUtils {
 	 */
 	public static Optional<ODocument> getDocument(List<OIdentifiable> identifiables) {
 		return isNotEmpty(identifiables) ? ofNullable(identifiables.get(0).getRecord()) : empty();
+	}
+	
+	/**
+	 * Return main object if it's not null or default
+	 * @param object main object
+	 * @param def default object
+	 * @return main object if it's not null or default
+	 */
+	public static <T> T defaultIfNull(T object, T def) {
+		return object!=null?object:def;
+	}
+	
+	/**
+	 * Return main object if it's not null or supplied default
+	 * @param object main object
+	 * @param def default object
+	 * @return main object if it's not null or supplied default
+	 */
+	public static <T> T defaultIfNull(T object, Supplier<T> supplier) {
+		return object!=null?object:supplier.get();
+	}
+	
+	/**
+	 * Safe method to merge sets. Always return not null
+	 * @param mainSet main set to merge into
+	 * @param mergeSet set to merge
+	 * @return mergedSet - not null
+	 */
+	public static <T> Set<T> mergeSets(Set<T> mainSet, Collection<T> mergeSet) {
+		if(mainSet==null) mainSet = new HashSet<>();
+		if(mergeSet!=null) mainSet.addAll(mergeSet);
+		return mainSet;
+	}
+	
+	/**
+	 * Safe method to merge maps
+	 * @param mainMap main map to merge into
+	 * @param mergeMap map to merge
+	 * @return merged map - not null
+	 */
+	public static <K, V> Map<K,V> mergeMaps(Map<K, V> mainMap, Map<K,V> mergeMap) {
+		if(mainMap==null) mainMap = new HashMap<>();
+		if(mergeMap!=null) mainMap.putAll(mergeMap);
+		return mainMap;
 	}
 }

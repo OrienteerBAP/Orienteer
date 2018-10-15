@@ -2,6 +2,7 @@ package org.orienteer.core.util;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.CustomAttribute;
@@ -9,6 +10,7 @@ import org.orienteer.core.CustomAttribute;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -310,4 +312,27 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		return this;
 	}
 	
+	@Override
+	public OSchemaHelper doOnOClass(Consumer<OClass> consumer) {
+		super.doOnOClass(consumer);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper doOnOProperty(Consumer<OProperty> consumer) {
+		super.doOnOProperty(consumer);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper doOnOIndex(Consumer<OIndex<?>> consumer) {
+		super.doOnOIndex(consumer);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper doOnODocument(Consumer<ODocument> consumer) {
+		super.doOnODocument(consumer);
+		return this;
+	}
 }
