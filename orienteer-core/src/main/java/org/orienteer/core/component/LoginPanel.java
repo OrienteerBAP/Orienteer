@@ -2,6 +2,7 @@ package org.orienteer.core.component;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authentication.IAuthenticationStrategy;
+import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
@@ -39,6 +40,26 @@ public class LoginPanel extends Panel {
         add(form);
         add(createFeedbackPanel("feedback"));
         setOutputMarkupPlaceholderTag(true);
+    }
+
+    @Override
+    protected void onConfigure() {
+        if (!AuthenticatedWebSession.get().isSignedIn()) {
+            IAuthenticationStrategy authenticationStrategy = getApplication().getSecuritySettings()
+                    .getAuthenticationStrategy();
+            String[] data = authenticationStrategy.load();
+
+            if ((data != null) && (data.length > 1)) {
+                if (OrienteerWebSession.get().signIn(data[0], data[1])) {
+                    name.setObject(data[0]);
+                    passwordModel.setObject(data[1]);
+
+                    onSuccessLogin();
+                }
+                else authenticationStrategy.remove();
+            }
+        }
+        super.onConfigure();
     }
 
     /**
