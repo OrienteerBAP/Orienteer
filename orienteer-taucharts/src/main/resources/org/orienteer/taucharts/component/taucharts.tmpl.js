@@ -34,6 +34,6 @@
 				renderData(data.result);
 			});
 	} else {
-		renderData(eval("${data}"));
+		renderData(eval(${data}));
 	}
 }();

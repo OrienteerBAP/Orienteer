@@ -99,7 +99,7 @@ public abstract class AbstractTauchartsPanel extends Panel{
 		params.put("componentId", getMarkupId());
 		
 		params.put("rest", config.isUsingRest());
-		params.put("data",jsonData);
+		params.put("data",CommonUtils.escapeAndWrapAsJavaScriptString(jsonData));
 		params.put("url",restUrl);
 		
 
