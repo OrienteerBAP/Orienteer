@@ -39,11 +39,11 @@ public abstract class AbstractTauchartsPanel extends Panel{
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractTauchartsPanel.class);
 	
 	private static final WebjarsJavaScriptResourceReference TAUCHARTS_JS = 
-			new WebjarsJavaScriptResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.js");
-	private static final WebjarsJavaScriptResourceReference D3_JS = new WebjarsJavaScriptResourceReference("/webjars/d3/current/d3.min.js");
+			new WebjarsJavaScriptResourceReference("/webjars/taucharts/build/production/tauCharts.min.js");
+	private static final WebjarsJavaScriptResourceReference D3_JS = new WebjarsJavaScriptResourceReference("/webjars/d3/d3.min.js");
 	
 	private static final WebjarsCssResourceReference TAUCHARTS_CSS =
-			new WebjarsCssResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.css");
+			new WebjarsCssResourceReference("/webjars/taucharts/build/production/tauCharts.min.css");
 
 	private IModel<TauchartsConfig> configModel;
 	
