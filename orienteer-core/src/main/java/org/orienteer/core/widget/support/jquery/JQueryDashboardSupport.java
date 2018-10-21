@@ -53,10 +53,10 @@ public class JQueryDashboardSupport implements IDashboardSupport {
 		Object width = widget.getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_X);
 		Object height = widget.getWidgetDocument().field(OWidgetsModule.OPROPERTY_SIZE_Y);
 		if (width!=null){
-			widget.add(AttributeModifier.append("style", "width:"+(Integer)width+"px;"));
+			widget.add(AttributeModifier.append("style", "min-width:"+(Integer)width+"px;"));
 		}
 		if (height!=null){
-			widget.add(AttributeModifier.append("style", "height:"+(Integer)height+"px;"));
+			widget.add(AttributeModifier.append("style", "min-height:"+(Integer)height+"px;"));
 		}
 	}
 

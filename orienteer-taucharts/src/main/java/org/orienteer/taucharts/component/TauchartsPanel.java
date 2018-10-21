@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.core.util.string.JavaScriptUtils;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
@@ -26,6 +27,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
+import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
 
 /**
  * Panel for display chart from <a href="https://www.taucharts.com/">https://www.taucharts.com/</a>
@@ -43,7 +45,7 @@ public class TauchartsPanel extends Panel{
 	private static final WebjarsCssResourceReference TAUCHARTS_CSS =
 			new WebjarsCssResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.css");
 
-	private TauchartsConfig config;
+	private IModel<TauchartsConfig> configModel;
 	
 	
 	public TauchartsPanel(String id, TauchartsConfig config) {
@@ -52,9 +54,14 @@ public class TauchartsPanel extends Panel{
 
 	public TauchartsPanel(String id,IModel<ODocument> assignedDoc, TauchartsConfig config) {
 		super(id,assignedDoc);
-		this.config = config;
-
+		this.configModel = new ODocumentWrapperModel<>(config);
 	}
+	
+	@Override
+		protected void onComponentTag(ComponentTag tag) {
+			tag.append("style", "height:"+configModel.getObject().getMinHeight()+"px;", " ");
+			super.onComponentTag(tag);
+		}
 	
 	@Override
 	public void renderHead(IHeaderResponse response) {
@@ -64,6 +71,7 @@ public class TauchartsPanel extends Panel{
 	  
 		String jsonData=null;
 		String restUrl=null;
+		TauchartsConfig config = configModel.getObject();
 		if (config.isUsingRest()){
 			restUrl = "/orientdb/query/db/sql/"+UrlEncoder.PATH_INSTANCE.encode(config.getQuery(), "UTF-8")+"/-1?rnd="+Math.random();
 		}else{

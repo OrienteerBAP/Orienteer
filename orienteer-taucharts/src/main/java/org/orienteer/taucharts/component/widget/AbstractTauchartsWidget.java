@@ -42,13 +42,13 @@ public abstract class AbstractTauchartsWidget<T> extends AbstractWidget<T> {
 	public AbstractTauchartsWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 		if (getWidgetDocument().field(QUERY_PROPERTY_NAME)!=null && getWidgetDocument().field(TYPE_PROPERTY_NAME)!=null){
-			makeChartPanel();
+			add(newChartPanel("tauchart"));
 		}else{
 			add(new Label("tauchart","Configure widget first"));
 		}
 	}
 
-	protected abstract TauchartsPanel makeChartPanel();
+	protected abstract TauchartsPanel newChartPanel(String id);
 	
 	@Override
 	protected FAIcon newIcon(String id) {

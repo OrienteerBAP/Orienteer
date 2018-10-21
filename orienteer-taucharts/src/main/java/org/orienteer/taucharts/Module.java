@@ -20,7 +20,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 public class Module extends AbstractOrienteerModule{
 
 	protected Module() {
-		super("taucharts", 1);
+		super("taucharts", 2, OWidgetsModule.NAME);
 	}
 	
 	@Override
@@ -31,9 +31,15 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
+	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc, int oldVersion,
+			int newVersion) {
+		makeSchema(db);
+		return null;
+	}
+	
+	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		makeSchema(db);
 		app.mountPages("org.orienteer.taucharts.web");
 		app.registerWidgets("org.orienteer.taucharts.component.widget");
 	}
@@ -64,8 +70,8 @@ public class Module extends AbstractOrienteerModule{
 			.oProperty(AbstractTauchartsWidget.Y_PROPERTY_NAME, OType.EMBEDDEDLIST, 130).linkedType(OType.STRING)
 			.oProperty(AbstractTauchartsWidget.Y_LABEL_PROPERTY_NAME, OType.STRING, 135)
 			.oProperty(AbstractTauchartsWidget.COLOR_PROPERTY_NAME, OType.STRING, 140)
-			.oProperty(AbstractTauchartsWidget.PLUGINS_PROPERTY_NAME, OType.LINKSET, 150).linkedClass("TauchartsPlugin").assignVisualization("listbox")
-			.oProperty(AbstractTauchartsWidget.USING_REST_PROPERTY_NAME, OType.BOOLEAN, 160)
+			.oProperty(AbstractTauchartsWidget.PLUGINS_PROPERTY_NAME, OType.LINKSET, 150).linkedClass(AbstractTauchartsWidget.PLUGINS_OCLASS).assignVisualization("listbox")
+			.oProperty(AbstractTauchartsWidget.USING_REST_PROPERTY_NAME, OType.BOOLEAN, 160).defaultValue("true")
 			.oProperty(AbstractTauchartsWidget.CONFIG_PROPERTY_NAME, OType.STRING, 170).assignVisualization("textarea");
 		
 		makeData(db);

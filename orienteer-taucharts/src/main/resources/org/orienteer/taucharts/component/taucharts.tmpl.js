@@ -30,7 +30,7 @@
 	var rest = ${rest};
 	if(rest) {
 		var restUrl = "${url}";
-		$.getJSON( '${url}', function( data ) {
+		$.getJSON( restUrl, function( data ) {
 				renderData(data.result);
 			});
 	} else {
