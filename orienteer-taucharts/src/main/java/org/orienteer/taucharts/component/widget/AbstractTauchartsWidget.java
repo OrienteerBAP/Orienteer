@@ -8,14 +8,14 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
-import org.orienteer.taucharts.component.TauchartsPanel;
+import org.orienteer.taucharts.component.AbstractTauchartsPanel;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 
 /**
  * 
- * Widget for display {@link TauchartsPanel}
+ * Widget for display {@link AbstractTauchartsPanel}
  *
  * @param <T> input data type
  */
@@ -39,16 +39,33 @@ public abstract class AbstractTauchartsWidget<T> extends AbstractWidget<T> {
 	
 	public static final String PLUGINS_OCLASS = "TauchartsPlugin";
 	
+	private boolean configValid;
+	
 	public AbstractTauchartsWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		if (getWidgetDocument().field(QUERY_PROPERTY_NAME)!=null && getWidgetDocument().field(TYPE_PROPERTY_NAME)!=null){
+		if (configValid=isConfigValid()){
 			add(newChartPanel("tauchart"));
 		}else{
 			add(new Label("tauchart","Configure widget first"));
 		}
 	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		if(!configValid) {
+			if(configValid = isConfigValid()) {
+				addOrReplace(newChartPanel("tauchart"));
+			}
+		}
+	}
 
-	protected abstract TauchartsPanel newChartPanel(String id);
+	protected abstract AbstractTauchartsPanel newChartPanel(String id);
+	
+	protected boolean isConfigValid() {
+		return getWidgetDocument().field(QUERY_PROPERTY_NAME)!=null 
+			&& getWidgetDocument().field(TYPE_PROPERTY_NAME)!=null;
+	}
 	
 	@Override
 	protected FAIcon newIcon(String id) {

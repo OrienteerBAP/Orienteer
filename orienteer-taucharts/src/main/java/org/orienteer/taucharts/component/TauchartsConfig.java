@@ -27,7 +27,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 /**
  * 
- * Config for {@link TauchartsPanel}
+ * Config for {@link AbstractTauchartsPanel}
  *
  */
 public class TauchartsConfig extends ODocumentWrapper{

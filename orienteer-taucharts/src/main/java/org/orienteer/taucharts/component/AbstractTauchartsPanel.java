@@ -33,10 +33,10 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
  * Panel for display chart from <a href="https://www.taucharts.com/">https://www.taucharts.com/</a>
  *
  */
-public class TauchartsPanel extends Panel{
+public abstract class AbstractTauchartsPanel extends Panel{
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(TauchartsPanel.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractTauchartsPanel.class);
 	
 	private static final WebjarsJavaScriptResourceReference TAUCHARTS_JS = 
 			new WebjarsJavaScriptResourceReference("/webjars/github-com-TargetProcess-tauCharts/current/build/production/tauCharts.min.js");
@@ -48,20 +48,31 @@ public class TauchartsPanel extends Panel{
 	private IModel<TauchartsConfig> configModel;
 	
 	
-	public TauchartsPanel(String id, TauchartsConfig config) {
+	public AbstractTauchartsPanel(String id, TauchartsConfig config) {
 		this(id, null, config);		
 	}
 
-	public TauchartsPanel(String id,IModel<ODocument> assignedDoc, TauchartsConfig config) {
+	public AbstractTauchartsPanel(String id,IModel<ODocument> assignedDoc, TauchartsConfig config) {
 		super(id,assignedDoc);
 		this.configModel = new ODocumentWrapperModel<>(config);
 	}
 	
 	@Override
-		protected void onComponentTag(ComponentTag tag) {
-			tag.append("style", "height:"+configModel.getObject().getMinHeight()+"px;", " ");
-			super.onComponentTag(tag);
-		}
+	protected void onComponentTag(ComponentTag tag) {
+		tag.append("style", "height:"+configModel.getObject().getMinHeight()+"px;", " ");
+		super.onComponentTag(tag);
+	}
+	
+	protected String getCustomSql() {
+		return configModel.getObject().getQuery();
+	}
+	
+	protected String getSql() {
+		String customSql = getCustomSql();
+		return Strings.isEmpty(customSql)?getDefaultSql():customSql;
+	}
+	
+	protected abstract String getDefaultSql();
 	
 	@Override
 	public void renderHead(IHeaderResponse response) {
@@ -73,9 +84,9 @@ public class TauchartsPanel extends Panel{
 		String restUrl=null;
 		TauchartsConfig config = configModel.getObject();
 		if (config.isUsingRest()){
-			restUrl = "/orientdb/query/db/sql/"+UrlEncoder.PATH_INSTANCE.encode(config.getQuery(), "UTF-8")+"/-1?rnd="+Math.random();
+			restUrl = "/orientdb/query/db/sql/"+UrlEncoder.PATH_INSTANCE.encode(getSql(), "UTF-8")+"/-1?rnd="+Math.random();
 		}else{
-			List<ODocument> testData = new OSQLSynchQuery<ODocument>(config.getQuery()).run(getDefaultModelObject()!=null?((ODocument)getDefaultModelObject()).toMap():null) ;
+			List<ODocument> testData = new OSQLSynchQuery<ODocument>(getSql()).run(getDefaultModelObject()!=null?((ODocument)getDefaultModelObject()).toMap():null) ;
 			jsonData = "[";
 			for ( ODocument object : testData) {
 				jsonData+=object.toJSON()+",";	
@@ -83,7 +94,7 @@ public class TauchartsPanel extends Panel{
 			jsonData+="]";
 		}
 
-	  	TextTemplate template = new PackageTextTemplate(TauchartsPanel.class, "taucharts.tmpl.js");
+	  	TextTemplate template = new PackageTextTemplate(AbstractTauchartsPanel.class, "taucharts.tmpl.js");
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("componentId", getMarkupId());
 		
