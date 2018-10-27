@@ -32,6 +32,7 @@ public abstract class AbstractTauchartsWidget<T> extends AbstractWidget<T> {
 	public static final String COLOR_PROPERTY_NAME = "chartColorBy";
 	public static final String PLUGINS_PROPERTY_NAME = "chartPlugins";
 	public static final String QUERY_PROPERTY_NAME = "chartQuery";
+	public static final String DATA_POST_PROCESSING_PROPERTY_NAME = "chartDataPostProcessing";
 	public static final String CONFIG_PROPERTY_NAME = "chartConfiguration";
 	public static final String USING_REST_PROPERTY_NAME = "chartUsingRest";
 	

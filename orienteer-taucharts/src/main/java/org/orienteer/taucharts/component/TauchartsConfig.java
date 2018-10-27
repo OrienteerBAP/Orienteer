@@ -89,6 +89,10 @@ public class TauchartsConfig extends ODocumentWrapper{
 	public String getQuery() {
 		return document.field(AbstractTauchartsWidget.QUERY_PROPERTY_NAME);
 	}
+	
+	public String getDataPostProcessing() {
+		return document.field(AbstractTauchartsWidget.DATA_POST_PROCESSING_PROPERTY_NAME);
+	}
 
 
 	public boolean isUsingRest() {

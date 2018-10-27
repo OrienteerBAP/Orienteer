@@ -1,5 +1,10 @@
 !function() {
+	function postProcess(data) {
+		${postProcess}
+	}
+	
 	function renderData(data) {
+		postProcess(data);
 		for (var row in data) {
 			for (var col in data[row]) {
 				if (col.match('@')){
@@ -26,6 +31,7 @@
 		var chart = new tauCharts.Chart(config);
 		chart.renderTo("#"+'${componentId}');
 	}
+	
 	
 	var rest = ${rest};
 	if(rest) {

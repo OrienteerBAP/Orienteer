@@ -20,7 +20,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 public class Module extends AbstractOrienteerModule{
 
 	protected Module() {
-		super("taucharts", 2, OWidgetsModule.NAME);
+		super("taucharts", 3, OWidgetsModule.NAME);
 	}
 	
 	@Override
@@ -63,7 +63,8 @@ public class Module extends AbstractOrienteerModule{
 			.oProperty("alias", OType.STRING, 20).oIndex(INDEX_TYPE.UNIQUE);
 
 		helper.oClass(AbstractTauchartsWidget.WIDGET_OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET).domain(OClassDomain.SYSTEM)
-			.oProperty(AbstractTauchartsWidget.QUERY_PROPERTY_NAME, OType.STRING, 100).assignVisualization("textarea")
+			.oProperty(AbstractTauchartsWidget.QUERY_PROPERTY_NAME, OType.STRING, 100).assignVisualization("sql")
+			.oProperty(AbstractTauchartsWidget.DATA_POST_PROCESSING_PROPERTY_NAME, OType.STRING, 105).assignVisualization("javascript")
 			.oProperty(AbstractTauchartsWidget.TYPE_PROPERTY_NAME, OType.LINK, 110).linkedClass(AbstractTauchartsWidget.TYPE_OCLASS).assignVisualization("listbox")
 			.oProperty(AbstractTauchartsWidget.X_PROPERTY_NAME, OType.EMBEDDEDLIST, 120).linkedType(OType.STRING)
 			.oProperty(AbstractTauchartsWidget.X_LABEL_PROPERTY_NAME, OType.STRING, 125)

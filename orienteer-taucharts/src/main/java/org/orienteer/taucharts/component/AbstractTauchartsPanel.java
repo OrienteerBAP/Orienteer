@@ -101,6 +101,8 @@ public abstract class AbstractTauchartsPanel extends Panel{
 		params.put("rest", config.isUsingRest());
 		params.put("data",CommonUtils.escapeAndWrapAsJavaScriptString(jsonData));
 		params.put("url",restUrl);
+		String postProcess = config.getDataPostProcessing();
+		params.put("postProcess", Strings.isEmpty(postProcess)?"return data;":postProcess);
 		
 
 		params.put("type", CommonUtils.escapeStringForJSON(config.getType()));
