@@ -1,6 +1,7 @@
 package org.orienteer.core.behavior;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.util.lang.Objects;
@@ -73,7 +74,8 @@ public class UpdateOnActionPerformedEventBehavior extends Behavior {
 	
 	protected void update(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
 		component.configure();
-		if(component.isVisibleInHierarchy()) event.getTarget().ifPresent(target ->target.add(component));
+		if(component.isVisibleInHierarchy() && component.findParent(Page.class)!=null)
+				event.getTarget().ifPresent(target ->target.add(component));
 	}
 	
 	protected boolean match(Component component, ActionPerformedEvent<?> event, IEvent<?> wicketEvent) {
