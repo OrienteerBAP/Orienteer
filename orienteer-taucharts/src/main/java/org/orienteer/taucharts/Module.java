@@ -20,7 +20,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 public class Module extends AbstractOrienteerModule{
 
 	protected Module() {
-		super("taucharts", 3, OWidgetsModule.NAME);
+		super("taucharts", 4, OWidgetsModule.NAME);
 	}
 	
 	@Override
@@ -73,7 +73,7 @@ public class Module extends AbstractOrienteerModule{
 			.oProperty(AbstractTauchartsWidget.COLOR_PROPERTY_NAME, OType.STRING, 140)
 			.oProperty(AbstractTauchartsWidget.PLUGINS_PROPERTY_NAME, OType.LINKSET, 150).linkedClass(AbstractTauchartsWidget.PLUGINS_OCLASS).assignVisualization("listbox")
 			.oProperty(AbstractTauchartsWidget.USING_REST_PROPERTY_NAME, OType.BOOLEAN, 160).defaultValue("true")
-			.oProperty(AbstractTauchartsWidget.CONFIG_PROPERTY_NAME, OType.STRING, 170).assignVisualization("textarea");
+			.oProperty(AbstractTauchartsWidget.CONFIG_PROPERTY_NAME, OType.STRING, 170).assignVisualization("javascript");
 		
 		makeData(db);
 	}
