@@ -12,9 +12,11 @@ import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.ODocumentDescriptionColumn;
 import org.orienteer.core.component.table.OEntityColumn;
+import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.service.impl.OClassIntrospector;
@@ -65,6 +67,8 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
                 Lists.newArrayList(entityColumn, directionColumn),
                 provider,//setParameter does not work here
                 2);
+        OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
+        table.addCommand(new ExportCommand<>(table, new StringResourceModel("export.filename.vertices", new ODocumentNameModel(model))));
         add(tablePanel);
         add(DisableIfDocumentNotSavedBehavior.INSTANCE,UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }

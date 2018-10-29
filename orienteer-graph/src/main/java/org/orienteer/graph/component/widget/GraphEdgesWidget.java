@@ -16,6 +16,7 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentsCommand;
+import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.LinkViewPanel;
@@ -74,6 +75,7 @@ public class GraphEdgesWidget extends AbstractWidget<ODocument> {
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
         table.addCommand(new DeleteEdgeCommand(table, getModel()));
+        table.addCommand(new ExportCommand<>(table, new StringResourceModel("export.filename.edges", new ODocumentNameModel(model))));
 
         add(tablePanel);
         add(DisableIfDocumentNotSavedBehavior.INSTANCE,UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
