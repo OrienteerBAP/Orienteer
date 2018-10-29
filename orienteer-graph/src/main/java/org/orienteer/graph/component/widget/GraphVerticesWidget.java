@@ -3,6 +3,7 @@ package org.orienteer.graph.component.widget;
 import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -47,9 +48,10 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     protected void onInitialize() {
         super.onInitialize();
         String sql = "select expand(bothV()) from " + getModelObject().getIdentity();
+        OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
         GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<>("vertices",
-                createColumns(),
-                new OQueryDataProvider<>(sql), //setParameter does not work here
+                createColumns(provider),
+                provider, //setParameter does not work here
                 2
         );
         OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
@@ -59,17 +61,16 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
         add(DisableIfDocumentNotSavedBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 
-    private List<IColumn<ODocument, String>> createColumns() {
+    private List<IColumn<ODocument, String>> createColumns(OQueryDataProvider<ODocument> provider) {
         List<IColumn<ODocument, String>> columns = new LinkedList<>();
-        columns.add(createNameColumn());
+        columns.add(createNameColumn(provider));
         columns.add(createDescriptionColumn());
         return columns;
     }
 
-    private IColumn<ODocument, String> createNameColumn() {
-        ODocument edge = getModelObject();
-        ODocument in = edge.field("in");
-        OProperty nameProperty = oClassIntrospector.getNameProperty(in.getSchemaClass());
+    private IColumn<ODocument, String> createNameColumn(OQueryDataProvider<ODocument> provider) {
+        OClass commonParent = provider.probeOClass(20);
+        OProperty nameProperty = oClassIntrospector.getNameProperty(commonParent);
         return new OEntityColumn(nameProperty, true,  DisplayMode.VIEW.asModel());
     }
 
