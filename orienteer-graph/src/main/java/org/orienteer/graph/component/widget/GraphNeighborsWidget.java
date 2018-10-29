@@ -40,7 +40,7 @@ public class GraphNeighborsWidget extends AbstractWidget<ODocument> {
         super(id, model, widgetDocumentModel);
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-        OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand(both()) from "+getModelObject().getIdentity());
+        OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand(both().asSet()) from "+getModelObject().getIdentity());
         OClass commonParent = provider.probeOClass(20);
         if(commonParent==null) commonParent = getSchema().getClass("V");
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
