@@ -15,6 +15,7 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.table.ODocumentClassColumn;
 import org.orienteer.core.component.table.ODocumentDescriptionColumn;
 import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -64,6 +65,7 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     private List<IColumn<ODocument, String>> createColumns(OQueryDataProvider<ODocument> provider) {
         List<IColumn<ODocument, String>> columns = new LinkedList<>();
         columns.add(createNameColumn(provider));
+        columns.add(new ODocumentClassColumn<>());
         columns.add(createDescriptionColumn());
         return columns;
     }
