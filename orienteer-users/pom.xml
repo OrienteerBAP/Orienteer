@@ -52,6 +52,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -118,7 +119,6 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
@@ -130,10 +130,15 @@
                             <value>${settings.localRepository}</value>
                         </systemProperty>
                     </systemProperties>
+                    <supportedPackagings>
+                        <supportedPackaging>jar</supportedPackaging>
+                    </supportedPackagings>
                     <webApp>
                         <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
                         <resourceBase>src/main/resources</resourceBase>
                         <contextPath>/</contextPath>
+                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
                     </webApp>
                     <httpConnector>
                         <name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
