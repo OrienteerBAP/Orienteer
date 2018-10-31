@@ -13,7 +13,9 @@ import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.command.EditODocumentsCommand;
 import org.orienteer.core.component.command.ExportCommand;
+import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.ODocumentClassColumn;
 import org.orienteer.core.component.table.ODocumentDescriptionColumn;
@@ -48,38 +50,32 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
+        IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         String sql = "select expand(bothV()) from " + getModelObject().getIdentity();
         OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
+        OClass commonParent = provider.probeOClass(20);
         GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<>("vertices",
-                createColumns(provider),
+                createColumns(commonParent, modeModel),
                 provider, //setParameter does not work here
                 2
         );
         OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
+        table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
+        table.addCommand(new SaveODocumentsCommand(table, modeModel));
         table.addCommand(new ExportCommand<>(table, new StringResourceModel("export.filename.vertices", new ODocumentNameModel(getModel()))));
 
         add(tablePanel);
         add(DisableIfDocumentNotSavedBehavior.INSTANCE, UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 
-    private List<IColumn<ODocument, String>> createColumns(OQueryDataProvider<ODocument> provider) {
-        List<IColumn<ODocument, String>> columns = new LinkedList<>();
-        columns.add(createNameColumn(provider));
+    private List<IColumn<ODocument, String>> createColumns(OClass commonParent, IModel<DisplayMode> modeModel) {
+    	OProperty nameProperty = oClassIntrospector.getNameProperty(commonParent);
+        List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
         columns.add(new ODocumentClassColumn<>());
-        columns.add(createDescriptionColumn());
+        columns.add(new ODocumentDescriptionColumn(
+        		new StringResourceModel("property.direction", this, Model.of()),
+        		new DirectionLocalizer()));
         return columns;
-    }
-
-    private IColumn<ODocument, String> createNameColumn(OQueryDataProvider<ODocument> provider) {
-        OClass commonParent = provider.probeOClass(20);
-        OProperty nameProperty = oClassIntrospector.getNameProperty(commonParent);
-        return new OEntityColumn(nameProperty, true,  DisplayMode.VIEW.asModel());
-    }
-
-    private IColumn<ODocument, String> createDescriptionColumn() {
-        return new ODocumentDescriptionColumn(
-                new StringResourceModel("property.direction", this, Model.of()),
-                new DirectionLocalizer());
     }
 
     @Override
