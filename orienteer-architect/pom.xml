@@ -111,6 +111,9 @@
                             <value>${settings.localRepository}</value>
                         </systemProperty>
                     </systemProperties>
+                    <supportedPackagings>
+                        <supportedPackaging>jar</supportedPackaging>
+                    </supportedPackagings>
                     <webApp>
                         <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
                         <resourceBase>src/main/resources</resourceBase>

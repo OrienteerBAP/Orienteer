@@ -18,14 +18,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
 		<version>1.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-war</artifactId>
-	<packaging>war</packaging>
 	<name>orienteer-war</name>
+
+    <packaging>war</packaging>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
@@ -47,16 +50,6 @@
             <artifactId>orienteer-pivottable</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <!--<dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-bpm</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-camel</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency> -->
         <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-devutils</artifactId>
@@ -68,6 +61,7 @@
             <version>${project.parent.version}</version>
         </dependency>
 	</dependencies>
+
 	<build>
 		<finalName>orienteer</finalName>
 		<resources>

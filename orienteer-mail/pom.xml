@@ -24,8 +24,8 @@
 	    <version>1.4-SNAPSHOT</version>
     </parent>
     <artifactId>orienteer-mail</artifactId>
-	<!-- TODO project name  -->
 	<name>orienteer-mail</name>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
@@ -66,6 +66,7 @@
             <scope>test</scope>
         </dependency>
 	</dependencies>
+
 	<build>
 		<resources>
 			<resource>
@@ -132,7 +133,6 @@
 					</systemPropertyVariables>
 				</configuration>
 			</plugin>
-
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
@@ -144,6 +144,16 @@
                             <value>${settings.localRepository}</value>
                         </systemProperty>
                     </systemProperties>
+                    <supportedPackagings>
+                        <supportedPackaging>jar</supportedPackaging>
+                    </supportedPackagings>
+                    <webApp>
+                        <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+                        <resourceBase>src/main/resources</resourceBase>
+                        <contextPath>/</contextPath>
+                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                    </webApp>
                     <httpConnector>
                         <name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
                         <port>8080</port>
@@ -173,4 +183,4 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	</project>
+</project>

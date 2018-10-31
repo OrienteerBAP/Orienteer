@@ -231,7 +231,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20</version>
+				<version>2.22.1</version>
 				<configuration>
 					<systemPropertyVariables>
 						<orienteer.loader.repository.local>${settings.localRepository}</orienteer.loader.repository.local>
@@ -251,6 +251,16 @@
 							<value>${settings.localRepository}</value>
 						</systemProperty>
 					</systemProperties>
+                    <supportedPackagings>
+                        <supportedPackaging>jar</supportedPackaging>
+                    </supportedPackagings>
+					<webApp>
+						<descriptor>src/main/webapp/WEB-INF/web.xml</descriptor>
+						<resourceBase>src/main/resources</resourceBase>
+						<contextPath>/</contextPath>
+						<containerIncludeJarPattern>^$</containerIncludeJarPattern>
+						<webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+					</webApp>
 					<httpConnector>
 						<name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
 						<port>8080</port>
@@ -282,4 +292,4 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	</project>
+</project>
