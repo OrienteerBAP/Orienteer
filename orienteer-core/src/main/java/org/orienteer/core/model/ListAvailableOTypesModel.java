@@ -47,7 +47,9 @@ public class ListAvailableOTypesModel extends LoadableDetachableModel<List<OType
 			List<OType> ret = CACHE_ORDERED.get(type);
 			if(ret==null)
 			{
-				ret = orderTypes(type.getCastable());
+				List<OType> candidates = new ArrayList<>(Arrays.asList(OType.values()));
+				candidates.removeIf(candidate->!candidate.getCastable().contains(type));
+				ret = orderTypes(candidates);
 				CACHE_ORDERED.put(type, ret);
 			}
 			return ret;
@@ -57,14 +59,8 @@ public class ListAvailableOTypesModel extends LoadableDetachableModel<List<OType
 	public static List<OType> orderTypes(Collection<OType> types)
 	{
 		List<OType> list = types instanceof List?(List<OType>)types:new ArrayList<OType>(types);
-		
-		Collections.sort(list, new Comparator<OType>() {
-
-			@Override
-			public int compare(OType o1, OType o2) {
-				return o1.name().compareTo(o2.name());
-			}
-		});
+		Collections.sort(list, 
+				(o1, o2) ->o1.name().compareTo(o2.name()));
 		return list;
 	}
 
