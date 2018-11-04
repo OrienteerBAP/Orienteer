@@ -237,4 +237,16 @@ public class CommonUtils {
 		if(mergeMap!=null) mainMap.putAll(mergeMap);
 		return mainMap;
 	}
+	
+	/**
+	 * Safe method to check that 2 {@link OIdentifiable}s are actually the same
+	 * @param a first {@link OIdentifiable}
+	 * @param b second {@link OIdentifiable}
+	 * @return true if 2 objects are referring to the same document
+	 */
+	public static boolean isTheSame(OIdentifiable a, OIdentifiable b) {
+		if(a==null && b==null) return true;
+		else if((a==null && b!=null) || (a!=null && b==null)) return false;
+		else return a.getIdentity().equals(b.getIdentity());
+	}
 }
