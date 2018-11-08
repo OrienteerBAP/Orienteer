@@ -99,6 +99,7 @@ public abstract class CodeEditorPanel extends FormComponentPanel<String> {
         params.put(READ_ONLY, Boolean.toString(!edit));
         params.put(CURSOR_BLINK_RATE, edit ? Integer.toString(530) : Integer.toString(-1));
         params.put(LINE_NUMBERS, "true");
+        params.put(LINE_WRAPPING, edit?"false":"true");
         params.put(STYLE_ACTIVE_LINE, Boolean.toString(edit));
         params.put(SCROLLBAR_STYLE, "'overlay'");
         params.put(MATCH_BRACKETS, "true");
