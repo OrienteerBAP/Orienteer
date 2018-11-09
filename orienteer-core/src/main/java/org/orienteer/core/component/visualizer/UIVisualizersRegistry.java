@@ -39,6 +39,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new CodeVisualizer());
 		registerUIComponentFactory(new JavaScriptCodeVisualizer());
 		registerUIComponentFactory(new SqlCodeVisualizer());
+		registerUIComponentFactory(new HexVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()

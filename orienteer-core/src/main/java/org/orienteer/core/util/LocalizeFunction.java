@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 
+import org.danekja.java.util.function.serializable.SerializableFunction;
 import org.orienteer.core.OrienteerWebSession;
 
 import com.google.common.base.Function;
@@ -13,7 +14,7 @@ import com.google.common.base.Function;
  *
  * @param <F> type of source object
  */
-public class LocalizeFunction<F> implements Function<F, String>, Serializable{
+public class LocalizeFunction<F> implements SerializableFunction<F, String>{
 
 	private static final LocalizeFunction<?> INSTANCE = new LocalizeFunction<Object>();
 	
