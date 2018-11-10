@@ -37,23 +37,12 @@ public class HexVisualizer extends AbstractSimpleVisualizer {
 		switch (mode)
         {
             case VIEW:
-                return new MultiLineLabel(id, new FunctionModel<>(model, HexVisualizer::byteArrayToMultilineString));
+                return new MultiLineLabel(id, valueModel);
             case EDIT:
-                return new TextArea<>(id, new FunctionModel<>(model, HexVisualizer::byteArrayToMultilineString, HexVisualizer::multilineStringToByteArray))
-                		.add(new PatternValidator("([0-9a-fA-F][0-9a-fA-F]\\R*)+", Pattern.MULTILINE));
+                return new TextArea<>(id, valueModel).setType(byte[].class);
             default:
                 return null;
         }
-	}
-	
-	public static String byteArrayToMultilineString(byte[] array) {
-		if(array==null || array.length==0) return null;
-		String data = DatatypeConverter.printHexBinary(array);
-		return data.replaceAll("(.{128})", "$1\n");
-	}
-	
-	public static byte[] multilineStringToByteArray(String data) {
-		return Strings.isEmpty(data)?null:DatatypeConverter.parseHexBinary(data.replaceAll("\\R", ""));
 	}
 
 }

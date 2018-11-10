@@ -2,6 +2,9 @@ package org.orienteer.core.util;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import org.apache.wicket.Application;
+import org.apache.wicket.Session;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
@@ -248,5 +251,26 @@ public class CommonUtils {
 		if(a==null && b==null) return true;
 		else if((a==null && b!=null) || (a!=null && b==null)) return false;
 		else return a.getIdentity().equals(b.getIdentity());
+	}
+	
+	/**
+	 * Safe method to get String representation of an object.
+	 * Wicket convertions are also has been used
+	 * @param data
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String toString(Object data) {
+		if(data==null) return "null";
+		else if (data instanceof CharSequence) return data.toString();
+		else {
+			IConverter<Object> converter = (IConverter<Object>)OrienteerWebApplication.lookupApplication()
+																	.getConverterLocator().getConverter(data.getClass());
+			if(converter!=null) {
+				return converter.convertToString(data, Session.exists()?Session.get().getLocale():Locale.getDefault());
+			} else {
+				return data.toString();
+			}
+		}
 	}
 }
