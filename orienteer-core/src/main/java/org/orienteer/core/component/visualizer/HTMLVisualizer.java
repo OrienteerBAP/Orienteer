@@ -15,9 +15,10 @@ import org.orienteer.core.component.property.DisplayMode;
  */
 public class HTMLVisualizer extends AbstractSimpleVisualizer
 {
+	public static final String NAME = "html";
 	public HTMLVisualizer()
 	{
-		super("html", false, OType.STRING);
+		super(NAME, false, OType.STRING);
 	}
 
 	@Override

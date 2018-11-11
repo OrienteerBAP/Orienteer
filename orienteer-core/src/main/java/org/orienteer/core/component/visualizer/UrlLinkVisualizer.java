@@ -15,7 +15,7 @@ import org.orienteer.core.component.property.DisplayMode;
  */
 public class UrlLinkVisualizer extends AbstractSimpleVisualizer
 {
-    private static final String NAME = "urlLink";
+    public static final String NAME = "urlLink";
     public UrlLinkVisualizer()
     {
         super(NAME,false, OType.STRING);

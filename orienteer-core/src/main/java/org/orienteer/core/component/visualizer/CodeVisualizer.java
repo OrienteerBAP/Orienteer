@@ -13,8 +13,10 @@ import org.orienteer.core.component.property.DisplayMode;
  * Visualizer for HTML/CSS/JS code editor
  */
 public class CodeVisualizer extends AbstractSimpleVisualizer {
+	public static final String NAME = "code";
+	
     public CodeVisualizer() {
-        super("code", false, OType.STRING);
+        super(NAME, false, OType.STRING);
     }
 
     @Override

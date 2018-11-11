@@ -22,10 +22,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class TagsVisualizer extends AbstractSimpleVisualizer {
 	
+	public static final String NAME = "suggest";
+	
 	private static final Logger LOG = LoggerFactory.getLogger(TagsVisualizer.class);
 	
     public TagsVisualizer() {
-        super("suggest", false, OType.LINK, OType.LINKLIST, OType.LINKSET);
+        super(NAME, false, OType.LINK, OType.LINKLIST, OType.LINKSET);
     }
 
     @SuppressWarnings("unchecked")

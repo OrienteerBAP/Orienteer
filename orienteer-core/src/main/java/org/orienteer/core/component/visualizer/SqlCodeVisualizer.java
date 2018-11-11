@@ -14,8 +14,10 @@ import org.orienteer.core.component.property.DisplayMode;
  */
 public class SqlCodeVisualizer extends AbstractSimpleVisualizer {
 
+	public static final String NAME = "sql";
+	
     public SqlCodeVisualizer() {
-        super("sql", false, OType.STRING);
+        super(NAME, false, OType.STRING);
     }
 
     @Override
