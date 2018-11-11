@@ -17,6 +17,21 @@ import java.util.List;
  */
 public class UIVisualizersRegistry
 {
+	public static final String VISUALIZER_DEFAULT = DefaultVisualizer.NAME;
+	public static final String VISUALIZER_TEXTAREA = "textarea";
+	public static final String VISUALIZER_TABLE = "table";
+	public static final String VISUALIZER_LISTBOX = ListboxVisualizer.NAME;
+	public static final String VISUALIZER_PASSWORD = PasswordVisualizer.NAME;
+	public static final String VISUALIZER_HTML = HTMLVisualizer.NAME;
+	public static final String VISUALIZER_URL_LINK = UrlLinkVisualizer.NAME;
+	public static final String VISUALIZER_MARKDOWN = MarkDownVisualizer.NAME;
+	public static final String VISUALIZER_LOCALIZATION = LocalizationVisualizer.NAME;
+	public static final String VISUALIZER_IMAGE = ImageVisualizer.NAME;
+	public static final String VISUALIZER_SUGGEST = SuggestVisualizer.NAME;
+	public static final String VISUALIZER_CODE = CodeVisualizer.NAME;
+	public static final String VISUALIZER_JAVASCRIPT = JavaScriptCodeVisualizer.NAME;
+	public static final String VISUALIZER_SQL = SqlCodeVisualizer.NAME;
+	public static final String VISUALIZER_HEX = HexVisualizer.NAME;
 	private Table<OType, String, IVisualizer> registryTable = HashBasedTable.create();
 	
 	public UIVisualizersRegistry()
@@ -35,7 +50,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new MarkDownVisualizer());
 		registerUIComponentFactory(new LocalizationVisualizer());
 		registerUIComponentFactory(new ImageVisualizer());
-		registerUIComponentFactory(new TagsVisualizer());
+		registerUIComponentFactory(new SuggestVisualizer());
 		registerUIComponentFactory(new CodeVisualizer());
 		registerUIComponentFactory(new JavaScriptCodeVisualizer());
 		registerUIComponentFactory(new SqlCodeVisualizer());
