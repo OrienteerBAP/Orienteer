@@ -4,7 +4,8 @@
 	}
 	
 	function renderData(data) {
-		postProcess(data);
+		var postProcessed = postProcess(data);
+		if(postProcessed) data = postProcessed;
 		for (var row in data) {
 			for (var col in data[row]) {
 				if (col.match('@')){

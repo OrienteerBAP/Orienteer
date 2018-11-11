@@ -25,7 +25,7 @@ import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
  */
 public class HexVisualizer extends AbstractSimpleVisualizer {
 
-	private static final String NAME = "hex";
+	public static final String NAME = "hex";
     public HexVisualizer()
     {
         super(NAME,false, OType.BINARY);
