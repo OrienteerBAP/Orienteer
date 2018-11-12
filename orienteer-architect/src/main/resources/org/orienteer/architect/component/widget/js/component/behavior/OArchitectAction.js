@@ -103,6 +103,11 @@ var OArchitectAction = {
             var target = addOPropertyLinkEvent.target;
             var sourceClass = source.value;
             var property = new OArchitectOProperty(sourceClass);
+            function onDestroy(property, event) {
+            	if (event !== this.OK) modal.showErrorFeedback(localizer.cannotCreateLink);
+            	OArchitectAction.unlockActionsForClass(sourceClass);
+            	OArchitectAction.unlockActionsForClass(target.value);
+            }
             property.linkedClass = target.value;
             var modal = new OPropertyEditModalWindow(property, app.editorId, onDestroy, true);
             modal.orientDbTypes = OArchitectOType.linkTypes;
@@ -118,11 +123,6 @@ var OArchitectAction = {
             };
             modal.show(addOPropertyLinkEvent.event.getGraphX(), addOPropertyLinkEvent.event.getGraphY());
 
-            function onDestroy(property, event) {
-                if (event !== this.OK) modal.showErrorFeedback(localizer.cannotCreateLink);
-                OArchitectAction.unlockActionsForClass(sourceClass);
-                OArchitectAction.unlockActionsForClass(target.value);
-            }
         }
     },
 
@@ -133,6 +133,15 @@ var OArchitectAction = {
         var graph = editor.graph;
         var pt = graph.getPointForEvent(evt.evt);
 
+        var addOClassCell = function (cell) {
+        	graph.getModel().beginUpdate();
+        	try {
+        		graph.addCell(cell, graph.getDefaultParent());
+        	} finally {
+        		graph.getModel().endUpdate();
+        	}
+        };
+        
         var action = function (json) {
             var START_X = pt.x;
             var START_Y = pt.y;
@@ -163,14 +172,6 @@ var OArchitectAction = {
         };
 
 
-        function addOClassCell(cell) {
-            graph.getModel().beginUpdate();
-            try {
-                graph.addCell(cell, graph.getDefaultParent());
-            } finally {
-                graph.getModel().endUpdate();
-            }
-        }
 
         function applyLayout(cells) {
             graph.getModel().beginUpdate();

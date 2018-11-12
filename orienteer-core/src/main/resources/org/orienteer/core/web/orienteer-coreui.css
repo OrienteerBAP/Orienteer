@@ -100,7 +100,7 @@ li.strict caption {
   line-height: .76rem;
   padding :.1875rem .375rem;
   font-size: .844rem; 
-  @include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);
+  /*@include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);*/
 }
 
 /*widgets headers*/

@@ -83,21 +83,12 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
     this.name = json.name;
     this.pageUrl = json.pageUrl;
     this.databaseJson = json.databaseJson !== undefined ? json.databaseJson : null;
-    setCell(this, cell);
-    configProperties(this, json.properties);
-    configClasses(this, json.superClasses, true);
-    configClasses(this, json.subClasses, false);
-    configExistsClassesLinks(this);
-    this.setExistsInDb(json.existsInDb);
-    this.updatePropertiesOrder();
-    app.editor.enableConnection();
-
     function setCell(oClass, cell) {
-        if (cell != null) {
-            oClass.setCell(cell);
-        } else if (oClass.cell !== null) {
-            oClass.setCell(oClass.cell);
-        }
+    	if (cell != null) {
+    		oClass.setCell(cell);
+    	} else if (oClass.cell !== null) {
+    		oClass.setCell(oClass.cell);
+    	}
     }
 
     function configProperties(oClass, jsonProperties) {
@@ -136,6 +127,11 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
     }
 
     function configExistsClassesLinks(oClass) {
+    	function isLinkToClass(property, oClass) {
+    		return property.linkedClass === oClass.name ||
+    		property.linkedClass instanceof OArchitectOClass && property.linkedClass.name === oClass.name;
+    	}
+    	
         OArchitectUtil.forEach(OArchitectUtil.getAllClassesInEditor(), function (existsClass) {
             if (existsClass instanceof OArchitectOClass) {
                 OArchitectUtil.forEach(existsClass.properties, function (property) {
@@ -157,10 +153,6 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
             }
         });
 
-        function isLinkToClass(property, oClass) {
-            return property.linkedClass === oClass.name ||
-                property.linkedClass instanceof OArchitectOClass && property.linkedClass.name === oClass.name;
-        }
     }
 
     function getPropertyCell(propertyJson, propertyCells) {
@@ -174,6 +166,15 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
         });
         return result;
     }
+    
+    setCell(this, cell);
+    configProperties(this, json.properties);
+    configClasses(this, json.superClasses, true);
+    configClasses(this, json.subClasses, false);
+    configExistsClassesLinks(this);
+    this.setExistsInDb(json.existsInDb);
+    this.updatePropertiesOrder();
+    app.editor.enableConnection();
 };
 
 /**

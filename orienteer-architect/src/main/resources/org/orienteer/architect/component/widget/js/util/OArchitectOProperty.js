@@ -128,6 +128,39 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
     this.order = json.order;
     this.exists = json.exists != null ? json.exists : true;
 
+    function setCell(property, oClass, cell) {
+    	property.setCell(property.cell !== null ? property.cell : cell != null ? cell : null);
+    	if (property.cell === null) oClass.createCellForProperty(this);
+    }
+    
+    function setLinkedClass(property, json) {
+    	var linkedCell = OArchitectUtil.getCellByClassName(json.linkedClass);
+    	if (linkedCell !== null) {
+    		property.setLinkedClass(linkedCell.value);
+    	} else {
+    		property.setLinkedClass(null, false);
+    		property.linkedClass = json.linkedClass;
+    	}
+    }
+    
+    function setInverseProperty(property, json) {
+    	var inverse = null;
+    	if (property.linkedClass instanceof OArchitectOClass) {
+    		inverse = property.linkedClass.getProperty(json.inverseProperty.name);
+    	}
+    	
+    	if (inverse !== null) {
+    		property.setInverseProperty(inverse);
+    	} else {
+    		property.inverseProperty = new OArchitectOProperty();
+    		property.inverseProperty.name = json.inverseProperty.name;
+    		property.inverseProperty.type = json.inverseProperty.type;
+    		property.inverseProperty.linkedClass = json.inverseProperty.linkedClass;
+    		property.inverseProperty.inverseProperty = json.inverseProperty.inverseProperty;
+    		property.inverseProperty.existsInDb = json.inverseProperty.existsInDb;
+    	}
+    }
+    
     if (!this.isSubClassProperty() || !this.isSuperClassExistsInEditor()) setCell(this, oClass, cell);
     if (json.linkedClass != null) setLinkedClass(this, json);
     else this.setLinkedClass(null, false);
@@ -139,39 +172,6 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
     this.setExistsInDb(json.existsInDb);
     oClass.notifySubClassesAboutChangesInProperty(this);
     app.editor.enableConnection();
-
-    function setCell(property, oClass, cell) {
-        property.setCell(property.cell !== null ? property.cell : cell != null ? cell : null);
-        if (property.cell === null) oClass.createCellForProperty(this);
-    }
-
-    function setLinkedClass(property, json) {
-        var linkedCell = OArchitectUtil.getCellByClassName(json.linkedClass);
-        if (linkedCell !== null) {
-            property.setLinkedClass(linkedCell.value);
-        } else {
-            property.setLinkedClass(null, false);
-            property.linkedClass = json.linkedClass;
-        }
-    }
-
-    function setInverseProperty(property, json) {
-        var inverse = null;
-        if (property.linkedClass instanceof OArchitectOClass) {
-            inverse = property.linkedClass.getProperty(json.inverseProperty.name);
-        }
-
-        if (inverse !== null) {
-            property.setInverseProperty(inverse);
-        } else {
-            property.inverseProperty = new OArchitectOProperty();
-            property.inverseProperty.name = json.inverseProperty.name;
-            property.inverseProperty.type = json.inverseProperty.type;
-            property.inverseProperty.linkedClass = json.inverseProperty.linkedClass;
-            property.inverseProperty.inverseProperty = json.inverseProperty.inverseProperty;
-            property.inverseProperty.existsInDb = json.inverseProperty.existsInDb;
-        }
-    }
 };
 
 /**
@@ -342,6 +342,15 @@ OArchitectOProperty.prototype.setInversePropertyEnable = function (enable) {
 };
 
 OArchitectOProperty.prototype.setInverseProperty = function (property, createConnection) {
+	function manageEdgeBetweenPropertyClasses(property, inverse, create) {
+		property.notSetLinkedClass = true;
+		inverse.notSetLinkedClass = true;
+		OArchitectUtil.manageEdgesBetweenCells(property.cell, inverse.ownerClass.cell, create);
+		OArchitectUtil.manageEdgesBetweenCells(inverse.cell, property.ownerClass.cell, create);
+		property.notSetLinkedClass = false;
+		inverse.notSetLinkedClass = false;
+	}
+	
     if (this.isInverseProperty() || property === null) {
         createConnection = createConnection == null ? true : createConnection;
         if (property !== null) {
@@ -364,14 +373,6 @@ OArchitectOProperty.prototype.setInverseProperty = function (property, createCon
         this.ownerClass.notifySubClassesAboutChangesInProperty(this);
     }
 
-    function manageEdgeBetweenPropertyClasses(property, inverse, create) {
-        property.notSetLinkedClass = true;
-        inverse.notSetLinkedClass = true;
-        OArchitectUtil.manageEdgesBetweenCells(property.cell, inverse.ownerClass.cell, create);
-        OArchitectUtil.manageEdgesBetweenCells(inverse.cell, property.ownerClass.cell, create);
-        property.notSetLinkedClass = false;
-        inverse.notSetLinkedClass = false;
-    }
 };
 
 /**
