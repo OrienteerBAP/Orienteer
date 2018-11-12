@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.junit.Sudo;
 
 import static org.junit.Assert.*;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -35,9 +36,9 @@ public class HooksTest
 	private static final String TEST_CLASS_C = "TestClassC";
 	private static final String TEST_CLASS_CALLBACK = "TestClassCallbacks";
 	@Test
+	@Sudo
 	public void testCalculableHook() throws Exception
 	{
-		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
 		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		OSchema schema = db.getMetadata().getSchema();
 		
@@ -89,14 +90,13 @@ public class HooksTest
 		{
 			if(db.getTransaction().isActive()) db.commit();
 			schema.dropClass(TEST_CLASS_A);
-			OrientDbWebSession.get().signOut();
 		}
 	}
 	
 	@Test
+	@Sudo
 	public void testReferencesHook() throws Exception
 	{
-		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
 		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		OSchema schema = db.getMetadata().getSchema();
 		
@@ -195,14 +195,13 @@ public class HooksTest
 		} finally
 		{
 			schema.dropClass(TEST_CLASS_B);
-			OrientDbWebSession.get().signOut();
 		}
 	}
 	
 	@Test
+	@Sudo
 	public void testReferencesHookDeepCase() throws Exception
 	{
-		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
 		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		OSchema schema = db.getMetadata().getSchema();
 		
@@ -238,14 +237,13 @@ public class HooksTest
 		} finally
 		{
 			schema.dropClass(TEST_CLASS_C);
-			OrientDbWebSession.get().signOut();
 		}
 	}
 	
 	@Test
+	@Sudo
 	public void testReferencesHookChangeParent() throws Exception
 	{
-		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
 		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		OSchema schema = db.getMetadata().getSchema();
 		
@@ -284,7 +282,6 @@ public class HooksTest
 		} finally
 		{
 			schema.dropClass(TEST_CLASS_C);
-			OrientDbWebSession.get().signOut();
 		}
 	}
 	
@@ -299,8 +296,8 @@ public class HooksTest
 	};
 	
 	@Test
+	@Sudo
 	public void testCallbackHook() throws Exception {
-		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
 		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		OSchema schema = db.getMetadata().getSchema();
 		OClass oClass = schema.createClass(TEST_CLASS_CALLBACK);
@@ -323,7 +320,6 @@ public class HooksTest
 			assertEquals("executed", doc.field("callback"+TYPE.AFTER_READ));
 		} finally {
 			schema.dropClass(TEST_CLASS_CALLBACK);
-			OrientDbWebSession.get().signOut();
 		}
 	}
 }

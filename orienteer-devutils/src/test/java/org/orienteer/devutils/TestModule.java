@@ -5,6 +5,7 @@ import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.devutils.web.ToolsPage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
+import org.orienteer.junit.Sudo;
 
 import static org.junit.Assert.*;
 
@@ -46,8 +47,8 @@ public class TestModule
 	}
 	
 	@Test
+	@Sudo
 	public void testPageLoad() {
-		tester.signIn("admin", "admin");
 		tester.startPage(ToolsPage.class, new PageParameters().add("tab", "console"));
 		tester.assertRenderedPage(ToolsPage.class);
 		tester.startPage(ToolsPage.class, new PageParameters().add("tab", "monitoring"));
