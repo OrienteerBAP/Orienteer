@@ -2,6 +2,7 @@ package org.orienteer.devutils;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
+import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.devutils.web.ToolsPage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
@@ -10,6 +11,8 @@ import org.orienteer.junit.Sudo;
 import static org.junit.Assert.*;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,6 +23,7 @@ import com.orientechnologies.orient.core.sql.query.OResultSet;
 
 import ru.ydn.wicket.wicketconsole.ScriptExecutor;
 import ru.ydn.wicket.wicketconsole.ScriptExecutorHolder;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 
 @RunWith(OrienteerTestRunner.class)
@@ -28,6 +32,19 @@ public class TestModule
 {
 	@Inject
 	private OrienteerTester tester;
+	
+	private static boolean isDevUtilsActivated = false;
+	
+	@Before
+	public void activateModel() {
+		if(!isDevUtilsActivated) OSchemaHelper.bind(tester.getDatabase()).oClass(IOrienteerModule.OMODULE_CLASS)
+					.oDocument(IOrienteerModule.OMODULE_NAME, "devutils")
+					.doOnODocument(doc -> {
+						doc.field(IOrienteerModule.OMODULE_ACTIVATE, true);
+						DBClosure.sudoSave(doc);
+						isDevUtilsActivated=true;
+					});
+	}
     
 	@Test
 	public void testModuleLoaded()
