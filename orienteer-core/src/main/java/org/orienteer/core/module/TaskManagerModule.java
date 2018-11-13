@@ -1,19 +1,10 @@
 package org.orienteer.core.module;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-
-import org.apache.wicket.MetaDataKey;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.tasks.ITaskSession;
-import org.orienteer.core.tasks.ITaskSessionCallback;
 import org.orienteer.core.tasks.OTask;
-import org.orienteer.core.tasks.OTaskManager;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
-import org.orienteer.core.tasks.console.OConsoleTask;
-import org.orienteer.core.tasks.console.OConsoleTaskSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -63,6 +54,7 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 		return null;
 	}
 	
+	@Override
 	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
 			int oldVersion, int newVersion) {
 		onInstall(app, db);

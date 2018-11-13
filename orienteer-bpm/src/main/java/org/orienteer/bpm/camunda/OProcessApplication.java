@@ -1,7 +1,6 @@
 package org.orienteer.bpm.camunda;
 
 import org.apache.wicket.MetaDataKey;
-import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.application.AbstractProcessApplication;
 import org.camunda.bpm.application.ProcessApplicationInterface;
 import org.camunda.bpm.application.ProcessApplicationReference;

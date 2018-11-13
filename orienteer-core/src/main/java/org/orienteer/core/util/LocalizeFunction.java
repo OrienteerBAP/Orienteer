@@ -1,6 +1,5 @@
 package org.orienteer.core.util;
 
-import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
 

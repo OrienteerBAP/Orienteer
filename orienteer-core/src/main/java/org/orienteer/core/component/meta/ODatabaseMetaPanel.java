@@ -15,7 +15,6 @@ import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.property.BooleanEditPanel;
 import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
@@ -29,7 +28,6 @@ import ru.ydn.wicket.wicketorientdb.validation.DateFormatValidator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.TimeZone;
 
 import static com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;

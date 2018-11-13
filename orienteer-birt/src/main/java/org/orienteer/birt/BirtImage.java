@@ -1,21 +1,15 @@
 package org.orienteer.birt;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.core.util.resource.UrlResourceStream;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.ByteArrayResource;
 import org.apache.wicket.request.resource.IResource;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.request.resource.ResourceStreamResource;
 import org.apache.wicket.resource.FileSystemResource;
-import org.apache.wicket.resource.FileSystemResourceReference;
 import org.apache.wicket.util.io.IClusterable;
 import org.eclipse.birt.report.engine.api.CachedImage;
 import org.eclipse.birt.report.engine.api.IImage;

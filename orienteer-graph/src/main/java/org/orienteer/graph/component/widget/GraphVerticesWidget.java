@@ -19,7 +19,6 @@ import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.ODocumentClassColumn;
 import org.orienteer.core.component.table.ODocumentDescriptionColumn;
-import org.orienteer.core.component.table.OEntityColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.model.ODocumentNameModel;
@@ -30,7 +29,6 @@ import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

@@ -1,7 +1,6 @@
 package org.orienteer.core.tasks;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.ORecordElement.STATUS;
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
@@ -61,6 +60,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 		return !isActive() && ITaskSession.Status.RUNNING.name().equals(getField(ITaskSession.Field.STATUS));
 	}
 	
+	@Override
 	public OTaskSessionRuntime getOTaskSessionRuntime() {
 		return OTaskManager.get().getTaskSession(this);
 	}
@@ -71,6 +71,7 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 		return ret;
 	}
 	
+	@Override
 	public OTaskSession getOTaskSessionPersisted() {
 		return this;
 	}

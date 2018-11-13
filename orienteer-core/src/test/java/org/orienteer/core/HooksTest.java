@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.inject.Provider;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.CustomAttribute;
@@ -16,7 +14,6 @@ import org.orienteer.junit.Sudo;
 import static org.junit.Assert.*;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;

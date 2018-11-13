@@ -4,18 +4,12 @@ import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
-import com.orientechnologies.orient.core.metadata.security.OUser;
-import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**

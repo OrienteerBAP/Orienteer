@@ -2,7 +2,6 @@ package org.orienteer.pages;
 
 import java.util.List;
 
-import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.junit.OrienteerTestRunner;
@@ -16,8 +15,6 @@ import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton

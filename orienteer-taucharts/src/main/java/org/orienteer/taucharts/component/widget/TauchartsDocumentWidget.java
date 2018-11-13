@@ -1,10 +1,5 @@
 package org.orienteer.taucharts.component.widget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.taucharts.component.TauchartsConfig;

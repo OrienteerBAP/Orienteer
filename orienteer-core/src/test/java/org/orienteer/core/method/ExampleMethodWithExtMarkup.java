@@ -3,7 +3,6 @@ package org.orienteer.core.method;
 import java.io.Serializable;
 import java.util.Optional;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;

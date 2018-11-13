@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
@@ -20,11 +18,8 @@ import org.orienteer.core.event.SwitchDashboardTabEvent;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardManager;
 import org.orienteer.core.widget.IWidgetFilter;
-import org.orienteer.core.widget.IWidgetType;
-
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
-import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 
 /**

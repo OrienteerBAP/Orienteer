@@ -1,13 +1,10 @@
 package org.orienteer.bpm.camunda.handler;
 
-import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.PropertyEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;import ru.ydn.wicket.wicketorientdb.model.OPropertiesDataProvider;
 
 /**
  * {@link IEntityHandler} for {@link PropertyEntity} 

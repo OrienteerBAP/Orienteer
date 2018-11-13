@@ -3,7 +3,6 @@ package org.orienteer.core.component.command;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
 /**

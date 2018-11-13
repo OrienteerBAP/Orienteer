@@ -1,7 +1,5 @@
 package org.orienteer.core.component.command.modal;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
@@ -12,9 +10,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -27,9 +23,7 @@ import org.orienteer.core.model.SubClassesModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassesDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OClassPrototyper;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 

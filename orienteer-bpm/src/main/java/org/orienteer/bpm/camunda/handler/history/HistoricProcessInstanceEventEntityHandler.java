@@ -52,7 +52,8 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
     	mappingConvertors.put("id", new NonUniqIdConverter("pi:"));
     }
 
-    public void applyRelationships(OSchemaHelper helper) {
+    @Override
+	public void applyRelationships(OSchemaHelper helper) {
         super.applyRelationships(helper);
         helper.setupRelationship(OCLASS_NAME, "task", TaskEntityHandler.OCLASS_NAME, "historicProcessInstances");
     }

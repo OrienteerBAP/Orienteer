@@ -8,19 +8,13 @@ import org.orienteer.core.tasks.ITaskSession;
 import org.orienteer.core.tasks.ITaskSession.Status;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
-import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.tasks.TestTask;
 import org.orienteer.core.tasks.console.OConsoleTask;
 import org.orienteer.junit.OrienteerTestRunner;
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.exception.ORecordNotFoundException;
-import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;

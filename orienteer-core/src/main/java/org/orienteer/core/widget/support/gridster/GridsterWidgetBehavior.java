@@ -14,7 +14,6 @@ import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.widget.AbstractWidget;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 class GridsterWidgetBehavior extends Behavior {

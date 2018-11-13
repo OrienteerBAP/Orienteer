@@ -3,7 +3,6 @@ package org.orienteer.core.widget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.io.IClusterable;
 
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**

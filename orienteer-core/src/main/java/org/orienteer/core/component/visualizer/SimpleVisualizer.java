@@ -10,8 +10,6 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.component.property.DisplayMode;
 
-import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
-
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Locale;
 
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.pivottable.PivotTableModule;

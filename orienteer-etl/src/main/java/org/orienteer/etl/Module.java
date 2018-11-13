@@ -34,6 +34,7 @@ public class Module extends AbstractOrienteerModule{
 		makeSchema(app, db);
 	}
 	
+	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.etl.web");

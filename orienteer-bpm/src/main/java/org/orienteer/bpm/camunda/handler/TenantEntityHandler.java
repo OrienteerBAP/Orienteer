@@ -3,11 +3,9 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
 import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.camunda.bpm.engine.ProcessEngineException;
-import org.camunda.bpm.engine.identity.TenantQuery;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.camunda.bpm.engine.impl.persistence.entity.TenantEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;

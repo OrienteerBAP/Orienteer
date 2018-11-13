@@ -14,15 +14,12 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.BookmarkablePageLinkCommand;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
-import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
-import org.orienteer.core.widget.AbstractWidget;
-import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.Widget;
 
 import com.google.inject.Inject;

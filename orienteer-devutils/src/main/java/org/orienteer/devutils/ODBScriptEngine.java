@@ -2,8 +2,6 @@ package org.orienteer.devutils;
 
 import java.util.regex.Pattern;
 
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.io.IOUtils;
 import org.apache.wicket.util.string.Strings;
 
 import com.google.common.base.Throwables;
@@ -11,8 +9,6 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
-import com.orientechnologies.orient.core.sql.query.OResultSet;
-
 import ru.ydn.wicket.wicketconsole.IScriptContext;
 import ru.ydn.wicket.wicketconsole.IScriptEngine;
 import ru.ydn.wicket.wicketconsole.ScriptResult;

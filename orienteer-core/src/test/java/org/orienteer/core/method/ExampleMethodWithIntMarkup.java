@@ -1,6 +1,5 @@
 package org.orienteer.core.method;
 
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.component.command.Command;

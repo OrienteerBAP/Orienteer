@@ -1,7 +1,6 @@
 package org.orienteer.core.component.property.filter;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;

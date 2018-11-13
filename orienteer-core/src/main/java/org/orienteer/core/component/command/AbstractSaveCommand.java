@@ -3,18 +3,12 @@ package org.orienteer.core.component.command;
 import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
-import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.widget.AbstractModeAwareWidget;
 
 /**
  * Abstract {@link AjaxFormCommand} for any commands which save something

@@ -1,6 +1,5 @@
 package org.orienteer.core.util;
 
-import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -11,14 +10,9 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Response;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
-import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaManager;
-import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Choice provider for Select2 control

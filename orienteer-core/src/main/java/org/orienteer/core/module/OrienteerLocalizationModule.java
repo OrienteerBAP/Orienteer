@@ -9,20 +9,14 @@ import javax.inject.Singleton;
 import org.apache.wicket.Component;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.util.OSchemaHelper;
 
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import com.google.common.primitives.Booleans;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.hook.ORecordHook;
-import com.orientechnologies.orient.core.hook.ORecordHook.DISTRIBUTED_EXECUTION_MODE;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;

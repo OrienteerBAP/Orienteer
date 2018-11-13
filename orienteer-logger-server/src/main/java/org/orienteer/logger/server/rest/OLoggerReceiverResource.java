@@ -1,9 +1,6 @@
 package org.orienteer.logger.server.rest;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.wicket.protocol.http.WebApplication;
@@ -16,10 +13,7 @@ import org.orienteer.logger.server.OLoggerModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
  * REST entry point of OLogger events 

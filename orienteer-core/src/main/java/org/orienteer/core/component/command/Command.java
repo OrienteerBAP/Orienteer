@@ -9,7 +9,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.GenericPanel;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
@@ -21,10 +20,6 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.IBootstrapAware;
 import org.orienteer.core.component.ICommandsSupportComponent;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
-import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.event.ActionPerformedEvent;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -134,6 +129,7 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 			 */
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public void onClick()
             {
                 Command.this.onClick();

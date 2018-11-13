@@ -3,7 +3,6 @@ package org.orienteer.core.util;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.util.convert.IConverter;

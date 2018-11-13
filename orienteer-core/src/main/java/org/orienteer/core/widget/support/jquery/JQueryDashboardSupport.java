@@ -7,8 +7,6 @@ import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.support.IDashboardSupport;
-import org.orienteer.core.widget.support.gridster.GridsterDashboardSupport;
-
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;

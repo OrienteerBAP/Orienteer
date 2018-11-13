@@ -1,7 +1,5 @@
 package org.orienteer.core.web.schema;
 
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.web.AbstractWidgetPage;
 

@@ -7,8 +7,6 @@ import org.camunda.bpm.engine.impl.scripting.engine.Resolver;
 import org.camunda.bpm.engine.impl.scripting.engine.ResolverFactory;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-
 /**
  * {@link ResolverFactory} to object {@link Resolver} for binding OrientDB objects to camunda env. 
  */

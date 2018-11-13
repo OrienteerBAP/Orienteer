@@ -5,8 +5,6 @@ import org.apache.wicket.application.IComponentInitializationListener;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.devutils.debugbar.DebugBar;
 import org.apache.wicket.devutils.inspector.LiveSessionsPage;
-import org.apache.wicket.markup.ComponentTag;
-import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
@@ -18,8 +16,6 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketconsole.devutils.WicketConsolePage;
-
-import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * {@link IOrienteerModule} for 'orienteer-devutils' module

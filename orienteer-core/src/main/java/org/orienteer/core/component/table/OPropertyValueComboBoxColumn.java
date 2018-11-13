@@ -2,7 +2,6 @@ package org.orienteer.core.component.table;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.meta.AbstractMetaPanel;

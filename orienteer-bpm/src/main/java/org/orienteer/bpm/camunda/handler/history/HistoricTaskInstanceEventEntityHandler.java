@@ -3,7 +3,6 @@ package org.orienteer.bpm.camunda.handler.history;
 import com.github.raymanrt.orientqb.query.Query;
 import com.google.common.base.Converter;
 import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -34,7 +33,8 @@ public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanc
     private static final Converter<Object, Object> ID_CONVERTER_REVERSE = ID_CONVERTER.reverse();
 
     private static final Function<ODocument, String> GET_ID_FUNCTION = new GetODocumentFieldValueFunction<String>("id"){
-    	public String apply(ODocument input) {
+    	@Override
+		public String apply(ODocument input) {
     		String id = super.apply(input);
     		return id==null?null:ID_CONVERTER_REVERSE.convert(id).toString();
     	}

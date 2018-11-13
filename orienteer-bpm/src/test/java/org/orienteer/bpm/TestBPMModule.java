@@ -1,11 +1,6 @@
 package org.orienteer.bpm;
 
-import org.orienteer.bpm.camunda.OProcessApplicationReference;
-import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
-import org.orienteer.bpm.camunda.handler.ExecutionEntityHandler;
-import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
-import org.orienteer.bpm.camunda.handler.UserEntityHandler;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
 
@@ -28,9 +23,6 @@ import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
-import org.camunda.bpm.engine.impl.cfg.IdGenerator;
-import org.camunda.bpm.engine.impl.jobexecutor.JobExecutor;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.util.ClockUtil;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.Job;

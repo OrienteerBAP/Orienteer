@@ -1,6 +1,5 @@
 package org.orienteer.core.method;
 
-import org.apache.wicket.Component;
 import org.orienteer.core.component.command.Command;
 
 /**

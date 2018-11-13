@@ -8,11 +8,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.camunda.bpm.BpmPlatform;
-import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
-import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
-import org.orienteer.bpm.component.command.CompleteTaskCommand;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
@@ -38,6 +34,7 @@ public class ProcessDefinitionFormWidget extends AbstractFormWidget {
 		propertiesStructureTable.addCommand(new EditODocumentCommand(propertiesStructureTable, getModeModel()));
 		propertiesStructureTable.addCommand(new SaveODocumentCommand(propertiesStructureTable, getModeModel()){
 			
+			@Override
 			protected void onInitialize() {
 				super.onInitialize();
 				setLabelModel(new ResourceModel("command.saveAndStart"));

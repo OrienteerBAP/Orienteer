@@ -1,13 +1,9 @@
 package org.orienteer.core.web;
 
-import static org.orienteer.core.module.OWidgetsModule.*;
-
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 import org.apache.wicket.Component;
@@ -18,29 +14,20 @@ import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.ODocumentPageHeader;
-import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.widget.document.ExtendedVisualizerWidget;
-import org.orienteer.core.component.widget.document.ODocumentNonRegisteredPropertiesWidget;
-import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.ByOClassWidgetFilter;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetFilter;
-import org.orienteer.core.widget.IWidgetType;
-
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
-import com.google.common.base.Predicate;
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * Widgets based page for {@link ODocument}s display

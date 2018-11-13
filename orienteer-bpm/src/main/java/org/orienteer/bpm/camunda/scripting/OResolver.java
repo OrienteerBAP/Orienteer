@@ -8,7 +8,6 @@ import org.camunda.bpm.engine.impl.scripting.engine.Resolver;
 
 import com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper;
 import com.orientechnologies.orient.core.command.script.OScriptOrientWrapper;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper;
 

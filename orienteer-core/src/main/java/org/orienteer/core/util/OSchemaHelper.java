@@ -1,6 +1,5 @@
 package org.orienteer.core.util;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -16,7 +15,6 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * Enhanced {@link ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper} from wicket-orientdb library to allow Orienteer specific things
@@ -87,42 +85,49 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	}
 	
 	
+	@Override
 	public OSchemaHelper set(OClass.ATTRIBUTES attr, Object value) 
 	{
 		super.set(attr, value);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper set(OProperty.ATTRIBUTES attr, Object value) 
 	{
 		super.set(attr, value);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper defaultValue(String defaultValue)
 	{
 		super.defaultValue(defaultValue);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper min(String min)
 	{
 		super.min(min);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper max(String max)
 	{
 		super.max(max);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper notNull()
 	{
 		super.notNull();
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper notNull(boolean value)
 	{
 		super.notNull(value);

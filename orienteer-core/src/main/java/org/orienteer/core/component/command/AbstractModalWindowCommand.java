@@ -6,10 +6,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.ICommandsSupportComponent;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
-import org.orienteer.core.component.table.OrienteerDataTable;
 
 /**
  * {@link AjaxCommand} that will display a modal window for additional steps

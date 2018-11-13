@@ -1,17 +1,10 @@
 package org.orienteer.core.widget;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
 

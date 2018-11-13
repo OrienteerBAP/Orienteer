@@ -32,19 +32,16 @@ import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.meta.AbstractModeMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.widget.oclass.OClassCustomPropertiesWidget;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfPrototypeBehavior;
 import ru.ydn.wicket.wicketorientdb.components.RootForm;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
-import ru.ydn.wicket.wicketorientdb.model.OClassCustomModel;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 

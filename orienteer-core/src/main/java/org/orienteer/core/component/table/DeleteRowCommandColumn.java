@@ -1,11 +1,9 @@
 package org.orienteer.core.component.table;
 
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import java.util.Optional;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -16,11 +14,7 @@ import org.apache.wicket.model.Model;
 import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.AjaxFormCommand;
-import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
-import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
 /**
  * {@link OrienteerDataTable} Column with 'delete' button.

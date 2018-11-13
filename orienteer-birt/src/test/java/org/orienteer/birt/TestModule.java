@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import static org.junit.Assert.*;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton

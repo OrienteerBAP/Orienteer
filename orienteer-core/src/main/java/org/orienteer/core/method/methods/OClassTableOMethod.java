@@ -2,7 +2,6 @@ package org.orienteer.core.method.methods;
 
 import java.util.List;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
 import org.orienteer.core.component.command.Command;

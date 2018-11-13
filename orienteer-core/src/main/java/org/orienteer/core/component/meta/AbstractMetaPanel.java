@@ -1,7 +1,6 @@
 package org.orienteer.core.component.meta;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.apache.wicket.Component;
@@ -13,10 +12,8 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.visit.ClassVisitFilter;
 import org.apache.wicket.util.visit.IVisit;
@@ -194,6 +191,7 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		});
 	}
 	
+	@Override
 	public IModel<?> getExportableDataModel() {
 		configure();
 		if(component instanceof IExportable){

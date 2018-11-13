@@ -150,14 +150,17 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 		return feedbacks;
 	}
 
+	@Override
 	public void setCurrentDashboard(IDashboard dashboard){
 		curDashboard = dashboard;
 	};
 
+	@Override
 	public IDashboard getCurrentDashboard(){
 		return curDashboard;
 	};
 
+	@Override
 	public Component getSelf(){
 		return this;
 	}

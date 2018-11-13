@@ -10,16 +10,11 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
-
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import org.orienteer.core.web.ODocumentPage;
 
 import ru.ydn.wicket.wicketorientdb.security.ISecuredComponent;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;

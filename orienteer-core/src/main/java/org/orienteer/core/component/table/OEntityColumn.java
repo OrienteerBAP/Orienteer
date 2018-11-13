@@ -1,8 +1,6 @@
 package org.orienteer.core.component.table;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.meta.AbstractMetaPanel;

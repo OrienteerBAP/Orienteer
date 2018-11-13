@@ -8,8 +8,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ReorderableRepeatingView;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;

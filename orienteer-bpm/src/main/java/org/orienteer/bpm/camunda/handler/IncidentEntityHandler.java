@@ -2,7 +2,6 @@ package org.orienteer.bpm.camunda.handler;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
-import org.camunda.bpm.engine.impl.cmmn.entity.repository.CaseDefinitionEntity;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.IncidentEntity;
 import org.camunda.bpm.engine.runtime.IncidentQuery;

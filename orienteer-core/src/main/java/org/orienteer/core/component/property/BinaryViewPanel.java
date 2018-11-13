@@ -8,8 +8,6 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.request.resource.AbstractResource;
-import org.apache.wicket.request.resource.AbstractResource.ResourceResponse;
-import org.apache.wicket.request.resource.IResource.Attributes;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.service.IOClassIntrospector;
 

@@ -1,7 +1,6 @@
 package org.orienteer.core.component.table;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.meta.AbstractMetaPanel;
 
 /**
  * {@link AbstractMetaColumn} which take into consideration display mode

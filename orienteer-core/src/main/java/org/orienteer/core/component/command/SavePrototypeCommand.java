@@ -6,12 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.table.OrienteerDataTable;
-
 import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
-
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
  * {@link Command} to save {@link IPrototype} based entities

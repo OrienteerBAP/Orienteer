@@ -1,22 +1,16 @@
 package org.orienteer.bpm.component.command;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.util.string.Strings;
 import org.camunda.bpm.BpmPlatform;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.task.Task;
-import org.camunda.bpm.engine.variable.impl.VariableMapImpl;
 import org.orienteer.bpm.component.widget.FormKey;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.AjaxFormCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;

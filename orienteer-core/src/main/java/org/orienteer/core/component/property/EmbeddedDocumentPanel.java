@@ -12,7 +12,6 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.model.SubClassesModel;

@@ -15,8 +15,6 @@ import org.orienteer.core.component.SchemaPageHeader;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OClassViewPanel;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
-import org.orienteer.core.web.AbstractWidgetPage;
-
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;

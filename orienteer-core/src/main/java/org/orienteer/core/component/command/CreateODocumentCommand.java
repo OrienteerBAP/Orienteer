@@ -13,7 +13,6 @@ import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.modal.SelectSubOClassDialogPage;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.web.ODocumentPage;
 

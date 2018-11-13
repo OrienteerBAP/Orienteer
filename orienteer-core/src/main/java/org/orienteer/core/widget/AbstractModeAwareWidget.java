@@ -1,9 +1,6 @@
 package org.orienteer.core.widget;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.component.FAIcon;
-import org.orienteer.core.component.command.EditODocumentCommand;
-import org.orienteer.core.component.command.SaveODocumentCommand;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
 

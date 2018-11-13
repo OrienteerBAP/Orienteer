@@ -8,10 +8,6 @@ import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.ICommandsSupportComponent;
-import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.structuretable.StructureTableCommandsToolbar;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
-import org.orienteer.core.component.table.OrienteerDataTable;
 
 /**
  * Ajax-enabled {@link Command}

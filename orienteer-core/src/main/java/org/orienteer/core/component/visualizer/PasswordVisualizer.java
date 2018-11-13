@@ -1,15 +1,10 @@
 package org.orienteer.core.component.visualizer;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.PasswordsPanel;
-
-import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;

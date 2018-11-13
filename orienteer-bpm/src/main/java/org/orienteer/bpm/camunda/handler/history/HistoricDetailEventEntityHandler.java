@@ -5,7 +5,6 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricDetailEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
-import org.orienteer.bpm.camunda.handler.JobDefinitionEntityHandler;
 import org.orienteer.bpm.camunda.handler.Statement;
 import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
 import org.orienteer.core.OClassDomain;
