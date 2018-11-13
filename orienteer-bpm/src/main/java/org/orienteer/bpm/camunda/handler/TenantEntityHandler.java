@@ -83,10 +83,12 @@ public class TenantEntityHandler implements IEntityHandler<TenantEntity> {
 
 	@Override
 	public void applySchema(OSchemaHelper helper) {
+		//It's already applied
 	}
 
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
+		//It's already applied
 	}
 
 	@Override
@@ -101,15 +103,17 @@ public class TenantEntityHandler implements IEntityHandler<TenantEntity> {
 
 	@Override
 	public void lock(String statement, Object parameter, OPersistenceSession session) {
+		//TODO: Not implemented
 	}
 
 	@Override
 	public void deleteBulk(DbBulkOperation operation, OPersistenceSession session) {
-		
+		//TODO: Not implemented
 	}
 
 	@Override
 	public void updateBulk(DbBulkOperation operation, OPersistenceSession session) {
+		//TODO: Not implemented
 	}
 	
 	@Override

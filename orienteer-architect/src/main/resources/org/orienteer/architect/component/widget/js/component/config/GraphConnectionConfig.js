@@ -86,6 +86,23 @@ GraphConnectionConfig.prototype.createIsValidConnection = function () {
 
 GraphConnectionConfig.prototype.createConnectionHandlerFactoryMethod = function () {
     var config = this;
+    
+    function getEdgeValue(source, target) {
+    	var result = '';
+    	if (source != null && target != null) {
+    		var sourceValue = source.value;
+    		var targetValue = target.value;
+    		if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
+    			result = sourceValue.isSuperClassExistsInDb(targetValue) ? OArchitectConstants.SAVED_INHERITANCE : OArchitectConstants.UNSAVED_INHERITANCE;
+    		} else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
+    			result = sourceValue.isLinkExistsInDb(targetValue) ? OArchitectConstants.SAVED_LINK : OArchitectConstants.UNSAVED_LINK;
+    		} else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOProperty) {
+    			result = sourceValue.isLinkExistsInDb(targetValue.ownerClass) ? OArchitectConstants.SAVED_LINK : OArchitectConstants.UNSAVED_LINK;
+    		}
+    	}
+    	return result;
+    }
+    
     return function (source, target) {
         var edge = new mxCell();
         edge.setValue(getEdgeValue(source, target));
@@ -97,21 +114,6 @@ GraphConnectionConfig.prototype.createConnectionHandlerFactoryMethod = function 
         return edge;
     };
 
-    function getEdgeValue(source, target) {
-        var result = '';
-        if (source != null && target != null) {
-            var sourceValue = source.value;
-            var targetValue = target.value;
-            if (sourceValue instanceof OArchitectOClass && targetValue instanceof OArchitectOClass) {
-                result = sourceValue.isSuperClassExistsInDb(targetValue) ? OArchitectConstants.SAVED_INHERITANCE : OArchitectConstants.UNSAVED_INHERITANCE;
-            } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOClass) {
-                result = sourceValue.isLinkExistsInDb(targetValue) ? OArchitectConstants.SAVED_LINK : OArchitectConstants.UNSAVED_LINK;
-            } else if (sourceValue instanceof OArchitectOProperty && targetValue instanceof OArchitectOProperty) {
-                result = sourceValue.isLinkExistsInDb(targetValue.ownerClass) ? OArchitectConstants.SAVED_LINK : OArchitectConstants.UNSAVED_LINK;
-            }
-        }
-        return result;
-    }
 };
 
 GraphConnectionConfig.prototype.createConnectionHandlerConnect = function () {

@@ -89,10 +89,12 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				OIndex<?> index = db.getMetadata().getIndexManager().getIndex(OCLASS_PERSPECTIVE + ".name");
 				if(index!=null) index.delete();
 				onInstall(app, db);
+				break;
 			case 5:
 				OSchemaHelper.bind(db)
 					.oClass(OIdentity.CLASS_NAME)
 					.oProperty("perspective", OType.LINK).linkedClass(OCLASS_PERSPECTIVE);
+				break;
 			default:
 				break;
 		}

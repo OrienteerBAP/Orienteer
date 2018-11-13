@@ -109,7 +109,7 @@ public class TestBPMModule {
 
 		Boolean varValue2 = (Boolean) processEngine.getRuntimeService().getVariable(processInstance.getId(),
 				"testVar2");
-		assertEquals(new Boolean(true), varValue2);
+		assertEquals(Boolean.TRUE, varValue2);
 
 		List<Execution> executions = processEngine.getRuntimeService().createExecutionQuery()
 				.processInstanceId(processInstance.getId()).list();
