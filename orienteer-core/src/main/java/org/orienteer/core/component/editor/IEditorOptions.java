@@ -23,6 +23,11 @@ public interface IEditorOptions extends IClusterable {
      * If true shows line numbers
      */
     public static final String LINE_NUMBERS = "lineNumbers";
+    
+    /**
+     * If true: long lines will be wrapped
+     */
+    public static final String LINE_WRAPPING = "lineWrapping";
 
     /**
      * If true shows active line.

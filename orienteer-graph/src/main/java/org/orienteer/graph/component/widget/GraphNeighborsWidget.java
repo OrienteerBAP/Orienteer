@@ -10,6 +10,7 @@ import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.EditODocumentsCommand;
+import org.orienteer.core.component.command.ExportCommand;
 import org.orienteer.core.component.command.SaveODocumentsCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
@@ -40,7 +41,7 @@ public class GraphNeighborsWidget extends AbstractWidget<ODocument> {
         super(id, model, widgetDocumentModel);
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-        OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand(both()) from "+getModelObject().getIdentity());
+        OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand(both().asSet()) from "+getModelObject().getIdentity());
         OClass commonParent = provider.probeOClass(20);
         if(commonParent==null) commonParent = getSchema().getClass("V");
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
@@ -52,6 +53,7 @@ public class GraphNeighborsWidget extends AbstractWidget<ODocument> {
         table.addCommand(new DeleteVertexCommand(table, getModel()));
         table.addCommand(new EditODocumentsCommand(table, modeModel, commonParent));
         table.addCommand(new SaveODocumentsCommand(table, modeModel));
+        table.addCommand(new ExportCommand<>(table, new StringResourceModel("export.filename.neighbors", new ODocumentNameModel(model))));
         add(tablePanel);
         add(DisableIfDocumentNotSavedBehavior.INSTANCE,UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }

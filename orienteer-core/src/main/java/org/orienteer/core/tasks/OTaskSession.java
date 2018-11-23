@@ -249,8 +249,8 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	}
 	
 	@Override
-	public ITaskSession incrementCurrentProgress() {
-		incrementField(Field.PROGRESS_CURRENT.fieldName(), 1);
+	public ITaskSession incrementCurrentProgress(int increment) {
+		incrementField(Field.PROGRESS_CURRENT.fieldName(), increment);
 		return this;
 	}
 }

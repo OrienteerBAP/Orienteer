@@ -18,6 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
@@ -25,7 +26,8 @@
 	</parent>
 	<artifactId>orienteer-logger-server</artifactId>
 	<name>orienteer-logger-server</name>
-	<description>Serverside of Orienter Logger</description>
+	<description>Server side of Orienter Logger</description>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
@@ -75,6 +77,7 @@
             <version>${jetty.version}</version>
         </dependency>
 	</dependencies>
+
 	<build>
 		<resources>
 			<resource>
@@ -124,36 +127,40 @@
 					<wtpversion>${wtp.version}</wtpversion>
 				</configuration>
 			</plugin>
-			<plugin>
+            <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
                 <configuration>
-                <systemProperties>
-					<systemProperty>
-						<name>orienteer.loader.repository.local</name>
-						<value>${settings.localRepository}</value>
-					</systemProperty>
-				</systemProperties>
-                <webApp>
-                    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-                    <resourceBase>src/main/resources</resourceBase>
-                    <contextPath>/</contextPath>
-                </webApp>
-                <connectors>
-                    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
+                    <systemProperties>
+                        <systemProperty>
+                            <name>orienteer.loader.repository.local</name>
+                            <value>${settings.localRepository}</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <supportedPackagings>
+                        <supportedPackaging>jar</supportedPackaging>
+                    </supportedPackagings>
+                    <webApp>
+                        <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+                        <resourceBase>src/main/resources</resourceBase>
+                        <contextPath>/</contextPath>
+                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                    </webApp>
+                    <httpConnector>
+                        <name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
                         <port>8080</port>
-                        <maxIdleTime>3600000</maxIdleTime>
-                    </connector>
-                </connectors>
+                        <idleTimeout>3600000</idleTimeout>
+                    </httpConnector>
                 </configuration>
                 <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.jetty.aggregate</groupId>
-                    <artifactId>jetty-all</artifactId>
-		    <classifier>uber</classifier>
-                    <version>${jetty.version}</version>
-                </dependency>
+                    <dependency>
+                        <groupId>org.eclipse.jetty.aggregate</groupId>
+                        <artifactId>jetty-all</artifactId>
+                        <classifier>uber</classifier>
+                        <version>${jetty.version}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
 		</plugins>

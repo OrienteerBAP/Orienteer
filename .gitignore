@@ -13,11 +13,14 @@ build.cmd
 databases/
 */runtime/
 /Orienteer/
+/Orienteer.*/
 /*/Orienteer/
+/*/Orienteer.*/
 /*/libs/
 */app/
 .idea/
 *.iml
 *.log
+*.tar.gz
 orienteer.properties
 orienteer-test.properties

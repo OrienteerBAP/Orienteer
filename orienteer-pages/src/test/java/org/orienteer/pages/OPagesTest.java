@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
+import org.orienteer.junit.Sudo;
 import org.orienteer.pages.web.EmbeddedWebPage;
 import org.orienteer.pages.web.FullWebPage;
 
@@ -26,8 +27,8 @@ public class OPagesTest {
 	private OrienteerTester tester;
 	
 	@Test
+	@Sudo
 	public void testPageRender() {
-		tester.signIn("admin", "admin");
 		ODatabaseDocument db = tester.getDatabase();
 		List<ODocument> docs = db.query(new OSQLSynchQuery<>("select from OPage where path = ?"), "/testcase/");
 		ODocument pageDoc = docs!=null && !docs.isEmpty()?docs.get(0):null;

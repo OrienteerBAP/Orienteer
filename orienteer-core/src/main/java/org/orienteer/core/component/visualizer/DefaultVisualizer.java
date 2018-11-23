@@ -35,11 +35,12 @@ import java.util.*;
  * Default {@link IVisualizer}. Should cover all property types
  */
 public class DefaultVisualizer extends AbstractSimpleVisualizer {
+	public static final String NAME = "default";
 	public static final DefaultVisualizer INSTANCE = new DefaultVisualizer();
 
 	public DefaultVisualizer()
 	{
-		super("default", false, OType.values());
+		super(NAME, false, OType.values());
 	}
 
 	@SuppressWarnings("unchecked")

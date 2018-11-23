@@ -56,4 +56,24 @@
 	    <artifactId>orienteer-architect</artifactId>
         <description>UI for easy and quick data models designing</description>
     </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+	    <artifactId>orienteer-mail</artifactId>
+        <description>Simply send emails with Orienteer</description>
+    </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+	    <artifactId>orienteer-object</artifactId>
+        <description>Allows to use your own java classes to work with OrientDB under Orienteer</description>
+    </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+	    <artifactId>orienteer-users</artifactId>
+        <description>Allows easily configure multiuser systems based on Orienteer</description>
+    </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+	    <artifactId>orienteer-bot</artifactId>
+        <description>Module to build and run messangers bots</description>
+    </module>
 </metadata>

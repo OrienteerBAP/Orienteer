@@ -19,15 +19,15 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>orienteer-birt</artifactId>
-	<!-- TODO project name  -->
 	<name>orienteer-birt</name>
 	<description />
-	<!--
-		<organization>
-			<name>company name</name>
-			<url>company url</url>
-		</organization>
-	-->
+
+    <parent>
+        <groupId>org.orienteer</groupId>
+        <artifactId>orienteer-parent</artifactId>
+        <version>1.4-SNAPSHOT</version>
+    </parent>
+
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -35,62 +35,25 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
 	<properties>
 		<orienteer.version>1.4-SNAPSHOT</orienteer.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
 			<artifactId>orienteer-core</artifactId>
 			<version>${orienteer.version}</version>
 		</dependency>
-<!-- BIRT depedencies -->
-
-<dependency>
-  <groupId>org.orienteer</groupId>
-  <artifactId>org.orienteer.birt.orientdb</artifactId>
-  <version>1.0</version>
-</dependency>
-
-
-		<!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-graph</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pages</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pivottable</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-bpm</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-devutils</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-logger-server</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
-        <!--<dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-camel</artifactId>
-            <version>${orienteer.version}</version>
-        </dependency>-->
+        <dependency>
+          <groupId>org.orienteer</groupId>
+          <artifactId>org.orienteer.birt.orientdb</artifactId>
+          <version>1.0</version>
+        </dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
@@ -119,6 +82,7 @@
             <scope>test</scope>
         </dependency>
 	</dependencies>
+
 	<build>
 		<resources>
 			<resource>
@@ -168,88 +132,64 @@
 					<wtpversion>${wtp.version}</wtpversion>
 				</configuration>
 			</plugin>
-			<!--
-			//Uncomment for quick inplace tests 
-             -->
 			<plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                <webApp>
-                    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-                    <resourceBase>src/main/resources</resourceBase>
-                    <contextPath>/</contextPath>
-                </webApp>
-                <connectors>
-                    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                        <port>8080</port>
-                        <maxIdleTime>3600000</maxIdleTime>
-                    </connector>
-                </connectors>
-                </configuration>
-                <dependencies>
-                <dependency>
-                    <groupId>org.eclipse.jetty.aggregate</groupId>
-                    <artifactId>jetty-all</artifactId>
-		    <classifier>uber</classifier>
-                    <version>${jetty.version}</version>
-                </dependency>
-                </dependencies>
-            </plugin>
-		<!-- 
-           <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>${project.build.outputDirectory}/WEB-INF/lib/</classpathPrefix>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-dependency-plugin</artifactId>
-	            <executions>
-	                <execution>
-	                    <id>copy</id>
-	                    <phase>install</phase>
-	                    <goals>
-	                        <goal>copy-dependencies</goal>
-	                    </goals>
-	                    <configuration>
-	                        <outputDirectory>
-	                          ${project.build.outputDirectory}/WEB-INF/lib
-	                        </outputDirectory>
-	                    </configuration>
-	                </execution>
-	            </executions>
-	        </plugin>
-		 -->
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-dependency-plugin</artifactId>
-	            <executions>
-	                <execution>
-	                    <id>copy</id>
-	                    <phase>install</phase>
-	                    <goals>
-	                        <goal>copy-dependencies</goal>
-	                    </goals>
-	                    <configuration>
-	                    	<includeArtifactIds>org.orienteer.birt.orientdb</includeArtifactIds>
-	                        <outputDirectory>
-	                          ${project.build.outputDirectory}/WEB-INF/lib
-	                        </outputDirectory>
-	                    </configuration>
-	                </execution>
-	            </executions>
-	        </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>org.orienteer.birt.orientdb</includeArtifactIds>
+							<outputDirectory>
+								${project.build.outputDirectory}/WEB-INF/lib
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.version}</version>
+				<configuration>
+					<systemProperties>
+						<systemProperty>
+							<name>orienteer.loader.repository.local</name>
+							<value>${settings.localRepository}</value>
+						</systemProperty>
+					</systemProperties>
+					<supportedPackagings>
+						<supportedPackaging>jar</supportedPackaging>
+					</supportedPackagings>
+					<webApp>
+						<descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+						<resourceBase>src/main/resources</resourceBase>
+						<contextPath>/</contextPath>
+						<containerIncludeJarPattern>^$</containerIncludeJarPattern>
+						<webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+					</webApp>
+					<httpConnector>
+						<name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
+						<port>8080</port>
+						<idleTimeout>3600000</idleTimeout>
+					</httpConnector>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.eclipse.jetty.aggregate</groupId>
+						<artifactId>jetty-all</artifactId>
+						<classifier>uber</classifier>
+						<version>${jetty.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 	    </plugins>
 	</build>
+
 	<repositories>
 		<repository>
 			<id>Apache Nexus</id>
@@ -262,9 +202,4 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	<parent>
-		<groupId>org.orienteer</groupId>
-		<artifactId>orienteer-parent</artifactId>
-		<version>1.4-SNAPSHOT</version>
-	</parent>
 </project>

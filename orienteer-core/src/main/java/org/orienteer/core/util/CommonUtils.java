@@ -2,6 +2,9 @@ package org.orienteer.core.util;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import org.apache.wicket.Application;
+import org.apache.wicket.Session;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
@@ -10,6 +13,7 @@ import org.orienteer.core.OrienteerWebSession;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static java.util.Optional.empty;
@@ -191,5 +195,82 @@ public class CommonUtils {
 	 */
 	public static Optional<ODocument> getDocument(List<OIdentifiable> identifiables) {
 		return isNotEmpty(identifiables) ? ofNullable(identifiables.get(0).getRecord()) : empty();
+	}
+	
+	/**
+	 * Return main object if it's not null or default
+	 * @param object main object
+	 * @param def default object
+	 * @return main object if it's not null or default
+	 */
+	public static <T> T defaultIfNull(T object, T def) {
+		return object!=null?object:def;
+	}
+	
+	/**
+	 * Return main object if it's not null or supplied default
+	 * @param object main object
+	 * @param def default object
+	 * @return main object if it's not null or supplied default
+	 */
+	public static <T> T defaultIfNull(T object, Supplier<T> supplier) {
+		return object!=null?object:supplier.get();
+	}
+	
+	/**
+	 * Safe method to merge sets. Always return not null
+	 * @param mainSet main set to merge into
+	 * @param mergeSet set to merge
+	 * @return mergedSet - not null
+	 */
+	public static <T> Set<T> mergeSets(Set<T> mainSet, Collection<T> mergeSet) {
+		if(mainSet==null) mainSet = new HashSet<>();
+		if(mergeSet!=null) mainSet.addAll(mergeSet);
+		return mainSet;
+	}
+	
+	/**
+	 * Safe method to merge maps
+	 * @param mainMap main map to merge into
+	 * @param mergeMap map to merge
+	 * @return merged map - not null
+	 */
+	public static <K, V> Map<K,V> mergeMaps(Map<K, V> mainMap, Map<K,V> mergeMap) {
+		if(mainMap==null) mainMap = new HashMap<>();
+		if(mergeMap!=null) mainMap.putAll(mergeMap);
+		return mainMap;
+	}
+	
+	/**
+	 * Safe method to check that 2 {@link OIdentifiable}s are actually the same
+	 * @param a first {@link OIdentifiable}
+	 * @param b second {@link OIdentifiable}
+	 * @return true if 2 objects are referring to the same document
+	 */
+	public static boolean isTheSame(OIdentifiable a, OIdentifiable b) {
+		if(a==null && b==null) return true;
+		else if((a==null && b!=null) || (a!=null && b==null)) return false;
+		else return a.getIdentity().equals(b.getIdentity());
+	}
+	
+	/**
+	 * Safe method to get String representation of an object.
+	 * Wicket convertions are also has been used
+	 * @param data
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String toString(Object data) {
+		if(data==null) return "null";
+		else if (data instanceof CharSequence) return data.toString();
+		else {
+			IConverter<Object> converter = (IConverter<Object>)OrienteerWebApplication.lookupApplication()
+																	.getConverterLocator().getConverter(data.getClass());
+			if(converter!=null) {
+				return converter.convertToString(data, Session.exists()?Session.get().getLocale():Locale.getDefault());
+			} else {
+				return data.toString();
+			}
+		}
 	}
 }

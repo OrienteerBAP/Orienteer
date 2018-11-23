@@ -44,15 +44,20 @@ public class RestorePasswordTest {
             user.save();
 
             OProperty property = user.getDocument().getSchemaClass().getProperty(OrienteerUser.PROP_RESTORE_ID);
-            OrienteerUsersModule.REMOVE_CRON_RULE.setValue(property, "0 0/1 * 1/1 * ? *");
+            OrienteerUsersModule.REMOVE_CRON_RULE.setValue(property, "0/10 0/1 * 1/1 * ? *");
             OrienteerUsersModule.REMOVE_SCHEDULE_START_TIMEOUT.setValue(property, "3000");
         });
     }
 
     @After
     public void destroy() {
-        DBClosure.sudoConsumer(db ->
-            db.command(new OCommandSQL("delete from ?")).execute(user.getDocument())
+        DBClosure.sudoConsumer(db -> {
+            	db.command(new OCommandSQL("delete from ?")).execute(user.getDocument());
+            	//Restore default
+            	OProperty property = user.getDocument().getSchemaClass().getProperty(OrienteerUser.PROP_RESTORE_ID);
+            	OrienteerUsersModule.REMOVE_CRON_RULE.setValue(property, "0 0/1 * * * ?");
+                OrienteerUsersModule.REMOVE_SCHEDULE_START_TIMEOUT.setValue(property, "86400000");
+        	}
         );
         tester.signOut();
     }
@@ -61,7 +66,7 @@ public class RestorePasswordTest {
     public void testRestorePassword() throws InterruptedException {
         usersService.restoreUserPassword(user);
         assertNotNull(getRestoreSchedulerEvent(user.getRestoreId()));
-        Thread.currentThread().join(70_000);
+        Thread.sleep(10_000);
         assertNull(getRestoreSchedulerEvent(user.getRestoreId()));
     }
 

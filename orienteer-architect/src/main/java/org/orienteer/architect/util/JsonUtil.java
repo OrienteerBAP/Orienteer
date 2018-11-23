@@ -7,6 +7,8 @@ import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.util.io.IClusterable;
 import org.apache.wicket.util.lang.Args;
+import org.orienteer.architect.model.OArchitectOClass;
+import org.orienteer.architect.model.OArchitectOProperty;
 
 import java.util.List;
 

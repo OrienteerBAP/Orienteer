@@ -1,5 +1,11 @@
 !function() {
+	function postProcess(data) {
+		${postProcess}
+	}
+	
 	function renderData(data) {
+		var postProcessed = postProcess(data);
+		if(postProcessed) data = postProcessed;
 		for (var row in data) {
 			for (var col in data[row]) {
 				if (col.match('@')){
@@ -27,13 +33,14 @@
 		chart.renderTo("#"+'${componentId}');
 	}
 	
+	
 	var rest = ${rest};
 	if(rest) {
 		var restUrl = "${url}";
-		$.getJSON( '${url}', function( data ) {
+		$.getJSON( restUrl, function( data ) {
 				renderData(data.result);
 			});
 	} else {
-		renderData(eval("${data}"));
+		renderData(eval(${data}));
 	}
 }();

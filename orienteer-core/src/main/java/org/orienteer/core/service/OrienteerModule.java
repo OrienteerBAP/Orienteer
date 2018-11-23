@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -14,6 +15,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.export.CSVDa
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.IDataExporter;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.impl.GuiceOrientDbSettings;
 import org.orienteer.core.service.impl.OClassIntrospector;
@@ -60,20 +62,23 @@ public class OrienteerModule extends AbstractModule {
 	}
 
 	@Provides
-	@RequestScoped
 	public ODatabaseDocumentTx getDatabaseDocumentTx(ODatabaseDocument db) {
 		return (ODatabaseDocumentTx)db;
 	}
 
 	@Provides
-	@RequestScoped
 	public ODatabaseDocument getDatabaseRecord()
 	{
 		return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
 	}
+	
+	@Provides
+	public OPartitionedDatabasePool getPartitionedDatabasePool(IOrientDbSettings settings) {
+		OrienteerWebSession session = OrienteerWebSession.get();
+		return settings.getDatabasePoolFactory().get(settings.getDBUrl(), session.getUsername(), session.getPassword());
+	}
 
 	@Provides
-	@RequestScoped
 	public OSchema getSchema(ODatabaseDocument db)
 	{
 		return db.getMetadata().getSchema();

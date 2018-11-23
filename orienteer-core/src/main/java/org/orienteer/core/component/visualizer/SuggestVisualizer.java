@@ -20,12 +20,14 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * {@link IVisualizer} to show links as tags control
  */
-public class TagsVisualizer extends AbstractSimpleVisualizer {
+public class SuggestVisualizer extends AbstractSimpleVisualizer {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(TagsVisualizer.class);
+	public static final String NAME = "suggest";
 	
-    public TagsVisualizer() {
-        super("suggest", false, OType.LINK, OType.LINKLIST, OType.LINKSET);
+	private static final Logger LOG = LoggerFactory.getLogger(SuggestVisualizer.class);
+	
+    public SuggestVisualizer() {
+        super(NAME, false, OType.LINK, OType.LINKLIST, OType.LINKSET);
     }
 
     @SuppressWarnings("unchecked")

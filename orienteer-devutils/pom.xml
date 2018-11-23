@@ -27,12 +27,7 @@
 	<!-- TODO project name  -->
 	<name>orienteer-devutils</name>
 	<description />
-	<!--
-		<organization>
-			<name>company name</name>
-			<url>company url</url>
-		</organization>
-	-->
+
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -40,6 +35,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
@@ -56,22 +52,6 @@
 			<artifactId>wicket-devutils</artifactId>
 			<version>${wicket.version}</version>
 		</dependency>
-		        
-		<!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-graph</artifactId>
-            <version>${dollar}{orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pages</artifactId>
-            <version>${dollar}{orienteer.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pivottable</artifactId>
-            <version>${dollar}{orienteer.version}</version>
-        </dependency>-->
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>
@@ -93,14 +73,13 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--  JETTY DEPENDENCIES FOR TESTING  -->
         <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all</artifactId>
-	    <classifier>uber</classifier>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
             <scope>test</scope>
         </dependency>
 	</dependencies>
+
 	<build>
 		<resources>
 			<resource>
@@ -135,38 +114,42 @@
 			</testResource>
 		</testResources>
 		<plugins>
-			<plugin>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-maven-plugin</artifactId>
-			<version>${jetty.version}</version>
-			<configuration>
-			<systemProperties>
-				<systemProperty>
-					<name>orienteer.loader.repository.local</name>
-					<value>${settings.localRepository}</value>
-				</systemProperty>
-			</systemProperties>
-			<webApp>
-			    <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
-			    <resourceBase>src/main/resources</resourceBase>
-			    <contextPath>/</contextPath>
-			</webApp>
-			<connectors>
-			    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-				<port>8080</port>
-				<maxIdleTime>3600000</maxIdleTime>
-			    </connector>
-			</connectors>
-			</configuration>
-			<dependencies>
-			<dependency>
-			    <groupId>org.eclipse.jetty.aggregate</groupId>
-			    <artifactId>jetty-all</artifactId>
-			    <classifier>uber</classifier>
-			    <version>${jetty.version}</version>
-			</dependency>
-			</dependencies>
-		    </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
+                <configuration>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>orienteer.loader.repository.local</name>
+                            <value>${settings.localRepository}</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <supportedPackagings>
+                        <supportedPackaging>jar</supportedPackaging>
+                    </supportedPackagings>
+                    <webApp>
+                        <descriptor>../orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+                        <resourceBase>src/main/resources</resourceBase>
+                        <contextPath>/</contextPath>
+                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                    </webApp>
+                    <httpConnector>
+                        <name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
+                        <port>8080</port>
+                        <idleTimeout>3600000</idleTimeout>
+                    </httpConnector>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.jetty.aggregate</groupId>
+                        <artifactId>jetty-all</artifactId>
+                        <classifier>uber</classifier>
+                        <version>${jetty.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 		</plugins>
 	</build>
 
@@ -182,4 +165,4 @@
 			</snapshots>
 		</repository>
 	</repositories>
-	</project>
+</project>

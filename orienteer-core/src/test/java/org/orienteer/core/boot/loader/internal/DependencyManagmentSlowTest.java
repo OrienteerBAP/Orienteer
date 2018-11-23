@@ -19,7 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(OrienteerTestRunner.class)
-public class DependencyManagmentTest {
+public class DependencyManagmentSlowTest {
 
     @Inject
     private InternalOModuleManager moduleManager;
