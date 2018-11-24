@@ -51,27 +51,35 @@ public class OContentShareResource extends AbstractResource {
             String rid = "#"+params.get("rid").toOptionalString();
             ODocument document = ORecordId.isA(rid) ? (ODocument)dbProvider.get().load(new ORecordId(rid)) : null;
             if (document != null) {
-                final byte [] data = document.field(params.get("field").toString(), byte[].class);
+                String prop = params.get("field").toString();
+                final byte [] data = document.field(prop, byte[].class);
                 if (data != null && data.length > 0) {
-                	String contentType = params.get("type").toOptionalString();
-                	if(Strings.isEmpty(contentType)) {
+                    String contentType = params.get("type").toOptionalString();
+                	if (Strings.isEmpty(contentType)) {
                 		contentType = new Tika().detect(data);
                 	}
                     response.setContentType(contentType);
-                    response.setWriteCallback(new WriteCallback() {
-                        @Override
-                        public void writeData(IResource.Attributes attributes) throws IOException {
-                            attributes.getResponse().write(data);
-                        }
-                    });
+                    response.setWriteCallback(createWriteCallback(data));
                 }
-            } else {
+            }
+
+            if (response.getWriteCallback() == null) {
                 response.setError(HttpServletResponse.SC_NOT_FOUND);
             }
+
         }
         return response;
     }
-    
+
+    private WriteCallback createWriteCallback(byte [] data) {
+        return new WriteCallback() {
+            @Override
+            public void writeData(IResource.Attributes attributes) throws IOException {
+                attributes.getResponse().write(data);
+            }
+        };
+    }
+
     public static void mount(OrienteerWebApplication app) {
     	app.getSharedResources().add(OContentShareResource.RES_KEY, app.getServiceInstance(OContentShareResource.class));
 		app.mountResource(OContentShareResource.MOUNT_PATH, new SharedResourceReference(OContentShareResource.RES_KEY));
