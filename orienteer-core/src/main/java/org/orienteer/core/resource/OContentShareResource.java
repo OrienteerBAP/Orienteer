@@ -15,8 +15,8 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.time.Time;
 import org.orienteer.core.MountPath;
-import org.orienteer.core.OrienteerWebApplication;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -77,7 +77,7 @@ public class OContentShareResource extends AbstractResource {
         return response;
     }
     
-    protected byte[] getContent(ORID rid, String field) {
+    protected byte[] getContent(OIdentifiable rid, String field) {
     	ODocument doc = rid.getRecord();
     	if(doc==null) return null;
     	return doc.field(field, byte[].class);
