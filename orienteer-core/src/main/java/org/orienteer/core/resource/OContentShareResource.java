@@ -17,6 +17,7 @@ import org.apache.wicket.util.time.Time;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.OrienteerWebApplication;
 
+import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -53,11 +54,11 @@ public class OContentShareResource extends AbstractResource {
         response.setLastModified(Time.now());
         if (response.dataNeedsToBeWritten(attributes)) {
             PageParameters params = attributes.getParameters();
-            String rid = "#"+params.get("rid").toOptionalString();
-            ODocument document = ORecordId.isA(rid) ? new ORecordId(rid).getRecord() : null;
-            if (document != null) {
+            String ridStr = "#"+params.get("rid").toOptionalString();
+            ORID orid = ORecordId.isA(ridStr) ? new ORecordId(ridStr) : null;
+            if (orid != null) {
                 String field = params.get("field").toString();
-                final byte [] data = getContent(document, field);
+                final byte [] data = getContent(orid, field);
                 if (data != null && data.length > 0) {
                     String contentType = params.get("type").toOptionalString();
                 	if (Strings.isEmpty(contentType)) {
@@ -76,7 +77,8 @@ public class OContentShareResource extends AbstractResource {
         return response;
     }
     
-    protected byte[] getContent(ODocument doc, String field) {
+    protected byte[] getContent(ORID rid, String field) {
+    	ODocument doc = rid.getRecord();
     	if(doc==null) return null;
     	return doc.field(field, byte[].class);
     }
