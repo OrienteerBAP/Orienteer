@@ -23,6 +23,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.settings.RequestCycleSettings;
 import org.apache.wicket.util.convert.converter.DateConverter;
@@ -51,6 +52,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -172,9 +174,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			});
 		}
 		WicketWebjars.install(this, webjarSettings);
-		mountPages("org.orienteer.core.web");
+		mountPackage("org.orienteer.core.web");
+		mountPackage("org.orienteer.core.resource");
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
-		OContentShareResource.mount(this);
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
@@ -314,23 +316,61 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return getServiceInstance(IOClassIntrospector.class);
 	}
 	
+	@Deprecated
 	public void mountPages(String packageName) {
 		mountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
+	@Deprecated
 	public void mountPages(String packageName, ClassLoader classLoader) {
-		mountOrUnmountPages(packageName, classLoader, true);
+		mountOrUnmountPackage(packageName, classLoader, true);
 	}
 
+	@Deprecated
 	public void unmountPages(String packageName) {
 		unmountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
+	@Deprecated
 	public void unmountPages(String packageName, ClassLoader classLoader) {
-		mountOrUnmountPages(packageName, classLoader, false);
+		mountOrUnmountPackage(packageName, classLoader, false);
 	}
 	
-	private void mountOrUnmountPages(String packageName, ClassLoader classLoader, boolean mount) {
+	/**
+	 * Mount all pages and resources in a package
+	 * @param packageName to mount
+	 */
+	public void mountPackage(String packageName) {
+		mountPackage(packageName, OrienteerClassLoader.getClassLoader());
+	}
+	
+	/**
+	 * Mount all pages and resources in a package
+	 * @param packageName to mount
+	 * @param classLoader {@link ClassLoader} where stuff defined
+	 */
+	public void mountPackage(String packageName, ClassLoader classLoader) {
+		mountOrUnmountPackage(packageName, classLoader, true);
+	}
+
+	/**
+	 * Unmount all pages or resources which are defined in a package
+	 * @param packageName to unmount from
+	 */
+	public void unmountPackage(String packageName) {
+		unmountPackage(packageName, OrienteerClassLoader.getClassLoader());
+	}
+	
+	/**
+	 * Unmount all pages or resources which are defined in a package
+	 * @param packageName to unmount from
+	 * @param classLoader {@link ClassLoader} where stuff defined
+	 */
+	public void unmountPackage(String packageName, ClassLoader classLoader) {
+		mountOrUnmountPackage(packageName, classLoader, false);
+	}
+	
+	private void mountOrUnmountPackage(String packageName, ClassLoader classLoader, boolean mount) {
 		ClassPath classPath;
 		try {
 			classPath = ClassPath.from(classLoader);
@@ -342,25 +382,38 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			Class<?> clazz = classInfo.load();
 			MountPath mountPath = clazz.getAnnotation(MountPath.class);
 			if(mountPath!=null) {
-				if(!IRequestablePage.class.isAssignableFrom(clazz)) 
-					throw new WicketRuntimeException("@"+MountPath.class.getSimpleName()+" should be only on pages");
-				Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
-				String mainPath = mountPath.value();
-				String[] alt = mountPath.alt();
-				for(int i=alt.length-1;i>=-1;i--)
-				{
-					String path = i<0?mainPath:alt[i];
+				if(IRequestablePage.class.isAssignableFrom(clazz)) { 
+					Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
+					forEachOnMountPath(mountPath, path -> {
+										if(mount) {
+											if ("/".equals(path)) {
+												mount(new HomePageMapper(pageClass));
+											}
+											mount(new MountedMapper(path, pageClass));
+										} else {
+											unmount(path);
+										}
+									});
+				} else if(IResource.class.isAssignableFrom(clazz)) {
 					if(mount) {
-						if ("/".equals(path)) {
-							mount(new HomePageMapper(pageClass));
-						}
-						mount(new MountedMapper(path, pageClass));
+						String resourceKey = clazz.getName();
+						getSharedResources().add(resourceKey, (IResource) getServiceInstance(clazz));
+						SharedResourceReference reference = new SharedResourceReference(resourceKey);
+						forEachOnMountPath(mountPath, path -> mountResource(path, reference));
 					} else {
-						unmount(path);
+						forEachOnMountPath(mountPath, this::unmount);
 					}
+				} else {
+					throw new WicketRuntimeException("@"+MountPath.class.getSimpleName()+" should be only on pages or resources");
 				}
 			}
 		}
+	}
+	
+	private void forEachOnMountPath(MountPath mountPath, Consumer<String> consumer) {
+		consumer.accept(mountPath.value());
+		for(String altPath : mountPath.alt()) consumer.accept(altPath);
+		
 	}
 	
 	public void registerWidgets(String packageName) {
