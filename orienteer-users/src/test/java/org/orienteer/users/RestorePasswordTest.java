@@ -44,7 +44,7 @@ public class RestorePasswordTest {
             user.save();
 
             OProperty property = user.getDocument().getSchemaClass().getProperty(OrienteerUser.PROP_RESTORE_ID);
-            OrienteerUsersModule.REMOVE_CRON_RULE.setValue(property, "0/10 0/1 * 1/1 * ? *");
+            OrienteerUsersModule.REMOVE_CRON_RULE.setValue(property, "0/7 0/1 * 1/1 * ? *");
             OrienteerUsersModule.REMOVE_SCHEDULE_START_TIMEOUT.setValue(property, "3000");
         });
     }
