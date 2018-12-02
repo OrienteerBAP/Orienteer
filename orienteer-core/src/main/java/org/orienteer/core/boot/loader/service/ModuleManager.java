@@ -7,10 +7,7 @@ import com.hazelcast.core.IExecutorService;
 import com.hazelcast.core.Member;
 import org.danekja.java.misc.serializable.SerializableRunnable;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.boot.loader.distributed.AddModulesToMetadataTask;
-import org.orienteer.core.boot.loader.distributed.DeleteMetadataTask;
-import org.orienteer.core.boot.loader.distributed.ResolveMetadataConflictTask;
-import org.orienteer.core.boot.loader.distributed.UpdateModulesInMetadataTask;
+import org.orienteer.core.boot.loader.distributed.*;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
@@ -134,6 +131,19 @@ public class ModuleManager implements IModuleManager {
         }
     }
 
+    @Override
+    public void reloadOrienteer() {
+        LOG.info("Reload Orienteer");
+        Optional<HazelcastInstance> hzOpt = getHazelcast();
+
+        if (hzOpt.isPresent()) {
+            HazelcastInstance hz = hzOpt.get();
+            IExecutorService executor = hz.getExecutorService(ReloadOrienteerTask.EXECUTOR_NAME);
+            executor.executeOnMember(createReloadOrienteerTask(), getLocalMember(hz));
+            executeOnOtherMember(hz, member -> executor.executeOnMember(createReloadOrienteerTask(), member));
+        } else createReloadOrienteerTask().run();
+    }
+
     private void executeOnOtherMember(HazelcastInstance hz, Consumer<Member> consumer) {
         Cluster cluster = hz.getCluster();
         Member localMember = cluster.getLocalMember();
@@ -165,6 +175,10 @@ public class ModuleManager implements IModuleManager {
 
     protected DeleteMetadataTask createDeleteModulesTask(Member target, Set<OArtifact> artifacts) {
         return new DeleteMetadataTask(artifacts);
+    }
+
+    protected ReloadOrienteerTask createReloadOrienteerTask() {
+        return new ReloadOrienteerTask();
     }
 
     private Set<OArtifact> deepCopy(Set<OArtifact> artifacts) {

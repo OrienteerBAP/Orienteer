@@ -26,4 +26,6 @@ public interface IModuleManager {
     void updateArtifacts(Map<OArtifact, OArtifact> artifacts, SerializableRunnable callback);
     void deleteArtifacts(Set<OArtifact> artifacts);
     void deleteArtifacts(Set<OArtifact> artifacts, SerializableRunnable callback);
+
+    void reloadOrienteer();
 }

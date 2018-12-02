@@ -5,16 +5,14 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.orienteer.core.boot.loader.service.IModuleManager;
 import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.service.IModuleManager;
 import org.orienteer.junit.OrienteerTestRunner;
 
 import java.util.Set;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 @RunWith(OrienteerTestRunner.class)
 public class TestModuleManager extends AbstractModulesTest {

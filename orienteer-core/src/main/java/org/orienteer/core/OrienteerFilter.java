@@ -21,8 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Main Orienteer Filter to handle all requests.
@@ -43,7 +42,7 @@ public final class OrienteerFilter implements Filter {
 
     private FilterConfig filterConfig;
     private ClassLoader classLoader;
-    private boolean reloading;
+    private static boolean reloading;
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
@@ -131,11 +130,7 @@ public final class OrienteerFilter implements Filter {
 	        LOG.info("Start reload doOrienteerFilter with doOrienteerFilter config: " + filterConfig);
 	        reloading = true;
 	        destroy();
-	        try {
-				Thread.sleep(wait);
-			} catch (InterruptedException e) {
-				/*NOP*/
-			}
+	        sleep(wait);
             OModulesStaticInjector.destroy();
 	        init(filterConfig);
 	        WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
@@ -155,15 +150,15 @@ public final class OrienteerFilter implements Filter {
         Thread.currentThread().setContextClassLoader(classLoader);
     }
 
-    public boolean isReloading() {
+    public static boolean isReloading() {
         return reloading;
     }
 
     /**
      * Reload Orienteer with fixed delay=3s and wait=5s
      */
-    public static void reloadOrienteer() {
-        reloadOrienteer(3000, 5000);
+    public static CompletableFuture<Void> reloadOrienteer() {
+        return reloadOrienteer(3000, 5000);
     }
 
     /**
@@ -171,14 +166,22 @@ public final class OrienteerFilter implements Filter {
      * @param delay - delay in ms. After delay Orienteer will be reload
      * @param wait - wait in ms. Wait before {@link OrienteerFilter} starts reload
      */
-    public static void reloadOrienteer(long delay, final long wait) {
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
-        executor.schedule(() -> {
+    public static CompletableFuture<Void> reloadOrienteer(long delay, final long wait) {
+        return CompletableFuture.runAsync(() -> {
+            sleep(delay);
             try {
                 instance.reload(wait);
             } catch (ServletException e) {
                 LOG.error("Can't reload Orienteer", e);
             }
-        }, delay, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    private static void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException ex) {
+            LOG.error("Exception during sleep!", ex);
+        }
     }
 }
