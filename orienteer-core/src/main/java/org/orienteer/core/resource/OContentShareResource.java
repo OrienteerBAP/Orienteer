@@ -64,6 +64,10 @@ public class OContentShareResource extends AbstractResource {
                 	if (Strings.isEmpty(contentType)) {
                 		contentType = new Tika().detect(data);
                 	}
+                	if(isCacheAllowed()) {
+	                	if(params.get("v").isEmpty()) response.disableCaching();
+	                	else response.setCacheDurationToMaximum();
+                	}
                     response.setContentType(contentType);
                     response.setWriteCallback(createWriteCallback(data));
                 }
@@ -75,6 +79,10 @@ public class OContentShareResource extends AbstractResource {
 
         }
         return response;
+    }
+    
+    protected boolean isCacheAllowed() {
+    	return false;
     }
     
     protected byte[] getContent(OIdentifiable rid, String field) {
