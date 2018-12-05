@@ -59,6 +59,7 @@ cd $WORK_DIR
 
 node_dir="runtime/$NODE"
 mkdir -p $node_dir
+cp orienteer.war "jetty/webapps/$NODE.war"
 
 java -server \
     -DORIENTDB_HOME=$node_dir \
@@ -70,4 +71,5 @@ java -server \
     $JAVA_OPTS \
     -Xmx$MAX_MEMORY \
     -XX:MaxDirectMemorySize=$MAX_DIRECT_MEMORY \
-    -jar ./jetty-runner.jar --port $PORT ./orienteer.war
+    -Djetty.port=$PORT \
+    -jar jetty/start.jar jetty.home="jetty" jetty.base="jetty"

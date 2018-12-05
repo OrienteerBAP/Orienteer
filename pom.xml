@@ -556,24 +556,15 @@
 								</goals>
 								<configuration>
 									<artifactItems>
-										<artifactItem>
-											<groupId>org.eclipse.jetty</groupId>
-											<artifactId>jetty-runner</artifactId>
-											<version>${jetty.version}</version>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>${project.basedir}/target/</outputDirectory>
-											<destFileName>jetty-runner.jar</destFileName>
-										</artifactItem>
-                                        <!--<artifactItem>-->
-                                            <!--<groupId>org.eclipse.jetty</groupId>-->
-                                            <!--<artifactId>jetty-start</artifactId>-->
-                                            <!--<version>${jetty.version}</version>-->
-                                            <!--<type>jar</type>-->
-                                            <!--<overWrite>true</overWrite>-->
-                                            <!--<outputDirectory>${project.basedir}/target/</outputDirectory>-->
-                                            <!--<destFileName>jetty-start.jar</destFileName>-->
-                                        <!--</artifactItem>-->
+                                        <artifactItem>
+                                            <groupId>org.eclipse.jetty</groupId>
+                                                <artifactId>jetty-distribution</artifactId>
+                                            <version>${jetty.version}</version>
+                                            <type>zip</type>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>${project.basedir}/target/</outputDirectory>
+                                            <destFileName>jetty-distribution.zip</destFileName>
+                                        </artifactItem>
 									</artifactItems>
 								</configuration>
 							</execution>
