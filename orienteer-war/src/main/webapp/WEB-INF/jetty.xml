@@ -1,10 +1,16 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
 
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
     <Call name="addBean">
         <Arg>
-            <New class="org.orienteer.jetty.JettyOrientDbSessionDataStoreFactory"/>
+            <New id="sessionDataStoreFactory" class="org.eclipse.jetty.hazelcast.session.HazelcastSessionDataStoreFactory">
+                <Set name="mapName"><Property name="jetty.session.hazelcast.mapName" default="jetty-distributed-session-map" /></Set>
+                <Set name="hazelcastInstanceName" type="String">orienteer-hazelcast</Set>
+                <Set name="configurationLocation" type="String">config/hazelcast.xml</Set>
+                <Set name="gracePeriodSec"><Property name="jetty.session.gracePeriod.seconds" default="3600" /></Set>
+                <Set name="savePeriodSec"><Property name="jetty.session.savePeriod.seconds" default="0" /></Set>
+            </New>
         </Arg>
     </Call>
 </Configure>

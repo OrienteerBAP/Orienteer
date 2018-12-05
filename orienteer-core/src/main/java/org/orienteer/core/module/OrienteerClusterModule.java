@@ -7,7 +7,6 @@ import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.pageStore.OWicketData;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.jetty.OrientDbJettyModule;
 
 /**
  * Module which create data model for run Orienteer in cluster mode
@@ -26,7 +25,6 @@ public class OrienteerClusterModule extends AbstractOrienteerModule {
                 .oProperty(OWicketData.PROP_ID, OType.INTEGER, 0).notNull().markAsDocumentName()
                 .oProperty(OWicketData.PROP_SESSION_ID, OType.STRING, 10).notNull()
                 .oProperty(OWicketData.PROP_DATA, OType.BINARY, 20).notNull();
-        OrientDbJettyModule.initSchema(db);
         return null;
     }
 

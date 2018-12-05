@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.server.distributed.impl.ODistributedStorage;
 import com.orientechnologies.orient.server.hazelcast.OHazelcastPlugin;
+import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.EmbeddOrientDbApplicationListener;
@@ -67,7 +68,7 @@ public class OrienteerEmeddOrientDbListener extends EmbeddOrientDbApplicationLis
 
     private void initDistributedDatabase(ODatabaseDocumentTx db, OrientDbWebApplication app) {
         if (db.getStorage() instanceof ODistributedStorage) {
-            OHazelcastPlugin plugin = app.getServer().getPluginByClass(OHazelcastPlugin.class);
+            OHazelcastPlugin plugin = app.getServer().getPluginByClass(OrienteerHazelcastPlugin.class);
             HazelcastInstance hz = plugin.getHazelcastInstance();
             hz.getCluster().addMembershipListener(new OrienteerClusterListener(hz));
         }

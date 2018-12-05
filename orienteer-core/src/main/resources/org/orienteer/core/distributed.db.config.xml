@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <orient-server>
     <handlers>
-        <handler class="com.orientechnologies.orient.server.hazelcast.OHazelcastPlugin">
+        <handler class="org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin">
             <parameters>
                 <parameter value="${distributed}" name="enabled"/>
                 <parameter value="${configuration.db.default}" name="configuration.db.default"/>

@@ -262,8 +262,15 @@
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
                 <version>${hz.version}</version>
+				<scope>provided</scope>
             </dependency>
-            <dependency>
+			<dependency>
+				<groupId>com.hazelcast</groupId>
+				<artifactId>hazelcast-client</artifactId>
+				<version>${hz.version}</version>
+                <scope>provided</scope>
+			</dependency>
+			<dependency>
                 <groupId>org.bitsofinfo</groupId>
                 <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
                 <version>1.0-RC8</version>
@@ -558,6 +565,15 @@
 											<outputDirectory>${project.basedir}/target/</outputDirectory>
 											<destFileName>jetty-runner.jar</destFileName>
 										</artifactItem>
+                                        <!--<artifactItem>-->
+                                            <!--<groupId>org.eclipse.jetty</groupId>-->
+                                            <!--<artifactId>jetty-start</artifactId>-->
+                                            <!--<version>${jetty.version}</version>-->
+                                            <!--<type>jar</type>-->
+                                            <!--<overWrite>true</overWrite>-->
+                                            <!--<outputDirectory>${project.basedir}/target/</outputDirectory>-->
+                                            <!--<destFileName>jetty-start.jar</destFileName>-->
+                                        <!--</artifactItem>-->
 									</artifactItems>
 								</configuration>
 							</execution>

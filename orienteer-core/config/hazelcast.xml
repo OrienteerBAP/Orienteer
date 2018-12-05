@@ -9,18 +9,25 @@
 	the specific language governing permissions and ~ limitations under the License. -->
 
 <hazelcast
-	xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.3.xsd"
-	xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.9.xsd"
+        xmlns="http://www.hazelcast.com/schema/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<group>
 		<name>orientdb</name>
 		<password>orientdb</password>
 	</group>
+    <instance-name>orienteer-hazelcast</instance-name>
 
-    <!--<properties>-->
-        <!--<property name="hazelcast.discovery.enabled">true</property>-->
-        <!--<property name="hazelcast.shutdownhook.enabled">true</property>-->
-        <!--<property name="hazelcast.socket.bind.any">false</property>-->
-    <!--</properties>-->
+    <properties>
+        <property name="hazelcast.shutdownhook.enabled">false</property>
+    </properties>
+
+    <map name="registeredNodes">
+        <backup-count>6</backup-count>
+    </map>
+    <map name="orientdb">
+        <merge-policy>com.orientechnologies.orient.server.hazelcast.OHazelcastMergeStrategy</merge-policy>
+    </map>
 
 	<network>
 		<port auto-increment="true">5701</port>
@@ -29,46 +36,6 @@
 				<multicast-group>235.1.1.1</multicast-group>
 				<multicast-port>5701</multicast-port>
 			</multicast>
-
-
-			<!-- Enable a Docker Swarm based discovery strategy -->
-			<!--<discovery-strategies>-->
-
-				<!--<discovery-strategy enabled="false"-->
-									<!--class="org.bitsofinfo.hazelcast.discovery.docker.swarm.DockerSwarmDiscoveryStrategy">-->
-
-					<!--<properties>-->
-						<!--&lt;!&ndash; Comma delimited list of Docker network names to discover matching services on &ndash;&gt;-->
-						<!--<property name="docker-network-names">${dockerNetworkNames}</property>-->
-
-						<!--&lt;!&ndash; Comma delimited list of relevant Docker service names-->
-                             <!--to find tasks/containers on the above networks &ndash;&gt;-->
-						<!--<property name="docker-service-names">${dockerServiceNames}</property>-->
-
-						<!--&lt;!&ndash; Comma delimited list of relevant Docker service label=values-->
-                             <!--to find tasks/containers on the above networks &ndash;&gt;-->
-						<!--&lt;!&ndash; <property name="docker-service-labels">${dockerServiceLabels}</property> &ndash;&gt;-->
-
-						<!--&lt;!&ndash; 1.0-RC5+ ONLY: Swarm Manager URI (overrides DOCKER_HOST) &ndash;&gt;-->
-						<!--<property name="swarm-mgr-uri">${swarmMgrUri}</property>-->
-
-						<!--&lt;!&ndash; 1.0-RC5+ ONLY: If Swarm Mgr URI is SSL, to enable skip-verify for it &ndash;&gt;-->
-						<!--<property name="skip-verify-ssl">${skipVerifySsl}</property>-->
-
-						<!--&lt;!&ndash; The raw port that hazelcast is listening on-->
-
-                             <!--IMPORTANT: this is NOT a docker "published" port, nor is it necessarily-->
-                             <!--a EXPOSEd port... it is simply the hazelcast port that the service-->
-                             <!--is configured with, this must be the same for all matched containers-->
-                             <!--in order to work, and just using the default of 5701 is the simplist-->
-                             <!--way to go.-->
-                         <!--&ndash;&gt;-->
-						<!--<property name="hazelcast-peer-port">${hazelcastPeerPort}</property>-->
-					<!--</properties>-->
-
-				<!--</discovery-strategy>-->
-			<!--</discovery-strategies>-->
-
 		</join>
         <interfaces enabled="false">
             <interface>10.0.0.*</interface>
