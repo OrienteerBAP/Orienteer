@@ -128,11 +128,6 @@
 			<version>5.27.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.hazelcast</groupId>
-			<artifactId>hazelcast</artifactId>
-		</dependency>
-
 		<!-- ECLIPSE AETHER -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
@@ -194,11 +189,6 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.5.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.bitsofinfo</groupId>
-			<artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
 		</dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
