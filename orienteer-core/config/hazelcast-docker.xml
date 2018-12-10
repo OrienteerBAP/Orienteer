@@ -51,7 +51,7 @@
         </interfaces>
 
         <join>
-            <multicast enabled="true">
+            <multicast enabled="false">
                 <multicast-group>235.1.1.1</multicast-group>
                 <multicast-port>5701</multicast-port>
             </multicast>
