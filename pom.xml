@@ -69,7 +69,7 @@
 		<wicketstuff.version>8.0.0</wicketstuff.version>
 		<orientdb.version>2.2.37</orientdb.version>
 		<guice.version>4.2.0</guice.version>
-		<wicket.orientdb.version>1.4-SNAPSHOT-distributed</wicket.orientdb.version>
+		<wicket.orientdb.version>1.4-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<enableAssertions>false</enableAssertions>
@@ -264,17 +264,29 @@
                 <version>1.0-RC8</version>
             </dependency>
             <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast</artifactId>
-                <version>${hz.version}</version>
-                <scope>provided</scope>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-client</artifactId>
+                <version>8.14.5</version>
             </dependency>
             <dependency>
                 <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast-client</artifactId>
+                <artifactId>hazelcast</artifactId>
                 <version>${hz.version}</version>
-                <scope>provided</scope>
+                <!--<scope>provided</scope>-->
             </dependency>
+			<dependency>
+				<groupId>javax.cache</groupId>
+				<artifactId>cache-api</artifactId>
+				<version>1.1.0</version>
+			</dependency>
+
+
+			<!--<dependency>-->
+                <!--<groupId>com.hazelcast</groupId>-->
+                <!--<artifactId>hazelcast-client</artifactId>-->
+                <!--<version>${hz.version}</version>-->
+                <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
+            <!--</dependency>-->
 
 		    <!--  JUNIT DEPENDENCY FOR TESTING -->
 		    <dependency>
@@ -592,6 +604,24 @@
                                             <outputDirectory>${project.basedir}/target/</outputDirectory>
                                             <destFileName>hazelcast-client.jar</destFileName>
                                         </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.bitsofinfo</groupId>
+                                            <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
+                                            <version>1.0-RC8</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>${project.basedir}/target/</outputDirectory>
+                                            <destFileName>hazelcast-docker-swarm-discovery-spi.jar</destFileName>
+                                        </artifactItem>
+                                        <!--<artifactItem>-->
+                                            <!--<groupId>com.spotify</groupId>-->
+                                            <!--<artifactId>docker-client</artifactId>-->
+                                            <!--<version>8.14.5</version>-->
+                                            <!--<type>jar</type>-->
+                                            <!--<overWrite>true</overWrite>-->
+                                            <!--<outputDirectory>${project.basedir}/target/</outputDirectory>-->
+                                            <!--<destFileName>docker-client.jar</destFileName>-->
+                                        <!--</artifactItem>-->
 									</artifactItems>
 								</configuration>
 							</execution>

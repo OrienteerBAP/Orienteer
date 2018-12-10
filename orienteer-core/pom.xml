@@ -184,6 +184,23 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.bitsofinfo</groupId>
+            <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>javax.cache</groupId>
+			<artifactId>cache-api</artifactId>
+		</dependency>
+
         <!-- NEED FOR LOAD TELEGRAM BOT-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -309,13 +326,6 @@
 						<idleTimeout>3600000</idleTimeout>
 					</httpConnector>
 				</configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-hazelcast</artifactId>
-                        <version>${jetty.version}</version>
-                    </dependency>
-                </dependencies>
 			</plugin>
 		</plugins>
 	</build>

@@ -22,17 +22,16 @@ mvn -P dockerbuild \
 
 
 
-mkdir -p $WORK_DIR
-cd $WORK_DIR
+mkdir -p $WORK_DIR/jetty/lib
 
-mkdir -p jetty/lib
+cp target/jetty-runner.jar                         $WORK_DIR/jetty/
+cp orienteer-war/src/main/webapp/WEB-INF/jetty.xml $WORK_DIR/jetty/
+cp target/jetty-hazelcast.jar                      $WORK_DIR/jetty/lib
+cp target/hazelcast.jar                            $WORK_DIR/jetty/lib
+cp target/hazelcast-client.jar                     $WORK_DIR/jetty/lib
+#cp target/hazelcast-docker-swarm-discovery-spi.jar $WORK_DIR/jetty/lib
+#cp target/docker-client.jar                        $WORK_DIR/jetty/lib
 
-cp ../target/jetty-runner.jar     jetty/
-cp ../orienteer-war/src/main/webapp/WEB-INF/jetty.xml jetty/
-cp ../target/jetty-hazelcast.jar  jetty/lib
-cp ../target/hazelcast.jar        jetty/lib
-cp ../target/hazelcast-client.jar jetty/lib
-
-cp ../orienteer-war/target/orienteer.war .
-cp ../orienteer.properties orienteer-default.properties
-cp -r ../orienteer-core/config config-default
+cp orienteer-war/target/orienteer.war              $WORK_DIR/
+cp orienteer.properties                            $WORK_DIR/orienteer-default.properties
+cp -r orienteer-core/config                        $WORK_DIR/config-default

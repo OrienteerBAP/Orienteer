@@ -25,6 +25,12 @@
     <map name="registeredNodes">
         <backup-count>6</backup-count>
     </map>
+	<map name="wicket-sessions">
+		<backup-count>5</backup-count>
+        <async-backup-count>1</async-backup-count>
+        <eviction-policy>LRU</eviction-policy>
+        <max-size policy="USED_HEAP_SIZE">256</max-size>
+	</map>
     <map name="orientdb">
         <merge-policy>com.orientechnologies.orient.server.hazelcast.OHazelcastMergeStrategy</merge-policy>
     </map>

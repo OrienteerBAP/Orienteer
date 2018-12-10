@@ -47,6 +47,7 @@ import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
+import org.orienteer.core.wicket.session.HazelcastSessionStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -205,6 +206,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
 
         setPageManagerProvider(createPageManagerProvider());
+        setSessionStoreProvider(HazelcastSessionStore::new);
 	}
 
 	@Override

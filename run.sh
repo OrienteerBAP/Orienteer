@@ -80,4 +80,4 @@ java -server \
     $JAVA_OPTS \
     -Xmx$MAX_MEMORY \
     -XX:MaxDirectMemorySize=$MAX_DIRECT_MEMORY \
-    -jar ../jetty/jetty-runner.jar --config ../jetty/jetty.xml --lib ../jetty/lib --port $PORT ../orienteer.war
+    -jar ../jetty/jetty-runner.jar --port $PORT ../orienteer.war
