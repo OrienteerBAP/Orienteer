@@ -154,7 +154,6 @@ public class HazelcastSessionStore implements ISessionStore {
 
     @Override
     public void destroy() {
-        sessionStore.clear();
         localStore.clear();
     }
 
