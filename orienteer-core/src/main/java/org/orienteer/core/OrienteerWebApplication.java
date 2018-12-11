@@ -88,6 +88,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	private boolean embedded;
 
 	@Inject
+	@Named("orientdb.distributed")
+	private boolean distributed;
+
+	@Inject
 	@Named("orienteer.authenticatelazy")
 	private boolean authenticateLazy;
 	
@@ -205,8 +209,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
 
-        setPageManagerProvider(createPageManagerProvider());
-        setSessionStoreProvider(HazelcastSessionStore::new);
+
+        if (distributed) { // set session store and page provider for distributed mode
+            setPageManagerProvider(createPageManagerProvider());
+            setSessionStoreProvider(HazelcastSessionStore::new);
+        }
 	}
 
 	@Override
