@@ -7,6 +7,7 @@ import org.apache.wicket.Application;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.IRequestLogger;
 import org.apache.wicket.request.Request;
+import org.apache.wicket.session.HttpSessionStore;
 import org.apache.wicket.session.ISessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,24 +40,36 @@ public class HazelcastSessionStore implements ISessionStore {
      */
     private final Map<String, HazelcastSession> localStore;
 
+    private final ISessionStore proxyStore;
 
     public HazelcastSessionStore() {
         HazelcastInstance hazelcast = Hazelcast.getHazelcastInstanceByName("orienteer-hazelcast");
-        sessionStore = hazelcast.getMap("wicket-sessions");
-        localStore = new HashMap<>();
+        if (hazelcast != null) {
+            sessionStore = hazelcast.getMap("wicket-sessions");
+            localStore = new HashMap<>();
+            proxyStore = null;
+        } else {
+            sessionStore = null;
+            localStore = null;
+            proxyStore = new HttpSessionStore();
+        }
     }
 
     @Override
     public Serializable getAttribute(Request request, String name) {
-        Serializable serializable = getHazelcastSession(request)
+        if (proxyStore != null) {
+            return proxyStore.getAttribute(request, name);
+        }
+        return getHazelcastSession(request)
                 .map(session -> session.getAttribute(name))
                 .orElse(null);
-        LOG.debug("get attribute {} - {}", name, serializable);
-        return serializable;
     }
 
     @Override
     public List<String> getAttributeNames(Request request) {
+        if (proxyStore != null) {
+            return getAttributeNames(request);
+        }
         return getHazelcastSession(request)
                 .map(HazelcastSession::getAttributes)
                 .map(Map::keySet)
@@ -66,37 +79,52 @@ public class HazelcastSessionStore implements ISessionStore {
 
     @Override
     public void setAttribute(Request request, String name, Serializable value) {
-        getHazelcastSession(request)
-                .ifPresent(session -> {
-                    session.setAttribute(name, value);
-                    sessionStore.put(session.getId(), session);
-                });
+        if (proxyStore != null) {
+            proxyStore.setAttribute(request, name, value);
+        } else {
+            getHazelcastSession(request)
+                    .ifPresent(session -> {
+                        session.setAttribute(name, value);
+                        sessionStore.put(session.getId(), session);
+                    });
+        }
     }
 
     @Override
     public void removeAttribute(Request request, String name) {
-        getHazelcastSession(request)
-                .ifPresent(session -> {
-                    session.removeAttribute(name);
-                    sessionStore.put(session.getId(), session);
-                });
+        if (proxyStore != null) {
+            proxyStore.removeAttribute(request, name);
+        } else {
+            getHazelcastSession(request)
+                    .ifPresent(session -> {
+                        session.removeAttribute(name);
+                        sessionStore.put(session.getId(), session);
+                    });
+        }
     }
 
     @Override
     public void invalidate(Request request) {
-        HttpSession httpSession = getHttpSession(request, false);
-        if (httpSession != null) {
-            // tell the app server the session is no longer valid
-            httpSession.invalidate();
+        if (proxyStore != null) {
+            proxyStore.invalidate(request);
+        } else {
+            HttpSession httpSession = getHttpSession(request, false);
+            if (httpSession != null) {
+                // tell the app server the session is no longer valid
+                httpSession.invalidate();
+            }
+            getSessionId(request).ifPresent(id -> {
+                localStore.remove(id);
+                sessionStore.remove(id);
+            });
         }
-        getSessionId(request).ifPresent(id -> {
-            localStore.remove(id);
-            sessionStore.remove(id);
-        });
     }
 
     @Override
     public String getSessionId(Request request, boolean create) {
+        if (proxyStore != null) {
+            return proxyStore.getSessionId(request, create);
+        }
         if (create) {
             HazelcastSession session = getOrCreateHazelcastSession(request);
             return session != null ? session.getId() : null;
@@ -108,6 +136,9 @@ public class HazelcastSessionStore implements ISessionStore {
 
     @Override
     public Session lookup(Request request) {
+        if (proxyStore != null) {
+            return proxyStore.lookup(request);
+        }
         String sessionId = getSessionId(request, false);
         if (sessionId != null) {
             return getWicketSession(request);
@@ -117,58 +148,76 @@ public class HazelcastSessionStore implements ISessionStore {
 
     @Override
     public void bind(Request request, Session newSession) {
-        Session wicketSession = getWicketSession(request);
-        String existsId = wicketSession != null ? wicketSession.getId() : null;
+        if (proxyStore != null) {
+            proxyStore.bind(request, newSession);
+        } else {
+            Session wicketSession = getWicketSession(request);
+            String existsId = wicketSession != null ? wicketSession.getId() : null;
 
-        if (existsId == null || !newSession.getId().equals(existsId)) {
-            // call template method
-            onBind(request, newSession);
-            for (BindListener listener : getBindListeners())
-            {
-                listener.bindingSession(request, newSession);
+            if (existsId == null || !newSession.getId().equals(existsId)) {
+                // call template method
+                onBind(request, newSession);
+                for (BindListener listener : getBindListeners()) {
+                    listener.bindingSession(request, newSession);
+                }
+
+                String applicationKey = Application.get().getName();
+                String attributeName = "Wicket:SessionUnbindingListener-" + applicationKey;
+                Serializable attributeValue = new HazelcastSessionStore.SessionBindingListener(applicationKey, newSession);
+
+                getHazelcastSession(request).ifPresent(session -> {
+                    session.setAttribute(attributeName, attributeValue); // register an unbinding listener for cleaning up
+                    sessionStore.put(session.getId(), session);
+                    setWicketSession(request, newSession); // register the session object itself
+                });
             }
-
-            String applicationKey = Application.get().getName();
-            String attributeName = "Wicket:SessionUnbindingListener-" + applicationKey;
-            Serializable attributeValue = new HazelcastSessionStore.SessionBindingListener(applicationKey, newSession);
-
-            getHazelcastSession(request).ifPresent(session -> {
-                session.setAttribute(attributeName, attributeValue); // register an unbinding listener for cleaning up
-                sessionStore.put(session.getId(), session);
-                setWicketSession(request, newSession); // register the session object itself
-            });
         }
     }
 
     @Override
     public void flushSession(Request request, Session session) {
-        Session wicketSession = getWicketSession(request);
-        String existsId = wicketSession != null ? wicketSession.getId() : null;
-        if (existsId == null || !session.getId().equals(existsId)) {
-            // this session is not yet bound, bind it
-            bind(request, session);
+        if (proxyStore != null) {
+            proxyStore.flushSession(request, session);
         } else {
-            setWicketSession(request, session);
+            Session wicketSession = getWicketSession(request);
+            String existsId = wicketSession != null ? wicketSession.getId() : null;
+            if (existsId == null || !session.getId().equals(existsId)) {
+                // this session is not yet bound, bind it
+                bind(request, session);
+            } else {
+                setWicketSession(request, session);
+            }
         }
     }
 
     @Override
     public void destroy() {
-        localStore.clear();
+        if (proxyStore != null) {
+            proxyStore.destroy();
+        } else localStore.clear();
     }
 
     @Override
     public final void registerUnboundListener(final UnboundListener listener) {
-        unboundListeners.add(listener);
+        if (proxyStore != null) {
+            proxyStore.registerUnboundListener(listener);
+        } else {
+            unboundListeners.add(listener);
+        }
     }
 
     @Override
     public final void unregisterUnboundListener(final UnboundListener listener) {
-        unboundListeners.remove(listener);
+        if (proxyStore != null) {
+            unboundListeners.remove(listener);
+        } else unboundListeners.remove(listener);
     }
 
     @Override
     public final Set<UnboundListener> getUnboundListener() {
+        if (proxyStore != null) {
+            proxyStore.getUnboundListener();
+        }
         return Collections.unmodifiableSet(unboundListeners);
     }
 
@@ -179,7 +228,11 @@ public class HazelcastSessionStore implements ISessionStore {
      */
     @Override
     public void registerBindListener(BindListener listener) {
-        bindListeners.add(listener);
+        if (proxyStore != null) {
+            proxyStore.registerBindListener(listener);
+        } else {
+            bindListeners.add(listener);
+        }
     }
 
     /**
@@ -189,7 +242,11 @@ public class HazelcastSessionStore implements ISessionStore {
      */
     @Override
     public void unregisterBindListener(BindListener listener) {
-        bindListeners.remove(listener);
+        if (proxyStore != null) {
+            proxyStore.unregisterBindListener(listener);
+        } else {
+            bindListeners.remove(listener);
+        }
     }
 
     /**
@@ -197,6 +254,9 @@ public class HazelcastSessionStore implements ISessionStore {
      */
     @Override
     public Set<BindListener> getBindListeners() {
+        if (proxyStore != null) {
+            return proxyStore.getBindListeners();
+        }
         return Collections.unmodifiableSet(bindListeners);
     }
 
