@@ -55,29 +55,19 @@ else
     fi
 fi
 
-mkdir $WORK_DIR/$NODE
+mkdir -p $WORK_DIR/runtime/$NODE
 
-cd $WORK_DIR/$NODE
-mkdir runtime
-
-if [[ ! -d "config/" ]]; then
-    cp -r ../config-default config
-fi
-
-if [[ ! -f "orienteer.properties" ]]; then
-    cp ../orienteer-default.properties orienteer.properties
-fi
-
-mkdir -p runtime
+cd $WORK_DIR
 
 java -server \
-    -DORIENTDB_HOME=runtime \
-    -Dorientdb.url="plocal:runtime/databases/Orienteer" \
+    -DORIENTDB_HOME=runtime/$NODE \
+    -Dorientdb.url="plocal:runtime/$NODE/databases/Orienteer" \
     -Dorientdb.remote.url=remote:localhost/Orienteer \
     -Dorientdb.distributed=$DISTRIBUTED \
     -Dorientdb.node.name=$NODE \
     -Dorienteer.loader.repository.local=$LOADER_LOCAL_REPOSITORY \
+    -Dorienteer.loader.libs.folder=runtime/$NODE/libs \
     $JAVA_OPTS \
     -Xmx$MAX_MEMORY \
     -XX:MaxDirectMemorySize=$MAX_DIRECT_MEMORY \
-    -jar ../jetty/jetty-runner.jar --port $PORT ../orienteer.war
+    -jar jetty-runner.jar --port $PORT orienteer.war
