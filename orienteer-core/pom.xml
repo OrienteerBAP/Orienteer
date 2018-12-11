@@ -232,6 +232,38 @@
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-standalone</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.orienteer</groupId>
+                    <artifactId>orienteer-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.orienteer</groupId>
+                    <artifactId>orienteer-graph</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.orienteer</groupId>
+                    <artifactId>orienteer-pages</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.orienteer</groupId>
+                    <artifactId>orienteer-pivottable</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.orienteer</groupId>
+                    <artifactId>orienteer-bpm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.orienteer</groupId>
+                    <artifactId>orienteer-devutils</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
 	<build>
