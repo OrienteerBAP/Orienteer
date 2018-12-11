@@ -27,6 +27,7 @@ public class OrientDbConfigModule extends AbstractModule {
             config = config.replaceAll("\\$\\{configuration.hazelcast\\}", System.getProperty("configuration.hazelcast"));
             config = config.replaceAll("\\$\\{node.name\\}", System.getProperty("node.name"));
             config = config.replaceAll("\\$\\{ip.address\\}", System.getProperty("ip.address"));
+            config = config.replaceAll("\\$\\{distributed\\}", "true");
         }
         return config;
     }
