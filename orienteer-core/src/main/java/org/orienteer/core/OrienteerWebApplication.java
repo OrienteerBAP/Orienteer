@@ -8,9 +8,6 @@ import com.google.inject.name.Named;
 import com.hazelcast.core.HazelcastInstance;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.server.distributed.impl.ODistributedStorage;
-import com.orientechnologies.orient.server.hazelcast.OHazelcastPlugin;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -38,6 +35,7 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
+import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
 import org.orienteer.core.pageStore.OrientDbDataStore;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
@@ -210,7 +208,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
 
 
-        if (distributed) { // set session store and page provider for distributed mode
+        if (isDistributedMode()) { // set session store and page provider for distributed mode
             setPageManagerProvider(createPageManagerProvider());
             setSessionStoreProvider(HazelcastSessionStore::new);
         }
@@ -242,13 +240,12 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	}
 
  	public boolean isDistributedMode() {
-        ODatabaseDocumentTx db = (ODatabaseDocumentTx) getDatabase();
-        return db.getStorage() instanceof ODistributedStorage;
+        return distributed;
 	}
 
 	public Optional<HazelcastInstance> getHazelcast() {
 	    if (isDistributedMode()) {
-            OHazelcastPlugin plugin = getServer().getPluginByClass(OHazelcastPlugin.class);
+            OrienteerHazelcastPlugin plugin = getServer().getPluginByClass(OrienteerHazelcastPlugin.class);
             return of(plugin.getHazelcastInstance());
         }
         return empty();
