@@ -19,7 +19,7 @@ public class ReloadOrienteerTask extends AbstractTask implements Runnable, Hazel
 
     public static final String LOCK_NAME = "reload.orienteer.lock";
 
-    private HazelcastInstance hazelcastInstance;
+    private transient HazelcastInstance hazelcastInstance;
 
     @Override
     public void run() {
