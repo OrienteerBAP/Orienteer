@@ -9,20 +9,43 @@
 	the specific language governing permissions and ~ limitations under the License. -->
 
 <hazelcast
-	xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.3.xsd"
-	xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.9.xsd"
+        xmlns="http://www.hazelcast.com/schema/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<group>
 		<name>orientdb</name>
 		<password>orientdb</password>
 	</group>
+    <instance-name>orienteer-hazelcast</instance-name>
+
+    <properties>
+        <property name="hazelcast.shutdownhook.enabled">false</property>
+    </properties>
+
+    <map name="registeredNodes">
+        <backup-count>6</backup-count>
+    </map>
+	<map name="wicket-sessions">
+		<backup-count>5</backup-count>
+        <async-backup-count>1</async-backup-count>
+        <eviction-policy>LRU</eviction-policy>
+        <max-size policy="USED_HEAP_SIZE">256</max-size>
+	</map>
+    <map name="orientdb">
+        <merge-policy>com.orientechnologies.orient.server.hazelcast.OHazelcastMergeStrategy</merge-policy>
+    </map>
+
 	<network>
-		<port auto-increment="true">2434</port>
+		<port auto-increment="true">5701</port>
 		<join>
 			<multicast enabled="true">
 				<multicast-group>235.1.1.1</multicast-group>
-				<multicast-port>2434</multicast-port>
+				<multicast-port>5701</multicast-port>
 			</multicast>
 		</join>
+        <interfaces enabled="false">
+            <interface>10.0.0.*</interface>
+        </interfaces>
 	</network>
 	<executor-service>
 		<pool-size>16</pool-size>

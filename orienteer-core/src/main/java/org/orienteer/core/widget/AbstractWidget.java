@@ -18,6 +18,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ICommandsSupportComponent;
+import org.orienteer.core.component.IRefreshable;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.event.ActionPerformedEvent;
@@ -98,6 +99,24 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 				super.onConfigure();
 				setVisible(getDashboardPanel().getModeObject().canModify());
 			}
+		});
+		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.refresh") {
+			
+			{
+				setAutoNotify(false);
+			}
+
+			@Override
+			public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+				if(AbstractWidget.this instanceof IRefreshable) {
+					((IRefreshable)AbstractWidget.this).refresh(targetOptional);
+				} else {
+					DashboardPanel<T> dashboard = getDashboardPanel();
+					AbstractWidget<T> newWidget = dashboard.replaceWidget(AbstractWidget.this);
+					targetOptional.ifPresent(target -> target.add(newWidget));
+				}
+			}
+			
 		});
 		addCommand(new FullScreenCommand<T>(commands.newChildId()));
 	}

@@ -128,6 +128,10 @@ OArchitectSidebar.prototype.makeDraggable = function (element, actionName) {
 
 OArchitectSidebar.prototype.getDropTarget = function (actionName) {
     return function (graph, x, y) {
+    	function getPropertyTargetCell(cell) {
+    		return graph.isClass(cell) ? cell : null;
+    	}
+    	
         if (actionName === OArchitectActionNames.ADD_OCLASS_ACTION) {
             return null;
         } else if (actionName === OArchitectActionNames.ADD_OPROPERTY_ACTION) {
@@ -137,10 +141,6 @@ OArchitectSidebar.prototype.getDropTarget = function (actionName) {
         } else if (actionName === OArchitectActionNames.ADD_EXISTS_OCLASSES_ACTION) {
             var cell = graph.getCellAt(x, y);
             return cell === null;
-        }
-
-        function getPropertyTargetCell(cell) {
-            return graph.isClass(cell) ? cell : null;
         }
     };
 };

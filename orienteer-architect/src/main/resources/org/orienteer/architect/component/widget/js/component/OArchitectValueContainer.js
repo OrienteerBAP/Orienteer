@@ -116,6 +116,21 @@ OPropertyContainer.prototype.createElement = function (maxLength) {
 };
 
 OPropertyContainer.prototype.createContainer = function (label, link, editProperty, deleteProperty) {
+	
+	function showElement(element) {
+		if (element !== null) {
+			element.style.visibility = 'visible';
+			element.style.cursor = 'pointer';
+		}
+	}
+	
+	function hideElement(element) {
+		if (element !== null) {
+			element.style.visibility = 'hidden';
+			element.style.cursor = 'default';
+		}
+	}
+	
     var container = document.createElement('div');
     if (link !== null) container.appendChild(link);
     if (editProperty !== null) container.appendChild(editProperty);
@@ -133,20 +148,6 @@ OPropertyContainer.prototype.createContainer = function (label, link, editProper
         hideElement(editProperty);
         hideElement(deleteProperty);
     });
-
-    function showElement(element) {
-        if (element !== null) {
-            element.style.visibility = 'visible';
-            element.style.cursor = 'pointer';
-        }
-    }
-
-    function hideElement(element) {
-        if (element !== null) {
-            element.style.visibility = 'hidden';
-            element.style.cursor = 'default';
-        }
-    }
 
     return container;
 };

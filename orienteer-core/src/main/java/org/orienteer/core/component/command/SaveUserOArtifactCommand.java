@@ -6,9 +6,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 
@@ -35,15 +35,16 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
         OArtifact artifact = model.getObject();
         File artifactFile = artifact.getArtifactReference().getFile();
         if (artifactFile != null) {
+            InternalOModuleManager manager = InternalOModuleManager.get();
             if (isUserArtifactValid(targetOptional, artifact)) {
-                Path path = OrienteerClassLoaderUtil
+                Path path = manager.getJarsManager()
                         .moveJarFileToArtifactsFolder(artifactFile.toPath(), artifactFile.getName());
                 if (path!=null) {
                     artifact.getArtifactReference().setFile(path.toFile());
-                    OrienteerClassLoaderUtil.updateOArtifactInMetadata(artifact);
+                    manager.updateOArtifactInMetadata(artifact);
                     artifact.setDownloaded(true);
                 }
-            } else OrienteerClassLoaderUtil.deleteOArtifactFile(artifact);
+            } else manager.deleteOArtifactFile(artifact);
         } else if (isUserArtifactValid(targetOptional, artifact)) {
             resolveUserArtifact(targetOptional, artifact);
         }
@@ -53,13 +54,14 @@ public class SaveUserOArtifactCommand extends AbstractSaveOArtifactCommand {
         String repository = oArtifact.getArtifactReference().getRepository();
         OArtifactReference artifactReference = oArtifact.getArtifactReference();
         Artifact artifact;
+        InternalOModuleManager manager = InternalOModuleManager.get();
         if (!Strings.isNullOrEmpty(repository)) {
-            artifact = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact(), repository);
-        } else artifact = OrienteerClassLoaderUtil.downloadArtifact(artifactReference.toAetherArtifact());
+            artifact = manager.downloadArtifact(artifactReference.toAetherArtifact(), repository);
+        } else artifact = manager.downloadArtifact(artifactReference.toAetherArtifact());
 
         if (artifact!=null) {
             artifactReference.setFile(artifact.getFile());
-            OrienteerClassLoaderUtil.updateOArtifactInMetadata(oArtifact);
+            manager.updateOArtifactInMetadata(oArtifact);
             oArtifact.setDownloaded(true);
         } else {
             sendErrorFeedback(targetOptional, new ResourceModel(DOWNLOAD_ERROR));

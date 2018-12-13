@@ -16,22 +16,22 @@ import com.google.inject.Inject;
 public abstract class AbstractTestInjection
 {
 	@Inject
-	private WicketTester tester1;
+	protected WicketTester tester1;
 	
 	@Inject
-	private WicketOrientDbTester tester2;
+	protected WicketOrientDbTester tester2;
 	
 	@Inject
-	private OrienteerTester tester3;
+	protected OrienteerTester tester3;
 	
 	@Inject
-	private WebApplication app1;
+	protected WebApplication app1;
 	
 	@Inject
-	private OrientDbWebApplication app2;
+	protected OrientDbWebApplication app2;
 	
 	@Inject
-	private OrienteerWebApplication app3;
+	protected OrienteerWebApplication app3;
 	
 	
 	@Test

@@ -100,6 +100,7 @@ GraphConfig.prototype.getLabelForEdge = function (cell) {
         var target = cell.target.value;
         var sourceGeo = source instanceof OArchitectOProperty ? this.graph.getCellGeometry(cell.source.parent) : null;
         var targetGeo = this.graph.getCellGeometry(target instanceof OArchitectOProperty ? cell.target.parent : cell.target);
+        var isRight = function() {return sourceGeo.x < targetGeo.x;};
         if (source instanceof OArchitectOProperty && target instanceof OArchitectOProperty) {
             if (OArchitectOType.isMultiValue(source.type) && OArchitectOType.isMultiValue(target.type)) {
                 label = '*..*';
@@ -112,10 +113,6 @@ GraphConfig.prototype.getLabelForEdge = function (cell) {
             }
         } else if (source instanceof OArchitectOProperty) {
             label = isRight() ? '*..1' : '1..*';
-        }
-
-        function isRight() {
-            return sourceGeo.x < targetGeo.x;
         }
     }
     return label;

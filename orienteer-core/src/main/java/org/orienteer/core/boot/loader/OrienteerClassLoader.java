@@ -5,9 +5,9 @@ import com.google.common.collect.Sets;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.util.SetModel;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.boot.loader.util.MavenResolver;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil.*;
 
 /**
  * Orienteer's classloader loads modules.
@@ -48,20 +46,20 @@ public class OrienteerClassLoader extends URLClassLoader {
      * Create trusted and untrusted OrienteerClassLoader
      * @param parent - classloader for delegate loading classes
      */
-    public static void initOrienteerClassLoaders(ClassLoader parent) {
+    public static void initOrienteerClassLoaders(InternalOModuleManager manager, ClassLoader parent) {
     	parentClassLoader = parent;
-        Map<Path, OArtifact> oArtifacts = getOArtifactsMetadataInMap();
-        Set<Path> jars = getJarsInArtifactsFolder();
+        Map<Path, OArtifact> oArtifacts = manager.getOArtifactsMetadataInMap();
+        Set<Path> jars = manager.getJarsInArtifactsFolder();
 
         List<OArtifact> modulesForLoad = Lists.newArrayList();
         Set<Path> paths = oArtifacts.keySet();
-        modulesForLoad.addAll(updateMetadataFromJars(Lists.newArrayList(Sets.difference(jars, paths))));
+        modulesForLoad.addAll(updateMetadataFromJars(manager, Lists.newArrayList(Sets.difference(jars, paths))));
         modulesForLoad.addAll(oArtifacts.values());
-        modulesForLoad = filterModules(modulesForLoad);
+        modulesForLoad = filterModules(manager, modulesForLoad);
 
         if (modulesForLoad.size() != 0)
             LOG.info("Resolving dependencies for {} module(s). Please wait...", modulesForLoad.size());
-        MavenResolver.get().setDependencies(modulesForLoad);
+        manager.getMavenResolver().setDependencies(modulesForLoad);
         
         trustedOrienteerClassLoader = new OrienteerClassLoader(parent);
         if (useUnTrusted) {
@@ -85,7 +83,7 @@ public class OrienteerClassLoader extends URLClassLoader {
      * If {@link OrienteerClassLoader#useUnTrusted} is false return only trusted modules and
      * untrusted modules disable in metadata.xml
      */
-    private static List<OArtifact> filterModules(List<OArtifact> modules) {
+    private static List<OArtifact> filterModules(InternalOModuleManager manager, List<OArtifact> modules) {
         List<OArtifact> result = Lists.newArrayList();
         Set<OArtifact> disabled = disabledModules.getObject();
         for (OArtifact module : modules) {
@@ -94,7 +92,7 @@ public class OrienteerClassLoader extends URLClassLoader {
             } else if (module.isLoad() && (!useUnTrusted || useOrienteerClassLoader)) {
                 module.setLoad(false);
                 disabled.add(module);
-                updateOArtifactInMetadata(module);
+                manager.updateOArtifactInMetadata(module);
             }
         }
         return result;
@@ -217,11 +215,11 @@ public class OrienteerClassLoader extends URLClassLoader {
      * @param jars jars in modules folder
      * @return list which contains Orienteer modules
      */
-	private static List<OArtifact> updateMetadataFromJars(List<Path> jars) {
+	private static List<OArtifact> updateMetadataFromJars(InternalOModuleManager manager, List<Path> jars) {
 		if(jars!=null && !jars.isEmpty()) {
-	        List<OArtifact> modules = MavenResolver.get().getResolvedOArtifacts(jars);
+	        List<OArtifact> modules = manager.getMavenResolver().getResolvedOArtifacts(jars);
 	        if (modules.size() > 0) {
-	            updateOArtifactsInMetadata(modules);
+	            manager.updateOArtifactsInMetadata(modules);
 	        }
 	
 	        return modules;

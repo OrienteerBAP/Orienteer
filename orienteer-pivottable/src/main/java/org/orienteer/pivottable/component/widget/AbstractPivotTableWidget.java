@@ -80,7 +80,7 @@ public abstract class AbstractPivotTableWidget<T> extends AbstractWidget<T> {
 	
 	protected String getSql() {
 		String customSql = getCustomSql();
-		return Strings.isEmpty(customSQL)?getDefaultSql():customSql;
+		return Strings.isEmpty(customSql)?getDefaultSql():customSql;
 	}
 	
 	protected abstract String getDefaultSql();

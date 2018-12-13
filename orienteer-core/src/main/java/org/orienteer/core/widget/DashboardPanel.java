@@ -118,13 +118,16 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 		return this;
 	}
 	
+	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
+		return createWidgetFromDocument(newWidgetId(), widgetDoc);
+	}
 		
 	@SuppressWarnings("unchecked")
-	private AbstractWidget<T> createWidgetFromDocument(ODocument widgetDoc) {
+	private AbstractWidget<T> createWidgetFromDocument(String widgetId, ODocument widgetDoc) {
 		IWidgetType<T> type = null;
 		if(widgetDoc!=null) type = (IWidgetType<T>)widgetTypesRegistry.lookupByTypeId((String)widgetDoc.field(OPROPERTY_TYPE_ID));
-		return  type!=null ? type.instanciate(newWidgetId(), getModel(), widgetDoc)
-						   : new NotFoundWidget<T>(newWidgetId(), getModel(), new ODocumentModel(widgetDoc));
+		return  type!=null ? type.instanciate(widgetId, getModel(), widgetDoc)
+						   : new NotFoundWidget<T>(widgetId, getModel(), new ODocumentModel(widgetDoc));
 	}
 	
 	/**
@@ -204,6 +207,16 @@ public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAw
 	{
 		widgets.remove(widget);
 		return this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public AbstractWidget<T> replaceWidget(AbstractWidget<T> oldWidget) {
+		IWidgetType<T> type = (IWidgetType<T>)widgetTypesRegistry
+								.lookupByWidgetClass((Class<? extends AbstractWidget<?>>)oldWidget.getClass());
+		AbstractWidget<T> widget = type.instanciate(oldWidget.getId(), 
+										(IModel<T>)oldWidget.getModel(), oldWidget.getWidgetDocument());
+		widgets.replace(widget);
+		return widget;
 	}
 	
 	@Override

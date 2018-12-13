@@ -14,6 +14,7 @@ public enum CodeMirrorJs implements IClusterable {
     JS_MODE("codemirror/current/mode/javascript/javascript.js"),
     HTMLMIXED_MODE("codemirror/current/mode/htmlmixed/htmlmixed.js"),
     SQL_MODE("codemirror/current/mode/sql/sql.js"),
+    C_LIKE_MODE("codemirror/current/mode/clike/clike.js"),
     SHELL_MODE("codemirror/current/mode/shell/shell.js"),
     R_MODE("codemirror/current/mode/r/r.js"),
     MARKDOWN_MODE("codemirror/current/mode/markdown/markdown.js"),
@@ -32,7 +33,7 @@ public enum CodeMirrorJs implements IClusterable {
     XML_HINT_ADDON("codemirror/current/addon/hint/xml-hint.js"),
     HTML_HINT_ADDON("codemirror/current/addon/hint/html-hint.js"),
     SQL_HINT_ADDON("codemirror/current/addon/hint/sql-hint.js"),
-    ANYWORD_HINT_ADDON("codemirror/current/addon/hint/anyword-hint.js");
+    ANYWORD_HINT_ADDON("codemirror/current/addon/hint/anyword-hint.js"),;
 
 
     private final JavaScriptResourceReference resourceReference;

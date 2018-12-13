@@ -33,9 +33,11 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  */
 public class ListboxVisualizer extends AbstractSimpleVisualizer
 {
+	public static final String NAME = "listbox";
+	
 	public ListboxVisualizer()
 	{
-		super("listbox", false, OType.LINK, OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
+		super(NAME, false, OType.LINK, OType.LINKLIST, OType.LINKSET, OType.LINKBAG);
 	}
 
 	@SuppressWarnings("unchecked")

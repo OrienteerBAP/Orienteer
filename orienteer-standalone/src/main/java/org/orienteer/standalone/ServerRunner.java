@@ -1,14 +1,14 @@
 package org.orienteer.standalone;
 
-import java.net.URL;
-import java.security.ProtectionDomain;
-
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
+
+import java.net.URL;
+import java.security.ProtectionDomain;
 
 /**
  * Utility class to run jetty server according to specified parameters
@@ -56,7 +56,7 @@ public class ServerRunner
 
 			ServerConnector http = new ServerConnector(server, new HttpConnectionFactory(httpConfig));
 			if(host!=null) http.setHost(host);
-			http.setPort(8080);
+			http.setPort(port);
 			http.setIdleTimeout(timeout);
 
 			server.addConnector(http);

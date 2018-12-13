@@ -1,7 +1,7 @@
 package org.orienteer.core.component.command;
 
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;

@@ -12,7 +12,8 @@ import org.apache.wicket.markup.head.OnLoadHeaderItem;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.architect.util.JsonUtil;
-import org.orienteer.architect.util.OArchitectOClass;
+import org.orienteer.architect.model.OArchitectOClass;
+import org.orienteer.architect.util.OArchitectClassesUtils;
 import org.orienteer.core.OrienteerWebApplication;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class GetNewChangesBehavior extends AbstractDefaultAjaxBehavior {
     private List<OArchitectOClass> toArchitectOClasses(List<OClass> classes) {
         List<OArchitectOClass> architectClasses = new ArrayList<>(classes.size());
         for (OClass oClass : classes) {
-            architectClasses.add(OArchitectOClass.toArchitectOClass(oClass));
+            architectClasses.add(OArchitectClassesUtils.toArchitectOClass(oClass));
         }
         return architectClasses;
     }

@@ -4,9 +4,12 @@ import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
+import org.apache.http.util.Args;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.event.IEvent;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.head.CssReferenceHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -19,12 +22,11 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.template.PackageTextTemplate;
 import org.apache.wicket.util.template.TextTemplate;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.architect.OArchitectModule;
 import org.orienteer.architect.component.behavior.*;
-import org.orienteer.architect.component.panel.SchemaOClassesModalPanel;
 import org.orienteer.architect.component.panel.command.OArchitectFullscreenCommand;
+import org.orienteer.architect.event.AbstractModalWindowEvent;
+import org.orienteer.architect.util.OArchitectJsUtils;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.util.CommonUtils;
@@ -46,14 +48,19 @@ import java.util.Optional;
 public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
 
     private static final JavaScriptResourceReference MXGRAPH_JS = new WebjarsJavaScriptResourceReference("mxgraph/current/javascript/mxClient.min.js");
-    private static final CssResourceReference MXGRAPH_CSS    = new WebjarsCssResourceReference("mxgraph/current/javascript/src/css/common.css");
-    private static final CssResourceReference OARCHITECT_CSS = new CssResourceReference(OArchitectEditorWidget.class, "css/architect.css");
+    private static final CssResourceReference MXGRAPH_CSS       = new WebjarsCssResourceReference("mxgraph/current/javascript/src/css/common.css");
+    private static final CssResourceReference OARCHITECT_CSS    = new CssResourceReference(OArchitectEditorWidget.class, "css/architect.css");
+
+    public static final int MODAL_WINDOW_HEIGHT = 510;
+    public static final int MODAL_WINDOW_WIDTH  = 670;
 
     private WebMarkupContainer container;
     private WebMarkupContainer editor;
     private WebMarkupContainer toolbar;
     private WebMarkupContainer sidebar;
     private WebMarkupContainer outline;
+
+    private ModalWindow modalWindow;
 
     public OArchitectEditorWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
@@ -62,29 +69,28 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
+        modalWindow = createModalWindow("modal");
         container = newContainer("container");
         container.add(editor = newContainer("editor"));
         container.add(toolbar = newContainer("toolbar"));
         container.add(sidebar = newContainer("sidebar"));
         container.add(outline = newContainer("outline"));
-        SchemaOClassesModalPanel panel = new SchemaOClassesModalPanel("listClasses", "app.executeCallback('%s');");
-        container.add(panel);
         add(container);
         add(new GetNewChangesBehavior());
         add(new ManageEditorConfigBehavior(getModel()));
         add(new ApplyEditorChangesBehavior());
-        add(new GetOClassesBehavior(panel));
+        add(new GetOClassesBehavior(this));
         add(new ExistsOClassBehavior());
+        add(new GenerateJavaSourcesBehavior(this));
+        add(modalWindow);
         addFullScreenCommand();
     }
 
     private void addFullScreenCommand() {
-        FullScreenCommand<?> command = commands.visitChildren(FullScreenCommand.class, new IVisitor<Component, FullScreenCommand<?>>() {
-            @Override
-            public void component(Component component, IVisit<FullScreenCommand<?>> visit) {
-                visit.stop((FullScreenCommand<?>) component);
-            }
-        });
+        FullScreenCommand<?> command = commands.visitChildren(
+                FullScreenCommand.class,
+                (component, visit) -> visit.stop((FullScreenCommand<?>) component)
+        );
         if (command != null) {
             final OArchitectFullscreenCommand fullscreen = new OArchitectFullscreenCommand(command.getId());
             fullscreen.setBootstrapType(null);
@@ -112,6 +118,31 @@ public class OArchitectEditorWidget extends AbstractWidget<ODocument> {
         WebMarkupContainer container = new WebMarkupContainer(id);
         container.setOutputMarkupId(true);
         return container;
+    }
+
+    private ModalWindow createModalWindow(String id) {
+        ModalWindow modal = new ModalWindow(id);
+        modal.setOutputMarkupId(true);
+        modal.setInitialWidth(MODAL_WINDOW_WIDTH);
+        modal.setInitialHeight(MODAL_WINDOW_HEIGHT);
+        modal.setMinimalWidth(MODAL_WINDOW_WIDTH);
+        modal.setMinimalHeight(MODAL_WINDOW_HEIGHT);
+        modal.setWindowClosedCallback(t -> t.appendJavaScript(OArchitectJsUtils.switchPageScroll(false)));
+        return modal;
+    }
+
+    public void onModalWindowEvent(AbstractModalWindowEvent event) {
+        Args.notNull(event, "event");
+        event.execute(modalWindow);
+    }
+
+    @Override
+    public void onEvent(IEvent<?> event) {
+        super.onEvent(event);
+        Object payload = event.getPayload();
+        if (payload instanceof AbstractModalWindowEvent) {
+            onModalWindowEvent((AbstractModalWindowEvent) payload);
+        }
     }
 
     @Override

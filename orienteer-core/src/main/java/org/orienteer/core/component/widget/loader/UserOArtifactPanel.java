@@ -13,9 +13,9 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactField;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactField;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
@@ -105,7 +105,7 @@ public class UserOArtifactPanel extends GenericPanel<OArtifact> {
                                 if (jarFile == null) {
                                     errorFeedback();
                                 } else {
-                                    OArtifact module = OrienteerClassLoaderUtil.getOArtifactFromJar(jarFile.toPath());
+                                    OArtifact module = InternalOModuleManager.get().getOArtifactFromJar(jarFile.toPath());
                                     if (module != null) {
                                         getEntityModel().setObject(module);
                                         structureTable.getModel().setObject(module);
@@ -158,7 +158,7 @@ public class UserOArtifactPanel extends GenericPanel<OArtifact> {
         if (fileUpload == null) return null;
         String clientFileName = fileUpload.getClientFileName();
         if (!fileUpload.getClientFileName().endsWith(".jar")) return null;
-        return OrienteerClassLoaderUtil.createJarTempFile(clientFileName, fileUpload);
+        return InternalOModuleManager.get().getJarsManager().createJarTempFile(clientFileName, fileUpload);
     }
 
 }

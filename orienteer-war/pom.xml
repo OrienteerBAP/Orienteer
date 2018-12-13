@@ -18,14 +18,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
 		<version>1.4-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-war</artifactId>
-	<packaging>war</packaging>
 	<name>orienteer-war</name>
+
+    <packaging>war</packaging>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.orienteer</groupId>
@@ -47,16 +50,6 @@
             <artifactId>orienteer-pivottable</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <!--<dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-bpm</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>-->
-        <!-- <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-camel</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency> -->
         <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-devutils</artifactId>
@@ -68,6 +61,7 @@
             <version>${project.parent.version}</version>
         </dependency>
 	</dependencies>
+
 	<build>
 		<finalName>orienteer</finalName>
 		<resources>
@@ -124,32 +118,43 @@
 			    <skip>true</skip>
 			</configuration>
 		    </plugin>
-		    <plugin>
-			    <groupId>org.eclipse.jetty</groupId>
-			    <artifactId>jetty-maven-plugin</artifactId>
-			    <version>${jetty.version}</version>
-			    <configuration>
-			    	<systemProperties>
-						<systemProperty>
-							<name>orienteer.loader.repository.local</name>
-							<value>${settings.localRepository}</value>
-						</systemProperty>
-					</systemProperties>
-				    <connectors>
-					    <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-						    <port>8080</port>
-						    <maxIdleTime>3600000</maxIdleTime>
-					    </connector>
-					    <connector implementation="org.eclipse.jetty.server.ssl.SslSocketConnector">
-						    <port>8443</port>
-						    <maxIdleTime>3600000</maxIdleTime>
-						    <keystore>${project.build.directory}/test-classes/keystore</keystore>
-						    <password>wicket</password>
-						    <keyPassword>wicket</keyPassword>
-					    </connector>
-				    </connectors>
-			    </configuration>
-		    </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
+                <configuration>
+                    <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
+                    <jettyXml>src/main/webapp/WEB-INF/jetty.xml</jettyXml>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>orienteer.loader.repository.local</name>
+                            <value>${settings.localRepository}</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <supportedPackagings>
+                        <supportedPackaging>jar</supportedPackaging>
+                    </supportedPackagings>
+                    <webApp>
+                        <descriptor>src/main/webapp/WEB-INF/web.xml</descriptor>
+                        <resourceBase>src/main/resources</resourceBase>
+                        <contextPath>/</contextPath>
+                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
+                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+                    </webApp>
+                    <httpConnector>
+                        <name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
+                        <port>8080</port>
+                        <idleTimeout>3600000</idleTimeout>
+                    </httpConnector>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.eclipse.jetty</groupId>
+                        <artifactId>jetty-hazelcast</artifactId>
+                        <version>${jetty.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 		</plugins>
 	</build>
 </project>

@@ -162,8 +162,8 @@ public class OTaskSessionRuntime implements ITaskSession {
 	}
 	
 	@Override
-	public ITaskSession incrementCurrentProgress() {
-		setCurrentProgress(getCurrentProgress()+1);
+	public ITaskSession incrementCurrentProgress(int increment) {
+		setCurrentProgress(getCurrentProgress()+increment);
 		return this;
 	}
 

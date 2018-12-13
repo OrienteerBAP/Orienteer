@@ -13,8 +13,10 @@ import org.orienteer.core.component.property.ImageViewPanel;
  * {@link IVisualizer} to display binary images.
  */
 public class ImageVisualizer extends AbstractSimpleVisualizer {
+	public static final String NAME = "image";
+	
     public ImageVisualizer() {
-        super("image", false, OType.BINARY);
+        super(NAME, false, OType.BINARY);
     }
 
     @Override

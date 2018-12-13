@@ -18,5 +18,10 @@ public class ToolsPage extends AbstractWidgetPage<Void> {
 	public String getDomain() {
 		return "tools";
 	}
+	
+	@Override
+		protected boolean switchToDefaultTab() {
+			return super.switchToDefaultTab()?true:selectTab("console");
+		}
 
 }

@@ -25,14 +25,14 @@
         var registered = [];
         var inited = false;
         var timer;
+        var notify = function () {
+        	for (var i = 0, cnt = registered.length; i < cnt; i++) {
+        		registered[i].apply();
+        	}
+        };
         var resize = function () {
             clearTimeout(timer);
             timer = setTimeout(notify, 100);
-        };
-        var notify = function () {
-            for (var i = 0, cnt = registered.length; i < cnt; i++) {
-                registered[i].apply();
-            }
         };
         return {
             register: function (fn) {

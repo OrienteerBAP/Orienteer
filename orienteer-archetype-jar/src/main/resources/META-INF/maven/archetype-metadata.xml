@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<archetype-descriptor name="quickstart">
+<archetype-descriptor name="basic">
     <requiredProperties>
 		<requiredProperty key="orienteerVersion">
 			<defaultValue>${project.version}</defaultValue>
@@ -32,7 +32,7 @@
 			</includes>
 		</fileSet>
 		<fileSet filtered="true" packaged="false" encoding="UTF-8">
-			<directory></directory>
+			<directory/>
 			<includes>
 				<include>README.md</include>
 			</includes>

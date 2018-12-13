@@ -63,5 +63,9 @@ public interface ITaskSession {
 	public double getFinalProgress();
 	public ITaskSession setCurrentProgress(double progress);
 	public double getCurrentProgress();
-	public ITaskSession incrementCurrentProgress();
+	public ITaskSession incrementCurrentProgress(int increment);
+	
+	public default ITaskSession incrementCurrentProgress() {
+		return incrementCurrentProgress(1);
+	}
 }

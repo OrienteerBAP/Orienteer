@@ -1,22 +1,21 @@
 package org.orienteer.core.service;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
-import com.google.inject.name.Named;
 import com.google.inject.servlet.RequestScoped;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.server.OServer;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
-import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.CSVDataExporter;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.IDataExporter;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.impl.GuiceOrientDbSettings;
 import org.orienteer.core.service.impl.OClassIntrospector;
@@ -24,10 +23,6 @@ import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.tasks.OTaskManager;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 
 /**
  * Main module to load Orienteer stuff to Guice
@@ -67,20 +62,23 @@ public class OrienteerModule extends AbstractModule {
 	}
 
 	@Provides
-	@RequestScoped
 	public ODatabaseDocumentTx getDatabaseDocumentTx(ODatabaseDocument db) {
 		return (ODatabaseDocumentTx)db;
 	}
 
 	@Provides
-	@RequestScoped
 	public ODatabaseDocument getDatabaseRecord()
 	{
 		return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
 	}
+	
+	@Provides
+	public OPartitionedDatabasePool getPartitionedDatabasePool(IOrientDbSettings settings) {
+		OrienteerWebSession session = OrienteerWebSession.get();
+		return settings.getDatabasePoolFactory().get(settings.getDBUrl(), session.getUsername(), session.getPassword());
+	}
 
 	@Provides
-	@RequestScoped
 	public OSchema getSchema(ODatabaseDocument db)
 	{
 		return db.getMetadata().getSchema();
@@ -106,32 +104,4 @@ public class OrienteerModule extends AbstractModule {
 		return OTaskManager.get();
 	}
 
-	@Provides
-	@Named("orientdb.server.config")
-	@Inject(optional = true)
-	public String provideOrientDBConfig(@Named("orientdb.distributed") boolean distributed) {
-		String config = readOrientDBConfigToString(distributed);
-		config = config.replaceAll("\\$\\{root.password\\}", System.getProperty("root.password"));
-		if (distributed) {
-            config = config.replaceAll("\\$\\{configuration.db.default\\}", System.getProperty("configuration.db.default"));
-            config = config.replaceAll("\\$\\{configuration.hazelcast\\}", System.getProperty("configuration.hazelcast"));
-            config = config.replaceAll("\\$\\{node.name\\}", System.getProperty("node.name"));
-        }
-        return config;
-	}
-
-	private String readOrientDBConfigToString(boolean distributed) {
-		try {
-			StringWriter writer = new StringWriter();
-			InputStream in;
-			if (distributed) {
-				in = OrienteerWebApplication.class.getResource("distributed.db.config.xml").openStream();
-			} else in = OrienteerWebApplication.class.getResource("db.config.xml").openStream();
-			IOUtils.copy(in, writer, StandardCharsets.UTF_8);
-			return writer.toString();
-		} catch (Exception e) {
-			// never return null, because one of configurations always is available in classpath
-			return null;
-		}
-	}
 }

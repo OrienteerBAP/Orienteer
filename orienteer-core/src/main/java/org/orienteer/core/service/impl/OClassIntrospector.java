@@ -277,10 +277,10 @@ public class OClassIntrospector implements IOClassIntrospector
 						case EMBEDDEDMAP:
 							Map<String, Object> localizations = (Map<String, Object>)value;
 							Object localized = CommonUtils.localizeByMap(localizations, true, locale.getLanguage(), Locale.getDefault().getLanguage());
-							ret = localized!=null ? localized.toString() : value.toString();
+							ret = CommonUtils.toString(localized!=null ? localized : value);
 							break;
 						default:
-							ret =  value.toString();
+							ret =  CommonUtils.toString(value);
 							break;
 					}
 				}

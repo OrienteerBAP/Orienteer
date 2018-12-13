@@ -16,8 +16,10 @@ import java.util.Map;
  * Visualizer for JavaScript code editor
  */
 public class JavaScriptCodeVisualizer extends AbstractSimpleVisualizer {
+	public static final String NAME = "javascript";
+	
     public JavaScriptCodeVisualizer() {
-        super("javascript", false, OType.STRING);
+        super(NAME, false, OType.STRING);
     }
 
     @Override

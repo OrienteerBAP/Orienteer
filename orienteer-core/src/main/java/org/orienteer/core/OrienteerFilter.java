@@ -1,12 +1,14 @@
 package org.orienteer.core;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Singleton;
 import com.google.inject.servlet.GuiceFilter;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.OModulesMicroFrameworkConfig;
+import org.orienteer.core.boot.loader.internal.service.OModulesInitModule;
+import org.orienteer.core.boot.loader.internal.service.OModulesStaticInjector;
 import org.orienteer.core.component.OModulesLoadFailedPanel;
 import org.orienteer.core.service.OrienteerInitModule;
 import org.orienteer.core.util.StartupPropertiesLoader;
@@ -19,8 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Main Orienteer Filter to handle all requests.
@@ -41,18 +42,22 @@ public final class OrienteerFilter implements Filter {
 
     private FilterConfig filterConfig;
     private ClassLoader classLoader;
-    private boolean reloading;
+    private static boolean reloading;
 
     @Override
     public void init(final FilterConfig filterConfig) throws ServletException {
     	instance = this;
     	this.filterConfig = filterConfig;
     	Properties properties = StartupPropertiesLoader.retrieveProperties();
-    	classLoader = initClassLoader(properties);
+    	Injector injector = OModulesStaticInjector.init(new OModulesInitModule(properties));
+    	classLoader = initClassLoader(injector.getInstance(InternalOModuleManager.class), properties);
+
     	Thread.currentThread().setContextClassLoader(classLoader);
+
         LOG.info("Start initialization: " + this.getClass().getName());
+
         ServletContext context = filterConfig.getServletContext();
-        Injector injector = Guice.createInjector(new OrienteerInitModule(properties));
+        injector = injector.createChildInjector(new OrienteerInitModule(properties));
         context.setAttribute(Injector.class.getName(), injector);
         initFilter(filterConfig);
     }
@@ -82,8 +87,9 @@ public final class OrienteerFilter implements Filter {
         }
     }
     
-    private ClassLoader initClassLoader(Properties properties) {
-        OrienteerClassLoader.initOrienteerClassLoaders(OrienteerFilter.class.getClassLoader());
+    private ClassLoader initClassLoader(InternalOModuleManager manager, Properties properties) {
+        manager.reindex(new OModulesMicroFrameworkConfig(properties));
+        OrienteerClassLoader.initOrienteerClassLoaders(manager, OrienteerFilter.class.getClassLoader());
         OrienteerClassLoader.enable();
     	return OrienteerClassLoader.getClassLoader();
     }
@@ -124,12 +130,8 @@ public final class OrienteerFilter implements Filter {
 	        LOG.info("Start reload doOrienteerFilter with doOrienteerFilter config: " + filterConfig);
 	        reloading = true;
 	        destroy();
-	        try {
-				Thread.currentThread().sleep(wait);
-			} catch (InterruptedException e) {
-				/*NOP*/
-			}
-            OrienteerClassLoaderUtil.reindex();
+	        sleep(wait);
+            OModulesStaticInjector.destroy();
 	        init(filterConfig);
 	        WicketWebjars.reindex(OrienteerWebApplication.lookupApplication());
 	        reloading = false;
@@ -148,15 +150,15 @@ public final class OrienteerFilter implements Filter {
         Thread.currentThread().setContextClassLoader(classLoader);
     }
 
-    public boolean isReloading() {
+    public static boolean isReloading() {
         return reloading;
     }
 
     /**
      * Reload Orienteer with fixed delay=3s and wait=5s
      */
-    public static void reloadOrienteer() {
-        reloadOrienteer(3000, 5000);
+    public static CompletableFuture<Void> reloadOrienteer() {
+        return reloadOrienteer(3000, 5000);
     }
 
     /**
@@ -164,14 +166,22 @@ public final class OrienteerFilter implements Filter {
      * @param delay - delay in ms. After delay Orienteer will be reload
      * @param wait - wait in ms. Wait before {@link OrienteerFilter} starts reload
      */
-    public static void reloadOrienteer(long delay, final long wait) {
-        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
-        executor.schedule(() -> {
+    public static CompletableFuture<Void> reloadOrienteer(long delay, final long wait) {
+        return CompletableFuture.runAsync(() -> {
+            sleep(delay);
             try {
                 instance.reload(wait);
             } catch (ServletException e) {
                 LOG.error("Can't reload Orienteer", e);
             }
-        }, delay, TimeUnit.MILLISECONDS);
+        });
+    }
+
+    private static void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException ex) {
+            LOG.error("Exception during sleep!", ex);
+        }
     }
 }

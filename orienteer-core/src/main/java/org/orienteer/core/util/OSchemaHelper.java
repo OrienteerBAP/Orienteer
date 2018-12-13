@@ -1,6 +1,8 @@
 package org.orienteer.core.util;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.CustomAttribute;
@@ -8,10 +10,13 @@ import org.orienteer.core.CustomAttribute;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * Enhanced {@link ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper} from wicket-orientdb library to allow Orienteer specific things
@@ -282,5 +287,52 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 
 		return this;
 	}
+
+	@Override
+	public OSchemaHelper oDocument() {
+		super.oDocument();
+		return this;
+	}
+
+	@Override
+	public OSchemaHelper oDocument(String pkField, Object pkValue) {
+		super.oDocument(pkField, pkValue);
+		return this;
+	}
 	
+	@Override
+	public OSchemaHelper saveDocument() {
+		super.saveDocument();
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper field(String field, Object value) {
+		super.field(field, value);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper doOnOClass(Consumer<OClass> consumer) {
+		super.doOnOClass(consumer);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper doOnOProperty(Consumer<OProperty> consumer) {
+		super.doOnOProperty(consumer);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper doOnOIndex(Consumer<OIndex<?>> consumer) {
+		super.doOnOIndex(consumer);
+		return this;
+	}
+	
+	@Override
+	public OSchemaHelper doOnODocument(Consumer<ODocument> consumer) {
+		super.doOnODocument(consumer);
+		return this;
+	}
 }

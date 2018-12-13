@@ -17,7 +17,7 @@ import org.orienteer.core.model.MarkDownModel;
  */
 public class MarkDownVisualizer extends AbstractSimpleVisualizer
 {
-    private static final String NAME = "markdown";
+    public static final String NAME = "markdown";
 
     public MarkDownVisualizer()
     {
