@@ -54,12 +54,14 @@ public class OrienteerWebSession extends OrientDbWebSession
 			}
 			onlineModule.updateSessionUser(getUser(), getId());
 		}
+		dirty();
 		return ret;
 	}
 
 	@Override
 	public void signOut() {
 		perspective=null;
+        dirty();
 		super.signOut();
 	}
 

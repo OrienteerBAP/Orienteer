@@ -9,6 +9,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.google.inject.util.Modules;
+import com.hazelcast.web.WebFilter;
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WicketFilter;
@@ -82,17 +83,30 @@ public class OrienteerInitModule extends ServletModule {
 	}
 
 	protected void bindWicket() {
-	    bindFilter();
+	    bindHazelcastFilter();
+	    bindWicketFilter();
 	    bindApplication();
     }
 
-    protected void bindFilter() {
+    protected void bindWicketFilter() {
         Map<String, String> params = new HashMap<String, String>();
         params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");
         params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
         params.put("injectorContextAttribute", Injector.class.getName());
         bind(WicketFilter.class).in(Singleton.class);
         filter("/*").through(WicketFilter.class, params);
+    }
+
+    protected void bindHazelcastFilter() {
+	    Map<String, String> params = new HashMap<>();
+	    params.put("config-location", properties.getProperty("orientdb.configuration.hazelcast"));
+	    params.put("map-name", "wicket-sessions");
+	    params.put("sticky-session", "false");
+	    params.put("debug", "true");
+	    params.put("cookie-name", "JSESSIONID");
+
+	    bind(WebFilter.class).in(Singleton.class);
+        filter("/*").through(WebFilter.class, params);
     }
 
     @SuppressWarnings("unchecked")

@@ -196,6 +196,10 @@
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-wm</artifactId>
+        </dependency>
 
         <!-- NEED FOR LOAD TELEGRAM BOT-->
 		<dependency>
