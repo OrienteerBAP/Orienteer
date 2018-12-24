@@ -13,8 +13,8 @@
         xmlns="http://www.hazelcast.com/schema/config"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <group>
-        <name>orientdb</name>
-        <password>orientdb</password>
+        <name>orienteer</name>
+        <password>orienteer</password>
     </group>
 
     <instance-name>orienteer-hazelcast</instance-name>
@@ -33,6 +33,14 @@
         <async-backup-count>1</async-backup-count>
         <eviction-policy>LRU</eviction-policy>
         <max-size policy="USED_HEAP_SIZE">256</max-size>
+        <in-memory-format>BINARY</in-memory-format>
+    </map>
+    <map name="wicket-data-store">
+        <backup-count>5</backup-count>
+        <async-backup-count>1</async-backup-count>
+        <eviction-policy>LRU</eviction-policy>
+        <max-size policy="USED_HEAP_SIZE">256</max-size>
+        <in-memory-format>BINARY</in-memory-format>
     </map>
     <map name="orientdb">
         <merge-policy>com.orientechnologies.orient.server.hazelcast.OHazelcastMergeStrategy</merge-policy>
