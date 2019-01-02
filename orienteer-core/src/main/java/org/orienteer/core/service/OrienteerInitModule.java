@@ -101,7 +101,8 @@ public class OrienteerInitModule extends ServletModule {
 	    Map<String, String> params = new HashMap<>();
 	    params.put("config-location", properties.getProperty("orientdb.configuration.hazelcast"));
 	    params.put("map-name", "wicket-sessions");
-	    params.put("sticky-session", "false");
+	    params.put("sticky-session", "true");
+	    params.put("deferred-write", "true");
 	    params.put("debug", "true");
 	    params.put("cookie-name", "JSESSIONID");
 

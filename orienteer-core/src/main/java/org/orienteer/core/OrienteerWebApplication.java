@@ -19,11 +19,13 @@ import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.pageStore.IDataStore;
+import org.apache.wicket.pageStore.IPageStore;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
+import org.apache.wicket.serialize.ISerializer;
 import org.apache.wicket.settings.RequestCycleSettings;
 import org.apache.wicket.util.convert.converter.DateConverter;
 import org.apache.wicket.util.string.Strings;
@@ -45,6 +47,7 @@ import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.wicket.pageStore.HazelcastDataStore;
+import org.orienteer.core.wicket.pageStore.HazelcastPageStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -435,6 +438,12 @@ public class OrienteerWebApplication extends OrientDbWebApplication
             protected IDataStore newDataStore() {
                 return new HazelcastDataStore();
 //				return new OrientDbDataStore();
+            }
+
+            @Override
+            protected IPageStore newPageStore(IDataStore dataStore) {
+                ISerializer pageSerializer = application.getFrameworkSettings().getSerializer();
+                return new HazelcastPageStore(pageSerializer, dataStore);
             }
         };
     }
