@@ -5,7 +5,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.pageStore.OWicketData;
+import org.orienteer.core.wicket.pageStore.OWicketData;
 import org.orienteer.core.util.OSchemaHelper;
 
 /**

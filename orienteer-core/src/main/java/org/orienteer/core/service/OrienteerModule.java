@@ -2,7 +2,6 @@ package org.orienteer.core.service;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.servlet.RequestScoped;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -99,8 +98,7 @@ public class OrienteerModule extends AbstractModule {
 	}
 	
 	@Provides
-	public OTaskManager getTaskManager()
-	{
+	public OTaskManager getTaskManager() {
 		return OTaskManager.get();
 	}
 

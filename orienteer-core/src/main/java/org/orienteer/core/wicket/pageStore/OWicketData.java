@@ -1,4 +1,4 @@
-package org.orienteer.core.pageStore;
+package org.orienteer.core.wicket.pageStore;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;

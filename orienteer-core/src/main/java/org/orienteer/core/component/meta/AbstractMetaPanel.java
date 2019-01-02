@@ -1,9 +1,6 @@
 package org.orienteer.core.component.meta;
 
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
+import com.google.inject.Inject;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
@@ -13,18 +10,17 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.ILabelProvider;
 import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.visit.ClassVisitFilter;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.IExportable;
 import org.orienteer.core.service.IMarkupProvider;
 
-import com.google.inject.Inject;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Objects;
 
 /**
  * {@link Panel} that can substitute required component according to a provided criteria
@@ -38,18 +34,16 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	private static final long serialVersionUID = 1L;
 
 	private static final String PANEL_ID = "panel";
-	
-	private Serializable stateSignature;
-	
+
 	private IModel<String> labelModel;
 	
 	@Inject
 	private IMarkupProvider markupProvider;
-	
+
+	protected Serializable signatureState;
+
 	private Component component;
-	
-	
-	
+
 	public AbstractMetaPanel(String id, IModel<T> entityModel,
 			IModel<C> propertyModel, IModel<V> valueModel)
 	{
@@ -65,19 +59,17 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	@Override
 	protected void onConfigure() {
 		super.onConfigure();
-		
 		C critery = getPropertyObject();
 		Serializable newSignature = getSignature(critery);
-		if(!newSignature.equals(stateSignature) || get(PANEL_ID)==null)
-		{
-			stateSignature = newSignature;
+
+		if (!Objects.equals(newSignature, signatureState) || get(PANEL_ID) == null) {
+			signatureState = newSignature;
 			component = resolveComponent(PANEL_ID, critery);
 			onPostResolveComponent(component, critery);
-//			component.setOutputMarkupId(true);
 			addOrReplace(component);
 		}
 	}
-	
+
 	protected void onPostResolveComponent(Component component, C critery)
 	{
 		if(component instanceof LabeledWebMarkupContainer)
@@ -85,12 +77,11 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 			((LabeledWebMarkupContainer)component).setLabel(getLabel());
 		}
 	}
-	
-	protected Serializable getSignature(C critery)
-	{
+
+	protected Serializable getSignature(C critery) {
 		return Objects.hashCode(critery);
 	}
-	
+
 	@Override
 	public IMarkupFragment getMarkup(Component child) {
 		if(child==null) return super.getMarkup(child);
@@ -136,7 +127,7 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		AbstractMetaPanel<T, C, W> otherMetaPanel = getMetaComponent(critery);
 		return otherMetaPanel!=null?otherMetaPanel.getValueObject():null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public V getEnteredValue()
 	{
@@ -188,7 +179,7 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 							public void component(
 									AbstractMetaPanel<?, ?, ?> object,
 									IVisit<AbstractMetaPanel<?, ?, ?>> visit) {
-								if(Objects.isEqual(object.getPropertyObject(), critery)) visit.stop(object);
+								if(Objects.equals(object.getPropertyObject(), critery)) visit.stop(object);
 								else visit.dontGoDeeper();
 							}
 		});

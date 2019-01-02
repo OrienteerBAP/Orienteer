@@ -1,4 +1,4 @@
-package org.orienteer.core.pageStore;
+package org.orienteer.core.wicket.pageStore;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
@@ -20,7 +20,7 @@ public class OrientDbDataStore implements IDataStore {
     public byte[] getData(String sessionId, int id) {
         return getWicketData(sessionId, id)
                 .map(OWicketData::getData)
-                .orElse(new byte[0]);
+                .orElse(null);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class OrientDbDataStore implements IDataStore {
 
     @Override
     public boolean canBeAsynchronous() {
-        return true;
+        return false;
     }
 
     private Optional<OWicketData> getWicketData(String sessionId, int id) {

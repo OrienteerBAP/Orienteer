@@ -19,11 +19,13 @@ import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.pageStore.IDataStore;
+import org.apache.wicket.pageStore.IPageStore;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.SharedResourceReference;
+import org.apache.wicket.serialize.ISerializer;
 import org.apache.wicket.settings.RequestCycleSettings;
 import org.apache.wicket.util.convert.converter.DateConverter;
 import org.apache.wicket.util.string.Strings;
@@ -36,7 +38,7 @@ import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
 import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
-import org.orienteer.core.pageStore.OrientDbDataStore;
+import org.orienteer.core.wicket.pageStore.OrientDbDataStore;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.service.listener.OrienteerEmeddOrientDbListener;
@@ -45,7 +47,7 @@ import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
-import org.orienteer.core.wicket.session.HazelcastSessionStore;
+import org.orienteer.core.wicket.pageStore.HazelcastPageStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -210,7 +212,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 
         if (isDistributedMode()) { // set session store and page provider for distributed mode
             setPageManagerProvider(createPageManagerProvider());
-            setSessionStoreProvider(HazelcastSessionStore::new);
         }
 	}
 
@@ -432,7 +433,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	    return new DefaultPageManagerProvider(this) {
             @Override
             protected IDataStore newDataStore() {
-                return new OrientDbDataStore();
+				return new OrientDbDataStore();
+            }
+
+            @Override
+            protected IPageStore newPageStore(IDataStore dataStore) {
+                ISerializer pageSerializer = application.getFrameworkSettings().getSerializer();
+                return new HazelcastPageStore(pageSerializer, dataStore);
             }
         };
     }
