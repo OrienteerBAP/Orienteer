@@ -1,8 +1,6 @@
 package org.orienteer.core.component.meta;
 
-import com.google.common.hash.Hashing;
 import com.google.inject.Inject;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
@@ -14,20 +12,16 @@ import org.apache.wicket.markup.html.form.LabeledWebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.lang.Objects;
 import org.apache.wicket.util.visit.ClassVisitFilter;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.bouncycastle.util.Arrays;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.IExportable;
 import org.orienteer.core.service.IMarkupProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.orienteer.core.service.ISignatureService;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * {@link Panel} that can substitute required component according to a provided criteria
@@ -38,22 +32,16 @@ import java.util.List;
  */
 public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndPropertyAwarePanel<T, C, V> implements ILabelProvider<String>, IExportable<Object>
 {
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractMetaPanel.class);
-
 	private static final long serialVersionUID = 1L;
 
 	private static final String PANEL_ID = "panel";
-	
-	private String stateSignature;
-	
+
 	private IModel<String> labelModel;
 	
 	@Inject
 	private IMarkupProvider markupProvider;
-	
+
 	private Component component;
-	
-	
 	
 	public AbstractMetaPanel(String id, IModel<T> entityModel,
 			IModel<C> propertyModel, IModel<V> valueModel)
@@ -71,17 +59,20 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	protected void onConfigure() {
 		super.onConfigure();
 		C critery = getPropertyObject();
-		String newSignature = getSignature(critery);
+		String key = getSignatureKey();
+		ISignatureService signatureService = OrienteerWebApplication.get().getServiceInstance(ISignatureService.class);
+		String oldSignature = signatureService.getSignature(key);
+		String newSignature = computeSignature(critery, signatureService);
 
-		if(!newSignature.equals(stateSignature) || get(PANEL_ID)==null)
+		if (!Objects.equals(oldSignature, newSignature) || get(PANEL_ID)==null)
 		{
-			stateSignature = newSignature;
+			signatureService.putSignature(key, newSignature);
 			component = resolveComponent(PANEL_ID, critery);
 			onPostResolveComponent(component, critery);
 			addOrReplace(component);
 		}
 	}
-	
+
 	protected void onPostResolveComponent(Component component, C critery)
 	{
 		if(component instanceof LabeledWebMarkupContainer)
@@ -90,25 +81,14 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		}
 	}
 	
-	protected final String getSignature(C critery) {
-		List<Serializable> signatureEntities = getSignatureEntities(critery);
-		try {
-			byte [] data = new byte[0];
-			for (Serializable entity : signatureEntities) {
-				byte [] entityData = SerializationUtils.serialize(entity);
-				data = Arrays.concatenate(data, entityData);
-			}
-			return Hashing.adler32().newHasher()
-					.putBytes(data)
-					.hash()
-					.toString();
-		} catch (Exception e) {
-			throw new IllegalStateException("Can't compute signature for " + signatureEntities, e);
-		}
+	protected String computeSignature(C critery, ISignatureService signatureService) {
+		return signatureService.computeSignature(getPropertyObject());
 	}
 
-	protected List<Serializable> getSignatureEntities(C critery) {
-		return Collections.singletonList((Serializable) critery);
+	protected String getSignatureKey() {
+		String sessionId = getSession() != null ? getSession().getId() : "-1";
+		String pageId = getPage().getId();
+		return sessionId + ":" + pageId + ":" + getPageRelativePath();
 	}
 
 	@Override
@@ -208,7 +188,7 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 							public void component(
 									AbstractMetaPanel<?, ?, ?> object,
 									IVisit<AbstractMetaPanel<?, ?, ?>> visit) {
-								if(Objects.isEqual(object.getPropertyObject(), critery)) visit.stop(object);
+								if(Objects.equals(object.getPropertyObject(), critery)) visit.stop(object);
 								else visit.dontGoDeeper();
 							}
 		});
