@@ -60,7 +60,7 @@ public class OrientDbDataStore implements IDataStore {
 
     @Override
     public boolean canBeAsynchronous() {
-        return true;
+        return false;
     }
 
     private Optional<OWicketData> getWicketData(String sessionId, int id) {

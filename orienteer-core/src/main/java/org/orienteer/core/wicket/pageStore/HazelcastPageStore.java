@@ -36,6 +36,6 @@ public class HazelcastPageStore extends AbstractCachingPageStore<IManageablePage
 
     @Override
     public boolean canBeAsynchronous() {
-        return true;
+        return false;
     }
 }
