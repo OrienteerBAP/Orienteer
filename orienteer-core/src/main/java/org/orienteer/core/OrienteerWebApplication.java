@@ -38,6 +38,7 @@ import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
 import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
+import org.orienteer.core.wicket.pageStore.OrientDbDataStore;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.service.listener.OrienteerEmeddOrientDbListener;
@@ -46,7 +47,6 @@ import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
-import org.orienteer.core.wicket.pageStore.HazelcastDataStore;
 import org.orienteer.core.wicket.pageStore.HazelcastPageStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
@@ -110,10 +110,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orientdb.server.config")
 	private String dbConfig;
-
-	@Inject
-    @Named("orientdb.node.name")
-	private String node;
 
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
@@ -202,6 +198,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
 		registerModule(OConsoleTasksModule.class);
+		registerModule(OrienteerClusterModule.class);
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
@@ -436,8 +433,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	    return new DefaultPageManagerProvider(this) {
             @Override
             protected IDataStore newDataStore() {
-                return new HazelcastDataStore();
-//				return new OrientDbDataStore();
+				return new OrientDbDataStore();
             }
 
             @Override

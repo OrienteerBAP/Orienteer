@@ -6,6 +6,9 @@ import com.hazelcast.core.IMap;
 import org.apache.wicket.page.IManageablePage;
 import org.apache.wicket.pageStore.SecondLevelPageCache;
 
+/**
+ * Hazelcast implementation of {@link SecondLevelPageCache} for cache Wicket pages in cluster
+ */
 public class HazelcastPagesCache implements SecondLevelPageCache<String, Integer, IManageablePage> {
 
     private final IMap<String, IManageablePage> cache;
@@ -40,7 +43,11 @@ public class HazelcastPagesCache implements SecondLevelPageCache<String, Integer
 
     @Override
     public void destroy() {
-
+        try {
+            cache.destroy();
+        } catch (Exception ex) {
+            /* Do nothing */
+        }
     }
 
     private String getKey(String sessionId, Integer pageId) {

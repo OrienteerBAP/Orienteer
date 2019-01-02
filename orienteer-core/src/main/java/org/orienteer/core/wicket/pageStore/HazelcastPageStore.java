@@ -5,6 +5,9 @@ import org.apache.wicket.pageStore.AbstractCachingPageStore;
 import org.apache.wicket.pageStore.IDataStore;
 import org.apache.wicket.serialize.ISerializer;
 
+/**
+ * Implementation of {@link AbstractCachingPageStore} which uses {@link HazelcastPagesCache} for store pages
+ */
 public class HazelcastPageStore extends AbstractCachingPageStore<IManageablePage> {
     /**
      * Constructor.
@@ -33,6 +36,6 @@ public class HazelcastPageStore extends AbstractCachingPageStore<IManageablePage
 
     @Override
     public boolean canBeAsynchronous() {
-        return false;
+        return true;
     }
 }
