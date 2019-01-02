@@ -1,11 +1,12 @@
 package org.orienteer.core.component.meta;
 
-import java.io.Serializable;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
-import org.apache.wicket.util.lang.Objects;
+
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * {@link AbstractMetaPanel} that can additionally take into consideration display mode.
@@ -56,10 +57,13 @@ public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPane
 	protected K getEffectiveMode(K mode, C critery) {
 		return mode;
 	}
-	
+
 	@Override
-	protected Serializable getSignature(C critery) {
-		return Objects.hashCode(critery, getModeObject());
+	protected List<Serializable> getSignatureEntities(C critery) {
+		List<Serializable> list = new LinkedList<>();
+		list.add((Serializable) critery);
+		list.add((Serializable) getModeObject());
+		return list;
 	}
 
 	protected abstract Component resolveComponent(String id, K mode, C critery);
