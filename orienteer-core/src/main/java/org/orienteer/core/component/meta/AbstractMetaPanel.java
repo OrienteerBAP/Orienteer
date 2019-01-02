@@ -15,11 +15,10 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.visit.ClassVisitFilter;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.IExportable;
 import org.orienteer.core.service.IMarkupProvider;
-import org.orienteer.core.service.ISignatureService;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -41,8 +40,10 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	@Inject
 	private IMarkupProvider markupProvider;
 
+	protected Serializable signatureState;
+
 	private Component component;
-	
+
 	public AbstractMetaPanel(String id, IModel<T> entityModel,
 			IModel<C> propertyModel, IModel<V> valueModel)
 	{
@@ -59,14 +60,10 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 	protected void onConfigure() {
 		super.onConfigure();
 		C critery = getPropertyObject();
-		String key = getSignatureKey();
-		ISignatureService signatureService = OrienteerWebApplication.get().getServiceInstance(ISignatureService.class);
-		String oldSignature = signatureService.getSignature(key);
-		String newSignature = computeSignature(critery, signatureService);
+		Serializable newSignature = getSignature(critery);
 
-		if (!Objects.equals(oldSignature, newSignature) || get(PANEL_ID)==null)
-		{
-			signatureService.putSignature(key, newSignature);
+		if (!Objects.equals(newSignature, signatureState) || get(PANEL_ID) == null) {
+			signatureState = newSignature;
 			component = resolveComponent(PANEL_ID, critery);
 			onPostResolveComponent(component, critery);
 			addOrReplace(component);
@@ -80,15 +77,9 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 			((LabeledWebMarkupContainer)component).setLabel(getLabel());
 		}
 	}
-	
-	protected String computeSignature(C critery, ISignatureService signatureService) {
-		return signatureService.computeSignature(getPropertyObject());
-	}
 
-	protected String getSignatureKey() {
-		String sessionId = getSession() != null ? getSession().getId() : "-1";
-		String pageId = getPage().getId();
-		return sessionId + ":" + pageId + ":" + getPageRelativePath();
+	protected Serializable getSignature(C critery) {
+		return Objects.hashCode(critery);
 	}
 
 	@Override

@@ -2,8 +2,6 @@ package org.orienteer.core.service;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -18,7 +16,9 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
-import org.orienteer.core.service.impl.*;
+import org.orienteer.core.service.impl.GuiceOrientDbSettings;
+import org.orienteer.core.service.impl.OClassIntrospector;
+import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.tasks.OTaskManager;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
@@ -98,19 +98,8 @@ public class OrienteerModule extends AbstractModule {
 	}
 	
 	@Provides
-	public OTaskManager getTaskManager()
-	{
+	public OTaskManager getTaskManager() {
 		return OTaskManager.get();
 	}
 
-	@Provides
-	@Singleton
-	public ISignatureService provideSignatureService(
-			@Named("orientdb.distributed") boolean distributed,
-			@Named("orientdb.node.name") String node) {
-		if (distributed) {
-			return new DistributedModeSignatureServiceImpl(node);
-		}
-		return new SingleModeSignatureServiceImpl(10_000, 15);
-	}
 }

@@ -3,7 +3,9 @@ package org.orienteer.core.component.meta;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.lang.Args;
-import org.orienteer.core.service.ISignatureService;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * {@link AbstractMetaPanel} that can additionally take into consideration display mode.
@@ -56,8 +58,14 @@ public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPane
 	}
 
 	@Override
-	protected String computeSignature(C critery, ISignatureService signatureService) {
-		return signatureService.computeSignature(critery, getModeObject());
+	protected Serializable getSignature(C critery) {
+		K modeObject = getModeObject();
+		Object mode;
+		if (modeObject instanceof Enum) {
+			mode = ((Enum) modeObject).ordinal();
+		} else mode = modeObject;
+
+		return Objects.hash(critery, mode);
 	}
 
 	protected abstract Component resolveComponent(String id, K mode, C critery);

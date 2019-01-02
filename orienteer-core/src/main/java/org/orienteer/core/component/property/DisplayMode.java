@@ -41,8 +41,7 @@ public enum DisplayMode {
 		return Model.of(this);
 	}
 	
-	public static DisplayMode parse(String string)
-	{
+	public static DisplayMode parse(String string) {
 		if(string==null) return null;
 		try {
 			return DisplayMode.valueOf(string.toUpperCase());
@@ -50,5 +49,6 @@ public enum DisplayMode {
 			return null;
 		}
 	}
+
 	
 }
