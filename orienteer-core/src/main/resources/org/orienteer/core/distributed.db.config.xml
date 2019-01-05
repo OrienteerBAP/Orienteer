@@ -60,6 +60,7 @@
         <entry value="1" name="db.pool.min"/>
         <entry value="50" name="db.pool.max"/>
         <entry value="false" name="profiler.enabled"/>
+        <entry value="0" name="distributed.autoRemoveOfflineServers"/>
     </properties>
     <isAfterFirstTime>true</isAfterFirstTime>
 </orient-server>
