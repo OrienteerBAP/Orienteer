@@ -76,7 +76,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
 		<wtp.version>none</wtp.version>
-		<hz.version>3.9.4</hz.version>
+		<hazelcast.version>3.9.4</hazelcast.version>
+		<docker-client.version>8.14.5</docker-client.version>
         <hazelcast-wm.version>3.8.3</hazelcast-wm.version>
 		<mockito.version>2.22.0</mockito.version>
 	</properties>
@@ -267,12 +268,12 @@
             <dependency>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-client</artifactId>
-                <version>8.14.5</version>
+                <version>${docker-client.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
-                <version>${hz.version}</version>
+                <version>${hazelcast.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.hazelcast</groupId>
@@ -364,32 +365,32 @@
 				    <wtpversion>${wtp.version}</wtpversion>
 			    </configuration>
 		    </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-checkstyle-plugin</artifactId>-->
-                <!--<version>2.17</version>-->
-                <!--<dependencies>-->
-			        <!--<dependency>-->
-				        <!--<groupId>com.puppycrawl.tools</groupId>-->
-				        <!--<artifactId>checkstyle</artifactId>-->
-				        <!--<version>6.19</version>-->
-			        <!--</dependency>-->
-			    <!--</dependencies>-->
-                <!--<configuration>-->
-                    <!--<configLocation>check_style.xml</configLocation>-->
-                    <!--<failOnViolation>true</failOnViolation>-->
-                    <!--<linkXRef>false</linkXRef>-->
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>checkstyle</id>-->
-                        <!--<phase>verify</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>check</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.17</version>
+                <dependencies>
+			        <dependency>
+				        <groupId>com.puppycrawl.tools</groupId>
+				        <artifactId>checkstyle</artifactId>
+				        <version>6.19</version>
+			        </dependency>
+			    </dependencies>
+                <configuration>
+                    <configLocation>check_style.xml</configLocation>
+                    <failOnViolation>true</failOnViolation>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -569,51 +570,6 @@
                                             <outputDirectory>${project.basedir}/target/</outputDirectory>
                                             <destFileName>jetty-runner.jar</destFileName>
                                         </artifactItem>
-										<artifactItem>
-											<groupId>org.eclipse.jetty</groupId>
-											<artifactId>jetty-hazelcast</artifactId>
-											<version>${jetty.version}</version>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>${project.basedir}/target/</outputDirectory>
-											<destFileName>jetty-hazelcast.jar</destFileName>
-										</artifactItem>
-										<artifactItem>
-											<groupId>com.hazelcast</groupId>
-											<artifactId>hazelcast</artifactId>
-											<version>${hz.version}</version>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>${project.basedir}/target/</outputDirectory>
-											<destFileName>hazelcast.jar</destFileName>
-										</artifactItem>
-                                        <artifactItem>
-                                            <groupId>com.hazelcast</groupId>
-                                            <artifactId>hazelcast-client</artifactId>
-                                            <version>${hz.version}</version>
-                                            <type>jar</type>
-                                            <overWrite>true</overWrite>
-                                            <outputDirectory>${project.basedir}/target/</outputDirectory>
-                                            <destFileName>hazelcast-client.jar</destFileName>
-                                        </artifactItem>
-                                        <artifactItem>
-                                            <groupId>org.bitsofinfo</groupId>
-                                            <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
-                                            <version>1.0-RC8</version>
-                                            <type>jar</type>
-                                            <overWrite>true</overWrite>
-                                            <outputDirectory>${project.basedir}/target/</outputDirectory>
-                                            <destFileName>hazelcast-docker-swarm-discovery-spi.jar</destFileName>
-                                        </artifactItem>
-                                        <!--<artifactItem>-->
-                                            <!--<groupId>com.spotify</groupId>-->
-                                            <!--<artifactId>docker-client</artifactId>-->
-                                            <!--<version>8.14.5</version>-->
-                                            <!--<type>jar</type>-->
-                                            <!--<overWrite>true</overWrite>-->
-                                            <!--<outputDirectory>${project.basedir}/target/</outputDirectory>-->
-                                            <!--<destFileName>docker-client.jar</destFileName>-->
-                                        <!--</artifactItem>-->
 									</artifactItems>
 								</configuration>
 							</execution>
