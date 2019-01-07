@@ -105,6 +105,7 @@ public class OrienteerInitModule extends ServletModule {
 	    params.put("deferred-write", "true");
 	    params.put("debug", "true");
 	    params.put("cookie-name", "JSESSIONID");
+        params.put("map-name", properties.getProperty("orienteer.sessions.map.name"));
 
 	    bind(WebFilter.class).in(Singleton.class);
         filter("/*").through(WebFilter.class, params);
