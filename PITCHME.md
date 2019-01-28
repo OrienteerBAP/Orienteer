@@ -1,7 +1,7 @@
 # Orienteer
 
 Open Source Business Application Platform
-![Word Clound](http://orienteer.org/images/wordcloud.png)
+![Word Clound](http://orienteerbap.github.io/Orienteer/images/wordcloud.png)
 
 ---
 
@@ -20,7 +20,7 @@ Open Source Business Application Platform
 
 # Modules
 
-![Modules Screenshot](http://orienteer.org/images/overview/Collage2_cond.png)
+![Modules Screenshot](http://orienteerbap.github.io/Orienteer/images/overview/Collage2_cond.png)
 ---
 
 ## Orienteer Core
@@ -40,35 +40,35 @@ Open Source Business Application Platform
 @title[DB Schema]
 DB Schema as grid...
 
-![Orienteer grid schema](http://orienteer.org/images/overview/Orienteer_Schema.png)
+![Orienteer grid schema](http://orienteerbap.github.io/Orienteer/images/overview/Orienteer_Schema.png)
 
 +++
 @title[Schema UML]
 
 ...or as graph
 
-![Orienteer graph schema](http://orienteer.org/images/overview/Schema.png)
+![Orienteer graph schema](http://orienteerbap.github.io/Orienteer/images/overview/Schema.png)
 
 +++
 @title[Dashboards&Widgets]
 
 Dynamic dashboards and widgets
 
-![Orienteer filters](http://orienteer.org/images/overview/dashboard_widgets.png)
+![Orienteer filters](http://orienteerbap.github.io/Orienteer/images/overview/dashboard_widgets.png)
 
 +++
 @title[Data filtering]
 
 Data filtering
 
-![Orienteer filters](http://orienteer.org/images/overview/orienteer_filters.png)
+![Orienteer filters](http://orienteerbap.github.io/Orienteer/images/overview/orienteer_filters.png)
 
 +++
 @title[Modules loading]
 
 Dynamic module loading
 
-![Orienteer modules](http://orienteer.org/images/overview/orienteer_modules.png)
+![Orienteer modules](http://orienteerbap.github.io/Orienteer/images/overview/orienteer_modules.png)
 
 ---
 
@@ -86,21 +86,21 @@ Dynamic module loading
 
 UML-like editor for data modeling
 
-![Architect diagram](http://orienteer.org/images/overview/architect_own_diagram.png)
+![Architect diagram](http://orienteerbap.github.io/Orienteer/images/overview/architect_own_diagram.png)
 
 +++
 @title[Create or reuse]
 
 New classes or reuse existing
 
-![Architect use classes](http://orienteer.org/images/overview/architect_use_classes.png)
+![Architect use classes](http://orienteerbap.github.io/Orienteer/images/overview/architect_use_classes.png)
 
 +++
 @title[Applying to DB]
 
 Applying to DB
 
-![Architect save](http://orienteer.org/images/overview/architect_save.png)
+![Architect save](http://orienteerbap.github.io/Orienteer/images/overview/architect_save.png)
 
 ---
 ## Orienteer BIRT
@@ -118,14 +118,14 @@ Applying to DB
 
 Prepare report in Eclipse BIRT...
 
-![Camel data](http://orienteer.org/images/overview/birt_eclipse_ss.png)
+![Camel data](http://orienteerbap.github.io/Orienteer/images/overview/birt_eclipse_ss.png)
 
 +++
 @title[Orienteer BIRT widget]
 
 ...then upload and use it in Orienteer!
 
-![Camel data](http://orienteer.org/images/overview/birt_orienteer_sn.png)
+![Camel data](http://orienteerbap.github.io/Orienteer/images/overview/birt_orienteer_sn.png)
 
 ---
 ## Orienteer BPM
@@ -138,7 +138,7 @@ Prepare report in Eclipse BIRT...
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_BPM.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/Orienteer_BPM.png&size=contain
 @title[BPM Editor]
 
 ---
@@ -158,27 +158,27 @@ Prepare report in Eclipse BIRT...
 
 Some data to export
 
-![Camel data](http://orienteer.org/images/overview/camel_data_sn.png)
+![Camel data](http://orienteerbap.github.io/Orienteer/images/overview/camel_data_sn.png)
 
 +++
 @title[Camel config]
 
 Specify simple camel configuration, press "Run"...
 
-![Camel script](http://orienteer.org/images/overview/camel_script_sn.png)
+![Camel script](http://orienteerbap.github.io/Orienteer/images/overview/camel_script_sn.png)
 
 +++
 @title[Camel Task]
 
 ... wait for a while ...
-![Camel session](http://orienteer.org/images/overview/camel_session_sn.png)
+![Camel session](http://orienteerbap.github.io/Orienteer/images/overview/camel_session_sn.png)
 
 +++
 @title[Results in CSV]
 
 ...and get CSV file! 
 
-![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
+![Camel out](http://orienteerbap.github.io/Orienteer/images/overview/camel_out_sn.png)
 
 ---
 ## Orienteer ETL
@@ -195,28 +195,28 @@ Specify simple camel configuration, press "Run"...
 
 CSV file to import to DB
 
-![Camel out](http://orienteer.org/images/overview/camel_out_sn.png)
+![Camel out](http://orienteerbap.github.io/Orienteer/images/overview/camel_out_sn.png)
 
 +++
 @title[OrientDB ETL]
 
 Specify OrientDB ETL configuration, press "Run"...
 
-![ETL Script](http://orienteer.org/images/overview/etl_script_sn.png)
+![ETL Script](http://orienteerbap.github.io/Orienteer/images/overview/etl_script_sn.png)
 
 +++
 @title[ETL Task]
 
 ... wait for a while ...
 
-![ETL Session](http://orienteer.org/images/overview/etl_session_sn.png)
+![ETL Session](http://orienteerbap.github.io/Orienteer/images/overview/etl_session_sn.png)
 
 +++
 @title[Results in Orienteer]
 
 ...and get data in Orienteer!
 
-![ETL result](http://orienteer.org/images/overview/etl_result_sn.png)
+![ETL result](http://orienteerbap.github.io/Orienteer/images/overview/etl_result_sn.png)
 
 ---
 
@@ -230,10 +230,10 @@ Specify OrientDB ETL configuration, press "Run"...
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_DevTools_JS.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/Orienteer_DevTools_JS.png&size=contain
 @title[JavaScript]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_DevTools_SQL.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/Orienteer_DevTools_SQL.png&size=contain
 @title[SQL]
 
 ---
@@ -246,7 +246,7 @@ Specify OrientDB ETL configuration, press "Run"...
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Graph_viz.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/Graph_viz.png&size=contain
 @title[Graph Visualization]
 
 ---
@@ -260,7 +260,7 @@ Specify OrientDB ETL configuration, press "Run"...
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Orienteer_Logger.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/Orienteer_Logger.png&size=contain
 @title[Logged Incident]
 
 ---
@@ -279,10 +279,10 @@ Specify OrientDB ETL configuration, press "Run"...
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/pivottable.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/pivottable.png&size=contain
 @title[Simple Pivot]
 
-+++?image=http://orienteer.org/images/overview/PivotTable_barcharts.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/PivotTable_barcharts.png&size=contain
 @title[Barchart]
 
 ---
@@ -294,7 +294,7 @@ Specify OrientDB ETL configuration, press "Run"...
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/Taucharts.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/Taucharts.png&size=contain
 @title[Taucharts]
 
 ---
@@ -309,13 +309,14 @@ Specify OrientDB ETL configuration, press "Run"...
 
 @fa[arrow-down]
 
-+++?image=http://orienteer.org/images/overview/otelebot.png&size=contain
++++?image=http://orienteerbap.github.io/Orienteer/images/overview/otelebot.png&size=contain
 @title[Dialog]
 
 ---
 ## Resources
 
-- [Official Site](https://orienteer.gitbooks.io/orienteer/content/)
+- [Official Site](https://orienteer.org)
+- [Official Documentation](https://orienteer.gitbooks.io/orienteer/content/)
 - [Demo Site](https://demo.orienteer.org)
 - [GitHub](https://github.com/OrienteerBAP/Orienteer)
 - [Blog](https://medium.com/orienteer)
