@@ -122,6 +122,10 @@
 			<artifactId>codemirror</artifactId>
 			<version>5.27.4</version>
 		</dependency>
+		<dependency>
+			<groupId>com.vladsch.flexmark</groupId>
+			<artifactId>flexmark-all</artifactId>
+		</dependency>
 
 		<!-- ECLIPSE AETHER -->
 		<dependency>
