@@ -1,7 +1,8 @@
 package org.orienteer.core.component.widget.document;
 
-import java.util.List;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
@@ -22,14 +23,17 @@ import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
 
 /**
  * Widget to show registered parameters for a document on particular tab
  */
-@Widget(domain="document", id = ODocumentPropertiesWidget.WIDGET_TYPE_ID, autoEnable=true)
+@Widget(
+		domain="document",
+		id = ODocumentPropertiesWidget.WIDGET_TYPE_ID,
+		tab = ODocumentPropertiesWidget.WIDGET_TYPE_ID,
+		autoEnable=true
+)
 public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument>{
 	
 	public static final String WIDGET_TYPE_ID = "parameters";
