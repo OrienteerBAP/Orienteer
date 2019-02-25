@@ -53,6 +53,11 @@
             <name>Ilia Naryzhny</name>
             <email>phantom@ydn.ru</email>
 	    </developer>
+		<developer>
+			<id>developer</id>
+			<name>Vitaliy Gonchar</name>
+			<email>weaxme@gmail.com</email>
+		</developer>
 	</developers>
 
 	<licenses>
