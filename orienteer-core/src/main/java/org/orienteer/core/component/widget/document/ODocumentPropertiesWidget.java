@@ -28,12 +28,7 @@ import java.util.List;
 /**
  * Widget to show registered parameters for a document on particular tab
  */
-@Widget(
-		domain="document",
-		id = ODocumentPropertiesWidget.WIDGET_TYPE_ID,
-		tab = ODocumentPropertiesWidget.WIDGET_TYPE_ID,
-		autoEnable=true
-)
+@Widget(domain="document", id = ODocumentPropertiesWidget.WIDGET_TYPE_ID, autoEnable=true)
 public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument>{
 	
 	public static final String WIDGET_TYPE_ID = "parameters";
