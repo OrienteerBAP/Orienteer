@@ -77,7 +77,6 @@
 		<wicket.orientdb.version>1.4-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<slf4j.version>1.7.25</slf4j.version>
-		<flexmark.version>0.40.16</flexmark.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
@@ -249,7 +248,7 @@
 			<dependency>
 				<groupId>com.vladsch.flexmark</groupId>
 				<artifactId>flexmark-all</artifactId>
-				<version>${flexmark.version}</version>
+				<version>0.40.16</version>
 			</dependency>
 		    <!-- LOGGING DEPENDENCIES - LOG4J -->
 		    <dependency>
