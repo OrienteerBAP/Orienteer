@@ -99,7 +99,8 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
             if (property === null) {
                 var cell = getPropertyCell(jsonProperty, propertyCells);
                 if (cell === null) {
-                    property = oClass.createProperty(jsonProperty.name, jsonProperty.type, null, jsonProperty.subClassProperty);
+                    console.dir('createProperty ', jsonProperty);
+                    property = oClass.createProperty(jsonProperty.name, jsonProperty.type, null, jsonProperty.order, jsonProperty.subClassProperty);
                 } else {
                     property = cell.value instanceof OArchitectOProperty ? cell.value : new OArchitectOProperty();
                 }
@@ -223,6 +224,7 @@ OArchitectOClass.prototype.setCell = function (cell) {
  * Update class value in class cell
  */
 OArchitectOClass.prototype.updateValueInCell = function (superClasses, subClasses) {
+    console.dir('update class in cell');
     this.setCell(this.cell);
     this.updatePropertiesOrder();
     if (superClasses) updateValueInCell(this.superClasses);
@@ -245,7 +247,7 @@ OArchitectOClass.prototype.updateValueInCell = function (superClasses, subClasse
  * @returns {@link OArchitectOProperty}
  * @throws {@link Error} if property with given name already exists
  */
-OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass, superClassExistsInEditor) {
+OArchitectOClass.prototype.createProperty = function (name, type, cell, order, subClass, superClassExistsInEditor) {
     var property = null;
     if (name !== null && type !== null) {
         property = this.getProperty(name);
@@ -254,6 +256,7 @@ OArchitectOClass.prototype.createProperty = function (name, type, cell, subClass
         property = new OArchitectOProperty(this, name, type, cell);
         property.subClassProperty = subClass;
         property.superClassExistsInEditor = superClassExistsInEditor;
+        property.order = order;
         this.properties.push(property);
         this.createCellForProperty(property);
         this.notifySubClassesAboutChangesInProperty(property);
@@ -380,6 +383,7 @@ OArchitectOClass.prototype.createCellForProperty = function (property) {
             property.setCell(OArchitectUtil.createOPropertyVertex(property));
         } else property.setCell(property.cell);
         graph.addCell(property.cell, this.cell);
+        property.updateValueInCell();
         graph.getModel().endUpdate();
     }
 };
@@ -669,6 +673,17 @@ OArchitectOClass.prototype.updatePropertiesOrder = function () {
 
 OArchitectOClass.prototype.getPropertyOrderStep = function () {
     return 10;
+};
+
+OArchitectOClass.prototype.getLastPropertyOrder = function () {
+    var properties = OArchitectUtil.getOrderValidProperties(this.properties);
+    if (!properties || properties.length === 0) {
+        return -10;
+    }
+    properties.sort(function (prop1, prop2) {
+        return prop1.getOrder() > prop2.getOrder();
+    });
+    return properties[properties.length - 1].order;
 };
 
 /**

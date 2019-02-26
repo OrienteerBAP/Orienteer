@@ -351,6 +351,7 @@ OPropertyEditModalWindow.prototype.createOkButtonOnClickBehavior = function (nam
     		tempProperty.type = type;
     		tempProperty.inversePropertyEnable = inversePropertyEnable;
     		tempProperty.inverseProperty = inverseProperty;
+    		tempProperty.order = property.order;
     		modal.updateProperty(property, tempProperty);
     		modal.afterUpdateValue(property);
     	}
