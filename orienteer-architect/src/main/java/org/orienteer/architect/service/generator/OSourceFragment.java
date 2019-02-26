@@ -25,7 +25,7 @@ public class OSourceFragment implements ISource {
         return this;
     }
 
-    public OSourceFragment addSources(List<ISource> sources) {
+    public OSourceFragment addSources(List<? extends ISource> sources) {
         this.sources.addAll(sources);
         return this;
     }
@@ -34,7 +34,7 @@ public class OSourceFragment implements ISource {
         return sources.remove(source);
     }
 
-    public boolean removeSources(List<ISource> sources) {
+    public boolean removeSources(List<? extends ISource> sources) {
         return this.sources.removeAll(sources);
     }
 

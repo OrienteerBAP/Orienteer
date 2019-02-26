@@ -46,7 +46,10 @@ import static org.orienteer.architect.util.OSourceUtil.wrapString;
  */
 public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
+    private List<OSourceConstant> constants;
+
     public ModuleGeneratorStrategy() {
+
     }
 
     @Override
@@ -59,8 +62,13 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     private ISource toSourceFragment(List<OArchitectOClass> classes) {
         OSourceFragment result = new OSourceFragment();
+
+        constants = createConstants(classes);
+
         result.addSource(new OSourceBlankLine());
-        result.addSources(createConstants(classes));
+        result.addSources(constants);
+        result.addSource(new OSourceBlankLine(2));
+
         result.addSource(new OSourceBlankLine(2));
         result.addSources(createSchemaHelperBindings(classes));
         result.addSource(new OSourceBlankLine());
@@ -68,12 +76,11 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         return result;
     }
 
-    private List<ISource> createConstants(List<OArchitectOClass> classes) {
-        List<ISource> constants = new LinkedList<>();
+    private List<OSourceConstant> createConstants(List<OArchitectOClass> classes) {
+        List<OSourceConstant> constants = new LinkedList<>();
         for (OArchitectOClass oClass : classes) {
             constants.add(createOClassConstant(oClass));
             constants.addAll(createPropertiesConstants(oClass));
-            constants.add(new OSourceBlankLine(2));
         }
         return constants;
     }
@@ -86,7 +93,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         return bindings;
     }
 
-    private ISource createOClassConstant(OArchitectOClass oClass) {
+    private OSourceConstant createOClassConstant(OArchitectOClass oClass) {
         return new OSourceConstant(
                 "public static final",
                 "String",
@@ -95,17 +102,14 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         );
     }
 
-    private List<ISource> createPropertiesConstants(OArchitectOClass oClass) {
+    private List<OSourceConstant> createPropertiesConstants(OArchitectOClass oClass) {
         return oClass.getProperties().stream()
-                .flatMap(property ->
-                        Stream.of(
-                                new OSourceBlankLine(),
-                                new OSourceConstant(
-                                        "public static final",
-                                        "String",
-                                        constantOProperty(oClass.getName(), property.getName()),
-                                        new OSourceNewInstance(null, wrapString(property.getName()))
-                                )
+                .map(property ->
+                        new OSourceConstant(
+                                "public static final",
+                                "String",
+                                constantOProperty(oClass.getName(), property.getName()),
+                                new OSourceNewInstance(null, wrapString(property.getName()))
                         )
                 ).collect(Collectors.toCollection(LinkedList::new));
     }
@@ -136,7 +140,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
     }
 
     private ISource createOClass(OArchitectOClass oClass) {
-        LinkedList<String> args = new LinkedList<>(oClass.getSuperClasses());
+        LinkedList<String> args = new LinkedList<>(constantSuperClasses(oClass.getSuperClasses()));
         args.addFirst(constantOClass(oClass.getName()));
         return new OSourceCall(helper(), "oClass", args.toArray(new String[0]));
     }
@@ -232,6 +236,15 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
                 .collect(Collectors.toSet());
     }
 
+    private List<String> constantSuperClasses(List<String> superClasses) {
+        return superClasses.stream()
+                .map(cls -> "\"" + cls + "\"")
+                .map(cls -> getConstantByValue(cls)
+                        .map(OSourceVariableDeclaration::getName)
+                        .orElse(cls)
+                ).collect(Collectors.toCollection(LinkedList::new));
+    }
+
     private String constantOClass(String name) {
         return String.format("%s_CLASS_NAME", name.toUpperCase());
     }
@@ -242,5 +255,14 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     protected String helper() {
         return "helper";
+    }
+
+    private Optional<OSourceConstant> getConstantByValue(String value) {
+        return constants.stream()
+                .filter(c -> {
+                    OSourceNewInstance instance = c.getInstance();
+                    List<String> args = instance.getArgs();
+                    return !args.isEmpty() && value.equals(args.get(0));
+                }).findFirst();
     }
 }
