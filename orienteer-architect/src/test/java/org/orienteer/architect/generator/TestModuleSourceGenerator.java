@@ -46,7 +46,6 @@ public class TestModuleSourceGenerator {
         OModuleSource source = optSource.get();
         assertEquals(GeneratorMode.MODULE.getName(), source.getName());
 
-
         assertNotPrettyPrint(new BufferedReader(new StringReader(source.getSrc())));
         assertPrettyPrint(new BufferedReader(new StringReader(source.getSrc())));
     }
@@ -58,7 +57,6 @@ public class TestModuleSourceGenerator {
         assertNextLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_WORKPLACE = \"workPlace\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_TESTLINK = \"testLink\";", reader);
-        assertNextLine("", reader);
         assertNextLine("public static final String WORKPLACE_CLASS_NAME = \"WorkPlace\";", reader);
         assertNextLine("public static final String WORKPLACE_PROP_NAME = \"name\";", reader);
         assertNextLine("public static final String WORKPLACE_PROP_ID = \"id\";", reader);
@@ -90,7 +88,6 @@ public class TestModuleSourceGenerator {
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_WORKPLACE = \"workPlace\";", reader);
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_TESTLINK = \"testLink\";", reader);
-        assertNextPrettyLine("", reader);
         assertNextPrettyLine("public static final String WORKPLACE_CLASS_NAME = \"WorkPlace\";", reader);
         assertNextPrettyLine("public static final String WORKPLACE_PROP_NAME = \"name\";", reader);
         assertNextPrettyLine("public static final String WORKPLACE_PROP_ID = \"id\";", reader);

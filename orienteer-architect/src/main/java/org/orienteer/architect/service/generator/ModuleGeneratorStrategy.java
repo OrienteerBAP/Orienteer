@@ -67,9 +67,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
         result.addSource(new OSourceBlankLine());
         result.addSources(constants);
-        result.addSource(new OSourceBlankLine(2));
-
-        result.addSource(new OSourceBlankLine(2));
+        result.addSource(new OSourceBlankLine(3));
         result.addSources(createSchemaHelperBindings(classes));
         result.addSource(new OSourceBlankLine());
         result.addSources(createRelationships(classes));
