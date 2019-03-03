@@ -53,6 +53,11 @@
             <name>Ilia Naryzhny</name>
             <email>phantom@ydn.ru</email>
 	    </developer>
+		<developer>
+			<id>developer</id>
+			<name>Vitaliy Gonchar</name>
+			<email>weaxme@gmail.com</email>
+		</developer>
 	</developers>
 
 	<licenses>
@@ -239,6 +244,11 @@
 				<groupId>org.webjars.npm</groupId>
 				<artifactId>coreui__ajax</artifactId>
 				<version>1.0.6</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark-all</artifactId>
+				<version>0.40.16</version>
 			</dependency>
 		    <!-- LOGGING DEPENDENCIES - LOG4J -->
 		    <dependency>

@@ -36,7 +36,7 @@ OPropertyCreateCommand.prototype.executeCommand = function () {
             this.oClass.properties.push(this.property);
             this.oClass.createCellForProperty(this.property);
             this.oClass.notifySubClassesAboutChangesInProperty(this.property);
-        } else this.property = this.oClass.createProperty(this.property.name, this.property.type, this.property.cell);
+        } else this.property = this.oClass.createProperty(this.property.name, this.property.type, this.property.cell, this.property.order);
         this.property.removed = false;
         this.property.exists = true;
         this.remove = true;
