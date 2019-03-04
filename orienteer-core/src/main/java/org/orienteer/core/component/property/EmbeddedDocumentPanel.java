@@ -101,13 +101,9 @@ public class EmbeddedDocumentPanel extends FormComponentPanel<ODocument> {
 	protected void onBeforeRender() {
 		ODocument currentDocument = getModelObject();
 		inputDocumentModel.setObject(currentDocument!=null?currentDocument:prepareEmbeddedDocument()); 
+		embeddedClassChoice.setVisible(DisplayMode.EDIT.equals(modeModel.getObject()) 
+										&& (currentDocument==null || !currentDocument.getIdentity().isPersistent()));
 		super.onBeforeRender();
-	}
-	
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		embeddedClassChoice.setVisible(DisplayMode.EDIT.equals(modeModel.getObject()));
 	}
 	
 	@Override

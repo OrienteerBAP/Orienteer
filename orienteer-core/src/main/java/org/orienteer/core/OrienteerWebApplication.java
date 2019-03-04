@@ -39,6 +39,7 @@ import org.orienteer.core.module.*;
 import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
+import org.orienteer.core.util.WicketProtector;
 import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
@@ -199,6 +200,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			public void onBeforeDestroyed(Application application) {/*NOP*/}
 			
 		});
+		WicketProtector.install(this);
 		getPageSettings().addComponentResolver(new WicketPropertyResolver());
 		//Remove default BookmarkableMapper to disallow direct accessing of pages through /wicket/bookmarkable/<class>
 		for(IRequestMapper mapper : getRootRequestMapperAsCompound()){

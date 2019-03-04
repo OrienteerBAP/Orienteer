@@ -55,6 +55,7 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new JavaScriptCodeVisualizer());
 		registerUIComponentFactory(new SqlCodeVisualizer());
 		registerUIComponentFactory(new HexVisualizer());
+		registerUIComponentFactory(new LinksAsEmbeddedVisualizer());
 	}
 	
 	public Table<OType, String, IVisualizer> getRegistryTable()
