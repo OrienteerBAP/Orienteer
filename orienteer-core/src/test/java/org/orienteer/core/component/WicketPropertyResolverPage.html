@@ -1,6 +1,8 @@
 <wicket:extend>
 <h1>Test Page</h1>
 <wicket:property wicket:id="name"></wicket:property>
+<wicket:property wicket:id="nameEdit" property="name" mode="edit" visualization="textarea"></wicket:property>
 <wicket:property wicket:id="status" ref="/"></wicket:property>
+<wicket:property wicket:id="statusEdit" property="status"  mode="edit" ref="/"></wicket:property>
 <wicket:property wicket:id="prespective" property="name" ref="#perspectiveItems"></wicket:property>
 </wicket:extend>

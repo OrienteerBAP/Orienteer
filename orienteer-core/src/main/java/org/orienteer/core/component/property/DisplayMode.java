@@ -41,13 +41,17 @@ public enum DisplayMode {
 		return Model.of(this);
 	}
 	
-	public static DisplayMode parse(String string)
+	public static DisplayMode parse(String string) {
+		return parse(string, null);
+	}
+	
+	public static DisplayMode parse(String string, DisplayMode defaultMode)
 	{
-		if(string==null) return null;
+		if(string==null) return defaultMode;
 		try {
 			return DisplayMode.valueOf(string.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return null;
+			return defaultMode;
 		}
 	}
 	

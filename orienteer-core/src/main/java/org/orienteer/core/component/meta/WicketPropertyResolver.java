@@ -66,6 +66,9 @@ public class WicketPropertyResolver implements IComponentResolver {
 				String objectExpression = tag.getAttribute("object");
 				if(!Strings.isEmpty(objectExpression)) model = new PropertyModel<ODocument>(model, objectExpression);
 				
+				DisplayMode mode = DisplayMode.parse(tag.getAttribute("mode"), DisplayMode.VIEW);
+				String visualization = tag.getAttribute("visualization");
+				
 				String property = tag.getAttribute("property");
 				if(Strings.isEmpty(property)) property = wTag.getId();
 				
@@ -79,9 +82,9 @@ public class WicketPropertyResolver implements IComponentResolver {
 				}
 				IModel<OProperty> propertyModel = new OPropertyModel(oClassName, property);
 				if(propertyModel.getObject()==null) throw new WicketRuntimeException("No such property '"+property+"' defined on class '"+oClassName+"'");
-				else return new ODocumentMetaPanel<Object>(wTag.getId(), DisplayMode.VIEW.asModel(), 
+				else return new ODocumentMetaPanel<Object>(wTag.getId(), mode.asModel(), 
 										(IModel<ODocument>)model, 
-										propertyModel);
+										propertyModel).setVisualization(visualization);
 			}
 		}
 

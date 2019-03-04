@@ -217,6 +217,18 @@ public class CommonUtils {
 	}
 	
 	/**
+	 * Combine array of {@link Optional} and return first not empty 
+	 * @param optionals array of {@link Optional}s
+	 * @return first not empty {@link Optional}
+	 */
+	public static <T> Optional<T> orOptional(Optional<T>... optionals) {
+		for (Optional<T> optional : optionals) {
+			if(optional.isPresent()) return optional;
+		}
+		return Optional.empty();
+	}
+	
+	/**
 	 * Safe method to merge sets. Always return not null
 	 * @param mainSet main set to merge into
 	 * @param mergeSet set to merge
