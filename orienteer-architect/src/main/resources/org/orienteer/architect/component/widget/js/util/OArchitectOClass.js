@@ -99,7 +99,6 @@ OArchitectOClass.prototype.configFromJson = function (json, cell) {
             if (property === null) {
                 var cell = getPropertyCell(jsonProperty, propertyCells);
                 if (cell === null) {
-                    console.dir('createProperty ', jsonProperty);
                     property = oClass.createProperty(jsonProperty.name, jsonProperty.type, null, jsonProperty.order, jsonProperty.subClassProperty);
                 } else {
                     property = cell.value instanceof OArchitectOProperty ? cell.value : new OArchitectOProperty();
@@ -224,7 +223,6 @@ OArchitectOClass.prototype.setCell = function (cell) {
  * Update class value in class cell
  */
 OArchitectOClass.prototype.updateValueInCell = function (superClasses, subClasses) {
-    console.dir('update class in cell');
     this.setCell(this.cell);
     this.updatePropertiesOrder();
     if (superClasses) updateValueInCell(this.superClasses);

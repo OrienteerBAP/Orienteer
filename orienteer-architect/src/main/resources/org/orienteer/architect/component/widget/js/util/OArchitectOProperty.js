@@ -258,7 +258,6 @@ OArchitectOProperty.prototype.setCell = function (cell) {
  * Update property in property cell and update class in class cell
  */
 OArchitectOProperty.prototype.updateValueInCell = function () {
-    console.dir('update property in cell')
     if (this.databaseJson !== null) {
         if (!this.equalsWithJsonLink(this.databaseJson)) {
             if (this.existsInDb) this.setExistsInDb(false);
