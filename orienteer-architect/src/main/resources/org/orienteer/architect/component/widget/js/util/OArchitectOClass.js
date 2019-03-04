@@ -468,25 +468,30 @@ OArchitectOClass.prototype.removeSuperClassProperty = function (superClassProper
  */
 OArchitectOClass.prototype.updateSubClassPropertyFromTemplate = function (templateProperty) {
     var property = this.getProperty(templateProperty.name);
-    var needForReturn = true;
-    if (property === null) property = this.getProperty(templateProperty.previousName);
+
+    if (property === null) {
+        property = this.getProperty(templateProperty.previousName);
+    }
+
     if (property !== null) {
         property.setName(templateProperty.name);
         property.setType(templateProperty.type);
-        needForReturn = false;
         if (property.cell != null) {
             OArchitectUtil.removeCell(property.cell, true);
             property.cell = null;
         }
+        property = null;
     } else {
         property = new OArchitectOProperty(this, templateProperty.name, templateProperty.type);
+        property.subClassProperty = true;
+        property.linkedClass = templateProperty.linkedClass;
+        property.inversePropertyEnable = templateProperty.inversePropertyEnable;
+        property.inverseProperty = templateProperty.inverseProperty;
+        property.superClassExistsInEditor = templateProperty.ownerClass.cell !== null;
+        property.order = this.getLastPropertyOrder() + this.getPropertyOrderStep();
     }
-    property.subClassProperty = true;
-    property.linkedClass = templateProperty.linkedClass;
-    property.inversePropertyEnable = templateProperty.inversePropertyEnable;
-    property.inverseProperty = templateProperty.inverseProperty;
-    property.superClassExistsInEditor = templateProperty.ownerClass.cell !== null;
-    return needForReturn ? property : null;
+
+    return property;
 };
 
 /**
