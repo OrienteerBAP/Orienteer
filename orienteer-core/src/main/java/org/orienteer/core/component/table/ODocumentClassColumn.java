@@ -13,7 +13,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link AbstractModeMetaColumn} to refer to {@link ODocument} class names
- * @param <S> - the type of sorting object
  */
 public class ODocumentClassColumn extends AbstractColumn<ODocument, String> {
 
