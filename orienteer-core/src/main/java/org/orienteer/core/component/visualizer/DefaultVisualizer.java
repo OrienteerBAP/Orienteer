@@ -15,6 +15,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.filter.AbstractFilterPanel;
 import org.orienteer.core.component.filter.FilterPanel;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.component.property.date.ODateField;
@@ -138,7 +139,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 		IFilterCriteriaManager manager = getManager(propertyModel, filterForm);
 		OProperty property = propertyModel.getObject();
 		OType type = property.getType();
-		List<AbstractFilterPanel<?>> filters = new LinkedList<>();
+		List<AbstractFilterPanel<?, ?>> filters = new LinkedList<>();
 
 		switch (type) {
 			case LINKBAG:

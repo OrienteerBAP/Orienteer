@@ -24,7 +24,7 @@ import java.util.List;
  * SELECT FROM aClass WHERE a IN ['value1', 'value2', ..., 'valueN']
  * @param <T> type of value
  */
-public class CollectionFilterPanel<T extends Serializable> extends AbstractFilterPanel<Collection<T>> {
+public class CollectionFilterPanel<T extends Serializable> extends AbstractOPropertyFilterPanel<Collection<T>> {
 
     private List<CollectionInputPanel<T>> filterComponents;
 

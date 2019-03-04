@@ -27,7 +27,7 @@ import static org.orienteer.core.component.meta.OClassMetaPanel.BOOTSTRAP_SELECT
  * Panel for search documents which contains equals links with value
  * SELECT FROM Class WHERE link = '#21:00'
  */
-public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
+public class LinkEqualsFilterPanel extends AbstractOPropertyFilterPanel<ODocument> {
 
     private FormComponent<OClass> classFormComponent;
     private FormComponent<ODocument> docFormComponent;
@@ -57,7 +57,7 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
             @Override
             protected void onInitialize() {
                 super.onInitialize();
-                OProperty property = LinkEqualsFilterPanel.this.getPropertyModel().getObject();
+                OProperty property = LinkEqualsFilterPanel.this.getEntityModel().getObject();
                 if (property != null && property.getLinkedClass() != null) {
                     setModelObject(property.getLinkedClass());
                     setEnabled(false);

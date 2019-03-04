@@ -30,7 +30,6 @@ import org.orienteer.core.component.BootstrapSize;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxFormCommand;
-import org.orienteer.core.component.property.filter.AbstractFilterPanel;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 
 import java.util.List;
@@ -55,7 +54,7 @@ public class FilterPanel extends Panel {
 
     private FilterTab currentTab;
 
-    public FilterPanel(String id, IModel<String> name, final Form form, List<AbstractFilterPanel<?>> filterPanels) {
+    public FilterPanel(String id, IModel<String> name, final Form form, List<AbstractFilterPanel<?, ?>> filterPanels) {
         super(id);
         final WebMarkupContainer container = new WebMarkupContainer("container");
         this.containerId = container.getMarkupId();
@@ -75,8 +74,8 @@ public class FilterPanel extends Panel {
         setOutputMarkupPlaceholderTag(true);
     }
 
-    private void initFilterPanels(List<AbstractFilterPanel<?>> filterPanels) {
-        for (AbstractFilterPanel<?> panel : filterPanels) {
+    private void initFilterPanels(List<AbstractFilterPanel<?, ?>> filterPanels) {
+        for (AbstractFilterPanel<?, ?> panel : filterPanels) {
             panel.setContainerId(this.containerId);
         }
     }
@@ -127,7 +126,7 @@ public class FilterPanel extends Panel {
     }
 
     private AjaxFormCommand<Void> newClearButton(String id, final WebMarkupContainer container, final Form form,
-                                                 final List<AbstractFilterPanel<?>> filterPanels) {
+                                                 final List<AbstractFilterPanel<?, ?>> filterPanels) {
         return new AjaxFormCommand<Void>(id, "widget.document.filter.clear") {
             @Override
             protected AbstractLink newLink(String id) {
@@ -176,11 +175,11 @@ public class FilterPanel extends Panel {
         };
     }
 
-    private void addFilterPanels(WebMarkupContainer container, List<AbstractFilterPanel<?>> panels, final List<FilterTab> tabs) {
-        ListView<AbstractFilterPanel<?>> listView = new ListView<AbstractFilterPanel<?>>("filterPanels", panels) {
+    private void addFilterPanels(WebMarkupContainer container, List<AbstractFilterPanel<?, ?>> panels, final List<FilterTab> tabs) {
+        ListView<AbstractFilterPanel<?, ?>> listView = new ListView<AbstractFilterPanel<?, ?>>("filterPanels", panels) {
             private boolean first = true;
             @Override
-            protected void populateItem(ListItem<AbstractFilterPanel<?>> item) {
+            protected void populateItem(ListItem<AbstractFilterPanel<?, ?>> item) {
                 if (first) {
                     first = false;
                     item.add(AttributeModifier.append("class", TAB_PANE_ACTIVE));
@@ -220,10 +219,10 @@ public class FilterPanel extends Panel {
         container.add(listView);
     }
 
-    private List<FilterTab> createPanelSwitches(String id, List<AbstractFilterPanel<?>> panels) {
+    private List<FilterTab> createPanelSwitches(String id, List<AbstractFilterPanel<?, ?>> panels) {
         final List<FilterTab> switches = Lists.newArrayList();
 
-        for (AbstractFilterPanel<?> panel : panels) {
+        for (AbstractFilterPanel<?, ?> panel : panels) {
             if (panel == null)
                 continue;
             FilterTab tab = new FilterTab(id, panel);

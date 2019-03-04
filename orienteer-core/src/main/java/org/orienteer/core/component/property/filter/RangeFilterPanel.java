@@ -27,7 +27,7 @@ import java.util.List;
  * SELECT FROM aClass WHERE a BETWEEN value1 AND value2
  * @param <T> type of value
  */
-public class RangeFilterPanel<T> extends AbstractFilterPanel<List<T>> {
+public class RangeFilterPanel<T> extends AbstractOPropertyFilterPanel<List<T>> {
 
     @Inject
     private IMarkupProvider markupProvider;

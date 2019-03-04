@@ -30,7 +30,7 @@ import java.util.List;
  * Create filter panel for filter such as:
  * SELECT FROM Class WHERE embedded.field IN  [value1, value2, value3]
  */
-public class EmbeddedCollectionFilterPanel extends AbstractFilterPanel<Collection<String>> {
+public class EmbeddedCollectionFilterPanel extends AbstractOPropertyFilterPanel<Collection<String>> {
 
     @Inject
     private IMarkupProvider markupProvider;
