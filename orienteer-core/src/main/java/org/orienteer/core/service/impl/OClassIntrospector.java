@@ -84,7 +84,7 @@ public class OClassIntrospector implements IOClassIntrospector
 			OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
 			columns.add(entityColumn);
 			if (!oClass.getSubclasses().isEmpty()) {
-				columns.add(new ODocumentClassColumn<String>());
+				columns.add(new ODocumentClassColumn());
 			}
 			for (OProperty oProperty : properties)
 			{
@@ -104,7 +104,7 @@ public class OClassIntrospector implements IOClassIntrospector
 			}
 		} else {
 			columns.add(new OUnknownEntityColumn(new ResourceModel("document.name")));
-			columns.add(new ODocumentClassColumn<String>());
+			columns.add(new ODocumentClassColumn());
 		}
 		return columns;
 	}

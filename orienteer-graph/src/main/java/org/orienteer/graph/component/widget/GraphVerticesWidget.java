@@ -69,7 +69,7 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     private List<IColumn<ODocument, String>> createColumns(OClass commonParent, IModel<DisplayMode> modeModel) {
     	OProperty nameProperty = oClassIntrospector.getNameProperty(commonParent);
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
-        columns.add(new ODocumentClassColumn<>());
+        columns.add(new ODocumentClassColumn());
         columns.add(new ODocumentDescriptionColumn(
         		new StringResourceModel("property.direction", this, Model.of()),
         		new DirectionLocalizer()));

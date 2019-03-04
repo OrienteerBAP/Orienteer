@@ -15,10 +15,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * {@link AbstractModeMetaColumn} to refer to {@link ODocument} class names
  * @param <S> - the type of sorting object
  */
-public class ODocumentClassColumn<S> extends AbstractColumn<ODocument, S> {
+public class ODocumentClassColumn extends AbstractColumn<ODocument, String> {
 
 	public ODocumentClassColumn() {
-		super(new ResourceModel("document.class"));
+		super(new ResourceModel("document.class"), "@class");
 	}
 
 	@Override
