@@ -38,7 +38,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
     }
 
     @Override
-    protected Collection<T> getFilterInput() {
+    public Collection<T> getFilterInput() {
         Collection<T> collection = Lists.newArrayList();
         for (CollectionInputPanel<T> input : filterComponents) {
             collection.add(input.getConvertedInput());
@@ -47,7 +47,7 @@ public class CollectionFilterPanel<T extends Serializable> extends AbstractFilte
     }
 
     @Override
-    protected void focus(AjaxRequestTarget target) {
+    public void focus(AjaxRequestTarget target) {
         if (!filterComponents.isEmpty())
             filterComponents.get(0).focus(target);
     }

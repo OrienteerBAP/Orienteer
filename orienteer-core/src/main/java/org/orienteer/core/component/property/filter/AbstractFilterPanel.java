@@ -12,6 +12,7 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.component.filter.FilterPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
@@ -69,13 +70,13 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
      * Override for return filter input
      * @return filter input
      */
-    protected abstract T getFilterInput();
+    public abstract T getFilterInput();
 
     /**
      * Set focus on filtered component
      * @param target {@link AjaxRequestTarget}
      */
-    protected abstract void focus(AjaxRequestTarget target);
+    public abstract void focus(AjaxRequestTarget target);
 
     @SuppressWarnings("unchecked")
     public FormComponent<?> createFilterComponent(IModel<?> model) {
@@ -83,7 +84,7 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     }
 
     protected IModel<String> getTitle() {
-        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
+        return new ResourceModel(String.format(FilterPanel.TAB_FILTER_TEMPLATE,
                 getFilterCriteriaType().getName()));
     }
 

@@ -68,12 +68,12 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
     }
 
     @Override
-    protected Collection<ODocument> getFilterInput() {
+    public Collection<ODocument> getFilterInput() {
         return docsFormComponent.getConvertedInput();
     }
 
     @Override
-    protected void focus(AjaxRequestTarget target) {
+    public void focus(AjaxRequestTarget target) {
         if (classesFormComponent.isEnabled()) {
             target.focusComponent(classesFormComponent);
         } else target.focusComponent(docsFormComponent);

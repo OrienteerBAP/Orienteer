@@ -92,12 +92,12 @@ public class LinkEqualsFilterPanel extends AbstractFilterPanel<ODocument> {
     }
 
     @Override
-    protected ODocument getFilterInput() {
+    public ODocument getFilterInput() {
         return docFormComponent.getConvertedInput();
     }
 
     @Override
-    protected void focus(AjaxRequestTarget target) {
+    public void focus(AjaxRequestTarget target) {
         if (classFormComponent.isEnabled()) {
             target.focusComponent(classFormComponent);
         } else target.focusComponent(docFormComponent);

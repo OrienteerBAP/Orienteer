@@ -50,7 +50,7 @@ public class EmbeddedCollectionFilterPanel extends AbstractFilterPanel<Collectio
     }
 
     @Override
-    protected Collection<String> getFilterInput() {
+    public Collection<String> getFilterInput() {
         Collection<String> collection = isList ? Lists.<String>newArrayList() : Sets.<String>newHashSet();
         for (CollectionInputPanel<String> inputPanel : collectionInput) {
             collection.add(inputPanel.getConvertedInput());
@@ -59,7 +59,7 @@ public class EmbeddedCollectionFilterPanel extends AbstractFilterPanel<Collectio
     }
 
     @Override
-    protected void focus(AjaxRequestTarget target) {
+    public void focus(AjaxRequestTarget target) {
         target.focusComponent(fieldFilter);
     }
 

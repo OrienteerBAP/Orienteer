@@ -15,6 +15,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.filter.FilterPanel;
 import org.orienteer.core.component.property.*;
 import org.orienteer.core.component.property.date.ODateField;
 import org.orienteer.core.component.property.date.ODateLabel;
@@ -134,118 +135,82 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 	@SuppressWarnings("unchecked")
 	public <V> Component getFilterComponent(final String id, final IModel<OProperty> propertyModel,
 											final FilterForm<OQueryModel<?>> filterForm) {
-		final IFilterCriteriaManager manager = getManager(propertyModel, filterForm);
-		Component component;
+		IFilterCriteriaManager manager = getManager(propertyModel, filterForm);
 		OProperty property = propertyModel.getObject();
-		final OType type = property.getType();
+		OType type = property.getType();
+		List<AbstractFilterPanel<?>> filters = new LinkedList<>();
+
 		switch (type) {
 			case LINKBAG:
 			case TRANSIENT:
 			case BINARY:
 			case ANY:
-				component = null;
-				break;
+				return null;
 			case EMBEDDED:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new EmbeddedContainsValuePanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new EmbeddedContainsKeyPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-					}
-				};
+				filters.add(new EmbeddedContainsValuePanel(FilterPanel.PANEL_ID, Model.of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
+				filters.add(new EmbeddedContainsKeyPanel(FilterPanel.PANEL_ID, Model.of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
 				break;
 			case LINK:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new LinkEqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<ODocument>of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<ODocument>(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-					}
-				};
+				filters.add(new LinkEqualsFilterPanel(FilterPanel.PANEL_ID, Model.of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
+				filters.add(new CollectionLinkFilterPanel(FilterPanel.PANEL_ID, new CollectionModel<>(),
+						id, propertyModel, DefaultVisualizer.this, manager));
 				break;
 			case EMBEDDEDLIST:
 			case EMBEDDEDSET:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						OProperty prop = propertyModel.getObject();
-						if (prop != null) {
-							if (prop.getLinkedType() != null) {
-								filterPanels.add(new EmbeddedCollectionContainsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
-										id, propertyModel, DefaultVisualizer.this, manager));
-							} else {
-								filterPanels.add(new EmbeddedCollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<String>(),
-										id, propertyModel, DefaultVisualizer.this, manager, true));
-							}
-						}
+				OProperty prop = propertyModel.getObject();
+				if (prop != null) {
+					if (prop.getLinkedType() != null) {
+						filters.add(new EmbeddedCollectionContainsFilterPanel(FilterPanel.PANEL_ID, Model.of(),
+								id, propertyModel, DefaultVisualizer.this, manager));
+					} else {
+						filters.add(new EmbeddedCollectionFilterPanel(FilterPanel.PANEL_ID, new CollectionModel<>(),
+								id, propertyModel, DefaultVisualizer.this, manager, true));
 					}
-				};
+				}
 				break;
 			case LINKLIST:
 			case LINKSET:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new CollectionLinkFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<ODocument>(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-					}
-				};
+				filters.add(new CollectionLinkFilterPanel(FilterPanel.PANEL_ID, new CollectionModel<>(),
+						id, propertyModel, DefaultVisualizer.this, manager));
 				break;
 			case EMBEDDEDMAP:
 			case LINKMAP:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new MapContainsKeyFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<String>of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-						if (type == OType.EMBEDDEDMAP) {
-							filterPanels.add(new EmbeddedMapContainsValueFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
-									id, propertyModel, DefaultVisualizer.this, manager));
-						} else filterPanels.add(new LinkMapContainsValueFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<ODocument>of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-					}
-				};
+				filters.add(new MapContainsKeyFilterPanel(FilterPanel.PANEL_ID, Model.<String>of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
+				if (type == OType.EMBEDDEDMAP) {
+					filters.add(new EmbeddedMapContainsValueFilterPanel(FilterPanel.PANEL_ID, Model.of(),
+							id, propertyModel, DefaultVisualizer.this, manager));
+				} else {
+					filters.add(new LinkMapContainsValueFilterPanel(FilterPanel.PANEL_ID, Model.<ODocument>of(),
+							id, propertyModel, DefaultVisualizer.this, manager));
+				}
 				break;
 			case STRING:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new ContainsStringFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<String>of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<String>of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new CollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<String>(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-					}
-				};
+
+				filters.add(new ContainsStringFilterPanel(FilterPanel.PANEL_ID, Model.<String>of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
+				filters.add(new EqualsFilterPanel(FilterPanel.PANEL_ID, Model.<String>of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
+				filters.add(new CollectionFilterPanel(FilterPanel.PANEL_ID, new CollectionModel<String>(),
+						id, propertyModel, DefaultVisualizer.this, manager));
 				break;
 			case BOOLEAN:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.<Boolean>of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-					}
-				};
+				filters.add(new EqualsFilterPanel(FilterPanel.PANEL_ID, Model.<Boolean>of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
 				break;
 			default:
-				component = new AbstractFilterOPropertyPanel(id, new OPropertyNamingModel(propertyModel), filterForm) {
-					@Override
-					protected void createFilterPanels(List<AbstractFilterPanel> filterPanels) {
-						filterPanels.add(new EqualsFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, Model.of(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new CollectionFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<>(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-						filterPanels.add(new RangeFilterPanel(AbstractFilterOPropertyPanel.PANEL_ID, new CollectionModel<>(),
-								id, propertyModel, DefaultVisualizer.this, manager));
-					}
-				};
+				filters.add(new EqualsFilterPanel(FilterPanel.PANEL_ID, Model.of(),
+						id, propertyModel, DefaultVisualizer.this, manager));
+				filters.add(new CollectionFilterPanel(FilterPanel.PANEL_ID, new CollectionModel<>(),
+						id, propertyModel, DefaultVisualizer.this, manager));
+				filters.add(new RangeFilterPanel(FilterPanel.PANEL_ID, new CollectionModel<>(),
+						id, propertyModel, DefaultVisualizer.this, manager));
 		}
-		return component;
+
+		return new FilterPanel(id, new OPropertyNamingModel(propertyModel), filterForm, filters);
 	}
 
 

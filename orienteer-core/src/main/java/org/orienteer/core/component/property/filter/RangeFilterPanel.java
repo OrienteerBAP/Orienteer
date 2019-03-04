@@ -57,7 +57,7 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<List<T>> {
     }
 
     @Override
-    protected List<T> getFilterInput() {
+    public List<T> getFilterInput() {
         List<T> collection = Lists.newArrayList();
         collection.add(startComponent.getConvertedInput());
         collection.add(endComponent.getConvertedInput());
@@ -65,7 +65,7 @@ public class RangeFilterPanel<T> extends AbstractFilterPanel<List<T>> {
     }
 
     @Override
-    protected void focus(AjaxRequestTarget target) {
+    public void focus(AjaxRequestTarget target) {
         target.focusComponent(startComponent);
     }
 

@@ -59,7 +59,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     }
 
     @Override
-    protected T getFilterInput() {
+    public T getFilterInput() {
         return formComponent.getConvertedInput();
     }
 
