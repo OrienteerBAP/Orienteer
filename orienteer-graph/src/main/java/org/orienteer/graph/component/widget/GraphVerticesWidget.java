@@ -26,6 +26,7 @@ import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 import java.io.Serializable;
@@ -69,7 +70,7 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
     private List<IColumn<ODocument, String>> createColumns(OClass commonParent, IModel<DisplayMode> modeModel) {
     	OProperty nameProperty = oClassIntrospector.getNameProperty(commonParent);
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
-        columns.add(new ODocumentClassColumn());
+        columns.add(new ODocumentClassColumn(new OClassModel(commonParent)));
         columns.add(new ODocumentDescriptionColumn(
         		new StringResourceModel("property.direction", this, Model.of()),
         		new DirectionLocalizer()));

@@ -2,7 +2,6 @@ package org.orienteer.core.component.table;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -23,6 +22,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.table.filter.IFilterSupportedColumn;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
     private FilterForm<?> filterForm;
     private final ISortStateLocator<S> stateLocator;
 
-    private final List<S> filteredColumns = Lists.newArrayList();
+    private final List<String> filteredColumns = Lists.newArrayList();
     private final String filteredColumnClass;
 
     /**
@@ -194,15 +194,14 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
     }
 
     private boolean needChangeColor(IColumn<T, S> column) {
-        boolean filter = false;
-        if (column instanceof OPropertyValueColumn) {
-            OPropertyValueColumn valueColumn = (OPropertyValueColumn) column;
-            OProperty property = valueColumn.getCriteryModel().getObject();
-            if (property != null) {
-                filter = filteredColumns.contains(property.getName());
-            }
-        } else filteredColumns.contains(column.getSortProperty());
-        return filter;
+        if (column instanceof IFilterSupportedColumn) {
+            IFilterSupportedColumn valueColumn = (IFilterSupportedColumn) column;
+            return filteredColumns.contains(valueColumn.getFilterName());
+        }
+
+        S sort = column.getSortProperty();
+
+        return sort instanceof String && filteredColumns.contains(sort);
     }
 
     public OrienteerHeadersToolbar<T, S> setFilterForm(FilterForm<?> filterForm) {
@@ -216,8 +215,8 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
         return (DataTable<T, S>) super.getTable();
     }
 
-    public void addFilteredColumn(S sort) {
-        filteredColumns.add(sort);
+    public void addFilteredColumn(String column) {
+        filteredColumns.add(column);
     }
 
     public void clearFilteredColumns() {

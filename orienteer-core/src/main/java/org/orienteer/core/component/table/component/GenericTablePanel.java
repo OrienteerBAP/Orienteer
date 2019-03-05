@@ -1,6 +1,5 @@
 package org.orienteer.core.component.table.component;
 
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxFallbackButton;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -14,9 +13,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.util.lang.Args;
-import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.OrienteerHeadersToolbar;
+import org.orienteer.core.component.table.filter.IFilterSupportedColumn;
 import ru.ydn.wicket.wicketorientdb.model.AbstractFilteredProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
@@ -50,31 +49,7 @@ public class GenericTablePanel<K> extends Panel {
         setOutputMarkupPlaceholderTag(true);
         dataTable = new OrienteerDataTable<>("table", columns, provider, rowsPerRange);
         if (filtered) {
-            final FilterForm<OQueryModel<K>> filterForm = new FilterForm<OQueryModel<K>>("form",
-                    (IFilterStateLocator<OQueryModel<K>>) provider) {
-                @Override
-                protected void onSubmit() {
-                    RequestCycle.get().find(AjaxRequestTarget.class).ifPresent(target -> 
-		                    {
-		                        OQueryModel<K> filterState = getStateLocator().getFilterState();
-		                        OrienteerHeadersToolbar<K, String> headersToolbar = dataTable.getHeadersToolbar();
-		                        headersToolbar.clearFilteredColumns();
-		                        for (IColumn<K, String> column : GenericTablePanel.this.getDataTable().getColumns()) {
-		                            if (column instanceof OPropertyValueColumn) {
-		                                OPropertyValueColumn propertyValueColumn = (OPropertyValueColumn) column;
-		                                OProperty property = propertyValueColumn.getCriteryModel().getObject();
-		                                if (property != null) {
-		                                    IFilterCriteriaManager manager = filterState.getFilterCriteriaManager(property.getName());
-		                                    if (manager != null && manager.isFilterApply()) {
-		                                        headersToolbar.addFilteredColumn(property.getName());
-		                                    }
-		                                }
-		                            }
-		                        }
-		                        target.add(dataTable);
-		                    });
-                }
-            };
+            FilterForm<OQueryModel<K>> filterForm = createFilterForm("form", (IFilterStateLocator<OQueryModel<K>>) provider);
             filterForm.setOutputMarkupPlaceholderTag(true);
             dataTable.addFilterForm(filterForm);
             filterForm.add(dataTable);
@@ -106,5 +81,36 @@ public class GenericTablePanel<K> extends Panel {
 
     public OrienteerDataTable<K, String> getDataTable() {
         return dataTable;
+    }
+
+    private FilterForm<OQueryModel<K>> createFilterForm(String id, IFilterStateLocator<OQueryModel<K>> provider) {
+        return new FilterForm<OQueryModel<K>>(id, provider) {
+            @Override
+            protected void onSubmit() {
+                RequestCycle.get()
+                        .find(AjaxRequestTarget.class)
+                        .ifPresent(this::onSubmit);
+            }
+
+            private void onSubmit(AjaxRequestTarget target) {
+                OQueryModel<K> filterState = getStateLocator().getFilterState();
+                OrienteerHeadersToolbar<K, String> headersToolbar = dataTable.getHeadersToolbar();
+                headersToolbar.clearFilteredColumns();
+                updateFilteredColumns(filterState, headersToolbar);
+                target.add(dataTable);
+            }
+
+            private void updateFilteredColumns(OQueryModel<K> filterState, OrienteerHeadersToolbar<K, String> toolbar) {
+                getDataTable().getColumns().stream()
+                        .filter(c -> c instanceof IFilterSupportedColumn)
+                        .map(c -> (IFilterSupportedColumn) c)
+                        .map(IFilterSupportedColumn::getFilterName)
+                        .filter(name -> {
+                            IFilterCriteriaManager manager = filterState.getFilterCriteriaManager(name);
+                            return manager != null && manager.isFilterApply();
+                        })
+                        .forEach(toolbar::addFilteredColumn);
+            }
+        };
     }
 }

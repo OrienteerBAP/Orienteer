@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.common.collection.OCollection;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -36,6 +35,7 @@ import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.converter.ODocumentORIDConverter;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
@@ -79,12 +79,12 @@ public class OClassIntrospector implements IOClassIntrospector
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
 		if(oClass!=null) {
 			List<OProperty> properties = getDisplayableProperties(oClass);
-			if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
+			if(withCheckbox) columns.add(new CheckBoxColumn<>(ODocumentORIDConverter.INSTANCE));
 			OProperty nameProperty = getNameProperty(oClass);
 			OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
 			columns.add(entityColumn);
 			if (!oClass.getSubclasses().isEmpty()) {
-				columns.add(new ODocumentClassColumn());
+				columns.add(new ODocumentClassColumn(new OClassModel(oClass)));
 			}
 			for (OProperty oProperty : properties)
 			{
@@ -104,7 +104,7 @@ public class OClassIntrospector implements IOClassIntrospector
 			}
 		} else {
 			columns.add(new OUnknownEntityColumn(new ResourceModel("document.name")));
-			columns.add(new ODocumentClassColumn());
+			columns.add(new ODocumentClassColumn(new OClassModel(oClass)));
 		}
 		return columns;
 	}
