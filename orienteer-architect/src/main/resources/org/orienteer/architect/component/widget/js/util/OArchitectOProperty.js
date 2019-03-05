@@ -129,8 +129,10 @@ OArchitectOProperty.prototype.configFromJson = function (oClass, json, cell) {
     this.exists = json.exists != null ? json.exists : true;
 
     function setCell(property, oClass, cell) {
-    	property.setCell(property.cell !== null ? property.cell : cell != null ? cell : null);
-    	if (property.cell === null) oClass.createCellForProperty(this);
+        property.setCell(property.cell !== null ? property.cell : cell != null ? cell : null);
+        if (property.cell === null) {
+            oClass.createCellForProperty(property);
+        }
     }
     
     function setLinkedClass(property, json) {
@@ -258,7 +260,6 @@ OArchitectOProperty.prototype.setCell = function (cell) {
  * Update property in property cell and update class in class cell
  */
 OArchitectOProperty.prototype.updateValueInCell = function () {
-    console.dir('update property in cell')
     if (this.databaseJson !== null) {
         if (!this.equalsWithJsonLink(this.databaseJson)) {
             if (this.existsInDb) this.setExistsInDb(false);

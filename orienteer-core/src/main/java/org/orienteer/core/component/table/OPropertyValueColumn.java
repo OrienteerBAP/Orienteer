@@ -59,4 +59,8 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 		return property != null ? getComponentForFiltering(componentId, propertyModel, (FilterForm<OQueryModel<?>>) form) : null;
 	}
 
+	@Override
+	public String getFilterName() {
+		return getCriteryModel().map(OProperty::getName).getObject();
+	}
 }

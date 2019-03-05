@@ -102,6 +102,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     private List<OSourceConstant> createPropertiesConstants(OArchitectOClass oClass) {
         return oClass.getProperties().stream()
+                .filter(p -> !p.isSubClassProperty())
                 .map(property ->
                         new OSourceConstant(
                                 "public static final",
@@ -145,6 +146,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     private List<ISource> createOClassProperties(List<OArchitectOClass> classes, OArchitectOClass oClass) {
         return oClass.getProperties().stream()
+                .filter(p -> !p.isSubClassProperty())
                 .flatMap(prop ->
                         Stream.of(
                                 new OSourceBlankLine(),

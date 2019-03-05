@@ -27,7 +27,7 @@ public class EmbeddedCollectionContainsFilterPanel<T extends Serializable> exten
     @Override
     @SuppressWarnings("unchecked")
     public FormComponent<?> createFilterComponent(IModel<?> model) {
-        OProperty property = getPropertyModel().getObject();
+        OProperty property = getEntityModel().getObject();
         FormComponent<?> component;
         switch (property.getLinkedType()) {
             case BOOLEAN:

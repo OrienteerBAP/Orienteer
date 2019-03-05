@@ -30,7 +30,7 @@ import java.util.List;
  * Create filter panel for filter such as:
  * SELECT FROM Class WHERE embedded.field IN  [value1, value2, value3]
  */
-public class EmbeddedCollectionFilterPanel extends AbstractFilterPanel<Collection<String>> {
+public class EmbeddedCollectionFilterPanel extends AbstractOPropertyFilterPanel<Collection<String>> {
 
     @Inject
     private IMarkupProvider markupProvider;
@@ -50,7 +50,7 @@ public class EmbeddedCollectionFilterPanel extends AbstractFilterPanel<Collectio
     }
 
     @Override
-    protected Collection<String> getFilterInput() {
+    public Collection<String> getFilterInput() {
         Collection<String> collection = isList ? Lists.<String>newArrayList() : Sets.<String>newHashSet();
         for (CollectionInputPanel<String> inputPanel : collectionInput) {
             collection.add(inputPanel.getConvertedInput());
@@ -59,7 +59,7 @@ public class EmbeddedCollectionFilterPanel extends AbstractFilterPanel<Collectio
     }
 
     @Override
-    protected void focus(AjaxRequestTarget target) {
+    public void focus(AjaxRequestTarget target) {
         target.focusComponent(fieldFilter);
     }
 

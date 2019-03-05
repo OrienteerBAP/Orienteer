@@ -356,7 +356,6 @@ var OArchitectAction = {
     },
 
     generateJavaSrcAction: function (editor) {
-        console.dir('generateJavaSrcAction');
         app.editor.toolbar.elementExecuted = true;
         app.generateJavaSources(OArchitectUtil.getOClassesAsJSON(editor.graph), function (response) {
 

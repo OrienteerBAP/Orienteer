@@ -1,7 +1,6 @@
-package org.orienteer.core.component.property.filter;
+package org.orienteer.core.component.filter;
 
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -12,7 +11,6 @@ import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
@@ -20,27 +18,28 @@ import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
 /**
  * Abstract panel for filters
- * @param <T> type of filtered model
+ * @param <T> type of filtered entity
+ * @param <V> type of filtered entity
  */
-public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
+public abstract class AbstractFilterPanel<T, V> extends FormComponentPanel<T> {
 
     @Inject
     protected IMarkupProvider markupProvider;
 
     private final IVisualizer visualizer;
-    private final IModel<OProperty> propertyModel;
+    private final IModel<V> entityModel;
     private final String filterId;
     private final IFilterCriteriaManager manager;
     private final IModel<Boolean> joinModel;
     private String containerId;
 
     public AbstractFilterPanel(String id, IModel<T> model, String filterId,
-                               IModel<OProperty> propertyModel,
+                               IModel<V> entityModel,
                                IVisualizer visualizer,
                                IFilterCriteriaManager manager, IModel<Boolean> join) {
         super(id, model);
         this.filterId = filterId;
-        this.propertyModel = propertyModel;
+        this.entityModel = entityModel;
         this.visualizer = visualizer;
         this.joinModel = join;
         this.manager = manager;
@@ -69,30 +68,24 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
      * Override for return filter input
      * @return filter input
      */
-    protected abstract T getFilterInput();
+    public abstract T getFilterInput();
 
     /**
      * Set focus on filtered component
      * @param target {@link AjaxRequestTarget}
      */
-    protected abstract void focus(AjaxRequestTarget target);
+    public abstract void focus(AjaxRequestTarget target);
 
-    @SuppressWarnings("unchecked")
-    public FormComponent<?> createFilterComponent(IModel<?> model) {
-        return (FormComponent<?>) visualizer.createComponent(filterId, DisplayMode.EDIT, null, propertyModel, model);
-    }
-
-    protected IModel<String> getTitle() {
-        return new ResourceModel(String.format(AbstractFilterOPropertyPanel.TAB_FILTER_TEMPLATE,
-                getFilterCriteriaType().getName()));
-    }
+    public abstract FormComponent<?> createFilterComponent(IModel<?> model);
 
     public abstract FilterCriteriaType getFilterCriteriaType();
+
     protected abstract void setFilterCriteria(IFilterCriteriaManager manager, FilterCriteriaType type, IModel<T> model);
+
     protected abstract void clearInputs();
 
 
-    protected IVisualizer getVisualizer() {
+    public IVisualizer getVisualizer() {
         return visualizer;
     }
 
@@ -100,11 +93,11 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
         return filterId;
     }
 
-    protected IModel<OProperty> getPropertyModel() {
-        return propertyModel;
+    public IModel<V> getEntityModel() {
+        return entityModel;
     }
 
-    protected IModel<Boolean> getJoinModel() {
+    public IModel<Boolean> getJoinModel() {
         return joinModel;
     }
 
@@ -134,7 +127,12 @@ public abstract class AbstractFilterPanel<T> extends FormComponentPanel<T> {
     @Override
     public void detachModels() {
     	super.detachModels();
-    	if(propertyModel!=null) propertyModel.detach();
+    	if(entityModel !=null) entityModel.detach();
     	if(joinModel!=null) joinModel.detach();
+    }
+
+    protected IModel<String> getTitle() {
+        return new ResourceModel(String.format(FilterPanel.TAB_FILTER_TEMPLATE,
+                getFilterCriteriaType().getName()));
     }
 }
