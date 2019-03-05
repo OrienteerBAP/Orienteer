@@ -19,7 +19,7 @@ import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 import java.util.List;
 
 /**
- *
+ * Panel which implements instanceof filtering for classes
  */
 public class InstanceOfClassFilterPanel extends AbstractFilterPanel<OClass, OClass> {
 
