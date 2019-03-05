@@ -10,8 +10,10 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.util.CollectionModel;
 import org.orienteer.core.component.filter.AbstractFilterPanel;
 import org.orienteer.core.component.filter.FilterPanel;
+import org.orienteer.core.component.oclass.filter.ClassInCollectionFilterPanel;
 import org.orienteer.core.component.oclass.filter.InstanceOfClassFilterPanel;
 import org.orienteer.core.component.property.OClassViewPanel;
 import org.orienteer.core.component.table.filter.IFilterSupportedColumn;
@@ -57,6 +59,8 @@ public class ODocumentClassColumn extends FilteredAbstractColumn<ODocument, Stri
 	private List<AbstractFilterPanel<?, ?>> createFilterPanels(String id, IFilterCriteriaManager manager) {
 		List<AbstractFilterPanel<?, ?>> panels = new LinkedList<>();
 		panels.add(new InstanceOfClassFilterPanel(FilterPanel.PANEL_ID, new OClassModel((String) null),
+				id, criteryModel, DefaultVisualizer.INSTANCE, manager));
+		panels.add(new ClassInCollectionFilterPanel(FilterPanel.PANEL_ID, new CollectionModel<>(),
 				id, criteryModel, DefaultVisualizer.INSTANCE, manager));
 		return panels;
 	}
