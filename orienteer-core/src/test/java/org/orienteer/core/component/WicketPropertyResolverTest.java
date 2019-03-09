@@ -36,6 +36,5 @@ public class WicketPropertyResolverTest {
 		tester.assertContains("value=\"ACTIVE\"");
 		tester.assertContains("Default");
 		tester.assertContains("reader</textarea>");
-//		System.out.println(tester.getLastResponseAsString());
 	}
 }
