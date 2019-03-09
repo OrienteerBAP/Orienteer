@@ -58,7 +58,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
         doc.field(ORestrictedOperation.ALLOW_READ.getFieldName(), doc);
         doc.field(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc);
 
-        return super.onRecordBeforeCreate(doc);
+        return RESULT.RECORD_CHANGED;
     }
 
     @Override
