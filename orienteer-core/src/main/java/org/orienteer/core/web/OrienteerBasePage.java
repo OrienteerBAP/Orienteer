@@ -1,5 +1,6 @@
 package org.orienteer.core.web;
 
+import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -70,7 +71,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 			}
 		};
 
-		add(new ListView<ODocument>("perspectives", new OQueryModel<ODocument>("select from "+PerspectivesModule.OCLASS_PERSPECTIVE)) {
+		add(new ListView<ODocument>("perspectives", new OQueryModel<>("select from " + PerspectivesModule.OCLASS_PERSPECTIVE)) {
 
 			@Override
 			protected void populateItem(final ListItem<ODocument> item) {
@@ -86,7 +87,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 						}
 					}
 				};
-				link.add(new FAIcon("icon", new PropertyModel<String>(itemModel, "icon")),
+				link.add(new FAIcon("icon", new PropertyModel<>(itemModel, "icon")),
 						 new Label("name",  new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
 				item.add(link);
 				link.add(highlightActivePerspective);
@@ -95,19 +96,20 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 		IModel<ODocument> perspectiveModel = new PropertyModel<>(this, "perspective");
 		Button perspectiveButton = new Button("perspectiveButton");
 
-		perspectiveButton.add(new FAIcon("icon", new PropertyModel<String>(perspectiveModel, "icon")));
+		perspectiveButton.add(new FAIcon("icon", new PropertyModel<>(perspectiveModel, "icon")));
 		perspectiveButton.add(new Label("name", new ODocumentNameModel(perspectiveModel)));
 		add(perspectiveButton);
 
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
-		add(new BookmarkablePageLink<Object>("login", LoginPage.class).setVisible(!signedIn));
-		add(new BookmarkablePageLink<Object>("logout", LogoutPage.class).setVisible(signedIn));
+		add(new BookmarkablePageLink<>("login", LoginPage.class).setVisible(!signedIn));
+		add(new BookmarkablePageLink<>("logout", LogoutPage.class).setVisible(signedIn));
 
 		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
 
 
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
-		add(new ODocumentPageLink("myProfile", new PropertyModel<ODocument>(this, "session.user.document")));
+		add(new ODocumentPageLink("myProfile", new PropertyModel<>(this, "session.user.document")));
+		add(createUsernameLabel("username"));
 
 		final IModel<String> queryModel = Model.of();
 		Form<String>  searchForm = new Form<String>("searchForm", queryModel)
@@ -119,7 +121,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 			}
 
 		};
-		searchForm.add(new TextField<String>("query", queryModel, String.class));
+		searchForm.add(new TextField<>("query", queryModel, String.class));
 		searchForm.add(new AjaxButton("search"){});
 		add(searchForm);
 	}
@@ -168,5 +170,11 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
+	}
+
+	private Label createUsernameLabel(String id) {
+		OSecurityUser user = OrienteerWebSession.get().getUser();
+
+		return new Label(id, Model.of(user != null ? user.getName() : null));
 	}
 }
