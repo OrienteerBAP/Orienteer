@@ -53,6 +53,7 @@
       <li class="nav-item dropdown px-2">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="accountMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa fa-user fa-fw"></i>
+          <span wicket:id="username"></span>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountMenuButton">
 
@@ -60,7 +61,10 @@
             <strong><wicket:message key="menu.settings">Settings</wicket:message></strong>
           </div>
           <wicket:enclosure child="logout">
-            <a class="dropdown-item" wicket:id="myProfile"><i class="fa fa-user fa-fw"></i> <wicket:message key="menu.userProfile">User Profile</wicket:message></a>
+            <a class="dropdown-item" wicket:id="myProfile">
+              <i class="fa fa-user fa-fw"></i>
+              <wicket:message key="menu.userProfile">User Profile</wicket:message>
+            </a>
             <a class="dropdown-item" wicket:id="logout"><i class="fa fa-sign-out fa-fw"></i> <wicket:message key="menu.logout"></wicket:message></a>
           </wicket:enclosure>
           <wicket:enclosure>

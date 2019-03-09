@@ -15,6 +15,7 @@ import ru.ydn.wicket.wicketorientdb.utils.query.filter.FilterCriteriaType;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteria;
 import ru.ydn.wicket.wicketorientdb.utils.query.filter.IFilterCriteriaManager;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -80,7 +81,7 @@ public class ClassInCollectionFilterPanel extends AbstractFilterPanel<Collection
 
     @Override
     protected void clearInputs() {
-        formComponent.setConvertedInput(null);
-        formComponent.setModelObject(null);
+        formComponent.setConvertedInput(new ArrayList<>());
+        formComponent.setModelObject(new ArrayList<>());
     }
 }
