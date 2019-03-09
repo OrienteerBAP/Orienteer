@@ -23,7 +23,7 @@ import java.io.IOException;
  */
 public class RegistrationResource extends AbstractResource {
 
-    public static final String MOUNT_PATH = "/offerai/registration";
+    public static final String MOUNT_PATH = "/r/registration";
     public static final String RES_KEY    = RegistrationResource.class.getName();
 
     public static final String PARAMETER_ID = "id";
