@@ -12,6 +12,7 @@ import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.util.OUsersDbUtils;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,19 +47,27 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
                     );
         }
 
+        ODocument orienteerRole = getOrienteerUserRole();
+
         List<ODocument> roles = doc.field("roles", List.class);
         if (roles == null || roles.isEmpty()) {
-            OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
-                    .map(ORole::getDocument)
-                    .ifPresent(
-                            role -> doc.field("roles", Collections.singleton(role))
-                    );
+            doc.field("roles", Collections.singleton(orienteerRole));
         }
 
-        doc.field(ORestrictedOperation.ALLOW_READ.getFieldName(), doc);
-        doc.field(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_READ.getFieldName(), doc);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc);
 
-        return super.onRecordBeforeCreate(doc);
+        return RESULT.RECORD_CHANGED;
+    }
+
+    private void updateAllowPermissions(String field, ODocument user) {
+        List<ODocument> allows = user.field(field, List.class);
+        if (allows == null) {
+            allows = new LinkedList<>();
+        } else allows = new LinkedList<>(allows);
+
+        allows.add(user);
+        user.field(field, allows);
     }
 
     @Override
@@ -66,4 +75,9 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
         return DISTRIBUTED_EXECUTION_MODE.SOURCE_NODE;
     }
 
+    private ODocument getOrienteerUserRole() {
+        return OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
+                .map(ORole::getDocument)
+                .orElseThrow(() -> new IllegalStateException("Role " + OrienteerUsersModule.ORIENTEER_USER_ROLE + " not exists"));
+    }
 }
