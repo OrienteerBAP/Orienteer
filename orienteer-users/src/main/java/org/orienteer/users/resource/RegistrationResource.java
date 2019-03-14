@@ -9,6 +9,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.service.IOrienteerUsersService;
 import org.orienteer.users.util.OUsersDbUtils;
@@ -67,7 +68,7 @@ public class RegistrationResource extends AbstractResource {
                 if (success) {
                     params.set(PARAMETER_ID, attributes.getParameters().get(PARAMETER_ID).toOptionalString());
                 }
-                RequestCycle.get().setResponsePage(service.getRegistrationPage(), params);
+                RequestCycle.get().setResponsePage(LoginPage.class, params);
             }
         };
     }
