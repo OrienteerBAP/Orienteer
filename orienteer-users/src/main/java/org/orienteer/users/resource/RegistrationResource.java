@@ -13,6 +13,7 @@ import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.service.IOrienteerUsersService;
 import org.orienteer.users.util.OUsersDbUtils;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
 
@@ -49,7 +50,11 @@ public class RegistrationResource extends AbstractResource {
             if (!Strings.isNullOrEmpty(id)) {
                 OUsersDbUtils.getUserById(id)
                         .filter(user -> user.getAccountStatus() != OSecurityUser.STATUSES.ACTIVE)
-                        .ifPresent(user -> response.setWriteCallback(createCallback(true)));
+                        .ifPresent(user -> {
+                            user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
+                            DBClosure.sudoSave(user);
+                            response.setWriteCallback(createCallback(true));
+                        });
             }
 
             if (response.getWriteCallback() == null) {
