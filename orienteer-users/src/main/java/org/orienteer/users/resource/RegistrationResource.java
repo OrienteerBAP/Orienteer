@@ -9,9 +9,11 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.service.IOrienteerUsersService;
 import org.orienteer.users.util.OUsersDbUtils;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
 
@@ -48,7 +50,11 @@ public class RegistrationResource extends AbstractResource {
             if (!Strings.isNullOrEmpty(id)) {
                 OUsersDbUtils.getUserById(id)
                         .filter(user -> user.getAccountStatus() != OSecurityUser.STATUSES.ACTIVE)
-                        .ifPresent(user -> response.setWriteCallback(createCallback(true)));
+                        .ifPresent(user -> {
+                            user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
+                            DBClosure.sudoSave(user);
+                            response.setWriteCallback(createCallback(true));
+                        });
             }
 
             if (response.getWriteCallback() == null) {
@@ -67,7 +73,7 @@ public class RegistrationResource extends AbstractResource {
                 if (success) {
                     params.set(PARAMETER_ID, attributes.getParameters().get(PARAMETER_ID).toOptionalString());
                 }
-                RequestCycle.get().setResponsePage(service.getRegistrationPage(), params);
+                RequestCycle.get().setResponsePage(LoginPage.class, params);
             }
         };
     }
