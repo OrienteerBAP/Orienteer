@@ -44,8 +44,8 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
     /**
      * Constructor
      *
-     * @param table
-     * @param stateLocator
+     * @param table table to add this toolbar to
+     * @param stateLocator locator for sort state
      */
     public OrienteerHeadersToolbar(DataTable<T, S> table, ISortStateLocator<S> stateLocator) {
         super(table);

@@ -43,6 +43,7 @@ public @interface OMethod{
 	public String selector() default ""; // hardcode link to SelectorFilter
 	/**
 	 * CREATE, READ, UPDATE, DELETE, EXECUTE
+	 * @return permissions filter
 	 */
 	public String permission() default ""; // hardcode link to PermissionFilter
 	OFilter[] filters() default {};

@@ -99,6 +99,7 @@ public abstract class AbstractMetaColumn<T, C, S> extends FilteredAbstractColumn
 	 * Get component for supported filtering column
 	 * @param id - component id
 	 * @param propertyModel - property model for view
+	 * @param filterForm - form for filters
 	 * @return component which support filtering
 	 */
 	protected Component getComponentForFiltering(String id, IModel<OProperty> propertyModel, FilterForm<OQueryModel<?>> filterForm) {

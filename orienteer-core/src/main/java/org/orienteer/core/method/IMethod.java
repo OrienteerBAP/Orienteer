@@ -12,14 +12,15 @@ public interface IMethod {
 	/**
 	 * Init method instance by environment data and individual config
 	 * Called only once per creation in linked {@link IMethodDefinition}
-	 * @param envData
+	 * @param config method definition
+	 * @param context method context
 	 */
 	public void init(IMethodDefinition config,IMethodContext context);
 	
 	/**
 	 * Return display {@link Command} with assigned id
 	 * May be created every time or storages into method 
-	 * If you need to use integrated markup, see {@link org.orienteer.core.method.ExampleMethodWithIntMarkup} for example
+	 * If you need to use integrated markup, see ExampleMethodWithIntMarkup in tests for example
 	 * @param id identification of the {@link Command} to be created 
 	 * 
 	 * @return created {@link Command}

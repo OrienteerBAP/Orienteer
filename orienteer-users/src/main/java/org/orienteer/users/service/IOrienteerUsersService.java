@@ -15,35 +15,35 @@ public interface IOrienteerUsersService {
     /**
      * Create scheduler event for remove {@link OrienteerUser#PROP_RESTORE_ID} and send mail with restore link
      * created by {@link RestorePasswordResource} to user email.
-     * @param user {@link OrienteerUser} user
+     * @param user user to restore password for
      */
     public void restoreUserPassword(OrienteerUser user);
 
     /**
      * Remove scheduler event for restore user password
-     * @param user {@link OrienteerUser} user
+     * @param user user
      */
     public void clearRestoring(OrienteerUser user);
 
     /**
      * Send mail to user with link to {@link RegistrationResource}
-     * @param user {@link OrienteerUser} user
+     * @param user user
      */
     public void notifyUserAboutRegistration(OrienteerUser user);
 
     /**
      * Creates new user.
-     * @return {@link OrienteerUser} user
+     * @return new user
      */
     public OrienteerUser createUser();
 
     /**
-     * @return {@link Class<? extends WebPage>} which uses in {@link RestorePasswordResource}
+     * @return page which uses in {@link RestorePasswordResource}
      */
     public Class<? extends WebPage> getRestorePasswordPage();
 
     /**
-     * @return {@link Class<? extends WebPage>} which uses in {@link RegistrationResource}
+     * @return page which uses in {@link RegistrationResource}
      */
     public Class<? extends WebPage> getRegistrationPage();
 }

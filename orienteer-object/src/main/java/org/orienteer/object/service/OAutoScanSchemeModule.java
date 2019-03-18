@@ -54,7 +54,7 @@ public class OAutoScanSchemeModule extends AbstractModule {
      * Join set of packages by ','.
      * Need for provide {@link SchemeInitializer} in {@link OAutoScanSchemeModule#provideSchemaInitializer(String, Provider, ObjectSchemeInitializer)}
      * For inject packages used Guice Multibindings
-     * @param packages {@link Set<String>} packages
+     * @param packages packages
      * @return string which contains packages separated by ',' or empty string if packages are empty
      */
     @Provides
@@ -66,10 +66,10 @@ public class OAutoScanSchemeModule extends AbstractModule {
 
     /**
      * Create {@link SchemeInitializer} depends on appPkgs.
-     * @param appPkgs {@link String} string which contains packages with OrientDB models, separated by ','
-     * @param dbProvider {@link Provider<OObjectDatabaseTx>} provider for {@link OObjectDatabaseTx}
-     * @param schemeInitializer {@link ObjectSchemeInitializer}
-     * @return {@link SchemeInitializer} if appPkgs is not empty returns {@link AutoScanSchemeInitializer} otherwise {@link NoOpSchemeInitializer}
+     * @param appPkgs  string which contains packages with OrientDB models, separated by ','
+     * @param dbProvider provider for {@link OObjectDatabaseTx}
+     * @param schemeInitializer object initializer
+     * @return initializer if appPkgs is not empty returns {@link AutoScanSchemeInitializer} otherwise {@link NoOpSchemeInitializer}
      */
     @Provides
     @Singleton

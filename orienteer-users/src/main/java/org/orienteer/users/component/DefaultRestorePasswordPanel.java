@@ -31,8 +31,8 @@ public class DefaultRestorePasswordPanel extends GenericPanel<OrienteerUser> {
 
     /**
      * Constructor
-     * @param id {@link String} component id
-     * @param model {@link IModel<OrienteerUser>} model which contains user for restore
+     * @param id component id
+     * @param model model which contains user for restore
      */
     public DefaultRestorePasswordPanel(String id, IModel<OrienteerUser> model) {
         super(id, model);
@@ -60,8 +60,8 @@ public class DefaultRestorePasswordPanel extends GenericPanel<OrienteerUser> {
 
     /**
      * Calls when restore was success
-     * @param target {@link AjaxRequestTarget} target for update components
-     * @param model {@link IModel<OrienteerUser>} model which contains restored user
+     * @param target target for update components
+     * @param model model which contains restored user
      */
     protected void onRestore(AjaxRequestTarget target, IModel<OrienteerUser> model) {
         // Override in subclass
@@ -70,8 +70,8 @@ public class DefaultRestorePasswordPanel extends GenericPanel<OrienteerUser> {
     /**
      * Creates restore button which set new password for user and clear user restore status.
      * Then calls {@link DefaultRestorePasswordPanel#onRestore(AjaxRequestTarget, IModel)}
-     * @param id {@link String} component id
-     * @return {@link AjaxFormCommand<Void>}
+     * @param id component id
+     * @return restore button
      */
     private AjaxFormCommand<Void> createRestoreButton(String id) {
         return new AjaxFormCommand<Void>(id, new ResourceModel("panel.restore.button.restore")) {

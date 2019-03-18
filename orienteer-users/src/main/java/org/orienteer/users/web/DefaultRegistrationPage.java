@@ -119,7 +119,7 @@ public class DefaultRegistrationPage extends BasePage<OrienteerUser> {
     }
 
     /**
-     * @return {@link IModel<String>} which uses in registration card title
+     * @return model which uses in registration card title
      */
     protected IModel<String> getRegistrationTitleModel() {
         return new ResourceModel("page.registration.title");
@@ -128,8 +128,8 @@ public class DefaultRegistrationPage extends BasePage<OrienteerUser> {
     /**
      * Creates label which will be displayed when user successfully registered
      * If user document didn't saved in database, so component doesn't visible
-     * @param id {@link String} component id
-     * @return {@link Label}
+     * @param id component id
+     * @return registration success label
      */
     protected Label createRegistrationSuccessLabel(String id) {
         return new Label(id, new ResourceModel("page.registration.success")) {

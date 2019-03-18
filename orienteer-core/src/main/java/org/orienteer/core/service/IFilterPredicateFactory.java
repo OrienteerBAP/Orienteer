@@ -17,28 +17,28 @@ public interface IFilterPredicateFactory extends IClusterable {
 
     /**
      * Create predicate which filter classes by target. Targets: BUSINESS, ALL.
-     * @param showAll {@link IModel<Boolean>} if true - target = ALL
-     * @return {@link SerializablePredicate<OClass>}
+     * @param showAll {@link IModel} if true - target = ALL
+     * @return predicate
      */
     public SerializablePredicate<OClass> getPredicateByTarget(IModel<Boolean> showAll);
 
     /**
      * Create predicate which filter classes by user permissions for this class.
      * @param operation {@link int} user operation. See OrientDB security operations.
-     * @return {@link SerializablePredicate<OClass>}
+     * @return predicate
      */
     public SerializablePredicate<OClass> getPredicateByOperation(int operation);
 
     /**
      * Create predicate for classes view
-     * @param showAll {@link IModel<Boolean>} if true - target = ALL
-     * @return {@link SerializablePredicate<OClass>}
+     * @param showAll {@link IModel} if true - target = ALL
+     * @return predicate
      */
     public SerializablePredicate<OClass> getPredicateForClassesView(IModel<Boolean> showAll);
 
     /**
      * Create predicate for classes search
-     * @return {@link SerializablePredicate<OClass>}
+     * @return predicate
      */
     public SerializablePredicate<OClass> getPredicateForClassesSearch();
 
@@ -48,10 +48,10 @@ public interface IFilterPredicateFactory extends IClusterable {
 
     /**
      * Compose predicates
-     * @param predicates {@link SerializablePredicate<V>} predicates for compose
+     * @param predicates {@link SerializablePredicate} predicates for compose
      * @param <V> type of predicate
-     * @return {@link SerializablePredicate<V>} which contains composed predicates
-     * If predicates are empty or null then returns (v) -> false
+     * @return predicate which contains composed predicates
+     * If predicates are empty or null then returns (v) then false
      */
     public default <V> SerializablePredicate<V> compose(SerializablePredicate<V>...predicates) {
         SerializablePredicate<V> result;
@@ -67,8 +67,8 @@ public interface IFilterPredicateFactory extends IClusterable {
 
     /**
      * See {@link IFilterPredicateFactory#getPredicateForClassesView(IModel)}
-     * @param showAll {@link IModel<Boolean>} if true - target = ALL
-     * @return {@link Predicate<OClass>}
+     * @param showAll {@link IModel} if true - target = ALL
+     * @return predicate
      */
     @Deprecated
     public default IGuicePredicate<OClass> getGuicePredicateForClassesView(IModel<Boolean> showAll) {
@@ -78,7 +78,7 @@ public interface IFilterPredicateFactory extends IClusterable {
 
     /**
      * See {@link IFilterPredicateFactory#getPredicateForClassesSearch()}
-     * @return {@link Predicate<OClass>}
+     * @return predicate
      */
     @Deprecated
     public default IGuicePredicate<OClass> getGuicePredicateForClassesSearch() {

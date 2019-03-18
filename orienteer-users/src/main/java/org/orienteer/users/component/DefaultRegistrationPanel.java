@@ -28,8 +28,8 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
 
     /**
      * Constructor
-     * @param id {@link String} component id
-     * @param model {@link IModel<OrienteerUser>} model which contains new {@link OrienteerUser}
+     * @param id component id
+     * @param model model which contains new {@link OrienteerUser}
      */
     public DefaultRegistrationPanel(String id, IModel<OrienteerUser> model) {
         super(id, model);
@@ -62,8 +62,8 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
 
     /**
      * Calls when form was success submitted
-     * @param target {@link AjaxRequestTarget} target for update components
-     * @param model {@link IModel<OrienteerUser>} model which contains filled user
+     * @param target target for update components
+     * @param model model which contains filled user
      */
     protected void onRegister(AjaxRequestTarget target, IModel<OrienteerUser> model) {
         // Override in subclass
@@ -78,8 +78,8 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
 
     /**
      * Create register button, which set user password and then calls {@link DefaultRegistrationPanel#onRegister(AjaxRequestTarget, IModel)}
-     * @param id {@link String} component id
-     * @return {@link AjaxFormCommand<Void>}
+     * @param id component id
+     * @return register button
      */
     private AjaxFormCommand<Void> createRegisterButton(String id) {
         return new AjaxFormCommand<Void>(id, "panel.registration.button.register") {

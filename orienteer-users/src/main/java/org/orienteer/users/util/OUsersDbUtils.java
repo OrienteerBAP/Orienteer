@@ -26,7 +26,7 @@ public final class OUsersDbUtils {
 	private OUsersDbUtils() {}
 
     /**
-     * @return {@link Optional<ODocument>} which contains perspective {@link OrienteerUsersModule#ORIENTEER_USER_PERSPECTIVE}
+     * @return optional which contains perspective {@link OrienteerUsersModule#ORIENTEER_USER_PERSPECTIVE}
      */
     public static Optional<ODocument> getDefaultOrienteerUserPerspective() {
         return DBClosure.sudo(db -> {
@@ -39,7 +39,7 @@ public final class OUsersDbUtils {
 
     /**
      * @param name {@link String} role name
-     * @return {@link Optional<ORole>} role
+     * @return role
      */
     public static Optional<ORole> getRoleByName(String name) {
         return DBClosure.sudo(db -> ofNullable(db.getMetadata().getSecurity().getRole(name)));
@@ -48,7 +48,7 @@ public final class OUsersDbUtils {
     /**
      * Search user by given restore id
      * @param restoreId {@link String} restore id
-     * @return {@link Optional< OrienteerUser >} user with given restore id
+     * @return user with given restore id
      */
     public static Optional<OrienteerUser> getUserByRestoreId(String restoreId) {
 	    return getUserBy(OrienteerUser.PROP_RESTORE_ID, restoreId);
@@ -56,8 +56,8 @@ public final class OUsersDbUtils {
 
     /**
      * Search user by given id
-     * @param id {@link String} user id
-     * @return {@link Optional<OrienteerUser>} user with given id
+     * @param id user id
+     * @return user with given id
      */
     public static Optional<OrienteerUser> getUserById(String id) {
 	    return getUserBy(OrienteerUser.PROP_ID, id);
@@ -65,8 +65,8 @@ public final class OUsersDbUtils {
 
     /**
      * Search user by given email
-     * @param email {@link String} user email
-     * @return {@link Optional<OrienteerUser>} user with given email
+     * @param email user email
+     * @return user with given email
      */
     public static Optional<OrienteerUser> getUserByEmail(String email) {
         return getUserBy(OrienteerUser.PROP_EMAIL, email);
@@ -74,7 +74,7 @@ public final class OUsersDbUtils {
 
     /**
      * Check if user exists with given restore id
-     * @param restoreId {@link String} user restore id
+     * @param restoreId user restore id
      * @return true if user with given restoreId exists in database
      */
     public static boolean isUserExistsWithRestoreId(String restoreId) {
@@ -83,7 +83,7 @@ public final class OUsersDbUtils {
 
     /**
      * Check if user exists with given email
-     * @param email {@link String} user email
+     * @param email user email
      * @return true if user exists with given email
      */
     public static boolean isUserExistsWithEmail(String email) {
@@ -92,7 +92,7 @@ public final class OUsersDbUtils {
 
     /**
      * Check if user exists with given id
-     * @param id {@link String} user id
+     * @param id user id
      * @return true if user exists with given id
      */
     public static boolean isUserExistsWithId(String id) {
@@ -101,9 +101,9 @@ public final class OUsersDbUtils {
 
     /**
      * Search user by given field and value
-     * @param field {@link String} field
-     * @param value {@link String} value
-     * @return {@link Optional<OrienteerUser>} user which field contains given value
+     * @param field field
+     * @param value value
+     * @return user which field contains given value
      */
     private static Optional<OrienteerUser> getUserBy(String field, String value) {
         return DBClosure.sudo(db -> {
@@ -115,8 +115,8 @@ public final class OUsersDbUtils {
 
     /**
      * Check if user exists with given field and value
-     * @param field {@link String} field
-     * @param value {@link String} value
+     * @param field field
+     * @param value value
      * @return true if user with given field and value exists in database
      */
     private static boolean isUserExistsBy(String field, String value) {

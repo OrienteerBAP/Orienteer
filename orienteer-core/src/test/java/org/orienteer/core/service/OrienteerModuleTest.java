@@ -24,7 +24,8 @@ public class OrienteerModuleTest {
 
 	/**
 	 * Test of lookupFile method, of class OrienteerModule.
-	 * @throws java.net.MalformedURLException
+	 * @throws MalformedURLException
+	 * @throws IOException
 	 */
 	@Test
 	public void testRetrieveProperties() throws MalformedURLException, IOException {

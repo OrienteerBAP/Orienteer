@@ -27,7 +27,7 @@ public class LoginButtonsPanel extends Panel {
     /**
      * Constructor
      * @param id {@link String} component id
-     * @param loginConsumer {@link SerializableConsumer<AjaxRequestTarget>} consumer which will be called when user clicks on login button
+     * @param loginConsumer consumer which will be called when user clicks on login button
      */
     public LoginButtonsPanel(String id, SerializableConsumer<AjaxRequestTarget> loginConsumer) {
         super(id);
@@ -45,7 +45,7 @@ public class LoginButtonsPanel extends Panel {
      * Creates login button. Calls {@link LoginButtonsPanel#loginConsumer} when user clicks on button
      * Used primary bootstrap type {@link BootstrapType#PRIMARY} and CSS class "mx-auto"
      * @param id {@link String} component id
-     * @return {@link AjaxFormCommand<Void>}
+     * @return created button
      */
     protected AjaxFormCommand<Void> createLoginButton(String id) {
         return new AjaxFormCommand<Void>(id, new ResourceModel("login.panel.button.login")) {
