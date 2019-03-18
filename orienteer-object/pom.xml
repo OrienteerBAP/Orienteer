@@ -5,7 +5,7 @@
     <parent>
         <artifactId>orienteer-parent</artifactId>
         <groupId>org.orienteer</groupId>
-        <version>1.4</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
     <artifactId>orienteer-object</artifactId>
 

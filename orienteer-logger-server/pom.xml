@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
-		<version>1.4</version>
+		<version>1.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-logger-server</artifactId>
 	<name>orienteer-logger-server</name>
