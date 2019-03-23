@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.org/OrienteerBAP/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerBAP/Orienteer) [![Coverage Status](https://coveralls.io/repos/github/OrienteerBAP/Orienteer/badge.svg)](https://coveralls.io/github/OrienteerBAP/Orienteer) [![Gitter](https://badges.gitter.im/OrienteerBAP/Orienteer.svg)](https://gitter.im/OrienteerBAP/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Dependency Status](https://www.versioneye.com/user/projects/5897a42427d3c30044303569/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/5897a42427d3c30044303569) [![Docker Pulls](https://img.shields.io/docker/pulls/orienteer/orienteer.svg)](https://hub.docker.com/r/orienteer/orienteer/) [![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/OrienteerBAP/Orienteer/) 
+[![Build Status](https://travis-ci.org/OrienteerBAP/Orienteer.svg?branch=master)](https://travis-ci.org/OrienteerBAP/Orienteer) [![Coverage Status](https://coveralls.io/repos/github/OrienteerBAP/Orienteer/badge.svg)](https://coveralls.io/github/OrienteerBAP/Orienteer) [![Gitter](https://badges.gitter.im/OrienteerBAP/Orienteer.svg)](https://gitter.im/OrienteerBAP/Orienteer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) [![Docker Pulls](https://img.shields.io/docker/pulls/orienteer/orienteer.svg)](https://hub.docker.com/r/orienteer/orienteer/) [![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/OrienteerBAP/Orienteer/) 
 
 ## Orienteer
 
-![Orienteer Wordcloud](http://orienteer.org/images/wordcloud.png)
+![Orienteer Wordcloud](http://orienteerbap.github.io/Orienteer/images/wordcloud.png)
 
 ### What is Orienteer 
 
@@ -71,7 +71,7 @@ Orienteer in standalone mode use embedded jetty server to run yourself. To insta
 
 #### Orienteer initial configuration
 
-**orienteer.properties** is the main file to store initial configuration paramenters for your installation. Sample properties file can be always found [here](https://github.com/OrienteerDW/Orienteer/blob/master/orienteer.properties.sample).
+**orienteer.properties** is the main file to store initial configuration paramenters for your installation. Sample properties file can be always found [here](https://github.com/OrienteerBAP/Orienteer/blob/master/orienteer.properties.sample).
 
 ```properties
 orienteer.production=false  //Run Orienteer in production mode or not
@@ -103,9 +103,9 @@ orientdb.admin.password=admin    //Password for OrientDB user used for administr
 
 #### Steps
 
-##### Install of [wicket-orientdb](https://github.com/OrienteerDW/wicket-orientdb) github SNAPSHOT
+##### Install of [wicket-orientdb](https://github.com/OrienteerBAP/wicket-orientdb) github SNAPSHOT
 
-This step is optional: [wicket-orientdb](https://github.com/OrienteerDW/wicket-orientdb) SNAPSHOT always available on Maven central
+This step is optional: [wicket-orientdb](https://github.com/OrienteerBAP/wicket-orientdb) SNAPSHOT always available on Maven central
 
 ```
 git clone <your fork URL for wicket-orientdb>
