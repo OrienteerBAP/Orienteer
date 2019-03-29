@@ -90,16 +90,7 @@ public class OClassIntrospector implements IOClassIntrospector
 			{
 				if(nameProperty==null || !nameProperty.equals(oProperty))
 				{
-					Class<?> javaType = oProperty.getType().getDefaultJavaType();
-					if(javaType!=null && Comparable.class.isAssignableFrom(javaType)) {
-						columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty, modeModel));
-					} else if (LocalizationVisualizer.NAME.equals(CustomAttribute.VISUALIZATION_TYPE.getValue(oProperty))) {
-						columns.add(new OPropertyValueColumn(
-								String.format("%s['%s']", oProperty.getName(),
-										OrienteerWebSession.get().getLocale().getLanguage()), oProperty, modeModel));
-					} else {
-						columns.add(new OPropertyValueColumn(oProperty, modeModel));
-					}
+					columns.add(new OPropertyValueColumn(oProperty, true, modeModel));
 				}
 			}
 		} else {

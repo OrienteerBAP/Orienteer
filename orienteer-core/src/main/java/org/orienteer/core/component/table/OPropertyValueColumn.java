@@ -5,9 +5,13 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.visualizer.LocalizationVisualizer;
+
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
@@ -27,6 +31,11 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 	public OPropertyValueColumn(IModel<OProperty> criteryModel, IModel<DisplayMode> modeModel)
 	{
 		super(criteryModel, modeModel);
+	}
+	
+	public OPropertyValueColumn(OProperty oProperty, boolean sortColumn, IModel<DisplayMode> modeModel)
+	{
+		this(sortColumn?resolveSortExpression(oProperty):null, oProperty, modeModel);
 	}
 	
 	public OPropertyValueColumn(String sortProperty, OProperty oProperty, IModel<DisplayMode> modeModel)
@@ -62,5 +71,19 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 	@Override
 	public String getFilterName() {
 		return getCriteryModel().map(OProperty::getName).getObject();
+	}
+	
+	private static String resolveSortExpression(OProperty property)
+	{
+		if(property==null || property.getType()==null) return null;
+		Class<?> javaType = property.getType().getDefaultJavaType();
+		if(javaType!=null && Comparable.class.isAssignableFrom(javaType)) {
+			return property.getName();
+		} else if (LocalizationVisualizer.NAME.equals(CustomAttribute.VISUALIZATION_TYPE.getValue(property))) {
+			return String.format("%s['%s']", property.getName(),
+							OrienteerWebSession.get().getLocale().getLanguage());
+		} else {
+			return null;
+		}
 	}
 }

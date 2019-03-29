@@ -33,7 +33,7 @@ public class OEntityColumn extends OPropertyValueColumn
 	
 	public OEntityColumn(OProperty oProperty, boolean sortColumn, IModel<DisplayMode> modeModel)
 	{
-		super(sortColumn?resolveSortExpression(oProperty):null, oProperty, modeModel);
+		super(oProperty, sortColumn, modeModel);
 	}
 
 	public OEntityColumn(OProperty oProperty, IModel<DisplayMode> modeModel)
@@ -53,13 +53,6 @@ public class OEntityColumn extends OPropertyValueColumn
 		super(sortProperty, oProperty, modeModel);
 	}
 	
-	private static String resolveSortExpression(OProperty property)
-	{
-		if(property==null || property.getType()==null) return null;
-		Class<?> defType = property.getType().getDefaultJavaType();
-		return defType!=null && Comparable.class.isAssignableFrom(defType)?property.getName():null;
-	}
-		
 	public String getNameProperty()
 	{
 		return getSortProperty();
