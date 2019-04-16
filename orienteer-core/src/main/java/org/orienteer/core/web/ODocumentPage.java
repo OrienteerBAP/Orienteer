@@ -1,11 +1,10 @@
 package org.orienteer.core.web;
 
-import java.util.*;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
@@ -13,28 +12,29 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.MountPath;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.widget.document.ExtendedVisualizerWidget;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.OWidgetsModule;
+import org.orienteer.core.module.RoutingModule;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.ByOClassWidgetFilter;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetFilter;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Widgets based page for {@link ODocument}s display
  */
-@MountPath("/doc/#{rid}/#{mode}")
+@MountPath(value = "/doc/#{rid}/#{mode}", alt = {"/address/#{address}/#{mode}"})
 public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument> {
-	
+
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
 	
@@ -60,18 +60,35 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	@Override
 	protected IModel<ODocument> resolveByPageParameters(PageParameters parameters) {
 		String rid = parameters.get("rid").toOptionalString();
-		if(rid!=null)
-		{
-			try
-			{
+		String address = parameters.get("address").toOptionalString();
+
+		if (rid != null) {
+			try {
 				return new ODocumentModel(new ORecordId(rid));
-			} catch (IllegalArgumentException e)
-			{
+			} catch (IllegalArgumentException e) {
 				//NOP Support of case with wrong rid
 			}
+		} else if (address != null) {
+		    return resolveDocumentByAddress(address);
 		}
+
 		return new ODocumentModel((ODocument)null);
 	}
+
+	protected IModel<ODocument> resolveDocumentByAddress(String address) {
+        List<ODocument> docs = DBClosure.sudo(db -> {
+            RoutingModule routing = (RoutingModule) OrienteerWebApplication.lookupApplication().getModuleByName(RoutingModule.NAME);
+            return routing.getRouteDocuments(db, address.startsWith("/") ? address : "/" + address);
+        });
+
+        if (docs.size() == 1) {
+            return new ODocumentModel(docs.get(0));
+        }
+
+        setResponsePage(SearchPage.class);
+
+        return new ODocumentModel((ODocument) null);
+    }
 
 	@Override
 	public String getDomain() {

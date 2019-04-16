@@ -36,7 +36,6 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
-import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.util.WicketProtector;
@@ -216,6 +215,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
 		registerModule(OConsoleTasksModule.class);
+		registerModule(RoutingModule.class);
 		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
 		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
 		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
