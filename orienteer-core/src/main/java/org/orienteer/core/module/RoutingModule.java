@@ -68,6 +68,16 @@ public class RoutingModule extends AbstractOrienteerModule {
                 .orElse(Collections.emptyList());
     }
 
+    public ORouterNode getRouterNode(ODatabaseDocument db, String route) {
+        String sql = String.format("select from %s where %s containsKey ? order by %s",
+                ORouter.CLASS_NAME, ORouter.PROP_ROUTES, ORouter.PROP_PRIORITY);
+        List<OIdentifiable> docs = db.query(new OSQLSynchQuery<>(sql, 1), route);
+
+        return CommonUtils.getFromIdentifiables(docs, ORouter::new)
+                .map(router -> router.getRoutes().get(route))
+                .orElse(null);
+    }
+
     public static class ORouter extends ODocumentWrapper {
         public static final String CLASS_NAME = "ORouter";
 

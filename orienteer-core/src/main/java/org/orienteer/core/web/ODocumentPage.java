@@ -1,6 +1,8 @@
 package org.orienteer.core.web;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -28,6 +30,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Widgets based page for {@link ODocument}s display
@@ -37,6 +40,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
+
 	
 	public ODocumentPage() {
 		super();
@@ -76,18 +80,26 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	}
 
 	protected IModel<ODocument> resolveDocumentByAddress(String address) {
-        List<ODocument> docs = DBClosure.sudo(db -> {
+        RoutingModule.ORouterNode routerNode = DBClosure.sudo(db -> {
             RoutingModule routing = (RoutingModule) OrienteerWebApplication.lookupApplication().getModuleByName(RoutingModule.NAME);
-            return routing.getRouteDocuments(db, address.startsWith("/") ? address : "/" + address);
+            return routing.getRouterNode(db, address.startsWith("/") ? address : "/" + address);
         });
 
-        if (docs.size() == 1) {
-            return new ODocumentModel(docs.get(0));
+        if (routerNode.getDocuments().size() == 1) {
+            return new ODocumentModel(routerNode.getDocuments().get(0));
         }
 
-        setResponsePage(SearchPage.class);
+        String docsParams = routerNode.getDocuments().stream().map(ODocument::getIdentity)
+				.map(OIdentifiable::getIdentity)
+				.map(ORID::toString)
+				.map(rid -> rid.substring(1))
+				.collect(Collectors.joining(","));
 
-        return new ODocumentModel((ODocument) null);
+
+		PageParameters pageParameters = new PageParameters();
+		pageParameters.add("docs", docsParams);
+		setResponsePage(new ODocumentsPage(pageParameters));
+		return new ODocumentModel(routerNode.getDocument());
     }
 
 	@Override
@@ -97,18 +109,27 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	
 	@Override
 	public void initialize() {
-		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+
+	}
+
+	@Override
+	protected void onInitialize() {
+		if (getModelObject() == null)
+			throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+
 		setWidgetsFilter(new ByOClassWidgetFilter<ODocument>() {
 
 			@Override
 			public OClass getOClass() {
 				ODocument doc = ODocumentPage.this.getModelObject();
-				return doc!=null?doc.getSchemaClass() : null;
+				return doc != null ? doc.getSchemaClass() : null;
 			}
 		});
+
 		super.initialize();
+		super.onInitialize();
 	}
-	
+
 	@Override
 	protected boolean switchToDefaultTab() {
 		if(super.switchToDefaultTab()) return true;
