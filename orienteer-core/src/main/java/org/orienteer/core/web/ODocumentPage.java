@@ -8,6 +8,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
+import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -76,7 +79,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		    return resolveDocumentByAddress(address);
 		}
 
-		return new ODocumentModel((ODocument)null);
+		return new ODocumentModel(null);
 	}
 
 	protected IModel<ODocument> resolveDocumentByAddress(String address) {
@@ -85,11 +88,17 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
             return routing.getRouterNode(db, address.startsWith("/") ? address : "/" + address);
         });
 
-        if (routerNode.getDocuments().size() == 1) {
+		List<ODocument> documents = routerNode.getDocuments();
+		if (documents.size() == 1) {
             return new ODocumentModel(routerNode.getDocuments().get(0));
-        }
+        } else if (!documents.isEmpty()) {
+			silentRedirectToDocumentsPage(documents);
+		}
+		return new ODocumentModel(null);
+    }
 
-        String docsParams = routerNode.getDocuments().stream().map(ODocument::getIdentity)
+    private void silentRedirectToDocumentsPage(List<ODocument> documents) throws RestartResponseException {
+		String docsParams = documents.stream().map(ODocument::getIdentity)
 				.map(OIdentifiable::getIdentity)
 				.map(ORID::toString)
 				.map(rid -> rid.substring(1))
@@ -98,9 +107,9 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 
 		PageParameters pageParameters = new PageParameters();
 		pageParameters.add("docs", docsParams);
-		setResponsePage(new ODocumentsPage(pageParameters));
-		return new ODocumentModel(routerNode.getDocument());
-    }
+		PageProvider provider = new PageProvider(ODocumentsPage.class, pageParameters);
+		throw new RestartResponseException(provider, RenderPageRequestHandler.RedirectPolicy.NEVER_REDIRECT);
+	}
 
 	@Override
 	public String getDomain() {
@@ -109,11 +118,6 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	
 	@Override
 	public void initialize() {
-
-	}
-
-	@Override
-	protected void onInitialize() {
 		if (getModelObject() == null)
 			throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 
@@ -127,7 +131,6 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		});
 
 		super.initialize();
-		super.onInitialize();
 	}
 
 	@Override

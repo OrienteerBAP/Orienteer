@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -49,11 +50,16 @@ public class ODocumentsPage extends AbstractWidgetPage<List<ODocument>> {
     }
 
     @Override
-    protected void onInitialize() {
+    public void initialize() {
         if (getModelObject() == null) {
             throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
         }
-        super.onInitialize();
+        super.initialize();
+    }
+
+    @Override
+    public IModel<String> getTitleModel() {
+        return new StringResourceModel("documents.title");
     }
 
     @Override
