@@ -77,6 +77,11 @@ public class RoutingModule extends AbstractOrienteerModule {
                 .orElse(null);
     }
 
+    public List<ODocument> getRouterNodeDocuments(ODatabaseDocument db, String route) {
+        ORouterNode routerNode = getRouterNode(db, route);
+        return routerNode != null ? routerNode.getDocuments() : Collections.emptyList();
+    }
+
     /**
      * Router for documents
      */

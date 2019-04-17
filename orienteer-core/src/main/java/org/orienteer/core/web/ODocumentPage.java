@@ -1,45 +1,35 @@
 package org.orienteer.core.web;
 
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
-import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.core.request.handler.PageProvider;
-import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.MountPath;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.ODocumentPageHeader;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.widget.document.ExtendedVisualizerWidget;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.OWidgetsModule;
-import org.orienteer.core.module.RoutingModule;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.ByOClassWidgetFilter;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetFilter;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Widgets based page for {@link ODocument}s display
- * Alternative mount path uses for create custom routes for documents. See {@link RoutingModule}
  */
-@MountPath(value = "/doc/#{rid}/#{mode}", alt = {"/address/#{address}/#{mode}"})
+@MountPath(value = "/doc/#{rid}/#{mode}")
 public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument> {
 
 	@Inject
@@ -68,55 +58,16 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	@Override
 	protected IModel<ODocument> resolveByPageParameters(PageParameters parameters) {
 		String rid = parameters.get("rid").toOptionalString();
-		String address = parameters.get("address").toOptionalString();
-
 		if (rid != null) {
 			try {
 				return new ODocumentModel(new ORecordId(rid));
 			} catch (IllegalArgumentException e) {
 				//NOP Support of case with wrong rid
 			}
-		} else if (address != null) {
-		    return resolveDocumentByAddress(address);
 		}
-
 		return new ODocumentModel(null);
 	}
 
-	/**
-	 * Try to resolve current document by given custom address
-	 * @param address custom address
-	 * @return model with current document or model with null
-	 * @throws RestartResponseException if current address contains list of documents. Redirects to {@link ODocumentsPage}
-	 */
-	protected IModel<ODocument> resolveDocumentByAddress(String address) throws RestartResponseException {
-        RoutingModule.ORouterNode routerNode = DBClosure.sudo(db -> {
-            RoutingModule routing = (RoutingModule) OrienteerWebApplication.lookupApplication().getModuleByName(RoutingModule.NAME);
-            return routing.getRouterNode(db, address.startsWith("/") ? address : "/" + address);
-        });
-
-		List<ODocument> documents = routerNode.getDocuments();
-		if (documents.size() == 1) {
-            return new ODocumentModel(routerNode.getDocuments().get(0));
-        } else if (!documents.isEmpty()) {
-			silentRedirectToDocumentsPage(documents);
-		}
-		return new ODocumentModel(null);
-    }
-
-    private void silentRedirectToDocumentsPage(List<ODocument> documents) throws RestartResponseException {
-		String docsParams = documents.stream().map(ODocument::getIdentity)
-				.map(OIdentifiable::getIdentity)
-				.map(ORID::toString)
-				.map(rid -> rid.substring(1))
-				.collect(Collectors.joining(","));
-
-
-		PageParameters pageParameters = new PageParameters();
-		pageParameters.add("docs", docsParams);
-		PageProvider provider = new PageProvider(ODocumentsPage.class, pageParameters);
-		throw new RestartResponseException(provider, RenderPageRequestHandler.RedirectPolicy.NEVER_REDIRECT);
-	}
 
 	@Override
 	public String getDomain() {
