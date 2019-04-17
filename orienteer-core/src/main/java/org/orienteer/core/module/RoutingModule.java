@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Module for create custom routing for documents.
+ */
 public class RoutingModule extends AbstractOrienteerModule {
 
     public static final String NAME = "routing";
@@ -58,19 +61,15 @@ public class RoutingModule extends AbstractOrienteerModule {
         onInstall(app, db);
     }
 
-    public List<ODocument> getRouteDocuments(ODatabaseDocument db, String route) {
-        String sql = String.format("select from %s where %s containsKey ? order by %s",
-                ORouter.CLASS_NAME, ORouter.PROP_ROUTES, ORouter.PROP_PRIORITY);
-        List<OIdentifiable> docs = db.query(new OSQLSynchQuery<>(sql, 1), route);
-
-        return CommonUtils.getFromIdentifiables(docs, ORouter::new)
-                .map(router -> router.getRouteDocuments(route))
-                .orElse(Collections.emptyList());
-    }
-
+    /**
+     * Find {@link ORouterNode} by given name
+     * @param db database instance
+     * @param route name of {@link ORouterNode}
+     * @return {@link ORouterNode} by name or null
+     */
     public ORouterNode getRouterNode(ODatabaseDocument db, String route) {
-        String sql = String.format("select from %s where %s containsKey ? order by %s",
-                ORouter.CLASS_NAME, ORouter.PROP_ROUTES, ORouter.PROP_PRIORITY);
+        String sql = String.format("select from %s where %s containsKey ? and %s=true order by %s",
+                ORouter.CLASS_NAME, ORouter.PROP_ROUTES, ORouter.PROP_ENABLED, ORouter.PROP_PRIORITY);
         List<OIdentifiable> docs = db.query(new OSQLSynchQuery<>(sql, 1), route);
 
         return CommonUtils.getFromIdentifiables(docs, ORouter::new)
@@ -78,12 +77,33 @@ public class RoutingModule extends AbstractOrienteerModule {
                 .orElse(null);
     }
 
+    /**
+     * Router for documents
+     */
     public static class ORouter extends ODocumentWrapper {
         public static final String CLASS_NAME = "ORouter";
 
+        /**
+         * Unique name for router
+         */
         public static final String PROP_NAME     = "name";
+
+        /**
+         * {@link OType#LINKMAP} which contains routes
+         * key - url (must start with '/')
+         * value - {@link ORouterNode} which contains list of documents which are on this url
+         */
         public static final String PROP_ROUTES   = "routes";
+
+        /**
+         * Priority of this router. Highest priority means that that router will try to use first
+         */
         public static final String PROP_PRIORITY = "priority";
+
+        /**
+         * true - use this router
+         * false - don't use this router
+         */
         public static final String PROP_ENABLED  = "enabled";
 
         public ORouter() {
@@ -154,10 +174,20 @@ public class RoutingModule extends AbstractOrienteerModule {
         }
     }
 
+    /**
+     * Router node which uses for routing by {@link ORouter}
+     */
     public static class ORouterNode extends ODocumentWrapper {
         public static final String CLASS_NAME = "ORouterNode";
 
+        /**
+         * Unique name of this node
+         */
         public static final String PROP_NAME      = "name";
+
+        /**
+         * List of documents which represents data for this route
+         */
         public static final String PROP_DOCUMENTS = "documents";
 
         public ORouterNode() {

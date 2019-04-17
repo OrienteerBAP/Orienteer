@@ -14,6 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Widget based page for display list of {@link ODocument}
+ * List of documents parses from page parameters.
+ * Parameter 'docs' contains documents rid separated by ','
+ */
 @MountPath("/documents/list")
 public class ODocumentsPage extends AbstractWidgetPage<List<ODocument>> {
 

@@ -18,10 +18,12 @@ import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.model.JavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
-import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 
 import java.util.List;
 
+/**
+ * Widget for display list of {@link ODocument} which are passed in constructor
+ */
 @Widget(id="list-documents", domain="documents", tab="list", autoEnable=true)
 public class ListDocumentsWidget extends AbstractWidget<List<ODocument>> {
 
@@ -73,7 +75,7 @@ public class ListDocumentsWidget extends AbstractWidget<List<ODocument>> {
 
     @Override
     protected IModel<String> getDefaultTitleModel() {
-        return new StringResourceModel("class.browse.title", new OClassNamingModel(getOClass()));
+        return new StringResourceModel("documents.list.title");
     }
 
     @Override

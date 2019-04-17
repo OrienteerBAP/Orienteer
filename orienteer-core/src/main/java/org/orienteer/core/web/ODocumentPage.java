@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 /**
  * Widgets based page for {@link ODocument}s display
+ * Alternative mount path uses for create custom routes for documents. See {@link RoutingModule}
  */
 @MountPath(value = "/doc/#{rid}/#{mode}", alt = {"/address/#{address}/#{mode}"})
 public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument> {
@@ -82,7 +83,13 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		return new ODocumentModel(null);
 	}
 
-	protected IModel<ODocument> resolveDocumentByAddress(String address) {
+	/**
+	 * Try to resolve current document by given custom address
+	 * @param address custom address
+	 * @return model with current document or model with null
+	 * @throws RestartResponseException if current address contains list of documents. Redirects to {@link ODocumentsPage}
+	 */
+	protected IModel<ODocument> resolveDocumentByAddress(String address) throws RestartResponseException {
         RoutingModule.ORouterNode routerNode = DBClosure.sudo(db -> {
             RoutingModule routing = (RoutingModule) OrienteerWebApplication.lookupApplication().getModuleByName(RoutingModule.NAME);
             return routing.getRouterNode(db, address.startsWith("/") ? address : "/" + address);
