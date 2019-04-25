@@ -14,10 +14,10 @@ import org.orienteer.core.component.visualizer.AbstractSimpleVisualizer;
 import org.orienteer.users.model.IOAuth2Provider;
 import org.orienteer.users.model.OAuth2Provider;
 import org.orienteer.users.util.OAuth2ProviderChoiceProvider;
+import org.orienteer.users.util.OUsersCommonUtils;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Select2Choice;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -64,7 +64,7 @@ public class OAuth2ProviderVisualizer extends AbstractSimpleVisualizer {
      * @return {@link ChoiceProvider} which provides provider label
      */
     protected ChoiceProvider<String> createProvider() {
-        List<IOAuth2Provider> providers = Arrays.asList(OAuth2Provider.values());
+        List<IOAuth2Provider> providers = OUsersCommonUtils.getOAuth2Providers();
         return new OAuth2ProviderChoiceProvider(providers);
     }
 

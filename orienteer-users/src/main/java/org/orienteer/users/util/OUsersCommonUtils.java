@@ -1,5 +1,9 @@
 package org.orienteer.users.util;
 
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -10,6 +14,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.users.model.IOAuth2Provider;
 
 import java.util.*;
 
@@ -21,6 +26,16 @@ import static org.orienteer.core.module.OWidgetsModule.*;
 public final class OUsersCommonUtils {
 	
 	private OUsersCommonUtils() {}
+
+	public static List<IOAuth2Provider> getOAuth2Providers() {
+        OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+        if (app == null) {
+            return Collections.emptyList();
+        }
+        Named named = Names.named("orienteer.oauth2.providers");
+        Key<List<IOAuth2Provider>> key = Key.get(new TypeLiteral<List<IOAuth2Provider>>() {}, named);
+        return app.getInjector().getInstance(key);
+    }
 
     public static void setRestricted(ODatabaseDocument db, OClass oClass) {
         OClass restricted = db.getMetadata().getSchema().getClass("ORestricted");
