@@ -11,7 +11,12 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository for work with {@link OrienteerUsersModule.ModuleModel}
+ */
 public final class OrienteerUserModuleRepository {
+
+    private OrienteerUserModuleRepository() {}
 
     public static Optional<OrienteerUsersModule.ModuleModel> getModuleModel() {
         return DBClosure.sudo(OrienteerUserModuleRepository::getModuleModel);

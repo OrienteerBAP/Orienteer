@@ -5,13 +5,36 @@ import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
+/**
+ * OAuth2 context
+ * Uses for login user
+ */
 public class OAuth2ServiceContext extends ODocumentWrapper {
 
     public static final String CLASS_NAME = "OAuth2ServiceContext";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Contains current state received in OAuth2 communication
+     */
     public static final String PROP_STATE             = "state";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#LINK}
+     * Links to {@link OAuth2Service} which was used for create this context
+     */
     public static final String PROP_SERVICE           = "service";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#BOOLEAN}
+     * If true - so this context was already used and it shouldn't use again
+     */
     public static final String PROP_USED              = "used";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Contains authorization url
+     */
     public static final String PROP_AUTHORIZATION_URL = "authorizationUrl";
 
     public OAuth2ServiceContext() {

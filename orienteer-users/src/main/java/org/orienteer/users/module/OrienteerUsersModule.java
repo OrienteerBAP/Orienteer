@@ -365,13 +365,29 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         app.getUIVisualizersRegistry().unregisterUIComponentFactory(Collections.singletonList(OType.STRING), OAuth2ProviderVisualizer.NAME);
     }
 
-
+    /**
+     * Wrapper for module document for {@link OrienteerUsersModule}
+     */
     public static class ModuleModel extends ODocumentWrapper {
 
         public static final String CLASS_NAME = "OrienteerUsers";
 
+        /**
+         * {@link OType#STRING}
+         * Contains app domain
+         */
         public static final String PROP_DOMAIN          = "domain";
+
+        /**
+         * {@link OType#BOOLEAN}
+         * If true, so users can login and register throughout social networks
+         */
         public static final String PROP_OAUTH2          = "oauth2";
+
+        /**
+         * {@link OType#STRING}
+         * Contains OAuth2 callback
+         */
         public static final String PROP_OAUTH2_CALLBACK = "oauth2Callback";
 
         public ModuleModel() {
@@ -413,6 +429,9 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
             return this;
         }
 
+        /**
+         * @return valid url which is concatenation of {@link ModuleModel#PROP_DOMAIN} and {@link ModuleModel#PROP_OAUTH2_CALLBACK}
+         */
         public String getFullOAuth2Callback() {
             String domain = getDomain();
             String callback = getOAuth2Callback();

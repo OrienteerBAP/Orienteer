@@ -10,6 +10,10 @@ import org.wicketstuff.select2.Response;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of {@link ChoiceProvider} for show {@link IOAuth2Provider} as choices.
+ * Shows labels as choice, but internal uses name of provider
+ */
 public class OAuth2ProviderChoiceProvider extends ChoiceProvider<String> {
 
     private final List<IOAuth2Provider> providers;

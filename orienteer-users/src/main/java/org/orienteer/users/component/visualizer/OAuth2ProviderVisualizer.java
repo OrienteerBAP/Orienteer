@@ -20,6 +20,11 @@ import org.wicketstuff.select2.Select2Choice;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Implementation of {@link org.orienteer.core.component.visualizer.IVisualizer} for visualize OAuth2 providers
+ * EDIT: show {@link Select2Choice} with providers labels
+ * VIEW: show {@link Label} with provider label
+ */
 public class OAuth2ProviderVisualizer extends AbstractSimpleVisualizer {
 
     public static final String NAME = "oauth2-visualizer";
@@ -55,15 +60,26 @@ public class OAuth2ProviderVisualizer extends AbstractSimpleVisualizer {
         };
     }
 
+    /**
+     * @return {@link ChoiceProvider} which provides provider label
+     */
     protected ChoiceProvider<String> createProvider() {
         List<IOAuth2Provider> providers = Arrays.asList(OAuth2Provider.values());
         return new OAuth2ProviderChoiceProvider(providers);
     }
 
+    /**
+     * @param name name of provider
+     * @return {@link IOAuth2Provider} with given name. By default try to find enum {@link OAuth2Provider}
+     */
     protected IOAuth2Provider getProviderByName(String name) {
         return OAuth2Provider.valueOf(name);
     }
 
+    /**
+     * @param provider {@link IOAuth2Provider}
+     * @return label of provider
+     */
     protected IModel<String> createProviderLabelModel(IOAuth2Provider provider) {
         return new ResourceModel(provider.getLabel());
     }

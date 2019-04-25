@@ -8,6 +8,9 @@ import org.orienteer.users.repository.OrienteerUserRepository;
 
 import java.util.UUID;
 
+/**
+ * Google implementation for {@link org.orienteer.users.service.IOAuth2UserCreator}
+ */
 public class GoogleUserCreator extends AbstractUserCreator {
 
     private static final String FIELD_NAME        = "name";

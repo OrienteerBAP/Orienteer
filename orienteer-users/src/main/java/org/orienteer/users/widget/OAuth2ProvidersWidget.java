@@ -9,6 +9,9 @@ import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.users.model.OAuth2Service;
 
+/**
+ * Widget which provides possibility for easy configure login throughout social networks
+ */
 @Widget(
         id = "oauth2-providers",
         oClass = OAuth2Service.CLASS_NAME,

@@ -25,6 +25,9 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Login panel with possibility for login throughout social networks
+ */
 public class OUsersLoginPanel extends LoginPanel {
 
     public static final CssResourceReference CSS_STYLE = new CssResourceReference(OUsersLoginPanel.class, "style.css");
@@ -71,6 +74,13 @@ public class OUsersLoginPanel extends LoginPanel {
         };
     }
 
+    /**
+     * Calls when user clicks on social image for login user.
+     * Redirects user to social network authorization url
+     * See {@link IOAuth2Service#requestAuthorizationUrl(OAuth2Service, String)}
+     * @param target {@link AjaxRequestTarget}
+     * @param model model with {@link OAuth2Service} for login
+     */
     protected void onSocialImageClick(AjaxRequestTarget target, IModel<OAuth2Service> model) {
         OAuth2Service service = model.getObject();
         OAuth2ServiceContext ctx = auth2Service.requestAuthorizationUrl(service, UUID.randomUUID().toString());

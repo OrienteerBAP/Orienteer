@@ -8,6 +8,9 @@ import org.orienteer.users.repository.OrienteerUserRepository;
 
 import java.util.UUID;
 
+/**
+ * Facebook implementation for {@link org.orienteer.users.service.IOAuth2UserCreator}
+ */
 public class FacebookUserCreator extends AbstractUserCreator {
 
     private static final String FIELD_FIRST_NAME = "first_name";

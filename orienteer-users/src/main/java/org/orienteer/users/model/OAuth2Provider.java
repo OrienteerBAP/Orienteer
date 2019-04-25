@@ -14,6 +14,10 @@ import org.orienteer.users.service.impl.GoogleUserCreator;
 
 import java.util.function.Supplier;
 
+/**
+ * Default implementation of {@link IOAuth2Provider}
+ * Contains base social networks.
+ */
 public enum OAuth2Provider implements IOAuth2Provider {
 
     GITHUB(

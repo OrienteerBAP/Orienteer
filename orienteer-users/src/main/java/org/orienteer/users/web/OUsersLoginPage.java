@@ -11,6 +11,9 @@ import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.service.IOAuth2Service;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+/**
+ * Extends {@link LoginPage} for allow login throughout social networks
+ */
 @MountPath("/login")
 public class OUsersLoginPage extends LoginPage {
 

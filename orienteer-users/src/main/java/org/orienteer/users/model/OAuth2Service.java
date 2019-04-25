@@ -7,12 +7,31 @@ import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+/**
+ * OAuth2 service wrapper.
+ * Contains main information for OAuth2
+ * @see <a href="https://github.com/scribejava/scribejava">ScribeJava</a>
+ */
 public class OAuth2Service extends ODocumentWrapper {
 
     public static final String CLASS_NAME = "OAuth2Service";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Contains client key
+     */
     public static final String PROP_API_KEY    = "apiKey";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Contains client API secret
+     */
     public static final String PROP_API_SECRET = "apiSecret";
+
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#STRING}
+     * Contains name for {@link IOAuth2Provider}
+     */
     public static final String PROP_PROVIDER   = "provider";
 
     public OAuth2Service() {

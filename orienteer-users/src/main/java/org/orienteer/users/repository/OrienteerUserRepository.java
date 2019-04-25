@@ -21,6 +21,9 @@ import static org.orienteer.core.util.CommonUtils.getDocument;
 import static org.orienteer.core.util.CommonUtils.getFromIdentifiables;
 import static org.orienteer.users.repository.DatabaseHelper.selectFromBy;
 
+/**
+ * Repository for work with user models
+ */
 public final class OrienteerUserRepository {
 
     private OrienteerUserRepository() {}

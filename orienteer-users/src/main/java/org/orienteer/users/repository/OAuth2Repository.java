@@ -11,6 +11,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository for work with OAuth2 models
+ */
 public final class OAuth2Repository {
 
     private OAuth2Repository() {}

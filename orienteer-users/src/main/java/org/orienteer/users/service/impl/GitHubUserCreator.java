@@ -9,7 +9,9 @@ import org.orienteer.users.repository.OrienteerUserRepository;
 
 import java.util.UUID;
 
-
+/**
+ * GitHub implementation for {@link org.orienteer.users.service.IOAuth2UserCreator}
+ */
 public class GitHubUserCreator extends AbstractUserCreator {
 
     private static final String FIELD_LOGIN    = "login";

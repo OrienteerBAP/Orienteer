@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Default implementation of {@link IOAuth2Service}
+ */
 @Singleton
-public class DefaultOAuth2SeerviceImpl implements IOAuth2Service {
+public class DefaultOAuth2ServiceImpl implements IOAuth2Service {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultOAuth2SeerviceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultOAuth2ServiceImpl.class);
 
     @Override
     public OAuth2ServiceContext requestAuthorizationUrl(OAuth2Service service, String secretState) {
