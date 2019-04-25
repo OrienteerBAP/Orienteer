@@ -17,8 +17,8 @@ import org.orienteer.core.component.LoginPanel;
 import org.orienteer.users.model.IOAuth2Provider;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
+import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.service.IOAuth2Service;
-import org.orienteer.users.util.OUsersDbUtils;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.inject.Inject;
@@ -43,7 +43,7 @@ public class OUsersLoginPanel extends LoginPanel {
     }
 
     private ListView<OAuth2Service> createSocialNetworksServices(String id) {
-        List<OAuth2Service> services = OUsersDbUtils.getOAuth2Services();
+        List<OAuth2Service> services = OAuth2Repository.getOAuth2Services();
 
         return new ListView<OAuth2Service>(id, new ListModel<>(services)) {
             @Override

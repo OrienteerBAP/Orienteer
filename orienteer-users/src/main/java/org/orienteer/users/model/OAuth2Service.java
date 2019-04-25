@@ -4,7 +4,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.orienteer.users.module.OrienteerUsersModule;
-import org.orienteer.users.util.OUsersDbUtils;
+import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 public class OAuth2Service extends ODocumentWrapper {
@@ -60,7 +60,7 @@ public class OAuth2Service extends ODocumentWrapper {
     }
 
     public String getCallback(ODatabaseDocument db) {
-        return OUsersDbUtils.getModuleModel(db)
+        return OrienteerUserModuleRepository.getModuleModel(db)
                 .map(OrienteerUsersModule.ModuleModel::getFullOAuth2Callback)
                 .orElse(null);
     }

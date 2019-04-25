@@ -12,8 +12,8 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.time.Time;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOrienteerUsersService;
-import org.orienteer.users.util.OUsersDbUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class RestorePasswordResource extends AbstractResource {
             public void writeData(Attributes attributes) throws IOException {
                 String id = attributes.getParameters().get("id").toString();
                 PageParameters params = new PageParameters();
-                if (!Strings.isNullOrEmpty(id) && OUsersDbUtils.isUserExistsWithRestoreId(id)) {
+                if (!Strings.isNullOrEmpty(id) && OrienteerUserRepository.isUserExistsWithRestoreId(id)) {
                     params.add(RES_KEY, id);
                     RequestCycle.get().setResponsePage(service.getRestorePasswordPage(), params);
                 } else RequestCycle.get().setResponsePage(OrienteerWebApplication.lookupApplication().getHomePage());

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OrienteerUser;
-import org.orienteer.users.util.OUsersDbUtils;
+import org.orienteer.users.repository.OrienteerUserRepository;
 
 import java.util.UUID;
 
@@ -19,7 +19,7 @@ public class GoogleUserCreator extends AbstractUserCreator {
     @Override
     protected OrienteerUser getUserFromNode(ODatabaseDocument db, JsonNode node) {
         String email = node.get(FIELD_EMAIL).textValue();
-        return OUsersDbUtils.getUserByEmail(db, email).orElse(null);
+        return OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
     }
 
     @Override

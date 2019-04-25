@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OrienteerUser;
-import org.orienteer.users.util.OUsersDbUtils;
+import org.orienteer.users.repository.OrienteerUserRepository;
 
 import java.util.UUID;
 
@@ -21,14 +21,14 @@ public class FacebookUserCreator extends AbstractUserCreator {
     protected OrienteerUser getUserFromNode(ODatabaseDocument db, JsonNode node) {
         String email = node.get(FIELD_EMAIL) != null ? node.get(FIELD_EMAIL).textValue() : null;
 
-        OrienteerUser user = OUsersDbUtils.getUserByEmail(db, email).orElse(null);
+        OrienteerUser user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
         if (user != null) {
             return user;
         }
 
         String shortName = node.get(FIELD_SHORT_NAME).textValue();
         String id = node.get(FIELD_ID).textValue();
-        return OUsersDbUtils.getUserByName(db, createUsername(shortName, id)).orElse(null);
+        return OrienteerUserRepository.getUserByName(db, createUsername(shortName, id)).orElse(null);
     }
 
     @Override

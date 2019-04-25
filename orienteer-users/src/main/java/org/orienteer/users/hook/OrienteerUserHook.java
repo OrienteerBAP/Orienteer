@@ -9,7 +9,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
-import org.orienteer.users.util.OUsersDbUtils;
+import org.orienteer.users.repository.OrienteerUserRepository;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -30,7 +30,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
      * Update document {@link OUser} before create document.
      * Fill field {@link OrienteerUser#PROP_ID} using {@link UUID#randomUUID()}
      * If field {@link PerspectivesModule#PROP_PERSPECTIVE} in user document is empty, so will be used default perspective for
-     * orienteer users by calling {@link OUsersDbUtils#getDefaultOrienteerUserPerspective()}.
+     * orienteer users by calling {@link OrienteerUserRepository#getDefaultOrienteerUserPerspective()}.
      * If filed "roles" is empty or null, so it will be fill by role {@link OrienteerUsersModule#ORIENTEER_USER_ROLE}
      * Allows user read and update herself
      * @param doc {@link ODocument} user document
@@ -41,7 +41,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
         doc.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
 
         if (doc.field(PerspectivesModule.PROP_PERSPECTIVE) == null) {
-            OUsersDbUtils.getDefaultOrienteerUserPerspective()
+            OrienteerUserRepository.getDefaultOrienteerUserPerspective()
                     .ifPresent(
                             perspective -> doc.field(PerspectivesModule.PROP_PERSPECTIVE, perspective)
                     );
@@ -76,7 +76,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
     }
 
     private ODocument getOrienteerUserRole() {
-        return OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
+        return OrienteerUserRepository.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
                 .map(ORole::getDocument)
                 .orElseThrow(() -> new IllegalStateException("Role " + OrienteerUsersModule.ORIENTEER_USER_ROLE + " not exists"));
     }

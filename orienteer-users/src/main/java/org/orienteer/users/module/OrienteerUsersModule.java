@@ -342,7 +342,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         RegistrationResource.mount(app);
         RestorePasswordResource.mount(app);
 
-        app.mountPages("org.orienteer.users.web");
+        app.mountPackage("org.orienteer.users.web");
         app.getUIVisualizersRegistry().registerUIComponentFactory(new OAuth2ProviderVisualizer());
 
         OScheduler scheduler = db.getMetadata().getScheduler();
@@ -361,7 +361,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         RegistrationResource.unmount(app);
         RestorePasswordResource.unmount(app);
 
-        app.unmountPages("org.orienteer.users.web");
+        app.mountPackage("org.orienteer.users.web");
         app.getUIVisualizersRegistry().unregisterUIComponentFactory(Collections.singletonList(OType.STRING), OAuth2ProviderVisualizer.NAME);
     }
 

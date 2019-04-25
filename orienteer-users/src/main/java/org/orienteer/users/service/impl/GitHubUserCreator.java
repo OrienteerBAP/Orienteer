@@ -5,7 +5,7 @@ import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OrienteerUser;
-import org.orienteer.users.util.OUsersDbUtils;
+import org.orienteer.users.repository.OrienteerUserRepository;
 
 import java.util.UUID;
 
@@ -26,9 +26,9 @@ public class GitHubUserCreator extends AbstractUserCreator {
 
         db.getMetadata().getSecurity().getUser(login);
 
-        OrienteerUser user = OUsersDbUtils.getUserByName(db, login).orElse(null);
+        OrienteerUser user = OrienteerUserRepository.getUserByName(db, login).orElse(null);
         if (user == null) {
-            user = OUsersDbUtils.getUserByEmail(db, email).orElse(null);
+            user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
         }
         return user;
     }

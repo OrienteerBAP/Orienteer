@@ -11,8 +11,8 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOrienteerUsersService;
-import org.orienteer.users.util.OUsersDbUtils;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class RegistrationResource extends AbstractResource {
             String id = params.get(PARAMETER_ID).toOptionalString();
 
             if (!Strings.isNullOrEmpty(id)) {
-                OUsersDbUtils.getUserById(id)
+                OrienteerUserRepository.getUserById(id)
                         .filter(user -> user.getAccountStatus() != OSecurityUser.STATUSES.ACTIVE)
                         .ifPresent(user -> {
                             user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
