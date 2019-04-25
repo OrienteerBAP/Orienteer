@@ -27,6 +27,16 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>3.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.scribejava</groupId>
+            <artifactId>scribejava-apis</artifactId>
+            <version>6.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.scribejava</groupId>
+            <artifactId>scribejava-core</artifactId>
+            <version>6.5.1</version>
+        </dependency>
         <!-- ORIENTEER TESTS for TESTING -->
         <dependency>
             <groupId>org.orienteer</groupId>

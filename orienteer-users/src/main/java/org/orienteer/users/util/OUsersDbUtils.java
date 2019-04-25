@@ -1,11 +1,16 @@
 package org.orienteer.users.util;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.util.CommonUtils;
+import org.orienteer.users.model.OAuth2Service;
+import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -72,6 +77,46 @@ public final class OUsersDbUtils {
         return getUserBy(OrienteerUser.PROP_EMAIL, email);
     }
 
+    public static Optional<OrienteerUser> getUserByEmail(ODatabaseDocument db, String email) {
+        return getUserBy(db, OrienteerUser.PROP_EMAIL, email);
+    }
+
+    public static Optional<OrienteerUser> getUserByName(ODatabaseDocument db, String name) {
+        return getUserBy(db, "name", name);
+    }
+
+    public static Optional<OrienteerUsersModule.ModuleModel> getModuleModel() {
+        return DBClosure.sudo(OUsersDbUtils::getModuleModel);
+    }
+
+    public static Optional<OrienteerUsersModule.ModuleModel> getModuleModel(ODatabaseDocument db) {
+        String sql = String.format("select from %s where %s = true",
+                OrienteerUsersModule.ModuleModel.CLASS_NAME, IOrienteerModule.OMODULE_ACTIVATE);
+        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql), 1);
+        return CommonUtils.getFromIdentifiables(identifiables, OrienteerUsersModule.ModuleModel::new);
+    }
+
+    public static List<OAuth2Service> getOAuth2Services() {
+        return DBClosure.sudo(OUsersDbUtils::getOAuth2Services);
+    }
+
+    public static List<OAuth2Service> getOAuth2Services(ODatabaseDocument db) {
+        String sql = String.format("select from %s", OAuth2Service.CLASS_NAME);
+        List<OIdentifiable> services = db.query(new OSQLSynchQuery<>(sql));
+        return CommonUtils.mapIdentifiables(services, OAuth2Service::new);
+    }
+
+    public static Optional<OAuth2ServiceContext> getServiceContextByState(String state) {
+        return DBClosure.sudo(db -> OUsersDbUtils.getServiceContextByState(db, state));
+    }
+
+    public static Optional<OAuth2ServiceContext> getServiceContextByState(ODatabaseDocument db, String state) {
+        String sql = String.format("select from %s where %s = ?",
+                OAuth2ServiceContext.CLASS_NAME, OAuth2ServiceContext.PROP_STATE);
+        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), state);
+        return CommonUtils.getFromIdentifiables(identifiables, OAuth2ServiceContext::new);
+    }
+
     /**
      * Check if user exists with given restore id
      * @param restoreId user restore id
@@ -106,11 +151,13 @@ public final class OUsersDbUtils {
      * @return user which field contains given value
      */
     private static Optional<OrienteerUser> getUserBy(String field, String value) {
-        return DBClosure.sudo(db -> {
-            String sql = String.format("select from %s where %s = ?", OrienteerUser.CLASS_NAME, field);
-            List<OIdentifiable> identifiables  = db.query(new OSQLSynchQuery<>(sql, 1), value);
-            return getFromIdentifiables(identifiables, OrienteerUser::new);
-        });
+        return DBClosure.sudo(db -> getUserBy(db, field, value));
+    }
+
+    private static Optional<OrienteerUser> getUserBy(ODatabaseDocument db, String field, String value) {
+        String sql = String.format("select from %s where %s = ?", OrienteerUser.CLASS_NAME, field);
+        List<OIdentifiable> identifiables  = db.query(new OSQLSynchQuery<>(sql, 1), value);
+        return getFromIdentifiables(identifiables, OrienteerUser::new);
     }
 
     /**

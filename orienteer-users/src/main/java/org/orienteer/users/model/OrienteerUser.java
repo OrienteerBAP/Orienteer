@@ -52,6 +52,10 @@ public class OrienteerUser extends OUser {
         this(new ODocument(className));
     }
 
+    public OrienteerUser() {
+        this(CLASS_NAME);
+    }
+
     public OrienteerUser(String iUserName, String iUserPassword) {
         super(iUserName, iUserPassword);
     }
