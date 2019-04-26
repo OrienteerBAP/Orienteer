@@ -63,6 +63,14 @@ public class OUsersLoginPage extends LoginPage {
         return super.createLoginPanel(id);
     }
 
+    @Override
+    protected String getContainerClasses(WebMarkupContainer loginPanel) {
+        if (loginPanel instanceof OUsersLoginPanel) {
+            return "col-md-6 card-group";
+        }
+        return super.getContainerClasses(loginPanel);
+    }
+
     private boolean isOAuth2Active() {
         return OrienteerUserModuleRepository.getModuleModel()
                 .map(OrienteerUsersModule.ModuleModel::isOAuth2)
