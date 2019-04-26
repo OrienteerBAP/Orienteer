@@ -28,4 +28,20 @@ public final class OrienteerUserModuleRepository {
         List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql), 1);
         return CommonUtils.getFromIdentifiables(identifiables, OrienteerUsersModule.ModuleModel::new);
     }
+
+    public static boolean isRegistrationActive() {
+        return getModuleModel()
+                .map(OrienteerUsersModule.ModuleModel::isRegistration)
+                .orElseThrow(OrienteerUserModuleRepository::moduleNotConfiguredException);
+    }
+
+    public static boolean isOAuth2Active() {
+        return getModuleModel()
+                .map(OrienteerUsersModule.ModuleModel::isOAuth2)
+                .orElseThrow(OrienteerUserModuleRepository::moduleNotConfiguredException);
+    }
+
+    private static IllegalStateException moduleNotConfiguredException() {
+        return new IllegalStateException("There is no configured module - " + OrienteerUsersModule.ModuleModel.CLASS_NAME);
+    }
 }

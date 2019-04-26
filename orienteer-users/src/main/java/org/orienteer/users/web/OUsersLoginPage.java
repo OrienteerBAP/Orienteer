@@ -10,7 +10,6 @@ import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.component.OUsersLoginFooterPanel;
 import org.orienteer.users.component.OUsersLoginPanel;
 import org.orienteer.users.model.OAuth2Service;
-import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import org.orienteer.users.service.IOAuth2Service;
@@ -34,7 +33,7 @@ public class OUsersLoginPage extends LoginPage {
     public OUsersLoginPage(PageParameters params) {
         this();
 
-        if (isOAuth2Active()) {
+        if (OrienteerUserModuleRepository.isOAuth2Active()) {
             String code = params.get("code").toOptionalString();
             String state = params.get("state").toOptionalString();
 
@@ -55,7 +54,7 @@ public class OUsersLoginPage extends LoginPage {
 
     @Override
     protected WebMarkupContainer createLoginPanel(String id) {
-        if (isOAuth2Active()) {
+        if (OrienteerUserModuleRepository.isOAuth2Active()) {
             List<OAuth2Service> services = OAuth2Repository.getOAuth2Services(true);
             if (!services.isEmpty()) {
                 return new OUsersLoginPanel(id, new ListModel<>(services));
@@ -66,7 +65,10 @@ public class OUsersLoginPage extends LoginPage {
 
     @Override
     protected WebMarkupContainer createLoginFooter(String id) {
-        return new OUsersLoginFooterPanel(id);
+        if (OrienteerUserModuleRepository.isRegistrationActive()) {
+            return new OUsersLoginFooterPanel(id);
+        }
+        return super.createLoginFooter(id);
     }
 
     @Override
@@ -77,9 +79,4 @@ public class OUsersLoginPage extends LoginPage {
         return super.getContainerClasses(loginPanel);
     }
 
-    private boolean isOAuth2Active() {
-        return OrienteerUserModuleRepository.getModuleModel()
-                .map(OrienteerUsersModule.ModuleModel::isOAuth2)
-                .orElseThrow(() -> new IllegalStateException("There is no configured module " + OrienteerUsersModule.ModuleModel.CLASS_NAME));
-    }
 }

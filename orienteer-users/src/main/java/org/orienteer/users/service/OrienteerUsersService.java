@@ -14,6 +14,7 @@ import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.mail.service.IOMailService;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
+import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import org.orienteer.users.resource.RegistrationResource;
 import org.orienteer.users.resource.RestorePasswordResource;
 import org.orienteer.users.web.DefaultRestorePasswordPage;
@@ -68,13 +69,15 @@ public class OrienteerUsersService implements IOrienteerUsersService {
 
     @Override
     public void notifyUserAboutRegistration(OrienteerUser user) {
-        OMailUtils.getOMailByName(OrienteerUsersModule.MAIL_REGISTRATION)
-                .ifPresent(mail -> {
-                    OPreparedMail preparedMail = new OPreparedMail(mail, createRegistrationMailMacros(user));
-                    adjustRegistrationPreparedMail(preparedMail, user);
-                    DBClosure.sudoSave(preparedMail);
-                    mailService.sendMailAsync(preparedMail);
-                });
+        if (OrienteerUserModuleRepository.isRegistrationActive()) {
+            OMailUtils.getOMailByName(OrienteerUsersModule.MAIL_REGISTRATION)
+                    .ifPresent(mail -> {
+                        OPreparedMail preparedMail = new OPreparedMail(mail, createRegistrationMailMacros(user));
+                        adjustRegistrationPreparedMail(preparedMail, user);
+                        DBClosure.sudoSave(preparedMail);
+                        mailService.sendMailAsync(preparedMail);
+                    });
+        }
     }
 
     @Override

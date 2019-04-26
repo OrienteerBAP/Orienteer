@@ -63,7 +63,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 6;
+    public static final int VERSION = 7;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -122,7 +122,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                 .oProperty(ModuleModel.PROP_OAUTH2, OType.BOOLEAN, 50)
                     .notNull()
                     .defaultValue("true")
-                .oProperty(ModuleModel.PROP_OAUTH2_CALLBACK, OType.STRING, 60)
+                .oProperty(ModuleModel.PROP_REGISTRATION, OType.BOOLEAN, 60)
+                    .notNull()
+                    .defaultValue("true")
+                .oProperty(ModuleModel.PROP_OAUTH2_CALLBACK, OType.STRING, 70)
                     .notNull()
                     .defaultValue("/login");
     }
@@ -393,6 +396,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         public static final String PROP_OAUTH2          = "oauth2";
 
         /**
+         * {@link OType#BOOLEAN}
+         * If true, so users can register in this app
+         */
+        public static final String PROP_REGISTRATION    = "registration";
+
+        /**
          * {@link OType#STRING}
          * Contains OAuth2 callback
          */
@@ -434,6 +443,15 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         public ModuleModel setOAuth2Callback(String callback) {
             document.field(PROP_OAUTH2_CALLBACK, callback);
+            return this;
+        }
+
+        public boolean isRegistration() {
+            return document.field(PROP_REGISTRATION);
+        }
+
+        public ModuleModel setRegistration(boolean registration) {
+            document.field(PROP_REGISTRATION, registration);
             return this;
         }
 
