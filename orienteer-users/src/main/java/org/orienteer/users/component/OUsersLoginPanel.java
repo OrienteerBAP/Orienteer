@@ -10,14 +10,12 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.orienteer.core.component.LoginPanel;
 import org.orienteer.users.model.IOAuth2Provider;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
-import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.service.IOAuth2Service;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -35,8 +33,11 @@ public class OUsersLoginPanel extends LoginPanel {
     @Inject
     private IOAuth2Service auth2Service;
 
-    public OUsersLoginPanel(String id) {
+    private final IModel<List<OAuth2Service>> services;
+
+    public OUsersLoginPanel(String id, IModel<List<OAuth2Service>> services) {
         super(id);
+        this.services = services;
     }
 
     @Override
@@ -46,9 +47,7 @@ public class OUsersLoginPanel extends LoginPanel {
     }
 
     private ListView<OAuth2Service> createSocialNetworksServices(String id) {
-        List<OAuth2Service> services = OAuth2Repository.getOAuth2Services(true);
-
-        return new ListView<OAuth2Service>(id, new ListModel<>(services)) {
+        return new ListView<OAuth2Service>(id, services) {
             @Override
             protected void populateItem(ListItem<OAuth2Service> item) {
                 IOAuth2Provider provider = item.getModelObject().getProvider();

@@ -3,15 +3,19 @@ package org.orienteer.users.web;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.component.OUsersLoginPanel;
+import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import org.orienteer.users.service.IOAuth2Service;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import java.util.List;
 
 /**
  * Extends {@link LoginPage} for allow login throughout social networks
@@ -50,7 +54,13 @@ public class OUsersLoginPage extends LoginPage {
 
     @Override
     protected WebMarkupContainer createLoginPanel(String id) {
-        return isOAuth2Active() ? new OUsersLoginPanel(id) : super.createLoginPanel(id);
+        if (isOAuth2Active()) {
+            List<OAuth2Service> services = OAuth2Repository.getOAuth2Services(true);
+            if (!services.isEmpty()) {
+                return new OUsersLoginPanel(id, new ListModel<>(services));
+            }
+        }
+        return super.createLoginPanel(id);
     }
 
     private boolean isOAuth2Active() {
