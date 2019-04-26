@@ -8,6 +8,10 @@ import org.orienteer.core.component.LoginButtonsPanel;
 import org.orienteer.users.component.event.RestorePasswordEventPayload;
 import org.orienteer.users.repository.OrienteerUserModuleRepository;
 
+/**
+ * Login buttons panel.
+ * Contains restore password button if restore feature is active
+ */
 public class OUsersLoginButtonsPanel extends LoginButtonsPanel {
 
     /**

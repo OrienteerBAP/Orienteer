@@ -5,6 +5,10 @@ import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.orienteer.users.service.IOrienteerUsersService;
 
+/**
+ * Login footer panel.
+ * Contains registration link
+ */
 public class OUsersLoginFooterPanel extends Panel {
 
     @Inject

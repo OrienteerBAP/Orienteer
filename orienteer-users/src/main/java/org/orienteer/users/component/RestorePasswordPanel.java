@@ -17,6 +17,9 @@ import org.orienteer.users.component.event.RestorePasswordEventPayload;
 import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOrienteerUsersService;
 
+/**
+ * Panel for restore user password
+ */
 public class RestorePasswordPanel extends GenericPanel<Boolean> {
 
     private final IModel<String> emailModel;

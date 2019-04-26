@@ -27,7 +27,7 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 
 /**
- * Extends {@link LoginPage} for allow login throughout social networks
+ * Extends {@link LoginPage} for allow :login throughout social networks, registration, restore user password
  */
 @MountPath("/login")
 public class OUsersLoginPage extends LoginPage {
