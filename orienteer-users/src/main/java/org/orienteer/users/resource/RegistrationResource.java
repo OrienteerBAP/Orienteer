@@ -1,6 +1,7 @@
 package org.orienteer.users.resource;
 
 import com.google.common.base.Strings;
+import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -8,7 +9,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import org.orienteer.users.repository.OrienteerUserRepository;
@@ -36,6 +36,9 @@ public class RegistrationResource extends AbstractResource {
         CharSequence url = RequestCycle.get().urlFor(new SharedResourceReference(RES_KEY), params);
         return RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
     }
+
+    @Inject
+    private IOrienteerUsersService usersService;
 
     @Override
     protected ResourceResponse newResourceResponse(Attributes attrs) {
@@ -72,7 +75,7 @@ public class RegistrationResource extends AbstractResource {
                 if (success) {
                     params.set(PARAMETER_ID, attributes.getParameters().get(PARAMETER_ID).toOptionalString());
                 }
-                RequestCycle.get().setResponsePage(LoginPage.class, params);
+                RequestCycle.get().setResponsePage(usersService.getLoginPage(), params);
             }
         };
     }

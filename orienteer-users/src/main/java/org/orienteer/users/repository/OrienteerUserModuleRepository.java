@@ -41,6 +41,12 @@ public final class OrienteerUserModuleRepository {
                 .orElseThrow(OrienteerUserModuleRepository::moduleNotConfiguredException);
     }
 
+    public static boolean isRestorePassword() {
+        return getModuleModel()
+                .map(OrienteerUsersModule.ModuleModel::isRestorePassword)
+                .orElseThrow(OrienteerUserModuleRepository::moduleNotConfiguredException);
+    }
+
     private static IllegalStateException moduleNotConfiguredException() {
         return new IllegalStateException("There is no configured module - " + OrienteerUsersModule.ModuleModel.CLASS_NAME);
     }

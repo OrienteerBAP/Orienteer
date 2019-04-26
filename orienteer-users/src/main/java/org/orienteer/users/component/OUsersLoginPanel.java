@@ -12,6 +12,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.request.resource.CssResourceReference;
+import org.orienteer.core.component.LoginButtonsPanel;
 import org.orienteer.core.component.LoginPanel;
 import org.orienteer.users.model.IOAuth2Provider;
 import org.orienteer.users.model.OAuth2Service;
@@ -44,6 +45,11 @@ public class OUsersLoginPanel extends LoginPanel {
     protected void onInitialize() {
         super.onInitialize();
         add(createSocialNetworksServices("networks"));
+    }
+
+    @Override
+    protected LoginButtonsPanel createButtonsPanel(String id) {
+        return new OUsersLoginButtonsPanel(id, this::onLoginButtonClick);
     }
 
     private ListView<OAuth2Service> createSocialNetworksServices(String id) {

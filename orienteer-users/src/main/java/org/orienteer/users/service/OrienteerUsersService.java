@@ -12,14 +12,15 @@ import org.apache.wicket.markup.html.WebPage;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.mail.service.IOMailService;
+import org.orienteer.mail.util.OMailUtils;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import org.orienteer.users.resource.RegistrationResource;
 import org.orienteer.users.resource.RestorePasswordResource;
-import org.orienteer.users.web.DefaultRestorePasswordPage;
 import org.orienteer.users.web.DefaultRegistrationPage;
-import org.orienteer.mail.util.OMailUtils;
+import org.orienteer.users.web.DefaultRestorePasswordPage;
+import org.orienteer.users.web.OUsersLoginPage;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.time.Instant;
@@ -38,17 +39,19 @@ public class OrienteerUsersService implements IOrienteerUsersService {
 
     @Override
     public void restoreUserPassword(OrienteerUser user) {
-        clearRestoring(user); // clear previous restore data if it present
+        if (OrienteerUserModuleRepository.isRestorePassword()) {
+            clearRestoring(user); // clear previous restore data if it present
 
-        DBClosure.sudoConsumer(db -> {
-            user.setRestoreId(UUID.randomUUID().toString())
-                    .setRestoreIdCreated(Instant.now())
-                    .save();
-            String name = OrienteerUsersModule.EVENT_RESTORE_PASSWORD_PREFIX + user.getRestoreId();
-            OScheduler scheduler = db.getMetadata().getScheduler();
-            scheduler.scheduleEvent(createRestorePasswordSchedulerEvent(db, user, name));
-        });
-        notifyUserAboutRestorePassword(user);
+            DBClosure.sudoConsumer(db -> {
+                user.setRestoreId(UUID.randomUUID().toString())
+                        .setRestoreIdCreated(Instant.now())
+                        .save();
+                String name = OrienteerUsersModule.EVENT_RESTORE_PASSWORD_PREFIX + user.getRestoreId();
+                OScheduler scheduler = db.getMetadata().getScheduler();
+                scheduler.scheduleEvent(createRestorePasswordSchedulerEvent(db, user, name));
+            });
+            notifyUserAboutRestorePassword(user);
+        }
     }
 
     @Override
@@ -93,6 +96,11 @@ public class OrienteerUsersService implements IOrienteerUsersService {
     @Override
     public Class<? extends WebPage> getRegistrationPage() {
         return DefaultRegistrationPage.class;
+    }
+
+    @Override
+    public Class<? extends WebPage> getLoginPage() {
+        return OUsersLoginPage.class;
     }
 
     protected void notifyUserAboutRestorePassword(OrienteerUser user) {

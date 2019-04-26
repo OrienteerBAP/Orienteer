@@ -125,7 +125,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                 .oProperty(ModuleModel.PROP_REGISTRATION, OType.BOOLEAN, 60)
                     .notNull()
                     .defaultValue("true")
-                .oProperty(ModuleModel.PROP_OAUTH2_CALLBACK, OType.STRING, 70)
+                .oProperty(ModuleModel.PROP_RESTORE_PASSWORD, OType.BOOLEAN, 70)
+                    .notNull()
+                    .defaultValue("true")
+                .oProperty(ModuleModel.PROP_OAUTH2_CALLBACK, OType.STRING, 80)
                     .notNull()
                     .defaultValue("/login");
     }
@@ -402,6 +405,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         public static final String PROP_REGISTRATION    = "registration";
 
         /**
+         * {@link OType#BOOLEAN}
+         * If true, so users can restore their passwords
+         */
+        public static final String PROP_RESTORE_PASSWORD = "restorePassword";
+
+        /**
          * {@link OType#STRING}
          * Contains OAuth2 callback
          */
@@ -452,6 +461,15 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         public ModuleModel setRegistration(boolean registration) {
             document.field(PROP_REGISTRATION, registration);
+            return this;
+        }
+
+        public boolean isRestorePassword() {
+            return document.field(PROP_RESTORE_PASSWORD);
+        }
+
+        public ModuleModel setRestorePassword(boolean restorePassword) {
+            document.field(PROP_RESTORE_PASSWORD, restorePassword);
             return this;
         }
 
