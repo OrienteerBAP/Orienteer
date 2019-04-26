@@ -7,6 +7,7 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.web.LoginPage;
+import org.orienteer.users.component.OUsersLoginFooterPanel;
 import org.orienteer.users.component.OUsersLoginPanel;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.module.OrienteerUsersModule;
@@ -61,6 +62,11 @@ public class OUsersLoginPage extends LoginPage {
             }
         }
         return super.createLoginPanel(id);
+    }
+
+    @Override
+    protected WebMarkupContainer createLoginFooter(String id) {
+        return new OUsersLoginFooterPanel(id);
     }
 
     @Override
