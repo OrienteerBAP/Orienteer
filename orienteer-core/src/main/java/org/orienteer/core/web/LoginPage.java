@@ -4,10 +4,12 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.component.LoginPanel;
+import org.orienteer.core.component.OrienteerFeedbackPanel;
 
 /**
  * Default login page
@@ -42,9 +44,15 @@ public class LoginPage extends BasePage<Object> {
                 add(loginPanel);
                 add(createLoginFooter("loginFooter"));
                 add(AttributeModifier.replace("class", getContainerClasses(loginPanel)));
+                add(createFeedbackPanel("feedback"));
+                initialize(this);
                 setOutputMarkupPlaceholderTag(true);
             }
         };
+    }
+
+    protected void initialize(WebMarkupContainer container) {
+
     }
 
     /**
@@ -89,5 +97,9 @@ public class LoginPage extends BasePage<Object> {
 
 	protected String getContainerClasses(WebMarkupContainer loginPanel) {
         return "col-md-4 card-group";
+    }
+
+    protected FeedbackPanel createFeedbackPanel(String id) {
+        return new OrienteerFeedbackPanel(id);
     }
 }

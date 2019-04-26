@@ -7,7 +7,6 @@ import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -38,7 +37,6 @@ public class LoginPanel extends Panel {
         form.add(new CheckBox("rememberMe", rememberMeModel));
         form.add(createButtonsPanel("loginButtonsPanel"));
         add(form);
-        add(createFeedbackPanel("feedback"));
         setOutputMarkupPlaceholderTag(true);
     }
 
@@ -60,15 +58,6 @@ public class LoginPanel extends Panel {
             }
         }
         super.onConfigure();
-    }
-
-    /**
-     * Create feedback.
-     * @param id {@link String} component id
-     * @return {@link FeedbackPanel}
-     */
-    protected FeedbackPanel createFeedbackPanel(String id) {
-        return new OrienteerFeedbackPanel(id);
     }
 
     /**
