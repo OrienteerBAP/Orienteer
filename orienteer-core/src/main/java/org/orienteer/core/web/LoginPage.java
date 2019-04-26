@@ -1,5 +1,6 @@
 package org.orienteer.core.web;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
@@ -35,10 +36,12 @@ public class LoginPage extends BasePage<Object> {
             @Override
             protected void onInitialize() {
                 super.onInitialize();
+                WebMarkupContainer loginPanel = createLoginPanel("loginPanel");
                 add(createLoginTitle("loginTitle"));
                 add(new Label("prompt", new ResourceModel("orienteer.login.prompt", "")).setEscapeModelStrings(false));
-                add(createLoginPanel("loginPanel"));
+                add(loginPanel);
                 add(createLoginFooter("loginFooter"));
+                add(AttributeModifier.replace("class", getContainerClasses(loginPanel)));
                 setOutputMarkupPlaceholderTag(true);
             }
         };
@@ -82,5 +85,9 @@ public class LoginPage extends BasePage<Object> {
 	@Override
 	protected String getBodyAppSubClasses(){
 		return "flex-row align-items-center footer-fixed";
-	}	
+	}
+
+	protected String getContainerClasses(WebMarkupContainer loginPanel) {
+        return "col-md-4 card-group";
+    }
 }
