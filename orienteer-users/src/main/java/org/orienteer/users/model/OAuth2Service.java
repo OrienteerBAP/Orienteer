@@ -34,6 +34,12 @@ public class OAuth2Service extends ODocumentWrapper {
      */
     public static final String PROP_PROVIDER   = "provider";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#BOOLEAN}
+     * If true - so this service can be used for login or register user
+     */
+    public static final String PROP_ACTIVE     = "active";
+
     public OAuth2Service() {
         this(CLASS_NAME);
     }
@@ -84,4 +90,12 @@ public class OAuth2Service extends ODocumentWrapper {
                 .orElse(null);
     }
 
+    public boolean isActive() {
+        return document.field(PROP_ACTIVE);
+    }
+
+    public OAuth2Service setActive(boolean active) {
+        document.field(PROP_ACTIVE, active);
+        return this;
+    }
 }

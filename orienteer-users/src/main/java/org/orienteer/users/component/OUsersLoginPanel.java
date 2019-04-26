@@ -46,7 +46,7 @@ public class OUsersLoginPanel extends LoginPanel {
     }
 
     private ListView<OAuth2Service> createSocialNetworksServices(String id) {
-        List<OAuth2Service> services = OAuth2Repository.getOAuth2Services();
+        List<OAuth2Service> services = OAuth2Repository.getOAuth2Services(true);
 
         return new ListView<OAuth2Service>(id, new ListModel<>(services)) {
             @Override

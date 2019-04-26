@@ -11,6 +11,8 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.Optional;
 
+import static org.orienteer.users.repository.DatabaseHelper.selectFromBy;
+
 /**
  * Repository for work with OAuth2 models
  */
@@ -22,9 +24,19 @@ public final class OAuth2Repository {
         return DBClosure.sudo(OAuth2Repository::getOAuth2Services);
     }
 
+    public static List<OAuth2Service> getOAuth2Services(boolean active) {
+        return DBClosure.sudo(db -> getOAuth2Services(db, active));
+    }
+
     public static List<OAuth2Service> getOAuth2Services(ODatabaseDocument db) {
         String sql = String.format("select from %s", OAuth2Service.CLASS_NAME);
         List<OIdentifiable> services = db.query(new OSQLSynchQuery<>(sql));
+        return CommonUtils.mapIdentifiables(services, OAuth2Service::new);
+    }
+
+    public static List<OAuth2Service> getOAuth2Services(ODatabaseDocument db, boolean active) {
+        String sql = selectFromBy(OAuth2Service.CLASS_NAME, OAuth2Service.PROP_ACTIVE);
+        List<OIdentifiable> services = db.query(new OSQLSynchQuery<>(sql), active);
         return CommonUtils.mapIdentifiables(services, OAuth2Service::new);
     }
 

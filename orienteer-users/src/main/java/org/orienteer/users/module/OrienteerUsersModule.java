@@ -63,7 +63,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 4;
+    public static final int VERSION = 6;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -301,14 +301,20 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         helper.oClass(OAuth2Service.CLASS_NAME)
                 .oProperty(OAuth2Service.PROP_API_KEY, OType.STRING, 0)
                     .notNull()
+                    .assignVisualization("password")
                 .oProperty(OAuth2Service.PROP_API_SECRET, OType.STRING, 10)
                     .notNull()
+                    .assignVisualization("password")
                 .oProperty(OAuth2Service.PROP_PROVIDER, OType.STRING, 30)
                     .notNull()
                     .markAsDocumentName()
                     .assignVisualization(OAuth2ProviderVisualizer.NAME)
                     .updateCustomAttribute(CustomAttribute.DISPLAYABLE, "true")
-                    .oIndex(OClass.INDEX_TYPE.UNIQUE);
+                    .oIndex(OClass.INDEX_TYPE.UNIQUE)
+                .oProperty(OAuth2Service.PROP_ACTIVE, OType.BOOLEAN, 40)
+                    .notNull()
+                    .defaultValue("true")
+                    .updateCustomAttribute(CustomAttribute.DISPLAYABLE, "true");
 
         helper.oClass(OAuth2ServiceContext.CLASS_NAME)
                 .oProperty(OAuth2ServiceContext.PROP_STATE, OType.STRING, 0)
