@@ -9,6 +9,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * {@link org.apache.wicket.request.IRequestMapper} for list of documents
+ */
 public class ODocumentsAliasMapper extends AbstractODocumentAliasMapper<List<ORID>> {
 
     public static final String PARAM_DOCS = "docs";

@@ -11,6 +11,9 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import java.util.List;
 import java.util.function.BiFunction;
 
+/**
+ * {@link IRequestMapper} for map documents
+ */
 public class ODocumentAliasCompoundMapper extends CompoundRequestMapper {
 
     private final BiFunction<String, OQueryModel<ODocument>, IRequestMapper> mapperCreator;

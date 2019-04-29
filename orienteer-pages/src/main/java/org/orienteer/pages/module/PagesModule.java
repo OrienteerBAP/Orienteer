@@ -30,7 +30,7 @@ public class PagesModule extends AbstractOrienteerModule {
 	public static final String OPROPERTY_EMBEDDED="embedded";
 	public static final String OPROPERTY_DOCUMENT="document";
 
-	public static CustomAttribute ALIAS = CustomAttribute.create("orienteer.alias", OType.STRING, null, true, false);
+	public static final CustomAttribute ALIAS = CustomAttribute.create("orienteer.alias", OType.STRING, null, true, false);
 
 
 	private PagesCompoundRequestMapper pagesCompoundRequestMapper;
@@ -38,8 +38,7 @@ public class PagesModule extends AbstractOrienteerModule {
 	private ODocumentAliasCompoundMapper documentsAliasCompoundMapper;
 
 	protected PagesModule() {
-		super(NAME, 1);
-
+		super(NAME, 2);
 	}
 	
 	@Override

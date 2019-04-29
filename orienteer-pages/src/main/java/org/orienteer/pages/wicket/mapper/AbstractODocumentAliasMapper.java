@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+/**
+ * Abstract document alias mapper for map documents
+ * @param <V> type fo map
+ */
 public abstract class AbstractODocumentAliasMapper<V> extends MountedMapper {
 
     private final OQueryModel<ODocument> queryModel;

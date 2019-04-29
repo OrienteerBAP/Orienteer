@@ -1,10 +1,14 @@
 package org.orienteer.pages.wicket.mapper;
 
 import org.apache.wicket.request.Url;
+import org.apache.wicket.request.mapper.parameter.IPageParametersEncoder;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.mapper.parameter.PageParametersEncoder;
 import org.apache.wicket.util.string.StringValue;
 
+/**
+ * {@link IPageParametersEncoder} for transparent add/remove parameters
+ */
 public class TransparentParameterPageEncoder extends PageParametersEncoder {
 
     private final String parameter;

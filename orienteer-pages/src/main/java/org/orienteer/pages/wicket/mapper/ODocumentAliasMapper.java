@@ -7,6 +7,9 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 import java.util.List;
 
+/**
+ * {@link org.apache.wicket.request.IRequestMapper} for single document
+ */
 public class ODocumentAliasMapper extends AbstractODocumentAliasMapper<ORID> {
 
     public static final String PARAM_RID = "rid";

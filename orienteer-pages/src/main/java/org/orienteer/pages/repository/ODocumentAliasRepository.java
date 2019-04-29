@@ -7,17 +7,16 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.commons.lang3.tuple.Pair;
 import org.orienteer.pages.module.PagesModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Repository for work with alias pages
+ */
 public final class ODocumentAliasRepository {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ODocumentAliasRepository.class);
 
     private ODocumentAliasRepository() {}
 
