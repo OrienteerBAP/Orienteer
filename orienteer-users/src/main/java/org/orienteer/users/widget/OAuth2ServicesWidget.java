@@ -16,6 +16,7 @@ import org.orienteer.users.model.IOAuth2Provider;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.util.OUsersCommonUtils;
+import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 import java.util.List;
 
@@ -57,6 +58,15 @@ public class OAuth2ServicesWidget extends CalculatedDocumentsWidget {
     @Override
     protected String getSql() {
         return String.format("select from %s", OAuth2Service.CLASS_NAME);
+    }
+
+    @Override
+    protected OClass getExpectedClass(OQueryDataProvider<ODocument> provider) {
+        OClass expectedClass = super.getExpectedClass(provider);
+        if (expectedClass == null) {
+            expectedClass = getDatabase().getMetadata().getSchema().getClass(OAuth2Service.CLASS_NAME);
+        }
+        return expectedClass;
     }
 
     @Override
