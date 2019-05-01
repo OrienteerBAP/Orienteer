@@ -6,6 +6,9 @@ import org.orienteer.users.model.OrienteerUser;
 
 import java.io.Serializable;
 
+/**
+ * Interface for manage Orienteer users in authorization by OAuth2
+ */
 public interface IOAuth2UserManager extends Serializable {
 
     /**

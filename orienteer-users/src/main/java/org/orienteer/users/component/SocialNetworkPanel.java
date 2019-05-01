@@ -24,6 +24,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Panel which contains authorization by social networks
+ */
 public class SocialNetworkPanel extends GenericPanel<List<OAuth2Service>> {
 
     public static final CssResourceReference CSS_STYLE = new CssResourceReference(SocialNetworkPanel.class, "style.css");
