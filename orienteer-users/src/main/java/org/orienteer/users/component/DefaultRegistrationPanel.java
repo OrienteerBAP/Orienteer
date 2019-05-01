@@ -7,16 +7,24 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.ListModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
 import org.orienteer.core.component.command.AjaxFormCommand;
+import org.orienteer.users.model.OAuth2Service;
+import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.validation.UserEmailValidator;
+
+import java.util.List;
 
 /**
  * Default registration panel.
@@ -54,10 +62,27 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
         form.add(confirmPasswordField);
         form.add(new EqualPasswordInputValidator(passwordField, confirmPasswordField));
         form.add(createRegisterButton("registerButton"));
+        form.add(createSocialNetworksPanel("socialNetworks"));
 
         add(form);
         add(createFeedbackPanel("feedback"));
         setOutputMarkupPlaceholderTag(true);
+    }
+
+    private Panel createSocialNetworksPanel(String id) {
+        List<OAuth2Service> services = OAuth2Repository.getOAuth2Services(true);
+        if (services.isEmpty()) {
+            return new EmptyPanel(id);
+        }
+
+        return new SocialNetworkPanel(id, "panel.registration.social.networks.title", new ListModel<>(services)) {
+            @Override
+            protected OAuth2ServiceContext createOAuth2ServiceContext(OAuth2Service service) {
+                OAuth2ServiceContext ctx = super.createOAuth2ServiceContext(service);
+                ctx.setRegistration(true);
+                return ctx;
+            }
+        };
     }
 
     /**

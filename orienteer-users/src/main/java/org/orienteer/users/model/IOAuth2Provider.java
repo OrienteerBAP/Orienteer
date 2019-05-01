@@ -52,4 +52,12 @@ public interface IOAuth2Provider extends Serializable {
      * @return user from node or null. If user already exists in system, so will returns this user.
      */
     OrienteerUser createUser(ODatabaseDocument db, JsonNode node);
+
+    /**
+     * Get user by this provider
+     * @param db database
+     * @param node JSON node which was received by using this provider
+     * @return user from node or null. If user already exists in system, so will returns this user.
+     */
+    OrienteerUser getUser(ODatabaseDocument db, JsonNode node);
 }

@@ -336,6 +336,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
                 .oProperty(OAuth2ServiceContext.PROP_AUTHORIZATION_URL, OType.STRING, 30)
                     .notNull()
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
+                .oProperty(OAuth2ServiceContext.PROP_REGISTRATION, OType.BOOLEAN, 40)
+                    .notNull()
+                    .defaultValue("false")
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, "true");
 
     }

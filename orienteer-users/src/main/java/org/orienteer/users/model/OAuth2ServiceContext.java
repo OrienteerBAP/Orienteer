@@ -37,6 +37,13 @@ public class OAuth2ServiceContext extends ODocumentWrapper {
      */
     public static final String PROP_AUTHORIZATION_URL = "authorizationUrl";
 
+    /**
+     * {@link com.orientechnologies.orient.core.metadata.schema.OType#BOOLEAN}
+     * Flag which indicates that this context need to use for register user.
+     * Default is false. If true - so this context will be used for register user.
+     */
+    public static final String PROP_REGISTRATION      = "registration";
+
     public OAuth2ServiceContext() {
         this(CLASS_NAME);
     }
@@ -96,6 +103,15 @@ public class OAuth2ServiceContext extends ODocumentWrapper {
 
     public OAuth2ServiceContext setAuthorizationUrl(String url) {
         document.field(PROP_AUTHORIZATION_URL, url);
+        return this;
+    }
+
+    public boolean isRegistration() {
+        return document.field(PROP_REGISTRATION);
+    }
+
+    public OAuth2ServiceContext setRegistration(boolean registration) {
+        document.field(PROP_REGISTRATION, registration);
         return this;
     }
 }

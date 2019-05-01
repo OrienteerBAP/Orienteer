@@ -6,13 +6,14 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.repository.OrienteerUserRepository;
+import org.orienteer.users.service.IOAuth2UserManager;
 
 import java.util.UUID;
 
 /**
- * GitHub implementation for {@link org.orienteer.users.service.IOAuth2UserCreator}
+ * GitHub implementation for {@link org.orienteer.users.service.IOAuth2UserManager}
  */
-public class GitHubUserCreator extends AbstractUserCreator {
+public class GitHubUserManager implements IOAuth2UserManager {
 
     private static final String FIELD_LOGIN    = "login";
     private static final String FIELD_NAME     = "name";
@@ -22,7 +23,7 @@ public class GitHubUserCreator extends AbstractUserCreator {
     private static final String FIELD_LOCATION = "location";
 
     @Override
-    protected OrienteerUser getUserFromNode(ODatabaseDocument db, JsonNode node) {
+    public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {
         String login = node.get(FIELD_LOGIN).textValue();
         String email = node.get(FIELD_EMAIL).textValue();
 
@@ -36,7 +37,7 @@ public class GitHubUserCreator extends AbstractUserCreator {
     }
 
     @Override
-    protected OrienteerUser createUserFromNode(ODatabaseDocument db, JsonNode node) {
+    public OrienteerUser createUser(ODatabaseDocument db, JsonNode node) {
         String name = node.get(FIELD_NAME).textValue();
         String firstName;
         String lastName;

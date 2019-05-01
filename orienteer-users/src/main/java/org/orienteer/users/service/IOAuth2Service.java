@@ -4,6 +4,8 @@ import com.google.inject.ImplementedBy;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.service.impl.DefaultOAuth2ServiceImpl;
+import org.orienteer.users.util.LoginException;
+import org.orienteer.users.util.RegistrationException;
 
 /**
  * OAuth2 service for login and register users throughout social networks
@@ -26,6 +28,13 @@ public interface IOAuth2Service {
      * @param code OAuth2 code which was received from OAuth2 server
      * @return true if authorized
      */
-    boolean authorize(OAuth2Service service, String code);
+    boolean authorize(OAuth2Service service, String code) throws LoginException;
 
+    /**
+     * Register user by given service and code
+     * @param service service for register user
+     * @param code OAuth2 code which was received from OAuth2 server
+     * @return true if registered
+     */
+    boolean register(OAuth2Service service, String code) throws RegistrationException;
 }

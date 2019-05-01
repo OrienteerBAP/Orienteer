@@ -7,10 +7,10 @@ import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.orienteer.users.service.IOAuth2UserCreator;
-import org.orienteer.users.service.impl.FacebookUserCreator;
-import org.orienteer.users.service.impl.GitHubUserCreator;
-import org.orienteer.users.service.impl.GoogleUserCreator;
+import org.orienteer.users.service.IOAuth2UserManager;
+import org.orienteer.users.service.impl.FacebookUserManager;
+import org.orienteer.users.service.impl.GitHubUserManager;
+import org.orienteer.users.service.impl.GoogleUserManager;
 
 import java.util.function.Supplier;
 
@@ -26,7 +26,7 @@ public enum OAuth2Provider implements IOAuth2Provider {
             "https://api.github.com/user",
             null,
             GitHubApi::instance,
-            new GitHubUserCreator()
+            new GitHubUserManager()
     ),
 
     FACEBOOK(
@@ -35,7 +35,7 @@ public enum OAuth2Provider implements IOAuth2Provider {
             "https://graph.facebook.com/v3.2/me?fields=first_name,last_name,email,picture,id,short_name",
             null,
             FacebookApi::instance,
-            new FacebookUserCreator()
+            new FacebookUserManager()
     ),
 
     GOOGLE(
@@ -44,7 +44,7 @@ public enum OAuth2Provider implements IOAuth2Provider {
             "https://www.googleapis.com/oauth2/v3/userinfo",
             "profile email",
             FacebookApi::instance,
-            new GoogleUserCreator()
+            new GoogleUserManager()
     );
 
 
@@ -53,7 +53,7 @@ public enum OAuth2Provider implements IOAuth2Provider {
     private String protectedResource;
     private String scope;
     private Supplier<DefaultApi20> supplier;
-    private IOAuth2UserCreator userCreator;
+    private IOAuth2UserManager userManager;
 
 
     OAuth2Provider(String label,
@@ -61,13 +61,13 @@ public enum OAuth2Provider implements IOAuth2Provider {
                    String protectedResource,
                    String scope,
                    Supplier<DefaultApi20> supplier,
-                   IOAuth2UserCreator userCreator) {
+                   IOAuth2UserManager userManager) {
         this.label = label;
         this.iconResourceReference = iconResourceReference;
         this.protectedResource = protectedResource;
         this.scope = scope;
         this.supplier = supplier;
-        this.userCreator = userCreator;
+        this.userManager = userManager;
     }
 
 
@@ -103,6 +103,11 @@ public enum OAuth2Provider implements IOAuth2Provider {
 
     @Override
     public OrienteerUser createUser(ODatabaseDocument db, JsonNode node) {
-        return userCreator.apply(db, node);
+        return userManager.createUser(db, node);
+    }
+
+    @Override
+    public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {
+        return userManager.getUser(db, node);
     }
 }

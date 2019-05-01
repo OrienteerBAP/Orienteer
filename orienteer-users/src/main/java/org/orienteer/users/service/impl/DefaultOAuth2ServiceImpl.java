@@ -16,6 +16,10 @@ import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.service.IOAuth2Service;
+import org.orienteer.users.util.LoginError;
+import org.orienteer.users.util.LoginException;
+import org.orienteer.users.util.RegistrationError;
+import org.orienteer.users.util.RegistrationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -45,24 +49,54 @@ public class DefaultOAuth2ServiceImpl implements IOAuth2Service {
     }
 
     @Override
-    public boolean authorize(OAuth2Service service, String code) {
+    public boolean authorize(OAuth2Service service, String code) throws LoginException {
         IOAuth2Provider provider = service.getProvider();
-        OAuth20Service authService = createService(service);
-        OAuth2AccessToken accessToken = getAccessToken(authService, code);
-
-        JsonNode jsonNode = requestProtectedData(authService, accessToken, provider.getProtectedResource());
-        LOG.debug("Success authorization for {}: {}", provider.getName(), jsonNode.toString());
+        JsonNode jsonNode = requestProtectedData(service, provider, code);
 
         String tmpPassword = UUID.randomUUID().toString();
 
         String username = DBClosure.sudo(db -> { // need execute from admin for access to user password
-            OrienteerUser user = provider.createUser(db, jsonNode);
+            OrienteerUser user = provider.getUser(db, jsonNode);
+            if (user == null) {
+                throw new LoginException(LoginError.USER_NOT_EXISTS);
+            }
             user.setPassword(tmpPassword);
             user.save();
             return user.getName();
         });
 
         return OrienteerWebSession.get().signIn(username, tmpPassword);
+    }
+
+    @Override
+    public boolean register(OAuth2Service service, String code) throws RegistrationException {
+        IOAuth2Provider provider = service.getProvider();
+        JsonNode jsonNode = requestProtectedData(service, provider, code);
+
+        String tmpPassword = UUID.randomUUID().toString();
+
+        String username = DBClosure.sudo(db -> { // need execute from admin for access to user password
+            OrienteerUser user = provider.getUser(db, jsonNode);
+            if (user != null) {
+                throw new RegistrationException(RegistrationError.USER_EXISTS);
+            }
+            user = provider.createUser(db, jsonNode);
+            user.setPassword(tmpPassword);
+            user.save();
+            return user.getName();
+        });
+
+        return OrienteerWebSession.get().signIn(username, tmpPassword);
+    }
+
+
+    private JsonNode requestProtectedData(OAuth2Service service, IOAuth2Provider provider, String code) {
+        OAuth20Service authService = createService(service);
+        OAuth2AccessToken accessToken = getAccessToken(authService, code);
+
+        JsonNode jsonNode = requestProtectedData(authService, accessToken, provider.getProtectedResource());
+        LOG.debug("Success request protected data: {} {}", jsonNode, service);
+        return jsonNode;
     }
 
     private OAuth20Service createService(OAuth2Service service) {

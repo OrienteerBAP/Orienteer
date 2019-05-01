@@ -5,13 +5,14 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.repository.OrienteerUserRepository;
+import org.orienteer.users.service.IOAuth2UserManager;
 
 import java.util.UUID;
 
 /**
- * Facebook implementation for {@link org.orienteer.users.service.IOAuth2UserCreator}
+ * Facebook implementation for {@link org.orienteer.users.service.IOAuth2UserManager}
  */
-public class FacebookUserCreator extends AbstractUserCreator {
+public class FacebookUserManager implements IOAuth2UserManager {
 
     private static final String FIELD_FIRST_NAME = "first_name";
     private static final String FIELD_LAST_NAME  = "last_name";
@@ -21,7 +22,7 @@ public class FacebookUserCreator extends AbstractUserCreator {
     private static final String FIELD_EMAIL      = "email";
 
     @Override
-    protected OrienteerUser getUserFromNode(ODatabaseDocument db, JsonNode node) {
+    public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {
         String email = node.get(FIELD_EMAIL) != null ? node.get(FIELD_EMAIL).textValue() : null;
 
         OrienteerUser user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
@@ -35,7 +36,7 @@ public class FacebookUserCreator extends AbstractUserCreator {
     }
 
     @Override
-    protected OrienteerUser createUserFromNode(ODatabaseDocument db, JsonNode node) {
+    public OrienteerUser createUser(ODatabaseDocument db, JsonNode node) {
         OrienteerUser user = new OrienteerUser();
         user.setFirstName(node.get(FIELD_FIRST_NAME).textValue())
                 .setLastName(node.get(FIELD_LAST_NAME).textValue())

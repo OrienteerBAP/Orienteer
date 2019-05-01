@@ -5,13 +5,14 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.repository.OrienteerUserRepository;
+import org.orienteer.users.service.IOAuth2UserManager;
 
 import java.util.UUID;
 
 /**
- * Google implementation for {@link org.orienteer.users.service.IOAuth2UserCreator}
+ * Google implementation for {@link org.orienteer.users.service.IOAuth2UserManager}
  */
-public class GoogleUserCreator extends AbstractUserCreator {
+public class GoogleUserManager implements IOAuth2UserManager {
 
     private static final String FIELD_NAME        = "name";
     private static final String FIELD_GIVEN_NAME  = "given_name";
@@ -20,13 +21,13 @@ public class GoogleUserCreator extends AbstractUserCreator {
     private static final String FIELD_EMAIL       = "email";
 
     @Override
-    protected OrienteerUser getUserFromNode(ODatabaseDocument db, JsonNode node) {
+    public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {
         String email = node.get(FIELD_EMAIL).textValue();
         return OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
     }
 
     @Override
-    protected OrienteerUser createUserFromNode(ODatabaseDocument db, JsonNode node) {
+    public OrienteerUser createUser(ODatabaseDocument db, JsonNode node) {
         String email = node.get(FIELD_EMAIL).textValue();
 
         OrienteerUser user = new OrienteerUser();

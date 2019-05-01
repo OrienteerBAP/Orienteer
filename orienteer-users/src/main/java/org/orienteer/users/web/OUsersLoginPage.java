@@ -19,6 +19,7 @@ import org.orienteer.users.component.OUsersLoginPanel;
 import org.orienteer.users.component.RestorePasswordPanel;
 import org.orienteer.users.component.event.RestorePasswordEventPayload;
 import org.orienteer.users.model.OAuth2Service;
+import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import org.orienteer.users.service.IOAuth2Service;
@@ -55,17 +56,29 @@ public class OUsersLoginPage extends LoginPage {
 
             if (!Strings.isNullOrEmpty(code) && !Strings.isNullOrEmpty(state)) {
                 OAuth2Repository.getServiceContextByState(state)
-                        .ifPresent(ctx -> {
-                            boolean authorized = authService.authorize(ctx.getService(), code);
-                            ctx.setUsed(true);
-                            DBClosure.sudoConsumer(db -> ctx.save());
-                            if (authorized) {
-                                continueToOriginalDestination();
-                                setResponsePage(getApplication().getHomePage());
-                            }
-                        });
+                        .ifPresent(ctx -> authorize(ctx, code));
             }
         }
+    }
+
+    private void authorize(OAuth2ServiceContext ctx, String code) {
+        try {
+            boolean authorized;
+            if (ctx.isRegistration()) {
+                authorized = authService.register(ctx.getService(), code);
+            } else {
+                authorized = authService.authorize(ctx.getService(), code);
+            }
+            if (authorized) {
+                continueToOriginalDestination();
+                setResponsePage(getApplication().getHomePage());
+            }
+        } catch (IllegalStateException ex) {
+            error(ex.getMessage());
+        }
+
+        ctx.setUsed(true);
+        DBClosure.sudoConsumer(db -> ctx.save());
     }
 
     @Override
