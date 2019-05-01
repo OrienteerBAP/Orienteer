@@ -9,6 +9,7 @@ import org.orienteer.pages.repository.ODocumentAliasRepository;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
@@ -48,6 +49,20 @@ public class ODocumentAliasCompoundMapper extends CompoundRequestMapper {
 
     public ODocumentAliasCompoundMapper add(String url, OQueryModel<ODocument> model) {
         add(mapperCreator.apply(url, model));
+        return this;
+    }
+
+    public ODocumentAliasCompoundMapper remove(String url) {
+        for (IRequestMapper mapper : this) {
+            if (mapper instanceof AbstractODocumentAliasMapper) {
+                AbstractODocumentAliasMapper<?> docMapper = (AbstractODocumentAliasMapper<?>) mapper;
+                if (Objects.equals(docMapper.getMountPath(), url)) {
+                    remove(docMapper);
+                    break;
+                }
+            }
+        }
+
         return this;
     }
 }

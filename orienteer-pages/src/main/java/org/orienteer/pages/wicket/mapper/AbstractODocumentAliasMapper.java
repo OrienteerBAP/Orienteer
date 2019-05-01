@@ -26,6 +26,7 @@ public abstract class AbstractODocumentAliasMapper<V> extends AbstractMountedMap
 
     private final OQueryModel<ODocument> queryModel;
     private final String parameter;
+    private final String mountPath;
 
     public AbstractODocumentAliasMapper(String mountPath,
                                         Class<? extends IRequestablePage> pageClass,
@@ -35,6 +36,7 @@ public abstract class AbstractODocumentAliasMapper<V> extends AbstractMountedMap
         super(mountPath, pageClass, pageParametersEncoder);
         this.queryModel = queryModel;
         this.parameter = parameter;
+        this.mountPath = mountPath;
     }
 
     public AbstractODocumentAliasMapper(String mountPath, Supplier<Class<? extends IRequestablePage>> pageProvider,
@@ -42,6 +44,7 @@ public abstract class AbstractODocumentAliasMapper<V> extends AbstractMountedMap
         super(mountPath, pageProvider, encoder);
         this.queryModel = queryModel;
         this.parameter = parameter;
+        this.mountPath = mountPath;
     }
 
     protected abstract V convertDocumentsToValue(List<ODocument> documents);
@@ -75,6 +78,9 @@ public abstract class AbstractODocumentAliasMapper<V> extends AbstractMountedMap
         return parameters;
     }
 
+    public String getMountPath() {
+        return mountPath;
+    }
 
     private V getValue(PageParameters parameters) {
         applyFilters(parameters, queryModel);
