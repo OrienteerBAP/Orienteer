@@ -9,7 +9,7 @@ import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.pages.PagesCompoundRequestMapper;
+import org.orienteer.pages.wicket.mapper.PagesCompoundRequestMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentAliasCompoundMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentAliasMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentsAliasMapper;
