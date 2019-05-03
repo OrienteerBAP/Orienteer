@@ -125,10 +125,13 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                 .oProperty(ModuleModel.PROP_REGISTRATION, OType.BOOLEAN, 60)
                     .notNull()
                     .defaultValue("true")
-                .oProperty(ModuleModel.PROP_RESTORE_PASSWORD, OType.BOOLEAN, 70)
+                .oProperty(ModuleModel.PROP_REGISTER_USER_ON_OAUTH2_LOGIN, OType.BOOLEAN, 70)
+                    .notNull()
+                    .defaultValue("false")
+                .oProperty(ModuleModel.PROP_RESTORE_PASSWORD, OType.BOOLEAN, 80)
                     .notNull()
                     .defaultValue("true")
-                .oProperty(ModuleModel.PROP_OAUTH2_CALLBACK, OType.STRING, 80)
+                .oProperty(ModuleModel.PROP_OAUTH2_CALLBACK, OType.STRING, 90)
                     .notNull()
                     .defaultValue("/login");
     }
@@ -410,6 +413,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         /**
          * {@link OType#BOOLEAN}
+         * If true, so users can be register when they try to login throughout OAuth2 and don't exists in system
+         */
+        public static final String PROP_REGISTER_USER_ON_OAUTH2_LOGIN = "registerUserOnOAuth2Login";
+
+        /**
+         * {@link OType#BOOLEAN}
          * If true, so users can restore their passwords
          */
         public static final String PROP_RESTORE_PASSWORD = "restorePassword";
@@ -474,6 +483,15 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         public ModuleModel setRestorePassword(boolean restorePassword) {
             document.field(PROP_RESTORE_PASSWORD, restorePassword);
+            return this;
+        }
+
+        public boolean isRegisterUserOnOAuth2Login() {
+            return document.field(PROP_REGISTER_USER_ON_OAUTH2_LOGIN);
+        }
+
+        public ModuleModel setRegisterUserOnOAuth2Login(boolean register) {
+            document.field(PROP_REGISTER_USER_ON_OAUTH2_LOGIN, register);
             return this;
         }
 

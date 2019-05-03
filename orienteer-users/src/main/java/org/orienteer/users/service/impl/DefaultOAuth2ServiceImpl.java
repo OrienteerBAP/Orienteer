@@ -15,6 +15,8 @@ import org.orienteer.users.model.IOAuth2Provider;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.module.OrienteerUsersModule;
+import org.orienteer.users.repository.OrienteerUserModuleRepository;
 import org.orienteer.users.service.IOAuth2Service;
 import org.orienteer.users.util.LoginError;
 import org.orienteer.users.util.LoginException;
@@ -58,7 +60,14 @@ public class DefaultOAuth2ServiceImpl implements IOAuth2Service {
         String username = DBClosure.sudo(db -> { // need execute from admin for access to user password
             OrienteerUser user = provider.getUser(db, jsonNode);
             if (user == null) {
-                throw new LoginException(LoginError.USER_NOT_EXISTS);
+                boolean register = OrienteerUserModuleRepository.getModuleModel(db)
+                        .map(OrienteerUsersModule.ModuleModel::isRegisterUserOnOAuth2Login)
+                        .orElseThrow(() -> new IllegalStateException("Module Orienteer Users not exists!"));
+                if (register) {
+                    user = provider.createUser(db, jsonNode);
+                } else {
+                    throw new LoginException(LoginError.USER_NOT_EXISTS);
+                }
             }
             user.setPassword(tmpPassword);
             user.save();
