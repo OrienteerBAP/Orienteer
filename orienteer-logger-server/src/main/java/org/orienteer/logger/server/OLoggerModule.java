@@ -141,6 +141,9 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		OLoggerReceiverResource.unmount(app);
 	}
 
+	/**
+	 * Wrapper for module {@link OLoggerModule}
+	 */
 	public static class Module extends ODocumentWrapper {
 
 		public static final String CLASS_NAME = "OLoggerModule";

@@ -1,12 +1,14 @@
 package org.orienteer.logger.server.model;
 
-import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 import java.time.Instant;
 import java.util.Date;
 
+/**
+ * Wrapper for logger event
+ */
 public class OLoggerEventModel extends ODocumentWrapper {
 
     public static final String CLASS_NAME = "OLoggerEvent";

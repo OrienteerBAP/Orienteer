@@ -8,7 +8,12 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.Date;
 
-public class OLoggerRepository {
+/**
+ * Repository for working with {@link OLoggerEventModel}
+ */
+public final class OLoggerRepository {
+
+    private OLoggerRepository() {}
 
     public static OLoggerEventModel storeOLoggerEvent(String event) {
         return DBClosure.sudo(db -> storeOLoggerEvent(db, event));
