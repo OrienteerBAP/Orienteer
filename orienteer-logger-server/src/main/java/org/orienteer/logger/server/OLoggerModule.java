@@ -1,6 +1,5 @@
 package org.orienteer.logger.server;
 
-import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
@@ -9,11 +8,8 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.logger.IOLoggerConfiguration;
-import org.orienteer.logger.OLogger;
-import org.orienteer.logger.OLoggerBuilder;
+import org.orienteer.logger.*;
 import org.orienteer.logger.impl.DefaultOLoggerConfiguration;
-import org.orienteer.logger.server.service.EmbeddedOLoggerEventDispatcher;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.resource.OLoggerReceiverResource;
 
@@ -22,8 +18,14 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import org.orienteer.logger.server.service.EmbeddedOLoggerEventDispatcher;
 import org.orienteer.logger.server.service.OLoggerExceptionListener;
 import org.orienteer.logger.server.service.OWebEnhancer;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * {@link IOrienteerModule} for 'orienteer-logger-server' module
@@ -77,10 +79,17 @@ public class OLoggerModule extends AbstractOrienteerModule{
 
 	private ODocument installModule(OSchemaHelper helper) {
 		helper.oClass(Module.CLASS_NAME, OMODULE_CLASS).domain(OClassDomain.SPECIFICATION)
-				.oProperty(Module.PROP_COLLECTOR_URL, OType.STRING, 50);
+				.oProperty(Module.PROP_COLLECTOR_URL, OType.STRING, 50)
+				.oProperty(Module.PROP_LOGGER_ENHANCERS, OType.EMBEDDEDLIST, 60)
+					.linkedType(OType.STRING)
+					.notNull()
+				.oProperty(Module.PROP_LOGGER_EVENT_DISPATCHER, OType.STRING, 70)
+					.notNull();
 
 		return helper.oDocument(AbstractOrienteerModule.OMODULE_NAME, NAME)
 				.field(OMODULE_ACTIVATE, false)
+				.field(Module.PROP_LOGGER_ENHANCERS, Collections.singletonList(OWebEnhancer.class.getName()))
+				.field(Module.PROP_LOGGER_EVENT_DISPATCHER, EmbeddedOLoggerEventDispatcher.class.getName())
 				.saveDocument()
 				.getODocument();
 	}
@@ -95,7 +104,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
 		super.onInitialize(app, db);
 		
-		installOLogger(app, moduleDoc);
+		installOLogger(app, new Module(moduleDoc));
 		app.mountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.mount(app);
 		app.getRequestCycleListeners().add(new OLoggerExceptionListener());
@@ -104,20 +113,24 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	@Override
 	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
 		super.onConfigurationChange(app, db, moduleDoc);
-		installOLogger(app, moduleDoc);
+		installOLogger(app, new Module(moduleDoc));
 	}
 	
-	private void installOLogger(OrienteerWebApplication app, ODocument moduleDoc) {
+	private void installOLogger(OrienteerWebApplication app, Module module) {
 		IOLoggerConfiguration config = new DefaultOLoggerConfiguration();
 		config.setApplicationName(app.getResourceSettings().getLocalizer().getString("application.name", null));
+
 		//If collector URL was not overwriten from system properties: lets get it from module
-		if(Strings.isEmpty(config.getCollectorUrl())) 
-			config.setCollectorUrl((String)moduleDoc.field("collectorUrl"));
-		OLogger oLogger = new OLoggerBuilder()
-								.setLoggerEventDispatcher(new EmbeddedOLoggerEventDispatcher())
-								.addEnhancer(new OWebEnhancer())
-								.addDefaultEnhancers().create(config);
-		OLogger.set(oLogger);
+		if (Strings.isEmpty(config.getCollectorUrl())) {
+			config.setCollectorUrl(module.getCollectorUrl());
+		}
+
+		OLoggerBuilder builder = new OLoggerBuilder();
+		builder.setLoggerEventDispatcher(module.getLoggerDispatcherInstance());
+		module.getLoggerEnhancersInstances().forEach(builder::addEnhancer);
+		builder.addDefaultEnhancers();
+
+		OLogger.set(builder.create(config));
 	}
 	
 	@Override
@@ -132,14 +145,16 @@ public class OLoggerModule extends AbstractOrienteerModule{
 
 		public static final String CLASS_NAME = "OLoggerModule";
 
-		public static final String PROP_COLLECTOR_URL = "collectorUrl";
+		public static final String PROP_COLLECTOR_URL           = "collectorUrl";
+		public static final String PROP_LOGGER_EVENT_DISPATCHER = "loggerEventDispatcher";
+		public static final String PROP_LOGGER_ENHANCERS        = "loggerEnhancers";
 
 		public Module() {
 			super(CLASS_NAME);
 		}
 
-		public Module(ORID iRID) {
-			super(iRID);
+		public Module(ODocument doc) {
+			super(doc);
 		}
 
 		public Module(String iClassName) {
@@ -153,6 +168,44 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		public Module setCollectorUrl(String url) {
 			document.field(PROP_COLLECTOR_URL, url);
 			return this;
+		}
+
+		public String getLoggerEventDispatcher() {
+			return document.field(PROP_LOGGER_EVENT_DISPATCHER);
+		}
+
+		public Module setLoggerEventDispatcher(String dispatcher) {
+			document.field(PROP_LOGGER_EVENT_DISPATCHER, dispatcher);
+			return this;
+		}
+
+		public List<String> getLoggerEnhancers() {
+			List<String> enhancers = document.field(PROP_LOGGER_ENHANCERS);
+			return enhancers != null ? enhancers : Collections.emptyList();
+		}
+
+		public Module setLoggerEnhancers(List<String> enhancers) {
+			document.field(PROP_LOGGER_ENHANCERS, enhancers);
+			return this;
+		}
+
+		private List<IOLoggerEventEnhancer> getLoggerEnhancersInstances() {
+			return getLoggerEnhancers().stream()
+					.map(className -> {
+						try {
+							return (IOLoggerEventEnhancer) Class.forName(className).newInstance();
+						} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+							throw new IllegalStateException(e);
+						}
+					}).collect(Collectors.toCollection(LinkedList::new));
+		}
+
+		private IOLoggerEventDispatcher getLoggerDispatcherInstance() {
+			try {
+				return (IOLoggerEventDispatcher) Class.forName(getLoggerEventDispatcher()).newInstance();
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				throw new IllegalStateException(e);
+			}
 		}
 	}
 	
