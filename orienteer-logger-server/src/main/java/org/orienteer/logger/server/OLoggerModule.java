@@ -1,7 +1,7 @@
 package org.orienteer.logger.server;
 
-import java.util.Date;
-
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
@@ -13,15 +13,17 @@ import org.orienteer.logger.IOLoggerConfiguration;
 import org.orienteer.logger.OLogger;
 import org.orienteer.logger.OLoggerBuilder;
 import org.orienteer.logger.impl.DefaultOLoggerConfiguration;
-import org.orienteer.logger.server.rest.OLoggerReceiverResource;
+import org.orienteer.logger.server.service.EmbeddedOLoggerEventDispatcher;
+import org.orienteer.logger.server.model.OLoggerEventModel;
+import org.orienteer.logger.server.resource.OLoggerReceiverResource;
 
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
-
 import com.orientechnologies.orient.core.metadata.schema.OType;
+import org.orienteer.logger.server.service.OLoggerExceptionListener;
+import org.orienteer.logger.server.service.OWebEnhancer;
 
 /**
  * {@link IOrienteerModule} for 'orienteer-logger-server' module
@@ -29,40 +31,58 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 @Singleton
 public class OLoggerModule extends AbstractOrienteerModule{
 	
-	public static final String MODULE_OLOGGER_NAME = "ologger";
-	public static final String MODULE_OLOGGER_OCLASS = "OLoggerModule";
-	public static final String OLOGGER_EVENT_OCLASS = "OLoggerEvent";
+	public static final String NAME = "orienteer-logger";
 
-	public static ODatabaseDocument db; 
-	
+	public static final int VERSION = 3;
+
+
 	protected OLoggerModule() {
-		super(MODULE_OLOGGER_NAME, 3);
+		super(NAME, VERSION);
 	}
 	
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(MODULE_OLOGGER_OCLASS, OMODULE_CLASS).domain(OClassDomain.SPECIFICATION)
-			.oProperty("collectorUrl", OType.STRING, 50);
-		helper.oClass("OLoggerEvent")
-			.oProperty("eventId", OType.STRING, 10).markAsDocumentName()
-			.oProperty("application", OType.STRING, 20).markDisplayable()
-			.oProperty("nodeId", OType.STRING, 30).markDisplayable()
-			.oProperty("correlationId", OType.STRING, 40).markDisplayable()
-			.oProperty("dateTime", OType.DATETIME, 50).markDisplayable()
-			.oProperty("remoteAddress", OType.STRING, 60)
-			.oProperty("hostName", OType.STRING, 70).markDisplayable()
-			.oProperty("username", OType.STRING, 80)
-			.oProperty("clientUrl", OType.STRING, 90)
-			.oProperty("summary", OType.STRING, 100)
-				.calculateBy("message.left(message.indexOf('\\n'))")
-				.markDisplayable()
-				.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
-			.oProperty("message", OType.STRING, 110).assignVisualization("textarea");	
-		ODocument moduleDoc = new ODocument(MODULE_OLOGGER_OCLASS);
-		moduleDoc.field(OMODULE_ACTIVATE, false);
-		return moduleDoc;
+		installOLoggerEvent(helper);
+
+		return installModule(helper);
+	}
+
+	private void installOLoggerEvent(OSchemaHelper helper) {
+		helper.oClass(OLoggerEventModel.CLASS_NAME)
+				.oProperty(OLoggerEventModel.PROP_EVENT_ID, OType.STRING, 10)
+					.markAsDocumentName()
+					.notNull()
+				.oProperty(OLoggerEventModel.PROP_APPLICATION, OType.STRING, 20)
+					.markDisplayable()
+				.oProperty(OLoggerEventModel.PROP_NODE_ID, OType.STRING, 30)
+					.markDisplayable()
+				.oProperty(OLoggerEventModel.PROP_CORRELATION_ID, OType.STRING, 40)
+					.markDisplayable()
+				.oProperty(OLoggerEventModel.PROP_DATE_TIME, OType.DATETIME, 50)
+					.markDisplayable()
+				.oProperty(OLoggerEventModel.PROP_REMOTE_ADDRESS, OType.STRING, 60)
+				.oProperty(OLoggerEventModel.PROP_HOST_NAME, OType.STRING, 70)
+					.markDisplayable()
+				.oProperty(OLoggerEventModel.PROP_USERNAME, OType.STRING, 80)
+				.oProperty(OLoggerEventModel.PROP_CLIENT_URL, OType.STRING, 90)
+				.oProperty(OLoggerEventModel.PROP_SUMMARY, OType.STRING, 100)
+					.calculateBy("message.left(message.indexOf('\\n'))")
+					.markDisplayable()
+					.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
+				.oProperty("message", OType.STRING, 110)
+					.assignVisualization("code");
+	}
+
+	private ODocument installModule(OSchemaHelper helper) {
+		helper.oClass(Module.CLASS_NAME, OMODULE_CLASS).domain(OClassDomain.SPECIFICATION)
+				.oProperty(Module.PROP_COLLECTOR_URL, OType.STRING, 50);
+
+		return helper.oDocument(AbstractOrienteerModule.OMODULE_NAME, NAME)
+				.field(OMODULE_ACTIVATE, false)
+				.saveDocument()
+				.getODocument();
 	}
 
 	@Override
@@ -76,7 +96,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		super.onInitialize(app, db);
 		
 		installOLogger(app, moduleDoc);
-		app.mountPages("org.orienteer.inclogger.web");
+		app.mountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.mount(app);
 		app.getRequestCycleListeners().add(new OLoggerExceptionListener());
 	}
@@ -104,24 +124,36 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
 		OLogger.set(null);
-		app.unmountPages("org.orienteer.inclogger.web");
+		app.unmountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.unmount(app);
 	}
-	
-	public static ODocument storeOLoggerEvent(final String json) {
-		return new DBClosure<ODocument>() {
 
-			@Override
-			protected ODocument execute(ODatabaseDocument db) {
-				ODocument doc = new ODocument();
-				doc.fromJSON(json);
-				Long dateTime = doc.field("dateTime", Long.class);
-				doc.field("dateTime", new Date(dateTime));
-				doc.setClassName(OLoggerModule.OLOGGER_EVENT_OCLASS);
-				doc.save();
-				return doc;
-			}
-		}.execute();
+	public static class Module extends ODocumentWrapper {
+
+		public static final String CLASS_NAME = "OLoggerModule";
+
+		public static final String PROP_COLLECTOR_URL = "collectorUrl";
+
+		public Module() {
+			super(CLASS_NAME);
+		}
+
+		public Module(ORID iRID) {
+			super(iRID);
+		}
+
+		public Module(String iClassName) {
+			super(iClassName);
+		}
+
+		public String getCollectorUrl() {
+			return document.field(PROP_COLLECTOR_URL);
+		}
+
+		public Module setCollectorUrl(String url) {
+			document.field(PROP_COLLECTOR_URL, url);
+			return this;
+		}
 	}
 	
 }

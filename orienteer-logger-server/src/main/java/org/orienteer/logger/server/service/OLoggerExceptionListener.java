@@ -1,4 +1,4 @@
-package org.orienteer.logger.server;
+package org.orienteer.logger.server.service;
 
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.IRequestCycleListener;

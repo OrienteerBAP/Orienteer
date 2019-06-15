@@ -4,7 +4,6 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
-import org.orienteer.logger.server.OLoggerModule;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -26,7 +25,7 @@ public class TestModule
 	{
 	    OrienteerWebApplication app = tester.getApplication();
 	    assertNotNull(app);
-	    IOrienteerModule module = app.getModuleByName(OLoggerModule.MODULE_OLOGGER_NAME);
+	    IOrienteerModule module = app.getModuleByName(OLoggerModule.NAME);
 	    assertNotNull(module);
 	    assertTrue(module instanceof OLoggerModule);
 	    //TODO : to add tests for incident logger

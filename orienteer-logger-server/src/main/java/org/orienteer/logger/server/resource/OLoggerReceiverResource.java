@@ -1,4 +1,4 @@
-package org.orienteer.logger.server.rest;
+package org.orienteer.logger.server.resource;
 
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +10,8 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.logger.server.OLoggerModule;
+import org.orienteer.logger.server.model.OLoggerEventModel;
+import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +21,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * REST entry point of OLogger events 
  */
 public class OLoggerReceiverResource extends AbstractResource {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
-	public static final String MOUNT_PATH = "/rest/ologger";
+
+	public static final String MOUNT_PATH = "/resource/ologger";
 	public static final String REGISTRATION_RES_KEY=OLoggerReceiverResource.class.getSimpleName();
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OLoggerReceiverResource.class);
@@ -44,8 +45,8 @@ public class OLoggerReceiverResource extends AbstractResource {
 				{
 
 					String content = IOUtils.toString(httpRequest.getInputStream());
-					ODocument log = OLoggerModule.storeOLoggerEvent(content);
-					out = log.toJSON();
+					OLoggerEventModel log = OLoggerRepository.storeOLoggerEvent(content);
+					out = log.getDocument().toJSON();
 				}
 			} catch (Throwable e)
 			{

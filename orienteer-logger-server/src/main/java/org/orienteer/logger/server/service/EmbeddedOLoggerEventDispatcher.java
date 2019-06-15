@@ -1,7 +1,6 @@
-package org.orienteer.logger.server;
+package org.orienteer.logger.server.service;
 
 import org.apache.wicket.authorization.AuthorizationException;
-import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.core.request.mapper.StalePageException;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.util.string.Strings;
@@ -9,6 +8,7 @@ import org.orienteer.logger.IOLoggerConfiguration;
 import org.orienteer.logger.IOLoggerEventDispatcher;
 import org.orienteer.logger.OLoggerEvent;
 import org.orienteer.logger.impl.DefaultOLoggerEventDispatcher;
+import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class EmbeddedOLoggerEventDispatcher extends DefaultOLoggerEventDispatche
 	@Override
 	public void dispatch(OLoggerEvent event) {
 		if(needsToBeLogged(event)) {
-			OLoggerModule.storeOLoggerEvent(event.toJson());
+			OLoggerRepository.storeOLoggerEvent(event.toJson());
 			super.dispatch(event);
 		}
 	}
@@ -34,10 +34,10 @@ public class EmbeddedOLoggerEventDispatcher extends DefaultOLoggerEventDispatche
 	}
 	
 	protected boolean needsToBeLogged(Throwable event) {
-		if(event instanceof StalePageException
-				|| event instanceof AuthorizationException
-				|| event instanceof UnauthorizedActionException) return false;
-		else return true;
+		if(event instanceof StalePageException || event instanceof AuthorizationException) {
+			return false;
+		}
+		return true;
 	}
 	
 	@Override
@@ -46,7 +46,7 @@ public class EmbeddedOLoggerEventDispatcher extends DefaultOLoggerEventDispatche
 		if(!Strings.isEmpty(collectorUrl)) {
 			Url url = Url.parse(collectorUrl);
 			if(Strings.isEmpty(url.getPath())) {
-				collectorUrl = collectorUrl+(collectorUrl.endsWith("/")?"":"/")+"rest/ologger";
+				collectorUrl = collectorUrl+(collectorUrl.endsWith("/")?"":"/")+"resource/ologger";
 			}
 		}
 	}
