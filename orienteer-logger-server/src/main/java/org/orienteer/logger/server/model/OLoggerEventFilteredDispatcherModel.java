@@ -41,12 +41,12 @@ public class OLoggerEventFilteredDispatcherModel extends OLoggerEventDispatcherM
     @Override
     public IOLoggerEventDispatcher createDispatcherClassInstance() {
         try {
-            return (IOLoggerEventDispatcher) Class.forName(getDispatcherClass()).getConstructor(Set.class)
-                    .newInstance(getExceptions());
+            return (IOLoggerEventDispatcher) Class.forName(getDispatcherClass()).getConstructor(String.class)
+                    .newInstance(getAlias());
         } catch (ClassNotFoundException | InstantiationException |
                 IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new IllegalStateException("Can't create dispatcher instance for class " + getDispatcherClass() +
-                    " and arguments: " + getExceptions(), e);
+                    " and argument: " + getAlias(), e);
         }
 
     }

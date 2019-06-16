@@ -39,6 +39,11 @@
 			<artifactId>orienteer-devutils</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.orienteer</groupId>
+			<artifactId>orienteer-mail</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- ORIENTEER TESTS for TESTING -->
 		<dependency>
 			<groupId>org.orienteer</groupId>

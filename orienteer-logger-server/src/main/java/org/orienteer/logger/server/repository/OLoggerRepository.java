@@ -7,6 +7,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.logger.OLoggerEvent;
 import org.orienteer.logger.server.model.OLoggerEventDispatcherModel;
+import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -52,6 +53,15 @@ public final class OLoggerRepository {
                 OLoggerEventModel.PROP_CORRELATION_ID);
         List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql), correlationId);
         return CommonUtils.mapIdentifiables(identifiables, OLoggerEventModel::new);
+    }
+
+    public static Optional<OLoggerEventFilteredDispatcherModel> getOLoggerEventFilteredDispatcher(String alias) {
+        return DBClosure.sudo(db -> OLoggerRepository.getOLoggerEventFilteredDispatcher(db, alias));
+    }
+
+    public static Optional<OLoggerEventFilteredDispatcherModel> getOLoggerEventFilteredDispatcher(ODatabaseDocument db, String alias) {
+        return getOLoggerEventDispatcherAsDocument(db, alias)
+                .map(OLoggerEventFilteredDispatcherModel::new);
     }
 
     public static Optional<OLoggerEventDispatcherModel> getOLoggerEventDispatcher(String alias) {
