@@ -49,7 +49,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 5;
+	public static final int VERSION = 6;
 
 	public static final String DISPATCHER_DEFAULT = "default";
 
@@ -85,11 +85,12 @@ public class OLoggerModule extends AbstractOrienteerModule{
 					.markDisplayable()
 				.oProperty(OLoggerEventModel.PROP_USERNAME, OType.STRING, 80)
 				.oProperty(OLoggerEventModel.PROP_CLIENT_URL, OType.STRING, 90)
-				.oProperty(OLoggerEventModel.PROP_SUMMARY, OType.STRING, 100)
+                .oProperty(OLoggerEventModel.PROP_SEED_CLASS, OType.STRING, 100)
+				.oProperty(OLoggerEventModel.PROP_SUMMARY, OType.STRING, 110)
 					.calculateBy("message.left(message.indexOf('\\n'))")
 					.markDisplayable()
 					.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
-				.oProperty("message", OType.STRING, 110)
+				.oProperty(OLoggerEventModel.PROP_MESSAGE, OType.STRING, 120)
 					.assignVisualization("code");
 
 
