@@ -42,6 +42,7 @@ public final class OLoggerRepository {
         doc.field(OLoggerEventModel.PROP_DATE_TIME, new Date(dateTime));
         doc.setClassName(OLoggerEventModel.CLASS_NAME);
         doc.save();
+        doc.reload();
         return new OLoggerEventModel(doc);
     }
 

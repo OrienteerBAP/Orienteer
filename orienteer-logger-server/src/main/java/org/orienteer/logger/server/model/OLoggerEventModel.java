@@ -74,20 +74,20 @@ public class OLoggerEventModel extends ODocumentWrapper {
         return this;
     }
 
-    public Instant getTimestamp() {
-        Date date = getTimestampAsDate();
+    public Instant getDatetime() {
+        Date date = getDatetimeAsDate();
         return date != null ? date.toInstant() : null;
     }
 
-    public Date getTimestampAsDate() {
+    public Date getDatetimeAsDate() {
         return document.field(PROP_DATE_TIME);
     }
 
-    public OLoggerEventModel setTimestamp(Instant timestamp) {
-        return setTimestampAsDate(timestamp != null ? Date.from(timestamp) : null);
+    public OLoggerEventModel setDatetime(Instant datetime) {
+        return setDatetimeAsDate(datetime != null ? Date.from(datetime) : null);
     }
 
-    public OLoggerEventModel setTimestampAsDate(Date date) {
+    public OLoggerEventModel setDatetimeAsDate(Date date) {
         document.field(PROP_DATE_TIME, date);
         return this;
     }

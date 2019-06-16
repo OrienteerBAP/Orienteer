@@ -51,7 +51,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 8;
+	public static final int VERSION = 9;
 
 	public static final String DISPATCHER_DEFAULT = "default";
 
@@ -130,7 +130,8 @@ public class OLoggerModule extends AbstractOrienteerModule{
 					.notNull()
 				.oProperty(Module.PROP_LOGGER_EVENT_DISPATCHER, OType.LINK, 70)
 					.linkedClass(OLoggerEventDispatcherModel.CLASS_NAME)
-					.notNull();
+					.notNull()
+                .oProperty(Module.PROP_DOMAIN, OType.STRING, 80);
 
 
 		ODocument dispatcher = OLoggerRepository.getOLoggerEventDispatcherAsDocument(helper.getDatabase(), DISPATCHER_DEFAULT)
@@ -141,6 +142,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 					.field(OMODULE_ACTIVATE, false)
 					.field(Module.PROP_LOGGER_ENHANCERS, Arrays.asList(OWebEnhancer.class.getName(), OSeedClassEnhancer.class.getName()))
 					.field(Module.PROP_LOGGER_EVENT_DISPATCHER, dispatcher)
+                    .field(Module.PROP_DOMAIN, "http://localhost:8080")
 					.saveDocument()
 				.getODocument();
 	}
@@ -213,6 +215,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		public static final String PROP_COLLECTOR_URL           = "collectorUrl";
 		public static final String PROP_LOGGER_EVENT_DISPATCHER = "loggerEventDispatcher";
 		public static final String PROP_LOGGER_ENHANCERS        = "loggerEnhancers";
+		public static final String PROP_DOMAIN                  = "domain";
 
 		public Module() {
 			super(CLASS_NAME);
@@ -274,6 +277,15 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			document.field(OLoggerModule.OMODULE_ACTIVATE, activated);
 			return this;
 		}
+
+		public String getDomain() {
+		    return document.field(PROP_DOMAIN);
+        }
+
+        public Module setDomain(String domain) {
+		    document.field(PROP_DOMAIN, domain);
+		    return this;
+        }
 
 		private List<IOLoggerEventEnhancer> getLoggerEnhancersInstances() {
 			return getLoggerEnhancers().stream()
