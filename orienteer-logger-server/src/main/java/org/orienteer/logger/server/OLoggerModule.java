@@ -24,11 +24,12 @@ import org.orienteer.logger.OLoggerBuilder;
 import org.orienteer.logger.impl.DefaultOLoggerConfiguration;
 import org.orienteer.logger.server.model.OLoggerEventDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
+import org.orienteer.logger.server.model.OLoggerEventMailDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.orienteer.logger.server.resource.OLoggerReceiverResource;
-import org.orienteer.logger.server.service.dispatcher.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.OLoggerExceptionListener;
+import org.orienteer.logger.server.service.dispatcher.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.enhancer.OSeedClassEnhancer;
 import org.orienteer.logger.server.service.enhancer.OWebEnhancer;
 
@@ -46,7 +47,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 4;
+	public static final int VERSION = 5;
 
 	public static final String DISPATCHER_DEFAULT = "default";
 
@@ -91,17 +92,24 @@ public class OLoggerModule extends AbstractOrienteerModule{
 
 
 		helper.oClass(OLoggerEventDispatcherModel.CLASS_NAME)
-				.oProperty(OLoggerEventDispatcherModel.PROP_NAME, OType.EMBEDDEDMAP)
+				.oProperty(OLoggerEventDispatcherModel.PROP_NAME, OType.EMBEDDEDMAP, 0)
 					.linkedType(OType.STRING)
 					.notNull()
-				.assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+					.assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
 					.markAsDocumentName()
-				.oProperty(OLoggerEventDispatcherModel.PROP_ALIAS, OType.STRING)
+				.oProperty(OLoggerEventDispatcherModel.PROP_ALIAS, OType.STRING, 10)
 					.notNull()
 				.oIndex(OClass.INDEX_TYPE.UNIQUE);
 
 		helper.oClass(OLoggerEventFilteredDispatcherModel.CLASS_NAME, OLoggerEventDispatcherModel.CLASS_NAME)
-				.oProperty(OLoggerEventFilteredDispatcherModel.PROP_EXCEPTIONS, OType.EMBEDDEDSET)
+				.oProperty(OLoggerEventFilteredDispatcherModel.PROP_EXCEPTIONS, OType.EMBEDDEDSET, 20)
+					.linkedType(OType.STRING)
+					.notNull();
+
+		helper.oClass(OLoggerEventMailDispatcherModel.CLASS_NAME, OLoggerEventFilteredDispatcherModel.CLASS_NAME)
+				.oProperty(OLoggerEventMailDispatcherModel.PROP_MAIL, OType.LINK, 30)
+					.notNull()
+				.oProperty(OLoggerEventMailDispatcherModel.PROP_RECIPIENTS, OType.EMBEDDEDSET, 40)
 					.linkedType(OType.STRING)
 					.notNull();
 	}

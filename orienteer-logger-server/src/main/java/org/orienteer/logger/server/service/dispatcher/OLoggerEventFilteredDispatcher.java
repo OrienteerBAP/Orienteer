@@ -21,4 +21,8 @@ public class OLoggerEventFilteredDispatcher extends OLoggerEventDispatcher {
 
         return super.needsToBeLogged(event) && dispatcher.getExceptions().contains(event.getClass().getName());
     }
+
+    public String getAlias() {
+        return alias;
+    }
 }

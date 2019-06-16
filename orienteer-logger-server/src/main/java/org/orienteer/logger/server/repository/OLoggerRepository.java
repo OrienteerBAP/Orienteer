@@ -8,6 +8,7 @@ import org.orienteer.core.util.CommonUtils;
 import org.orienteer.logger.OLoggerEvent;
 import org.orienteer.logger.server.model.OLoggerEventDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
+import org.orienteer.logger.server.model.OLoggerEventMailDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -62,6 +63,15 @@ public final class OLoggerRepository {
     public static Optional<OLoggerEventFilteredDispatcherModel> getOLoggerEventFilteredDispatcher(ODatabaseDocument db, String alias) {
         return getOLoggerEventDispatcherAsDocument(db, alias)
                 .map(OLoggerEventFilteredDispatcherModel::new);
+    }
+
+    public static Optional<OLoggerEventMailDispatcherModel> getOLoggerEventMailDispatcher(String alias) {
+        return DBClosure.sudo(db -> getOLoggerEventMailDispatcher(db, alias));
+    }
+
+    public static Optional<OLoggerEventMailDispatcherModel> getOLoggerEventMailDispatcher(ODatabaseDocument db, String alias) {
+        return getOLoggerEventDispatcherAsDocument(db, alias)
+                .map(OLoggerEventMailDispatcherModel::new);
     }
 
     public static Optional<OLoggerEventDispatcherModel> getOLoggerEventDispatcher(String alias) {
