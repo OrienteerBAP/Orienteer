@@ -34,6 +34,8 @@ import org.orienteer.logger.server.service.dispatcher.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.enhancer.OSeedClassEnhancer;
 import org.orienteer.logger.server.service.enhancer.OWebEnhancer;
 import org.orienteer.logger.server.util.OLoggerServerUtils;
+import org.orienteer.mail.OMailModule;
+import org.orienteer.mail.model.OMail;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,12 +51,12 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 6;
+	public static final int VERSION = 8;
 
 	public static final String DISPATCHER_DEFAULT = "default";
 
 	protected OLoggerModule() {
-		super(NAME, VERSION);
+		super(NAME, VERSION, OMailModule.NAME);
 	}
 	
 	@Override
@@ -102,17 +104,20 @@ public class OLoggerModule extends AbstractOrienteerModule{
 					.markAsDocumentName()
 				.oProperty(OLoggerEventDispatcherModel.PROP_ALIAS, OType.STRING, 10)
 					.notNull()
-				.oIndex(OClass.INDEX_TYPE.UNIQUE);
+					.oIndex(OClass.INDEX_TYPE.UNIQUE)
+				.oProperty(OLoggerEventDispatcherModel.PROP_DISPATCHER_CLASS, OType.STRING, 20)
+					.notNull();
 
 		helper.oClass(OLoggerEventFilteredDispatcherModel.CLASS_NAME, OLoggerEventDispatcherModel.CLASS_NAME)
-				.oProperty(OLoggerEventFilteredDispatcherModel.PROP_EXCEPTIONS, OType.EMBEDDEDSET, 20)
+				.oProperty(OLoggerEventFilteredDispatcherModel.PROP_EXCEPTIONS, OType.EMBEDDEDSET, 30)
 					.linkedType(OType.STRING)
 					.notNull();
 
 		helper.oClass(OLoggerEventMailDispatcherModel.CLASS_NAME, OLoggerEventFilteredDispatcherModel.CLASS_NAME)
-				.oProperty(OLoggerEventMailDispatcherModel.PROP_MAIL, OType.LINK, 30)
+				.oProperty(OLoggerEventMailDispatcherModel.PROP_MAIL, OType.LINK, 40)
 					.notNull()
-				.oProperty(OLoggerEventMailDispatcherModel.PROP_RECIPIENTS, OType.EMBEDDEDSET, 40)
+					.linkedClass(OMail.CLASS_NAME)
+				.oProperty(OLoggerEventMailDispatcherModel.PROP_RECIPIENTS, OType.EMBEDDEDSET, 50)
 					.linkedType(OType.STRING)
 					.notNull();
 	}
