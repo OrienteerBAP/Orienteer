@@ -27,10 +27,10 @@ import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.orienteer.logger.server.resource.OLoggerReceiverResource;
-import org.orienteer.logger.server.service.OLoggerEventDispatcher;
+import org.orienteer.logger.server.service.dispatcher.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.OLoggerExceptionListener;
-import org.orienteer.logger.server.service.OSeedClassEnhancer;
-import org.orienteer.logger.server.service.OWebEnhancer;
+import org.orienteer.logger.server.service.enhancer.OSeedClassEnhancer;
+import org.orienteer.logger.server.service.enhancer.OWebEnhancer;
 
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package org.orienteer.logger.server.service;
+package org.orienteer.logger.server.service.enhancer;
 
 import org.orienteer.logger.IOLoggerEventEnhancer;
 import org.orienteer.logger.OLoggerEvent;

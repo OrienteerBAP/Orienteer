@@ -12,7 +12,7 @@ import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerModuleRepository;
 import org.orienteer.logger.server.repository.OLoggerRepository;
-import org.orienteer.logger.server.service.OLoggerEventFilteredDispatcher;
+import org.orienteer.logger.server.service.dispatcher.OLoggerEventFilteredDispatcher;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.HashSet;

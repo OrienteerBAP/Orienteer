@@ -1,4 +1,4 @@
-package org.orienteer.logger.server.service;
+package org.orienteer.logger.server.service.enhancer;
 
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.request.cycle.RequestCycle;

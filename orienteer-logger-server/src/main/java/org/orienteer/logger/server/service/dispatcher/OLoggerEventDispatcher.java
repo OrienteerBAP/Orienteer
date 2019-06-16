@@ -1,4 +1,4 @@
-package org.orienteer.logger.server.service;
+package org.orienteer.logger.server.service.dispatcher;
 
 import org.apache.wicket.authorization.AuthorizationException;
 import org.apache.wicket.core.request.mapper.StalePageException;

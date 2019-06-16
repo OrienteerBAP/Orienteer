@@ -1,4 +1,4 @@
-package org.orienteer.logger.server.service;
+package org.orienteer.logger.server.service.dispatcher;
 
 import java.util.Set;
 
