@@ -7,6 +7,9 @@ import org.orienteer.mail.model.OMail;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * Wrapper for mail dispatcher
+ */
 public class OLoggerEventMailDispatcherModel extends OLoggerEventFilteredDispatcherModel {
 
     public static final String CLASS_NAME = "OLoggerEventMailDispatcher";
