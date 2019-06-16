@@ -1,27 +1,38 @@
 package org.orienteer.logger.server;
 
+import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
+import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
+import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.logger.*;
+import org.orienteer.logger.IOLoggerConfiguration;
+import org.orienteer.logger.IOLoggerEventEnhancer;
+import org.orienteer.logger.OLogger;
+import org.orienteer.logger.OLoggerBuilder;
 import org.orienteer.logger.impl.DefaultOLoggerConfiguration;
+import org.orienteer.logger.server.model.OLoggerEventDispatcherModel;
+import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
+import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.orienteer.logger.server.resource.OLoggerReceiverResource;
-
-import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import org.orienteer.logger.server.service.EmbeddedOLoggerEventDispatcher;
+import org.orienteer.logger.server.service.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.OLoggerExceptionListener;
+import org.orienteer.logger.server.service.OSeedClassEnhancer;
 import org.orienteer.logger.server.service.OWebEnhancer;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,8 +46,9 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 3;
+	public static final int VERSION = 4;
 
+	public static final String DISPATCHER_DEFAULT = "default";
 
 	protected OLoggerModule() {
 		super(NAME, VERSION);
@@ -47,6 +59,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		installOLoggerEvent(helper);
+		createDefaultOLoggerEventDispatcher(helper);
 
 		return installModule(helper);
 	}
@@ -75,6 +88,22 @@ public class OLoggerModule extends AbstractOrienteerModule{
 					.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
 				.oProperty("message", OType.STRING, 110)
 					.assignVisualization("code");
+
+
+		helper.oClass(OLoggerEventDispatcherModel.CLASS_NAME)
+				.oProperty(OLoggerEventDispatcherModel.PROP_NAME, OType.EMBEDDEDMAP)
+					.linkedType(OType.STRING)
+					.notNull()
+				.assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+					.markAsDocumentName()
+				.oProperty(OLoggerEventDispatcherModel.PROP_ALIAS, OType.STRING)
+					.notNull()
+				.oIndex(OClass.INDEX_TYPE.UNIQUE);
+
+		helper.oClass(OLoggerEventFilteredDispatcherModel.CLASS_NAME, OLoggerEventDispatcherModel.CLASS_NAME)
+				.oProperty(OLoggerEventFilteredDispatcherModel.PROP_EXCEPTIONS, OType.EMBEDDEDSET)
+					.linkedType(OType.STRING)
+					.notNull();
 	}
 
 	private ODocument installModule(OSchemaHelper helper) {
@@ -83,14 +112,20 @@ public class OLoggerModule extends AbstractOrienteerModule{
 				.oProperty(Module.PROP_LOGGER_ENHANCERS, OType.EMBEDDEDLIST, 60)
 					.linkedType(OType.STRING)
 					.notNull()
-				.oProperty(Module.PROP_LOGGER_EVENT_DISPATCHER, OType.STRING, 70)
+				.oProperty(Module.PROP_LOGGER_EVENT_DISPATCHER, OType.LINK, 70)
+					.linkedClass(OLoggerEventDispatcherModel.CLASS_NAME)
 					.notNull();
 
-		return helper.oDocument(AbstractOrienteerModule.OMODULE_NAME, NAME)
-				.field(OMODULE_ACTIVATE, false)
-				.field(Module.PROP_LOGGER_ENHANCERS, Collections.singletonList(OWebEnhancer.class.getName()))
-				.field(Module.PROP_LOGGER_EVENT_DISPATCHER, EmbeddedOLoggerEventDispatcher.class.getName())
-				.saveDocument()
+
+		ODocument dispatcher = OLoggerRepository.getOLoggerEventDispatcherAsDocument(helper.getDatabase(), DISPATCHER_DEFAULT)
+			.orElseThrow(() -> new IllegalStateException("There is no default dispatcher with alias: " + DISPATCHER_DEFAULT));
+
+		return helper.oClass(Module.CLASS_NAME)
+				.oDocument(AbstractOrienteerModule.OMODULE_NAME, NAME)
+					.field(OMODULE_ACTIVATE, false)
+					.field(Module.PROP_LOGGER_ENHANCERS, Arrays.asList(OWebEnhancer.class.getName(), OSeedClassEnhancer.class.getName()))
+					.field(Module.PROP_LOGGER_EVENT_DISPATCHER, dispatcher)
+					.saveDocument()
 				.getODocument();
 	}
 
@@ -126,7 +161,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		}
 
 		OLoggerBuilder builder = new OLoggerBuilder();
-		builder.setLoggerEventDispatcher(module.getLoggerDispatcherInstance());
+		builder.setLoggerEventDispatcher(module.getLoggerEventDispatcher().createDispatcherClassInstance());
 		module.getLoggerEnhancersInstances().forEach(builder::addEnhancer);
 		builder.addDefaultEnhancers();
 
@@ -139,6 +174,17 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		OLogger.set(null);
 		app.unmountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.unmount(app);
+	}
+
+	private void createDefaultOLoggerEventDispatcher(OSchemaHelper helper) {
+		helper.oClass(OLoggerEventDispatcherModel.CLASS_NAME);
+
+		String name = new ResourceModel("logger.event.dispatcher.default.name").getObject();
+
+		helper.oDocument(OLoggerEventDispatcherModel.PROP_ALIAS, DISPATCHER_DEFAULT)
+				.field(OLoggerEventDispatcherModel.PROP_NAME, CommonUtils.toMap("en", name))
+				.field(OLoggerEventDispatcherModel.PROP_DISPATCHER_CLASS, OLoggerEventDispatcher.class.getName())
+				.saveDocument();
 	}
 
 	/**
@@ -173,11 +219,21 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			return this;
 		}
 
-		public String getLoggerEventDispatcher() {
-			return document.field(PROP_LOGGER_EVENT_DISPATCHER);
+		public OLoggerEventFilteredDispatcherModel getLoggerEventDispatcher() {
+			ODocument dispatcher = getLoggerEventDispatcherAsDocument();
+			return dispatcher != null ? new OLoggerEventFilteredDispatcherModel(dispatcher) : null;
 		}
 
-		public Module setLoggerEventDispatcher(String dispatcher) {
+		public ODocument getLoggerEventDispatcherAsDocument() {
+			OIdentifiable dispatcher = document.field(PROP_LOGGER_EVENT_DISPATCHER);
+			return dispatcher != null ? dispatcher.getRecord() : null;
+		}
+
+		public Module setLoggerEventDispatcher(OLoggerEventFilteredDispatcherModel dispatcher) {
+			return setLoggerEventDispatcherAsDocument(dispatcher != null ? dispatcher.getDocument() : null);
+		}
+
+		public Module setLoggerEventDispatcherAsDocument(ODocument dispatcher) {
 			document.field(PROP_LOGGER_EVENT_DISPATCHER, dispatcher);
 			return this;
 		}
@@ -192,6 +248,16 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			return this;
 		}
 
+		public boolean isActivated() {
+			Boolean activated = document.field(OLoggerModule.OMODULE_ACTIVATE);
+			return activated != null && activated;
+		}
+
+		public Module setActivated(boolean activated) {
+			document.field(OLoggerModule.OMODULE_ACTIVATE, activated);
+			return this;
+		}
+
 		private List<IOLoggerEventEnhancer> getLoggerEnhancersInstances() {
 			return getLoggerEnhancers().stream()
 					.map(className -> {
@@ -203,13 +269,6 @@ public class OLoggerModule extends AbstractOrienteerModule{
 					}).collect(Collectors.toCollection(LinkedList::new));
 		}
 
-		private IOLoggerEventDispatcher getLoggerDispatcherInstance() {
-			try {
-				return (IOLoggerEventDispatcher) Class.forName(getLoggerEventDispatcher()).newInstance();
-			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-				throw new IllegalStateException(e);
-			}
-		}
 	}
 	
 }

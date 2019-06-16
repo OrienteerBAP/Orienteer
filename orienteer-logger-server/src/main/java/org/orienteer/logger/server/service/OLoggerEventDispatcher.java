@@ -15,26 +15,32 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link IOLoggerEventDispatcher} for handle {@link OLoggerEvent}s within Orienteer: log localy and send to other host 
  */
-public class EmbeddedOLoggerEventDispatcher extends DefaultOLoggerEventDispatcher {
+public class OLoggerEventDispatcher extends DefaultOLoggerEventDispatcher {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(EmbeddedOLoggerEventDispatcher.class);
+	private static final Logger LOG = LoggerFactory.getLogger(OLoggerEventDispatcher.class);
 	
 	@Override
 	public void dispatch(OLoggerEvent event) {
 		if(needsToBeLogged(event)) {
-			OLoggerRepository.storeOLoggerEvent(event.toJson());
+			logEvent(event);
 			super.dispatch(event);
 		}
 	}
-	
+
+	protected void logEvent(OLoggerEvent event) {
+		OLoggerRepository.storeOLoggerEvent(event.toJson());
+	}
+
 	protected boolean needsToBeLogged(OLoggerEvent event) {
 		Object seed = event.getSeed();
-		if(seed instanceof Throwable) return needsToBeLogged((Throwable)seed);
-		else return true;
+		if (seed instanceof Throwable) {
+			return needsToBeLogged((Throwable)seed);
+		}
+		return true;
 	}
 	
 	protected boolean needsToBeLogged(Throwable event) {
-		if(event instanceof StalePageException || event instanceof AuthorizationException) {
+		if (event instanceof StalePageException || event instanceof AuthorizationException) {
 			return false;
 		}
 		return true;

@@ -13,17 +13,18 @@ public class OLoggerEventModel extends ODocumentWrapper {
 
     public static final String CLASS_NAME = "OLoggerEvent";
 
-    public static final String PROP_EVENT_ID       = "eventId";
-    public static final String PROP_APPLICATION    = "application";
-    public static final String PROP_NODE_ID        = "nodeId";
-    public static final String PROP_CORRELATION_ID = "correlationId";
-    public static final String PROP_DATE_TIME      = "dateTime";
-    public static final String PROP_REMOTE_ADDRESS = "remoteAddress";
-    public static final String PROP_HOST_NAME      = "hostName";
-    public static final String PROP_USERNAME       = "username";
-    public static final String PROP_CLIENT_URL     = "clientUrl";
-    public static final String PROP_SUMMARY        = "summary";
-    public static final String PROP_MESSAGE        = "message";
+    public static final String PROP_EVENT_ID        = "eventId";
+    public static final String PROP_APPLICATION     = "application";
+    public static final String PROP_NODE_ID         = "nodeId";
+    public static final String PROP_CORRELATION_ID  = "correlationId";
+    public static final String PROP_DATE_TIME       = "dateTime";
+    public static final String PROP_REMOTE_ADDRESS  = "remoteAddress";
+    public static final String PROP_HOST_NAME       = "hostName";
+    public static final String PROP_USERNAME        = "username";
+    public static final String PROP_CLIENT_URL      = "clientUrl";
+    public static final String PROP_SUMMARY         = "summary";
+    public static final String PROP_MESSAGE         = "message";
+    public static final String PROP_SEED_CLASS      = "seedClass";
 
     public OLoggerEventModel() {
         this(CLASS_NAME);
@@ -137,6 +138,15 @@ public class OLoggerEventModel extends ODocumentWrapper {
 
     public OLoggerEventModel setMessage(String message) {
         document.field(PROP_MESSAGE, message);
+        return this;
+    }
+
+    public String getSeedClass() {
+        return document.field(PROP_SEED_CLASS);
+    }
+
+    public OLoggerEventModel setSeedClass(String seedClass) {
+        document.field(PROP_SEED_CLASS, seedClass);
         return this;
     }
 }
