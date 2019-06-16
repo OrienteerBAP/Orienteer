@@ -29,9 +29,11 @@ import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.orienteer.logger.server.resource.OLoggerReceiverResource;
 import org.orienteer.logger.server.service.OLoggerExceptionListener;
+import org.orienteer.logger.server.service.dispatcher.IOLoggerEventDispatcherModelFactory;
 import org.orienteer.logger.server.service.dispatcher.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.enhancer.OSeedClassEnhancer;
 import org.orienteer.logger.server.service.enhancer.OWebEnhancer;
+import org.orienteer.logger.server.util.OLoggerServerUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -227,9 +229,10 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			return this;
 		}
 
-		public OLoggerEventFilteredDispatcherModel getLoggerEventDispatcher() {
+		public OLoggerEventDispatcherModel getLoggerEventDispatcher() {
 			ODocument dispatcher = getLoggerEventDispatcherAsDocument();
-			return dispatcher != null ? new OLoggerEventFilteredDispatcherModel(dispatcher) : null;
+            IOLoggerEventDispatcherModelFactory factory = OLoggerServerUtils.getEventDispatcherModelFactory();
+            return dispatcher != null ? factory.createEventDispatcherModel(dispatcher) : null;
 		}
 
 		public ODocument getLoggerEventDispatcherAsDocument() {
@@ -237,7 +240,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			return dispatcher != null ? dispatcher.getRecord() : null;
 		}
 
-		public Module setLoggerEventDispatcher(OLoggerEventFilteredDispatcherModel dispatcher) {
+		public Module setLoggerEventDispatcher(OLoggerEventDispatcherModel dispatcher) {
 			return setLoggerEventDispatcherAsDocument(dispatcher != null ? dispatcher.getDocument() : null);
 		}
 
