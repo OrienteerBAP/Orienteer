@@ -70,7 +70,11 @@ public class UIVisualizersRegistry
 			registryTable.put(oType, visualizer.getName(), visualizer);
 		}
 	}
-	
+
+	public void unregisterUIComponentFactory(List<OType> types, String name) {
+		types.forEach(t -> registryTable.remove(t, name));
+	}
+
 	public IVisualizer getComponentFactory(OType oType, String componentName)
 	{
 		Args.notNull(oType, "oType");

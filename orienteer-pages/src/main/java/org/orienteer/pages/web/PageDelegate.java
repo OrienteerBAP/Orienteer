@@ -21,7 +21,7 @@ import org.apache.wicket.util.resource.IFixedLocationResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.pages.OPageParametersEncoder;
+import org.orienteer.pages.wicket.mapper.OPageParametersEncoder;
 import org.orienteer.pages.module.PagesModule;
 
 import com.orientechnologies.common.concur.resource.OPartitionedObjectPool;

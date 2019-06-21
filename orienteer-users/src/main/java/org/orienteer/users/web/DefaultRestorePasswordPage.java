@@ -14,8 +14,8 @@ import org.orienteer.core.MountPath;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.users.component.DefaultRestorePasswordPanel;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.resource.RestorePasswordResource;
-import org.orienteer.users.util.OUsersDbUtils;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -50,7 +50,7 @@ public class DefaultRestorePasswordPage extends BasePage<OrienteerUser> {
             throw new RedirectToUrlException("/home");
         }
 
-        return OUsersDbUtils.getUserByRestoreId(id)
+        return OrienteerUserRepository.getUserByRestoreId(id)
                 .map(ODocumentWrapperModel::new)
                 .orElseThrow(() -> new RedirectToUrlException("/home"));
     }

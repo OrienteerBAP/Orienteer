@@ -1,5 +1,6 @@
-package org.orienteer.users.util;
+package org.orienteer.users.repository;
 
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -8,6 +9,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
+import org.orienteer.users.util.OUsersCommonUtils;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.List;
@@ -17,13 +19,14 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 import static org.orienteer.core.util.CommonUtils.getDocument;
 import static org.orienteer.core.util.CommonUtils.getFromIdentifiables;
+import static org.orienteer.users.repository.DatabaseHelper.selectFromBy;
 
 /**
- * Specialized utils for DB
+ * Repository for work with user models
  */
-public final class OUsersDbUtils {
-	
-	private OUsersDbUtils() {}
+public final class OrienteerUserRepository {
+
+    private OrienteerUserRepository() {}
 
     /**
      * @return optional which contains perspective {@link OrienteerUsersModule#ORIENTEER_USER_PERSPECTIVE}
@@ -51,7 +54,7 @@ public final class OUsersDbUtils {
      * @return user with given restore id
      */
     public static Optional<OrienteerUser> getUserByRestoreId(String restoreId) {
-	    return getUserBy(OrienteerUser.PROP_RESTORE_ID, restoreId);
+        return getUserBy(OrienteerUser.PROP_RESTORE_ID, restoreId);
     }
 
     /**
@@ -60,7 +63,7 @@ public final class OUsersDbUtils {
      * @return user with given id
      */
     public static Optional<OrienteerUser> getUserById(String id) {
-	    return getUserBy(OrienteerUser.PROP_ID, id);
+        return getUserBy(OrienteerUser.PROP_ID, id);
     }
 
     /**
@@ -72,13 +75,22 @@ public final class OUsersDbUtils {
         return getUserBy(OrienteerUser.PROP_EMAIL, email);
     }
 
+    public static Optional<OrienteerUser> getUserByEmail(ODatabaseDocument db, String email) {
+        return getUserBy(db, OrienteerUser.PROP_EMAIL, email);
+    }
+
+    public static Optional<OrienteerUser> getUserByName(ODatabaseDocument db, String name) {
+        return getUserBy(db, "name", name);
+    }
+
+
     /**
      * Check if user exists with given restore id
      * @param restoreId user restore id
      * @return true if user with given restoreId exists in database
      */
     public static boolean isUserExistsWithRestoreId(String restoreId) {
-	    return isUserExistsBy(OrienteerUser.PROP_RESTORE_ID, restoreId);
+        return isUserExistsBy(OrienteerUser.PROP_RESTORE_ID, restoreId);
     }
 
     /**
@@ -99,19 +111,6 @@ public final class OUsersDbUtils {
         return isUserExistsBy(OrienteerUser.PROP_ID, id);
     }
 
-    /**
-     * Search user by given field and value
-     * @param field field
-     * @param value value
-     * @return user which field contains given value
-     */
-    private static Optional<OrienteerUser> getUserBy(String field, String value) {
-        return DBClosure.sudo(db -> {
-            String sql = String.format("select from %s where %s = ?", OrienteerUser.CLASS_NAME, field);
-            List<OIdentifiable> identifiables  = db.query(new OSQLSynchQuery<>(sql, 1), value);
-            return getFromIdentifiables(identifiables, OrienteerUser::new);
-        });
-    }
 
     /**
      * Check if user exists with given field and value
@@ -127,5 +126,21 @@ public final class OUsersDbUtils {
                     .map(d -> (long) d.field("count") == 1)
                     .orElse(false);
         });
+    }
+
+    /**
+     * Search user by given field and value
+     * @param field field
+     * @param value value
+     * @return user which field contains given value
+     */
+    public static Optional<OrienteerUser> getUserBy(String field, String value) {
+        return DBClosure.sudo(db -> getUserBy(db, field, value));
+    }
+
+    public static Optional<OrienteerUser> getUserBy(ODatabaseDocument db, String field, String value) {
+        String sql = selectFromBy(OrienteerUser.CLASS_NAME, field);
+        List<OIdentifiable> identifiables  = db.query(new OSQLSynchQuery<>(sql, 1), value);
+        return getFromIdentifiables(identifiables, OrienteerUser::new);
     }
 }

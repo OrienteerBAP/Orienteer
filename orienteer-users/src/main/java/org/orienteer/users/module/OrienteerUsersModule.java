@@ -1,6 +1,7 @@
 package org.orienteer.users.module;
 
 
+import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.hook.ORecordHook;
@@ -13,18 +14,23 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.schedule.OScheduledEvent;
 import com.orientechnologies.orient.core.schedule.OScheduler;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.module.AbstractOrienteerModule;
+import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
 import org.orienteer.mail.OMailModule;
+import org.orienteer.users.component.visualizer.OAuth2ProviderVisualizer;
 import org.orienteer.users.hook.OrienteerUserHook;
 import org.orienteer.users.hook.OrienteerUserRoleHook;
+import org.orienteer.users.model.OAuth2Service;
+import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.resource.RegistrationResource;
 import org.orienteer.users.resource.RestorePasswordResource;
@@ -57,6 +63,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
+    public static final int VERSION = 7;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -67,14 +74,70 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String MAIL_MACROS_LINK = "link";
 
     protected OrienteerUsersModule() {
-        super(MODULE_NAME, 1,  PerspectivesModule.NAME, OMailModule.NAME);
+        super(MODULE_NAME, VERSION,  PerspectivesModule.NAME, OMailModule.NAME);
     }
 
     @Override
     public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
-        OClass user = helper.oClass(OUser.CLASS_NAME)
+        OClass user = updateUserOClass(helper);
+
+        updateDefaultOrienteerUsers(db);
+
+        helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE, OrienteerUser.PROP_ID);
+
+        OUsersCommonUtils.setRestricted(db, helper.oClass(OIdentity.CLASS_NAME).getOClass());
+        OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OCLASS_PERSPECTIVE).getOClass());
+
+        ODocument perspective = createOrienteerUsersPerspective(db);
+        ODocument readerPerspective = createReaderPerspective(db);
+
+        ODocument reader = updateAndGetUserReader(db);
+        updateReaderPermissions(db, reader, readerPerspective);
+        updateOrienteerUserRoleDoc(db, perspective);
+
+        createRemoveRestoreIdFunction(helper);
+
+        createOAuth2Services(helper);
+        configureModuleClass(helper);
+
+        return createModuleDocument(db);
+    }
+
+    private ODocument createModuleDocument(ODatabaseDocument db) {
+        List<ODocument> docs = db.query(new OSQLSynchQuery<>("select from " + ModuleModel.CLASS_NAME, 1));
+
+        if (docs != null && !docs.isEmpty()) {
+            return null;
+        }
+        return new ODocument(ModuleModel.CLASS_NAME);
+    }
+
+    private void configureModuleClass(OSchemaHelper helper) {
+        helper.oClass(ModuleModel.CLASS_NAME, IOrienteerModule.OMODULE_CLASS)
+                .oProperty(ModuleModel.PROP_DOMAIN, OType.STRING, 40)
+                    .notNull()
+                    .defaultValue("http://localhost:8080")
+                .oProperty(ModuleModel.PROP_OAUTH2, OType.BOOLEAN, 50)
+                    .notNull()
+                    .defaultValue("true")
+                .oProperty(ModuleModel.PROP_REGISTRATION, OType.BOOLEAN, 60)
+                    .notNull()
+                    .defaultValue("true")
+                .oProperty(ModuleModel.PROP_REGISTER_USER_ON_OAUTH2_LOGIN, OType.BOOLEAN, 70)
+                    .notNull()
+                    .defaultValue("false")
+                .oProperty(ModuleModel.PROP_RESTORE_PASSWORD, OType.BOOLEAN, 80)
+                    .notNull()
+                    .defaultValue("true")
+                .oProperty(ModuleModel.PROP_OAUTH2_CALLBACK, OType.STRING, 90)
+                    .notNull()
+                    .defaultValue("/login");
+    }
+
+    private OClass updateUserOClass(OSchemaHelper helper) {
+        helper.oClass(OUser.CLASS_NAME)
                 .oProperty(OrienteerUser.PROP_ID, OType.STRING).notNull()
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
                 .oProperty(OrienteerUser.PROP_RESTORE_ID, OType.STRING)
@@ -83,32 +146,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                     .updateCustomAttribute(REMOVE_SCHEDULE_START_TIMEOUT, "86400000")
                 .oProperty(OrienteerUser.PROP_RESTORE_ID_CREATED, OType.DATETIME)
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
-                .oProperty(OrienteerUser.PROP_EMAIL, OType.STRING).notNull()
+                .oProperty(OrienteerUser.PROP_EMAIL, OType.STRING)
                 .oProperty(OrienteerUser.PROP_FIRST_NAME, OType.STRING)
-                .oProperty(OrienteerUser.PROP_LAST_NAME, OType.STRING)
-                .getOClass();
+                .oProperty(OrienteerUser.PROP_LAST_NAME, OType.STRING);
 
-        updateDefaultOrienteerUsers(db);
-
-        helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE, OrienteerUser.PROP_ID);
-        helper.oIndex(user.getProperty(OrienteerUser.PROP_EMAIL).getFullName(), OClass.INDEX_TYPE.UNIQUE, OrienteerUser.PROP_EMAIL);
-
-        OUsersCommonUtils.setRestricted(db, helper.oClass(OIdentity.CLASS_NAME).getOClass());
-        OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OCLASS_PERSPECTIVE).getOClass());
-
-        ODocument perspective = createOrienteerUsersPerspective(db);
-        ODocument readerPerspective = createReaderPespective(db);
-
-        ODocument reader = updateAndGetUserReader(db);
-        updateReaderPermissions(db, reader, readerPerspective);
-        updateOrienteerUserRoleDoc(db, perspective);
-
-        createRemoveRestoreIdFunction(helper);
-
-
-        return null;
+        return helper.getOClass();
     }
-
 
     private void updateOrienteerUserRoleDoc(ODatabaseDocument db, ODocument perspective) {
         OSecurity security = db.getMetadata().getSecurity();
@@ -182,7 +225,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         return perspective;
     }
 
-    private ODocument createReaderPespective(ODatabaseDocument db) {
+    private ODocument createReaderPerspective(ODatabaseDocument db) {
         ODocument perspective = OUsersCommonUtils.getOrCreatePerspective(db, READER_PERSPECTIVE);
         perspective.field("icon", FAIconType.database.name());
         perspective.field("homeUrl", "/browse/" + OUser.CLASS_NAME);
@@ -262,6 +305,48 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         writer.save();
     }
 
+    private void createOAuth2Services(OSchemaHelper helper) {
+
+        helper.oClass(OAuth2Service.CLASS_NAME)
+                .oProperty(OAuth2Service.PROP_API_KEY, OType.STRING, 0)
+                    .notNull()
+                    .assignVisualization("password")
+                .oProperty(OAuth2Service.PROP_API_SECRET, OType.STRING, 10)
+                    .notNull()
+                    .assignVisualization("password")
+                .oProperty(OAuth2Service.PROP_PROVIDER, OType.STRING, 30)
+                    .notNull()
+                    .markAsDocumentName()
+                    .assignVisualization(OAuth2ProviderVisualizer.NAME)
+                    .updateCustomAttribute(CustomAttribute.DISPLAYABLE, "true")
+                    .oIndex(OClass.INDEX_TYPE.UNIQUE)
+                .oProperty(OAuth2Service.PROP_ACTIVE, OType.BOOLEAN, 40)
+                    .notNull()
+                    .defaultValue("true")
+                    .updateCustomAttribute(CustomAttribute.DISPLAYABLE, "true");
+
+        helper.oClass(OAuth2ServiceContext.CLASS_NAME)
+                .oProperty(OAuth2ServiceContext.PROP_STATE, OType.STRING, 0)
+                    .notNull()
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
+                .oProperty(OAuth2ServiceContext.PROP_SERVICE, OType.LINK, 10)
+                    .linkedClass(OAuth2Service.CLASS_NAME)
+                    .notNull()
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
+                .oProperty(OAuth2ServiceContext.PROP_USED, OType.BOOLEAN, 20)
+                    .defaultValue("false")
+                    .notNull()
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
+                .oProperty(OAuth2ServiceContext.PROP_AUTHORIZATION_URL, OType.STRING, 30)
+                    .notNull()
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
+                .oProperty(OAuth2ServiceContext.PROP_REGISTRATION, OType.BOOLEAN, 40)
+                    .notNull()
+                    .defaultValue("false")
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, "true");
+
+    }
+
     @Override
     public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
         onInstall(app, db);
@@ -276,7 +361,9 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         RegistrationResource.mount(app);
         RestorePasswordResource.mount(app);
 
-        app.mountPages("org.orienteer.users.web");
+        app.mountPackage("org.orienteer.users.web");
+        app.registerWidgets("org.orienteer.users.widget");
+        app.getUIVisualizersRegistry().registerUIComponentFactory(new OAuth2ProviderVisualizer());
 
         OScheduler scheduler = db.getMetadata().getScheduler();
         Collection<OScheduledEvent> events = scheduler.getEvents().values(); // TODO: remove after fix issue https://github.com/orientechnologies/orientdb/issues/8368
@@ -294,6 +381,144 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         RegistrationResource.unmount(app);
         RestorePasswordResource.unmount(app);
 
-        app.unmountPages("org.orienteer.users.web");
+        app.unmountPackage("org.orienteer.users.web");
+        app.unregisterWidgets("org.orienteer.users.widget");
+        app.getUIVisualizersRegistry().unregisterUIComponentFactory(Collections.singletonList(OType.STRING), OAuth2ProviderVisualizer.NAME);
+    }
+
+    /**
+     * Wrapper for module document for {@link OrienteerUsersModule}
+     */
+    public static class ModuleModel extends ODocumentWrapper {
+
+        public static final String CLASS_NAME = "OrienteerUsers";
+
+        /**
+         * {@link OType#STRING}
+         * Contains app domain
+         */
+        public static final String PROP_DOMAIN          = "domain";
+
+        /**
+         * {@link OType#BOOLEAN}
+         * If true, so users can login and register throughout social networks
+         */
+        public static final String PROP_OAUTH2          = "oauth2";
+
+        /**
+         * {@link OType#BOOLEAN}
+         * If true, so users can register in this app
+         */
+        public static final String PROP_REGISTRATION    = "registration";
+
+        /**
+         * {@link OType#BOOLEAN}
+         * If true, so users can be register when they try to login throughout OAuth2 and don't exists in system
+         */
+        public static final String PROP_REGISTER_USER_ON_OAUTH2_LOGIN = "registerUserOnOAuth2Login";
+
+        /**
+         * {@link OType#BOOLEAN}
+         * If true, so users can restore their passwords
+         */
+        public static final String PROP_RESTORE_PASSWORD = "restorePassword";
+
+        /**
+         * {@link OType#STRING}
+         * Contains OAuth2 callback
+         */
+        public static final String PROP_OAUTH2_CALLBACK = "oauth2Callback";
+
+        public ModuleModel() {
+            this(CLASS_NAME);
+        }
+
+        public ModuleModel(String iClassName) {
+            super(iClassName);
+        }
+
+        public ModuleModel(ODocument iDocument) {
+            super(iDocument);
+        }
+
+        public String getDomain() {
+            return document.field(PROP_DOMAIN);
+        }
+
+        public ModuleModel setDomain(String domain) {
+            document.field(PROP_DOMAIN, domain);
+            return this;
+        }
+
+        public boolean isOAuth2() {
+            return document.field(PROP_OAUTH2);
+        }
+
+        public ModuleModel setOAuth2(boolean oauth2) {
+            document.field(PROP_OAUTH2, oauth2);
+            return this;
+        }
+
+        public String getOAuth2Callback() {
+            return document.field(PROP_OAUTH2_CALLBACK);
+        }
+
+        public ModuleModel setOAuth2Callback(String callback) {
+            document.field(PROP_OAUTH2_CALLBACK, callback);
+            return this;
+        }
+
+        public boolean isRegistration() {
+            return document.field(PROP_REGISTRATION);
+        }
+
+        public ModuleModel setRegistration(boolean registration) {
+            document.field(PROP_REGISTRATION, registration);
+            return this;
+        }
+
+        public boolean isRestorePassword() {
+            return document.field(PROP_RESTORE_PASSWORD);
+        }
+
+        public ModuleModel setRestorePassword(boolean restorePassword) {
+            document.field(PROP_RESTORE_PASSWORD, restorePassword);
+            return this;
+        }
+
+        public boolean isRegisterUserOnOAuth2Login() {
+            return document.field(PROP_REGISTER_USER_ON_OAUTH2_LOGIN);
+        }
+
+        public ModuleModel setRegisterUserOnOAuth2Login(boolean register) {
+            document.field(PROP_REGISTER_USER_ON_OAUTH2_LOGIN, register);
+            return this;
+        }
+
+        /**
+         * @return valid url which is concatenation of {@link ModuleModel#PROP_DOMAIN} and {@link ModuleModel#PROP_OAUTH2_CALLBACK}
+         */
+        public String getFullOAuth2Callback() {
+            String domain = getDomain();
+            String callback = getOAuth2Callback();
+
+            if (Strings.isNullOrEmpty(domain)) {
+                return null;
+            }
+
+            if (!domain.endsWith("/")) {
+                domain += "/";
+            }
+
+            if (Strings.isNullOrEmpty(callback)) {
+                return domain;
+            }
+
+            if (callback.startsWith("/")) {
+                callback = callback.substring(1);
+            }
+
+            return domain + callback;
+        }
     }
 }

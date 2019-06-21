@@ -1,7 +1,7 @@
 package org.orienteer.pages.module;
 
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.pages.PagesCompoundRequestMapper;
+import org.orienteer.pages.wicket.mapper.PagesCompoundRequestMapper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;

@@ -1,11 +1,10 @@
 package org.orienteer.core.web;
 
-import java.util.*;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.inject.Inject;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
@@ -24,19 +23,18 @@ import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IWidgetFilter;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * Widgets based page for {@link ODocument}s display
  */
-@MountPath("/doc/#{rid}/#{mode}")
+@MountPath(value = "/doc/#{rid}/#{mode}")
 public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument> {
-	
+
 	@Inject
 	private IOClassIntrospector oClassIntrospector;
+
 	
 	public ODocumentPage() {
 		super();
@@ -60,18 +58,16 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	@Override
 	protected IModel<ODocument> resolveByPageParameters(PageParameters parameters) {
 		String rid = parameters.get("rid").toOptionalString();
-		if(rid!=null)
-		{
-			try
-			{
+		if (rid != null) {
+			try {
 				return new ODocumentModel(new ORecordId(rid));
-			} catch (IllegalArgumentException e)
-			{
+			} catch (IllegalArgumentException e) {
 				//NOP Support of case with wrong rid
 			}
 		}
-		return new ODocumentModel((ODocument)null);
+		return new ODocumentModel(null);
 	}
+
 
 	@Override
 	public String getDomain() {
@@ -80,18 +76,21 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	
 	@Override
 	public void initialize() {
-		if(getModelObject()==null) throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+		if (getModelObject() == null)
+			throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
+
 		setWidgetsFilter(new ByOClassWidgetFilter<ODocument>() {
 
 			@Override
 			public OClass getOClass() {
 				ODocument doc = ODocumentPage.this.getModelObject();
-				return doc!=null?doc.getSchemaClass() : null;
+				return doc != null ? doc.getSchemaClass() : null;
 			}
 		});
+
 		super.initialize();
 	}
-	
+
 	@Override
 	protected boolean switchToDefaultTab() {
 		if(super.switchToDefaultTab()) return true;

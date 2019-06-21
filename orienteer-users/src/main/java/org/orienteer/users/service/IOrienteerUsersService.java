@@ -46,4 +46,6 @@ public interface IOrienteerUsersService {
      * @return page which uses in {@link RegistrationResource}
      */
     public Class<? extends WebPage> getRegistrationPage();
+
+    Class<? extends WebPage> getLoginPage();
 }

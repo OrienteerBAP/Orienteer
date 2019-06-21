@@ -18,6 +18,7 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 import java.util.List;
@@ -38,29 +39,40 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
                                     IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
 
-        IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
-        final String sql = getSql();
-	    GenericTablePanel<ODocument> tablePanel;
-        if(!Strings.isEmpty(sql)) {
-        	OQueryDataProvider<ODocument> provider = newDataProvider(sql);
-        	OClass expectedClass = getExpectedClass(provider);
-        	if(expectedClass!=null) {
-	        	oClassIntrospector.defineDefaultSorting(provider, expectedClass);
-		        List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(expectedClass, true, modeModel);
-	        	tablePanel = new GenericTablePanel<>("tablePanel", columns, provider, 20);
-		        OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
-	        	
-	        	table.addCommand(new EditODocumentsCommand(table, modeModel, expectedClass));
-	        	table.addCommand(new SaveODocumentsCommand(table, modeModel));
-	        	table.addCommand(new DeleteODocumentCommand(table, expectedClass));
-	        	table.addCommand(new ExportCommand<>(table, getTitleModel()));
-        	} else {
-        		tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.class.not.defined"));
-        	}
-        } else {
-	        tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.query.not.defined"));
-        }
-        add(tablePanel);
+	}
+
+	@Override
+	protected void onInitialize() {
+		super.onInitialize();
+
+		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
+		final String sql = getSql();
+
+		GenericTablePanel<ODocument> tablePanel;
+
+		if (!Strings.isEmpty(sql)) {
+			OQueryDataProvider<ODocument> provider = newDataProvider(sql);
+			OClass expectedClass = getExpectedClass(provider);
+			if (expectedClass != null) {
+				oClassIntrospector.defineDefaultSorting(provider, expectedClass);
+				List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(expectedClass, true, modeModel);
+				tablePanel = new GenericTablePanel<>("tablePanel", columns, provider, 20);
+				customizeDataTable(tablePanel.getDataTable(), modeModel, new OClassModel(expectedClass));
+			} else {
+				tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.class.not.defined"));
+			}
+		} else {
+			tablePanel = new GenericTablePanel<>("tablePanel",  new ResourceModel("error.query.not.defined"));
+		}
+
+		add(tablePanel);
+	}
+
+	protected void customizeDataTable(OrienteerDataTable<ODocument, String> table, IModel<DisplayMode> modeModel, IModel<OClass> expectedClass) {
+		table.addCommand(new EditODocumentsCommand(table, modeModel, expectedClass));
+		table.addCommand(new SaveODocumentsCommand(table, modeModel));
+		table.addCommand(new DeleteODocumentCommand(table, expectedClass));
+		table.addCommand(new ExportCommand<>(table, getTitleModel()));
 	}
 	
 	protected String getSql() {

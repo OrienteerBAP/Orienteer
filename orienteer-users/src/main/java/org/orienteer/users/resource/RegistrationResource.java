@@ -9,10 +9,10 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.web.LoginPage;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OrienteerUserModuleRepository;
+import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOrienteerUsersService;
-import org.orienteer.users.util.OUsersDbUtils;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
@@ -30,9 +30,6 @@ public class RegistrationResource extends AbstractResource {
 
     public static final String PARAMETER_ID = "id";
 
-    @Inject
-    private IOrienteerUsersService service;
-
     public static String createRegistrationLink(OrienteerUser user) {
         PageParameters params = new PageParameters();
         params.add(PARAMETER_ID, user.getId());
@@ -40,21 +37,26 @@ public class RegistrationResource extends AbstractResource {
         return RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
     }
 
+    @Inject
+    private IOrienteerUsersService usersService;
+
     @Override
     protected ResourceResponse newResourceResponse(Attributes attrs) {
         ResourceResponse response = new ResourceResponse();
         if (response.dataNeedsToBeWritten(attrs)) {
-            PageParameters params = attrs.getParameters();
-            String id = params.get(PARAMETER_ID).toOptionalString();
+            if (OrienteerUserModuleRepository.isRegistrationActive()) {
+                PageParameters params = attrs.getParameters();
+                String id = params.get(PARAMETER_ID).toOptionalString();
 
-            if (!Strings.isNullOrEmpty(id)) {
-                OUsersDbUtils.getUserById(id)
-                        .filter(user -> user.getAccountStatus() != OSecurityUser.STATUSES.ACTIVE)
-                        .ifPresent(user -> {
-                            user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
-                            DBClosure.sudoSave(user);
-                            response.setWriteCallback(createCallback(true));
-                        });
+                if (!Strings.isNullOrEmpty(id)) {
+                    OrienteerUserRepository.getUserById(id)
+                            .filter(user -> user.getAccountStatus() != OSecurityUser.STATUSES.ACTIVE)
+                            .ifPresent(user -> {
+                                user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
+                                DBClosure.sudoSave(user);
+                                response.setWriteCallback(createCallback(true));
+                            });
+                }
             }
 
             if (response.getWriteCallback() == null) {
@@ -73,7 +75,7 @@ public class RegistrationResource extends AbstractResource {
                 if (success) {
                     params.set(PARAMETER_ID, attributes.getParameters().get(PARAMETER_ID).toOptionalString());
                 }
-                RequestCycle.get().setResponsePage(LoginPage.class, params);
+                RequestCycle.get().setResponsePage(usersService.getLoginPage(), params);
             }
         };
     }
