@@ -66,8 +66,6 @@ public class OrienteerWebSession extends OrientDbWebSession
 
 	public OrienteerWebSession setPerspecive(ODocument perspective) {
 		this.perspective = perspective;
-		PerspectivesModule perspectivesModule = OrienteerWebApplication.get().getServiceInstance(PerspectivesModule.class);
-		perspectivesModule.updateUserPerspective(getUserAsODocument(), perspective);
 		return this;
 	}
 
