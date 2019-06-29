@@ -25,9 +25,8 @@ public class OWebEnhancer implements IOLoggerEventEnhancer {
 					event.setMetaData(OLoggerEventModel.PROP_REMOTE_ADDRESS, clientInfo.getProperties().getRemoteAddress());
 					event.setMetaData(OLoggerEventModel.PROP_HOST_NAME, clientInfo.getProperties().getHostname());
 				}
-
-				if (session.isSignedIn()) {
-					event.setMetaData(OLoggerEventModel.PROP_USERNAME, session.getUser().getName());
+				if(session.isSignedIn()) {
+					event.setMetaData(OLoggerEventModel.PROP_USERNAME, session.getEffectiveUser().getName());
 				}
 			}
 
