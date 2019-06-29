@@ -88,7 +88,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE, OrienteerUser.PROP_ID);
 
         OUsersCommonUtils.setRestricted(db, helper.oClass(OIdentity.CLASS_NAME).getOClass());
-        OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OCLASS_PERSPECTIVE).getOClass());
+        OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OPerspective.CLASS_NAME).getOClass());
 
         ODocument perspective = createOrienteerUsersPerspective(db);
         ODocument readerPerspective = createReaderPerspective(db);
@@ -165,8 +165,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, READ.getPermissionFlag());
 
         // TODO: remove this after release with fix for roles in OrientDB: https://github.com/orientechnologies/orientdb/issues/8338
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, READ.getPermissionFlag());
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspective.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.SCHEMA, null, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLUSTER, "internal", READ.getPermissionFlag());
@@ -191,8 +191,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     private void updateReaderPermissions(ODatabaseDocument db, ODocument reader, ODocument perspective) {
         ORole role = db.getMetadata().getSecurity().getRole("reader");
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_ITEM, READ.getPermissionFlag());
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OCLASS_PERSPECTIVE, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspective.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, null, 0);
         role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, 0);
@@ -210,14 +210,14 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     private ODocument createOrienteerUsersPerspective(ODatabaseDocument db) {
         ODocument perspective = OUsersCommonUtils.getOrCreatePerspective(db, ORIENTEER_USER_PERSPECTIVE);
-        perspective.field("icon", FAIconType.user_o.name());
-        perspective.field("homeUrl", "/browse/" + OrienteerUser.CLASS_NAME);
+        perspective.field(PerspectivesModule.OPerspective.PROP_ICON, FAIconType.user_o.name());
+        perspective.field(PerspectivesModule.OPerspective.PROP_HOME_URL, "/browse/" + OrienteerUser.CLASS_NAME);
         perspective.save();
 
         ODocument item1 = OUsersCommonUtils.getOrCreatePerspectiveItem(db, perspective, "perspective.menu.item.profile");
-        item1.field("icon", FAIconType.user_o.name());
-        item1.field("perspective", perspective);
-        item1.field("url", "/browse/" + OrienteerUser.CLASS_NAME); // TODO: add macros for links
+        item1.field(PerspectivesModule.OPerspectiveItem.PROP_ICON, FAIconType.user_o.name());
+        item1.field(PerspectivesModule.OPerspectiveItem.PROP_PERSPECTIVE, perspective);
+        item1.field(PerspectivesModule.OPerspectiveItem.PROP_URL, "/browse/" + OrienteerUser.CLASS_NAME); // TODO: add macros for links
         item1.save();
 
         perspective.save();

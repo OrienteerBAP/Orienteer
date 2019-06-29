@@ -49,13 +49,15 @@ public class RegistrationResource extends AbstractResource {
                 String id = params.get(PARAMETER_ID).toOptionalString();
 
                 if (!Strings.isNullOrEmpty(id)) {
-                    OrienteerUserRepository.getUserById(id)
-                            .filter(user -> user.getAccountStatus() != OSecurityUser.STATUSES.ACTIVE)
-                            .ifPresent(user -> {
-                                user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
-                                DBClosure.sudoSave(user);
-                                response.setWriteCallback(createCallback(true));
-                            });
+                    DBClosure.sudoConsumer(db -> {
+                        OrienteerUserRepository.getUserById(id)
+                                .filter(user -> user.getAccountStatus() != OSecurityUser.STATUSES.ACTIVE)
+                                .ifPresent(user -> {
+                                    user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
+                                    user.save();
+                                    response.setWriteCallback(createCallback(true));
+                                });
+                    });
                 }
             }
 

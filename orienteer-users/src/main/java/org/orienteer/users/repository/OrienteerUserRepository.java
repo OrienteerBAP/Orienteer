@@ -9,11 +9,9 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
-import org.orienteer.users.util.OUsersCommonUtils;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -33,10 +31,8 @@ public final class OrienteerUserRepository {
      */
     public static Optional<ODocument> getDefaultOrienteerUserPerspective() {
         return DBClosure.sudo(db -> {
-            String sql = String.format("select from %s where name.en = ?", PerspectivesModule.OCLASS_PERSPECTIVE);
-            String name = OUsersCommonUtils.getString(OrienteerWebApplication.lookupApplication(), OrienteerUsersModule.ORIENTEER_USER_PERSPECTIVE, Locale.ENGLISH);
-            List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), name);
-            return getDocument(identifiables);
+            PerspectivesModule perspectivesModule = OrienteerWebApplication.lookupApplication().getServiceInstance(PerspectivesModule.class);
+            return perspectivesModule.getPerspectiveByAliasAsDocument(db, OrienteerUsersModule.ORIENTEER_USER_PERSPECTIVE);
         });
     }
 

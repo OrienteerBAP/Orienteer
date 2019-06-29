@@ -33,6 +33,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 		return (OrienteerWebSession)Session.get();
 	}
 
+
 	@Override
 	public boolean authenticate(String username, String password) {
 		boolean ret = super.authenticate(username, password);
@@ -63,8 +64,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 		super.signOut();
 	}
 
-	public OrienteerWebSession setPerspecive(ODocument perspective)
-	{
+	public OrienteerWebSession setPerspecive(ODocument perspective) {
 		this.perspective = perspective;
 		return this;
 	}
@@ -80,9 +80,8 @@ public class OrienteerWebSession extends OrientDbWebSession
 			if(perspective!=null) perspective = perspective.getRecord();
 			if(perspective==null)
 			{
-				OrienteerWebApplication app = OrienteerWebApplication.get();
-				PerspectivesModule perspectiveModule = app.getServiceInstance(PerspectivesModule.class);
-				perspective = perspectiveModule.getDefaultPerspective(getDatabase(), getEffectiveUser());
+				PerspectivesModule perspectivesModule = OrienteerWebApplication.get().getServiceInstance(PerspectivesModule.class);
+				perspective = perspectivesModule.getDefaultPerspective(getDatabase(), getEffectiveUser());
 			}
 			return (ODocument)perspective;
 			
