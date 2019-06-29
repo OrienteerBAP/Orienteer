@@ -3,6 +3,8 @@ package org.orienteer.core.method.filters;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.method.IMethodContext;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -13,12 +15,19 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 public class OClassBrowseFilter extends AbstractStringFilter{
 
+	private static final Logger LOG = LoggerFactory.getLogger(OClassBrowseFilter.class);
+
 	@Override
 	public boolean isSupportedMethod(IMethodContext dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
-		if (model!=null && model.getObject()!=null && model.getObject() instanceof OClass){
-			return ((OClass) (model.getObject())).isSubClassOf(this.filterData);
+		try {
+			if (model!=null && model.getObject()!=null && model.getObject() instanceof OClass){
+				return ((OClass) (model.getObject())).isSubClassOf(this.filterData);
+			}
+		} catch (Exception e) {
+			LOG.error("Error during filtering", e);
 		}
+
 		return false;
 	}
 }

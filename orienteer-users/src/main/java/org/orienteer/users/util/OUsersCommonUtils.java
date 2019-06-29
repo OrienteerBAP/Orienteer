@@ -82,12 +82,13 @@ public final class OUsersCommonUtils {
         OrienteerWebApplication app = OrienteerWebApplication.get();
         Map<String, String> localizedStrings = getLocalizedStrings(app, key, tags);
         PerspectivesModule perspectivesModule = app.getServiceInstance(PerspectivesModule.class);
-        ODocument doc = perspectivesModule.getPerspectiveByName(db, localizedStrings.get("en"));
-        if (doc == null) {
-            doc = new ODocument(PerspectivesModule.OCLASS_PERSPECTIVE);
-            doc.field("name", localizedStrings);
-        }
-        return doc;
+        return perspectivesModule.getPerspectiveByAliasAsDocument(db, key)
+                .orElseGet(() -> {
+                    ODocument newDoc = new ODocument(PerspectivesModule.OPerspective.CLASS_NAME);
+                    newDoc.field(PerspectivesModule.OPerspective.PROP_NAME, localizedStrings);
+                    newDoc.field(PerspectivesModule.OPerspective.PROP_ALIAS, key);
+                    return newDoc;
+                });
     }
 
     public static ODocument getOrCreatePerspectiveItem(ODatabaseDocument db, ODocument perspective, String key) {
@@ -96,14 +97,16 @@ public final class OUsersCommonUtils {
 
     public static ODocument getOrCreatePerspectiveItem(ODatabaseDocument db, ODocument perspective, String key, List<String> tags) {
         Map<String, String> localizedStrings = getLocalizedStrings(OrienteerWebApplication.get(), key, tags);
-        List<ODocument> docs = db.query(new OSQLSynchQuery<>("select from " + PerspectivesModule.OCLASS_ITEM
-                + " where name.values() contains ? and perspective = ?"), localizedStrings.get("en"), perspective);
-        ODocument doc = docs != null && !docs.isEmpty() ? docs.get(0) : null;
-        if (doc == null) {
-            doc = new ODocument(PerspectivesModule.OCLASS_ITEM);
-            doc.field("name", localizedStrings);
-        }
-        return doc;
+        PerspectivesModule perspectivesModule = OrienteerWebApplication.lookupApplication().getServiceInstance(PerspectivesModule.class);
+
+        return perspectivesModule.getPerspectiveItemByAliasAsDocument(db, key)
+                .orElseGet(() -> {
+                    ODocument doc = new ODocument(PerspectivesModule.OPerspectiveItem.CLASS_NAME);
+                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_NAME, localizedStrings);
+                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_ALIAS, key);
+                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_PERSPECTIVE, perspective);
+                    return doc;
+                });
     }
 
     public static boolean isWidgetExists(ODocument dashboard, String typeId) {

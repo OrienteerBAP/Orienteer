@@ -71,7 +71,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 			}
 		};
 
-		add(new ListView<ODocument>("perspectives", new OQueryModel<>("select from " + PerspectivesModule.OCLASS_PERSPECTIVE)) {
+		add(new ListView<ODocument>("perspectives", new OQueryModel<>("select from " + PerspectivesModule.OPerspective.CLASS_NAME)) {
 
 			@Override
 			protected void populateItem(final ListItem<ODocument> item) {

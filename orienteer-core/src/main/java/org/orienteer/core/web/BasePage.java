@@ -92,19 +92,19 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 			String perspective = parameters.get("_perspective").toOptionalString();
 			if(!Strings.isEmpty(perspective))
 			{
-				ODocument perspectiveDoc = perspectivesModule.getPerspectiveByName(getDatabase(), perspective);
-				if(perspectiveDoc!=null) OrienteerWebSession.get().setPerspecive(perspectiveDoc);
+				perspectivesModule.getPerspectiveByAliasAsDocument(getDatabase(), perspective)
+						.ifPresent(perspectiveDoc -> OrienteerWebSession.get().setPerspecive(perspectiveDoc));
 			}
 		}
 		initialize();
 	}
-	
+
 	protected IModel<T> resolveByPageParameters(PageParameters pageParameters)
 	{
 		return null;
 	}
-	
-	
+
+
 	public void initialize()
 	{
 		//TO BO sure that DB was initialized
@@ -113,14 +113,14 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		add(uiPlugins);
 		if(!OrienteerWebSession.get().isClientInfoAvailable()) add(new AjaxClientInfoBehavior());
 	}
-	
+
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
 		TransparentWebMarkupContainer body;
 		add(body = new TransparentWebMarkupContainer("body"));
 		body.add(new AttributeAppender("class", " "+getBodyAppSubClasses()));
-		
+
 		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS_FOR_CHANGING));
 		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(
 				OrienteerWebApplication.get().getVersion(), OrienteerWebSession.get().isSignedIn() ? OrienteerWebApplication.get().getLoadModeInfo() : "");
