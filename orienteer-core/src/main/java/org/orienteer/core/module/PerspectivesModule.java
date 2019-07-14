@@ -12,6 +12,7 @@ import com.orientechnologies.orient.core.metadata.security.OIdentity;
 import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.model.ResourceModel;
@@ -76,7 +77,6 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 					.markAsDocumentName()
 				.oProperty(OPerspectiveItem.PROP_ALIAS, OType.STRING, 10)
 					.notNull()
-					.oIndex(INDEX_TYPE.UNIQUE)
 				.oProperty(OPerspectiveItem.PROP_ICON, OType.STRING, 20)
 				.oProperty(OPerspectiveItem.PROP_URL, OType.STRING, 30)
 				.oProperty(OPerspectiveItem.PROP_PERSPECTIVE, OType.LINK, 40)
@@ -99,13 +99,13 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		return null;
 	}
 
-	private void createDefaultPerspective(OSchemaHelper helper) {
+	private ODocument createDefaultPerspective(OSchemaHelper helper) {
 
 		helper.oClass(OPerspective.CLASS_NAME);
 
 		ODocument defaultPerspective = helper.oDocument(OPerspective.PROP_ALIAS, ALIAS_PERSPECTIVE_DEFAULT)
 				.field(OPerspective.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.default.name").getObject()))
-				.field(OPerspective.PROP_HOME_URL, "/classes")
+				.field(OPerspective.PROP_HOME_URL, "/schema")
 				.field(OPerspective.PROP_ICON, "fa fa-cog")
 				.saveDocument()
 				.getODocument();
@@ -154,6 +154,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				.field(OPerspectiveItem.PROP_URL, "/browse/" + AbstractOrienteerModule.OMODULE_CLASS)
 				.field(OPerspectiveItem.PROP_PERSPECTIVE, defaultPerspective)
 				.saveDocument();
+		return defaultPerspective;
 	}
 	
 	@Override
@@ -166,7 +167,6 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				convertNameProperty(app, db, OPerspectiveItem.CLASS_NAME);
 				break;
 			case 3:
-			case 6:
 				onInstall(app, db);
 				break;
 			case 4:
@@ -178,6 +178,22 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				OSchemaHelper.bind(db)
 					.oClass(OIdentity.CLASS_NAME)
 					.oProperty(PROP_PERSPECTIVE, OType.LINK).linkedClass(OPerspective.CLASS_NAME);
+				break;
+			case 6:
+				OSchemaHelper helper = OSchemaHelper.bind(db);
+				
+				helper.oClass(OPerspective.CLASS_NAME)
+					.oProperty(OPerspective.PROP_ALIAS, OType.STRING, 10);
+				db.command(new OCommandSQL("update OPerspective set alias=name['en'].toLowerCase() where alias is null"))
+					.execute();
+				helper.notNull()
+					.oIndex(INDEX_TYPE.UNIQUE);
+				//update aliases
+				helper.oClass(OPerspectiveItem.CLASS_NAME)
+					.oProperty(OPerspectiveItem.PROP_ALIAS, OType.STRING, 10);
+				db.command(new OCommandSQL("update OPerspectiveItem set alias=name['en'].toLowerCase() where alias is null"))
+					.execute();
+				helper.notNull();
 				break;
 			default:
 				break;
@@ -247,9 +263,9 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				}
 			}
 		}
-
 		return getPerspectiveByAliasAsDocument(db, ALIAS_PERSPECTIVE_DEFAULT)
-				.orElse(null);
+					// Restore default perspective if it was not found
+				.orElseGet(() -> DBClosure.sudo((adminDb)->createDefaultPerspective(OSchemaHelper.bind(adminDb))));
 	}
 	
 	public ODocument getPerspectiveForORole(OSecurityRole role) {
