@@ -22,19 +22,20 @@
 	<name>orienteer-camel</name>
 
     <properties>
-        <camel.version>2.17.6</camel.version>
+        <camel.version>2.23.3</camel.version>
+        <camel.core.version>2.24.1</camel.core.version>
     </properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-core</artifactId>
-			<version>${camel.version}</version>
+			<version>${camel.core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.orienteer.camel.component</groupId>
 			<artifactId>camel-orientdb</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
