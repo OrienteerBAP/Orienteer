@@ -1,15 +1,5 @@
 package org.orienteer.core.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.OrienteerWebSession;
-
-import static org.orienteer.core.module.OWidgetsModule.*;
-
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -18,6 +8,16 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebSession;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.orienteer.core.module.OWidgetsModule.*;
 
 /**
  * Default implementation of {@link IDashboardManager}
@@ -33,7 +33,7 @@ public class DefaultDashboardManager implements IDashboardManager{
 	}
 
 	@Override
-	public <T> List<String> listTabs(String domain, Predicate<IWidgetType<T>> filter) {
+	public <T> List<String> listTabs(String domain, Predicate<IWidgetType<T>> filter, T data) {
 		List<String> tabs = new ArrayList<String>();
 		if(domain!=null)
 		{

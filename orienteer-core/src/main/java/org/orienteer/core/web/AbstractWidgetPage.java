@@ -1,8 +1,6 @@
 package org.orienteer.core.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.inject.Inject;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
@@ -20,7 +18,8 @@ import org.orienteer.core.widget.IDashboardManager;
 import org.orienteer.core.widget.IWidgetFilter;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract class for all pages that use widgets approach
@@ -138,7 +137,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	}
 	
 	public List<String> getTabs() {
-		return dashboardManager.listTabs(getDomain(), getWidgetsFilter());
+		return dashboardManager.listTabs(getDomain(), getWidgetsFilter(), getModelObject());
 	}
 	
 	/**
