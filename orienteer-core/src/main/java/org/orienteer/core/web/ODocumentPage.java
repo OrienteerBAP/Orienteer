@@ -65,7 +65,8 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 				//NOP Support of case with wrong rid
 			}
 		}
-		return new ODocumentModel(null);
+		String className = parameters.get("class").toOptionalString();
+		return new ODocumentModel(!Strings.isEmpty(className) ? new ODocument(className) : null);
 	}
 
 
