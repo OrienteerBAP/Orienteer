@@ -10,6 +10,8 @@ import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.repository.OrienteerUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -20,6 +22,8 @@ import java.util.UUID;
  * Hook to initialize OUser.
  */
 public class OrienteerUserHook extends ODocumentHookAbstract {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OrienteerUserHook.class);
 
     public OrienteerUserHook(ODatabaseDocument database) {
         super(database);
@@ -38,7 +42,9 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
      */
     @Override
     public RESULT onRecordBeforeCreate(ODocument doc) {
-        doc.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
+        if (doc.field(OrienteerUser.PROP_ID) == null) {
+            doc.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
+        }
 
         if (doc.field(PerspectivesModule.PROP_PERSPECTIVE) == null) {
             OrienteerUserRepository.getDefaultOrienteerUserPerspective()
