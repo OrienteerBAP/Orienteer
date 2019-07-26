@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
+import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.apache.wicket.ISessionListener;
@@ -44,6 +45,7 @@ public class UserOnlineModule extends AbstractOrienteerModule {
     @Override
     public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
         super.onInitialize(app, db);
+        resetUsersOnline(db);
         app.getSessionListeners().add(new ISessionListener() {
             @Override
             public void onCreated(Session session) { }
@@ -88,5 +90,10 @@ public class UserOnlineModule extends AbstractOrienteerModule {
 	            }
 	        }.execute();
     	}
+    }
+
+    private void resetUsersOnline(ODatabaseDocument db) {
+        String sql = String.format("update %s set %s = ?", OUser.CLASS_NAME, ONLINE_FIELD);
+        db.command(new OCommandSQL(sql)).execute(false);
     }
 }
