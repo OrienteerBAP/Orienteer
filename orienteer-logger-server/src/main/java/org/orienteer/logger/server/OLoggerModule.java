@@ -51,7 +51,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 10;
+	public static final int VERSION = 11;
 
 	public static final String DISPATCHER_DEFAULT = "default";
 
@@ -76,16 +76,18 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	private void installOLoggerEvent(OSchemaHelper helper) {
 		helper.oClass(OLoggerEventModel.CLASS_NAME)
 				.oProperty(OLoggerEventModel.PROP_EVENT_ID, OType.STRING, 10)
-					.markAsDocumentName()
+					.switchDisplayable(false)
 					.notNull()
 				.oProperty(OLoggerEventModel.PROP_APPLICATION, OType.STRING, 20)
 					.markDisplayable()
 				.oProperty(OLoggerEventModel.PROP_NODE_ID, OType.STRING, 30)
 					.markDisplayable()
 				.oProperty(OLoggerEventModel.PROP_CORRELATION_ID, OType.STRING, 40)
+					.assignVisualization(UIVisualizersRegistry.VISUALIZER_RESTRICTED_WIDTH)
 					.markDisplayable()
 				.oProperty(OLoggerEventModel.PROP_DATE_TIME, OType.DATETIME, 50)
 					.markDisplayable()
+					.markAsDocumentName()
 				.oProperty(OLoggerEventModel.PROP_REMOTE_ADDRESS, OType.STRING, 60)
 				.oProperty(OLoggerEventModel.PROP_HOST_NAME, OType.STRING, 70)
 					.markDisplayable()
@@ -93,7 +95,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 				.oProperty(OLoggerEventModel.PROP_CLIENT_URL, OType.STRING, 90)
                 .oProperty(OLoggerEventModel.PROP_SEED_CLASS, OType.STRING, 100)
 				.oProperty(OLoggerEventModel.PROP_SUMMARY, OType.STRING, 110)
-					.calculateBy("message.left(message.indexOf('\\n'))")
+					.assignVisualization(UIVisualizersRegistry.VISUALIZER_RESTRICTED_WIDTH)
 					.markDisplayable()
 					.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
 				.oProperty(OLoggerEventModel.PROP_MESSAGE, OType.STRING, 120)
