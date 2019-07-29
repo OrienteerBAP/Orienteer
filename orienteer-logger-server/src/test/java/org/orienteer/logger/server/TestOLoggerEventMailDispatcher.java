@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.logger.OLogger;
-import org.orienteer.logger.OLoggerUtils;
+import org.orienteer.logger.server.model.OCorrelationIdGeneratorModel;
 import org.orienteer.logger.server.model.OLoggerEventMailDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerModuleRepository;
@@ -36,6 +36,7 @@ public class TestOLoggerEventMailDispatcher {
     private OMail mail;
     private OMailSettings settings;
     private OLoggerEventMailDispatcherModel mailDispatcher;
+    private OCorrelationIdGeneratorModel correlationIdGenerator;
 
     private Exception exception1;
     private Exception exception2;
@@ -56,7 +57,11 @@ public class TestOLoggerEventMailDispatcher {
             mailDispatcher = createMailDispatcherModel(mail);
             mailDispatcher.save();
 
+            correlationIdGenerator = OLoggerRepository.getOCorrelationIdGenerator(OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER)
+                    .orElseThrow(() -> new IllegalStateException("There is no correlation id generator with alias: " + OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER));
+
             OLoggerModule.Module module = OLoggerModuleRepository.getModule(db);
+            module.setCorrelationIdGenerator(correlationIdGenerator);
             module.setLoggerEventDispatcher(mailDispatcher);
             module.setActivated(true);
             module.save();
@@ -86,7 +91,7 @@ public class TestOLoggerEventMailDispatcher {
     }
 
     private void deleteEvents(ODatabaseDocument db, Exception exception) {
-        OLoggerRepository.getEventsByCorrelationId(db, OLoggerUtils.getCorrelationId(exception))
+        OLoggerRepository.getEventsByCorrelationId(db, correlationIdGenerator.createCorrelationIdGenerator().generate(exception))
                 .stream()
                 .map(OLoggerEventModel::getDocument)
                 .forEach(db::delete);
@@ -138,7 +143,7 @@ public class TestOLoggerEventMailDispatcher {
     public void testSendingEventByMail() {
         OLogger.log(exception1);
 
-        String correlationId = OLoggerUtils.getCorrelationId(exception1);
+        String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception1);
 
         List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
         assertEquals("There is no events with correlationId: " + correlationId, 1, events.size());
@@ -154,7 +159,7 @@ public class TestOLoggerEventMailDispatcher {
     public void testIgnoreSendingEventByMail() {
         OLogger.log(exception2);
 
-        String correlationId = OLoggerUtils.getCorrelationId(exception2);
+        String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception2);
         List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
         assertTrue("There is present event with correlationId: " + correlationId, events.isEmpty());
 
