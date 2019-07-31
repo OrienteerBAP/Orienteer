@@ -21,14 +21,14 @@ import org.orienteer.logger.IOLoggerConfiguration;
 import org.orienteer.logger.IOLoggerEventEnhancer;
 import org.orienteer.logger.OLogger;
 import org.orienteer.logger.OLoggerBuilder;
+import org.orienteer.logger.impl.DefaultCorrelationIdGenerator;
 import org.orienteer.logger.impl.DefaultOLoggerConfiguration;
-import org.orienteer.logger.server.model.OLoggerEventDispatcherModel;
-import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
-import org.orienteer.logger.server.model.OLoggerEventMailDispatcherModel;
-import org.orienteer.logger.server.model.OLoggerEventModel;
+import org.orienteer.logger.server.hook.OLoggerEventHook;
+import org.orienteer.logger.server.model.*;
 import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.orienteer.logger.server.resource.OLoggerReceiverResource;
 import org.orienteer.logger.server.service.OLoggerExceptionListener;
+import org.orienteer.logger.server.service.correlation.OrienteerCorrelationIdGenerator;
 import org.orienteer.logger.server.service.dispatcher.IOLoggerEventDispatcherModelFactory;
 import org.orienteer.logger.server.service.dispatcher.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.enhancer.OSeedClassEnhancer;
@@ -51,9 +51,12 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 9;
+	public static final int VERSION = 11;
 
 	public static final String DISPATCHER_DEFAULT = "default";
+
+	public static final String CORRELATION_ID_GENERATOR_DEFAULT   = "default";
+	public static final String CORRELATION_ID_GENERATOR_ORIENTEER = "orienteer";
 
 	protected OLoggerModule() {
 		super(NAME, VERSION, OMailModule.NAME);
@@ -65,6 +68,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		installOLoggerEvent(helper);
 		createDefaultOLoggerEventDispatcher(helper);
+		createDefaultCorrelationIdGenerators(helper);
 
 		return installModule(helper);
 	}
@@ -72,16 +76,18 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	private void installOLoggerEvent(OSchemaHelper helper) {
 		helper.oClass(OLoggerEventModel.CLASS_NAME)
 				.oProperty(OLoggerEventModel.PROP_EVENT_ID, OType.STRING, 10)
-					.markAsDocumentName()
+					.switchDisplayable(false)
 					.notNull()
 				.oProperty(OLoggerEventModel.PROP_APPLICATION, OType.STRING, 20)
 					.markDisplayable()
 				.oProperty(OLoggerEventModel.PROP_NODE_ID, OType.STRING, 30)
 					.markDisplayable()
 				.oProperty(OLoggerEventModel.PROP_CORRELATION_ID, OType.STRING, 40)
+					.assignVisualization(UIVisualizersRegistry.VISUALIZER_RESTRICTED_WIDTH)
 					.markDisplayable()
 				.oProperty(OLoggerEventModel.PROP_DATE_TIME, OType.DATETIME, 50)
 					.markDisplayable()
+					.markAsDocumentName()
 				.oProperty(OLoggerEventModel.PROP_REMOTE_ADDRESS, OType.STRING, 60)
 				.oProperty(OLoggerEventModel.PROP_HOST_NAME, OType.STRING, 70)
 					.markDisplayable()
@@ -89,7 +95,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 				.oProperty(OLoggerEventModel.PROP_CLIENT_URL, OType.STRING, 90)
                 .oProperty(OLoggerEventModel.PROP_SEED_CLASS, OType.STRING, 100)
 				.oProperty(OLoggerEventModel.PROP_SUMMARY, OType.STRING, 110)
-					.calculateBy("message.left(message.indexOf('\\n'))")
+					.assignVisualization(UIVisualizersRegistry.VISUALIZER_RESTRICTED_WIDTH)
 					.markDisplayable()
 					.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
 				.oProperty(OLoggerEventModel.PROP_MESSAGE, OType.STRING, 120)
@@ -120,6 +126,18 @@ public class OLoggerModule extends AbstractOrienteerModule{
 				.oProperty(OLoggerEventMailDispatcherModel.PROP_RECIPIENTS, OType.EMBEDDEDSET, 50)
 					.linkedType(OType.STRING)
 					.notNull();
+
+		helper.oClass(OCorrelationIdGeneratorModel.CLASS_NAME)
+				.oProperty(OCorrelationIdGeneratorModel.PROP_NAME, OType.EMBEDDEDMAP, 0)
+					.markAsDocumentName()
+					.linkedType(OType.STRING)
+					.assignTab(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+					.notNull()
+				.oProperty(OCorrelationIdGeneratorModel.PROP_ALIAS, OType.STRING, 10)
+					.notNull()
+					.oIndex(OClass.INDEX_TYPE.UNIQUE)
+				.oProperty(OCorrelationIdGeneratorModel.PROP_GENERATOR_CLASS, OType.STRING, 20)
+					.notNull();
 	}
 
 	private ODocument installModule(OSchemaHelper helper) {
@@ -131,17 +149,24 @@ public class OLoggerModule extends AbstractOrienteerModule{
 				.oProperty(Module.PROP_LOGGER_EVENT_DISPATCHER, OType.LINK, 70)
 					.linkedClass(OLoggerEventDispatcherModel.CLASS_NAME)
 					.notNull()
+				.oProperty(Module.PROP_CORRELATION_ID_GENERATOR, OType.LINK, 80)
+					.linkedClass(OCorrelationIdGeneratorModel.CLASS_NAME)
+					.notNull()
                 .oProperty(Module.PROP_DOMAIN, OType.STRING, 80);
 
 
 		ODocument dispatcher = OLoggerRepository.getOLoggerEventDispatcherAsDocument(helper.getDatabase(), DISPATCHER_DEFAULT)
 			.orElseThrow(() -> new IllegalStateException("There is no default dispatcher with alias: " + DISPATCHER_DEFAULT));
 
+		ODocument correlationIdGenerator = OLoggerRepository.getOCorrelationIdGeneratorAsDocument(helper.getDatabase(), CORRELATION_ID_GENERATOR_ORIENTEER)
+				.orElseThrow(() -> new IllegalStateException("There is no orienteer correlation id generator with alias: " + CORRELATION_ID_GENERATOR_ORIENTEER));
+
 		return helper.oClass(Module.CLASS_NAME)
 				.oDocument(AbstractOrienteerModule.OMODULE_NAME, NAME)
 					.field(OMODULE_ACTIVATE, false)
 					.field(Module.PROP_LOGGER_ENHANCERS, Arrays.asList(OWebEnhancer.class.getName(), OSeedClassEnhancer.class.getName()))
 					.field(Module.PROP_LOGGER_EVENT_DISPATCHER, dispatcher)
+					.field(Module.PROP_CORRELATION_ID_GENERATOR, correlationIdGenerator)
                     .field(Module.PROP_DOMAIN, "http://localhost:8080")
 					.saveDocument()
 				.getODocument();
@@ -161,6 +186,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		app.mountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.mount(app);
 		app.getRequestCycleListeners().add(new OLoggerExceptionListener());
+		app.getOrientDbSettings().getORecordHooks().add(OLoggerEventHook.class);
 	}
 	
 	@Override
@@ -178,6 +204,10 @@ public class OLoggerModule extends AbstractOrienteerModule{
 			config.setCollectorUrl(module.getCollectorUrl());
 		}
 
+		if (module.getCorrelationIdGenerator() != null) {
+			config.setCorrelationIdGenerator(module.getCorrelationIdGenerator().createCorrelationIdGenerator());
+		}
+
 		OLoggerBuilder builder = new OLoggerBuilder();
 		builder.setLoggerEventDispatcher(module.getLoggerEventDispatcher().createDispatcherClassInstance());
 		module.getLoggerEnhancersInstances().forEach(builder::addEnhancer);
@@ -192,6 +222,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		OLogger.set(null);
 		app.unmountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.unmount(app);
+		app.getOrientDbSettings().getORecordHooks().remove(OLoggerEventHook.class);
 	}
 
 	private void createDefaultOLoggerEventDispatcher(OSchemaHelper helper) {
@@ -205,6 +236,24 @@ public class OLoggerModule extends AbstractOrienteerModule{
 				.saveDocument();
 	}
 
+	private void createDefaultCorrelationIdGenerators(OSchemaHelper helper) {
+		helper.oClass(OCorrelationIdGeneratorModel.CLASS_NAME);
+
+		String defaultName = new ResourceModel("logger.event.correlation.id.generator.default.name").getObject();
+
+		helper.oDocument(OCorrelationIdGeneratorModel.PROP_ALIAS, CORRELATION_ID_GENERATOR_DEFAULT)
+				.field(OCorrelationIdGeneratorModel.PROP_NAME, CommonUtils.toMap("en", defaultName))
+				.field(OCorrelationIdGeneratorModel.PROP_GENERATOR_CLASS, DefaultCorrelationIdGenerator.class.getName())
+				.saveDocument();
+
+		String orienteerName = new ResourceModel("logger.event.correlation.id.generator.orienteer.name").getObject();
+
+		helper.oDocument(OCorrelationIdGeneratorModel.PROP_ALIAS, CORRELATION_ID_GENERATOR_ORIENTEER)
+				.field(OCorrelationIdGeneratorModel.PROP_NAME, CommonUtils.toMap("en", orienteerName))
+				.field(OCorrelationIdGeneratorModel.PROP_GENERATOR_CLASS, OrienteerCorrelationIdGenerator.class.getName())
+				.saveDocument();
+	}
+
 	/**
 	 * Wrapper for module {@link OLoggerModule}
 	 */
@@ -212,10 +261,11 @@ public class OLoggerModule extends AbstractOrienteerModule{
 
 		public static final String CLASS_NAME = "OLoggerModule";
 
-		public static final String PROP_COLLECTOR_URL           = "collectorUrl";
-		public static final String PROP_LOGGER_EVENT_DISPATCHER = "loggerEventDispatcher";
-		public static final String PROP_LOGGER_ENHANCERS        = "loggerEnhancers";
-		public static final String PROP_DOMAIN                  = "domain";
+		public static final String PROP_COLLECTOR_URL            = "collectorUrl";
+		public static final String PROP_LOGGER_EVENT_DISPATCHER  = "loggerEventDispatcher";
+		public static final String PROP_LOGGER_ENHANCERS         = "loggerEnhancers";
+		public static final String PROP_CORRELATION_ID_GENERATOR = "correlationIdGenerator";
+		public static final String PROP_DOMAIN                   = "domain";
 
 		public Module() {
 			super(CLASS_NAME);
@@ -286,6 +336,26 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		    document.field(PROP_DOMAIN, domain);
 		    return this;
         }
+
+        public OCorrelationIdGeneratorModel getCorrelationIdGenerator() {
+			ODocument generator = getCorrelationIdGeneratorAsDocument();
+			return generator != null ? new OCorrelationIdGeneratorModel(generator) : null;
+		}
+
+		public ODocument getCorrelationIdGeneratorAsDocument() {
+			OIdentifiable generator = document.field(PROP_CORRELATION_ID_GENERATOR);
+			return generator != null ? generator.getRecord() : null;
+		}
+
+        public Module setCorrelationIdGenerator(OCorrelationIdGeneratorModel correlationIdGenerator) {
+			return setCorrelationIdGeneratorAsDocument(correlationIdGenerator != null ? correlationIdGenerator.getDocument() : null);
+		}
+
+		public Module setCorrelationIdGeneratorAsDocument(ODocument correlationIdGenerator) {
+			document.field(PROP_CORRELATION_ID_GENERATOR, correlationIdGenerator);
+			return this;
+		}
+
 
 		private List<IOLoggerEventEnhancer> getLoggerEnhancersInstances() {
 			return getLoggerEnhancers().stream()

@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.logger.OLogger;
-import org.orienteer.logger.OLoggerUtils;
+import org.orienteer.logger.server.model.OCorrelationIdGeneratorModel;
 import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
 import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerModuleRepository;
@@ -27,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 public class TestOLoggerEventFilteredDispatcher {
 
     private OLoggerEventFilteredDispatcherModel filteredDispatcher;
+    private OCorrelationIdGeneratorModel correlationIdGenerator;
 
     @Before
     public void init() {
@@ -41,8 +42,12 @@ public class TestOLoggerEventFilteredDispatcher {
             filteredDispatcher.setExceptions(exceptions);
             filteredDispatcher.save();
 
+            correlationIdGenerator = OLoggerRepository.getOCorrelationIdGenerator(OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER)
+                    .orElseThrow(() -> new IllegalStateException("There is no correlation id generator with id: " + OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER));
+
             OLoggerModule.Module module = OLoggerModuleRepository.getModule(db);
             module.setLoggerEventDispatcher(filteredDispatcher);
+            module.setCorrelationIdGenerator(correlationIdGenerator);
             module.setActivated(true);
             module.save();
         });
@@ -67,7 +72,7 @@ public class TestOLoggerEventFilteredDispatcher {
         TestException exception = new TestException("Test Exception: " + UUID.randomUUID().toString());
         OLogger.log(exception);
 
-        String correlationId = OLoggerUtils.getCorrelationId(exception);
+        String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception);
 
         List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
         assertEquals("There is no events with correlationId: " + correlationId, 1, events.size());
@@ -79,7 +84,7 @@ public class TestOLoggerEventFilteredDispatcher {
         SecondTestException exception = new SecondTestException("Test Exception: " + UUID.randomUUID().toString());
         OLogger.log(exception);
 
-        String correlationId = OLoggerUtils.getCorrelationId(exception);
+        String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception);
         List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
         assertTrue("There is present event with correlationId: " + correlationId, events.isEmpty());
     }

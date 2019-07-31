@@ -6,10 +6,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.logger.OLoggerEvent;
-import org.orienteer.logger.server.model.OLoggerEventDispatcherModel;
-import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
-import org.orienteer.logger.server.model.OLoggerEventMailDispatcherModel;
-import org.orienteer.logger.server.model.OLoggerEventModel;
+import org.orienteer.logger.server.model.*;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.Date;
@@ -90,6 +87,22 @@ public final class OLoggerRepository {
     public static Optional<ODocument> getOLoggerEventDispatcherAsDocument(ODatabaseDocument db, String alias) {
         String sql = String.format("select from %s where %s = ?", OLoggerEventDispatcherModel.CLASS_NAME,
                 OLoggerEventDispatcherModel.PROP_ALIAS);
+        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), alias);
+        return CommonUtils.getDocument(identifiables);
+    }
+
+    public static Optional<OCorrelationIdGeneratorModel> getOCorrelationIdGenerator(String alias) {
+        return DBClosure.sudo(db -> getOCorrelationIdGenerator(db, alias));
+    }
+
+    public static Optional<OCorrelationIdGeneratorModel> getOCorrelationIdGenerator(ODatabaseDocument db, String alias) {
+        return getOCorrelationIdGeneratorAsDocument(db, alias)
+                .map(OCorrelationIdGeneratorModel::new);
+    }
+
+    public static Optional<ODocument> getOCorrelationIdGeneratorAsDocument(ODatabaseDocument db, String alias) {
+        String sql = String.format("select from %s where %s = ?", OCorrelationIdGeneratorModel.CLASS_NAME,
+                OCorrelationIdGeneratorModel.PROP_ALIAS);
         List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), alias);
         return CommonUtils.getDocument(identifiables);
     }

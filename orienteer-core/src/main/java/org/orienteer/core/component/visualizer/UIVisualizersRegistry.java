@@ -5,7 +5,9 @@ import com.google.common.collect.Table;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.util.lang.Args;
+import org.orienteer.core.component.TextBreakPanel;
 import org.orienteer.core.component.property.LinksPropertyDataTablePanel;
 
 import java.util.ArrayList;
@@ -32,6 +34,8 @@ public class UIVisualizersRegistry
 	public static final String VISUALIZER_JAVASCRIPT = JavaScriptCodeVisualizer.NAME;
 	public static final String VISUALIZER_SQL = SqlCodeVisualizer.NAME;
 	public static final String VISUALIZER_HEX = HexVisualizer.NAME;
+	public static final String VISUALIZER_RESTRICTED_WIDTH = "restricted-width";
+
 	private Table<OType, String, IVisualizer> registryTable = HashBasedTable.create();
 	
 	public UIVisualizersRegistry()
@@ -43,6 +47,7 @@ public class UIVisualizersRegistry
 																	   OType.LINKLIST, 
 																	   OType.LINKSET, 
 																	   OType.LINKBAG));
+		registerUIComponentFactory(new SimpleVisualizer(VISUALIZER_RESTRICTED_WIDTH, TextBreakPanel.class, TextField.class, OType.STRING));
 		registerUIComponentFactory(new ListboxVisualizer());
 		registerUIComponentFactory(new PasswordVisualizer());
 		registerUIComponentFactory(new HTMLVisualizer());

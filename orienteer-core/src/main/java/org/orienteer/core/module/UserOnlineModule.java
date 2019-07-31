@@ -78,7 +78,7 @@ public class UserOnlineModule extends AbstractOrienteerModule {
             @Override
             public void onUnbound(final String sessionId) {
                 DBClosure.sudoConsumer(db -> {
-                    String sql = String.format("update %s set %s = ? and %s = ?", OUser.CLASS_NAME,
+                    String sql = String.format("update %s set %s = ?, %s = ?", OUser.CLASS_NAME,
                             PROP_ONLINE, PROP_LAST_SESSION_FIELD);
                     db.command(new OCommandSQL(sql)).execute(false, sessionId);
                 });
