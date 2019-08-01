@@ -1,5 +1,6 @@
 package org.orienteer.core.web;
 
+import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
@@ -33,6 +34,8 @@ import org.orienteer.core.widget.IDashboard;
 import org.orienteer.core.widget.IDashboardContainer;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,19 +81,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 		add(new ODocumentPageLink("myProfile", new PropertyModel<>(this, "session.user.document")));
 		add(createUsernameLabel("username"));
 
-		final IModel<String> queryModel = Model.of();
-		Form<String>  searchForm = new Form<String>("searchForm", queryModel)
-		{
-
-			@Override
-			protected void onSubmit() {
-				setResponsePage(new SearchPage(queryModel));
-			}
-
-		};
-		searchForm.add(new TextField<>("query", queryModel, String.class));
-		searchForm.add(new AjaxButton("search"){});
-		add(searchForm);
+		add(createSearchForm("searchForm", Model.of()));
 	}
 
 	private WebMarkupContainer createPerspectivesContainer(String id, IModel<ODocument> perspectiveModel,
@@ -151,6 +142,35 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 						return Objects.isEqual(getPerspective(), component.getDefaultModelObject());
 					}
 				};
+			}
+		};
+	}
+
+	private Form<String> createSearchForm(String id, IModel<String> queryModel) {
+		return new Form<String>(id, queryModel) {
+			@Override
+			protected void onInitialize() {
+				super.onInitialize();
+				add(new TextField<>("query", queryModel, String.class));
+				add(new AjaxButton("search") {});
+			}
+
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+                OSecurityUser user = OrienteerWebSession.get().getUser();
+                if (user != null) {
+					OSecurityRole allowedRole = user.checkIfAllowed(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE,
+							OrientPermission.READ.getPermissionFlag());
+                    setVisible(allowedRole != null);
+                } else {
+                    setVisible(false);
+                }
+            }
+
+			@Override
+			protected void onSubmit() {
+				setResponsePage(new SearchPage(queryModel));
 			}
 		};
 	}
