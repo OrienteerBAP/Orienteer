@@ -8,6 +8,7 @@ import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
@@ -33,6 +34,7 @@ import org.orienteer.core.widget.IDashboardContainer;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -63,49 +65,14 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 		super.initialize();
 		showChangedPerspectiveInfo();
 
-		final AttributeAppender highlightActivePerspective = new AttributeAppender("class", " disabled")
-		{
-			@Override
-			public boolean isEnabled(Component component) {
-				return Objects.isEqual(getPerspective(), component.getDefaultModelObject());
-			}
-		};
-
-		add(new ListView<ODocument>("perspectives", new OQueryModel<>("select from " + PerspectivesModule.OPerspective.CLASS_NAME)) {
-
-			@Override
-			protected void populateItem(final ListItem<ODocument> item) {
-				IModel<ODocument> itemModel = item.getModel();
-				Link<ODocument> link = new AjaxFallbackLink<ODocument>("link", itemModel) {
-					@Override
-					public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-						if (!getModelObject().equals(getPerspective())) {
-							OrienteerWebSession session = OrienteerWebSession.get();
-							session.setPerspecive(getModelObject());
-							session.setAttribute("newPerspective", getModel());
-							setResponsePage(HomePage.class);
-						}
-					}
-				};
-				link.add(new FAIcon("icon", new PropertyModel<>(itemModel, "icon")),
-						 new Label("name",  new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
-				item.add(link);
-				link.add(highlightActivePerspective);
-			}
-		});
-		IModel<ODocument> perspectiveModel = new PropertyModel<>(this, "perspective");
-		Button perspectiveButton = new Button("perspectiveButton");
-
-		perspectiveButton.add(new FAIcon("icon", new PropertyModel<>(perspectiveModel, "icon")));
-		perspectiveButton.add(new Label("name", new ODocumentNameModel(perspectiveModel)));
-		add(perspectiveButton);
+		IModel<ODocument> perspectiveModel = PropertyModel.of(this, "perspective");
+		IModel<List<ODocument>> perspectivesModel = new OQueryModel<>("select from " + PerspectivesModule.OPerspective.CLASS_NAME);
+		add(createPerspectivesContainer("perspectivesContainer", perspectiveModel, perspectivesModel));
+		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
 
 		boolean signedIn = OrientDbWebSession.get().isSignedIn();
 		add(new BookmarkablePageLink<>("login", LoginPage.class).setVisible(!signedIn));
 		add(new BookmarkablePageLink<>("logout", LogoutPage.class).setVisible(signedIn));
-
-		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
-
 
 		add(feedbacks = new OrienteerFeedbackPanel("feedbacks"));
 		add(new ODocumentPageLink("myProfile", new PropertyModel<>(this, "session.user.document")));
@@ -124,6 +91,68 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 		searchForm.add(new TextField<>("query", queryModel, String.class));
 		searchForm.add(new AjaxButton("search"){});
 		add(searchForm);
+	}
+
+	private WebMarkupContainer createPerspectivesContainer(String id, IModel<ODocument> perspectiveModel,
+														   IModel<List<ODocument>> perspectivesModel) {
+		return new WebMarkupContainer(id) {
+			@Override
+			protected void onInitialize() {
+				super.onInitialize();
+				add(createPerspectivesList("perspectives", perspectivesModel));
+				Button perspectiveButton = new Button("perspectiveButton");
+
+				perspectiveButton.add(new FAIcon("icon", new PropertyModel<>(perspectiveModel, "icon")));
+				perspectiveButton.add(new Label("name", new ODocumentNameModel(perspectiveModel)));
+				add(perspectiveButton);
+
+				setOutputMarkupPlaceholderTag(true);
+			}
+
+			@Override
+			protected void onConfigure() {
+				super.onConfigure();
+				List<ODocument> perspectives = perspectivesModel.getObject();
+				setVisible(perspectives != null && perspectives.size() > 1);
+			}
+		};
+	}
+
+	private ListView<ODocument> createPerspectivesList(String id, IModel<List<ODocument>> perspectivesModel) {
+		return new ListView<ODocument>(id, perspectivesModel) {
+			@Override
+			protected void populateItem(final ListItem<ODocument> item) {
+				IModel<ODocument> itemModel = item.getModel();
+				Link<ODocument> link = createChangePerspectiveLink("link", itemModel);
+				link.add(new FAIcon("icon", PropertyModel.of(itemModel, "icon")),
+						new Label("name",  new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
+				item.add(link);
+				link.add(createHighlightActivePerspective());
+			}
+
+			private AjaxFallbackLink<ODocument> createChangePerspectiveLink(String id, IModel<ODocument> model) {
+				return new AjaxFallbackLink<ODocument>(id, model) {
+					@Override
+					public void onClick(Optional<AjaxRequestTarget> targetOptional) {
+						if (!getModelObject().equals(getPerspective())) {
+							OrienteerWebSession session = OrienteerWebSession.get();
+							session.setPerspecive(getModelObject());
+							session.setAttribute("newPerspective", getModel());
+							setResponsePage(HomePage.class);
+						}
+					}
+				};
+			}
+
+			private AttributeAppender createHighlightActivePerspective() {
+				return new AttributeAppender("class", " disabled") {
+					@Override
+					public boolean isEnabled(Component component) {
+						return Objects.isEqual(getPerspective(), component.getDefaultModelObject());
+					}
+				};
+			}
+		};
 	}
 
 	@SuppressWarnings("unchecked")
