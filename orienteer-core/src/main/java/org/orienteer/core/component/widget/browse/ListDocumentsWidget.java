@@ -4,12 +4,11 @@ import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.component.command.*;
+import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
@@ -20,6 +19,7 @@ import ru.ydn.wicket.wicketorientdb.model.JavaSortableDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Widget for display list of {@link ODocument} which are passed in constructor
@@ -35,33 +35,27 @@ public class ListDocumentsWidget extends AbstractWidget<List<ODocument>> {
         super(id, model, widgetDocumentModel);
     }
 
-
     @Override
     protected void onInitialize() {
         super.onInitialize();
 
-
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         OClass oClass = getOClass();
-        IModel<OClass> oClassModel = new OClassModel(oClass);
-
         JavaSortableDataProvider<ODocument, String> provider = new JavaSortableDataProvider<>(getModel());
 
         GenericTablePanel<ODocument> tablePanel =
                 new GenericTablePanel<>("tablePanel", oClassIntrospector.getColumnsFor(oClass, true, modeModel), provider, 20);
 
-        final OrienteerDataTable<ODocument, String> table = tablePanel.getDataTable();
-        table.getCommandsToolbar().setDefaultModel(getModel());
-        table.addCommand(new EditODocumentsCommand(table, modeModel, oClassModel));
-        table.addCommand(new SaveODocumentsCommand(table, modeModel));
-        table.addCommand(new CopyODocumentCommand(table, oClassModel));
-        table.addCommand(new DeleteODocumentCommand(table, oClassModel));
-        table.addCommand(new ExportCommand<>(table, new PropertyModel<>(oClassModel, "name")));
-
+        adjustTable(tablePanel.getDataTable(), modeModel, new OClassModel(oClass));
         add(tablePanel);
         add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALL_CONTINUE);
     }
 
+    private void adjustTable(OrienteerDataTable<ODocument, String> table, IModel<DisplayMode> modeModel, IModel<OClass> oClassModel) {
+        table.getCommandsToolbar().setDefaultModel(getModel());
+        Map<String, Command<ODocument>> commands = oClassIntrospector.getCommandsForDocumentsTable(table, modeModel, oClassModel);
+        commands.forEach((key, command) -> table.addCommand(command));
+    }
 
     private OClass getOClass() {
         List<ODocument> modelObject = getModelObject();

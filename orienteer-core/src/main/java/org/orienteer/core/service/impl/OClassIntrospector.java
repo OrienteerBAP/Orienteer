@@ -18,16 +18,17 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
 import org.danekja.java.util.function.serializable.SerializablePredicate;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
+import org.orienteer.core.component.command.*;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.*;
 import org.orienteer.core.component.visualizer.IVisualizer;
-import org.orienteer.core.component.visualizer.LocalizationVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.service.IFilterPredicateFactory;
 import org.orienteer.core.service.IOClassIntrospector;
@@ -376,6 +377,20 @@ public class OClassIntrospector implements IOClassIntrospector
 		if(sql==null) sql = "select from "+oClass.getName()+" where any() containstext :query";
 
 		return new OQueryDataProvider<ODocument>(sql).setParameter("query", queryModel);
+	}
+
+	@Override
+	public Map<String, Command<ODocument>> getCommandsForDocumentsTable(OrienteerDataTable<ODocument, ?> table, IModel<DisplayMode> modeModel, IModel<OClass> model) {
+		Map<String, Command<ODocument>> result = new HashMap<>();
+
+		result.put(CreateODocumentCommand.class.getName(), new CreateODocumentCommand(table, model));
+		result.put(EditODocumentsCommand.class.getName(), new EditODocumentsCommand(table, modeModel, model));
+		result.put(SaveODocumentCommand.class.getName(), new SaveODocumentsCommand(table, modeModel));
+		result.put(CopyODocumentCommand.class.getName(), new CopyODocumentCommand(table, model));
+		result.put(DeleteODocumentCommand.class.getName(), new DeleteODocumentCommand(table, model));
+		result.put(ExportCommand.class.getName(), new ExportCommand<>(table, new PropertyModel<>(model, "name")));
+
+		return result;
 	}
 
 }
