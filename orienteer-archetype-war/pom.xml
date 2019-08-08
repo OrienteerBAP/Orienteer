@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
-		<version>1.5-SNAPSHOT</version>
+		<version>1.5-SNAPSHOT-orientdb-3</version>
 	</parent>
 	<artifactId>orienteer-archetype-war</artifactId>
 	<packaging>maven-archetype</packaging>

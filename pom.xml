@@ -20,7 +20,7 @@
 	<groupId>org.orienteer</groupId>
 	<artifactId>orienteer-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.5-SNAPSHOT-orientdb-3</version>
 	<name>Orienteer</name>
 	<description>Orienteer - Business Application Platform</description>
 	<url>http://orienteer.org</url>
