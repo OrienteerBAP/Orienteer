@@ -12,8 +12,6 @@ import com.orientechnologies.orient.core.metadata.security.OIdentity;
 import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttribute;
@@ -184,15 +182,13 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				
 				helper.oClass(OPerspective.CLASS_NAME)
 					.oProperty(OPerspective.PROP_ALIAS, OType.STRING, 10);
-				db.command(new OCommandSQL("update OPerspective set alias=name['en'].toLowerCase() where alias is null"))
-					.execute();
+				db.command("update OPerspective set alias=name['en'].toLowerCase() where alias is null");
 				helper.notNull()
 					.oIndex(INDEX_TYPE.UNIQUE);
 				//update aliases
 				helper.oClass(OPerspectiveItem.CLASS_NAME)
 					.oProperty(OPerspectiveItem.PROP_ALIAS, OType.STRING, 10);
-				db.command(new OCommandSQL("update OPerspectiveItem set alias=name['en'].toLowerCase() where alias is null"))
-					.execute();
+				db.command("update OPerspectiveItem set alias=name['en'].toLowerCase() where alias is null");
 				helper.notNull();
 				break;
 			default:
@@ -233,9 +229,12 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 
 	public Optional<ODocument> getPerspectiveByAliasAsDocument(ODatabaseDocument db, String alias) {
-		String sql = String.format("select from %s where %s = ?", OPerspective.CLASS_NAME, OPerspective.PROP_ALIAS);
-		List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), alias);
-		return CommonUtils.getDocument(identifiables);
+		String sql = String.format("select from %s where %s = ? limit 1", OPerspective.CLASS_NAME, OPerspective.PROP_ALIAS);
+
+		return db.query(sql, alias)
+				.elementStream()
+				.map(e -> (ODocument) e)
+				.findFirst();
 	}
 
 	public Optional<OPerspectiveItem> getPerspectiveItemByAlias(ODatabaseDocument db, String alias) {
@@ -244,9 +243,12 @@ public class PerspectivesModule extends AbstractOrienteerModule {
     }
 
 	public Optional<ODocument> getPerspectiveItemByAliasAsDocument(ODatabaseDocument db, String alias) {
-	    String sql = String.format("select from %s where %s =?", OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_ALIAS);
-	    List<OIdentifiable> identifiable = db.query(new OSQLSynchQuery<>(sql, 1), alias);
-	    return CommonUtils.getDocument(identifiable);
+	    String sql = String.format("select from %s where %s = ? limit 1", OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_ALIAS);
+
+	    return db.query(sql, alias)
+				.elementStream()
+				.map(e -> (ODocument) e)
+				.findFirst();
     }
 	
 	public ODocument getDefaultPerspective(ODatabaseDocument db, OSecurityUser user) {

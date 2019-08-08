@@ -1,23 +1,20 @@
 package org.orienteer.core.module;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.wicket.Application;
-import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.util.OSchemaHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-
+import org.apache.wicket.Application;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.util.OSchemaHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.AbstractDataInstallator;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Data installator of modules specific classes
@@ -78,8 +75,8 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 				.oProperty(IOrienteerModule.OMODULE_NAME, OType.STRING, 0).markDisplayable().markAsDocumentName()
 				.oProperty(IOrienteerModule.OMODULE_VERSION, OType.INTEGER, 10).markDisplayable()
 				.oProperty(IOrienteerModule.OMODULE_ACTIVATE, OType.BOOLEAN, 20).markDisplayable().defaultValue("true");
-		db.command(new OCommandSQL("update "+IOrienteerModule.OMODULE_CLASS+" set "+IOrienteerModule.OMODULE_ACTIVATE+" = true where "+
-										IOrienteerModule.OMODULE_ACTIVATE +" is null")).execute();
+		db.command("update "+IOrienteerModule.OMODULE_CLASS+" set "+IOrienteerModule.OMODULE_ACTIVATE+" = true where "+
+				IOrienteerModule.OMODULE_ACTIVATE +" is null");
 	}
 	
 	private Map<String, ODocument> getInstalledModules(ODatabaseDocument db) {
