@@ -18,8 +18,10 @@ import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -69,12 +71,18 @@ public class HistoricTaskInstanceEventEntityHandler extends HistoricScopeInstanc
     }
 
     @Statement
+    @SuppressWarnings("unchecked")
     public List<String> selectHistoricTaskInstanceIdsByParameters(OPersistenceSession session, ListQueryParameterObject parameters) {
         Map<String, String> params = (Map<String, String>) parameters.getParameter();
         Query q = new Query().from(getSchemaClass());
         List<Object> args = new ArrayList<>();
         enrichWhereByMap(session, q, session.getClass(getSchemaClass()), params, args, null);
-        List<ODocument> docs = session.getDatabase().query(new OSQLSynchQuery<>(q.toString()), args);
-        return docs==null?new ArrayList<String>():(List<String>)Lists.transform(docs, GET_ID_FUNCTION);
+
+
+        return session.getDatabase().query(q.toString(), args)
+                .elementStream()
+                .map(e -> (ODocument) e)
+                .map(GET_ID_FUNCTION)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 }

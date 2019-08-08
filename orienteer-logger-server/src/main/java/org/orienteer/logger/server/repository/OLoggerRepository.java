@@ -1,17 +1,16 @@
 package org.orienteer.logger.server.repository;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-import org.orienteer.core.util.CommonUtils;
 import org.orienteer.logger.OLoggerEvent;
 import org.orienteer.logger.server.model.*;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Repository for working with {@link OLoggerEventModel}
@@ -50,8 +49,10 @@ public final class OLoggerRepository {
     public static List<OLoggerEventModel> getEventsByCorrelationId(ODatabaseDocument db, String correlationId) {
         String sql = String.format("select from %s where %s = ?", OLoggerEventModel.CLASS_NAME,
                 OLoggerEventModel.PROP_CORRELATION_ID);
-        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql), correlationId);
-        return CommonUtils.mapIdentifiables(identifiables, OLoggerEventModel::new);
+
+        return db.query(sql, correlationId).elementStream()
+                .map(e -> new OLoggerEventModel((ODocument) e))
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     public static Optional<OLoggerEventFilteredDispatcherModel> getOLoggerEventFilteredDispatcher(String alias) {
@@ -87,8 +88,9 @@ public final class OLoggerRepository {
     public static Optional<ODocument> getOLoggerEventDispatcherAsDocument(ODatabaseDocument db, String alias) {
         String sql = String.format("select from %s where %s = ?", OLoggerEventDispatcherModel.CLASS_NAME,
                 OLoggerEventDispatcherModel.PROP_ALIAS);
-        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), alias);
-        return CommonUtils.getDocument(identifiables);
+        return db.query(sql, alias).elementStream()
+                .map(e -> (ODocument) e)
+                .findFirst();
     }
 
     public static Optional<OCorrelationIdGeneratorModel> getOCorrelationIdGenerator(String alias) {
@@ -103,7 +105,8 @@ public final class OLoggerRepository {
     public static Optional<ODocument> getOCorrelationIdGeneratorAsDocument(ODatabaseDocument db, String alias) {
         String sql = String.format("select from %s where %s = ?", OCorrelationIdGeneratorModel.CLASS_NAME,
                 OCorrelationIdGeneratorModel.PROP_ALIAS);
-        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), alias);
-        return CommonUtils.getDocument(identifiables);
+        return db.query(sql, alias).elementStream()
+                .map(e -> (ODocument) e)
+                .findFirst();
     }
 }

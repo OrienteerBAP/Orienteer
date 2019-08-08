@@ -1,19 +1,27 @@
 package org.orienteer.bpm.camunda.handler;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
+import com.github.raymanrt.orientqb.query.Clause;
+import com.github.raymanrt.orientqb.query.Operator;
+import com.github.raymanrt.orientqb.query.Parameter;
+import com.github.raymanrt.orientqb.query.Query;
+import com.github.raymanrt.orientqb.query.core.AbstractQuery;
+import com.gitub.raymanrt.orientqb.delete.Delete;
+import com.google.common.base.Converter;
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.reflect.TypeToken;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
+import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.core.util.lang.PropertyResolver;
-import org.apache.wicket.core.util.lang.PropertyResolverConverter;
 import org.apache.wicket.core.util.lang.PropertyResolver.IGetAndSet;
+import org.apache.wicket.core.util.lang.PropertyResolverConverter;
 import org.apache.wicket.util.string.Strings;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.impl.db.DbEntity;
@@ -25,29 +33,14 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import com.github.raymanrt.orientqb.query.Clause;
-import com.github.raymanrt.orientqb.query.Operator;
-import com.github.raymanrt.orientqb.query.Parameter;
-import com.github.raymanrt.orientqb.query.Query;
-import com.github.raymanrt.orientqb.query.core.AbstractQuery;
-import com.gitub.raymanrt.orientqb.delete.Delete;
-import com.google.common.base.Converter;
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
-import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static com.github.raymanrt.orientqb.query.Clause.*;
+import static com.github.raymanrt.orientqb.query.Clause.clause;
 
 /**
  * Abstract implementation of {@link IEntityHandler} 
@@ -132,8 +125,10 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		if(oIdentifiable!=null) return oIdentifiable.getRecord();
 		else {
 			ODatabaseDocument db = session.getDatabase();
-			List<ODocument> ret = db.query(new OSQLSynchQuery<>("select from "+getSchemaClass()+" where "+getPkField()+" = ?", 1), oid);
-			return ret==null || ret.isEmpty()? null : ret.get(0);
+			String sql = String.format("select from %s where %s = ? limit 1", getSchemaClass(), getPkField());
+			return (ODocument) db.query(sql, oid)
+					.elementStream()
+					.findFirst().orElse(null);
 		}
 	}
 	
@@ -153,7 +148,8 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 		if(oIdentifiable!=null) {
 			db.delete(oIdentifiable.getIdentity());
 		} else {
-			db.command(new OCommandSQL("delete from "+getSchemaClass()+" where "+getPkField()+" = ?")).execute(oid);
+			String sql = String.format("delete from %s where %s = ?", getSchemaClass(), getPkField());
+			db.command(sql, oid);
 		}
 	}
 	
@@ -341,15 +337,11 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	
 	protected List<T> queryList(final OPersistenceSession session, String sql, Object... args) {
 		ODatabaseDocument db = session.getDatabase();
-		List<ODocument> ret = db.query(new OSQLSynchQuery<>(sql), args);
-		if(ret==null) return Collections.emptyList();
-		return new ArrayList<T>(Lists.transform(ret, new Function<ODocument, T>() {
 
-			@Override
-			public T apply(ODocument input) {
-				return mapToEntity(input, null, session);
-			}
-		}));
+		return db.query(sql, args).elementStream()
+				.map(e -> (ODocument) e)
+				.map(d -> mapToEntity(d, null, session))
+				.collect(Collectors.toCollection(LinkedList::new));
 	}
 	
 	protected void command(OPersistenceSession session, String sql, Object... args) {
