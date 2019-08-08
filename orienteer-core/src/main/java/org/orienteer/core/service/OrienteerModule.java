@@ -2,8 +2,8 @@ package org.orienteer.core.service;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.orientechnologies.orient.core.db.ODatabasePool;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
-import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
@@ -72,7 +72,7 @@ public class OrienteerModule extends AbstractModule {
 	}
 	
 	@Provides
-	public OPartitionedDatabasePool getPartitionedDatabasePool(IOrientDbSettings settings) {
+	public ODatabasePool getPartitionedDatabasePool(IOrientDbSettings settings) {
 		OrienteerWebSession session = OrienteerWebSession.get();
 		return settings.getDatabasePoolFactory().get(settings.getDBUrl(), session.getUsername(), session.getPassword());
 	}
