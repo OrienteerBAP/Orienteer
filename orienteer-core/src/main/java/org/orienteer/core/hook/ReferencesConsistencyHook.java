@@ -1,15 +1,5 @@
 package org.orienteer.core.hook;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import org.orienteer.core.CustomAttribute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -25,6 +15,15 @@ import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.CustomAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * {@link ODocumentHookAbstract} for keeping references consistency between documents
@@ -104,10 +103,8 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 		return DISTRIBUTED_EXECUTION_MODE.TARGET_NODE;
 	}
 	
-	private LoadingCache<OClass, Collection<OProperty>> getCache()
-	{
-		@SuppressWarnings("deprecation")
-		int version = ODatabaseRecordThreadLocal.INSTANCE.get().getMetadata().getSchema().getVersion();
+	private LoadingCache<OClass, Collection<OProperty>> getCache() {
+		int version = ODatabaseRecordThreadLocal.instance().get().getMetadata().getSchema().getVersion();
 		if(version>currentSchemaVersion)
 		{
 			CACHE.invalidateAll();

@@ -1,5 +1,12 @@
 package org.orienteer.devutils;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
@@ -7,22 +14,11 @@ import org.orienteer.devutils.web.ToolsPage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.junit.Sudo;
-
-import static org.junit.Assert.*;
-
-import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OResultSet;
-
 import ru.ydn.wicket.wicketconsole.ScriptExecutor;
 import ru.ydn.wicket.wicketconsole.ScriptExecutorHolder;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import static org.junit.Assert.*;
 
 
 @RunWith(OrienteerTestRunner.class)
@@ -58,8 +54,10 @@ public class TestModule
 	@Test
 	public void testSimpleSQL() {
 		ScriptExecutor se = ScriptExecutorHolder.get().getScriptExecutor();
-		assertEquals(tester.getSchema().getClass("OUser").count(), 
-				(Object)  ((OResultSet<ODocument>)se.executeWithoutHistory("SELECT count(1) from OUser","SQL",null).getResult()).get(0).field("count"));
+
+		OResultSet result = (OResultSet) se.executeWithoutHistory("SELECT count(1) from OUser", "SQL", null).getResult();
+
+		assertEquals(tester.getSchema().getClass("OUser").count(), (long) result.next().getProperty("count"));
 	}
 	
 	@Test

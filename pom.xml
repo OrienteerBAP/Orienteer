@@ -250,7 +250,13 @@
 				<artifactId>flexmark-all</artifactId>
 				<version>0.40.16</version>
 			</dependency>
-		    <!-- LOGGING DEPENDENCIES - LOG4J -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.9.9</version>
+			</dependency>
+
+			<!-- LOGGING DEPENDENCIES - LOG4J -->
 		    <dependency>
 			    <groupId>org.slf4j</groupId>
 			    <artifactId>slf4j-log4j12</artifactId>

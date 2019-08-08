@@ -1,12 +1,13 @@
 package org.orienteer.etl.component;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.OTask;
@@ -14,10 +15,6 @@ import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.etl.tasks.OETLTaskSession;
-import org.orienteer.etl.tasks.OETLTaskSessionCallback;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 /**
  * 
@@ -51,7 +48,7 @@ public class OETLConfig extends OTask {
 	@Override
 	public OTaskSessionRuntime startNewSession() {
 		
-		final OETLTaskSession session = new OETLTaskSession();
+		/*final OETLTaskSession session = new OETLTaskSession();
 		session.start();
 
 		try {
@@ -85,6 +82,9 @@ public class OETLConfig extends OTask {
 		
 		
 		return session;
+
+		 */
+		throw new UnsupportedOperationException();
 	}
 
 	private void printCause(Throwable e,OETLTaskSession session){

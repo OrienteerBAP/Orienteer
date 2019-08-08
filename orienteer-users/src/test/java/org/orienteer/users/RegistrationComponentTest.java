@@ -96,7 +96,7 @@ public class RegistrationComponentTest {
     public void testRegistrationUser() {
         OrienteerUser user = registerUser();
         openRegistrationLink(user);
-        DBClosure.sudoConsumer(db -> user.load());
+        DBClosure.sudoConsumer(db -> user.getDocument().load());
         login(user);
     }
 
