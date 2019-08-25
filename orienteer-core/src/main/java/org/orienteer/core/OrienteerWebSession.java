@@ -88,6 +88,11 @@ public class OrienteerWebSession extends OrientDbWebSession
 		}
 	}
 	
+	public PerspectivesModule.OPerspective getOPerspective()
+	{
+		return new PerspectivesModule.OPerspective(getPerspective());
+	}
+	
 	public boolean isClientInfoAvailable() {
 		return clientInfo!=null;
 	}

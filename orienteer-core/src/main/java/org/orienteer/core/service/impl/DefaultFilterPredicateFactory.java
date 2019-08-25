@@ -1,17 +1,24 @@
 package org.orienteer.core.service.impl;
 
 import com.google.common.base.Strings;
+import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
+
+import javax.inject.Provider;
+
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.danekja.java.util.function.serializable.SerializablePredicate;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.service.IFilterPredicateFactory;
+
+import ru.ydn.wicket.wicketorientdb.security.IResourceCheckingStrategy;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
@@ -19,7 +26,7 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
  * Default implementation for {@link IFilterPredicateFactory}
  */
 public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
-
+	
     @Override
     public SerializablePredicate<OClass> getPredicateByTarget(IModel<Boolean> showAllModel) {
         return (input) -> {
@@ -30,8 +37,7 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
 
     @Override
     public SerializablePredicate<OClass> getPredicateByOperation(int operation) {
-        OSecurityUser user = OrienteerWebSession.get().getEffectiveUser();
-        return (input) -> user.checkIfAllowed(ORule.ResourceGeneric.CLASS, input.getName(), operation) != null;
+        return (input) -> getResourceCheckingStrategy().checkResource(ORule.ResourceGeneric.CLASS, input.getName(), operation);
     }
 
     @Override
@@ -66,14 +72,18 @@ public class DefaultFilterPredicateFactory implements IFilterPredicateFactory {
     private SerializablePredicate<OClass> getPredicateByFeature(OrientPermission permission) {
         return (input) -> {
             String feature = CustomAttribute.FEATURE.getValue(input);
-            return Strings.isNullOrEmpty(feature) || OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, feature, permission);
+            return getResourceCheckingStrategy().checkResource(OSecurityHelper.FEATURE_RESOURCE, feature, permission);
         };
     }
 
     private SerializablePredicate<OProperty> getPredicateByFeatureProp(OrientPermission permission) {
         return (input) -> {
             String feature = CustomAttribute.FEATURE.getValue(input);
-            return Strings.isNullOrEmpty(feature) || OSecurityHelper.isAllowed(OSecurityHelper.FEATURE_RESOURCE, feature, permission);
+            return getResourceCheckingStrategy().checkResource(OSecurityHelper.FEATURE_RESOURCE, feature, permission);
         };
+    }
+    
+    private IResourceCheckingStrategy getResourceCheckingStrategy() {
+    	return OrienteerWebApplication.lookupApplication();
     }
 }

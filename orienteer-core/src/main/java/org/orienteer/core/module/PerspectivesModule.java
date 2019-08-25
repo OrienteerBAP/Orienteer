@@ -48,7 +48,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 
 	public PerspectivesModule()
 	{
-		super(NAME, 6);
+		super(NAME, 7);
 	}
 
 	@Override
@@ -69,6 +69,8 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 					.assignVisualization(UIVisualizersRegistry.VISUALIZER_TABLE)
 				.oProperty(OPerspective.PROP_FOOTER, OType.STRING, 50)
 					.assignVisualization(UIVisualizersRegistry.VISUALIZER_TEXTAREA)
+				.oProperty(OPerspective.PROP_FEATURES, OType.EMBEDDEDSET, 60)
+					.linkedType(OType.STRING)	
 				.switchDisplayable(true, OPerspective.PROP_NAME, OPerspective.PROP_ICON, OPerspective.PROP_HOME_URL);
 
 		helper.oClass(OPerspectiveItem.CLASS_NAME)
@@ -195,6 +197,11 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 					.execute();
 				helper.notNull();
 				break;
+			case 7:
+				OSchemaHelper.bind(db)
+					.oClass(OPerspective.CLASS_NAME)
+						.oProperty(OPerspective.PROP_FEATURES, OType.EMBEDDEDSET, 60)
+						.linkedType(OType.STRING);
 			default:
 				break;
 		}
@@ -312,6 +319,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		public static final String PROP_HOME_URL = "homeUrl";
 		public static final String PROP_MENU     = "menu";
 		public static final String PROP_FOOTER   = "footer";
+		public static final String PROP_FEATURES   = "features";
 
 		public OPerspective() {
 			super(CLASS_NAME);
@@ -390,6 +398,20 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		public OPerspective setFooter(String footer) {
 			document.field(PROP_FOOTER, footer);
 			return this;
+		}
+		
+		public Collection<String> getFeatures() {
+			return document.field(PROP_FEATURES);
+		}
+
+		public OPerspective setFeatures(Collection<String> features) {
+			document.field(PROP_FEATURES, features);
+			return this;
+		}
+		
+		public boolean providesFeature(String feature) {
+			Collection<String> features = getFeatures();
+			return features!=null?features.contains(feature):false;
 		}
 	}
 

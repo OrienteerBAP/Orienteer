@@ -22,6 +22,7 @@ import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.tasks.OTaskManager;
 import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.security.IResourceCheckingStrategy;
 
 /**
  * Main module to load Orienteer stuff to Guice
@@ -101,6 +102,12 @@ public class OrienteerModule extends AbstractModule {
 	public OTaskManager getTaskManager()
 	{
 		return OTaskManager.get();
+	}
+
+	@Provides
+	public IResourceCheckingStrategy getResourceCheckingStrategy()
+	{
+		return OrienteerWebApplication.lookupApplication();
 	}
 
 }

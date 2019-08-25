@@ -41,6 +41,7 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link IOClassIntrospector}
@@ -148,13 +149,10 @@ public class OClassIntrospector implements IOClassIntrospector
 	public List<String> listTabs(OClass oClass) {
 		IFilterPredicateFactory factory = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class);
 		SerializablePredicate<OProperty> predicate = factory.getPredicateForListProperties();
-		Set<String> tabs = new HashSet<>();
+		List<String> tabs = new ArrayList<String>();
 		for (OProperty prop : oClass.properties()) {
-			if (predicate.test(prop)) {
-				String tab = CustomAttribute.TAB.getValue(prop);
-				if (tab == null) tab = DEFAULT_TAB;
-				tabs.add(tab);
-			}
+			String tab = CustomAttribute.TAB.getValue(prop, DEFAULT_TAB);
+			if(!tabs.contains(tab) && predicate.test(prop)) tabs.add(tab); 
 		}
 		return new ArrayList<>(tabs);
 	}

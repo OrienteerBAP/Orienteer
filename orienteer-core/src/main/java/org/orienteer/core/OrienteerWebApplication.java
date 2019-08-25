@@ -9,6 +9,8 @@ import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.security.OUser;
+import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
+
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -48,6 +50,8 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.*;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
@@ -473,5 +477,18 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	public void setLoadWithoutModules(boolean loadWithoutModules) {
 		this.loadWithoutModules = loadWithoutModules;
 		this.loadModeInfo = null;
+	}
+	
+	@Override
+	public boolean checkResource(ResourceGeneric resource, String specific, int iOperation) {
+	
+		if(OSecurityHelper.FEATURE_RESOURCE.equals(resource)) {
+			if(Strings.isEmpty(specific)) return true;
+			else 
+				return super.checkResource(resource, specific, iOperation) 
+						|| OrienteerWebSession.get().getOPerspective().providesFeature(specific);
+		} else {
+			return super.checkResource(resource, specific, iOperation);
+		}
 	}
 }
