@@ -66,7 +66,7 @@ public class DefaultVisualizer extends AbstractSimpleVisualizer {
 				case LINKSET:
 					return new LinksCollectionViewPanel<>(id, documentModel, property);
                 case DATE:
-                	return new ODateLabel(id, (IModel<Date>) valueModel);
+                	return new ODateLabel(id, (IModel<Date>) valueModel, false, false);
                 case DATETIME:
                 	return new ODateLabel(id, (IModel<Date>) valueModel, true);
                 case BOOLEAN:
