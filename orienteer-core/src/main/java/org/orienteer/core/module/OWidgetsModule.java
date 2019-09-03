@@ -18,12 +18,14 @@ import org.orienteer.core.component.widget.AbstractCalculatedDocumentsWidget;
 import org.orienteer.core.component.widget.AbstractHtmlJsPaneWidget;
 import org.orienteer.core.component.widget.document.CalculatedDocumentsWidget;
 import org.orienteer.core.component.widget.document.ExternalPageWidget;
+import org.orienteer.core.component.widget.document.ExternalViewWidget;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.widget.IWidgetType;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -59,7 +61,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	private IWidgetTypesRegistry registry;
 	
 	public OWidgetsModule() {
-		super(NAME, 5);
+		super(NAME, 6);
 	}
 	
 	@Override
@@ -86,6 +88,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		installWidgetsSchemaV3(db);
 		installWidgetsSchemaV4(db);
 		installWidgetsSchemaV5(db);
+		installWidgetsSchemaV6(db); 
 		return null;
 	}
 	
@@ -101,29 +104,35 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 				installWidgetsSchemaV4(db);
 			case 5:
 				installWidgetsSchemaV5(db);
+			case 6:
+				installWidgetsSchemaV6(db);
 		}
 	}
 	
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-		if(!checkWidgetClassesInstallation(db)) {
+		List<IWidgetType<?>> notInstalled = checkWidgetClassesInstallation(db);
+		if(!notInstalled.isEmpty()) {
 			LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			LOG.error("!!! NOT ALL WIDGET CLASSES WERE INSTALLED !!!");
 			LOG.error("!!!          TRYING TO REINSTALL          !!!");
 			LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			onInstall(app, db);
-			if(!checkWidgetClassesInstallation(db)) {
+			LOG.error("Problematic widget types: "+desribeWidgetTypes(notInstalled));
+			notInstalled = checkWidgetClassesInstallation(db);
+			if(!notInstalled.isEmpty()) {
 				LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				LOG.error("!!!   REINSTALL HAS NOT FIXED A PROBLEM   !!!");
 				LOG.error("!!!     SYSTEM MIGHT WORK INCORRECTLY     !!!");
 				LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				LOG.error("Problematic widget types: "+desribeWidgetTypes(notInstalled));
 			}
 		}
 	}
 	
-	private boolean checkWidgetClassesInstallation(ODatabaseDocument db) {
+	private List<IWidgetType<?>> checkWidgetClassesInstallation(ODatabaseDocument db) {
 		final OSchema schema = db.getMetadata().getSchema();
-		List<IWidgetType<?>> notInstalled = registry.listWidgetTypes(new Predicate<IWidgetType<Object>>() {
+		return registry.listWidgetTypes(new Predicate<IWidgetType<Object>>() {
 
 			@Override
 			public boolean apply(IWidgetType<Object> input) {
@@ -132,7 +141,15 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 				return !schema.existsClass(oClassName);
 			}
 		});
-		return notInstalled==null || notInstalled.isEmpty();
+	}
+	
+	private String desribeWidgetTypes(List<IWidgetType<?>> widgetTypes) {
+		StringBuilder sb = new StringBuilder();
+		for (Iterator<IWidgetType<?>> iterator = widgetTypes.iterator(); iterator.hasNext();) {
+			IWidgetType<?> iWidgetType = iterator.next();
+			sb.append(iWidgetType.getId()).append(':').append(iWidgetType.getOClassName()).append(System.lineSeparator());
+		}
+		return sb.toString();
 	}
 	
 	protected void installWidgetsSchemaV2(ODatabaseDocument db) {
@@ -175,5 +192,11 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
         helper.oClass(AbstractCalculatedDocumentsWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
                 .oProperty("class", OType.STRING, 10).notNull(true);
+	}
+	
+	protected void installWidgetsSchemaV6(ODatabaseDocument db) {
+		OSchemaHelper helper = OSchemaHelper.bind(db);
+		helper.oClass(ExternalViewWidget.EXTERNAL_VIEW_WIDGET_CLASS, OWidgetsModule.OCLASS_WIDGET)
+			.oProperty(ExternalViewWidget.TABS_PROPERTY_NAME, OType.EMBEDDEDMAP, 50 ).linkedType(OType.STRING);
 	}
 }
