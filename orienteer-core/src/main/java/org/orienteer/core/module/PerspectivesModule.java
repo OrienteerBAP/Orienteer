@@ -326,11 +326,11 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		}
 
 		public OPerspective(String iClassName) {
-			super(iClassName);
+			super(iClassName!=null?iClassName:CLASS_NAME);
 		}
 
 		public OPerspective(ODocument iDocument) {
-			super(iDocument);
+			super(iDocument!=null?iDocument:new ODocument(CLASS_NAME));
 		}
 
 		public Map<String, String> getName() {
