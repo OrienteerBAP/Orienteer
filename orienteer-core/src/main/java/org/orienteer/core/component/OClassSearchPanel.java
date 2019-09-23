@@ -28,16 +28,21 @@ import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OClassNamingModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import java.util.List;
 
 /**
  * Panel for search documents in classes
  */
+@RequiredOrientResource(value = OSecurityHelper.FEATURE, specific=SearchPage.SEARCH_FEATURE, permissions=OrientPermission.READ)
 public class OClassSearchPanel extends GenericPanel<String> {
 
     public final static Ordering<OClass> CLASSES_ORDERING = Ordering.natural().nullsFirst().onResultOf(input -> new OClassNamingModel(input).getObject());

@@ -111,7 +111,11 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		getDatabase();
 		uiPlugins = new RepeatingView("uiPlugins");
 		add(uiPlugins);
-		if(!OrienteerWebSession.get().isClientInfoAvailable()) add(new AjaxClientInfoBehavior());
+		if(isClientInfoRequired() && !OrienteerWebSession.get().isClientInfoAvailable()) add(new AjaxClientInfoBehavior());
+	}
+	
+	protected boolean isClientInfoRequired() {
+		return true;
 	}
 
 	@Override
