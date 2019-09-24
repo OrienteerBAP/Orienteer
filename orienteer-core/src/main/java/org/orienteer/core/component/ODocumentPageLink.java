@@ -10,6 +10,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.model.ODocumentNameModel;
+import org.orienteer.core.web.ODocumentPage;
 
 /**
  * {@link BookmarkablePageLink} for {@link ODocument}
@@ -77,20 +78,9 @@ public class ODocumentPageLink extends BookmarkablePageLink<ODocument>
 	
 	@Override
 	public PageParameters getPageParameters() {
-		PageParameters pageParameters = super.getPageParameters();
-		pageParameters.add("rid", buitifyRid(getModelObject()));
-		if(propogateDisplayMode)
-		{
-			pageParameters.add("mode", displayModeModel.getObject().getName());
-		}
-		return pageParameters;
+		return ODocumentPage.getPageParameters(getModelObject(),
+								 propogateDisplayMode?displayModeModel.getObject():DisplayMode.VIEW,
+								 super.getPageParameters());
 	}
 	
-	public String buitifyRid(OIdentifiable identifiable)
-	{
-		if(identifiable==null) return "";
-		String ret = identifiable.getIdentity().toString();
-		return ret.charAt(0)==ORID.PREFIX?ret.substring(1):ret;
-	}
-
 }

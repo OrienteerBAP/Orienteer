@@ -1,12 +1,16 @@
 package org.orienteer.core.web;
 
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.flow.AbortWithHttpErrorCodeException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
@@ -174,6 +178,27 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 				return doc;
 			}
 		};
+	}
+	
+	public static PageParameters getPageParameters(OIdentifiable doc, DisplayMode mode) {
+		return getPageParameters(doc, mode, new PageParameters());
+	}
+	
+	public static PageParameters getPageParameters(OIdentifiable doc, DisplayMode mode, PageParameters parameters) {
+		parameters.add("rid", buitifyRid(doc));
+		parameters.add("mode", mode.getName());
+		return parameters;
+	}
+	
+	public static Url getLinkToTheDocument(OIdentifiable doc, DisplayMode mode) {
+		return RequestCycle.get().mapUrlFor(ODocumentPage.class, getPageParameters(doc, mode));
+	}
+	
+	private static String buitifyRid(OIdentifiable identifiable)
+	{
+		if(identifiable==null) return "";
+		String ret = identifiable.getIdentity().toString();
+		return ret.charAt(0)==ORID.PREFIX?ret.substring(1):ret;
 	}
 
 }
