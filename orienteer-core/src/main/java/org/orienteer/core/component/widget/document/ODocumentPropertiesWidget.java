@@ -12,6 +12,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.OPropertyNameLabel;
 import org.orienteer.core.component.command.BookmarkablePageLinkCommand;
 import org.orienteer.core.component.command.EditODocumentCommand;
 import org.orienteer.core.component.command.SaveODocumentCommand;
@@ -53,7 +54,7 @@ public class ODocumentPropertiesWidget extends AbstractModeAwareWidget<ODocument
 			
 			@Override
 			protected Component getLabelComponent(String id, final IModel<OProperty> rowModel, IModel<?> labelModel) {
-				Component ret = super.getLabelComponent(id, rowModel, labelModel);
+				Component ret = new OPropertyNameLabel(id, rowModel);
 				ret.add(new AttributeAppender("class", " required"){
 
 					@Override

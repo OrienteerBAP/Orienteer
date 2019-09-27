@@ -9,10 +9,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxClientInfoBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.PriorityHeaderItem;
+import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -33,6 +30,7 @@ import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.AjaxIndicator;
 import org.orienteer.core.component.OModulesLoadFailedPanel;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import java.util.List;
@@ -138,7 +136,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 
 	@Override
 	public void renderHead(IHeaderResponse response) {
-		response.render(new PriorityHeaderItem(CssHeaderItem.forReference(BOOTSTRAP_CSS)));
+		response.render(CssHeaderItem.forReference(BOOTSTRAP_CSS));
 		response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
 		response.render(CssHeaderItem.forReference(SIMPLE_LINE_ICONS_CSS));
 		response.render(CssHeaderItem.forReference(COREUI_CSS));
@@ -147,13 +145,13 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		addBootstrapDatepicker(response);
 		JavaScriptLibrarySettings javaScriptSettings =
 				getApplication().getJavaScriptLibrarySettings();
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem
-				.forReference(javaScriptSettings.getJQueryReference())));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TETHER_JS)));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
+		response.render(JavaScriptHeaderItem.forReference(javaScriptSettings.getJQueryReference()));
+		response.render(JavaScriptHeaderItem.forReference(JQueryDashboardSupport.JQUERY_UI_JS));
+		response.render(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS));
+		response.render(JavaScriptHeaderItem.forReference(TETHER_JS));
+		response.render(JavaScriptHeaderItem.forReference(PACE_JS));
 		response.render(JavaScriptHeaderItem.forReference(COREUI_JS).setDefer(true));
-
+		response.render(OnDomReadyHeaderItem.forScript("$(function () {$('[data-toggle=\"tooltip\"]').tooltip()})"));
 	}
 
 	protected String getBodyAppSubClasses(){
