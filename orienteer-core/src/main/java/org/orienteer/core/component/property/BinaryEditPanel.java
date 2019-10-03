@@ -1,9 +1,7 @@
 package org.orienteer.core.component.property;
 
-import java.util.ArrayList;
-
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
@@ -11,11 +9,9 @@ import org.apache.wicket.markup.html.form.upload.FileUploadField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
-
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.ArrayList;
 
 /**
  * {@link FormComponentPanel} to edit binary parameters (upload)
@@ -45,18 +41,7 @@ public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 		add(fileUploadField);
 		fileUploadField.setOutputMarkupId(true);
 
-		clear = new AjaxCheckBox("clear", Model.of(Boolean.FALSE)) {
-			@Override
-			protected void onUpdate(AjaxRequestTarget target) {
-				Boolean shouldClear = clear.getConvertedInput();
-				if (shouldClear) {
-					fileUploadField.clearInput();
-				}
-
-				fileUploadField.setEnabled(!shouldClear);
-				target.add(fileUploadField);
-			}
-		};
+		clear = new CheckBox("clear", Model.of(Boolean.FALSE));
 
 		add(clear);
 	}
