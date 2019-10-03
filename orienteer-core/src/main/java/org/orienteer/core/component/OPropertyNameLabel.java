@@ -10,6 +10,9 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.CustomAttribute;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
+/**
+ * Label for property name
+ */
 public class OPropertyNameLabel extends GenericPanel<OProperty> {
 
     public OPropertyNameLabel(String id, IModel<OProperty> model) {
