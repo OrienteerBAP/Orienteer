@@ -2,6 +2,7 @@ package org.orienteer.core.component.structuretable;
 
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
@@ -19,6 +20,8 @@ import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.component.ITooltipProvider;
+
 import ru.ydn.wicket.wicketorientdb.behavior.SyncVisibilityBehaviour;
 
 /**
@@ -69,6 +72,7 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 				item.add(new SyncVisibilityBehaviour(value));
 				Component label = getLabelComponent(LABEL_CELL_ID, rowModel, getLabelModel(value, rowModel));
 				if(!LABEL_CELL_ID.equals(label.getId())) throw new WicketRuntimeException("Wrong component id '"+label.getId()+"'. Should be '"+LABEL_CELL_ID+"'.");
+				label.add(new AttributeModifier("title", getTooltipModel(value, rowModel)));
 				item.add(label, value);
 			}
 
@@ -93,6 +97,18 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 		else
 		{
 			return rowModel;
+		}
+	}
+	
+	protected IModel<?> getTooltipModel(Component resolvedComponent, IModel<C> rowModel)
+	{
+		if(resolvedComponent instanceof ITooltipProvider<?>)
+		{
+			return ((ITooltipProvider<?>)resolvedComponent).getTooltip();
+		}
+		else
+		{
+			return null;
 		}
 	}
 	

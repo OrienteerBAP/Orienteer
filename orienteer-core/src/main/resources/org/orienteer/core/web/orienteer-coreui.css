@@ -76,6 +76,15 @@ td.st-label label{
 	font-weight: 700;
 }
 
+td.st-label label[title]:after {
+	content: "\f05a";
+	display: inline-block;
+	font: normal normal normal 14px/1 FontAwesome;
+	font-size: inherit;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+}
+
 .form-control {
 	/* width: auto; */
 	display: inline-block;
