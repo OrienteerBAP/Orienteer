@@ -11,9 +11,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.ITooltipProvider;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.model.OPropertyTooltipModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -30,7 +32,7 @@ import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
  *
  * @param <V> type of a value
  */
-public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> implements IDisplayModeAware {
+public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> implements IDisplayModeAware, ITooltipProvider<String> {
 	
 	private static final long serialVersionUID = 1L;
 	private String featureSpecification;
@@ -138,6 +140,11 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 	public ODocumentMetaPanel<V> setVisualization(String visualization) {
 		this.visualization = visualization;
 		return this;
+	}
+
+	@Override
+	public IModel<String> getTooltip() {
+		return new OPropertyTooltipModel(getPropertyModel());
 	}
 	
 }
