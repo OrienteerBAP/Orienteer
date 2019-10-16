@@ -96,6 +96,7 @@ public class CommonUtils {
 		else {
 			content = JavaScriptUtils.escapeQuotes(content);
 			content = "\"" + content + "\""; 
+			content = Strings.replaceAll(content, "\r", "");
 			content = Strings.replaceAll(content, "\n", "\" + \n\"");
 			return content;
 		}
@@ -111,6 +112,7 @@ public class CommonUtils {
 	public static final CharSequence escapeStringForJSON(CharSequence content) {
 		if(content==null) return "";
 		else {
+			content = Strings.replaceAll(content, "\r", "");
 			content = Strings.replaceAll(content, "\"", "\\\"");
 			content = Strings.replaceAll(content, "\n", "\" + \n\"");
 			return content;
