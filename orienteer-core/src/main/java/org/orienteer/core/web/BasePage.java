@@ -9,10 +9,7 @@ import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceR
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxClientInfoBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.markup.head.CssHeaderItem;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.head.PriorityHeaderItem;
+import org.apache.wicket.markup.head.*;
 import org.apache.wicket.markup.html.GenericWebPage;
 import org.apache.wicket.markup.html.TransparentWebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -33,10 +30,13 @@ import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.AjaxIndicator;
 import org.orienteer.core.component.OModulesLoadFailedPanel;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.service.IPerspectiveService;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import java.util.List;
 import java.util.Locale;
+
+import static org.orienteer.core.module.PerspectivesModule.OPerspective;
 
 /**
  * Root {@link WebPage} for Orienteer enabled pages.
@@ -67,6 +67,9 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 
 	@Inject
 	private PerspectivesModule perspectivesModule;
+
+	@Inject
+	private IPerspectiveService perspectiveService;
 	
 	private RepeatingView uiPlugins;
 	
@@ -153,6 +156,18 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TETHER_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
 		response.render(JavaScriptHeaderItem.forReference(COREUI_JS).setDefer(true));
+
+
+		OPerspective perspective = new OPerspective(getPerspective());
+		String perspectiveCss = perspectiveService.getCSS(perspective, getPage());
+		if (!Strings.isEmpty(perspectiveCss)) {
+			response.render(CssHeaderItem.forCSS(perspectiveCss, "perspective-css"));
+		}
+
+		String perspectiveJs = perspectiveService.getJS(perspective, getPage());
+		if (!Strings.isEmpty(perspectiveJs)) {
+			response.render(OnDomReadyHeaderItem.forScript(perspectiveJs));
+		}
 
 	}
 
