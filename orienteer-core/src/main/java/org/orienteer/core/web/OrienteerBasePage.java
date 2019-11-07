@@ -45,11 +45,11 @@ import java.util.Optional;
  *
  * @param <T> type of a main object for this page
  */
-public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashboardContainer {
+public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashboardContainer<T> {
 	private static final long serialVersionUID = 1L;
 
 	private OrienteerFeedbackPanel feedbacks;
-	private IDashboard curDashboard;
+	private IDashboard<T> curDashboard;
 
 	public OrienteerBasePage() {
 		super();
@@ -202,17 +202,17 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 	}
 
 	@Override
-	public void setCurrentDashboard(IDashboard dashboard){
+	public void setCurrentDashboard(IDashboard<T> dashboard){
 		curDashboard = dashboard;
 	};
 
 	@Override
-	public IDashboard getCurrentDashboard(){
+	public IDashboard<T> getCurrentDashboard(){
 		return curDashboard;
 	};
 
 	@Override
-	public Component getSelf(){
+	public Component getSelfComponent(){
 		return this;
 	}
 

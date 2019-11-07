@@ -34,15 +34,4 @@ public abstract class AbstractModeAwareWidget<T> extends AbstractWidget<T> imple
 		return displayModeModel;
 	}
 
-	@Override
-	public DisplayMode getModeObject() {
-		return displayModeModel.getObject();
-	}
-	
-	public AbstractModeAwareWidget<T> setModeObject(DisplayMode mode)
-	{
-		displayModeModel.setObject(mode);
-		return this;
-	}
-
 }

@@ -26,10 +26,9 @@ public class ConfigureDashboardCommand extends AjaxCommand<ODocument> {
 
 	@Override
 	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-		IDashboardContainer container = findParent(IDashboardContainer.class);
-		DashboardPanel<?> dashboard = container.getCurrentDashboard().getSelfComponent();
-		dashboard.getModeModel().setObject(DisplayMode.EDIT);
-		targetOptional.ifPresent(target -> target.add(dashboard));
+		IDashboardContainer<?> container = findParent(IDashboardContainer.class);
+		container.setModeObject(DisplayMode.EDIT);
+		targetOptional.ifPresent(target -> target.add(container.getCurrentDashboardComponent()));
 	}
 
 }

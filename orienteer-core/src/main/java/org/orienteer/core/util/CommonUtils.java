@@ -12,8 +12,10 @@ import org.orienteer.core.OrienteerWebSession;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -129,14 +131,29 @@ public class CommonUtils {
 	 * @return mapped list of {@link OIdentifiable} or empty list if identifiables is null
 	 */
 	public static <T> List<T> mapIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> mapFunc) {
+		return mapIdentifiables(identifiables, mapFunc, null);
+	}
+	
+	/**
+	 * Map given list of {@link OIdentifiable} uses given mapping function mapFunc and apply filter
+	 * Before apply mapFunc loads record and cast it to {@link ODocument} from identifiable, by calling {@link OIdentifiable#getRecord()}
+	 * If record is null, so discard this identifiable and doesn't apply mapFunc to it.
+	 * @param identifiables {@link OIdentifiable} list of {@link OIdentifiable} for map to value
+	 * @param mapFunc  map function
+	 * @param filter filter to be applied
+	 * @param <T> - type of return value in map function
+	 * @return mapped list of {@link OIdentifiable} or empty list if identifiables is null
+	 */
+	public static <T> List<T> mapIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> mapFunc, Predicate<? super T> filter) {
 		if (identifiables == null) {
 			return Collections.emptyList();
 		}
-		return identifiables.stream()
-				.map(i -> (ODocument) i.getRecord())
-				.filter(Objects::nonNull)
-				.map(mapFunc)
-				.collect(Collectors.toList());
+		Stream<T> stream  = identifiables.stream()
+											.map(i -> (ODocument) i.getRecord())
+											.filter(Objects::nonNull)
+											.map(mapFunc);
+		if(filter!=null) stream = stream.filter(filter);
+		return stream.collect(Collectors.toList());
 	}
 
 	/**

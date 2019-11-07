@@ -31,12 +31,12 @@ public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
 	
 	@Override
 	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-		IDashboardContainer container = findParent(IDashboardContainer.class);
+		IDashboardContainer<?> container = findParent(IDashboardContainer.class);
 		DashboardPanel<?> dashboard = container.getCurrentDashboard().getSelfComponent();
 		dashboard.storeDashboard();
 		dashboard.getModeModel().setObject(DisplayMode.VIEW);
 		targetOptional.ifPresent(target -> {
-			target.add(container.getSelf().get("pageHeader"));
+			target.add(container.getSelfComponent().get("pageHeader"));
 			target.add(dashboard);
 		});
 	}

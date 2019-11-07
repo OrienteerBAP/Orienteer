@@ -26,10 +26,9 @@ public class KeepUnsavedDashboardCommand extends AjaxCommand<ODocument> {
 	
 	@Override
 	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-		IDashboardContainer container = findParent(IDashboardContainer.class);
-		DashboardPanel<?> dashboard = container.getCurrentDashboard().getSelfComponent();
-		dashboard.getModeModel().setObject(DisplayMode.VIEW);
-		targetOptional.ifPresent(target -> target.add(dashboard));
+		IDashboardContainer<?> container = findParent(IDashboardContainer.class);
+		container.setModeObject(DisplayMode.VIEW);
+		targetOptional.ifPresent(target -> target.add(container.getCurrentDashboardComponent()));
 	}
 
 }

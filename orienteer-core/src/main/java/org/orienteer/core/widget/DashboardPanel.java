@@ -25,7 +25,7 @@ import static org.orienteer.core.module.OWidgetsModule.*;
  *
  * @param <T> the type of main data object
  */
-public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware,IDashboard<T> {
+public class DashboardPanel<T> extends GenericPanel<T> implements IDashboard<T> {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
