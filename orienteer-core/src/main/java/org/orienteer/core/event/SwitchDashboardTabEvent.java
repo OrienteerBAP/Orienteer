@@ -1,20 +1,26 @@
 package org.orienteer.core.event;
 
+import java.util.Optional;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.request.cycle.RequestCycle;
 
 /**
  * On switch dashboard tab event
  *
  */
 public class SwitchDashboardTabEvent {
-	protected AjaxRequestTarget target;
+	private Optional<AjaxRequestTarget> targetOptional;
 	
-	public SwitchDashboardTabEvent(AjaxRequestTarget target){
-		this.target=target;
+	public SwitchDashboardTabEvent(Optional<AjaxRequestTarget> targetOptional){
+		this.targetOptional=targetOptional;
 	}
 	
-	public AjaxRequestTarget getTarget(){
-		return target;
+	public Optional<AjaxRequestTarget> getTarget(){
+		if(targetOptional==null) {
+			targetOptional = RequestCycle.get().find(AjaxRequestTarget.class);
+		}
+		return targetOptional;
 	}
 
 }

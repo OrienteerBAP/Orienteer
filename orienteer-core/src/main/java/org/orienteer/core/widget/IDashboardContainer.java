@@ -9,28 +9,35 @@ import org.orienteer.core.component.property.DisplayMode;
 /**
  * 
  * Object contains {@link IDashboard}
- *
+ * @param <T> type of the main object for the container
  */
-public interface IDashboardContainer<T> extends IDisplayModeAware {
+public interface IDashboardContainer<T> {
 
 	public void setCurrentDashboard(IDashboard<T> dashboard);
 	public IDashboard<T> getCurrentDashboard();
 	
 	public Component getSelfComponent();
 	
+	default public boolean hasDashboard() {
+		return getCurrentDashboard()!=null;
+	}
+	
 	default public DashboardPanel<T> getCurrentDashboardComponent() {
-		return getCurrentDashboard().getSelfComponent();
+		IDashboard<T> dashboard = getCurrentDashboard();
+		return dashboard!=null?dashboard.getSelfComponent():null;
 	}
 	
-	default public IModel<DisplayMode> getModeModel() {
-		return getCurrentDashboard().getModeModel();
+	default public IModel<DisplayMode> getDashboardModeModel() {
+		IDashboard<T> dashboard = getCurrentDashboard();
+		return dashboard!=null?dashboard.getModeModel():null;
 	}
 	
-	default public DisplayMode getModeObject() {
-		return getCurrentDashboard().getModeObject();
+	default public DisplayMode getDashboardModeObject() {
+		IDashboard<T> dashboard = getCurrentDashboard();
+		return dashboard!=null?dashboard.getModeObject():DisplayMode.VIEW;
 	}
 	
-	default public IDashboardContainer<T> setModeObject(DisplayMode mode) {
+	default public IDashboardContainer<T> setDashboardModeObject(DisplayMode mode) {
 		getCurrentDashboard().setModeObject(mode);
 		return this;
 	}

@@ -13,6 +13,7 @@ import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
+import org.orienteer.core.widget.IDashboardContainer;
 import org.orienteer.core.widget.command.modal.UnhideWidgetDialog;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -22,7 +23,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-@OMethod(order=2,filters={
+@OMethod(order=900+70,filters={
 		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
 })
 public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
@@ -50,6 +51,13 @@ public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<ODocument
 		});
 		modal.setAutoSize(true);
 		modal.setMinimalWidth(300);
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		IDashboardContainer<?> dashboardContainer = findParent(IDashboardContainer.class);
+		setVisible(dashboardContainer.hasDashboard() && dashboardContainer.getDashboardModeObject().canModify());
 	}
 
 }

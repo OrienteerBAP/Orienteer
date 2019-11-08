@@ -20,6 +20,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Abstract class for all pages that use widgets approach
@@ -90,7 +91,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 			@Override
 			protected void onLinkClick(AjaxRequestTarget target) {
 				super.onLinkClick(target);
-				send(AbstractWidgetPage.this, Broadcast.DEPTH, new SwitchDashboardTabEvent(target));
+				send(AbstractWidgetPage.this, Broadcast.DEPTH, new SwitchDashboardTabEvent(Optional.ofNullable(target)));
 			}
 		});
 	}
