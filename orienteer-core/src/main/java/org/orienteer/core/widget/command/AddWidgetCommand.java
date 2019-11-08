@@ -24,9 +24,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-@OMethod(order=900+60,filters={
-		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
-})
+@OMethod(order=900+60,
+	filters={
+			@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
+	})
 public class AddWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
 	private static final long serialVersionUID = 1L;
 

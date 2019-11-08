@@ -36,7 +36,7 @@ public @interface OMethod{
 	public FAIconType icon() default FAIconType.list;
 	public BootstrapType bootstrap() default BootstrapType.DEFAULT;
 	public boolean changingDisplayMode() default false;
-	public boolean changingModel() default true;	
+	public boolean changingModel() default false;	
 	public int order() default 0;
 	
 	
