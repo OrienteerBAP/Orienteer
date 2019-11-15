@@ -551,5 +551,20 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>github</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>github</id>
+					<name>GitHub OrienteerBAP Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/OrienteerBAP</url>
+				</snapshotRepository>
+				<repository>
+					<id>github</id>
+					<name>GitHub OrienteerBAP Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/OrienteerBAP</url>
+				</repository>
+			</distributionManagement>
+		</profile>
 	</profiles>
 </project>
