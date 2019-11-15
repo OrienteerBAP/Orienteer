@@ -40,8 +40,9 @@ import static org.junit.Assert.assertTrue;
 public class OrienteerMainTest
 {
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerMainTest.class);
+	
 	@Inject
-	private WicketTester tester;
+	private OrienteerTester tester;
 
 	public OrienteerMainTest() {
 	}
@@ -93,13 +94,14 @@ public class OrienteerMainTest
 		ODatabaseDocument db = getDatabase();
 		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
 		PageParameters parameters = new PageParameters();
-		for (OClass oClass : classes)
-		{
+		
+		tester.iterativelyTest(classes, oClass -> {
 			parameters.set("className", oClass.getName());
 			LOG.info("Rendering browse page for class '"+oClass.getName()+"'");
 			tester.startPage(BrowseOClassPage.class, parameters);
 			tester.assertRenderedPage(BrowseOClassPage.class);
-		}
+			return null;
+		}).log(LOG, "Stats of rendering browse page");
 	}
 	
 	@Test
@@ -107,16 +109,22 @@ public class OrienteerMainTest
 	{
 		ODatabaseDocument db = getDatabase();
 		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
-		for (OClass oClass : classes)
-		{
+		
+		tester.iterativelyTest(classes, oClass -> {
 			ODocument doc = new ODocument(oClass);
 			LOG.info("Rendering VIEW document page for class '"+oClass.getName()+"'");
 			tester.startPage(new ODocumentPage(doc));
 			tester.assertRenderedPage(ODocumentPage.class);
+			return null;
+		}).log(LOG, "Stats of rendering VIEW pages");
+		
+		tester.iterativelyTest(classes, oClass -> {
+			ODocument doc = new ODocument(oClass);
 			LOG.info("Rendering EDIT document page for class '"+oClass.getName()+"'");
 			tester.startPage(new ODocumentPage(doc).setModeObject(DisplayMode.EDIT));
 			tester.assertRenderedPage(ODocumentPage.class);
-		}
+			return null;
+		}).log(LOG, "Stats of rendering EDIT pages");
 	}
 	
 	@Test
@@ -125,8 +133,8 @@ public class OrienteerMainTest
 		ODatabaseDocument db = getDatabase();
 		Collection<OClass> classes = db.getMetadata().getSchema().getClasses();
 		PageParameters parameters = new PageParameters();
-		for (OClass oClass : classes)
-		{
+		
+		tester.iterativelyTest(classes, oClass -> {
 			parameters.clearNamed();
 			parameters.set("className", oClass.getName());
 			LOG.info("Rendering page for class '"+oClass.getName()+"'");
@@ -148,7 +156,8 @@ public class OrienteerMainTest
 				tester.startPage(OIndexPage.class, parameters);
 				tester.assertRenderedPage(OIndexPage.class);
 			}
-		}
+			return null;
+		}).log(LOG, "Stats of rendering schema related pages: class, property, indexes");
 	}
 	
 	private ODatabaseDocument getDatabase()

@@ -67,7 +67,7 @@ public class TestModule
 	    	savedStream.close();
 	    }
 	    
-	    assertEquals(oldResult,newResult);
+	    assertEquals(oldResult.replace("\r\n",  "\n"),newResult.replace("\r\n",  "\n"));
 	    //ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 	    //OutputStream stream = response.getOutputStream();
 	    
