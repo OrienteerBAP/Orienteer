@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
@@ -116,7 +116,8 @@
 		<module>orienteer-mail</module>
         <module>orienteer-users</module>
         <module>orienteer-object</module>
-    </modules>
+      <module>orienteer-tours</module>
+  </modules>
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->
@@ -327,7 +328,7 @@
                     <maxmem>256m</maxmem>
                     <!-- aggregated reports for multi-module projects -->
                     <aggregate>true</aggregate>
-                    <check />
+                    <check/>
                 </configuration>
 		    </plugin>
 		    <plugin>
@@ -385,7 +386,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
