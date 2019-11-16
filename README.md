@@ -2,7 +2,7 @@
 
 ## Orienteer
 
-![Orienteer Wordcloud](http://orienteerbap.github.io/Orienteer/images/wordcloud.png)
+![Orienteer Wordcloud](http://orienteerbap.github.io/Orienteer/images/wordcloud.png) ![Screencast](http://orienteerbap.github.io/Orienteer/images/overview/screencasts.gif)
 
 ### What is Orienteer 
 
