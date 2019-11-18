@@ -1,19 +1,5 @@
 package org.orienteer.core;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.orienteer.core.CustomAttribute;
-import org.orienteer.core.hook.CallbackHook;
-import org.orienteer.junit.OrienteerTestRunner;
-import org.orienteer.junit.Sudo;
-
-import static org.junit.Assert.*;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
@@ -23,6 +9,18 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.orienteer.core.hook.CallbackHook;
+import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.junit.Sudo;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
@@ -306,13 +304,14 @@ public class HooksTest
 			CallbackHook.registerCallback(doc, TYPE.AFTER_CREATE, callback);
 			CallbackHook.registerCallback(doc, TYPE.BEFORE_CREATE, callback);
 			doc.save();
-			assertEquals("executed", doc.field("callback"+TYPE.AFTER_CREATE));
 			assertEquals("executed", doc.field("callback"+TYPE.BEFORE_CREATE));
+			assertEquals("executed", doc.field("callback"+TYPE.AFTER_CREATE));
 			assertFalse(doc.containsField("__callbacks__"));
 			doc.reload();
 			assertFalse(doc.containsField("__callbacks__"));
 			assertFalse(doc.containsField("callback"+TYPE.AFTER_READ)); 
 			CallbackHook.registerCallback(doc, TYPE.AFTER_READ, callback);
+			doc.save();
 			doc.reload();
 			assertEquals("executed", doc.field("callback"+TYPE.AFTER_READ));
 		} finally {
