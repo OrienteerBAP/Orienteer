@@ -2,23 +2,19 @@ package org.orienteer.core.component.meta;
 
 import com.orientechnologies.orient.core.compression.OCompressionFactory;
 import com.orientechnologies.orient.core.conflict.ORecordConflictStrategy;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.ORule;
 import com.orientechnologies.orient.core.storage.OCluster;
 import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.widget.schema.OClustersWidget;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,7 +61,8 @@ public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster,
 
     @Override
     protected void setValue(OCluster entity, String critery, V value) {
-        ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+        throw new UnsupportedOperationException("Update clusters not supported yet.");
+        /*ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
         db.commit();
         try
         {
@@ -91,7 +88,7 @@ public class OClusterMetaPanel<V> extends AbstractComplexModeMetaPanel<OCluster,
         finally
         {
             db.begin();
-        }
+        }*/
     }
 
     @SuppressWarnings("unchecked")
