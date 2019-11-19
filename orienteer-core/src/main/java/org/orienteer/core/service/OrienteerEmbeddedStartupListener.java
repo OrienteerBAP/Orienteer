@@ -13,6 +13,9 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import java.io.File;
 import java.net.URL;
 
+/**
+ * Listener which creates Orienteer database after server startup
+ */
 public class OrienteerEmbeddedStartupListener extends EmbeddOrientDbApplicationListener {
 
     public OrienteerEmbeddedStartupListener() {
