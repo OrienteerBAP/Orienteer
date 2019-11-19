@@ -1,9 +1,10 @@
 package org.orienteer.core.resource;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.tika.Tika;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -16,10 +17,8 @@ import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.time.Time;
 import org.orienteer.core.MountPath;
 
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Share dynamic resources such as image, video and other.
@@ -87,8 +86,19 @@ public class OContentShareResource extends AbstractResource {
     
     protected byte[] getContent(OIdentifiable rid, String field) {
     	ODocument doc = rid.getRecord();
-    	if(doc==null) return null;
-    	return doc.field(field, byte[].class);
+    	Object data = doc != null ? doc.field(field) : null;
+    	byte[] result = null;
+
+    	if (data != null) {
+            OType type = doc.fieldType(field);
+            if (type == OType.STRING) {
+                result = ((String) data).getBytes();
+            } else {
+                result = (byte[]) OType.convert(data, byte[].class);
+            }
+        }
+
+    	return result;
     }
 
     private WriteCallback createWriteCallback(byte [] data) {
