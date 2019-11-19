@@ -1,10 +1,6 @@
 package org.orienteer.camel.component;
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ServiceStatus;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -19,20 +15,23 @@ import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Wrapper for OIntegrationConfig ODocuments
@@ -146,7 +145,7 @@ public class OIntegrationConfig extends OTask {
 			}
 			context = new DefaultCamelContext();
 			Map<String, String> properties = context.getProperties();
-			properties.put(OrientDBComponent.DB_URL, dbSettings.getDBUrl());
+			properties.put(OrientDBComponent.DB_URL, dbSettings.getDbType() + ":" + dbSettings.getDbName());
 			properties.put(OrientDBComponent.DB_USERNAME, session.getUsername());
 			properties.put(OrientDBComponent.DB_PASSWORD, session.getPassword());
 			context.setProperties(properties);
