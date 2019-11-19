@@ -28,13 +28,12 @@ import java.util.List;
  */
 @Widget(domain="schema", tab="clusters", id="list-oclusters", order=50, autoEnable=true)
 public class OClustersWidget extends AbstractWidget<Void> {
-    public static final String NAME = "name";
-    public static final String ID = "id";
-    public static final String COUNT = "recordsSize";
+
+    public static final String ID                = "id";
+    public static final String COUNT             = "recordsSize";
+    public static final String NAME              = "name";
+    public static final String STATUS            = "status";
     public static final String CONFLICT_STRATEGY = "recordConflictStrategy";
-    public static final String RECORD_GROW_FACTOR = "recordGrowFactor";
-    public static final String RECORD_OVERFLOW_GROW_FACTOR = "recordOverflowGrowFactor";
-    public static final String COMPRESSION = "compression";
 
     public OClustersWidget(String id, IModel<Void> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
