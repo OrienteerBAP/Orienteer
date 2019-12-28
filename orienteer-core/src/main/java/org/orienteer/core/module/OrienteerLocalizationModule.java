@@ -31,6 +31,8 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 {
 	public static final String NAME = "localization";
 	
+	public static final String DEFAULT_LANGUAGE = "en";
+	
 	public static final String OCLASS_LOCALIZATION="OLocalization";
 	public static final String OCLASS_USER="OUser";
 	public static final String OPROPERTY_KEY="key";
@@ -108,39 +110,43 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 
 				@Override
 				protected String execute(ODatabaseDocument db) {
-					OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("select from "+OCLASS_LOCALIZATION+" where "+OPROPERTY_KEY+" = ?");
-					List<ODocument> result = db.command(query).execute(key);
-					if(result==null || result.isEmpty())
-					{
-						registerStringResourceRequest(key, language, style, variation);
-						return null;
-					}
-					
-					ODocument bestCandidate = null;
-					int bestCandidateScore = -1;
-					boolean fullMatchPresent=false;
-					for (ODocument candidate : result)
-					{
-						int score = 0;
-						if(Strings.isEqual(language, (String)candidate.field(OPROPERTY_LANG)))score|=1<<2;
-						if(Strings.isEqual(style, (String)candidate.field(OPROPERTY_STYLE)))score|=1<<1;
-						if(Strings.isEqual(variation, (String)candidate.field(OPROPERTY_VARIATION)))score|=1;
-						if(score==7) fullMatchPresent=true;
-						Boolean active = candidate.field(OPROPERTY_ACTIVE);
-						if(active==null || !active) score=-1;
-						if(score>bestCandidateScore)
-						{
-							bestCandidate = candidate;
-							bestCandidateScore=score;
-						}
-					}
-					if(!fullMatchPresent)
-					{
-						registerStringResourceRequest(key, language, style, variation);
-					}
-					return bestCandidate!=null?(String)bestCandidate.field(OPROPERTY_VALUE):null;
+					String ret = sudoLoadStringResource(db, true, key, language, style, variation);
+					return ret!=null || DEFAULT_LANGUAGE.equals(language) ? ret : sudoLoadStringResource(db, false, key, DEFAULT_LANGUAGE, style, variation);
 				}
 			}.execute();
+		}
+		
+		private String sudoLoadStringResource(ODatabaseDocument db, boolean registerIfNeeded, final String key, String language, final String style, final String variation) {
+			OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("select from "+OCLASS_LOCALIZATION+" where "+OPROPERTY_KEY+" = ? and "+OPROPERTY_LANG+" = ?");
+			List<ODocument> result = db.command(query).execute(key, language);
+			if(result==null || result.isEmpty())
+			{
+				if(registerIfNeeded) registerStringResourceRequest(key, language, style, variation);
+				return null;
+			}
+			
+			ODocument bestCandidate = null;
+			int bestCandidateScore = -1;
+			boolean fullMatchPresent=false;
+			for (ODocument candidate : result)
+			{
+				int score = 0;
+				if(Strings.isEqual(style, (String)candidate.field(OPROPERTY_STYLE)))score|=1<<1;
+				if(Strings.isEqual(variation, (String)candidate.field(OPROPERTY_VARIATION)))score|=1;
+				if(score==7) fullMatchPresent=true;
+				Boolean active = candidate.field(OPROPERTY_ACTIVE);
+				if(active==null || !active) score=-1;
+				if(score>bestCandidateScore)
+				{
+					bestCandidate = candidate;
+					bestCandidateScore=score;
+				}
+			}
+			if(!fullMatchPresent && registerIfNeeded)
+			{
+				registerStringResourceRequest(key, language, style, variation);
+			}
+			return bestCandidate!=null?(String)bestCandidate.field(OPROPERTY_VALUE):null;
 		}
 		
 		private void registerStringResourceRequest(String key, String language, String style, String variation)
