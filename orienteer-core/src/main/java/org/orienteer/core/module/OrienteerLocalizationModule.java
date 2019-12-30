@@ -126,16 +126,16 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule
 			}
 			
 			ODocument bestCandidate = null;
-			int bestCandidateScore = -1;
+			int bestCandidateScore = 0;
 			boolean fullMatchPresent=false;
 			for (ODocument candidate : result)
 			{
 				int score = 0;
 				if(Strings.isEqual(style, (String)candidate.field(OPROPERTY_STYLE)))score|=1<<1;
 				if(Strings.isEqual(variation, (String)candidate.field(OPROPERTY_VARIATION)))score|=1;
-				if(score==7) fullMatchPresent=true;
+				if(score==0b011) fullMatchPresent=true;
 				Boolean active = candidate.field(OPROPERTY_ACTIVE);
-				if(active==null || !active) score=-1;
+				if(active==null || !active) score=0;
 				if(score>bestCandidateScore)
 				{
 					bestCandidate = candidate;
