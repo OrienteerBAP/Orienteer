@@ -213,6 +213,12 @@
 			<artifactId>orientqb</artifactId>
 			<version>0.2.0</version>
 		</dependency>
+		<!-- Thumbnailing  -->
+		<dependency>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>[0.4, 0.5)</version>
+		</dependency>
 	</dependencies>
 
 	<build>

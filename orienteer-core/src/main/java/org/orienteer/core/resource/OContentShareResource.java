@@ -1,5 +1,7 @@
 package org.orienteer.core.resource;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -15,32 +17,50 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.time.Time;
 import org.orienteer.core.MountPath;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import net.coobird.thumbnailator.Thumbnails;
+
 /**
- * Share dynamic resources such as image, video and other.
+ * Share dynamic resources such as image, video and other. Params
+ * type (optional) - content type of the content
+ * s (optional) - size of image to resize to
+ * q (optional) - quality of output image after resizing 
  */
 @MountPath("/content/${rid}/${field}")
 public class OContentShareResource extends AbstractResource {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(OContentShareResource.class);
     
     public static SharedResourceReference getSharedResourceReference() {
     	return new SharedResourceReference(OContentShareResource.class.getName());
     }
     
-    public static CharSequence urlFor(ODocument document, String field, String contentType, boolean fullUrl) {
-    	return urlFor(getSharedResourceReference(), document, field, contentType, fullUrl);
+    public static CharSequence urlFor(ODocument document, String field, String contentType,  boolean fullUrl) {
+    	return urlFor(getSharedResourceReference(), document, field, contentType, null, null, fullUrl);
+    }
+    
+    public static CharSequence urlFor(ODocument document, String field, String contentType, Integer imageSize, boolean fullUrl) {
+    	return urlFor(getSharedResourceReference(), document, field, contentType, imageSize, null, fullUrl);
+    }
+    
+    public static CharSequence urlFor(ODocument document, String field, String contentType, Integer imageSize, Double imageQuality, boolean fullUrl) {
+    	return urlFor(getSharedResourceReference(), document, field, contentType, imageSize, imageQuality, fullUrl);
     }
 
-    protected static CharSequence urlFor(ResourceReference ref, ODocument document, String field, String contentType, boolean fullUrl) {
+    protected static CharSequence urlFor(ResourceReference ref, ODocument document, String field, String contentType, Integer imageSize, Double imageQuality, boolean fullUrl) {
     	PageParameters params = new PageParameters();
     	params.add("rid", document.getIdentity().toString().substring(1));
     	params.add("field", field);
     	params.add("v", document.getVersion());
     	if(!Strings.isEmpty(contentType)) params.add("type", contentType);
+    	if(imageSize!=null && imageSize>0) params.add("s", imageSize);
+    	if(imageQuality!=null && imageQuality>0 && imageQuality<1.0) params.add("q", imageQuality);
     	CharSequence url = RequestCycle.get().urlFor(ref, params);
     	if(fullUrl) {
     		url = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
@@ -58,7 +78,7 @@ public class OContentShareResource extends AbstractResource {
             ORID orid = ORecordId.isA(ridStr) ? new ORecordId(ridStr) : null;
             if (orid != null) {
                 String field = params.get("field").toString();
-                final byte [] data = getContent(orid, field);
+                byte [] data = getContent(orid, field);
                 if (data != null && data.length > 0) {
                     String contentType = params.get("type").toOptionalString();
                 	if (Strings.isEmpty(contentType)) {
@@ -69,6 +89,21 @@ public class OContentShareResource extends AbstractResource {
 	                	else response.setCacheDurationToMaximum();
                 	}
                     response.setContentType(contentType);
+                    Integer maxSize = params.get("s").toOptionalInteger();
+                    if(maxSize!=null && maxSize>0 && contentType.startsWith("image/")) {
+                    	double quality = params.get("q").toDouble(0.8);
+                    	ByteArrayOutputStream thumbnailOS = new ByteArrayOutputStream();
+                    	try {
+							Thumbnails.of(new ByteArrayInputStream(data))
+										.size(maxSize, maxSize)
+										.keepAspectRatio(true)
+										.outputQuality(quality)
+										.toOutputStream(thumbnailOS);
+							data = thumbnailOS.toByteArray();
+						} catch (IOException e) {
+							LOG.error("Can't create thumbnail. Using original image. ", e);
+						}
+                    }
                     response.setWriteCallback(createWriteCallback(data));
                 }
             }
