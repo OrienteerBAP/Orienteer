@@ -70,8 +70,8 @@
 
 	<properties>
         <java.version>1.8</java.version>
-		<wicket.version>8.5.0</wicket.version>
-		<wicketstuff.version>8.5.0</wicketstuff.version>
+		<wicket.version>8.6.1</wicket.version>
+		<wicketstuff.version>8.6.0</wicketstuff.version>
 		<orientdb.version>2.2.37</orientdb.version>
 		<guice.version>4.2.0</guice.version>
 		<wicket.orientdb.version>1.5-SNAPSHOT</wicket.orientdb.version>
