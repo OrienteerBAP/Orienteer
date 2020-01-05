@@ -85,4 +85,10 @@ public class BinaryEditPanel extends FormComponentPanel<byte[]> {
 		super.onModelChanged();
 		if(nameModel!=null) nameModel.setObject(tempName);
 	}
+	
+	//To avoid treating form as simple if clear is on - we need to set explicitly multipart
+	@Override
+	public boolean isMultiPart() {
+		return true;
+	}
 }
