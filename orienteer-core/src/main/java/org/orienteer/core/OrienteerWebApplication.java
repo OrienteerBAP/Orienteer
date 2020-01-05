@@ -92,7 +92,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
-	
+
+	@Inject
+	@Named("orienteer.image.icon")
+	private String imageIconPath;
+
 	@Inject
 	@Named("orienteer.version")
 	private String version;
@@ -181,6 +185,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountPackage("org.orienteer.core.web");
 		mountPackage("org.orienteer.core.resource");
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
+		mountResource("icon.png", new SharedResourceReference(imageIconPath));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
