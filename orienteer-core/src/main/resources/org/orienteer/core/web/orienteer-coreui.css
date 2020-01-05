@@ -72,12 +72,16 @@ td.st-label
 	width: 30%;
 }
 
+.form-control {
+	/* width: auto; */
+	display: inline-block;
+}
+
 td.st-label label{
 	font-weight: 700;
 }
 
-td.st-label label[title]:after {
-	content: "\f05a";
+td.st-label label:after {
 	display: inline-block;
 	font: normal normal normal 14px/1 FontAwesome;
 	font-size: inherit;
@@ -85,14 +89,20 @@ td.st-label label[title]:after {
 	-webkit-font-smoothing: antialiased;
 }
 
-.form-control {
-	/* width: auto; */
-	display: inline-block;
+td.st-label label[title]:after {
+	content: "\f05a";
+	padding-left: 0.2em;
 }
 
-table.structure-table label.required:after {
+
+td.st-label label.required:after {
 	color: red;
 	content: "*";
+}
+
+td.st-label label[title].required:after {
+	content: "* \f05a";
+	padding-left: 0;
 }
 
 td.st-value textarea
