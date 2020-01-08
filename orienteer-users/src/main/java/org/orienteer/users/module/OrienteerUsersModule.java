@@ -8,6 +8,7 @@ import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.function.OFunction;
 import com.orientechnologies.orient.core.metadata.function.OFunctionLibrary;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.*;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -63,7 +64,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -147,6 +148,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                 .oProperty(OrienteerUser.PROP_RESTORE_ID_CREATED, OType.DATETIME)
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
                 .oProperty(OrienteerUser.PROP_EMAIL, OType.STRING)
+                    .set(OProperty.ATTRIBUTES.COLLATE, "ci")
                 .oProperty(OrienteerUser.PROP_FIRST_NAME, OType.STRING)
                 .oProperty(OrienteerUser.PROP_LAST_NAME, OType.STRING);
 
