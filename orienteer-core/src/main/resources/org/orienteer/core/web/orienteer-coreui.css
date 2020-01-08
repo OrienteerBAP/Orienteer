@@ -36,10 +36,16 @@ tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
 	margin-right:0.5em;
 }
 
-td.checkbox-column
+/*Checkbox column*/ 
+td.cb-clmn
 {
 	width: 15px;
 }
+
+table.no-checkboxes th.cb-clmn, table.no-checkboxes td.cb-clmn 
+{
+	display: none;	
+} 
 
 td.combobox-column
 {
@@ -275,7 +281,7 @@ li.strict div.panel-body {
 		display: table-cell;
 	}
 
-	.classes-table-panel > form > table > thead > .headers > th:first-child, tbody > tr > .checkbox-column {
+	.classes-table-panel > form > table > thead > .headers > th.cb-clmn, tbody > tr > .cb-clmn {
 		display: none !important;
 	}
 

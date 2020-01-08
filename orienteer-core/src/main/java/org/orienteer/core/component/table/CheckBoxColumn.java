@@ -110,6 +110,6 @@ public class CheckBoxColumn<T, P extends Serializable, S> extends AbstractColumn
 
 	@Override
 	public String getCssClass() {
-		return "checkbox-column";
+		return "cb-clmn";
 	}
 }
