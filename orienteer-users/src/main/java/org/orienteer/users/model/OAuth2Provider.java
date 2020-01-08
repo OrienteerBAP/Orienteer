@@ -3,6 +3,7 @@ package org.orienteer.users.model;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.scribejava.apis.FacebookApi;
 import com.github.scribejava.apis.GitHubApi;
+import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import org.apache.wicket.request.resource.PackageResourceReference;
@@ -43,7 +44,7 @@ public enum OAuth2Provider implements IOAuth2Provider {
             new PackageResourceReference(OAuth2Provider.class, "social/google.png"),
             "https://www.googleapis.com/oauth2/v3/userinfo",
             "profile email",
-            FacebookApi::instance,
+            GoogleApi20::instance,
             new GoogleUserManager()
     );
 
