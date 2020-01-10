@@ -5,8 +5,10 @@ import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OAuth2Provider;
+import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OUserSocialNetwork;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.repository.OUserSocialNetworkRepository;
 import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOAuth2UserManager;
@@ -33,7 +35,9 @@ public class GitHubUserManager implements IOAuth2UserManager {
         if (user == null) {
             user = getUserByEmailOrName(db, node);
         }
-
+        if (user != null) {
+            createOUserSocialNetworkIfNotExists(db, getGitHubId(node), user);
+        }
         return user;
     }
 
@@ -63,14 +67,17 @@ public class GitHubUserManager implements IOAuth2UserManager {
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
-
         user.save();
+
+        createOUserSocialNetworkIfNotExists(db, getGitHubId(node), user);
+
         return user;
     }
 
     private OrienteerUser getUserByGitHubId(ODatabaseDocument db, JsonNode node) {
-        if (node.get(FIELD_ID) != null) {
-            return OUserSocialNetworkRepository.getSocialNetworkByUserId(db, OAuth2Provider.GITHUB, node.get(FIELD_ID).textValue())
+        String id = getGitHubId(node);
+        if (id != null) {
+            return OUserSocialNetworkRepository.getSocialNetworkByUserId(db, OAuth2Provider.GITHUB, id)
                     .map(OUserSocialNetwork::getUser)
                     .orElse(null);
         }
@@ -88,5 +95,29 @@ public class GitHubUserManager implements IOAuth2UserManager {
             user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
         }
         return user;
+    }
+
+    private void createOUserSocialNetworkIfNotExists(ODatabaseDocument db, String userId, OrienteerUser user) {
+       if (!isGitHubContainsInUserSocialNetworks(user)) {
+           OAuth2Repository.getOAuth2ServiceByProvider(db, OAuth2Provider.GITHUB, true)
+                   .ifPresent(service -> {
+                       OUserSocialNetwork network = new OUserSocialNetwork();
+                       network.setService(service);
+                       network.setUser(user);
+                       network.setUserId(userId);
+                       network.save();
+                   });
+       }
+    }
+
+    private boolean isGitHubContainsInUserSocialNetworks(OrienteerUser user) {
+        return user.getSocialNetworks().stream()
+                .map(OUserSocialNetwork::getService)
+                .map(OAuth2Service::getProvider)
+                .anyMatch(provider -> provider.equals(OAuth2Provider.GITHUB));
+    }
+
+    private String getGitHubId(JsonNode node) {
+        return node.get(FIELD_ID) != null ? node.get(FIELD_ID).textValue() : null;
     }
 }

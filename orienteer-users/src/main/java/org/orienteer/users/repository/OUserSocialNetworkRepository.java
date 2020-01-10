@@ -29,7 +29,7 @@ public final class OUserSocialNetworkRepository {
 
     public static Optional<OUserSocialNetwork> getSocialNetworkByUserId(ODatabaseDocument db, String providerAlias, String userId) {
         String sql = String.format("select from %s where %s = ? and %s = ?", OUserSocialNetwork.CLASS_NAME,
-                OUserSocialNetwork.PROP_PROVIDER, OUserSocialNetwork.PROP_USER_ID);
+                OUserSocialNetwork.PROP_SERVICE, OUserSocialNetwork.PROP_USER_ID);
         List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), providerAlias, userId);
         return CommonUtils.getFromIdentifiables(identifiables, OUserSocialNetwork::new);
     }

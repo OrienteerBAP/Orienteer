@@ -8,9 +8,9 @@ public class OUserSocialNetwork extends ODocumentWrapper {
 
     public static final String CLASS_NAME = "OUserSocialNetwork";
 
-    public static final String PROP_USER_ID  = "userId";
-    public static final String PROP_PROVIDER = "provider";
-    public static final String PROP_USER     = "user";
+    public static final String PROP_USER_ID = "userId";
+    public static final String PROP_SERVICE = "service";
+    public static final String PROP_USER    = "user";
 
     public OUserSocialNetwork() {
         this(CLASS_NAME);
@@ -33,18 +33,23 @@ public class OUserSocialNetwork extends ODocumentWrapper {
         return this;
     }
 
-    public IOAuth2Provider getProvider() {
-        String alias = document.field(PROP_PROVIDER);
-        return OAuth2Provider.valueOf(alias);
+    public OAuth2Service getService() {
+        ODocument service = getServiceAsDocument();
+        return service != null ? new OAuth2Service(service) : null;
+    }
+
+    public ODocument getServiceAsDocument() {
+        OIdentifiable service = document.field(PROP_SERVICE);
+        return service != null ? service.getRecord() : null;
     }
 
 
-    public OUserSocialNetwork setProvider(IOAuth2Provider provider) {
-        return setProviderAsAlias(provider != null ? provider.getName() : null);
+    public OUserSocialNetwork setService(OAuth2Service service) {
+        return setServiceAsDocument(service.getDocument());
     }
 
-    public OUserSocialNetwork setProviderAsAlias(String provider) {
-        document.field(PROP_PROVIDER, provider);
+    public OUserSocialNetwork setServiceAsDocument(ODocument service) {
+        document.field(PROP_SERVICE, service);
         return this;
     }
 

@@ -20,6 +20,8 @@ import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.method.MethodStorage;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.OWidgetsModule;
@@ -41,6 +43,7 @@ import org.orienteer.users.util.OUsersCommonUtils;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 import static com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
@@ -66,7 +69,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 11;
+    public static final int VERSION = 13;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -144,8 +147,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     private void createUserSocialNetwork(OSchemaHelper helper) {
         helper.oClass(OUserSocialNetwork.CLASS_NAME, "ORestricted")
-                .oProperty(OUserSocialNetwork.PROP_PROVIDER, OType.STRING, 0)
-                    .assignVisualization(OAuth2ProviderVisualizer.NAME)
+                .oProperty(OUserSocialNetwork.PROP_SERVICE, OType.LINK, 0)
+                    .linkedClass(OAuth2Service.CLASS_NAME)
                 .oProperty(OUserSocialNetwork.PROP_USER_ID, OType.STRING, 10)
                 .oProperty(OUserSocialNetwork.PROP_USER, OType.LINK, 20);
     }
@@ -385,6 +388,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         app.mountPackage("org.orienteer.users.web");
         app.registerWidgets("org.orienteer.users.widget");
         app.getUIVisualizersRegistry().registerUIComponentFactory(new OAuth2ProviderVisualizer());
+        initMethods();
 
         OScheduler scheduler = db.getMetadata().getScheduler();
         Collection<OScheduledEvent> events = scheduler.getEvents().values(); // TODO: remove after fix issue https://github.com/orientechnologies/orientdb/issues/8368
@@ -405,6 +409,21 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         app.unmountPackage("org.orienteer.users.web");
         app.unregisterWidgets("org.orienteer.users.widget");
         app.getUIVisualizersRegistry().unregisterUIComponentFactory(Collections.singletonList(OType.STRING), OAuth2ProviderVisualizer.NAME);
+    }
+
+    // Hack for OMethodManager. Need fix initialize paths for methods in Orienteer
+    private void initMethods() {
+        try {
+            OMethodsManager manager = OMethodsManager.get();
+            Field methodStorageField = manager.getClass().getDeclaredField("methodStorage");
+            methodStorageField.setAccessible(true);
+            MethodStorage storage = (MethodStorage) methodStorageField.get(manager);
+            storage.addPath("org.orienteer.users");
+            manager.reload();
+            methodStorageField.setAccessible(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
