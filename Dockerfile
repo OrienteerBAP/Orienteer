@@ -1,4 +1,4 @@
-FROM maven:3.5.0-jdk-8-alpine
+FROM maven:3.5.0-jdk-8
 EXPOSE 8080
 
 WORKDIR /tmp/src/
