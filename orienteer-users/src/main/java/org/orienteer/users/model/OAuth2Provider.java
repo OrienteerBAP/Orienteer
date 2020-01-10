@@ -33,7 +33,7 @@ public enum OAuth2Provider implements IOAuth2Provider {
     FACEBOOK(
             "oauth2.provider.facebook",
             new PackageResourceReference(OAuth2Provider.class, "social/facebook.png"),
-            "https://graph.facebook.com/v3.2/me?fields=first_name,last_name,email,picture,id,short_name",
+            "https://graph.facebook.com/v5.0/me?fields=first_name,last_name,email,picture,id,short_name",
             null,
             FacebookApi::instance,
             new FacebookUserManager()
