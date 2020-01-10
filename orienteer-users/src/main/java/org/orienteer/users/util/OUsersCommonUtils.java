@@ -14,7 +14,8 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
-import org.orienteer.users.model.IOAuth2Provider;
+import org.orienteer.users.model.*;
+import org.orienteer.users.repository.OAuth2Repository;
 
 import java.util.*;
 
@@ -129,5 +130,25 @@ public final class OUsersCommonUtils {
 
     public static List<String> createDefaultLanguageTags() {
         return Arrays.asList("en", "ru", "uk");
+    }
+
+    public static void createOUserSocialNetworkIfNotExists(ODatabaseDocument db, OAuth2Provider provider, String userId, OrienteerUser user) {
+        if (!isProviderContainsInUserSocialNetworks(provider, user)) {
+            OAuth2Repository.getOAuth2ServiceByProvider(db, provider, true)
+                    .ifPresent(service -> {
+                        OUserSocialNetwork network = new OUserSocialNetwork();
+                        network.setService(service);
+                        network.setUser(user);
+                        network.setUserId(userId);
+                        network.save();
+                    });
+        }
+    }
+
+    private static boolean isProviderContainsInUserSocialNetworks(OAuth2Provider provider, OrienteerUser user) {
+        return user.getSocialNetworks().stream()
+                .map(OUserSocialNetwork::getService)
+                .map(OAuth2Service::getProvider)
+                .anyMatch(sp -> sp.equals(provider));
     }
 }

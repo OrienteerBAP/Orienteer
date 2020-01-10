@@ -5,13 +5,12 @@ import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.orienteer.users.model.OAuth2Provider;
-import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OUserSocialNetwork;
 import org.orienteer.users.model.OrienteerUser;
-import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.repository.OUserSocialNetworkRepository;
 import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOAuth2UserManager;
+import org.orienteer.users.util.OUsersCommonUtils;
 
 import java.util.UUID;
 
@@ -36,7 +35,7 @@ public class GitHubUserManager implements IOAuth2UserManager {
             user = getUserByEmailOrName(db, node);
         }
         if (user != null) {
-            createOUserSocialNetworkIfNotExists(db, getGitHubId(node), user);
+            OUsersCommonUtils.createOUserSocialNetworkIfNotExists(db, OAuth2Provider.GITHUB, getGitHubId(node), user);
         }
         return user;
     }
@@ -69,7 +68,7 @@ public class GitHubUserManager implements IOAuth2UserManager {
                 .setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
         user.save();
 
-        createOUserSocialNetworkIfNotExists(db, getGitHubId(node), user);
+        OUsersCommonUtils.createOUserSocialNetworkIfNotExists(db, OAuth2Provider.GITHUB, getGitHubId(node), user);
 
         return user;
     }
@@ -97,25 +96,6 @@ public class GitHubUserManager implements IOAuth2UserManager {
         return user;
     }
 
-    private void createOUserSocialNetworkIfNotExists(ODatabaseDocument db, String userId, OrienteerUser user) {
-       if (!isGitHubContainsInUserSocialNetworks(user)) {
-           OAuth2Repository.getOAuth2ServiceByProvider(db, OAuth2Provider.GITHUB, true)
-                   .ifPresent(service -> {
-                       OUserSocialNetwork network = new OUserSocialNetwork();
-                       network.setService(service);
-                       network.setUser(user);
-                       network.setUserId(userId);
-                       network.save();
-                   });
-       }
-    }
-
-    private boolean isGitHubContainsInUserSocialNetworks(OrienteerUser user) {
-        return user.getSocialNetworks().stream()
-                .map(OUserSocialNetwork::getService)
-                .map(OAuth2Service::getProvider)
-                .anyMatch(provider -> provider.equals(OAuth2Provider.GITHUB));
-    }
 
     private String getGitHubId(JsonNode node) {
         return node.get(FIELD_ID) != null ? node.get(FIELD_ID).textValue() : null;
