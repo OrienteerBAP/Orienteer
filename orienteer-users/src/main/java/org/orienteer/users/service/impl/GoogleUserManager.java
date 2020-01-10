@@ -19,6 +19,7 @@ public class GoogleUserManager implements IOAuth2UserManager {
     private static final String FIELD_FAMILY_NAME = "family_name";
     private static final String FIELD_PICTURE     = "picture";
     private static final String FIELD_EMAIL       = "email";
+    private static final String FIELD_SUB         = "sub";
 
     @Override
     public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {

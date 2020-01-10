@@ -19,6 +19,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.OWidgetsModule;
@@ -32,6 +33,7 @@ import org.orienteer.users.hook.OrienteerUserHook;
 import org.orienteer.users.hook.OrienteerUserRoleHook;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
+import org.orienteer.users.model.OUserSocialNetwork;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.resource.RegistrationResource;
 import org.orienteer.users.resource.RestorePasswordResource;
@@ -64,7 +66,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 8;
+    public static final int VERSION = 11;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -74,6 +76,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     public static final String MAIL_MACROS_LINK = "link";
 
+    public static final String TAB_SOCIAL_NETWORKS = "social-networks";
+
     protected OrienteerUsersModule() {
         super(MODULE_NAME, VERSION,  PerspectivesModule.NAME, OMailModule.NAME);
     }
@@ -82,6 +86,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
+        createUserSocialNetwork(helper);
         OClass user = updateUserOClass(helper);
 
         updateDefaultOrienteerUsers(db);
@@ -137,6 +142,14 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                     .defaultValue("/login");
     }
 
+    private void createUserSocialNetwork(OSchemaHelper helper) {
+        helper.oClass(OUserSocialNetwork.CLASS_NAME, "ORestricted")
+                .oProperty(OUserSocialNetwork.PROP_PROVIDER, OType.STRING, 0)
+                    .assignVisualization(OAuth2ProviderVisualizer.NAME)
+                .oProperty(OUserSocialNetwork.PROP_USER_ID, OType.STRING, 10)
+                .oProperty(OUserSocialNetwork.PROP_USER, OType.LINK, 20);
+    }
+
     private OClass updateUserOClass(OSchemaHelper helper) {
         helper.oClass(OUser.CLASS_NAME)
                 .oProperty(OrienteerUser.PROP_ID, OType.STRING).notNull()
@@ -150,7 +163,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                 .oProperty(OrienteerUser.PROP_EMAIL, OType.STRING)
                     .set(OProperty.ATTRIBUTES.COLLATE, "ci")
                 .oProperty(OrienteerUser.PROP_FIRST_NAME, OType.STRING)
-                .oProperty(OrienteerUser.PROP_LAST_NAME, OType.STRING);
+                .oProperty(OrienteerUser.PROP_LAST_NAME, OType.STRING)
+                .oProperty(OrienteerUser.PROP_SOCIAL_NETWORKS, OType.LINKLIST, 0)
+                    .assignTab(TAB_SOCIAL_NETWORKS)
+                    .assignVisualization(UIVisualizersRegistry.VISUALIZER_TABLE);
+
+        helper.setupRelationship(OrienteerUser.CLASS_NAME, OrienteerUser.PROP_SOCIAL_NETWORKS, OUserSocialNetwork.CLASS_NAME, OUserSocialNetwork.PROP_USER);
 
         return helper.getOClass();
     }
@@ -181,6 +199,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, READ.getPermissionFlag());
 
         role.grant(ResourceGeneric.CLASS, OrienteerUser.CLASS_NAME, OrientPermission.combinedPermission(READ, UPDATE));
+        role.grant(ResourceGeneric.CLASS, OUserSocialNetwork.CLASS_NAME, 11);
         role.grant(ResourceGeneric.DATABASE, "cluster", OrientPermission.combinedPermission(READ, UPDATE));
 
         role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));

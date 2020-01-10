@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
+import org.orienteer.users.model.OAuth2Provider;
+import org.orienteer.users.model.OUserSocialNetwork;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OUserSocialNetworkRepository;
 import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOAuth2UserManager;
 
@@ -21,18 +24,16 @@ public class GitHubUserManager implements IOAuth2UserManager {
     private static final String FIELD_BIO      = "bio";
     private static final String FIELD_BLOG     = "blog";
     private static final String FIELD_LOCATION = "location";
+    private static final String FIELD_ID       = "id";
 
     @Override
     public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {
-        String login = node.get(FIELD_LOGIN).textValue();
-        String email = node.get(FIELD_EMAIL).textValue();
+        OrienteerUser user = getUserByGitHubId(db, node);
 
-        db.getMetadata().getSecurity().getUser(login);
-
-        OrienteerUser user = OrienteerUserRepository.getUserByName(db, login).orElse(null);
         if (user == null) {
-            user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
+            user = getUserByEmailOrName(db, node);
         }
+
         return user;
     }
 
@@ -64,6 +65,28 @@ public class GitHubUserManager implements IOAuth2UserManager {
                 .setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
 
         user.save();
+        return user;
+    }
+
+    private OrienteerUser getUserByGitHubId(ODatabaseDocument db, JsonNode node) {
+        if (node.get(FIELD_ID) != null) {
+            return OUserSocialNetworkRepository.getSocialNetworkByUserId(db, OAuth2Provider.GITHUB, node.get(FIELD_ID).textValue())
+                    .map(OUserSocialNetwork::getUser)
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    private OrienteerUser getUserByEmailOrName(ODatabaseDocument db, JsonNode node) {
+        String login = node.get(FIELD_LOGIN).textValue();
+        String email = node.get(FIELD_EMAIL).textValue();
+
+        db.getMetadata().getSecurity().getUser(login);
+
+        OrienteerUser user = OrienteerUserRepository.getUserByName(db, login).orElse(null);
+        if (user == null) {
+            user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
+        }
         return user;
     }
 }
