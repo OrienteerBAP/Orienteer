@@ -3,9 +3,13 @@ package org.orienteer.users.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
+import org.orienteer.users.model.OAuth2Provider;
+import org.orienteer.users.model.OUserSocialNetwork;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OUserSocialNetworkRepository;
 import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOAuth2UserManager;
+import org.orienteer.users.util.OUsersCommonUtils;
 
 import java.util.UUID;
 
@@ -23,8 +27,19 @@ public class GoogleUserManager implements IOAuth2UserManager {
 
     @Override
     public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {
-        String email = node.get(FIELD_EMAIL).textValue();
-        return OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
+        String id = getGoogleId(node);
+        OrienteerUser user = getUserById(db, id);
+
+        if (user == null) {
+            String email = node.get(FIELD_EMAIL).textValue();
+            user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
+        }
+
+        if (user != null) {
+            OUsersCommonUtils.createOUserSocialNetworkIfNotExists(db, OAuth2Provider.GOOGLE, id, user);
+        }
+
+        return user;
     }
 
     @Override
@@ -40,6 +55,21 @@ public class GoogleUserManager implements IOAuth2UserManager {
         user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
         user.save();
 
+        OUsersCommonUtils.createOUserSocialNetworkIfNotExists(db, OAuth2Provider.GOOGLE, getGoogleId(node), user);
+
         return user;
+    }
+
+    private OrienteerUser getUserById(ODatabaseDocument db, String id) {
+        if (id != null) {
+            return OUserSocialNetworkRepository.getSocialNetworkByUserId(db, OAuth2Provider.GOOGLE, id)
+                    .map(OUserSocialNetwork::getUser)
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    private String getGoogleId(JsonNode node) {
+        return node.get(FIELD_SUB) != null ? node.get(FIELD_SUB).textValue() : null;
     }
 }

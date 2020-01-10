@@ -98,6 +98,6 @@ public class GitHubUserManager implements IOAuth2UserManager {
 
 
     private String getGitHubId(JsonNode node) {
-        return node.get(FIELD_ID) != null ? node.get(FIELD_ID).textValue() : null;
+        return node.get(FIELD_ID) != null ? Integer.toString(node.get(FIELD_ID).intValue()) : null;
     }
 }
