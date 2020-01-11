@@ -3,6 +3,8 @@ package org.orienteer.users.web;
 import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import org.apache.wicket.event.IEvent;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.model.IModel;
@@ -38,6 +40,8 @@ public class OUsersLoginPage extends LoginPage {
 
     private final IModel<Boolean> restoreModel;
 
+    private boolean closeWindow;
+
     public OUsersLoginPage() {
         this(Model.of(false));
     }
@@ -70,8 +74,12 @@ public class OUsersLoginPage extends LoginPage {
                 authorized = authService.authorize(ctx.getService(), code);
             }
             if (authorized) {
-                continueToOriginalDestination();
-                setResponsePage(getApplication().getHomePage());
+                if (ctx.isSocialNetworkLink()) {
+                    closeWindow = true;
+                } else {
+                    continueToOriginalDestination();
+                    setResponsePage(getApplication().getHomePage());
+                }
             }
         } catch (IllegalStateException ex) {
             error(ex.getMessage());
@@ -84,6 +92,15 @@ public class OUsersLoginPage extends LoginPage {
     @Override
     protected void initialize(WebMarkupContainer container) {
         container.add(createRestorePasswordPanel("restorePasswordPanel"));
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+
+        if (closeWindow) {
+            response.render(OnDomReadyHeaderItem.forScript("window.close();"));
+        }
     }
 
     protected WebMarkupContainer createRestorePasswordPanel(String id) {

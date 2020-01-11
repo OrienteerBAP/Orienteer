@@ -44,6 +44,8 @@ public class OAuth2ServiceContext extends ODocumentWrapper {
      */
     public static final String PROP_REGISTRATION      = "registration";
 
+    public static final String PROP_SOCIAL_NETWORK_LINK = "socialNetworkLink";
+
     public OAuth2ServiceContext() {
         this(CLASS_NAME);
     }
@@ -112,6 +114,16 @@ public class OAuth2ServiceContext extends ODocumentWrapper {
 
     public OAuth2ServiceContext setRegistration(boolean registration) {
         document.field(PROP_REGISTRATION, registration);
+        return this;
+    }
+
+    public boolean isSocialNetworkLink() {
+        Boolean socialNetworkLink = document.field(PROP_SOCIAL_NETWORK_LINK);
+        return socialNetworkLink != null && socialNetworkLink;
+    }
+
+    public OAuth2ServiceContext setSocialNetworkLink(boolean socialNetworkLink) {
+        document.field(PROP_SOCIAL_NETWORK_LINK, socialNetworkLink);
         return this;
     }
 }

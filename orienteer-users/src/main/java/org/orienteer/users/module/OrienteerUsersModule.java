@@ -69,7 +69,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 13;
+
+    public static final int VERSION = 14;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -365,6 +366,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
                     .notNull()
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
                 .oProperty(OAuth2ServiceContext.PROP_REGISTRATION, OType.BOOLEAN, 40)
+                    .notNull()
+                    .defaultValue("false")
+                    .updateCustomAttribute(CustomAttribute.UI_READONLY, "true")
+                .oProperty(OAuth2ServiceContext.PROP_SOCIAL_NETWORK_LINK, OType.BOOLEAN, 50)
                     .notNull()
                     .defaultValue("false")
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, "true");

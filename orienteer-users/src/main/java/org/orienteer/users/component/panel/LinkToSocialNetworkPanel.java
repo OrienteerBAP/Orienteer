@@ -6,30 +6,33 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.util.MapModel;
 import org.orienteer.users.component.SocialNetworkPanel;
 import org.orienteer.users.model.*;
 import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.service.IOAuth2Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Panel for link user with his Social Network
+ */
 public class LinkToSocialNetworkPanel extends GenericPanel<OrienteerUser> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LinkToSocialNetworkPanel.class);
 
     @Inject
     private IOAuth2Service auth2Service;
+
+    private Label feedbackLabel;
 
     public LinkToSocialNetworkPanel(String id, IModel<OrienteerUser> model) {
         super(id, model);
@@ -38,7 +41,11 @@ public class LinkToSocialNetworkPanel extends GenericPanel<OrienteerUser> {
     @Override
     protected void onInitialize() {
         super.onInitialize();
-        add(createSocialNetworksServices("networks", resolveNotLinkedOAuth2Services(getModelObject())));
+
+        add(createSocialNetworksServices("networks"));
+        add(feedbackLabel = new Label("feedback"));
+        feedbackLabel.setOutputMarkupPlaceholderTag(true);
+        feedbackLabel.setVisible(false);
 
         setOutputMarkupPlaceholderTag(true);
     }
@@ -49,27 +56,37 @@ public class LinkToSocialNetworkPanel extends GenericPanel<OrienteerUser> {
         response.render(CssHeaderItem.forReference(SocialNetworkPanel.CSS_STYLE));
     }
 
-    /**
-     * Calls when user clicks on social image for login user.
-     * Redirects user to social network authorization url
-     * See {@link IOAuth2Service#requestAuthorizationUrl(OAuth2Service, String)}
-     * @param target {@link AjaxRequestTarget}
-     * @param model model with {@link OAuth2Service} for login
-     */
-    protected void onSocialImageClick(AjaxRequestTarget target, IModel<OAuth2Service> model) {
-//        OAuth2Service service = model.getObject();
-//        OAuth2ServiceContext ctx = createOAuth2ServiceContext(service);
-//        DBClosure.sudoConsumer(db -> ctx.save());
-//        throw new RedirectToUrlException(ctx.getAuthorizationUrl());
-        LOG.info("Click on social image: {}", model.getObject().getProvider().getName());
+
+    private void onSocialImageClick(AjaxRequestTarget target, IModel<OAuth2Service> model) {
+        OAuth2Service service = model.getObject();
+        OAuth2ServiceContext ctx = createOAuth2ServiceContext(service);
+        ctx.setSocialNetworkLink(true);
+        DBClosure.sudoConsumer(db -> ctx.save());
+        String url = ctx.getAuthorizationUrl();
+        target.appendJavaScript(String.format("window.open('%s', '_blank', 'height=570,width=520')", url));
+
+
+        Map<String, Object> macros = new HashMap<>();
+        macros.put("network", new ResourceModel(service.getProvider().getLabel()).getObject());
+
+        feedbackLabel.setDefaultModel(new StringResourceModel("info.social.network.added", new MapModel<>(macros)));
+        feedbackLabel.setVisible(true);
+        target.add(feedbackLabel);
     }
 
-    protected OAuth2ServiceContext createOAuth2ServiceContext(OAuth2Service service) {
+    private OAuth2ServiceContext createOAuth2ServiceContext(OAuth2Service service) {
         return auth2Service.requestAuthorizationUrl(service, UUID.randomUUID().toString());
     }
 
-    private ListView<OAuth2Service> createSocialNetworksServices(String id, List<OAuth2Service> services) {
-        return new ListView<OAuth2Service>(id, services) {
+    private ListView<OAuth2Service> createSocialNetworksServices(String id) {
+        return new ListView<OAuth2Service>(id, resolveNotLinkedOAuth2Services(getModelObject())) {
+
+            @Override
+            protected void onConfigure() {
+                super.onConfigure();
+                setModelObject(resolveNotLinkedOAuth2Services(LinkToSocialNetworkPanel.this.getModelObject()));
+            }
+
             @Override
             protected void populateItem(ListItem<OAuth2Service> item) {
                 IOAuth2Provider provider = item.getModelObject().getProvider();
@@ -80,6 +97,8 @@ public class LinkToSocialNetworkPanel extends GenericPanel<OrienteerUser> {
                     @Override
                     protected void onEvent(AjaxRequestTarget target) {
                         onSocialImageClick(target, item.getModel());
+                        image.setVisible(false);
+                        target.add(image);
                     }
                 });
                 image.add(new AttributeModifier("alt", new ResourceModel(provider.getLabel()).getObject()));
