@@ -4,6 +4,9 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
+/**
+ * Data class for user account to user social network account
+ */
 public class OUserSocialNetwork extends ODocumentWrapper {
 
     public static final String CLASS_NAME = "OUserSocialNetwork";

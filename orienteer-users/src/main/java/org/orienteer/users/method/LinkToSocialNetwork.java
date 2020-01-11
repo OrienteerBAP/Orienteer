@@ -17,6 +17,9 @@ import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.repository.OAuth2Repository;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
 
+/**
+ * Method for link user account to user social networks accounts
+ */
 @OMethod(
         titleKey = "method.user.social.networks.link",
         icon = FAIconType.chain,

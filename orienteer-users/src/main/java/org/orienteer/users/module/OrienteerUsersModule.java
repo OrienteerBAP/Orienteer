@@ -90,6 +90,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
+        createOAuth2Services(helper);
         createUserSocialNetwork(helper);
         OClass user = updateUserOClass(helper);
 
@@ -109,7 +110,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         createRemoveRestoreIdFunction(helper);
 
-        createOAuth2Services(helper);
+
         configureModuleClass(helper);
 
         return createModuleDocument(db);
