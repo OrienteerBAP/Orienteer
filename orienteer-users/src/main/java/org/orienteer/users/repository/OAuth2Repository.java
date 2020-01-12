@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.orienteer.core.util.CommonUtils;
+import org.orienteer.users.model.OAuth2Provider;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -38,6 +39,17 @@ public final class OAuth2Repository {
         String sql = selectFromBy(OAuth2Service.CLASS_NAME, OAuth2Service.PROP_ACTIVE);
         List<OIdentifiable> services = db.query(new OSQLSynchQuery<>(sql), active);
         return CommonUtils.mapIdentifiables(services, OAuth2Service::new);
+    }
+
+    public static Optional<OAuth2Service> getOAuth2ServiceByProvider(ODatabaseDocument db, OAuth2Provider provider, boolean active) {
+        return getOAuth2ServiceByProvider(db, provider.getName(), active);
+    }
+
+    public static Optional<OAuth2Service> getOAuth2ServiceByProvider(ODatabaseDocument db, String provider, boolean active) {
+        String sql = String.format("select from %s where %s = ? and %s = ?", OAuth2Service.CLASS_NAME,
+                OAuth2Service.PROP_PROVIDER, OAuth2Service.PROP_ACTIVE);
+        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), provider, active);
+        return CommonUtils.getFromIdentifiables(identifiables, OAuth2Service::new);
     }
 
     public static Optional<OAuth2ServiceContext> getServiceContextByState(String state) {

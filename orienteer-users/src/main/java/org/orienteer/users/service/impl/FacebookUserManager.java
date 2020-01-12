@@ -3,9 +3,13 @@ package org.orienteer.users.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
+import org.orienteer.users.model.OAuth2Provider;
+import org.orienteer.users.model.OUserSocialNetwork;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OUserSocialNetworkRepository;
 import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.service.IOAuth2UserManager;
+import org.orienteer.users.util.OUsersCommonUtils;
 
 import java.util.UUID;
 
@@ -23,16 +27,24 @@ public class FacebookUserManager implements IOAuth2UserManager {
 
     @Override
     public OrienteerUser getUser(ODatabaseDocument db, JsonNode node) {
-        String email = node.get(FIELD_EMAIL) != null ? node.get(FIELD_EMAIL).textValue() : null;
+        String id = getFacebookId(node);
+        OrienteerUser user = getUserById(db, id);
 
-        OrienteerUser user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
-        if (user != null) {
-            return user;
+        if (user == null) {
+            String email = node.get(FIELD_EMAIL) != null ? node.get(FIELD_EMAIL).textValue() : null;
+
+            user = OrienteerUserRepository.getUserByEmail(db, email).orElse(null);
+            if (user == null) {
+                String shortName = node.get(FIELD_SHORT_NAME).textValue();
+                user = OrienteerUserRepository.getUserByName(db, createUsername(shortName, id)).orElse(null);
+            }
         }
 
-        String shortName = node.get(FIELD_SHORT_NAME).textValue();
-        String id = node.get(FIELD_ID).textValue();
-        return OrienteerUserRepository.getUserByName(db, createUsername(shortName, id)).orElse(null);
+        if (user != null) {
+            OUsersCommonUtils.createOUserSocialNetworkIfNotExists(db, OAuth2Provider.FACEBOOK, id, user);
+        }
+
+        return user;
     }
 
     @Override
@@ -46,10 +58,25 @@ public class FacebookUserManager implements IOAuth2UserManager {
         user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
         user.save();
 
+        OUsersCommonUtils.createOUserSocialNetworkIfNotExists(db, OAuth2Provider.FACEBOOK, getFacebookId(node), user);
+
         return user;
     }
 
     private String createUsername(String shortName, String id) {
         return shortName + "_" + id;
+    }
+
+    private OrienteerUser getUserById(ODatabaseDocument db, String id) {
+        if (id != null) {
+            return OUserSocialNetworkRepository.getSocialNetworkByUserId(db, OAuth2Provider.FACEBOOK, id)
+                    .map(OUserSocialNetwork::getUser)
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    private String getFacebookId(JsonNode node) {
+        return node.get(FIELD_ID) != null ? node.get(FIELD_ID).textValue() : null;
     }
 }
