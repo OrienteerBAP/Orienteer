@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tika.Tika;
 import org.apache.wicket.request.Url;
+import org.apache.wicket.request.Url.StringMode;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
@@ -61,11 +62,9 @@ public class OContentShareResource extends AbstractResource {
     	if(!Strings.isEmpty(contentType)) params.add("type", contentType);
     	if(imageSize!=null && imageSize>0) params.add("s", imageSize);
     	if(imageQuality!=null && imageQuality>0 && imageQuality<1.0) params.add("q", imageQuality);
-    	CharSequence url = RequestCycle.get().urlFor(ref, params);
-    	if(fullUrl) {
-    		url = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
-    	}
-    	return url;
+    	Url url = RequestCycle.get().mapUrlFor(ref, params);
+    	if(fullUrl) return RequestCycle.get().getUrlRenderer().renderFullUrl(url);
+    	else return url.toString(StringMode.LOCAL);
     }
 
     @Override
