@@ -1,5 +1,7 @@
 package org.orienteer.core.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.wicket.model.IModel;
@@ -61,6 +63,15 @@ public class BrowseOClassPage extends AbstractWidgetPage<OClass> implements ISec
 			}
 		});
 		super.initialize();
+	}
+	
+	@Override
+	public List<String> getTabs() {
+		List<String> tabs = dashboardManager.listTabs(getDomain(), getWidgetsFilter(), getModelObject());
+		List<String> registeredTabs = dashboardManager.listExistingTabs(getDomain(), getModel(), getModelObject());
+		registeredTabs.removeAll(tabs);
+		tabs.addAll(registeredTabs);
+		return tabs;
 	}
 	
 	@Override

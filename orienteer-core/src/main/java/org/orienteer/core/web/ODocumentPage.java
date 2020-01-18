@@ -112,12 +112,12 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 	@Override
 	public List<String> getTabs() {
 		List<String> tabs = oClassIntrospector.listTabs(getModelObject().getSchemaClass());
-		List<String> widgetsTabs = super.getTabs();
-		if(widgetsTabs!=null) {
-			for(String widgetTab: widgetsTabs) {
-				if(!tabs.contains(widgetTab)) tabs.add(widgetTab);
-			}
-		}
+		List<String> widgetTabs = dashboardManager.listTabs(getDomain(), getWidgetsFilter(), getModelObject());
+		widgetTabs.removeAll(tabs);
+		tabs.addAll(widgetTabs);
+		List<String> registeredTabs = dashboardManager.listExistingTabs(getDomain(), getModel(), getModelObject().getSchemaClass());
+		registeredTabs.removeAll(tabs);
+		tabs.addAll(registeredTabs);
 		return tabs;
 	}
 		

@@ -17,6 +17,8 @@ public interface IDashboardManager {
 	public ODocument createWidgetDocument(IWidgetType<?> widgetType);
 	public ODocument createWidgetDocument(Class<? extends AbstractWidget<?>> widgetClass);
 	public <T> List<String> listTabs(String domain, Predicate<IWidgetType<T>> filter, T data);
+	public List<String> listExistingTabs(String domain, IModel<?> dataModel);
+	public List<String> listExistingTabs(String domain, IModel<?> dataModel, OClass oClass);
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel);
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel, Map<String, Object> criteriesMap);
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel, OClass oClass);

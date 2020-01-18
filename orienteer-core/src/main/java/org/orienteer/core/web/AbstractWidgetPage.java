@@ -138,7 +138,11 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 	}
 	
 	public List<String> getTabs() {
-		return dashboardManager.listTabs(getDomain(), getWidgetsFilter(), getModelObject());
+		List<String> tabs = dashboardManager.listTabs(getDomain(), getWidgetsFilter(), getModelObject());
+		List<String> registeredTabs = dashboardManager.listExistingTabs(getDomain(), getModel());
+		registeredTabs.removeAll(tabs);
+		tabs.addAll(registeredTabs);
+		return tabs;
 	}
 	
 	/**
