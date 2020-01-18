@@ -34,7 +34,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		private String tab;
 		private IModel<String> titleModel;
 		
-		private DashboardPanel dashboard;
+		private DashboardPanel<T> dashboard;
 		
 		public DashboardTab(String tab) {
 			this(tab, newTabNameModel(tab));
@@ -137,6 +137,16 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		return ret;
 	}
 	
+	public boolean addTab(String name) {
+		if(Strings.isEmpty(name)) return false;
+		List<DashboardTab> tabs = tabbedPanel.getTabs();
+		for(DashboardTab tab:tabs) {
+			if(name.equals(tab.tab)) return false;
+		}
+		tabbedPanel.getTabs().add(new DashboardTab(name));
+		return false;
+	}
+	
 	public List<String> getTabs() {
 		List<String> tabs = dashboardManager.listTabs(getDomain(), getWidgetsFilter(), getModelObject());
 		List<String> registeredTabs = dashboardManager.listExistingTabs(getDomain(), getModel());
@@ -156,8 +166,23 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		for(int i=0; i<tabs.size();i++) {
 			if(tab.equals(tabs.get(i).tab)) {
 				tabbedPanel.setSelectedTab(i);
+				setCurrentDashboard(tabs.get(i).dashboard);
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Select tab
+	 * @param tab the name of tab to select
+	 * @param optionalTarget - {@link AjaxRequestTarget} to be updated
+	 * @return true if tab was switched and false if there is no such tab;
+	 */
+	public boolean selectTab(String tab, Optional<AjaxRequestTarget> optionalTarget) {
+		if(selectTab(tab)) {
+			optionalTarget.ifPresent(target -> target.add(tabbedPanel));
+			return true;
 		}
 		return false;
 	}
