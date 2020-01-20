@@ -71,4 +71,21 @@ public class OContentShareResourceTest {
         MockHttpServletResponse response = tester.getLastResponse();
         assertEquals(response.getStatus(), HttpServletResponse.SC_NOT_FOUND);
     }
+    
+    @Test
+    public void testUrls() {
+    	tester.setUseRequestUrlAsBase(true);
+    	System.out.println("Local URL: "+OContentShareResource.urlFor(doc, "phone", "text/plain", false));
+    	System.out.println("Full  URL: "+OContentShareResource.urlFor(doc, "phone", "text/plain", true));
+
+    	tester.executeUrl("./api/echo/"+doc.getIdentity().toString().substring(1)+"/phone?full=false");
+    	MockHttpServletResponse response = tester.getLastResponse();
+    	String ret = response.getDocument();
+    	assertEquals(OContentShareResource.urlFor(doc, "phone", "text/plain", false), ret);
+    	
+    	tester.executeUrl("./api/echo/"+doc.getIdentity().toString().substring(1)+"/phone?full=true");
+    	response = tester.getLastResponse();
+    	ret = response.getDocument();
+    	assertEquals(OContentShareResource.urlFor(doc, "phone", "text/plain", true), ret);
+    }
 }

@@ -62,9 +62,12 @@ public class OContentShareResource extends AbstractResource {
     	if(!Strings.isEmpty(contentType)) params.add("type", contentType);
     	if(imageSize!=null && imageSize>0) params.add("s", imageSize);
     	if(imageQuality!=null && imageQuality>0 && imageQuality<1.0) params.add("q", imageQuality);
-    	Url url = RequestCycle.get().mapUrlFor(ref, params);
-    	if(fullUrl) return RequestCycle.get().getUrlRenderer().renderFullUrl(url);
-    	else return url.toString(StringMode.LOCAL);
+    	if(fullUrl) {
+    		return RequestCycle.get().getUrlRenderer()
+    				.renderFullUrl(Url.parse(RequestCycle.get().urlFor(ref, params)));
+    	} else {
+    		return RequestCycle.get().mapUrlFor(ref, params).toString(StringMode.LOCAL);
+    	}
     }
 
     @Override
