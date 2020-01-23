@@ -1,6 +1,5 @@
 .git
 .gitignore
-**/target/
 */libs/
 **/pom.xml.tag
 **/pom.xml.releaseBackup
@@ -15,7 +14,6 @@
 build.cmd
 */databases/
 */Orienteer/
-*/Orienteer*/
 **/.idea/
 **/*.iml
 **/*.log
