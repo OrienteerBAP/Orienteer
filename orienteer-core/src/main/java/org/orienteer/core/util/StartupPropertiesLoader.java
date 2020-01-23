@@ -1,14 +1,14 @@
 package org.orienteer.core.util;
 
+import org.apache.wicket.util.string.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.wicket.util.string.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for startup loader properties
@@ -31,6 +31,7 @@ public class StartupPropertiesLoader {
 															 LookupResourceHelper.SystemPropertyURLLookuper.INSTANCE,
 															 LookupResourceHelper.UpDirectoriesFileLookuper.INSTANCE,
 															 LookupResourceHelper.DirFileLookuper.CONFIG_DIR_INSTANCE,
+															 new LookupResourceHelper.DirFileLookuper(getAppHome()),
 															 LookupResourceHelper.SystemPropertyResourceLookuper.INSTANCE);
 	
 	static {
@@ -120,5 +121,10 @@ public class StartupPropertiesLoader {
 		//Load from Java system properties
 		loadedProperties.putAll(System.getProperties());
 		return loadedProperties;
+	}
+
+	public static String getAppHome() {
+		String appHome = System.getenv("ORIENTEER_APP_HOME");
+		return Strings.isEmpty(appHome) ? "./" : appHome;
 	}
 }
