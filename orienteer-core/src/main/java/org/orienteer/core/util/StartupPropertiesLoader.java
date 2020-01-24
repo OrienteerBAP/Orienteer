@@ -21,7 +21,7 @@ public class StartupPropertiesLoader {
 	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER 		= "orienteer";
 	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT 		= "orienteer-default.properties";
 	
-	
+	public static final String ENV_ORIENTEER_HOME = "ORIENTEER_HOME";
 	
 	public final static Properties PROPERTIES_DEFAULT = new Properties();
 
@@ -124,7 +124,7 @@ public class StartupPropertiesLoader {
 	}
 
 	public static String getAppHome() {
-		String appHome = System.getenv("ORIENTEER_APP_HOME");
+		String appHome = System.getenv(ENV_ORIENTEER_HOME);
 		return Strings.isEmpty(appHome) ? "./" : appHome;
 	}
 }
