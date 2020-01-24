@@ -135,9 +135,7 @@ public class LookupResourceHelper {
 		}
 		
 		public DirFileLookuper(String path) {
-			if (!Strings.isEmpty(path)) {
-				this.dir = new File(path);
-			}
+			this.dir = new File(path);
 		}
 		
 		@Override
