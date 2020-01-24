@@ -1,5 +1,6 @@
 .git
 .gitignore
+**/target/
 */libs/
 **/pom.xml.tag
 **/pom.xml.releaseBackup
