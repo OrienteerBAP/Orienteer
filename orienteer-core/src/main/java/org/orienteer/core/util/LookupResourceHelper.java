@@ -1,13 +1,13 @@
 package org.orienteer.core.util;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.service.OrienteerModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * Utility class to help in lookuping of startup properties files.
