@@ -96,28 +96,7 @@
          </repository>
      </repositories>
 
-	<modules>
-		<module>orienteer-birt</module>
-		<module>orienteer-bpm</module>
-		<module>orienteer-camel</module>
-		<module>orienteer-core</module>
-		<module>orienteer-devutils</module>
-		<module>orienteer-graph</module>
-		<module>orienteer-logger-server</module>
-		<module>orienteer-pages</module>
-		<module>orienteer-pivottable</module>
-		<module>orienteer-etl</module>
-		<module>orienteer-taucharts</module>
-		<module>orienteer-standalone</module>
-		<module>orienteer-war</module>
-		<module>orienteer-archetype-jar</module>
-		<module>orienteer-archetype-war</module>
-		<module>orienteer-architect</module>
-		<module>orienteer-mail</module>
-        <module>orienteer-users</module>
-        <module>orienteer-object</module>
-      <module>orienteer-tours</module>
-  </modules>
+	<!-- IMPORTANT: to support quick docker builds: modules were moved to default profile below -->
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->
@@ -437,6 +416,36 @@
 	</build>
 
 	<profiles>
+		<profile>
+			<id>default-modules</id>
+			<activation>
+				<property>
+					<name>!docker-build</name>
+				</property>
+			</activation>
+			<modules>
+				<module>orienteer-birt</module>
+				<module>orienteer-bpm</module>
+				<module>orienteer-camel</module>
+				<module>orienteer-core</module>
+				<module>orienteer-devutils</module>
+				<module>orienteer-graph</module>
+				<module>orienteer-logger-server</module>
+				<module>orienteer-pages</module>
+				<module>orienteer-pivottable</module>
+				<module>orienteer-etl</module>
+				<module>orienteer-taucharts</module>
+				<module>orienteer-standalone</module>
+				<module>orienteer-war</module>
+				<module>orienteer-archetype-jar</module>
+				<module>orienteer-archetype-war</module>
+				<module>orienteer-architect</module>
+				<module>orienteer-mail</module>
+				<module>orienteer-users</module>
+				<module>orienteer-object</module>
+				<module>orienteer-tours</module>
+			</modules>
+		</profile>
 	    <profile> 
 		<id>release</id>
 		<build>
@@ -513,38 +522,17 @@
 		</profile>
 		<profile>
 			<id>dockerbuild</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<version>2.10</version>
-						<inherited>false</inherited>
-						<executions>
-							<execution>
-								<id>copy</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>org.eclipse.jetty</groupId>
-											<artifactId>jetty-runner</artifactId>
-											<version>${jetty.version}</version>
-											<type>jar</type>
-											<overWrite>true</overWrite>
-											<outputDirectory>${project.basedir}/target/</outputDirectory>
-											<destFileName>jetty-runner.jar</destFileName>
-										</artifactItem>
-									</artifactItems>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
+			<activation>
+				<property>
+					<name>docker-build</name>
+				</property>
+			</activation>
+			<!-- Only modules which are required for initial docker build -->
+			<modules>
+				<module>orienteer-core</module>
+				<module>orienteer-graph</module>
+				<module>orienteer-war</module>
+			</modules>
 		</profile>
 	</profiles>
 </project>
