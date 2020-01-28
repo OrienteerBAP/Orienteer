@@ -27,8 +27,8 @@ public class OIndexDefinitionColumn extends OIndexMetaColumn
 	}
 
 	@Override
-	public void populateItem(Item<ICellPopulator<OIndex<?>>> cellItem,
-			String componentId, IModel<OIndex<?>> rowModel) {
+	public void populateItem(Item<ICellPopulator<OIndex>> cellItem,
+			String componentId, IModel<OIndex> rowModel) {
 		if(DisplayMode.EDIT.equals(getModeObject()))
 		{
 			super.populateItem(cellItem, componentId, rowModel);

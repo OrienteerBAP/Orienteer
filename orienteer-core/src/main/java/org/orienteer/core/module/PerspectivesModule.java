@@ -170,7 +170,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				onInstall(app, db);
 				break;
 			case 4:
-				OIndex<?> index = db.getMetadata().getIndexManager().getIndex(OPerspective.CLASS_NAME + ".name");
+				OIndex index = db.getMetadata().getIndexManager().getIndex(OPerspective.CLASS_NAME + ".name");
 				if(index!=null) index.delete();
 				onInstall(app, db);
 				break;

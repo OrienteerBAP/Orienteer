@@ -9,7 +9,6 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
-import org.apache.wicket.util.tester.WicketTester;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -148,8 +147,8 @@ public class OrienteerMainTest
 				tester.startPage(OPropertyPage.class, parameters);
 				tester.assertRenderedPage(OPropertyPage.class);
 			}
-			Collection<OIndex<?>> indexes = oClass.getIndexes();
-			for (OIndex<?> oIndex : indexes)
+			Collection<OIndex> indexes = oClass.getIndexes();
+			for (OIndex oIndex : indexes)
 			{
 				parameters.set("indexName", oIndex.getName());
 				LOG.info("Rendering page for index '"+oIndex.getName()+"'");

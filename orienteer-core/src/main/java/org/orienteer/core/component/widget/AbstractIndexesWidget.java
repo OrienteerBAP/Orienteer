@@ -34,15 +34,15 @@ import java.util.List;
  */
 public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T> {
 
-    protected final OrienteerDataTable<OIndex<?>, String> iTable;
+    protected final OrienteerDataTable<OIndex, String> iTable;
 
     protected AbstractIndexesWidget(String id, IModel<T> model,
                                 IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
 
         IModel<DisplayMode> indexesDisplayMode = getModeModel();
-        List<IColumn<OIndex<?>, String>> iColumns = new ArrayList<IColumn<OIndex<?>,String>>();
-        iColumns.add(new CheckBoxColumn<OIndex<?>, String, String>(OIndexNameConverter.INSTANCE));
+        List<IColumn<OIndex, String>> iColumns = new ArrayList<>();
+        iColumns.add(new CheckBoxColumn<>(OIndexNameConverter.INSTANCE));
         iColumns.add(new OIndexDefinitionColumn(OIndexPrototyper.NAME, indexesDisplayMode));
         iColumns.add(new OIndexMetaColumn(OIndexPrototyper.TYPE, indexesDisplayMode));
         iColumns.add(new OIndexMetaColumn(OIndexPrototyper.DEF_FIELDS, indexesDisplayMode));
@@ -53,10 +53,10 @@ public abstract class AbstractIndexesWidget<T> extends AbstractModeAwareWidget<T
 
         OIndexesDataProvider iProvider = getIndexDataProvider();
         iProvider.setSort("name", SortOrder.ASCENDING);
-        GenericTablePanel<OIndex<?>> tablePanel = new GenericTablePanel<OIndex<?>>("tablePanel", iColumns, iProvider ,20);
+        GenericTablePanel<OIndex> tablePanel = new GenericTablePanel<>("tablePanel", iColumns, iProvider, 20);
         iTable = tablePanel.getDataTable();
-        iTable.addCommand(new EditSchemaCommand<OIndex<?>>(iTable, indexesDisplayMode));
-        iTable.addCommand(new SaveSchemaCommand<OIndex<?>>(iTable, indexesDisplayMode));
+        iTable.addCommand(new EditSchemaCommand<>(iTable, indexesDisplayMode));
+        iTable.addCommand(new SaveSchemaCommand<>(iTable, indexesDisplayMode));
         iTable.addCommand(new DeleteOIndexCommand(iTable));
         iTable.setCaptionModel(new ResourceModel("class.indexes"));
         add(tablePanel);

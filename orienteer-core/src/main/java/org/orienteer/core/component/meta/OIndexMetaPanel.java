@@ -1,8 +1,15 @@
 package org.orienteer.core.component.meta;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.collate.OCollate;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.index.OCompositeIndexDefinition;
+import com.orientechnologies.orient.core.index.OIndex;
+import com.orientechnologies.orient.core.index.OIndexDefinition;
+import com.orientechnologies.orient.core.index.OIndexes;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.OSQLEngine;
 import org.apache.wicket.Component;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
@@ -14,29 +21,21 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.property.BooleanViewPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OClassViewPanel;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
-import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.collate.OCollate;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.index.OCompositeIndexDefinition;
-import com.orientechnologies.orient.core.index.OIndex;
-import com.orientechnologies.orient.core.index.OIndexDefinition;
-import com.orientechnologies.orient.core.index.OIndexes;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OSQLEngine;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Meta panel for {@link OIndex}
  *
  * @param <V> type of a value
  */
-public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, DisplayMode, String, V> implements IDisplayModeAware
+public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex, DisplayMode, String, V> implements IDisplayModeAware
 {
 	private static final List<String> INDEX_TYPES;
 	private static final List<String> ALGORITHMS = new ArrayList<>(OIndexes.getIndexEngines());
@@ -51,21 +50,21 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 	}
 	
 	public OIndexMetaPanel(String id, IModel<DisplayMode> modeModel,
-			IModel<OIndex<?>> entityModel, IModel<String> propertyModel,
+			IModel<OIndex> entityModel, IModel<String> propertyModel,
 			IModel<V> valueModel)
 	{
 		super(id, modeModel, entityModel, propertyModel, valueModel);
 	}
 
 	public OIndexMetaPanel(String id, IModel<DisplayMode> modeModel,
-			IModel<OIndex<?>> entityModel, IModel<String> criteryModel)
+			IModel<OIndex> entityModel, IModel<String> criteryModel)
 	{
 		super(id, modeModel, entityModel, criteryModel);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected V getValue(OIndex<?> entity, String critery) {
+	protected V getValue(OIndex entity, String critery) {
 		if(OIndexPrototyper.DEF_COLLATE.equals(critery))
 		{
 			OIndexDefinition definition = entity.getDefinition();
@@ -80,7 +79,7 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 	}
 
 	@Override
-	protected void setValue(OIndex<?> entity, String critery, V value) {
+	protected void setValue(OIndex entity, String critery, V value) {
 		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
 		db.commit();
 		try
@@ -141,7 +140,7 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex<?>, 
 			}
 			else if(OIndexPrototyper.DEF_COLLATE.equals(critery))
 			{
-				OIndex<?> index = getEntityObject();
+				OIndex index = getEntityObject();
 				if(!(index.getDefinition() instanceof OCompositeIndexDefinition)
 						&& (!isProto || index.getDefinition().getFields().size()==1))
 				{
