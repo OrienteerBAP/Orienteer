@@ -11,6 +11,9 @@
 	</listeners>
     </network>
     <users>
-	<user name="root" password="OrienteerDatabase" resources="*"/>
+		<user name="root" password="OrienteerDatabase" resources="*"/>
     </users>
+	<properties>
+		<entry name="db.custom.support" value="true"/>
+	</properties>
 </orient-server>
