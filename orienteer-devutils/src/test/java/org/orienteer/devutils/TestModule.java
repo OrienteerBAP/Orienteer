@@ -55,7 +55,7 @@ public class TestModule
 	public void testSimpleSQL() {
 		ScriptExecutor se = ScriptExecutorHolder.get().getScriptExecutor();
 
-		OResultSet result = (OResultSet) se.executeWithoutHistory("SELECT count(1) from OUser", "SQL", null).getResult();
+		OResultSet result = (OResultSet) se.executeWithoutHistory("SELECT count(1) as count from OUser", "SQL", null).getResult();
 
 		assertEquals(tester.getSchema().getClass("OUser").count(), (long) result.next().getProperty("count"));
 	}
