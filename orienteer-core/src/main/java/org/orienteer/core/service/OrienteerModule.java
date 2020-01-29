@@ -73,9 +73,9 @@ public class OrienteerModule extends AbstractModule {
 	}
 	
 	@Provides
-	public ODatabasePool getPartitionedDatabasePool(IOrientDbSettings settings) {
+	public ODatabasePool getCachedDatabasePool(IOrientDbSettings settings) {
 		OrienteerWebSession session = OrienteerWebSession.get();
-		return settings.getDatabasePoolFactory().get(settings.getDbName(), session.getUsername(), session.getPassword());
+		return settings.getContext().cachedPool(settings.getDbName(), session.getUsername(), session.getPassword());
 	}
 
 	@Provides
