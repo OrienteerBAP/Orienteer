@@ -1,6 +1,5 @@
 package org.orienteer.bpm;
 
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -18,6 +17,8 @@ import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.*;
 
 /**
  * {@link IOrienteerModule} for 'orienteer-bpm' module
@@ -53,19 +54,14 @@ public class BPMModule extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		LOG.info("[{}] active database before initialize: {}", Thread.currentThread().getName(), ODatabaseRecordThreadLocal.instance().get());
-		LOG.info("[{}] database:                          {}", Thread.currentThread().getName(), db);
 		app.mountPages("org.orienteer.bpm.web");
 
-		OProcessApplication processApplication = new OProcessApplication();
-		processApplication.deploy();
-
-		processApplicationReference = processApplication.getReference();
 		app.registerWidgets("org.orienteer.bpm.component.widget");
 		app.getOrientDbSettings().getORecordHooks().add(BpmnHook.class);
-		LOG.info("[{}] active database after  initialize: {}", Thread.currentThread().getName(), ODatabaseRecordThreadLocal.instance().get());
+
+		processApplicationReference = deployApplication();
 	}
-	
+
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
@@ -80,5 +76,21 @@ public class BPMModule extends AbstractOrienteerModule{
 			}
 		}
 	}
-	
+
+
+	private ProcessApplicationReference deployApplication() {
+		FutureTask<ProcessApplicationReference> task = new FutureTask<>(() -> {
+			OProcessApplication processApplication = new OProcessApplication();
+			processApplication.deploy();
+			return processApplication.getReference();
+		});
+
+		ExecutorService service = Executors.newSingleThreadExecutor();
+		service.submit(task);
+		try {
+			return task.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new IllegalStateException(e);
+		}
+	}
 }
