@@ -155,12 +155,10 @@ class InitUtils {
     }
 
     private String getDefaultLibsFolder() {
-        String appHome = StartupPropertiesLoader.getAppHome();
-        return appHome.endsWith("/") ? appHome + DEFAULT_LIBS_FOLDER : appHome + "/" + DEFAULT_LIBS_FOLDER;
+    	return StartupPropertiesLoader.getRuntime()+DEFAULT_LIBS_FOLDER;
     }
 
     private String getDefaultMavenLocalRepository() {
-        String appHome = StartupPropertiesLoader.getAppHome();
-        return appHome.endsWith("/") ? appHome + DEFAULT_MAVEN_LOCAL_REPOSITORY : appHome + "/" + DEFAULT_MAVEN_LOCAL_REPOSITORY;
+    	return StartupPropertiesLoader.getRuntime()+DEFAULT_MAVEN_LOCAL_REPOSITORY;
     }
 }
