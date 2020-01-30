@@ -20,7 +20,7 @@ public final class OLoggerModuleRepository {
     public static OLoggerModule.Module getModule(ODatabaseDocument db) {
         String sql = String.format("select from %s where %s = ? limit 1", OLoggerModule.Module.CLASS_NAME, OLoggerModule.OMODULE_NAME);
 
-        return db.query(sql)
+        return db.query(sql, OLoggerModule.NAME)
                 .elementStream()
                 .map(e -> new OLoggerModule.Module((ODocument) e))
                 .findFirst()
