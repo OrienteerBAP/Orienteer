@@ -68,12 +68,8 @@ public class BPMModule extends AbstractOrienteerModule{
 		app.unregisterWidgets("org.orienteer.bpm.component.widget");
 		app.unmountPages("org.orienteer.bpm.web");
 		app.getOrientDbSettings().getORecordHooks().remove(BpmnHook.class);
-		if(processApplicationReference!=null) {
-			try {
-				processApplicationReference.getProcessApplication().undeploy();
-			} catch (ProcessApplicationUnavailableException e) {
-				LOG.error("Can't undeploy process application", e);
-			}
+		if (processApplicationReference != null) {
+			undeployApplication(processApplicationReference);
 		}
 	}
 
@@ -89,6 +85,20 @@ public class BPMModule extends AbstractOrienteerModule{
 		service.submit(task);
 		try {
 			return task.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	private void undeployApplication(ProcessApplicationReference processApplicationReference) {
+		try {
+			CompletableFuture.runAsync(() -> {
+				try {
+					processApplicationReference.getProcessApplication().undeploy();
+				} catch (ProcessApplicationUnavailableException e) {
+					LOG.error("Can't undeploy process application", e);
+				}
+			}).get();
 		} catch (InterruptedException | ExecutionException e) {
 			throw new IllegalStateException(e);
 		}
