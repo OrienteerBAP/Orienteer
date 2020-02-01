@@ -1,6 +1,7 @@
 package org.orienteer.bpm;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -18,6 +19,8 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -57,7 +60,9 @@ public class BPMModule extends AbstractOrienteerModule{
 		app.mountPages("org.orienteer.bpm.web");
 
 		app.registerWidgets("org.orienteer.bpm.component.widget");
-		app.getOrientDbSettings().getORecordHooks().add(BpmnHook.class);
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
+		hooks.add(BpmnHook.class);
+		app.getOrientDbSettings().setORecordHooks(hooks);
 
 		processApplicationReference = deployApplication();
 	}
@@ -67,7 +72,10 @@ public class BPMModule extends AbstractOrienteerModule{
 		super.onDestroy(app, db);
 		app.unregisterWidgets("org.orienteer.bpm.component.widget");
 		app.unmountPages("org.orienteer.bpm.web");
-		app.getOrientDbSettings().getORecordHooks().remove(BpmnHook.class);
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
+		hooks.remove(BpmnHook.class);
+		app.getOrientDbSettings().setORecordHooks(hooks);
+
 		if (processApplicationReference != null) {
 			undeployApplication(processApplicationReference);
 		}

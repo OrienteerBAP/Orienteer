@@ -7,6 +7,7 @@ import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
@@ -165,9 +166,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
 		registerModule(OConsoleTasksModule.class);
-		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
-		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
-		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
+
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(getOrientDbSettings().getORecordHooks());
+		hooks.add(CalculablePropertiesHook.class);
+		hooks.add(ReferencesConsistencyHook.class);
+		hooks.add(CallbackHook.class);
+		getOrientDbSettings().setORecordHooks(hooks);
+
 		mountOrientDbRestApi();
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
 		registerWidgets("org.orienteer.core.component.widget");

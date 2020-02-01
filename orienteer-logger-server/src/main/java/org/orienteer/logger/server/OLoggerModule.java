@@ -3,6 +3,7 @@ package org.orienteer.logger.server;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -36,6 +37,8 @@ import org.orienteer.logger.server.service.enhancer.OWebEnhancer;
 import org.orienteer.logger.server.util.OLoggerServerUtils;
 import org.orienteer.mail.OMailModule;
 import org.orienteer.mail.model.OMail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +51,9 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class OLoggerModule extends AbstractOrienteerModule{
+
+
+	private static final Logger LOG = LoggerFactory.getLogger(OLoggerModule.class);
 	
 	public static final String NAME = "orienteer-logger";
 
@@ -181,12 +187,15 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
 		super.onInitialize(app, db);
-		
+		LOG.info("Initialize OLoggerModule");
 		installOLogger(app, new Module(moduleDoc));
 		app.mountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.mount(app);
 		app.getRequestCycleListeners().add(new OLoggerExceptionListener());
-		app.getOrientDbSettings().getORecordHooks().add(OLoggerEventHook.class);
+
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
+		hooks.add(OLoggerEventHook.class);
+		app.getOrientDbSettings().setORecordHooks(hooks);
 	}
 	
 	@Override
@@ -222,7 +231,10 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		OLogger.set(null);
 		app.unmountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.unmount(app);
-		app.getOrientDbSettings().getORecordHooks().remove(OLoggerEventHook.class);
+
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
+		hooks.remove(OLoggerEventHook.class);
+		app.getOrientDbSettings().setORecordHooks(hooks);
 	}
 
 	private void createDefaultOLoggerEventDispatcher(OSchemaHelper helper) {

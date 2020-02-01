@@ -1,5 +1,7 @@
 package org.orienteer.logger.server;
 
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +15,8 @@ import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerModuleRepository;
 import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.orienteer.logger.server.service.dispatcher.OLoggerEventFilteredDispatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.HashSet;
@@ -25,6 +29,8 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(OrienteerTestRunner.class)
 public class TestOLoggerEventFilteredDispatcher {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TestOLoggerEventFilteredDispatcher.class);
 
     private OLoggerEventFilteredDispatcherModel filteredDispatcher;
     private OCorrelationIdGeneratorModel correlationIdGenerator;
@@ -73,6 +79,10 @@ public class TestOLoggerEventFilteredDispatcher {
         OLogger.log(exception);
 
         String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception);
+
+        ODatabaseDocumentInternal db = ODatabaseRecordThreadLocal.instance().get();
+
+        db.getHooks().keySet().forEach(hook -> LOG.info("Loaded hook: {}", hook));
 
         List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
         assertEquals("There is no events with correlationId: " + correlationId, 1, events.size());

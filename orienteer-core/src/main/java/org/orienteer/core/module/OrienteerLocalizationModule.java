@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import javax.inject.Singleton;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -75,7 +77,10 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		app.getResourceSettings().getStringResourceLoaders().add(new OrienteerStringResourceLoader());
-		app.getOrientDbSettings().getORecordHooks().add(LocalizationInvalidationHook.class);
+
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
+		hooks.add(LocalizationInvalidationHook.class);
+		app.getOrientDbSettings().setORecordHooks(hooks);
 	}
 	
 	@Override
@@ -83,7 +88,9 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
         app.getResourceSettings().getStringResourceLoaders()
                 .removeIf(iStringResourceLoader -> iStringResourceLoader instanceof OrienteerStringResourceLoader);
 
-		app.getOrientDbSettings().getORecordHooks().remove(LocalizationInvalidationHook.class);
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
+        hooks.remove(LocalizationInvalidationHook.class);
+        app.getOrientDbSettings().setORecordHooks(hooks);
 	}
 
 

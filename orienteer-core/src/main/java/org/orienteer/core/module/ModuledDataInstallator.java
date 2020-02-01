@@ -14,6 +14,8 @@ import ru.ydn.wicket.wicketorientdb.AbstractDataInstallator;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -65,7 +67,11 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		ODatabaseDocument db = (ODatabaseDocument)database;
 		updateOModuleSchema(db);
-		app.getOrientDbSettings().getORecordHooks().add(OModulesHook.class);
+
+		List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
+		hooks.add(OModulesHook.class);
+		app.getOrientDbSettings().setORecordHooks(hooks);
+
 		loadOrienteerModules(app, db);
 	}
 	

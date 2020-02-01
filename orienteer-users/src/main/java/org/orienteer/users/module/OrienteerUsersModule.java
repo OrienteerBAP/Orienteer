@@ -354,9 +354,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     @Override
     public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
+        List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
         hooks.add(OrienteerUserHook.class);
         hooks.add(OrienteerUserRoleHook.class);
+        app.getOrientDbSettings().setORecordHooks(hooks);
 
         RegistrationResource.mount(app);
         RestorePasswordResource.mount(app);
@@ -374,9 +375,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     @Override
     public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
-        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
+        List<Class<? extends ORecordHook>> hooks = new LinkedList<>(app.getOrientDbSettings().getORecordHooks());
         hooks.remove(OrienteerUserHook.class);
         hooks.remove(OrienteerUserRoleHook.class);
+        app.getOrientDbSettings().setORecordHooks(hooks);
 
         RegistrationResource.unmount(app);
         RestorePasswordResource.unmount(app);
