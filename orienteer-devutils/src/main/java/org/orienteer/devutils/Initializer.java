@@ -15,6 +15,7 @@ public class Initializer implements IInitializer
 	@Override
 	public void init(Application application) {
 		ScriptExecutor.registerScriptEngineFactory(new ODBScriptEngineFactory());
+		ScriptExecutor.registerScriptEngineFactory(new ODBConsoleEngineFactory());
 		ScriptResultRendererManager.INSTANCE.registerRenderer(new ODBScriptResultRenderer());
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
 		app.registerModule(Module.class);
