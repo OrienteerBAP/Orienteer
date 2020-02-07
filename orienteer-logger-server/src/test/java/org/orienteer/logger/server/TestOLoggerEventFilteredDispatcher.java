@@ -1,7 +1,5 @@
 package org.orienteer.logger.server;
 
-import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
-import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +61,9 @@ public class TestOLoggerEventFilteredDispatcher {
     public void destroy() {
         DBClosure.sudoConsumer(db -> {
             db.delete(filteredDispatcher.getDocument());
+
+            db.command("delete from " + OLoggerEventModel.CLASS_NAME);
+
             OLoggerRepository.getOLoggerEventDispatcherAsDocument(db, OLoggerModule.DISPATCHER_DEFAULT)
                     .ifPresent(d ->
                         OLoggerModuleRepository.getModule(db)
@@ -79,10 +80,6 @@ public class TestOLoggerEventFilteredDispatcher {
         OLogger.log(exception);
 
         String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception);
-
-        ODatabaseDocumentInternal db = ODatabaseRecordThreadLocal.instance().get();
-
-        db.getHooks().keySet().forEach(hook -> LOG.info("Loaded hook: {}", hook));
 
         List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
         assertEquals("There is no events with correlationId: " + correlationId, 1, events.size());

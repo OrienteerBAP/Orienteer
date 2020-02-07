@@ -13,7 +13,7 @@ import com.orientechnologies.orient.core.metadata.security.*;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.schedule.OScheduledEvent;
 import com.orientechnologies.orient.core.schedule.OScheduler;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
@@ -52,6 +52,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     public static final String ORIENTEER_USER_ROLE = "orienteerUser";
 
+    public static final String ROLE_ADMIN = "admin";
+
     public static final String ORIENTEER_USER_PERSPECTIVE = "orienteerUserPerspective";
     public static final String READER_PERSPECTIVE         = "readerPerspective";
 
@@ -63,7 +65,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 7;
+    public static final int VERSION = 8;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -102,13 +104,15 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         createOAuth2Services(helper);
         configureModuleClass(helper);
 
+        updateDefaultPerspective(helper);
+
         return createModuleDocument(db);
     }
 
     private ODocument createModuleDocument(ODatabaseDocument db) {
-        List<ODocument> docs = db.query(new OSQLSynchQuery<>("select from " + ModuleModel.CLASS_NAME, 1));
+        OResultSet result = db.query("select from " + ModuleModel.CLASS_NAME, 1);
 
-        if (docs != null && !docs.isEmpty()) {
+        if (result.hasNext()) {
             return null;
         }
         return new ODocument(ModuleModel.CLASS_NAME);
@@ -163,7 +167,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_WIDGET, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, READ.getPermissionFlag());
-
+        role.grant(ResourceGeneric.CLASS, "OSecurityPolicy", READ.getPermissionFlag());
         // TODO: remove this after release with fix for roles in OrientDB: https://github.com/orientechnologies/orientdb/issues/8338
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspective.CLASS_NAME, READ.getPermissionFlag());
@@ -235,9 +239,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     private ODocument updateAndGetUserReader(ODatabaseDocument db) {
-        String sql = String.format("select from %s where name = ?", OUser.CLASS_NAME);
-        List<ODocument> docs = db.query(new OSQLSynchQuery<>(sql, 1), "reader");
-        ODocument reader = docs.get(0);
+        ORole role = db.getMetadata().getSecurity().getRole("reader");
+        ODocument reader = role.getDocument();
         Set<OIdentifiable> users = reader.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Set.class);
         if (users == null || users.isEmpty()) {
             reader.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singleton(reader));
@@ -245,8 +248,19 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
             users.add(reader);
             reader.field(ORestrictedOperation.ALLOW_READ.getFieldName(), users);
         }
+        role.grant(ResourceGeneric.CLASS, "OSecurityPolicy", READ.getPermissionFlag());
         reader.save();
         return reader;
+    }
+
+    private void updateDefaultPerspective(OSchemaHelper helper) {
+        ORole adminRole = helper.getDatabase().getMetadata().getSecurity().getRole(ROLE_ADMIN);
+
+        helper.oClass(PerspectivesModule.OPerspective.CLASS_NAME)
+                .oDocument(PerspectivesModule.OPerspective.PROP_ALIAS, PerspectivesModule.ALIAS_PERSPECTIVE_DEFAULT)
+                .field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singleton(adminRole.getDocument()))
+                .field(ORestrictedOperation.ALLOW_ALL.getFieldName(), Collections.singleton(adminRole.getDocument()))
+                .saveDocument();
     }
 
     /**

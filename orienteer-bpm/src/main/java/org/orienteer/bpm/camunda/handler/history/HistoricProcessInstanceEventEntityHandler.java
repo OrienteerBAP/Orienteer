@@ -5,17 +5,20 @@ import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.history.event.HistoricProcessInstanceEventEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.*;
+import org.orienteer.bpm.camunda.handler.IEntityHandler;
+import org.orienteer.bpm.camunda.handler.NonUniqIdConverter;
+import org.orienteer.bpm.camunda.handler.Statement;
+import org.orienteer.bpm.camunda.handler.TaskEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * {@link IEntityHandler} for {@link HistoricProcessInstanceEventEntity}
@@ -61,7 +64,8 @@ public class HistoricProcessInstanceEventEntityHandler extends HistoricScopeInst
     @Statement
     public List<String> selectHistoricProcessInstanceIdsByProcessDefinitionId(OPersistenceSession session, ListQueryParameterObject parameter) {
         ODatabaseDocument db = session.getDatabase();
-        List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where processDefinition.id = ?"), parameter.getParameter());
+        List<ODocument> resultSet = db.query("select id from "+getSchemaClass()+" where processDefinition.id = ?", parameter.getParameter())
+                .elementStream().map(el -> (ODocument) el).collect(Collectors.toList());
         return Lists.transform(resultSet, GET_ID_FUNCTION);
     }
 
