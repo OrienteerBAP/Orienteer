@@ -6,6 +6,7 @@ import org.apache.wicket.util.string.Strings;
 
 import com.google.common.base.Throwables;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.exception.OSecurityAccessException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
@@ -70,7 +71,7 @@ public class ODBScriptEngine implements IScriptEngine {
 	}
 	
 	protected boolean shouldBeShorted(Exception e) {
-		return e instanceof OCommandSQLParsingException;
+		return e instanceof OCommandSQLParsingException || e instanceof OSecurityAccessException;
 	}
 
 }

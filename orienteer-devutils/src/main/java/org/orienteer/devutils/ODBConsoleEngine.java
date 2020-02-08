@@ -12,6 +12,7 @@ import com.google.common.base.Throwables;
 import com.orientechnologies.orient.console.OConsoleDatabaseApp;
 import com.orientechnologies.orient.core.command.script.OCommandScriptException;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.exception.OSecurityAccessException;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
 
 import ru.ydn.wicket.wicketconsole.IScriptContext;
@@ -64,7 +65,7 @@ public class ODBConsoleEngine implements IScriptEngine {
 	}
 	
 	protected boolean shouldBeShorted(Throwable e) {
-		return e instanceof OCommandSQLParsingException || e instanceof OCommandScriptException;
+		return e instanceof OCommandSQLParsingException || e instanceof OCommandScriptException || e instanceof OSecurityAccessException;
 	}
 
 }
