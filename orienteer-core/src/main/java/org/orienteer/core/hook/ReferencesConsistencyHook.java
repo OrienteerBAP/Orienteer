@@ -10,6 +10,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeEvent;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeTimeLine;
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -134,7 +135,18 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 							if(otherObj instanceof OIdentifiable)
 							{
 								ODocument otherDoc = ((OIdentifiable) otherObj).getRecord();
-								addLink(otherDoc, inverseProperty, doc);
+
+								for (int i = 0; i <= 10; i++) {
+									try {
+										addLink(otherDoc, inverseProperty, doc);
+										database.commit();
+									} catch (OConcurrentModificationException e) {
+										otherDoc.reload();
+										if (i == 10) {
+											throw new IllegalStateException(e);
+										}
+									}
+								}
 							}
 						}
 					}
@@ -348,5 +360,5 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			}
 		}
 	}
-	
+
 }
