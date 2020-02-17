@@ -3,7 +3,6 @@ package org.orienteer.users;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.tester.FormTester;
@@ -56,7 +55,7 @@ public class RegistrationComponentTest {
     public void destroy() {
         DBClosure.sudoConsumer(db -> {
             String sql = String.format("delete from %s where %s = ?", OUser.CLASS_NAME, OrienteerUser.PROP_EMAIL);
-            db.command(new OCommandSQL(sql)).execute(testUser.getEmail());
+            db.command(sql, testUser.getEmail());
         });
         tester.signOut();
     }
