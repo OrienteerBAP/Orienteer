@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.web.HomePage;
+import org.orienteer.core.web.LoginPage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.users.component.DefaultRegistrationPanel;
@@ -125,7 +125,7 @@ public class RegistrationComponentTest {
     }
 
     private void login(OrienteerUser user) {
-        tester.startPage(HomePage.class);
+        tester.startPage(LoginPage.class);
         FormTester formTester = tester.newFormTester("container:loginPanel:form");
         formTester.setValue("username", user.getName());
         formTester.setValue("password", testUser.getPassword());

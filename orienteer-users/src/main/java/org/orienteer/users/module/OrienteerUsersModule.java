@@ -65,7 +65,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String PARAM_TIMEOUT         = "timeout";
 
     public static final String MODULE_NAME = "orienteer-users";
-    public static final int VERSION = 8;
+    public static final int VERSION = 9;
 
     public static final CustomAttribute REMOVE_CRON_RULE              = CustomAttribute.create("remove.cron", OType.STRING, "", false, false);
     public static final CustomAttribute REMOVE_SCHEDULE_START_TIMEOUT = CustomAttribute.create("remove.timeout", OType.STRING, "0", false, false);
@@ -188,6 +188,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
         role.save();
+
+        db.command(String.format("alter role %s set policy default_2 on database.class.OUser", role.getName()));
 
         perspective.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
         perspective.save();

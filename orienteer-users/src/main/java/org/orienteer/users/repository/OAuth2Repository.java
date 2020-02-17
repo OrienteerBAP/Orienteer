@@ -1,15 +1,16 @@
 package org.orienteer.users.repository;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.users.model.OAuth2Service;
 import org.orienteer.users.model.OAuth2ServiceContext;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.orienteer.users.repository.DatabaseHelper.selectFromBy;
 
@@ -30,14 +31,18 @@ public final class OAuth2Repository {
 
     public static List<OAuth2Service> getOAuth2Services(ODatabaseDocument db) {
         String sql = String.format("select from %s", OAuth2Service.CLASS_NAME);
-        List<OIdentifiable> services = db.query(new OSQLSynchQuery<>(sql));
-        return CommonUtils.mapIdentifiables(services, OAuth2Service::new);
+        return db.query(sql).elementStream()
+                .map(element -> CommonUtils.getFromIdentifiable(element.getRecord(), OAuth2Service::new).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     public static List<OAuth2Service> getOAuth2Services(ODatabaseDocument db, boolean active) {
         String sql = selectFromBy(OAuth2Service.CLASS_NAME, OAuth2Service.PROP_ACTIVE);
-        List<OIdentifiable> services = db.query(new OSQLSynchQuery<>(sql), active);
-        return CommonUtils.mapIdentifiables(services, OAuth2Service::new);
+        return db.query(sql, active).elementStream()
+                .map(element -> CommonUtils.getFromIdentifiable(element.getRecord(), OAuth2Service::new).orElse(null))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 
     public static Optional<OAuth2ServiceContext> getServiceContextByState(String state) {
@@ -47,8 +52,9 @@ public final class OAuth2Repository {
     public static Optional<OAuth2ServiceContext> getServiceContextByState(ODatabaseDocument db, String state) {
         String sql = String.format("select from %s where %s = ?",
                 OAuth2ServiceContext.CLASS_NAME, OAuth2ServiceContext.PROP_STATE);
-        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), state);
-        return CommonUtils.getFromIdentifiables(identifiables, OAuth2ServiceContext::new);
+        return db.query(sql, state).elementStream()
+                .map(element -> CommonUtils.getFromIdentifiable(element.getRecord(), OAuth2ServiceContext::new).orElse(null))
+                .findFirst();
     }
 
 }

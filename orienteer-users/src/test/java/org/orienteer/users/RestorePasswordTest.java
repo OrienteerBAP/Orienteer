@@ -5,16 +5,15 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.schedule.OScheduledEvent;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
+import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
 import org.orienteer.users.service.IOrienteerUsersService;
-import org.orienteer.users.model.OrienteerUser;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.UUID;
@@ -52,7 +51,7 @@ public class RestorePasswordTest {
     @After
     public void destroy() {
         DBClosure.sudoConsumer(db -> {
-            	db.command(new OCommandSQL("delete from ?")).execute(user.getDocument());
+            	db.command("delete from ?", user.getDocument());
             	//Restore default
             	OProperty property = user.getDocument().getSchemaClass().getProperty(OrienteerUser.PROP_RESTORE_ID);
             	OrienteerUsersModule.REMOVE_CRON_RULE.setValue(property, "0 0/1 * * * ?");
