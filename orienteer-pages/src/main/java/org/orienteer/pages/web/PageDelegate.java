@@ -1,8 +1,9 @@
 package org.orienteer.pages.web;
 
 import com.orientechnologies.common.concur.resource.OPartitionedObjectPool;
-import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.command.script.OScriptManager;
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.id.ORID;
@@ -23,6 +24,7 @@ import org.apache.wicket.util.resource.AbstractStringResourceStream;
 import org.apache.wicket.util.resource.IFixedLocationResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.pages.module.PagesModule;
 import org.orienteer.pages.wicket.mapper.OPageParametersEncoder;
@@ -82,7 +84,8 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 		if(doc!=null) page.setDefaultModel(new ODocumentModel(doc));
 		String script = pageDocumentModel.getObject().field(PagesModule.OPROPERTY_SCRIPT);
 		if(!Strings.isEmpty(script)) {
-			OScriptManager scriptManager = Orient.instance().getScriptManager();
+			OrientDB context = OrienteerWebApplication.lookupApplication().getOrientDbSettings().getContext();
+			OScriptManager scriptManager = OrientDBInternal.extract(context).getScriptManager();
 			ODatabaseDocument db = OrienteerWebSession.get().getDatabase();
 			final OPartitionedObjectPool.PoolEntry<ScriptEngine> entry = 
 					scriptManager.acquireDatabaseEngine(db.getName(), "javascript");

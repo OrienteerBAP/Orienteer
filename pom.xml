@@ -115,7 +115,6 @@
 		<module>orienteer-architect</module>
 		<module>orienteer-mail</module>
         <module>orienteer-users</module>
-        <module>orienteer-object</module>
     </modules>
 	<dependencyManagement>
 	    <dependencies>

@@ -106,6 +106,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         updateDefaultPerspective(helper);
 
+        db.command(String.format("alter role %s set policy default_2 on database.class.OUser", "reader"));
+
         return createModuleDocument(db);
     }
 
@@ -283,8 +285,13 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     private String createCodeForRemoveRestoreIdFunction() {
-        return String.format("var res = db.command('UPDATE %s SET %s = null, %s = null WHERE %s = ? AND %s <= (sysdate() - ?)', %s, %s);\n"
-                        + "if (res > 0) db.command('DELETE FROM OSchedule WHERE name = ?', %s);",
+        return String.format("print(\"test\");var res = db.command('UPDATE %s SET %s = null, %s = null WHERE %s = ? AND %s <= (sysdate().asLong() - ?)', %s, %s);\n"
+                        + "print(res);" +
+                        "var next = res.next();print(next);" +
+                        "var count = next.getProperty(\"count\");"
+                        + "print(count);\n"
+                        + "print(restoreId);print(timeout);print(eventName);"
+                        + "if (count > 0) db.command('DELETE FROM OSchedule WHERE name = ?', %s);",
                 OrienteerUser.CLASS_NAME, OrienteerUser.PROP_RESTORE_ID, OrienteerUser.PROP_RESTORE_ID_CREATED,
                 OrienteerUser.PROP_RESTORE_ID,
                 OrienteerUser.PROP_RESTORE_ID_CREATED,
