@@ -76,4 +76,14 @@
 	    <artifactId>orienteer-bot</artifactId>
         <description>Module to build and run messangers bots</description>
     </module>
+	<module>
+        <groupId>org.orienteer</groupId>
+	    <artifactId>orienteer-tours</artifactId>
+        <description>Module to create guided tours</description>
+    </module>
+	<module>
+        <groupId>org.orienteer</groupId>
+	    <artifactId>orienteer-metrics</artifactId>
+        <description>Module to gather metrics from Orienteer instance</description>
+    </module>
 </metadata>

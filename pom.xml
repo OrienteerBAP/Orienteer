@@ -444,6 +444,7 @@
 				<module>orienteer-users</module>
 				<module>orienteer-object</module>
 				<module>orienteer-tours</module>
+				<module>orienteer-metrics</module>
 			</modules>
 		</profile>
 	    <profile> 
