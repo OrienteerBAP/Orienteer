@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
@@ -16,6 +17,8 @@ import org.orienteer.mail.model.OMailSettings;
 import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.notifications.hook.ONotificationHook;
 import org.orienteer.notifications.model.*;
+import org.orienteer.notifications.scheduler.ONotificationScheduler;
+import org.orienteer.notifications.task.ONotificationSendTask;
 
 import java.util.List;
 
@@ -36,7 +39,21 @@ public class ONotificationModule extends AbstractOrienteerModule {
     installNotification(helper);
     installMailNotification(helper);
 
-    return null;
+    return createModuleDocument(helper);
+  }
+
+  private ODocument createModuleDocument(OSchemaHelper helper) {
+    helper.oClass(Module.CLASS_NAME, OMODULE_CLASS)
+            .oProperty(Module.PROP_SEND_PERIOD, OType.LONG)
+              .notNull()
+              .defaultValue("60000")
+            .oProperty(Module.PROP_NOTIFICATIONS_PER_WORKER, OType.INTEGER)
+              .notNull()
+              .defaultValue("50");
+
+    return helper.oDocument(OMODULE_NAME, NAME)
+            .saveDocument()
+            .getODocument();
   }
 
   private void installNotification(OSchemaHelper helper) {
@@ -138,6 +155,10 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
     List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
     hooks.add(ONotificationHook.class);
+
+    long period = new Module(moduleDoc).getSendPeriod();
+
+    ONotificationScheduler.scheduleTask(new ONotificationSendTask(), period);
   }
 
   @Override
@@ -146,5 +167,47 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
     List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
     hooks.remove(ONotificationHook.class);
+
+    ONotificationScheduler.stopAll();
+  }
+
+  public static class Module extends ODocumentWrapper {
+
+    public static final String CLASS_NAME = "ONotificationModule";
+
+    public static final String PROP_SEND_PERIOD              = "sendPeriod";
+    public static final String PROP_NOTIFICATIONS_PER_WORKER = "notificationsPerWorker";
+
+    public Module() {
+      this(CLASS_NAME);
+    }
+
+    public Module(String iClassName) {
+      super(iClassName);
+    }
+
+    public Module(ODocument iDocument) {
+      super(iDocument);
+    }
+
+    public long getSendPeriod() {
+      Long period = document.field(PROP_SEND_PERIOD);
+      return period != null ? period : 60_000;
+    }
+
+    public Module setSendPeriod(long period) {
+      document.field(PROP_SEND_PERIOD, period);
+      return this;
+    }
+
+    public int getNotificationsPerWorker() {
+      Integer notifications = document.field(PROP_NOTIFICATIONS_PER_WORKER);
+      return notifications != null ? notifications : 50;
+    }
+
+    public Module setNotificationsPerWorker(int notifications) {
+      document.field(PROP_NOTIFICATIONS_PER_WORKER, notifications);
+      return this;
+    }
   }
 }
