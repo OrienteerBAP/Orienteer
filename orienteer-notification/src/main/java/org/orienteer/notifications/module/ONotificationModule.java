@@ -117,7 +117,7 @@ public class ONotificationModule extends AbstractOrienteerModule {
               .oIndex(OClass.INDEX_TYPE.UNIQUE)
               .markAsDocumentName();
 
-    helper.oClass(OMailNotificationTransport.CLASS_NAME)
+    helper.oClass(OMailNotificationTransport.CLASS_NAME, ONotificationTransport.CLASS_NAME)
             .oProperty(OMailNotificationTransport.PROP_MAIL_SETTINGS, OType.LINK)
               .linkedClass(OMailSettings.CLASS_NAME)
               .notNull()

@@ -30,7 +30,7 @@ public class OMailTransport implements ITransport<OMailNotification> {
     session = createSession(settings, createSendMailProperties(settings));
 
     try {
-      this.transport = session.getTransport();
+      this.transport = session.getTransport("smtp");
       this.transport.connect();
     } catch (Exception e) {
       throw new IllegalStateException("Can't create inner transport for: " + transport, e);
