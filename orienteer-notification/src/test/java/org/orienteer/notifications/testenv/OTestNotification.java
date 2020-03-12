@@ -18,4 +18,9 @@ public class OTestNotification extends ONotification {
   public OTestNotification(ODocument iDocument) {
     super(iDocument);
   }
+
+  @Override
+  public String getDescription() {
+    return CLASS_NAME;
+  }
 }

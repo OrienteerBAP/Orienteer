@@ -21,6 +21,8 @@ public class OMailTransport implements ITransport<OMailNotification> {
 
   private static final Logger LOG = LoggerFactory.getLogger(OMailTransport.class);
 
+  public static final int CONNECTION_ATTEMPTS = 10;
+
   private final OMailSettings settings;
   private final Session session;
   private final Transport transport;
@@ -31,7 +33,7 @@ public class OMailTransport implements ITransport<OMailNotification> {
 
     try {
       this.transport = session.getTransport("smtp");
-      this.transport.connect();
+      connect();
     } catch (Exception e) {
       throw new IllegalStateException("Can't create inner transport for: " + transport, e);
     }
@@ -39,6 +41,8 @@ public class OMailTransport implements ITransport<OMailNotification> {
 
   @Override
   public void send(OMailNotification notification) {
+    connect();
+
     final Message message = new MimeMessage(session);
     OPreparedMail mail = notification.getPreparedMail();
 
@@ -59,9 +63,29 @@ public class OMailTransport implements ITransport<OMailNotification> {
   @Override
   public void close() throws IOException {
     try {
-      transport.close();
+      if (transport.isConnected()) {
+        transport.close();
+      }
     } catch (MessagingException e) {
       LOG.error("Can't close inner transport: {}", transport, e);
+    }
+  }
+
+  private void connect() {
+    synchronized (this) {
+      if (!transport.isConnected()) {
+        for (int i = 1; i <= CONNECTION_ATTEMPTS; i++) {
+          try {
+            this.transport.connect();
+            Thread.sleep(500);
+            break;
+          } catch (MessagingException e) {
+            if (i == CONNECTION_ATTEMPTS) {
+              throw new IllegalStateException(e);
+            }
+          } catch (InterruptedException e) {}
+        }
+      }
     }
   }
 

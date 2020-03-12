@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import org.orienteer.notifications.model.ONotification;
 import org.orienteer.notifications.model.ONotificationStatus;
 import org.orienteer.notifications.model.ONotificationStatusHistory;
+import org.orienteer.notifications.model.ONotificationTransport;
 import org.orienteer.notifications.repository.ONotificationStatusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,28 +21,35 @@ public class NotificationService implements INotificationService {
 
   public static final int ATTEMPTS = 10;
 
+  private final OTransportPool transportPool = new OTransportPool();
+
   @Override
   @SuppressWarnings("unchecked")
   public void send(List<ONotification> notifications) {
     if (notifications == null || notifications.isEmpty()) {
       return;
     }
-    ITransport<ONotification> transport = (ITransport<ONotification>) notifications.get(0).getTransport().createTransportService();
+//    ITransport<ONotification> transport = (ITransport<ONotification>) notifications.get(0).getTransport().createTransportService();
 
     ODatabaseDocument db = ODatabaseRecordThreadLocal.instance().get();
 
     notifications.forEach(notification -> {
+      ONotificationTransport transportModel = notification.getTransport();
+      ITransport<ONotification> transport = (ITransport<ONotification>) transportPool.acquire(transportModel.getAlias(), transportModel::createTransportService);
+
       for (int i = 1; i <= ATTEMPTS; i++) {
         try {
           if (i == 1) {
             handleSendingNotificationStatus(db, notification);
           }
+          LOG.info("Send notification: {} {}", Thread.currentThread().getName(), notification.getDescription());
           transport.send(notification);
           handleSentNotificationStatus(db, notification);
+          transportPool.release(transportModel.getAlias(), transport);
           break;
         } catch (Exception e) {
           if (i == ATTEMPTS) {
-            handleFailedNotificationStatus(db, notification);
+            handleFailedNotificationStatus(db, notification, e);
           }
         }
       }
@@ -58,9 +66,9 @@ public class NotificationService implements INotificationService {
     updateNotificationStatus(db, notification, status);
   }
 
-  private void handleFailedNotificationStatus(ODatabaseDocument db, ONotification notification) {
+  private void handleFailedNotificationStatus(ODatabaseDocument db, ONotification notification, Exception e) {
     ONotificationStatus status = ONotificationStatusRepository.getFailedStatus(db);
-    LOG.warn("Couldn't send notification: {}", notification);
+    LOG.warn("Couldn't send notification: {}", notification.getDescription(), e);
     updateNotificationStatus(db, notification, status);
   }
 
@@ -75,7 +83,7 @@ public class NotificationService implements INotificationService {
         break;
       } catch (Exception e) {
         if (i == 10) {
-           LOG.error("Couldn't save notification: {}", notification, e);
+           LOG.error("Couldn't save notification: {}", notification.getDescription(), e);
         } else {
           notification.reload();
         }

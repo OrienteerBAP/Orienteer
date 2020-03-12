@@ -4,6 +4,8 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.mail.model.OPreparedMail;
 
+import java.util.stream.Collectors;
+
 public class OMailNotification extends ONotification {
 
   public static final String CLASS_NAME = "OMailNotification";
@@ -20,6 +22,20 @@ public class OMailNotification extends ONotification {
 
   public OMailNotification(ODocument iDocument) {
     super(iDocument);
+  }
+
+  @Override
+  public String getDescription() {
+    OPreparedMail preparedMail = getPreparedMail();
+    String to = preparedMail.getRecipients().stream().collect(Collectors.joining(",", "[", "]"));
+    return CLASS_NAME + "( subject = " + preparedMail.getSubject() + ", from = " + preparedMail.getFrom()
+            + ", to = " + to + ", rid = " + getDocument().getIdentity().toString() + " )";
+  }
+
+  public OMailNotification(OPreparedMail preparedMail, ONotificationTransport transport) {
+    this();
+    setPreparedMail(preparedMail);
+    setTransport(transport);
   }
 
   public OPreparedMail getPreparedMail() {

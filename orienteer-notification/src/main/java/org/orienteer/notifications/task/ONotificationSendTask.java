@@ -53,7 +53,7 @@ public class ONotificationSendTask extends ONotificationTask {
 
     int executorSize = computeExecutorSize(module.getNotificationsPerWorker(), notifications);
     List<List<ONotification>> groupedNotifications = groupNotificationsForWorkers(module.getNotificationsPerWorker(), notifications);
-    ExecutorService executorService = Executors.newScheduledThreadPool(executorSize);
+    ExecutorService executorService = Executors.newFixedThreadPool(executorSize);
 
     List<Future<?>> futures = submitTasks(groupedNotifications, executorService);
     waitForComplete(futures);
@@ -85,9 +85,9 @@ public class ONotificationSendTask extends ONotificationTask {
 
               notificationsByTransport.forEach(notification -> {
                 List<ONotification> group = grouped.peek();
-                if (group == null || group.size() > notificationsPerWorker) {
+                if (group == null || group.size() >= notificationsPerWorker) {
                   group = new LinkedList<>();
-                  grouped.add(group);
+                  grouped.push(group);
                 }
                 group.add(notification);
               });

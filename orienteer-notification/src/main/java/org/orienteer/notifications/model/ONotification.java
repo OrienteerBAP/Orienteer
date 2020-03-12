@@ -28,6 +28,8 @@ public abstract class ONotification extends ODocumentWrapper {
     super(iDocument);
   }
 
+  public abstract String getDescription();
+
   public String getId() {
     return document.field(PROP_ID);
   }
