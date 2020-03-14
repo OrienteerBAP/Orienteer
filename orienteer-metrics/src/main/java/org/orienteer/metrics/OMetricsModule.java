@@ -30,12 +30,16 @@ public class OMetricsModule extends AbstractOrienteerModule{
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
 		DefaultExports.initialize();
+		OMetricsRequestCycleListener.install(app);
+		OMetricSessionListener.install(app);
 		app.mountPackage(OMetricsModule.class.getPackage().getName());
 	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		app.unmountPackage(OMetricsModule.class.getPackage().getName());
+		OMetricSessionListener.deinstall(app);
+		OMetricsRequestCycleListener.deinstall(app);
 		CollectorRegistry.defaultRegistry.clear();
 		super.onDestroy(app, db);
 	}

@@ -5,7 +5,7 @@ import org.apache.wicket.IInitializer;
 import org.orienteer.core.OrienteerWebApplication;
 
 /**
- * {@link IInitializer} for 'tours' module
+ * {@link IInitializer} for 'metrics' module
  */
 public class Initializer implements IInitializer
 {

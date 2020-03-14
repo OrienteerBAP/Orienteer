@@ -27,6 +27,7 @@ public class OMetricsResource extends AbstractResource {
         response.setLastModified(Time.now());
 //        response.setStatusCode(HttpServlet);
         response.setContentType(TextFormat.CONTENT_TYPE_004);
+        response.disableCaching();
         if (response.dataNeedsToBeWritten(attributes)) {
         	
         	PageParameters params = attributes.getParameters();
