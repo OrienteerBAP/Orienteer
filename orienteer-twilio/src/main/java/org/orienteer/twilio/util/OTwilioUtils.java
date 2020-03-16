@@ -1,7 +1,12 @@
 package org.orienteer.twilio.util;
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.MapModel;
+import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.twilio.service.ITwilioService;
 
 import java.util.Map;
 
@@ -16,6 +21,15 @@ public final class OTwilioUtils {
    * @return string with applied macros
    */
   public static String applyMacros(String str, Map<String, Object> macros) {
+    if (macros == null) {
+      return str;
+    }
     return new StringResourceModel("", new MapModel<>(macros)).setDefaultValue(str).getString();
+  }
+
+  public static ITwilioService getService() {
+    OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+    Injector injector = app.getInjector();
+    return injector.getInstance(Key.get(ITwilioService.class, Names.named("service.twilio")));
   }
 }

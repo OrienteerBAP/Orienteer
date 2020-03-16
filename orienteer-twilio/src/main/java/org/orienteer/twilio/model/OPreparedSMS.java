@@ -35,6 +35,10 @@ public class OPreparedSMS extends ODocumentWrapper {
     super(iDocument);
   }
 
+  public OPreparedSMS(OSMS sms) {
+    this(sms, null, null);
+  }
+
   public OPreparedSMS(OSMS sms, String recipient, Map<String, Object> macros) {
     this(sms, recipient, macros, null);
   }

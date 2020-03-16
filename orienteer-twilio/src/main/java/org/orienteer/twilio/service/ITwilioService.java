@@ -1,12 +1,41 @@
 package org.orienteer.twilio.service;
 
-import com.google.inject.ImplementedBy;
-import org.orienteer.twilio.model.OPreparedSMS;
+import io.reactivex.Completable;
+import retrofit2.http.*;
 
-@ImplementedBy(TwilioService.class)
+import java.util.List;
+
 public interface ITwilioService {
 
-  void sendSMS(OPreparedSMS sms) throws Exception;
-  void sendSMSAsync(OPreparedSMS sms);
+  @FormUrlEncoded
+  @POST("2010-04-01/Accounts/{accountSid}/Messages.json")
+  Completable sendMessage(
+          @Path("accountSid") String accountSid,
+          @Field("To") String to,
+          @Field("From") String from,
+          @Field("Body") String text,
+          @Field("StatusCallback") String callback,
+          @Header("Authorization") String basicAuth
+  );
 
+  @FormUrlEncoded
+  @POST("2010-04-01/Accounts/{accountSid}/Messages.json")
+  Completable sendMessage(
+          @Path("accountSid") String accountSid,
+          @Field("To") String to,
+          @Field("From") String from,
+          @Field("Body") String text,
+          @Header("Authorization") String basicAuth
+  );
+
+  @FormUrlEncoded
+  @POST("2010-04-01/Accounts/{accountSid}/Messages.json")
+  Completable sendMessage(
+          @Path("accountSid") String accountSid,
+          @Field("To") String to,
+          @Field("From") String from,
+          @Field("Body") String text,
+          @Field("MediaUrl") List<String> mediaUrl,
+          @Header("Authorization") String basicAuth
+  );
 }

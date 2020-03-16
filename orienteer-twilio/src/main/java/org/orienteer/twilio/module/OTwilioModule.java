@@ -89,6 +89,15 @@ public class OTwilioModule extends AbstractOrienteerModule {
   @Override
   public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
     super.onInitialize(app, db);
+
+    app.mountPackage("org.orienteer.twilio.resource");
+  }
+
+  @Override
+  public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+    super.onDestroy(app, db);
+
+    app.unmountPackage("org.orienteer.twilio.resource");
   }
 
   @Override

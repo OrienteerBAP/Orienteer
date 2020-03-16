@@ -12,6 +12,8 @@
     <artifactId>orienteer-twilio</artifactId>
     <properties>
         <twilio.version>7.40.0</twilio.version>
+        <retrofit.version>2.7.2</retrofit.version>
+        <rx.java.version>2.2.19</rx.java.version>
     </properties>
 
     <dependencies>
@@ -20,6 +22,27 @@
             <artifactId>orienteer-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>adapter-rxjava2</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rx.java.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.twilio.sdk</groupId>
             <artifactId>twilio</artifactId>
