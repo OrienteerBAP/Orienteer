@@ -13,6 +13,9 @@ import org.orienteer.twilio.model.OPreparedSMS;
 import org.orienteer.twilio.model.OSMS;
 import org.orienteer.twilio.model.OSmsSettings;
 
+/**
+ * Module for install data model for 'orienteer-notifications'
+ */
 public class OTwilioModule extends AbstractOrienteerModule {
 
   public static final String NAME = "orienteer-twilio";

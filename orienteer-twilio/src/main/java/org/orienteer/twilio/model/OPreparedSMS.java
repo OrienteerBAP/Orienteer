@@ -11,6 +11,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Prepared SMS for send
+ */
 public class OPreparedSMS extends ODocumentWrapper {
 
   public static final String CLASS_NAME = "OPreparedSMS";

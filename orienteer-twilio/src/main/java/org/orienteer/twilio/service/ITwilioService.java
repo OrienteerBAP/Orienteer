@@ -5,6 +5,9 @@ import retrofit2.http.*;
 
 import java.util.List;
 
+/**
+ * HTTP service for work with Twilio API
+ */
 public interface ITwilioService {
 
   @FormUrlEncoded
@@ -36,6 +39,18 @@ public interface ITwilioService {
           @Field("From") String from,
           @Field("Body") String text,
           @Field("MediaUrl") List<String> mediaUrl,
+          @Header("Authorization") String basicAuth
+  );
+
+  @FormUrlEncoded
+  @POST("2010-04-01/Accounts/{accountSid}/Messages.json")
+  Completable sendMessage(
+          @Path("accountSid") String accountSid,
+          @Field("To") String to,
+          @Field("From") String from,
+          @Field("Body") String text,
+          @Field("MediaUrl") List<String> mediaUrl,
+          @Field("StatusCallback") String callback,
           @Header("Authorization") String basicAuth
   );
 }

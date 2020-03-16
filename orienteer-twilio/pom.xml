@@ -42,18 +42,6 @@
             <artifactId>rxjava</artifactId>
             <version>${rx.java.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.twilio.sdk</groupId>
-            <artifactId>twilio</artifactId>
-            <version>${twilio.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <!-- ORIENTEER TESTS for TESTING -->
         <dependency>
             <groupId>org.orienteer</groupId>

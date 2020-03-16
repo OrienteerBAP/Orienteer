@@ -3,6 +3,9 @@ package org.orienteer.twilio.model;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
+/**
+ * SMS settings
+ */
 public class OSmsSettings extends ODocumentWrapper {
 
   public static final String CLASS_NAME = "OSmsSettings";

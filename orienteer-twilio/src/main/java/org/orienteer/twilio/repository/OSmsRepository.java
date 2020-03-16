@@ -11,6 +11,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository for work with {@link OSMS}
+ */
 public final class OSmsRepository {
 
   private OSmsRepository() {}

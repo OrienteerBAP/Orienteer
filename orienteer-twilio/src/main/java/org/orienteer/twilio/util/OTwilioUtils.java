@@ -10,6 +10,9 @@ import org.orienteer.twilio.service.ITwilioService;
 
 import java.util.Map;
 
+/**
+ * Util class
+ */
 public final class OTwilioUtils {
 
   private OTwilioUtils() {}

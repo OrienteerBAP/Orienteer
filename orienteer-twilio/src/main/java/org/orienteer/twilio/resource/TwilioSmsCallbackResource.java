@@ -7,6 +7,10 @@ import org.orienteer.core.MountPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Resource for handle information about sms
+ * TODO: implement this resource
+ */
 @MountPath("/api/sms/callback")
 public class TwilioSmsCallbackResource extends AbstractResource {
 
