@@ -11,6 +11,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository for {@link ONotificationStatus}
+ */
 public final class ONotificationStatusRepository {
 
   private ONotificationStatusRepository() {}

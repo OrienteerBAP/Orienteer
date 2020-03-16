@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Default implementation of {@link INotificationService}
+ */
 @Singleton
 public class NotificationService implements INotificationService {
 

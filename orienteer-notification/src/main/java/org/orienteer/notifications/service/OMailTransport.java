@@ -17,6 +17,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Transport for send notification throughout mail
+ */
 public class OMailTransport implements ITransport<OMailNotification> {
 
   private static final Logger LOG = LoggerFactory.getLogger(OMailTransport.class);

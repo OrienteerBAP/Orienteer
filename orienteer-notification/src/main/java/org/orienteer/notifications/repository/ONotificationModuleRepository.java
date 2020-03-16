@@ -10,6 +10,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.List;
 
+/**
+ * Repository for {@link ONotificationModule.Module}
+ */
 public final class ONotificationModuleRepository {
 
   private ONotificationModuleRepository() {}

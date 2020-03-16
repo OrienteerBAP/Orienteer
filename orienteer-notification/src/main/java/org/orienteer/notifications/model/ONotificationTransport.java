@@ -7,6 +7,9 @@ import org.orienteer.notifications.service.ITransport;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Notification transport model
+ */
 public abstract class ONotificationTransport extends ODocumentWrapper {
 
   public static final String CLASS_NAME = "ONotificationTransport";

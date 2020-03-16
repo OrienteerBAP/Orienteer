@@ -4,6 +4,9 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.twilio.model.OPreparedSMS;
 
+/**
+ * SMS notification
+ */
 public class OSmsNotification extends ONotification {
 
   public static final String CLASS_NAME = "OSmsNotification";

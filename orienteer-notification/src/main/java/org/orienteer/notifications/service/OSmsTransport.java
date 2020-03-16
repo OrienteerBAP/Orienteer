@@ -14,7 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
+/**
+ * Transport for send notification throughout SMS
+ */
 public class OSmsTransport implements ITransport<OSmsNotification> {
 
   private static final Logger LOG = LoggerFactory.getLogger(OSmsTransport.class);
@@ -44,13 +48,14 @@ public class OSmsTransport implements ITransport<OSmsNotification> {
 
   private Completable sendMessage(OSmsNotification notification) {
     OPreparedSMS preparedSms = notification.getPreparedSms();
+    List<String> attachments = preparedSms.getAttachments();
     String auth = Credentials.basic(accountSid, authToken);
 
     if (Strings.isNullOrEmpty(callback)) {
-      return twilioService.sendMessage(accountSid, preparedSms.getRecipient(), from, preparedSms.getText(), auth);
+      return twilioService.sendMessage(accountSid, preparedSms.getRecipient(), from, preparedSms.getText(), attachments, auth);
     }
 
-    return twilioService.sendMessage(accountSid, preparedSms.getRecipient(), from, preparedSms.getText(), callback, auth);
+    return twilioService.sendMessage(accountSid, preparedSms.getRecipient(), from, preparedSms.getText(), attachments, callback, auth);
   }
 
   @Override

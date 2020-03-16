@@ -11,6 +11,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Notification model class
+ */
 public abstract class ONotification extends ODocumentWrapper {
 
   public static final String CLASS_NAME = "ONotification";

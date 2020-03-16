@@ -6,6 +6,9 @@ import org.orienteer.mail.model.OMailSettings;
 import org.orienteer.notifications.service.ITransport;
 import org.orienteer.notifications.service.OMailTransport;
 
+/**
+ * Mail notification transport
+ */
 public class OMailNotificationTransport extends ONotificationTransport {
   public static final String CLASS_NAME = "OMailNotificationTransport";
 

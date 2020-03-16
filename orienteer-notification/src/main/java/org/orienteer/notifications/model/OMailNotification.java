@@ -6,6 +6,9 @@ import org.orienteer.mail.model.OPreparedMail;
 
 import java.util.stream.Collectors;
 
+/**
+ * Mail notification
+ */
 public class OMailNotification extends ONotification {
 
   public static final String CLASS_NAME = "OMailNotification";

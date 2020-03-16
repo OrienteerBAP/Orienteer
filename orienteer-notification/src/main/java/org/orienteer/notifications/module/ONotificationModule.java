@@ -25,6 +25,9 @@ import org.orienteer.twilio.module.OTwilioModule;
 
 import java.util.List;
 
+/**
+ * Module for install data model for 'orienteer-notification' module
+ */
 public class ONotificationModule extends AbstractOrienteerModule {
 
   public static final String NAME = "orienteer-notification";
@@ -189,6 +192,9 @@ public class ONotificationModule extends AbstractOrienteerModule {
     ONotificationScheduler.stopAll();
   }
 
+  /**
+   * Model wrapper for {@link ONotificationModule}
+   */
   public static class Module extends ODocumentWrapper {
 
     public static final String CLASS_NAME = "ONotificationModule";

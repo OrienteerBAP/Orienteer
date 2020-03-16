@@ -6,6 +6,9 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * Notification status
+ */
 public class ONotificationStatus extends ODocumentWrapper {
 
   public static final String CLASS_NAME = "ONotificationStatus";

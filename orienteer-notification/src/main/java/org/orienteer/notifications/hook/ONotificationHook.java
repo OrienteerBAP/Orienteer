@@ -14,6 +14,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Hook for {@link ONotification}
+ */
 public class ONotificationHook extends ODocumentHookAbstract {
 
   public ONotificationHook(ODatabaseDocument database) {

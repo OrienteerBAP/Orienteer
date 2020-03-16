@@ -6,6 +6,9 @@ import org.orienteer.notifications.model.OMailNotification;
 import org.orienteer.notifications.model.ONotification;
 import org.orienteer.notifications.model.OSmsNotification;
 
+/**
+ * Default implementation of {@link IONotificationFactory}
+ */
 public class ONotificationFactory implements IONotificationFactory {
 
   @Override

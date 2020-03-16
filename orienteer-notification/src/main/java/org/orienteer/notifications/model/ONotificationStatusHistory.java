@@ -9,6 +9,9 @@ import org.orienteer.notifications.service.IONotificationFactory;
 import java.time.Instant;
 import java.util.Date;
 
+/**
+ * Notification status history
+ */
 public class ONotificationStatusHistory extends ODocumentWrapper {
 
   public static final String CLASS_NAME = "ONotificationStatusHistory";

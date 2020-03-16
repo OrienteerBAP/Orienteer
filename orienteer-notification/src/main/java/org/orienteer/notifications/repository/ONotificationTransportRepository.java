@@ -13,6 +13,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository for {@link ONotificationTransport}
+ */
 public final class ONotificationTransportRepository {
 
   private ONotificationTransportRepository() {}

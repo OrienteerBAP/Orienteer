@@ -23,6 +23,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+/**
+ * Task for send notifications
+ */
 public class ONotificationSendTask extends ONotificationTask {
 
   private static final Logger LOG = LoggerFactory.getLogger(ONotificationSendTask.class);

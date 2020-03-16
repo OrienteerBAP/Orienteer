@@ -6,6 +6,9 @@ import org.orienteer.notifications.model.ONotification;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Notification Service interface
+ */
 @ImplementedBy(NotificationService.class)
 public interface INotificationService {
 

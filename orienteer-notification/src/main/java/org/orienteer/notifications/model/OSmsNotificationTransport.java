@@ -6,6 +6,9 @@ import org.orienteer.notifications.service.ITransport;
 import org.orienteer.notifications.service.OSmsTransport;
 import org.orienteer.twilio.model.OSmsSettings;
 
+/**
+ * SMS notification transport
+ */
 public class OSmsNotificationTransport extends ONotificationTransport {
 
   public static final String CLASS_NAME = "OSmsNotificationTransport";

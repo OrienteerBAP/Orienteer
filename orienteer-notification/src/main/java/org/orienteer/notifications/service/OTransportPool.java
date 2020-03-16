@@ -7,6 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
+/**
+ * Transport pool
+ */
 public class OTransportPool {
 
   private final Map<String, ConcurrentLinkedQueue<ITransport<? extends ONotification>>> resources;
