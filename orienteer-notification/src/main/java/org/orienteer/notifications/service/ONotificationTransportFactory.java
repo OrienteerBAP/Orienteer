@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.http.util.Args;
 import org.orienteer.notifications.model.OMailNotificationTransport;
 import org.orienteer.notifications.model.ONotificationTransport;
+import org.orienteer.notifications.model.OSmsNotificationTransport;
 
 public class ONotificationTransportFactory implements IONotificationTransportFactory {
 
@@ -14,6 +15,8 @@ public class ONotificationTransportFactory implements IONotificationTransportFac
     switch (document.getSchemaClass().getName()) {
       case OMailNotificationTransport.CLASS_NAME:
         return new OMailNotificationTransport(document);
+      case OSmsNotificationTransport.CLASS_NAME:
+        return new OSmsNotificationTransport(document);
       default:
         return null;
     }

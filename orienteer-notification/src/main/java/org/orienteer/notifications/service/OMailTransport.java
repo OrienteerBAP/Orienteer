@@ -41,6 +41,7 @@ public class OMailTransport implements ITransport<OMailNotification> {
 
   @Override
   public void send(OMailNotification notification) {
+    LOG.info("Send mail notification: {} {}", notification.getDescription(), transport.isConnected());
     connect();
 
     final Message message = new MimeMessage(session);

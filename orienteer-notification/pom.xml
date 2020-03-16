@@ -11,6 +11,7 @@
 
     <artifactId>orienteer-notifications</artifactId>
 
+
     <dependencies>
         <dependency>
             <groupId>org.orienteer</groupId>
@@ -20,6 +21,11 @@
         <dependency>
             <groupId>org.orienteer</groupId>
             <artifactId>orienteer-mail</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-twilio</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- ORIENTEER TESTS for TESTING -->

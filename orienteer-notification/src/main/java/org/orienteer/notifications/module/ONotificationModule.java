@@ -19,6 +19,9 @@ import org.orienteer.notifications.hook.ONotificationHook;
 import org.orienteer.notifications.model.*;
 import org.orienteer.notifications.scheduler.ONotificationScheduler;
 import org.orienteer.notifications.task.ONotificationSendTask;
+import org.orienteer.twilio.model.OPreparedSMS;
+import org.orienteer.twilio.model.OSmsSettings;
+import org.orienteer.twilio.module.OTwilioModule;
 
 import java.util.List;
 
@@ -28,7 +31,7 @@ public class ONotificationModule extends AbstractOrienteerModule {
   public static final int VERSION = 1;
 
   protected ONotificationModule() {
-    super(NAME, VERSION, OMailModule.NAME);
+    super(NAME, VERSION, OMailModule.NAME, OTwilioModule.NAME);
   }
 
   @Override
@@ -38,6 +41,8 @@ public class ONotificationModule extends AbstractOrienteerModule {
     installNotificationTransport(helper);
     installNotification(helper);
     installMailNotification(helper);
+    installSmsNotification(helper);
+    installSmsNotificationTransport(helper);
 
     return createModuleDocument(helper);
   }
@@ -49,7 +54,8 @@ public class ONotificationModule extends AbstractOrienteerModule {
               .defaultValue("60000")
             .oProperty(Module.PROP_NOTIFICATIONS_PER_WORKER, OType.INTEGER)
               .notNull()
-              .defaultValue("50");
+              .defaultValue("50")
+            .oProperty(Module.PROP_SMS_STATUS_URL, OType.STRING);
 
     return helper.oDocument(OMODULE_NAME, NAME)
             .saveDocument()
@@ -92,6 +98,18 @@ public class ONotificationModule extends AbstractOrienteerModule {
     helper.oClass(OMailNotification.CLASS_NAME, ONotification.CLASS_NAME)
             .oProperty(OMailNotification.PROP_PREPARED_MAIL, OType.LINK)
               .linkedClass(OPreparedMail.CLASS_NAME);
+  }
+
+  private void installSmsNotification(OSchemaHelper helper) {
+    helper.oClass(OSmsNotification.CLASS_NAME, ONotification.CLASS_NAME)
+            .oProperty(OSmsNotification.PROP_PREPARED_SMS, OType.LINK)
+              .linkedClass(OPreparedSMS.CLASS_NAME);
+  }
+
+  private void installSmsNotificationTransport(OSchemaHelper helper) {
+    helper.oClass(OSmsNotificationTransport.CLASS_NAME, ONotificationTransport.CLASS_NAME)
+            .oProperty(OSmsNotificationTransport.PROP_SMS_SETTINGS, OType.LINK)
+              .linkedClass(OSmsSettings.CLASS_NAME);
   }
 
   private void installNotificationStatus(OSchemaHelper helper) {
@@ -177,6 +195,7 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
     public static final String PROP_SEND_PERIOD              = "sendPeriod";
     public static final String PROP_NOTIFICATIONS_PER_WORKER = "notificationsPerWorker";
+    public static final String PROP_SMS_STATUS_URL           = "smsStatusUrl";
 
     public Module() {
       this(CLASS_NAME);
@@ -207,6 +226,15 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
     public Module setNotificationsPerWorker(int notifications) {
       document.field(PROP_NOTIFICATIONS_PER_WORKER, notifications);
+      return this;
+    }
+
+    public String getSmsStatusUrl() {
+      return document.field(PROP_SMS_STATUS_URL);
+    }
+
+    public Module setSmsStatusUrl(String smsStatusUrl) {
+      document.field(PROP_SMS_STATUS_URL, smsStatusUrl);
       return this;
     }
   }
