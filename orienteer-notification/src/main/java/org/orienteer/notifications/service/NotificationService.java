@@ -32,8 +32,6 @@ public class NotificationService implements INotificationService {
     if (notifications == null || notifications.isEmpty()) {
       return;
     }
-//    ITransport<ONotification> transport = (ITransport<ONotification>) notifications.get(0).getTransport().createTransportService();
-
     ODatabaseDocument db = ODatabaseRecordThreadLocal.instance().get();
 
     notifications.forEach(notification -> {
