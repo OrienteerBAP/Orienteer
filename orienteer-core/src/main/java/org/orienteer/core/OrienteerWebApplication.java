@@ -186,6 +186,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountPackage("org.orienteer.core.resource");
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
 		mountResource("icon.png", new SharedResourceReference(imageIconPath));
+		mountResource("favicon.ico", new SharedResourceReference(imageIconPath));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());

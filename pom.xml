@@ -446,6 +446,7 @@
 				<module>orienteer-tours</module>
 				<module>orienteer-notification</module>
 				<module>orienteer-twilio</module>
+				<module>orienteer-metrics</module>
 			</modules>
 		</profile>
 	    <profile> 
