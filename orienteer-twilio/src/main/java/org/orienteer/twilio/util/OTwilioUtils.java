@@ -1,8 +1,5 @@
 package org.orienteer.twilio.util;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.model.util.MapModel;
 import org.orienteer.core.OrienteerWebApplication;
@@ -31,8 +28,6 @@ public final class OTwilioUtils {
   }
 
   public static ITwilioService getService() {
-    OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
-    Injector injector = app.getInjector();
-    return injector.getInstance(Key.get(ITwilioService.class, Names.named("service.twilio")));
+    return OrienteerWebApplication.lookupApplication().getServiceInstance(ITwilioService.class);
   }
 }

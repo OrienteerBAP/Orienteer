@@ -1,6 +1,10 @@
 package org.orienteer.twilio.service;
 
 import io.reactivex.Completable;
+import okhttp3.Credentials;
+import org.orienteer.twilio.model.OPreparedSMS;
+import org.orienteer.twilio.model.OSMS;
+import org.orienteer.twilio.model.OSmsSettings;
 import retrofit2.http.*;
 
 import java.util.List;
@@ -53,4 +57,11 @@ public interface ITwilioService {
           @Field("StatusCallback") String callback,
           @Header("Authorization") String basicAuth
   );
+
+  default Completable sendMessage(OPreparedSMS preparedSMS) {
+    OSMS sms = preparedSMS.getSMS();
+    OSmsSettings settings = sms.getSettings();
+    String auth = Credentials.basic(settings.getTwilioAcountSid(), settings.getTwilioAuthToken());
+    return sendMessage(settings.getTwilioAcountSid(), preparedSMS.getRecipient(), settings.getTwilioPhoneNumber(), preparedSMS.getText(), auth);
+  }
 }

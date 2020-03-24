@@ -9,6 +9,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.twilio.hook.OPreparedSMSHook;
 import org.orienteer.twilio.model.OPreparedSMS;
 import org.orienteer.twilio.model.OSMS;
 import org.orienteer.twilio.model.OSmsSettings;
@@ -19,7 +20,7 @@ import org.orienteer.twilio.model.OSmsSettings;
 public class OTwilioModule extends AbstractOrienteerModule {
 
   public static final String NAME = "orienteer-twilio";
-  public static final int VERSION = 1;
+  public static final int VERSION = 2;
 
   protected OTwilioModule() {
     super(NAME, VERSION);
@@ -37,16 +38,19 @@ public class OTwilioModule extends AbstractOrienteerModule {
   private void installSmsSettings(OSchemaHelper helper) {
     helper.oClass(OSmsSettings.CLASS_NAME)
             .oProperty(OSmsSettings.PROP_NAME, OType.STRING, 0)
-            .notNull()
-            .markDisplayable()
-            .markAsDocumentName()
+              .notNull()
+              .markDisplayable()
+              .markAsDocumentName()
             .oProperty(OSmsSettings.PROP_TWILIO_PHONE_NUMBER, OType.STRING, 10)
-            .markDisplayable()
-            .notNull()
+              .markDisplayable()
+              .notNull()
             .oProperty(OSmsSettings.PROP_TWILIO_ACCOUNT_SID, OType.STRING, 20)
-            .notNull()
+              .notNull()
             .oProperty(OSmsSettings.PROP_TWILIO_AUTH_TOKEN, OType.STRING, 30)
-            .notNull();
+              .notNull()
+            .oProperty(OSmsSettings.PROP_ALIAS, OType.STRING, 40)
+              .notNull()
+              .markDisplayable();
   }
 
   private void installSms(OSchemaHelper helper) {
@@ -92,13 +96,14 @@ public class OTwilioModule extends AbstractOrienteerModule {
   @Override
   public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
     super.onInitialize(app, db);
-
+    app.getOrientDbSettings().getORecordHooks().add(OPreparedSMSHook.class);
     app.mountPackage("org.orienteer.twilio.resource");
   }
 
   @Override
   public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
     super.onDestroy(app, db);
+    app.getOrientDbSettings().getORecordHooks().remove(OPreparedSMSHook.class);
 
     app.unmountPackage("org.orienteer.twilio.resource");
   }

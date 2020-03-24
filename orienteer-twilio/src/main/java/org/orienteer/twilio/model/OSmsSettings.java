@@ -14,6 +14,7 @@ public class OSmsSettings extends ODocumentWrapper {
   public static final String PROP_TWILIO_ACCOUNT_SID  = "twilioAccountSid";
   public static final String PROP_TWILIO_AUTH_TOKEN   = "twilioAuthToken";
   public static final String PROP_TWILIO_PHONE_NUMBER = "twilioPhoneNumber";
+  public static final String PROP_ALIAS               = "alias";
 
   public OSmsSettings() {
     this(CLASS_NAME);
@@ -60,6 +61,15 @@ public class OSmsSettings extends ODocumentWrapper {
 
   public OSmsSettings setTwilioPhoneNumber(String twilioPhoneNumber) {
     document.field(PROP_TWILIO_PHONE_NUMBER, twilioPhoneNumber);
+    return this;
+  }
+
+  public String getAlias() {
+    return document.field(PROP_ALIAS);
+  }
+
+  public OSmsSettings setAlias(String alias) {
+    document.field(PROP_ALIAS, alias);
     return this;
   }
 }

@@ -18,7 +18,6 @@ public class OTwilioInitModule extends AbstractModule {
     super.configure();
   }
 
-  @Named("service.twilio")
   @Provides
   @Singleton
   public ITwilioService provideTwilioHttpService(@Named("twilio.url") String twilioUrl) {

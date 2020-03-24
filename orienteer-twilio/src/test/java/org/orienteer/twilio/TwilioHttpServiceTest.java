@@ -1,7 +1,6 @@
 package org.orienteer.twilio;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import okhttp3.Credentials;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -15,7 +14,6 @@ import java.util.Collections;
 public class TwilioHttpServiceTest {
 
   @Inject
-  @Named("service.twilio")
   private ITwilioService twilioHttpService;
 
 
