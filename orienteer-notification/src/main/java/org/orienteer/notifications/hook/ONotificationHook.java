@@ -11,6 +11,7 @@ import org.orienteer.notifications.repository.ONotificationStatusRepository;
 import org.orienteer.notifications.service.IONotificationFactory;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +43,11 @@ public class ONotificationHook extends ODocumentHookAbstract {
 
     if (notification.getId() == null) {
       notification.setId(UUID.randomUUID().toString());
+      changed = true;
+    }
+
+    if (notification.getCreatedAsDate() == null) {
+      notification.setCreatedAsDate(new Date());
       changed = true;
     }
 

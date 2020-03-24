@@ -31,7 +31,7 @@ import java.util.List;
 public class ONotificationModule extends AbstractOrienteerModule {
 
   public static final String NAME = "orienteer-notification";
-  public static final int VERSION = 1;
+  public static final int VERSION = 2;
 
   protected ONotificationModule() {
     super(NAME, VERSION, OMailModule.NAME, OTwilioModule.NAME);
@@ -90,7 +90,10 @@ public class ONotificationModule extends AbstractOrienteerModule {
               .linkedClass(ONotificationTransport.CLASS_NAME)
               .markAsLinkToParent()
               .markDisplayable()
-            .oProperty(ONotification.PROP_STATUS_HISTORIES, OType.LINKLIST, 30)
+            .oProperty(ONotification.PROP_CREATED, OType.DATETIME, 30)
+              .notNull()
+              .markDisplayable()
+            .oProperty(ONotification.PROP_STATUS_HISTORIES, OType.LINKLIST, 40)
               .assignVisualization(UIVisualizersRegistry.VISUALIZER_TABLE);
 
     helper.setupRelationship(ONotification.CLASS_NAME, ONotification.PROP_STATUS_HISTORIES,

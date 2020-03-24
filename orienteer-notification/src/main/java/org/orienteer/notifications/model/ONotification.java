@@ -7,6 +7,8 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.notifications.service.IONotificationTransportFactory;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ public abstract class ONotification extends ODocumentWrapper {
   public static final String PROP_STATUS_HISTORIES = "statusHistories";
   public static final String PROP_STATUS           = "status";
   public static final String PROP_TRANSPORT        = "transport";
+  public static final String PROP_CREATED          = "created";
 
   protected ONotification(String iClassName) {
     super(iClassName);
@@ -38,7 +41,7 @@ public abstract class ONotification extends ODocumentWrapper {
   }
 
   public ONotification setId(String id) {
-    document.field(PROP_ID);
+    document.field(PROP_ID, id);
     return this;
   }
 
@@ -115,5 +118,23 @@ public abstract class ONotification extends ODocumentWrapper {
     List<ODocument> histories = new LinkedList<>(getStatusHistoriesAsDocuments());
     histories.add(history);
     return setStatusHistoriesAsDocuments(histories);
+  }
+
+  public Instant getCreated() {
+    Date created = getCreatedAsDate();
+    return created != null ? created.toInstant() : null;
+  }
+
+  public Date getCreatedAsDate() {
+    return document.field(PROP_CREATED);
+  }
+
+  public ONotification setCreated(Instant created) {
+    return setCreatedAsDate(created != null ? Date.from(created) : null);
+  }
+
+  public ONotification setCreatedAsDate(Date created) {
+    document.field(PROP_CREATED, created);
+    return this;
   }
 }
