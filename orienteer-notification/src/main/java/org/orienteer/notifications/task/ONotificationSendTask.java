@@ -51,8 +51,8 @@ public class ONotificationSendTask extends ONotificationTask {
 
   private void sendNotifications(ODatabaseDocument db) {
     ONotificationModule.Module module = ONotificationModuleRepository.getModule(db);
-    ONotificationStatus pendingStatus = ONotificationStatusRepository.getPendingStatus(db);
-    List<ONotification> notifications = ONotificationRepository.getNotificationsByStatus(db, pendingStatus);
+    ONotificationStatus sentStatus = ONotificationStatusRepository.getSentStatus(db);
+    List<ONotification> notifications = ONotificationRepository.getNotificationsExceptStatus(db, sentStatus);
 
     int executorSize = computeExecutorSize(module.getNotificationsPerWorker(), notifications);
     List<List<ONotification>> groupedNotifications = groupNotificationsForWorkers(module.getNotificationsPerWorker(), notifications);

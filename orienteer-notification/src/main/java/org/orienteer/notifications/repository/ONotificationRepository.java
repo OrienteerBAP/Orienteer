@@ -61,6 +61,29 @@ public final class ONotificationRepository {
     return CommonUtils.getDocuments(identifiables);
   }
 
+  public static List<ONotification> getNotificationsExceptStatus(ODatabaseDocument db, ONotificationStatus status) {
+    return getNotificationsExceptStatus(db, status.getDocument());
+  }
+
+  public static List<ONotification> getNotificationsExceptStatus(ODatabaseDocument db, ODocument status) {
+    IONotificationFactory factory = OrienteerWebApplication.lookupApplication().getServiceInstance(IONotificationFactory.class);
+
+    return getNotificationsExceptStatusAsDocuments(db, status)
+            .stream()
+            .map(factory::create)
+            .collect(Collectors.toCollection(LinkedList::new));
+  }
+
+  public static List<ODocument> getNotificationsExceptStatusAsDocuments(ODocument status) {
+    return DBClosure.sudo(db -> getNotificationsExceptStatusAsDocuments(db, status));
+  }
+
+  public static List<ODocument> getNotificationsExceptStatusAsDocuments(ODatabaseDocument db, ODocument status) {
+    String sql = String.format("select from %s where %s != ?", ONotification.CLASS_NAME, ONotification.PROP_STATUS);
+    List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql), status);
+    return CommonUtils.getDocuments(identifiables);
+  }
+
   public static List<ONotification> getPendingNotifications(ODatabaseDocument db) {
     ONotificationStatus status = ONotificationStatusRepository.getPendingStatus(db);
     return getNotificationsByStatus(db, status);
