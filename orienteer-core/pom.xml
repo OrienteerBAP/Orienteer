@@ -72,6 +72,11 @@
  			<artifactId>reflections</artifactId>
     		<version>0.9.10</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>joor-java-8</artifactId>
+			<version>0.9.12</version>
+		</dependency>
 		<!-- WEB JARS -->
 		<dependency>
 			<groupId>de.agilecoders.wicket.webjars</groupId>
