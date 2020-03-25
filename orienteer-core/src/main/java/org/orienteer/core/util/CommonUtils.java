@@ -309,4 +309,38 @@ public class CommonUtils {
 			}
 		}
 	}
+	
+	/**
+	 * Capitalizes a string.
+	 * 
+	 * @param s
+	 *            The string
+	 * @return The capitalized string
+	 */
+	public static String capitalize(final String s) {
+		return Strings.capitalize(s);
+	}
+	
+	/**
+	 * DeCapitalizes a string.
+	 * 
+	 * @param s
+	 *            The string
+	 * @return The de-capitalized string
+	 */
+	public static String decapitalize(final String s)
+	{
+		if (s == null)
+		{
+			return null;
+		}
+		final char[] chars = s.toCharArray();
+
+		if (chars.length > 0)
+		{
+			chars[0] = Character.toLowerCase(chars[0]);
+		}
+
+		return new String(chars);
+	}
 }
