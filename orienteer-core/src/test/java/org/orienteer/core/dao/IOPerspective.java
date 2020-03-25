@@ -31,5 +31,4 @@ public interface IOPerspective extends IODocumentWrapper {
 	List<ODocument> listAllMenu();
 
   List<ODocument> getMenu();
-
 }

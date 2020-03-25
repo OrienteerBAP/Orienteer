@@ -15,8 +15,7 @@ class ODocumentWrapperInvocationHandler extends StackInvocationHandler<ODocument
 									new MirrorMethodHandler<>(IODocumentWrapper.class),
 									new RetargetMethodHandler<>(),
 									new DefaultInterfaceMethodHandler<>(),
-									new ODocumentGetHandler(),
-									new ODocumentSetHandler(),
+									new ODocumentWrapperGetterAndSetterHandler(),
 									new LookupMethodHandler(),
 									new QueryMethodHandler<>(ODocumentWrapper::getDocument)
 					);
