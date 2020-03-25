@@ -1,17 +1,17 @@
 package org.orienteer.core.dao;
 
-import java.util.List;
-
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.util.List;
 
 @ProvidedBy(DAOProvider.class)
 public interface ITestDAO {
 
 	@Query("select from OPerspective")
-	public List<ODocument> listOPerspective();
+	List<ODocument> listOPerspective();
 	
-	default public int countPerspectives() {
+	default int countPerspectives() {
 		return listOPerspective().size();
 	}
 }

@@ -1,25 +1,25 @@
 package org.orienteer.core.dao;
 
-import java.io.Serializable;
-
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
+
+import java.io.Serializable;
 
 /**
  * Interface which mirror methods of {@link ODocumentWrapper} 
  */
 public interface IODocumentWrapper extends Serializable {
 	
-	public void fromStream(final ODocument iDocument);
-	public ODocument toStream();
-	public <R extends IODocumentWrapper> R load();
-	public <R extends IODocumentWrapper> R load(final String iFetchPlan);
-	public <R extends IODocumentWrapper> R load(final String iFetchPlan, final boolean iIgnoreCache);
-	public <R extends IODocumentWrapper> R load(final String iFetchPlan, final boolean iIgnoreCache, final boolean loadTombstone);
-	public <R extends IODocumentWrapper> R reload();
-	public <R extends IODocumentWrapper> R reload(final String iFetchPlan);
-	public <R extends IODocumentWrapper> R reload(final String iFetchPlan, final boolean iIgnoreCache);
-	public <R extends IODocumentWrapper> R save();
-	public <R extends IODocumentWrapper> R save(final String iClusterName);
-	public ODocument getDocument();
+	void fromStream(final ODocument iDocument);
+	ODocument toStream();
+	<R extends IODocumentWrapper> R load();
+	<R extends IODocumentWrapper> R load(final String iFetchPlan);
+	<R extends IODocumentWrapper> R load(final String iFetchPlan, final boolean iIgnoreCache);
+	<R extends IODocumentWrapper> R load(final String iFetchPlan, final boolean iIgnoreCache, final boolean loadTombstone);
+	<R extends IODocumentWrapper> R reload();
+	<R extends IODocumentWrapper> R reload(final String iFetchPlan);
+	<R extends IODocumentWrapper> R reload(final String iFetchPlan, final boolean iIgnoreCache);
+	<R extends IODocumentWrapper> R save();
+	<R extends IODocumentWrapper> R save(final String iClusterName);
+	ODocument getDocument();
 }
