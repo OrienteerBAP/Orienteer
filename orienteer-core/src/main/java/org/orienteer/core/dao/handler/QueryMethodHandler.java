@@ -16,7 +16,7 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
  * {@link IMethodHandler} to cover methods to query DB
  * @param <T>  type of target/delegate object
  */
-public class QueryMethodHandler<T> extends AbstractSQLMethodHandler<T>{
+public class QueryMethodHandler<T> extends AbstractMethodHandler<T>{
 	
 	private final SerializableFunction<T, ? extends Object> converter;
 	

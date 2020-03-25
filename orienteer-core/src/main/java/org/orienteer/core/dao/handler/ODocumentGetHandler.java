@@ -14,9 +14,17 @@ public class ODocumentGetHandler implements IMethodHandler<ODocumentWrapper>{
 
 	@Override
 	public ResultHolder handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
-		if (method.getName().startsWith("get") && args.length==0) {
-			return new ResultHolder(target.getDocument().field(CommonUtils.decapitalize(method.getName().substring(3))));
-		} else return null;
+		if(args.length==0) {
+			String name=null;
+			String methodName = method.getName();
+			if(methodName.startsWith("get")) name = CommonUtils.decapitalize(methodName.substring(3));
+			if(methodName.startsWith("is")) name = CommonUtils.decapitalize(methodName.substring(2));
+			if(name!=null) {
+				Object value = target.getDocument().field(name, method.getReturnType());
+				return new ResultHolder(value);
+			}
+		}
+		return null;
 	}
 
 }

@@ -17,7 +17,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 /**
  * {@link IMethodHandler} which load {@link ODocument} into {@link ODocumentWrapper} after lookup it in DB
  */
-public class LookupMethodHandler extends AbstractSQLMethodHandler<ODocumentWrapper> {
+public class LookupMethodHandler extends AbstractMethodHandler<ODocumentWrapper> {
 
 	@Override
 	public ResultHolder handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
@@ -25,7 +25,7 @@ public class LookupMethodHandler extends AbstractSQLMethodHandler<ODocumentWrapp
 			String sql = method.getAnnotation(Lookup.class).value();
 			ODocument ret = new OSQLSynchQuery<ODocument>(sql).runFirst(toArguments(method, args));
 			target.fromStream(ret);
-			return NULL_RESULT;
+			return returnChained(proxy, method, ret!=null);
 		} else return null;
 	}
 

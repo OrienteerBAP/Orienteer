@@ -19,8 +19,9 @@ public class MirrorMethodHandler<T> implements IMethodHandler<T>{
 	@Override
 	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
 		if(method.getDeclaringClass().equals(mirrorInterface)) {
-			return new ResultHolder(target.getClass().getMethod(method.getName(), method.getParameterTypes())
-					.invoke(target, args));
+			Object ret = target.getClass().getMethod(method.getName(), method.getParameterTypes())
+					.invoke(target, args);
+			return new ResultHolder(target == ret? proxy : ret);
 		} else return null;
 	}
 

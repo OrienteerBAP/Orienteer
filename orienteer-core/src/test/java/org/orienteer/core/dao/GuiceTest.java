@@ -62,4 +62,13 @@ public class GuiceTest {
 		assertTrue("Size of perspectives", dao.countPerspectives()>0);
 		assertEquals(perspectives.size(), dao.countPerspectives());
 	}
+	
+	@Test
+	public void testMirroring() {
+		IOPerspective iOPerspective = tester.getApplication().getServiceInstance(IOPerspective.class);
+		iOPerspective.lookup("default");
+		assertNotNull(iOPerspective.getDocument());
+		Object reloadRet = iOPerspective.reload();
+		assertTrue(reloadRet == iOPerspective);
+	}
 }
