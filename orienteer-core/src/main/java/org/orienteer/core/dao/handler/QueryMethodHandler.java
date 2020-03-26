@@ -15,9 +15,9 @@ import java.util.Map;
  *
  * @param <T> type of target/delegate object
  */
-public class QueryMethodHandler<T> extends AbstractSQLMethodHandler<T> {
+public class QueryMethodHandler<T> extends AbstractMethodHandler<T> {
 
-  private final SerializableFunction<T, ?> converter;
+  private final SerializableFunction<T, ? extends Object> converter;
 
   public QueryMethodHandler() {
     this(null);
@@ -31,26 +31,21 @@ public class QueryMethodHandler<T> extends AbstractSQLMethodHandler<T> {
   public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
     if (method.isAnnotationPresent(Query.class)) {
       String sql = method.getAnnotation(Query.class).value();
-      OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<>(sql);
-      Map<String, Object> arguments = createArguments(target, method, args);
+      OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>(sql);
+      Map<String, Object> argumets = toArguments(method, args);
 
+      if (converter != null) {
+        argumets.putIfAbsent("target", converter.apply(target));
+      }
       Class<?> returnType = method.getReturnType();
-      if (Collection.class.isAssignableFrom(returnType)) {
-				return new ResultHolder(query.run(arguments));
-			}
 
-      return new ResultHolder(query.runFirst(arguments));
+      if (Collection.class.isAssignableFrom(returnType)) {
+        return new ResultHolder(query.run(argumets));
+      }
+      return new ResultHolder(query.runFirst(argumets));
     }
 
     return null;
   }
-
-  private Map<String, Object> createArguments(T target, Method method, Object[] args) {
-		Map<String, Object> result = toArguments(method, args);
-		if (converter != null) {
-			result.putIfAbsent("target", converter.apply(target));
-		}
-		return result;
-	}
 
 }

@@ -12,17 +12,17 @@ import java.util.Map;
 /**
  * {@link IMethodHandler} which load {@link ODocument} into {@link ODocumentWrapper} after lookup it in DB
  */
-public class LookupMethodHandler extends AbstractSQLMethodHandler<ODocumentWrapper> {
+public class LookupMethodHandler extends AbstractMethodHandler<ODocumentWrapper> {
 
   @Override
   public ResultHolder handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
     if (method.isAnnotationPresent(Lookup.class)) {
       String sql = method.getAnnotation(Lookup.class).value();
-      Map<String, Object> arguments = toArguments(method, args);
-      ODocument ret = new OSQLSynchQuery<ODocument>(sql).runFirst(arguments);
+      ODocument ret = new OSQLSynchQuery<ODocument>(sql).runFirst(toArguments(method, args));
       target.fromStream(ret);
-      return NULL_RESULT;
+      return returnChained(proxy, method, ret != null);
     }
+
     return null;
   }
 

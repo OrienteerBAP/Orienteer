@@ -31,15 +31,9 @@ public class StackInvocationHandler<T> implements InvocationHandler {
     if (args == null) {
       args = NO_ARGS;
     }
-
     IMethodHandler.ResultHolder holder = stack.handle(target, proxy, method, args);
     if (holder != null) {
-      if (holder.result != null) {
-        return holder.result == target ? proxy : holder.result;
-      }
-
-      Class<?> returnClass = method.getReturnType();
-      return returnClass != null && returnClass.isInstance(proxy) ? proxy : null;
+      return holder.result;
     }
 
     throw new IllegalStateException("Can't proxy method: " + method);
