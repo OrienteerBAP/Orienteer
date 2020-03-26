@@ -24,7 +24,10 @@ public interface IOPerspective extends IODocumentWrapper {
 	}
 	
 	@Lookup("select from OPerspective where alias = :alias")
-	public void lookup(String alias);
+	public boolean lookupToBoolean(String alias);
+	
+	@Lookup("select from OPerspective where alias = :alias")
+	public IOPerspective lookupAsChain(String alias);
 	
 	@Query("select expand(menu) from OPerspective where @rid = :target")
 	public List<ODocument> listAllMenu();

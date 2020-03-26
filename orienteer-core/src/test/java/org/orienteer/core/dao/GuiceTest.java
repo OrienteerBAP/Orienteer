@@ -37,17 +37,20 @@ public class GuiceTest {
 	@Test
 	public void testLookups() {
 		IOPerspective iOPerspective = tester.getApplication().getServiceInstance(IOPerspective.class);
-		iOPerspective.lookup("default");
+		assertTrue(iOPerspective.lookupToBoolean("default"));
 		assertEquals("default", iOPerspective.getAlias());
 		assertEquals("testdefault", iOPerspective.getTestAlias());
 		assertEquals("test2default", iOPerspective.getTest2Alias());
 		assertEquals("test3testdefault", iOPerspective.getTest3Alias());
+		IOPerspective other = iOPerspective.lookupAsChain("default");
+		assertSame(iOPerspective, other);
+		assertNull(iOPerspective.lookupAsChain("notExistingPerspective"));
 	}
 	
 	@Test
 	public void testQuery() {
 		IOPerspective iOPerspective = tester.getApplication().getServiceInstance(IOPerspective.class);
-		iOPerspective.lookup("default");
+		iOPerspective.lookupToBoolean("default");
 		List<ODocument> menu = iOPerspective.listAllMenu();
 		assertNotNull(menu);
 		assertTrue("Size of menu", menu.size()>0);
@@ -66,9 +69,22 @@ public class GuiceTest {
 	@Test
 	public void testMirroring() {
 		IOPerspective iOPerspective = tester.getApplication().getServiceInstance(IOPerspective.class);
-		iOPerspective.lookup("default");
+		iOPerspective.lookupToBoolean("default");
 		assertNotNull(iOPerspective.getDocument());
 		Object reloadRet = iOPerspective.reload();
 		assertTrue(reloadRet == iOPerspective);
+	}
+	
+	@Test
+	public void testConvertions() {
+		ITestDAO dao = tester.getApplication().getServiceInstance(ITestDAO.class);
+		ODocument doc = dao.findSingleAsDocument("default");
+		IOPerspective pers = dao.findSingleAsDAO("default");
+		assertEquals(doc.field("alias"), pers.getAlias());
+		List<ODocument> listDocs = dao.findAllAsDocument();
+		List<IOPerspective> listObjs = dao.findAllAsDAO();
+		assertEquals(listDocs.size(), listObjs.size());
+		assertTrue(listDocs.get(0) instanceof ODocument);
+		assertTrue(listObjs.get(0) instanceof IOPerspective);
 	}
 }

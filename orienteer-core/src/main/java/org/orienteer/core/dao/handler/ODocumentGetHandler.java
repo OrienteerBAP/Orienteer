@@ -10,7 +10,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 /**
  * {@link IMethodHandler} to GET field value from {@link ODocumentWrapper}
  */
-public class ODocumentGetHandler implements IMethodHandler<ODocumentWrapper>{
+public class ODocumentGetHandler extends AbstractMethodHandler<ODocumentWrapper>{
 
 	@Override
 	public ResultHolder handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
@@ -21,7 +21,7 @@ public class ODocumentGetHandler implements IMethodHandler<ODocumentWrapper>{
 			if(methodName.startsWith("is")) name = CommonUtils.decapitalize(methodName.substring(2));
 			if(name!=null) {
 				Object value = target.getDocument().field(name, method.getReturnType());
-				return new ResultHolder(value);
+				return new ResultHolder(prepareForJava(value, method));
 			}
 		}
 		return null;

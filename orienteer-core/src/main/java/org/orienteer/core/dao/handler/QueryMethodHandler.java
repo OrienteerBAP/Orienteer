@@ -35,10 +35,7 @@ public class QueryMethodHandler<T> extends AbstractMethodHandler<T>{
 			OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>(sql);
 			Map<String, Object> argumets = toArguments(method, args);
 			if(converter!=null) argumets.putIfAbsent("target", converter.apply(target));
-			Class<?> returnType = method.getReturnType();
-			if(Collection.class.isAssignableFrom(returnType)) 
-				return new ResultHolder(query.run(argumets));
-			else return new ResultHolder(query.runFirst(argumets));
+			return new ResultHolder(queryDB(query, argumets, method));
 		} else return null;
 	}
 
