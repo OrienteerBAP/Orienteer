@@ -42,7 +42,7 @@ public final class DAO {
 		interfaces[1] = IODocumentWrapper.class;
 		if(builtInInterfaces.length>0) System.arraycopy(builtInInterfaces, 0, interfaces, 2, builtInInterfaces.length);
 		if(additionalInterfaces.length>0) System.arraycopy(additionalInterfaces, 0, interfaces, 2+builtInInterfaces.length, additionalInterfaces.length);
-		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] {interfaceClass, IODocumentWrapper.class},  new ODocumentWrapperInvocationHandler(docWrapper));
+		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), interfaces,  new ODocumentWrapperInvocationHandler(docWrapper));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -51,6 +51,6 @@ public final class DAO {
 		Class<?>[] interfaces = new Class[1+additionalInterfaces.length];
 		interfaces[0] = interfaceClass;
 		if(additionalInterfaces.length>0) System.arraycopy(additionalInterfaces, 0, interfaces, 1, additionalInterfaces.length);
-		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[] {interfaceClass, IODocumentWrapper.class},  new DAOInvocationHandler());
+		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), interfaces ,  new DAOInvocationHandler());
 	}
 }
