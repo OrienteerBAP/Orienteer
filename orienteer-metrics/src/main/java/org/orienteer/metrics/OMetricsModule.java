@@ -34,7 +34,7 @@ public class OMetricsModule extends AbstractOrienteerModule{
 		DefaultExports.initialize();
 		OMetricsRequestCycleListener.install(app);
 		OMetricSessionListener.install(app);
-//		new OMetricsOrientDB().register();
+		new OMetricsOrientDB().register();
 //		OPerformanceStatisticManager psm = OMetricsOrientDB.getPerformanceStatisticManager();
 		//WorkAround to avoid NPEs in logs
 		//TODO: Remove when https://github.com/orientechnologies/orientdb/issues/9169 will be fixed
