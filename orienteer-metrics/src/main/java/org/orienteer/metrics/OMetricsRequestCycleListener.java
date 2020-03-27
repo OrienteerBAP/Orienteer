@@ -45,7 +45,7 @@ public class OMetricsRequestCycleListener implements IRequestCycleListener {
 																.namespace("wicket")
 																	.name("pages")
 																	.help("Total number of requests per page")
-																	.labelNames("ajax", "handler")
+																	.labelNames("ajax", "page")
 																	.create();
 	
 	private static final Histogram HISTOGRAM_REQUESTS = Histogram.build()
