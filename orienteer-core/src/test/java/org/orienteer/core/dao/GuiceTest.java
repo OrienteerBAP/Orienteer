@@ -27,6 +27,7 @@ public class GuiceTest {
 		for (ODocument oDocument : perspectives) {
 			iOPerspective.fromStream(oDocument);
 			assertEquals(oDocument.field("alias"), iOPerspective.getAlias());
+			assertEquals(oDocument.field("alias"), iOPerspective.getAliasSynonymMethod());
 			assertEquals("test"+oDocument.field("alias"), iOPerspective.getTestAlias());
 			assertEquals("test2"+oDocument.field("alias"), iOPerspective.getTest2Alias());
 			assertEquals("test3test"+oDocument.field("alias"), iOPerspective.getTest3Alias());

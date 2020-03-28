@@ -2,6 +2,8 @@ package org.orienteer.core.dao;
 
 import java.lang.reflect.Proxy;
 
+import org.apache.wicket.util.string.Strings;
+
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
@@ -18,7 +20,11 @@ public final class DAO {
 	}
 	
 	public static <T> T create(Class<T> interfaceClass, Class<?>... additionalInterfaces) {
-		return provide(interfaceClass, new ODocumentWrapper(), additionalInterfaces);
+		DAOOClass daoOClass = interfaceClass.getAnnotation(DAOOClass.class);
+		ODocumentWrapper docWrapper = daoOClass!=null && !Strings.isEmpty(daoOClass.value())
+											? new ODocumentWrapper(daoOClass.value())
+											: new ODocumentWrapper();
+		return provide(interfaceClass, docWrapper, additionalInterfaces);
 	}
 	
 	public static <T> T create(Class<T> interfaceClass, String className, Class<?>... additionalInterfaces) {

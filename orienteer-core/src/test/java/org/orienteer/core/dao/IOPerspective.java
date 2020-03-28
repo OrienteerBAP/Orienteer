@@ -11,6 +11,9 @@ public interface IOPerspective extends IODocumentWrapper {
 	public String getAlias();
 	public Map<String, Object> getName();
 	
+	@DAOField("alias")
+	public String getAliasSynonymMethod();
+	
 	default public String getTestAlias() {
 		return "test"+getAlias();
 	}
