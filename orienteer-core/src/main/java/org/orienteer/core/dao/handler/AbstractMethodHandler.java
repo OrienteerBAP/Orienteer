@@ -96,7 +96,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		else return prepareForJava(query.runFirst(args), method.getReturnType());
 	}
 	
-	protected static Class<?> typeToRequiredClass(Type type) {
+	public static Class<?> typeToRequiredClass(Type type) {
 		if(type instanceof Class) return (Class<?>) type;
 		else if(type instanceof WildcardType) 
 			return typeToRequiredClass(((WildcardType)type).getUpperBounds()[0]);

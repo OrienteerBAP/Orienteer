@@ -16,9 +16,11 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
+import org.orienteer.junit.Sudo;
 
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
@@ -142,5 +144,19 @@ public class DAOTest {
 		assertEquals(listDocs.size(), listObjs.size());
 		assertTrue(listDocs.get(0) instanceof ODocument);
 		assertTrue(listObjs.get(0) instanceof IDAOTestClass);
+	}
+	
+	@Test
+	@Sudo
+	public void testDescriber() {
+		OSchema schema = tester.getMetadata().getSchema();
+		try {
+			DAO.describe(OSchemaHelper.bind(tester.getDatabase()), IDAOTestClassA.class);
+			schema.existsClass("DAOTestClassA");
+			schema.existsClass("DAOTestClassB");
+		} finally {
+			if(schema.existsClass("DAOTestClassA")) schema.dropClass("DAOTestClassA");
+			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
+		}
 	}
 }

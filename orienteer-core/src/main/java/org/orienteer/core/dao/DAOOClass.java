@@ -14,4 +14,5 @@ import java.lang.annotation.Target;
 public @interface DAOOClass {
 	String value();
 	String[] superClasses() default {};
+	boolean isAbstract() default false;
 }
