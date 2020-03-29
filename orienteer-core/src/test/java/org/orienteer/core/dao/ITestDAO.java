@@ -8,23 +8,23 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 @ProvidedBy(DAOProvider.class)
 public interface ITestDAO {
 
-	@Query("select from OPerspective")
-	public List<ODocument> listOPerspective();
+	@Query("select from DAOTestClass")
+	public List<ODocument> listDAOTestClass();
 	
 	
-	@Query("select from OPerspective where alias = :alias")
-	public ODocument findSingleAsDocument(String alias);
+	@Query("select from DAOTestClass where name = :name")
+	public ODocument findSingleAsDocument(String name);
 	
-	@Query("select from OPerspective where alias = :alias")
-	public IOPerspective findSingleAsDAO(String alias);
+	@Query("select from DAOTestClass where name = :name")
+	public IDAOTestClass findSingleAsDAO(String name);
 	
-	@Query("select from OPerspective")
+	@Query("select from DAOTestClass")
 	public List<ODocument> findAllAsDocument();
 	
-	@Query("select from OPerspective")
-	public List<IOPerspective> findAllAsDAO();
+	@Query("select from DAOTestClass")
+	public List<IDAOTestClass> findAllAsDAO();
 	
-	default public int countPerspectives() {
-		return listOPerspective().size();
+	default public int countAll() {
+		return listDAOTestClass().size();
 	}
 }
