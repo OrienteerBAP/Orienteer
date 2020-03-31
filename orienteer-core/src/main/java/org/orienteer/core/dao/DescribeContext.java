@@ -1,6 +1,7 @@
 package org.orienteer.core.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,8 +92,15 @@ class DescribeContext {
 		else postponedTillDefined.addValue(linkedClass, supplier);
 	}
 	
-	public void close() {
+	public void close(boolean restrictDependencies) {
 		if(processingStackIndex.size()>0) throw new IllegalStateException("Can't close context because stack is not null");
+		Collection<List<Supplier<Boolean>>> remaining = postponedTillDefined.values();
+		if(restrictDependencies && remaining.size()>0) throw new IllegalStateException("There are unsitisfied dependencies");
+		for (List<Supplier<Boolean>> list : remaining) {
+			for (Supplier<Boolean> supplier : list) {
+				supplier.get();
+			}
+		}
 	}
 
 }

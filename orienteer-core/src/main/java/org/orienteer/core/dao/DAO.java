@@ -83,7 +83,7 @@ public final class DAO {
 	public static OSchemaHelper describe(OSchemaHelper helper, Class<?>... classes) {
 		DescribeContext ctx = new DescribeContext();
 		describe(helper, Arrays.asList(classes), ctx);
-		ctx.close();
+		ctx.close(false);
 		return helper;
 	}
 	

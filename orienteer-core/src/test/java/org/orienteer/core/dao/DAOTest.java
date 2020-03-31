@@ -155,10 +155,19 @@ public class DAOTest {
 		OSchema schema = tester.getMetadata().getSchema();
 		try {
 			DAO.describe(OSchemaHelper.bind(tester.getDatabase()), IDAOTestClassA.class);
+			assertTrue(schema.existsClass("DAOTestClassRoot"));
 			assertTrue(schema.existsClass("DAOTestClassA"));
 			assertTrue(schema.existsClass("DAOTestClassB"));
+			OClass daoTestClassRoot = schema.getClass("DAOTestClassRoot");
 			OClass daoTestClassA = schema.getClass("DAOTestClassA");
 			OClass daoTestClassB = schema.getClass("DAOTestClassB");
+			
+			assertTrue(daoTestClassRoot.isAbstract());
+			assertProperty(daoTestClassRoot, "root", OType.STRING);
+			
+			OProperty root = assertProperty(daoTestClassA, "root", OType.STRING);
+			assertEquals("DAOTestClassRoot.root", root.getFullName());
+			
 			assertProperty(daoTestClassA, "name", OType.STRING);
 			assertProperty(daoTestClassA, "bSingle", OType.LINK, daoTestClassB, null);
 			assertProperty(daoTestClassA, "bOtherField", OType.LINK, daoTestClassB, null);
@@ -169,18 +178,21 @@ public class DAOTest {
 		} finally {
 			if(schema.existsClass("DAOTestClassA")) schema.dropClass("DAOTestClassA");
 			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
+			if(schema.existsClass("DAOTestClassRoot")) schema.dropClass("DAOTestClassRoot");
 		}
 	}
 	
-	private void assertProperty(OClass oClass, String property, OType oType, OClass linkedClass, String inverse) {
+	private OProperty assertProperty(OClass oClass, String property, OType oType, OClass linkedClass, String inverse) {
 		OProperty prop = assertProperty(oClass, property, oType);
 		assertEquals(linkedClass, prop.getLinkedClass());
 		assertEquals(inverse, CustomAttribute.PROP_INVERSE.getValue(prop));
+		return prop;
 	}
 	
-	private void assertProperty(OClass oClass, String property, OType oType, OType linkedType) {
+	private OProperty assertProperty(OClass oClass, String property, OType oType, OType linkedType) {
 		OProperty prop = assertProperty(oClass, property, oType);
 		assertEquals(linkedType, prop.getLinkedType());
+		return prop;
 	}
 	
 	private OProperty assertProperty(OClass oClass, String property, OType oType) {

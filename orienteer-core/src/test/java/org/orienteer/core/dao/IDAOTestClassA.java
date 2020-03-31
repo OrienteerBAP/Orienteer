@@ -4,7 +4,7 @@ import com.google.inject.ProvidedBy;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass("DAOTestClassA")
-public interface IDAOTestClassA {
+public interface IDAOTestClassA extends IDAOTestClassRoot{
 
 	public String getName();
 	public void setName();
