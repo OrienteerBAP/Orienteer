@@ -6,4 +6,6 @@ import com.google.inject.ProvidedBy;
 @DAOOClass("DAOTestClassB")
 public interface IDAOTestClassB {
 	public String getAlias();
+	
+	public IDAOTestClassA getLinkToA();
 }

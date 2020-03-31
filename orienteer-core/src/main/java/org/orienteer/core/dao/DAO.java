@@ -81,52 +81,54 @@ public final class DAO {
 	
 	
 	public static OSchemaHelper describe(OSchemaHelper helper, Class<?>... classes) {
-		describe(helper, Arrays.asList(classes), new HashMap<Class<?>, String>());
+		DescribeContext ctx = new DescribeContext();
+		describe(helper, Arrays.asList(classes), ctx);
+		ctx.close();
 		return helper;
 	}
 	
-	private static Set<String> describe(OSchemaHelper helper, List<Class<?>> classes, Map<Class<?>, String> describedClasses) {
+	private static Set<String> describe(OSchemaHelper helper, List<Class<?>> classes, DescribeContext ctx) {
 		Set<String> oClassNames = new HashSet<String>();
 		for (Class<?> clazz : classes) {
-			String className = describe(helper, clazz, describedClasses);
+			String className = describe(helper, clazz, ctx);
 			if(className!=null) oClassNames.add(className);
 		}
 		return oClassNames;
 	}
 	
-	private static String describe(OSchemaHelper helper, Class<?> clazz, Map<Class<?>, String> describedClasses) {
+	private static String describe(OSchemaHelper helper, Class<?> clazz, DescribeContext ctx) {
 		if(clazz==null || !clazz.isInterface()) return null;	
 		DAOOClass daooClass = clazz.getAnnotation(DAOOClass.class);
 		if(daooClass==null) return null;
-		if(describedClasses.containsKey(clazz)) return describedClasses.get(clazz);
+		if(ctx.wasDescribed(clazz)) return ctx.getOClass(clazz);
+		ctx.entering(clazz, daooClass.value());
 		List<Class<?>> interfaces = Arrays.asList(clazz.getInterfaces());
-		Set<String> superClasses = describe(helper, interfaces, describedClasses);
+		Set<String> superClasses = describe(helper, interfaces, ctx);
 		superClasses.addAll(Arrays.asList(daooClass.superClasses()));
 		
-		List<Supplier<OProperty>> creators = new ArrayList<>();
 		int currentOrder=0;
 		
 		for(Method method : clazz.getDeclaredMethods()) {
 			String methodName = method.getName();
 			Parameter[] params =  method.getParameters();
 			String fieldNameCandidate = null;
-			Class<?> javaType = null;
-			Class<?> subJavaType = null;
+			final Class<?> javaType;
+			Class<?> subJavaTypeCandidate = null;
 			if(methodName.startsWith("set") && params.length==1) {
 				fieldNameCandidate = CommonUtils.decapitalize(methodName.substring(3));
 				javaType = params[0].getType();
-				subJavaType = typeToRequiredClass(params[0].getParameterizedType());
+				subJavaTypeCandidate = typeToRequiredClass(params[0].getParameterizedType());
 			} else if(methodName.startsWith("get") && params.length==0) {
 				fieldNameCandidate = CommonUtils.decapitalize(methodName.substring(3));
 				javaType = method.getReturnType();
-				subJavaType = typeToRequiredClass(method.getGenericReturnType());
+				subJavaTypeCandidate = typeToRequiredClass(method.getGenericReturnType());
 			} else if(methodName.startsWith("is") && params.length==0) {
 				fieldNameCandidate = CommonUtils.decapitalize(methodName.substring(2));
 				javaType = method.getReturnType();
-				subJavaType = typeToRequiredClass(method.getGenericReturnType());
-			}
-			if(fieldNameCandidate==null) continue;
-			if(subJavaType!=null && subJavaType.equals(javaType)) subJavaType = null;
+				subJavaTypeCandidate = typeToRequiredClass(method.getGenericReturnType());
+			} else continue;
+			if(subJavaTypeCandidate!=null && subJavaTypeCandidate.equals(javaType)) subJavaTypeCandidate = null;
+			final Class<?> subJavaType = subJavaTypeCandidate;
 			final DAOField daoField = method.getAnnotation(DAOField.class);
 			if(daoField!=null) fieldNameCandidate = daoField.value();
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
@@ -138,8 +140,8 @@ public final class DAO {
 			final int order = daoField!=null && daoField.order()>=0
 									?daoField.order()
 									:10*currentOrder++;
-			String linkedClassCandidate = describe(helper, subJavaType, describedClasses);
-			if(linkedClassCandidate==null) linkedClassCandidate = describe(helper, javaType, describedClasses);
+			String linkedClassCandidate = ctx.resolveOClass(subJavaType, () -> describe(helper, subJavaType, ctx));
+			if(linkedClassCandidate==null) linkedClassCandidate = ctx.resolveOClass(javaType, () -> describe(helper, javaType, ctx));
 			if(oTypeCandidate==null && linkedClassCandidate!=null) {
 				oTypeCandidate = OType.LINK;
 			}
@@ -147,11 +149,20 @@ public final class DAO {
 			final String fieldName = fieldNameCandidate;
 			final OType oType = oTypeCandidate;
 			final String linkedClass = linkedClassCandidate;
-			LOG.info("Method: "+methodName+" type: "+oType + "LinkedType: "+linkedType+" LinkedClass: "+linkedClass);
-			creators.add(() -> {
+			LOG.info("Method: "+methodName+" Field: "+fieldName+" Type: "+oType + " LinkedType: "+linkedType+" LinkedClass: "+linkedClass);
+			
+			ctx.postponTillExit(() -> {
 				helper.oProperty(fieldName, oType, order);
 				if(linkedType!=null) helper.linkedType(linkedType);
-				if(linkedClass!=null) helper.linkedClass(linkedClass);
+				return null;
+			});
+			if(linkedClass!=null) ctx.postponeTillDefined(linkedClass, () -> {
+				String inverse = daoField!=null?daoField.inverse():null;
+				if(Strings.isEmpty(inverse)) {
+					helper.setupRelationship(daooClass.value(), fieldName, linkedClass);
+				} else {
+					helper.setupRelationship(daooClass.value(), fieldName, linkedClass, inverse);
+				}
 				return null;
 			});
 		}
@@ -159,11 +170,7 @@ public final class DAO {
 		if(daooClass.isAbstract()) helper.oAbstractClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
 		else helper.oClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
 		
-		for (Supplier<OProperty> supplier : creators) {
-			supplier.get();
-		}
-		
-		describedClasses.put(clazz, daooClass.value());
+		ctx.exiting(clazz, daooClass.value());
 		return daooClass.value();
 	}
 }

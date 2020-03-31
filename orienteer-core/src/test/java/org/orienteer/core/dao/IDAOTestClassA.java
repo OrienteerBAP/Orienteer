@@ -13,4 +13,6 @@ public interface IDAOTestClassA {
 	
 	@DAOField("bOtherField")
 	public IDAOTestClassB getBOther();
+	
+	public IDAOTestClassA getSelfType();
 }

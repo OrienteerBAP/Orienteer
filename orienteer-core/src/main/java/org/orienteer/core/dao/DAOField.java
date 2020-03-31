@@ -18,4 +18,5 @@ public @interface DAOField {
 	OType type() default OType.ANY;
 	OType linkedType() default OType.ANY;
 	int order() default -1; 
+	String inverse() default "";
 }

@@ -12,6 +12,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.junit.OrienteerTestRunner;
@@ -20,6 +21,8 @@ import org.orienteer.junit.Sudo;
 
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -152,11 +155,38 @@ public class DAOTest {
 		OSchema schema = tester.getMetadata().getSchema();
 		try {
 			DAO.describe(OSchemaHelper.bind(tester.getDatabase()), IDAOTestClassA.class);
-			schema.existsClass("DAOTestClassA");
-			schema.existsClass("DAOTestClassB");
+			assertTrue(schema.existsClass("DAOTestClassA"));
+			assertTrue(schema.existsClass("DAOTestClassB"));
+			OClass daoTestClassA = schema.getClass("DAOTestClassA");
+			OClass daoTestClassB = schema.getClass("DAOTestClassB");
+			assertProperty(daoTestClassA, "name", OType.STRING);
+			assertProperty(daoTestClassA, "bSingle", OType.LINK, daoTestClassB, null);
+			assertProperty(daoTestClassA, "bOtherField", OType.LINK, daoTestClassB, null);
+			assertProperty(daoTestClassA, "selfType", OType.LINK, daoTestClassA, null);
+			
+			assertProperty(daoTestClassB, "alias", OType.STRING);
+			assertProperty(daoTestClassB, "linkToA", OType.LINK, daoTestClassA, null);
 		} finally {
 			if(schema.existsClass("DAOTestClassA")) schema.dropClass("DAOTestClassA");
 			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
 		}
+	}
+	
+	private void assertProperty(OClass oClass, String property, OType oType, OClass linkedClass, String inverse) {
+		OProperty prop = assertProperty(oClass, property, oType);
+		assertEquals(linkedClass, prop.getLinkedClass());
+		assertEquals(inverse, CustomAttribute.PROP_INVERSE.getValue(prop));
+	}
+	
+	private void assertProperty(OClass oClass, String property, OType oType, OType linkedType) {
+		OProperty prop = assertProperty(oClass, property, oType);
+		assertEquals(linkedType, prop.getLinkedType());
+	}
+	
+	private OProperty assertProperty(OClass oClass, String property, OType oType) {
+		OProperty prop = oClass.getProperty(property);
+		assertNotNull("Property was not found", prop);
+		assertEquals(oType, prop.getType());
+		return prop;
 	}
 }
