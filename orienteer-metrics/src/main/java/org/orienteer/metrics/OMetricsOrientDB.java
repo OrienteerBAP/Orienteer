@@ -1,14 +1,18 @@
 package org.orienteer.metrics;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.storage.OStorage;
 import com.orientechnologies.orient.core.storage.impl.local.OAbstractPaginatedStorage;
 import com.orientechnologies.orient.core.storage.impl.local.statistic.OPerformanceStatisticManager;
@@ -16,6 +20,7 @@ import com.orientechnologies.orient.core.storage.impl.local.statistic.OPerforman
 import io.prometheus.client.Collector;
 import io.prometheus.client.CounterMetricFamily;
 import io.prometheus.client.GaugeMetricFamily;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
@@ -26,11 +31,13 @@ public class OMetricsOrientDB extends Collector {
 	
 	/**
 	 *  Utility interface to pack building of {@link MetricFamilySamples} collection
+	 *  TODO: Uncomment when performance metrics gathering will be fixed in OrientDB
+	 *  https://github.com/orientechnologies/orientdb/issues/9169
 	 */
-	@FunctionalInterface
+	/*@FunctionalInterface
 	private static interface IAddMetricFunction {
 		void addMetric(String name, boolean counter, Function<OPerformanceStatisticManager, Number> getter);
-	}
+	}*/
 	
 	@Override
 	public List<MetricFamilySamples> collect() {
@@ -38,7 +45,20 @@ public class OMetricsOrientDB extends Collector {
 			@Override
 			protected List<MetricFamilySamples> execute(ODatabaseDocument db) {
 				List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
-				OPerformanceStatisticManager perf = getPerformanceStatisticManager(db);
+				mfs.add(new GaugeMetricFamily("orientdb_frozen", "Is DB frozen and in RO mode", db.isFrozen()?1.0:0.0));
+				
+				GaugeMetricFamily count = new GaugeMetricFamily("orientdb_count", "Count of instances per class including subclasses", Collections.singletonList("class"));
+				long total = 0;
+				Collection<OClass> classes = ((ODatabaseDocumentTx)db).getMetadata().getImmutableSchemaSnapshot().getClasses();
+				for (OClass oClass : classes) {
+					count.addMetric(Collections.singletonList(oClass.getName()), oClass.count());
+					total+=oClass.count(false);
+				}
+				mfs.add(count);
+				mfs.add(new GaugeMetricFamily("orientdb_count_total", "Count of total instances", total));
+				
+				
+				/*OPerformanceStatisticManager perf = getPerformanceStatisticManager(db);
 				if(perf!=null) {
 					IAddMetricFunction doOp = (name, counter, getter) -> {
 						Number value = getter.apply(perf);
@@ -66,13 +86,13 @@ public class OMetricsOrientDB extends Collector {
 					doOp.addMetric("write_cache_pages_per_flush", false, OPerformanceStatisticManager::getWriteCachePagesPerFlush);
 					doOp.addMetric("write_cache_size", false, OPerformanceStatisticManager::getWriteCacheSize);
 					doOp.addMetric("write_speed_in_cache_in_pages", false, OPerformanceStatisticManager::getWriteSpeedInCacheInPages);
-				}
+				}*/
 				return mfs;
 			}
 		}.execute();
 	}
 	
-	public static OPerformanceStatisticManager getPerformanceStatisticManager() {
+	/*public static OPerformanceStatisticManager getPerformanceStatisticManager() {
 		return new DBClosure<OPerformanceStatisticManager>() {
 
 			@Override
@@ -90,6 +110,6 @@ public class OMetricsOrientDB extends Collector {
 			}
 		}
 		return null;
-	}
+	}*/
 
 }

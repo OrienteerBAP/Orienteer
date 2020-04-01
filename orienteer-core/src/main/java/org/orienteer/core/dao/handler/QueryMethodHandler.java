@@ -15,37 +15,27 @@ import java.util.Map;
  *
  * @param <T> type of target/delegate object
  */
-public class QueryMethodHandler<T> extends AbstractMethodHandler<T> {
+public class QueryMethodHandler<T> extends AbstractMethodHandler<T>{
+	
+	private final SerializableFunction<T, ? extends Object> converter;
+	
+	public QueryMethodHandler() {
+		this(null);
+	}
+	
+	public QueryMethodHandler(SerializableFunction<T, ? extends Object> converter) {
+		this.converter = converter;
+	}
 
-  private final SerializableFunction<T, ? extends Object> converter;
-
-  public QueryMethodHandler() {
-    this(null);
-  }
-
-  public QueryMethodHandler(SerializableFunction<T, ? extends Object> converter) {
-    this.converter = converter;
-  }
-
-  @Override
-  public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
-    if (method.isAnnotationPresent(Query.class)) {
-      String sql = method.getAnnotation(Query.class).value();
-      OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>(sql);
-      Map<String, Object> argumets = toArguments(method, args);
-
-      if (converter != null) {
-        argumets.putIfAbsent("target", converter.apply(target));
-      }
-      Class<?> returnType = method.getReturnType();
-
-      if (Collection.class.isAssignableFrom(returnType)) {
-        return new ResultHolder(query.run(argumets));
-      }
-      return new ResultHolder(query.runFirst(argumets));
-    }
-
-    return null;
-  }
+	@Override
+	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+		if(method.isAnnotationPresent(Query.class)) {
+			String sql = method.getAnnotation(Query.class).value();
+			OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>(sql);
+			Map<String, Object> argumets = toArguments(method, args);
+			if(converter!=null) argumets.putIfAbsent("target", converter.apply(target));
+			return new ResultHolder(queryDB(query, argumets, method));
+		} else return null;
+	}
 
 }

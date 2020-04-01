@@ -2,6 +2,7 @@ package org.orienteer.metrics;
 
 
 import org.apache.wicket.MetaDataKey;
+import org.apache.wicket.core.request.handler.IPageClassRequestHandler;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
@@ -40,6 +41,13 @@ public class OMetricsRequestCycleListener implements IRequestCycleListener {
 																	.labelNames("ajax", "handler")
 																	.create();
 	
+	private static final Counter COUNTER_PAGES = Counter.build()
+																.namespace("wicket")
+																	.name("pages")
+																	.help("Total number of requests per page")
+																	.labelNames("ajax", "page")
+																	.create();
+	
 	private static final Histogram HISTOGRAM_REQUESTS = Histogram.build()
 															.namespace("wicket")
 															.name("requests")
@@ -53,6 +61,7 @@ public class OMetricsRequestCycleListener implements IRequestCycleListener {
 		COUNTER_EXCEPTIONS.labels(Boolean.TRUE.toString()).inc(0);
 		COUNTER_EXCEPTIONS.labels(Boolean.FALSE.toString()).inc(0);
 		CollectorRegistry.defaultRegistry.register(COUNTER_EXECUTIONS);
+		CollectorRegistry.defaultRegistry.register(COUNTER_PAGES);
 		CollectorRegistry.defaultRegistry.register(HISTOGRAM_REQUESTS);
 	}
 	
@@ -78,12 +87,18 @@ public class OMetricsRequestCycleListener implements IRequestCycleListener {
 	
 	@Override
 	public void onRequestHandlerExecuted(RequestCycle cycle, IRequestHandler handler) {
-		COUNTER_EXECUTIONS.labels(Boolean.toString(((WebRequest)cycle.getRequest()).isAjax()),
+		String ajaxLabel = Boolean.toString(((WebRequest)cycle.getRequest()).isAjax());
+		COUNTER_EXECUTIONS.labels(ajaxLabel,
 									handler.getClass().getSimpleName()).inc();
+		if(handler instanceof IPageClassRequestHandler) {
+			COUNTER_PAGES.labels(ajaxLabel,
+					((IPageClassRequestHandler)handler).getPageClass().getSimpleName()).inc();
+		}
 	}
 	
 	protected void onDestroy() {
 		CollectorRegistry.defaultRegistry.unregister(COUNTER_EXECUTIONS);
+		CollectorRegistry.defaultRegistry.unregister(COUNTER_PAGES);
 		CollectorRegistry.defaultRegistry.unregister(COUNTER_EXCEPTIONS);
 		CollectorRegistry.defaultRegistry.unregister(HISTOGRAM_REQUESTS);
 	}
