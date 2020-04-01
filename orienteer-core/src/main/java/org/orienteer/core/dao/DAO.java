@@ -130,7 +130,7 @@ public final class DAO {
 			if(subJavaTypeCandidate!=null && subJavaTypeCandidate.equals(javaType)) subJavaTypeCandidate = null;
 			final Class<?> subJavaType = subJavaTypeCandidate;
 			final DAOField daoField = method.getAnnotation(DAOField.class);
-			if(daoField!=null) fieldNameCandidate = daoField.value();
+			if(daoField!=null && !Strings.isEmpty(daoField.value())) fieldNameCandidate = daoField.value();
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
 											?daoField.type()
 											:OType.getTypeByClass(javaType);
@@ -142,6 +142,7 @@ public final class DAO {
 									:10*currentOrder++;
 			String linkedClassCandidate = ctx.resolveOClass(subJavaType, () -> describe(helper, subJavaType, ctx));
 			if(linkedClassCandidate==null) linkedClassCandidate = ctx.resolveOClass(javaType, () -> describe(helper, javaType, ctx));
+			if(linkedClassCandidate==null && daoField!=null && !Strings.isEmpty(daoField.linkedClass())) linkedClassCandidate = daoField.linkedClass();
 			if(oTypeCandidate==null && linkedClassCandidate!=null) {
 				oTypeCandidate = OType.LINK;
 			}
@@ -149,9 +150,10 @@ public final class DAO {
 			final String fieldName = fieldNameCandidate;
 			final OType oType = oTypeCandidate;
 			final String linkedClass = linkedClassCandidate;
-			LOG.info("Method: "+methodName+" Field: "+fieldName+" Type: "+oType + " LinkedType: "+linkedType+" LinkedClass: "+linkedClass);
+			LOG.info("Method: {} OCLass: {} Field: {} Type: {} LinkedType: {} LinkedClass: {}",methodName, daooClass.value(), fieldName, oType, linkedType, linkedClass);
 			
-			ctx.postponTillExit(() -> {
+			ctx.postponeTillExit(() -> {
+				LOG.info("Create property {} ({}) order {}. LinkedType: {}", fieldName, oType, order, linkedType);
 				helper.oProperty(fieldName, oType, order);
 				if(linkedType!=null) helper.linkedType(linkedType);
 				return null;
@@ -159,18 +161,22 @@ public final class DAO {
 			if(linkedClass!=null) ctx.postponeTillDefined(linkedClass, () -> {
 				String inverse = daoField!=null?daoField.inverse():null;
 				if(Strings.isEmpty(inverse)) {
+					LOG.info("Setup relationship {}.{} -> {}", daooClass.value(), fieldName, linkedClass);
 					helper.setupRelationship(daooClass.value(), fieldName, linkedClass);
 				} else {
-					helper.setupRelationship(daooClass.value(), fieldName, linkedClass, inverse);
+					LOG.info("Setup relationship {}.{} -> {} ({})", daooClass.value(), fieldName, linkedClass, inverse);
+					helper.setupRelationship(daooClass.value(), fieldName, linkedClass, inverse); 
 				}
 				return null;
 			});
 		}
 		
+		LOG.info("Creation of OClass {}", daooClass.value());
 		if(daooClass.isAbstract()) helper.oAbstractClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
 		else helper.oClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
 		
 		ctx.exiting(clazz, daooClass.value());
+		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
 	}
 }

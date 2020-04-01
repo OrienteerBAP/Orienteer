@@ -3,6 +3,7 @@ package org.orienteer.core.dao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -10,6 +11,8 @@ import java.util.function.Supplier;
 
 import org.apache.wicket.util.collections.MultiMap;
 import org.apache.wicket.util.string.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class DescribeContext {
 	
@@ -17,6 +20,7 @@ class DescribeContext {
 		private Class<?> daoClass;
 		private String oClass;
 		private List<Supplier<Boolean>> postponedTillExit = new ArrayList<Supplier<Boolean>>();
+		private MultiMap<String, Supplier<Boolean>> postponedTillDefined = new MultiMap<String, Supplier<Boolean>>();
 		
 		ContextItem(Class<?> daoClass, String oClass) {
 			this.daoClass = daoClass;
@@ -29,7 +33,8 @@ class DescribeContext {
 	private Stack<Class<?>> processingStackIndex = new Stack<Class<?>>();
 	private Stack<ContextItem> processingStack = new Stack<ContextItem>();
 	
-	private MultiMap<String, Supplier<Boolean>> postponedTillDefined = new MultiMap<String, Supplier<Boolean>>();
+	private MultiMap<String, Supplier<Boolean>> globalPostponedTillDefined = new MultiMap<String, Supplier<Boolean>>();
+	
 
 	public void entering(Class<?> clazz, String oClass) {
 		if(processingStackIndex.contains(clazz)) throw new IllegalStateException("Class "+clazz.getName()+" is already in stack. Stop infinite loop.");
@@ -45,15 +50,24 @@ class DescribeContext {
 		for (Supplier<Boolean> postponed : last.postponedTillExit) {
 			postponed.get();
 		}
+		describedClasses.put(clazz, oClassName);
 		
-		List<Supplier<Boolean>> dependencies = postponedTillDefined.remove(oClassName);
-		if(dependencies!=null) {
-			for (Supplier<Boolean> supplier : dependencies) {
-				supplier.get();
+		MultiMap<String, Supplier<Boolean>> mergeTo = processingStack.empty()?globalPostponedTillDefined:processingStack.lastElement().postponedTillDefined;
+		Iterator<Map.Entry<String, List<Supplier<Boolean>>>> it = last.postponedTillDefined.entrySet().iterator();
+		while(it.hasNext()) {
+			Map.Entry<String, List<Supplier<Boolean>>> entry = it.next();
+			if(wasDescribed(entry.getKey())) {
+				for (Supplier<Boolean> supplier : entry.getValue()) {
+					supplier.get();
+				}
+				it.remove();
+			} else {
+				List<Supplier<Boolean>> mergeToValue = mergeTo.get(entry.getKey());
+				if(mergeToValue!=null) mergeToValue.addAll(entry.getValue());
+				else mergeTo.put(entry.getKey(), entry.getValue());
 			}
 		}
 		
-		describedClasses.put(clazz, oClassName);
 	}
 	
 	public boolean inStack(Class<?> clazz) {
@@ -83,18 +97,19 @@ class DescribeContext {
 		return !Strings.isEmpty(ret) ? ret : supplier.get();
 	}
 	
-	public void postponTillExit(Supplier<Boolean> supplier) {
+	public void postponeTillExit(Supplier<Boolean> supplier) {
 		processingStack.lastElement().postponedTillExit.add(supplier);
 	}
 	
 	public void postponeTillDefined(String linkedClass, Supplier<Boolean> supplier) {
-		if(wasDescribed(linkedClass)) postponTillExit(supplier);
-		else postponedTillDefined.addValue(linkedClass, supplier);
+		if(wasDescribed(linkedClass)) postponeTillExit(supplier);
+		else processingStack.lastElement().postponedTillDefined.addValue(linkedClass, supplier);
+//		if(wasDescribed(linkedClass) || processingStack.lastElement().oClass.equals(linkedClass)) postponTillExit(supplier);
 	}
 	
 	public void close(boolean restrictDependencies) {
 		if(processingStackIndex.size()>0) throw new IllegalStateException("Can't close context because stack is not null");
-		Collection<List<Supplier<Boolean>>> remaining = postponedTillDefined.values();
+		Collection<List<Supplier<Boolean>>> remaining = globalPostponedTillDefined.values();
 		if(restrictDependencies && remaining.size()>0) throw new IllegalStateException("There are unsitisfied dependencies");
 		for (List<Supplier<Boolean>> list : remaining) {
 			for (Supplier<Boolean> supplier : list) {

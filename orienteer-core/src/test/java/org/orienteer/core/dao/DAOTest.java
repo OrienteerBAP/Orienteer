@@ -172,6 +172,8 @@ public class DAOTest {
 			assertProperty(daoTestClassA, "bSingle", OType.LINK, daoTestClassB, null);
 			assertProperty(daoTestClassA, "bOtherField", OType.LINK, daoTestClassB, null);
 			assertProperty(daoTestClassA, "selfType", OType.LINK, daoTestClassA, null);
+			assertProperty(daoTestClassA, "linkAsDoc", OType.LINK, daoTestClassB, null);
+			assertProperty(daoTestClassA, "embeddedStringList", OType.EMBEDDEDLIST, OType.STRING);
 			
 			assertProperty(daoTestClassB, "alias", OType.STRING);
 			assertProperty(daoTestClassB, "linkToA", OType.LINK, daoTestClassA, null);

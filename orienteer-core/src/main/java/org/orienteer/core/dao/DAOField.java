@@ -17,6 +17,7 @@ public @interface DAOField {
 	String value() default "";
 	OType type() default OType.ANY;
 	OType linkedType() default OType.ANY;
+	String linkedClass() default "";
 	int order() default -1; 
 	String inverse() default "";
 }
