@@ -1,32 +1,24 @@
 package org.orienteer.core.dao;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.util.string.Strings;
-import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
-
-import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
 
 /**
  * Utility class for creating implementations for required interfaces
@@ -137,9 +129,18 @@ public final class DAO {
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
 											?daoField.type()
 											:OType.getTypeByClass(javaType);
-			final OType linkedType = daoField!=null && !OType.ANY.equals(daoField.linkedType())
-											?daoField.linkedType()
-											:(subJavaType!=null?OType.getTypeByClass(subJavaType):null);
+
+			final OType linkedType;
+			if (daoField != null) {
+				if (OType.ANY.equals(daoField.linkedType())) {
+					linkedType = null;
+				} else {
+					linkedType = daoField.linkedType();
+				}
+			} else {
+				linkedType = null;
+			}
+
 			final int order = daoField!=null && daoField.order()>=0
 									?daoField.order()
 									:10*currentOrder++;
