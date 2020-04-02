@@ -1,23 +1,23 @@
 package org.orienteer.notifications.testenv.service;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.notifications.service.ITransport;
-import org.orienteer.notifications.testenv.OTestNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class OTestTransport implements ITransport<OTestNotification> {
+public class OTestTransport implements ITransport {
 
   public static final Logger LOG = LoggerFactory.getLogger(OTestTransport.class);
 
-  public OTestTransport() {
+  public OTestTransport(ODocument transportDocument) {
     super();
-    LOG.info("Open transport connection for: {}", getClass().getSimpleName());
+    LOG.info("Open transport connection for: {}", transportDocument);
   }
 
   @Override
-  public void send(OTestNotification notification) {
+  public void send(ODocument notification) {
     try {
       Thread.sleep(3000);
       LOG.info("Send notification: {}", notification);

@@ -1,22 +1,24 @@
 package org.orienteer.notifications.test;
 
+import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.Sudo;
 import org.orienteer.mail.model.OMail;
 import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.mail.util.OMailUtils;
+import org.orienteer.notifications.dao.ONotificationStatusDao;
+import org.orienteer.notifications.dao.ONotificationTransportDao;
 import org.orienteer.notifications.model.OMailNotification;
 import org.orienteer.notifications.model.ONotification;
 import org.orienteer.notifications.model.ONotificationStatusHistory;
-import org.orienteer.notifications.model.ONotificationTransport;
-import org.orienteer.notifications.repository.ONotificationStatusRepository;
-import org.orienteer.notifications.repository.ONotificationTransportRepository;
 import org.orienteer.notifications.scheduler.ONotificationScheduler;
 import org.orienteer.notifications.task.ONotificationSendTask;
 import org.orienteer.notifications.testenv.module.TestDataModule;
@@ -38,6 +40,12 @@ public class TestSendNotificationTask {
 
   private List<ONotification> notifications;
 
+  @Inject
+  private ONotificationTransportDao transportDao;
+
+  @Inject
+  private ONotificationStatusDao statusDao;
+
   @Before
   @Sudo
   public void init() {
@@ -45,8 +53,11 @@ public class TestSendNotificationTask {
 
     ODatabaseDocument db = ODatabaseRecordThreadLocal.instance().get();
 
-    ONotificationTransport transport = ONotificationTransportRepository.getTransportByAlias(db, TestDataModule.TRANSPORT_MAIL)
-            .orElseThrow(IllegalStateException::new);
+    ODocument mailTransport = transportDao.findByAlias(TestDataModule.TRANSPORT_MAIL);
+
+    if (mailTransport == null) {
+      throw new IllegalStateException("There is no transport with alias: " + TestDataModule.TRANSPORT_MAIL);
+    }
 
     OMail mail = OMailUtils.getOMailByName(TestDataModule.MAIL_TEST)
             .orElseThrow(IllegalStateException::new);
@@ -56,7 +67,9 @@ public class TestSendNotificationTask {
     for (int i = 0; i < NOTIFICATIONS; i++) {
       db.begin();
       OPreparedMail preparedMail = new OPreparedMail(mail);
-      ONotification notification = new OMailNotification(preparedMail, transport);
+      OMailNotification notification = IODocumentWrapper.get(OMailNotification.class, new ODocument(OMailNotification.CLASS_NAME));
+      notification.setTransport(mailTransport);
+      notification.setPreparedMail(preparedMail.getDocument());
       preparedMail.addRecipient("vetalgonchar@gmail.com");
       preparedMail.save();
       notification.save();
@@ -94,7 +107,7 @@ public class TestSendNotificationTask {
     long countOfSentNotificaitons = notifications.stream()
             .filter(notification -> {
               notification.reload();
-              return new LinkedList<>(notification.getStatusHistories()).getLast().getStatus().equals(ONotificationStatusRepository.getSentStatus());
+              return new LinkedList<>(notification.getStatusHistories()).getLast().equals(statusDao.getSent());
             }).count();
 
     LOG.info("all notifications: {} sent notificaitons: {}", notifications.size(), countOfSentNotificaitons);
@@ -103,23 +116,27 @@ public class TestSendNotificationTask {
   }
 
   private void assertNotificationLifecycle(ONotification notification) {
-    ODatabaseDocument db = ODatabaseRecordThreadLocal.instance().get();
     notification.reload();
 
-    LinkedList<ONotificationStatusHistory> statusHistories = new LinkedList<>(notification.getStatusHistories());
+    ONotificationStatusHistory statusHistory = IODocumentWrapper.get(ONotificationStatusHistory.class);
+
+    LinkedList<ODocument> statusHistories = new LinkedList<>(notification.getStatusHistories());
     assertEquals(3, statusHistories.size());
 
-    ONotificationStatusHistory pendingHistory = statusHistories.pop();
+    ODocument pendingHistory = statusHistories.pop();
     assertNotNull(pendingHistory);
-    assertEquals(pendingHistory.getStatus(), ONotificationStatusRepository.getPendingStatus(db));
+    statusHistory.fromStream(pendingHistory);
+    assertEquals(statusHistory.getStatus(), statusDao.getPending());
 
-    ONotificationStatusHistory sendingHistory = statusHistories.pop();
+    ODocument sendingHistory = statusHistories.pop();
     assertNotNull(sendingHistory);
-    assertEquals(sendingHistory.getStatus(), ONotificationStatusRepository.getSendingStatus(db));
+    statusHistory.fromStream(sendingHistory);
+    assertEquals(statusHistory.getStatus(), statusDao.getSending());
 
-    ONotificationStatusHistory sentHistory = statusHistories.pop();
+    ODocument sentHistory = statusHistories.pop();
     assertNotNull(sentHistory);
-    assertEquals(sentHistory.getStatus(), ONotificationStatusRepository.getSentStatus(db));
+    statusHistory.fromStream(sentHistory);
+    assertEquals(statusHistory.getStatus(), statusDao.getSent());
 
   }
 

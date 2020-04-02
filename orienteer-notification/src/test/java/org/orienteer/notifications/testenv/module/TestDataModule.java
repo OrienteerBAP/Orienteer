@@ -3,18 +3,21 @@ package org.orienteer.notifications.testenv.module;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.mail.OMailModule;
 import org.orienteer.mail.model.OMail;
 import org.orienteer.mail.model.OMailSettings;
+import org.orienteer.notifications.dao.ONotificationTransportDao;
 import org.orienteer.notifications.model.OMailNotificationTransport;
-import org.orienteer.notifications.model.ONotification;
-import org.orienteer.notifications.model.ONotificationTransport;
 import org.orienteer.notifications.module.ONotificationModule;
+import org.orienteer.notifications.service.OMailTransport;
 import org.orienteer.notifications.testenv.OTestNotification;
 import org.orienteer.notifications.testenv.OTestNotificationTransport;
+import org.orienteer.notifications.testenv.service.OTestTransport;
 
 public class TestDataModule extends AbstractOrienteerModule {
 
@@ -31,32 +34,38 @@ public class TestDataModule extends AbstractOrienteerModule {
   public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
     ODocument mailSettings = installTestMailSettings(helper);
+    DAO.describe(helper, OTestNotification.class, OTestNotificationTransport.class);
+
     installOMail(helper, mailSettings);
     installTestNotificationTransports(helper, mailSettings);
-    installTestNotification(helper);
+
     return null;
   }
 
-  private void installTestNotification(OSchemaHelper helper) {
-    helper.oClass(OTestNotification.CLASS_NAME, ONotification.CLASS_NAME);
-  }
 
   private void installTestNotificationTransports(OSchemaHelper helper, ODocument settings) {
-    helper.oClass(OTestNotificationTransport.CLASS_NAME, ONotificationTransport.CLASS_NAME)
-            .getOClass();
+    ONotificationTransportDao transportDao = ONotificationTransportDao.get();
 
-    helper.oClass(OMailNotificationTransport.CLASS_NAME)
-            .oDocument(OMailNotificationTransport.PROP_ALIAS, TRANSPORT_MAIL)
-            .field(OMailNotificationTransport.PROP_NAME, CommonUtils.toMap("en", "Test Mail Transport"))
-            .field(OMailNotificationTransport.PROP_MAIL_SETTINGS, settings)
-            .field(OMailNotificationTransport.PROP_CONNECTIONS_LIMIT, 4)
-            .saveDocument();
+    ODocument mailTransport = transportDao.findByAlias(TRANSPORT_MAIL);
+    if (mailTransport == null) {
+      OMailNotificationTransport transport = IODocumentWrapper.get(OMailNotificationTransport.class);
+      transport.fromStream(new ODocument(OMailNotificationTransport.CLASS_NAME));
+      transport.setName(CommonUtils.toMap("en", "Test Mail Transport"));
+      transport.setAlias(TRANSPORT_MAIL);
+      transport.setMailSettings(settings);
+      transport.setTransportClass(OMailTransport.class.getName());
+      transport.save();
+    }
 
-    helper.oClass(OTestNotificationTransport.CLASS_NAME)
-            .oDocument(OTestNotificationTransport.PROP_ALIAS, TRANSPORT_TEST)
-            .field(OMailNotificationTransport.PROP_NAME, CommonUtils.toMap("en", "Test Mail Transport"))
-            .field(OMailNotificationTransport.PROP_CONNECTIONS_LIMIT, 4)
-            .saveDocument();
+    ODocument testTransport = transportDao.findByAlias(TRANSPORT_TEST);
+    if (testTransport == null) {
+      OTestNotificationTransport transport = IODocumentWrapper.get(OTestNotificationTransport.class);
+      transport.fromStream(new ODocument(OTestNotificationTransport.CLASS_NAME));
+      transport.setName(CommonUtils.toMap("en", "Test Transport"));
+      transport.setAlias(TRANSPORT_TEST);
+      transport.setTransportClass(OTestTransport.class.getName());
+      transport.save();
+    }
   }
 
   private void installOMail(OSchemaHelper helper, ODocument settings) {

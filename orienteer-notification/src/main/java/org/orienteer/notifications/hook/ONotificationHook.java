@@ -5,12 +5,11 @@ import com.orientechnologies.orient.core.exception.OValidationException;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.notifications.dao.ONotificationStatusDao;
 import org.orienteer.notifications.model.ONotification;
 import org.orienteer.notifications.model.ONotificationStatusHistory;
-import org.orienteer.notifications.repository.ONotificationStatusRepository;
 import org.orienteer.notifications.service.IONotificationFactory;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -46,16 +45,19 @@ public class ONotificationHook extends ODocumentHookAbstract {
       changed = true;
     }
 
-    if (notification.getCreatedAsDate() == null) {
-      notification.setCreatedAsDate(new Date());
+    if (notification.getCreated() == null) {
+      notification.setCreated(new Date());
       changed = true;
     }
 
-    if (notification.getStatusAsDocument() == null) {
-      ODocument pendingStatus = ONotificationStatusRepository.getPendingStatus(database).getDocument();
+    if (notification.getStatus() == null) {
+      ODocument pendingStatus = ONotificationStatusDao.get().getPending();
 
-      notification.setStatusAsDocument(pendingStatus);
-      notification.addStatusHistory(new ONotificationStatusHistory(Instant.now(), pendingStatus));
+      notification.setStatus(pendingStatus);
+
+      ONotificationStatusHistory history = ONotificationStatusHistory.create(new Date(), pendingStatus);
+
+      notification.addStatusHistory(history);
 
       changed = true;
     }
@@ -75,10 +77,10 @@ public class ONotificationHook extends ODocumentHookAbstract {
       throw new OValidationException("Not supported '" + ONotification.CLASS_NAME + "' subclass!");
     }
 
-    List<ODocument> history = notification.getStatusHistoriesAsDocuments();
+    List<ODocument> history = notification.getStatusHistories();
     if (!history.isEmpty()) {
       history.forEach(database::delete);
-      notification.setStatusHistoriesAsDocuments(null);
+      notification.setStatusHistories(null);
       changed = true;
     }
 

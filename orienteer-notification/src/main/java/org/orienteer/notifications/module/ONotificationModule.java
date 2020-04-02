@@ -2,25 +2,22 @@ package org.orienteer.notifications.module;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ORecordHook;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.mail.OMailModule;
-import org.orienteer.mail.model.OMailSettings;
-import org.orienteer.mail.model.OPreparedMail;
+import org.orienteer.notifications.dao.ONotificationStatusDao;
 import org.orienteer.notifications.hook.ONotificationHook;
 import org.orienteer.notifications.model.*;
 import org.orienteer.notifications.scheduler.ONotificationScheduler;
 import org.orienteer.notifications.task.ONotificationSendTask;
-import org.orienteer.twilio.model.OPreparedSMS;
-import org.orienteer.twilio.model.OSmsSettings;
 import org.orienteer.twilio.module.OTwilioModule;
 
 import java.util.List;
@@ -40,13 +37,20 @@ public class ONotificationModule extends AbstractOrienteerModule {
   @Override
   public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
+
+    DAO.describe(helper, ONotification.class, ONotificationStatus.class, ONotificationTransport.class, ONotificationStatusHistory.class);
+    DAO.describe(helper, OMailNotification.class, OMailNotificationTransport.class);
+    DAO.describe(helper, OSmsNotification.class, OSmsNotificationTransport.class);
+
     installNotificationStatus(helper);
+
+  /*  installNotificationStatus(helper);
     installNotificationTransport(helper);
     installNotification(helper);
     installMailNotification(helper);
     installSmsNotification(helper);
     installSmsNotificationTransport(helper);
-
+*/
     return createModuleDocument(helper);
   }
 
@@ -65,7 +69,42 @@ public class ONotificationModule extends AbstractOrienteerModule {
             .getODocument();
   }
 
-  private void installNotification(OSchemaHelper helper) {
+  private void installNotificationStatus(OSchemaHelper helper) {
+    ONotificationStatus status = IODocumentWrapper.get(ONotificationStatus.class);
+    ONotificationStatusDao statusDao = ONotificationStatusDao.get();
+
+    if (statusDao.getPending() == null) {
+      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
+      status.setAlias(ONotificationStatus.ALIAS_PENDING);
+      status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.pending").getObject()));
+      status.save();
+    }
+
+    if (statusDao.getSending() == null) {
+      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
+      status.setAlias(ONotificationStatus.ALIAS_SENDING);
+      status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.sending").getObject()));
+      status.save();
+    }
+
+    if (statusDao.getSent() == null) {
+      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
+      status.setAlias(ONotificationStatus.ALIAS_SENT);
+      status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.sent").getObject()));
+      status.save();
+    }
+
+    if (statusDao.getFailed() == null) {
+      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
+      status.setAlias(ONotificationStatus.ALIAS_FAILED);
+      status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.failed").getObject()));
+      status.save();
+    }
+
+  }
+
+
+/*  private void installNotification(OSchemaHelper helper) {
 
     helper.oClass(ONotificationStatusHistory.CLASS_NAME)
             .oProperty(ONotificationStatusHistory.PROP_TIMESTAMP, OType.DATETIME, 0)
@@ -166,7 +205,7 @@ public class ONotificationModule extends AbstractOrienteerModule {
               .notNull()
               .defaultValue("1")
               .min("1");
-  }
+  }*/
 
   @Override
   public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {

@@ -1,49 +1,43 @@
 package org.orienteer.notifications.model;
 
+import com.google.common.base.Strings;
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.IODocumentWrapper;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.notifications.service.ITransport;
 
-import java.util.Collections;
+import java.lang.reflect.Constructor;
 import java.util.Map;
 
-/**
- * Notification transport model
- */
-public abstract class ONotificationTransport extends ODocumentWrapper {
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = ONotificationTransport.CLASS_NAME, isAbstract = true)
+public interface ONotificationTransport extends IODocumentWrapper {
 
-  public static final String CLASS_NAME = "ONotificationTransport";
+  String CLASS_NAME = "ONotificationTransport";
 
-  public static final String PROP_NAME       = "name";
-  public static final String PROP_ALIAS      = "alias";
 
-  protected ONotificationTransport(String iClassName) {
-    super(iClassName);
-  }
+  String getAlias();
+  ONotificationTransport setAlias(String alias);
 
-  protected ONotificationTransport(ODocument iDocument) {
-    super(iDocument);
-  }
+  Map<String, String> getName();
+  ONotificationTransport setName(Map<String, String> name);
 
-  public abstract ITransport<? extends ONotification> createTransportService();
+  String getTransportClass();
+  ONotificationTransport setTransportClass(String transportClass);
 
-  public Map<String, String> getName() {
-    Map<String, String> name = document.field(PROP_NAME);
-    return name != null ? name : Collections.emptyMap();
-  }
-
-  public ONotificationTransport setName(Map<String, String> name) {
-    document.field(PROP_NAME, name);
-    return this;
-  }
-
-  public String getAlias() {
-    return document.field(PROP_ALIAS);
-  }
-
-  public ONotificationTransport setAlias(String alias) {
-    document.field(PROP_ALIAS, alias);
-    return this;
+  default ITransport createTransportService() {
+    String transportClass = getTransportClass();
+    if (!Strings.isNullOrEmpty(transportClass)) {
+      try {
+        Constructor<?> constructor = Class.forName(transportClass).getConstructor(ODocument.class);
+        return (ITransport) constructor.newInstance(getDocument());
+      } catch (Exception e) {
+        throw new IllegalStateException(e);
+      }
+    }
+    return null;
   }
 
 }

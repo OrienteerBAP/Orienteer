@@ -1,104 +1,46 @@
 package org.orienteer.notifications.model;
 
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.google.inject.ProvidedBy;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
-import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.notifications.service.IONotificationFactory;
+import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.IODocumentWrapper;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
 
-import java.time.Instant;
 import java.util.Date;
 
-/**
- * Notification status history
- */
-public class ONotificationStatusHistory extends ODocumentWrapper {
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = ONotificationStatusHistory.CLASS_NAME)
+public interface ONotificationStatusHistory extends IODocumentWrapper {
 
-  public static final String CLASS_NAME = "ONotificationStatusHistory";
+  String CLASS_NAME = "ONotificationStatusHistory";
 
-  public static final String PROP_TIMESTAMP    = "timestamp";
-  public static final String PROP_STATUS       = "status";
-  public static final String PROP_NOTIFICATION = "notification";
+  Date getTimestamp();
+  ONotificationStatusHistory setTimestamp(Date timestamp);
 
-  public ONotificationStatusHistory() {
-    super(CLASS_NAME);
+  @DAOField(linkedClass = ONotification.CLASS_NAME, inverse = "statusHistories", type = OType.LINK)
+  ODocument getNotification();
+
+  @DAOField(linkedClass = ONotification.CLASS_NAME, inverse = "statusHistories", type = OType.LINK)
+  ONotificationStatusHistory setNotification(ODocument notification);
+
+  @DAOField(linkedClass = ONotificationStatus.CLASS_NAME, type = OType.LINK)
+  ODocument getStatus();
+
+  @DAOField(linkedClass = ONotificationStatus.CLASS_NAME, type = OType.LINK)
+  ONotificationStatusHistory setStatus(ODocument status);
+
+  static ONotificationStatusHistory create(Date timestamp, ONotificationStatus status) {
+    return create(timestamp, status.getDocument());
   }
 
-  public ONotificationStatusHistory(String iClassName) {
-    super(iClassName);
+  static ONotificationStatusHistory create(Date timestamp, ODocument status) {
+    ONotificationStatusHistory statusHistory = IODocumentWrapper.get(ONotificationStatusHistory.class);
+    statusHistory.fromStream(new ODocument(CLASS_NAME));
+    statusHistory.setStatus(status);
+    statusHistory.setTimestamp(timestamp);
+    return statusHistory;
   }
 
-  public ONotificationStatusHistory(ODocument iDocument) {
-    super(iDocument);
-  }
-
-  public ONotificationStatusHistory(Instant timestamp, ONotificationStatus status) {
-    this(timestamp, status != null ? status.getDocument() : null);
-  }
-
-  public ONotificationStatusHistory(Instant timestamp, ODocument status) {
-    this();
-    setTimestamp(timestamp);
-    setStatusAsDocument(status);
-  }
-
-  public Instant getTimestamp() {
-    Date timestamp = getTimestampAsDate();
-    return timestamp != null ? timestamp.toInstant() : null;
-  }
-
-  public Date getTimestampAsDate() {
-    return document.field(PROP_TIMESTAMP);
-  }
-
-  public ONotificationStatusHistory setTimestamp(Instant timestamp) {
-    return setTimestampAsDate(timestamp != null ? Date.from(timestamp) : null);
-  }
-
-  public ONotificationStatusHistory setTimestampAsDate(Date timestamp) {
-    document.field(PROP_TIMESTAMP, timestamp);
-    return this;
-  }
-
-  public ONotificationStatus getStatus() {
-    ODocument status = getStatusAsDocument();
-    return status != null ? new ONotificationStatus(status) : null;
-  }
-
-  public ODocument getStatusAsDocument() {
-    OIdentifiable status = document.field(PROP_STATUS);
-    return status != null ? status.getRecord() : null;
-  }
-
-  public ONotificationStatusHistory setStatus(ONotificationStatus status) {
-    return setStatusAsDocument(status != null ? status.getDocument() : null);
-  }
-
-  public ONotificationStatusHistory setStatusAsDocument(ODocument status) {
-    document.field(PROP_STATUS, status);
-    return this;
-  }
-
-  public ONotification getNotification() {
-    ODocument notification = getNotificationAsDocument();
-    if (notification != null) {
-      return OrienteerWebApplication.lookupApplication().getServiceInstance(IONotificationFactory.class)
-              .create(notification);
-    }
-    return null;
-  }
-
-  public ODocument getNotificationAsDocument() {
-    OIdentifiable notification = document.field(PROP_NOTIFICATION);
-    return notification != null ? notification.getRecord() : null;
-  }
-
-  public ONotificationStatusHistory setNotification(ONotification notification) {
-    return setNotificationAsDocument(notification != null ? notification.getDocument() : null);
-  }
-
-  public ONotificationStatusHistory setNotificationAsDocument(ODocument notification) {
-    document.field(PROP_NOTIFICATION, notification);
-    return this;
-  }
 }

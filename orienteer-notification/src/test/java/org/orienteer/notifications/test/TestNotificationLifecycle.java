@@ -3,24 +3,26 @@ package org.orienteer.notifications.test;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.Sudo;
+import org.orienteer.notifications.dao.ONotificationStatusDao;
+import org.orienteer.notifications.dao.ONotificationTransportDao;
 import org.orienteer.notifications.model.ONotification;
 import org.orienteer.notifications.model.ONotificationStatusHistory;
-import org.orienteer.notifications.model.ONotificationTransport;
-import org.orienteer.notifications.repository.ONotificationStatusRepository;
-import org.orienteer.notifications.repository.ONotificationTransportRepository;
 import org.orienteer.notifications.service.INotificationService;
 import org.orienteer.notifications.testenv.OTestNotification;
 import org.orienteer.notifications.testenv.module.TestDataModule;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(OrienteerTestRunner.class)
 public class TestNotificationLifecycle {
@@ -30,16 +32,23 @@ public class TestNotificationLifecycle {
   @Inject
   private INotificationService notificationService;
 
+  @Inject
+  private ONotificationTransportDao transportDao;
+
+  @Inject
+  private ONotificationStatusDao statusDao;
+
   @Before
   @Sudo
   public void init() {
-    ODatabaseDocument db = ODatabaseRecordThreadLocal.instance().get();
+    ODocument testTransport = transportDao.findByAlias(TestDataModule.TRANSPORT_TEST);
 
-    ONotificationTransport testNotificationTransport = ONotificationTransportRepository.getTransportByAlias(db, TestDataModule.TRANSPORT_TEST)
-            .orElseThrow(() -> new IllegalStateException("There is no configured test notification transport"));
+    if (testTransport == null) {
+      throw new IllegalStateException("There is no configured test notification transport");
+    }
 
-    testNotification = new OTestNotification();
-    testNotification.setTransport(testNotificationTransport);
+    testNotification = IODocumentWrapper.get(OTestNotification.class, new ODocument(OTestNotification.CLASS_NAME));
+    testNotification.setTransport(testTransport);
     testNotification.save();
   }
 
@@ -61,24 +70,25 @@ public class TestNotificationLifecycle {
   @Test
   @Sudo
   public void testSuccessfulLifecycle() {
-    ODatabaseDocument db = ODatabaseRecordThreadLocal.instance().get();
-    notificationService.send(testNotification);
+    notificationService.send(testNotification.getDocument());
     testNotification.reload();
 
-    List<ONotificationStatusHistory> statusHistories = testNotification.getStatusHistories();
+    ONotificationStatusHistory statusHistory = IODocumentWrapper.get(ONotificationStatusHistory.class);
+
+    List<ODocument> statusHistories = testNotification.getStatusHistories();
     assertEquals(3, statusHistories.size());
 
-    ONotificationStatusHistory pendingHistory = statusHistories.get(0);
-    assertNotNull(pendingHistory);
-    assertEquals(pendingHistory.getStatus(), ONotificationStatusRepository.getPendingStatus(db));
+    assertNotNull(statusHistories.get(0));
+    statusHistory.fromStream(statusHistories.get(0));
+    assertEquals(statusHistory.getStatus(), statusDao.getPending());
 
-    ONotificationStatusHistory sendingHistory = statusHistories.get(1);
-    assertNotNull(sendingHistory);
-    assertEquals(sendingHistory.getStatus(), ONotificationStatusRepository.getSendingStatus(db));
+    assertNotNull(statusHistories.get(1));
+    statusHistory.fromStream(statusHistories.get(1));
+    assertEquals(statusHistory.getStatus(), statusDao.getSending());
 
-    ONotificationStatusHistory sentHistory = statusHistories.get(2);
-    assertNotNull(sentHistory);
-    assertEquals(sentHistory.getStatus(), ONotificationStatusRepository.getSentStatus(db));
+    assertNotNull(statusHistories.get(2));
+    statusHistory.fromStream(statusHistories.get(2));
+    assertEquals(statusHistory.getStatus(), statusDao.getSent());
   }
 
 }

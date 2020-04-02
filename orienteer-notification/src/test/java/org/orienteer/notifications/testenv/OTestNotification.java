@@ -1,26 +1,14 @@
 package org.orienteer.notifications.testenv;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.google.inject.ProvidedBy;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.notifications.model.ONotification;
 
-public class OTestNotification extends ONotification {
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = OTestNotification.CLASS_NAME, superClasses = ONotification.CLASS_NAME)
+public interface OTestNotification extends ONotification {
 
-  public static final String CLASS_NAME = "OTestNotification";
+  String CLASS_NAME = "OTestNotification";
 
-  public OTestNotification() {
-    this(CLASS_NAME);
-  }
-
-  public OTestNotification(String iClassName) {
-    super(iClassName);
-  }
-
-  public OTestNotification(ODocument iDocument) {
-    super(iDocument);
-  }
-
-  @Override
-  public String getDescription() {
-    return CLASS_NAME;
-  }
 }

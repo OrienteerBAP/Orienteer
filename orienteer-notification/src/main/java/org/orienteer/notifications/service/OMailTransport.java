@@ -1,5 +1,7 @@
 package org.orienteer.notifications.service;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.mail.model.OMailAttachment;
 import org.orienteer.mail.model.OMailSettings;
 import org.orienteer.mail.model.OPreparedMail;
@@ -20,7 +22,7 @@ import java.util.Properties;
 /**
  * Transport for send notification throughout mail
  */
-public class OMailTransport implements ITransport<OMailNotification> {
+public class OMailTransport implements ITransport {
 
   private static final Logger LOG = LoggerFactory.getLogger(OMailTransport.class);
 
@@ -30,8 +32,9 @@ public class OMailTransport implements ITransport<OMailNotification> {
   private final Session session;
   private final Transport transport;
 
-  public OMailTransport(OMailNotificationTransport transport) {
-    settings = transport.getMailSettings();
+  public OMailTransport(ODocument transportDocument) {
+    OMailNotificationTransport transport = IODocumentWrapper.get(OMailNotificationTransport.class, transportDocument);
+    settings = new OMailSettings(transport.getMailSettings());
     session = createSession(settings, createSendMailProperties(settings));
 
     try {
@@ -43,12 +46,13 @@ public class OMailTransport implements ITransport<OMailNotification> {
   }
 
   @Override
-  public void send(OMailNotification notification) {
-    LOG.info("Send mail notification: {} {}", notification.getDescription(), transport.isConnected());
+  public void send(ODocument notification) {
+    OMailNotification mailNotification = IODocumentWrapper.get(OMailNotification.class, notification);
+    LOG.info("Send mail notification: {} {}", notification, transport.isConnected());
     connect();
 
     final Message message = new MimeMessage(session);
-    OPreparedMail mail = notification.getPreparedMail();
+    OPreparedMail mail = new OPreparedMail(mailNotification.getPreparedMail());
 
     try {
       Address[] recipients = toAddressArray(mail.getRecipients());

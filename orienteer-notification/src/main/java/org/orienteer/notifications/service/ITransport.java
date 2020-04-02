@@ -1,6 +1,6 @@
 package org.orienteer.notifications.service;
 
-import org.orienteer.notifications.model.ONotification;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import java.io.Closeable;
 
@@ -8,7 +8,7 @@ import java.io.Closeable;
  * Transport for given notification
  * @param <T> notification type for send
  */
-public interface ITransport<T extends ONotification> extends Closeable {
+public interface ITransport extends Closeable {
 
-  void send(T notification);
+  void send(ODocument notification);
 }

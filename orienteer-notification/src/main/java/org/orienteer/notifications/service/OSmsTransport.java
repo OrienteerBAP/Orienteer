@@ -1,8 +1,10 @@
 package org.orienteer.notifications.service;
 
 import com.google.common.base.Strings;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import io.reactivex.Completable;
 import okhttp3.Credentials;
+import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.notifications.model.OSmsNotification;
 import org.orienteer.notifications.model.OSmsNotificationTransport;
 import org.orienteer.notifications.repository.ONotificationModuleRepository;
@@ -19,7 +21,7 @@ import java.util.List;
 /**
  * Transport for send notification throughout SMS
  */
-public class OSmsTransport implements ITransport<OSmsNotification> {
+public class OSmsTransport implements ITransport {
 
   private static final Logger LOG = LoggerFactory.getLogger(OSmsTransport.class);
 
@@ -29,8 +31,9 @@ public class OSmsTransport implements ITransport<OSmsNotification> {
   private final String callback;
   private final ITwilioService twilioService;
 
-  public OSmsTransport(OSmsNotificationTransport transport) {
-    OSmsSettings settings = transport.getSettings();
+  public OSmsTransport(ODocument transportDocument) {
+    OSmsNotificationTransport transport = IODocumentWrapper.get(OSmsNotificationTransport.class, transportDocument);
+    OSmsSettings settings = new OSmsSettings(transport.getSmsSettings());
 
     accountSid = settings.getTwilioAcountSid();
     authToken = settings.getTwilioAuthToken();
@@ -40,14 +43,15 @@ public class OSmsTransport implements ITransport<OSmsNotification> {
   }
 
   @Override
-  public void send(OSmsNotification notification) {
-    LOG.info("Send notification: {}", notification.getDescription());
+  public void send(ODocument notification) {
+    OSmsNotification smsNotification = IODocumentWrapper.get(OSmsNotification.class, notification);
+    LOG.info("Send notification: {}", notification);
 
-    sendMessage(notification).blockingAwait();
+    sendMessage(smsNotification).blockingAwait();
   }
 
   private Completable sendMessage(OSmsNotification notification) {
-    OPreparedSMS preparedSms = notification.getPreparedSms();
+    OPreparedSMS preparedSms = new OPreparedSMS(notification.getPreparedSms());
     List<String> attachments = preparedSms.getAttachments();
     String auth = Credentials.basic(accountSid, authToken);
 

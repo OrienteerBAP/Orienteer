@@ -4,12 +4,12 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ThreadContext;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.IODocumentWrapper;
+import org.orienteer.notifications.dao.ONotificationDao;
+import org.orienteer.notifications.dao.ONotificationStatusDao;
 import org.orienteer.notifications.model.ONotification;
-import org.orienteer.notifications.model.ONotificationStatus;
 import org.orienteer.notifications.module.ONotificationModule;
 import org.orienteer.notifications.repository.ONotificationModuleRepository;
-import org.orienteer.notifications.repository.ONotificationRepository;
-import org.orienteer.notifications.repository.ONotificationStatusRepository;
 import org.orienteer.notifications.scheduler.ONotificationScheduler;
 import org.orienteer.notifications.scheduler.ONotificationTask;
 import org.orienteer.notifications.service.INotificationService;
@@ -50,15 +50,19 @@ public class ONotificationSendTask extends ONotificationTask {
   }
 
   private void sendNotifications(ODatabaseDocument db) {
-    ONotificationModule.Module module = ONotificationModuleRepository.getModule(db);
-    ONotificationStatus sentStatus = ONotificationStatusRepository.getSentStatus(db);
-    List<ONotification> notifications = ONotificationRepository.getNotificationsExceptStatus(db, sentStatus);
+    ONotificationDao notificationDao = ONotificationDao.get();
+    ONotificationStatusDao statusDao = ONotificationStatusDao.get();
 
-    int executorSize = computeExecutorSize(module.getNotificationsPerWorker(), notifications);
-    List<List<ONotification>> groupedNotifications = groupNotificationsForWorkers(module.getNotificationsPerWorker(), notifications);
+    ONotificationModule.Module module = ONotificationModuleRepository.getModule(db);
+    ODocument sentStatus = statusDao.getSent();
+    List<ODocument> notificationsDocs = notificationDao.findExceptStatus(sentStatus);
+
+    int executorSize = computeExecutorSize(module.getNotificationsPerWorker(), notificationsDocs);
+    int notificationsPerWorker = module.getNotificationsPerWorker();
+    List<List<ODocument>> groupedNotifications = groupNotificationsForWorkers(notificationsPerWorker, notificationsDocs);
     ExecutorService executorService = Executors.newFixedThreadPool(executorSize);
 
-    LOG.info("Sending {} notifications...", notifications.size());
+    LOG.info("Sending {} notifications...", notificationsDocs.size());
     List<Future<?>> futures = submitTasks(groupedNotifications, executorService);
     waitForComplete(futures);
   }
@@ -73,27 +77,31 @@ public class ONotificationSendTask extends ONotificationTask {
     });
   }
 
-  private List<Future<?>> submitTasks(List<List<ONotification>> notifications, ExecutorService executorService) {
+  private List<Future<?>> submitTasks(List<List<ODocument>> notifications, ExecutorService executorService) {
     return notifications.stream()
             .map(group -> executorService.submit(new SendNotificationsTask(group)))
             .collect(Collectors.toCollection(LinkedList::new));
   }
 
-  private List<List<ONotification>> groupNotificationsForWorkers(int notificationsPerWorker, List<ONotification> notifications) {
-    Map<ODocument, LinkedList<List<ONotification>>> groupedMap = new LinkedHashMap<>();
+  private List<List<ODocument>> groupNotificationsForWorkers(int notificationsPerWorker, List<ODocument> notifications) {
+    ONotification notification = IODocumentWrapper.get(ONotification.class);
+    Map<ODocument, LinkedList<List<ODocument>>> groupedMap = new LinkedHashMap<>();
 
     notifications.stream()
-            .collect(Collectors.groupingBy(ONotification::getTransportAsDocument))
+            .collect(Collectors.groupingBy(doc -> {
+              notification.fromStream(doc);
+              return notification.getTransport();
+            }))
             .forEach((transport, notificationsByTransport) -> {
-              LinkedList<List<ONotification>> grouped = groupedMap.computeIfAbsent(transport, k -> new LinkedList<>());
+              LinkedList<List<ODocument>> grouped = groupedMap.computeIfAbsent(transport, k -> new LinkedList<>());
 
-              notificationsByTransport.forEach(notification -> {
-                List<ONotification> group = grouped.peek();
+              notificationsByTransport.forEach(notificationDoc -> {
+                List<ODocument> group = grouped.peek();
                 if (group == null || group.size() >= notificationsPerWorker) {
                   group = new LinkedList<>();
                   grouped.push(group);
                 }
-                group.add(notification);
+                group.add(notificationDoc);
               });
             });
 
@@ -102,7 +110,7 @@ public class ONotificationSendTask extends ONotificationTask {
             .collect(Collectors.toList());
   }
 
-  private int computeExecutorSize(int notificationsPerWorker, List<ONotification> notifications) {
+  private int computeExecutorSize(int notificationsPerWorker, List<ODocument> notifications) {
     if (notifications.size() <= notificationsPerWorker) {
       return 1;
     }
@@ -119,9 +127,9 @@ public class ONotificationSendTask extends ONotificationTask {
 
   private static class SendNotificationsTask implements Runnable {
 
-    private final List<ONotification> notifications;
+    private final List<ODocument> notifications;
 
-    public SendNotificationsTask(List<ONotification> notifications) {
+    public SendNotificationsTask(List<ODocument> notifications) {
       this.notifications = notifications;
     }
 
