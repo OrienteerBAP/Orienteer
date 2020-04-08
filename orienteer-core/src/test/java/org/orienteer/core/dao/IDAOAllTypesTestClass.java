@@ -1,5 +1,10 @@
 package org.orienteer.core.dao;
 
+import com.google.inject.ProvidedBy;
+import com.orientechnologies.orient.core.db.record.ridbag.ORidBag;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,13 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.inject.ProvidedBy;
-import com.orientechnologies.orient.core.db.record.ridbag.ORidBag;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass("DAOAllTypesTestClass")
 public interface IDAOAllTypesTestClass {
+
+	@DAOField(linkedClass = "IDAODummyClass", type = OType.LINKLIST)
+	public List<ODocument> getDocs();
+	@DAOField(linkedClass = "IDAODummyClass", type = OType.LINKLIST)
+	public void setDocs(List<ODocument> val);
+
 	  /**
 	   * BOOLEAN("Boolean", 0, Boolean.class, new Class<?>[] { Number.class }),
 	   */
@@ -136,6 +143,8 @@ public interface IDAOAllTypesTestClass {
 	 */
 	public List<IDAODummyClass> getLinkList();
 	public void setLinkList(List<IDAODummyClass> val);
+
+
 
 	/**
 	 * LINKSET("LinkSet", 15, Set.class, new Class<?>[] { Set.class }),

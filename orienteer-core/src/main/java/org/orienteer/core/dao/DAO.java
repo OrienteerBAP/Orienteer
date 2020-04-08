@@ -1,30 +1,22 @@
 package org.orienteer.core.dao;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.util.string.Strings;
-import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
-import static org.orienteer.core.util.CommonUtils.toMap;
-import static org.orienteer.core.util.CommonUtils.decapitalize;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Proxy;
+import java.util.*;
+
+import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
+import static org.orienteer.core.util.CommonUtils.decapitalize;
+import static org.orienteer.core.util.CommonUtils.toMap;
 
 /**
  * Utility class for creating implementations for required interfaces
@@ -161,7 +153,7 @@ public final class DAO {
 			
 			final String fieldName = fieldNameCandidate;
 			final OType oType = oTypeCandidate!=null?oTypeCandidate:OType.ANY;
-			final OType linkedType = linkedTypeCandidate;
+			final OType linkedType = resolveLinkedType(oType, linkedTypeCandidate);
 			final String linkedClass = linkedClassCandidate;
 			final boolean notNull = javaType.isPrimitive() || (daoField!=null && daoField.notNull());
 			LOG.info("Method: {} OCLass: {} Field: {} Type: {} LinkedType: {} LinkedClass: {}",methodName, daooClass.value(), fieldName, oType, linkedType, linkedClass);
@@ -194,4 +186,16 @@ public final class DAO {
 		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
 	}
+
+	private static OType resolveLinkedType(OType type, OType linkedTypeCandidate) {
+		switch (type) {
+			case LINK:
+			case LINKLIST:
+			case LINKSET:
+			case LINKBAG:
+				return null;
+		}
+		return linkedTypeCandidate;
+	}
+
 }
