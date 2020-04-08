@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.orienteer.core.OClassDomain;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.CustomAttribute;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -34,6 +35,11 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public static OSchemaHelper bind(ODatabaseDocument db)
 	{
 		return new OSchemaHelper(db);
+	}
+	
+	public OSchemaHelper describeAndInstallSchema(Class<?>... classes) {
+		DAO.describe(this, classes);
+		return this;
 	}
 
 	@Override

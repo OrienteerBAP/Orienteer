@@ -36,6 +36,29 @@ public final class DAO {
 		
 	}
 	
+	public static IODocumentWrapper asWrapper(Object obj) {
+		if(obj==null) return null;
+		else if (obj instanceof IODocumentWrapper) return (IODocumentWrapper)obj;
+		else throw new IllegalStateException("Object is not a wrapper. Object: "+obj);
+	}
+	
+	public static ODocument asDocument(Object obj) {
+		return asWrapper(obj).getDocument();
+	}
+	
+	public static <T> T loadFromDocument(T obj, ODocument doc) {
+		asWrapper(obj).fromStream(doc);
+		return obj;
+	}
+	
+	public static <T> T save(T obj) {
+		return asWrapper(obj).save();
+	}
+	
+	public static <T> T reload(T obj) {
+		return asWrapper(obj).reload();
+	}
+	
 	public static <T> T create(Class<T> interfaceClass, Class<?>... additionalInterfaces) {
 		DAOOClass daoOClass = interfaceClass.getAnnotation(DAOOClass.class);
 		ODocumentWrapper docWrapper = daoOClass!=null && !Strings.isEmpty(daoOClass.value())
