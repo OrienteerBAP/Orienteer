@@ -1,13 +1,13 @@
 package org.orienteer.core.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
+import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,17 +18,11 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.junit.Sudo;
-
-import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
@@ -231,7 +225,9 @@ public class DAOTest {
 			assertProperty(oClass, "embeddedStringSet", OType.EMBEDDEDSET, OType.STRING);
 			assertProperty(oClass, "embeddedStringList", OType.EMBEDDEDLIST, OType.STRING);
 			assertProperty(oClass, "embeddedStringMap", OType.EMBEDDEDMAP, OType.STRING);
-			
+
+			assertProperty(oClass, "docs", OType.LINKLIST, dummyClass, null);
+
 		} finally {
 			if(schema.existsClass("DAOAllTypesTestClass")) schema.dropClass("DAOAllTypesTestClass");
 			if(schema.existsClass("IDAODummyClass")) schema.dropClass("IDAODummyClass");
