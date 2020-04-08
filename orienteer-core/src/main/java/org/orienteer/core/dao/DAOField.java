@@ -21,4 +21,5 @@ public @interface DAOField {
 	int order() default -1; 
 	String inverse() default "";
 	boolean embedded() default false;
+	boolean notNull() default false;
 }

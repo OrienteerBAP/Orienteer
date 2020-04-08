@@ -19,6 +19,13 @@ public interface IDAOAllTypesTestClass {
 	   */
 	public Boolean getBoolean();
 	public void setBoolean(Boolean val);
+	
+	public boolean getBooleanPrimitive();
+	public void setBooleanPrimitive(boolean val);
+	
+	@DAOField(notNull = true)
+	public Boolean getBooleanDeclared();
+	public void setBooleanDeclared(Boolean val);
 
 	/**
 	 * INTEGER("Integer", 1, Integer.class, new Class<?>[] { Number.class }),

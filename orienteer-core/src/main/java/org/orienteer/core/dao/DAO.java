@@ -163,12 +163,14 @@ public final class DAO {
 			final OType oType = oTypeCandidate!=null?oTypeCandidate:OType.ANY;
 			final OType linkedType = linkedTypeCandidate;
 			final String linkedClass = linkedClassCandidate;
+			final boolean notNull = javaType.isPrimitive() || (daoField!=null && daoField.notNull());
 			LOG.info("Method: {} OCLass: {} Field: {} Type: {} LinkedType: {} LinkedClass: {}",methodName, daooClass.value(), fieldName, oType, linkedType, linkedClass);
 			
 			ctx.postponeTillExit(fieldName, () -> {
 				LOG.info("Create property {} ({}) order {}. LinkedType: {}", fieldName, oType, order, linkedType);
 				helper.oProperty(fieldName, oType, order);
 				if(linkedType!=null) helper.linkedType(linkedType);
+				helper.notNull(notNull);
 				return null;
 			});
 			if(linkedClass!=null) ctx.postponeTillDefined(linkedClass, () -> {

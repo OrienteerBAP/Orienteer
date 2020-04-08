@@ -198,7 +198,10 @@ public class DAOTest {
 			
 			assertTrue(!oClass.isAbstract());
 			
-			assertProperty(oClass, "boolean", OType.BOOLEAN);
+			assertProperty(oClass, "boolean", OType.BOOLEAN, false);
+			assertProperty(oClass, "booleanPrimitive", OType.BOOLEAN, true);
+			assertProperty(oClass, "booleanDeclared", OType.BOOLEAN, true);
+			
 			assertProperty(oClass, "integer", OType.INTEGER);
 			assertProperty(oClass, "short", OType.SHORT);
 			assertProperty(oClass, "long", OType.LONG);
@@ -245,6 +248,12 @@ public class DAOTest {
 	private OProperty assertProperty(OClass oClass, String property, OType oType, OType linkedType) {
 		OProperty prop = assertProperty(oClass, property, oType);
 		assertEquals(linkedType, prop.getLinkedType());
+		return prop;
+	}
+	
+	private OProperty assertProperty(OClass oClass, String property, OType oType, boolean notNull) {
+		OProperty prop = assertProperty(oClass, property, oType);
+		assertEquals(notNull, prop.isNotNull());
 		return prop;
 	}
 	
