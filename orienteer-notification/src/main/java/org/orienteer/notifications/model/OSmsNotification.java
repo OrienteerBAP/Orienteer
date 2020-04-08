@@ -19,8 +19,6 @@ public interface OSmsNotification extends ONotification {
 
   @DAOField(linkedClass = OPreparedSMS.CLASS_NAME, type = OType.LINK)
   ODocument getPreparedSms();
-
-  @DAOField(linkedClass = OPreparedSMS.CLASS_NAME, type = OType.LINK)
   ONotification setPreparedSms(ODocument preparedSms);
 
 }

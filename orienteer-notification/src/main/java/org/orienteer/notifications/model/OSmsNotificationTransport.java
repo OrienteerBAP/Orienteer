@@ -19,8 +19,6 @@ public interface OSmsNotificationTransport extends ONotificationTransport {
 
   @DAOField(linkedClass = OSmsSettings.CLASS_NAME, type = OType.LINK)
   ODocument getSmsSettings();
-
-  @DAOField(linkedClass = OSmsSettings.CLASS_NAME, type = OType.LINK)
   OSmsNotificationTransport setSmsSettings(ODocument smsSettings);
 
 }

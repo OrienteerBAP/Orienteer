@@ -5,9 +5,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ThreadContext;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.notifications.dao.ONotificationDao;
-import org.orienteer.notifications.dao.ONotificationStatusDao;
 import org.orienteer.notifications.model.ONotification;
+import org.orienteer.notifications.model.ONotificationDAO;
 import org.orienteer.notifications.module.ONotificationModule;
 import org.orienteer.notifications.repository.ONotificationModuleRepository;
 import org.orienteer.notifications.scheduler.ONotificationScheduler;
@@ -50,12 +49,11 @@ public class ONotificationSendTask extends ONotificationTask {
   }
 
   private void sendNotifications(ODatabaseDocument db) {
-    ONotificationDao notificationDao = ONotificationDao.get();
-    ONotificationStatusDao statusDao = ONotificationStatusDao.get();
+    ONotificationDAO notificationDao = ONotificationDAO.get();
 
     ONotificationModule.Module module = ONotificationModuleRepository.getModule(db);
-    ODocument sentStatus = statusDao.getSent();
-    List<ODocument> notificationsDocs = notificationDao.findExceptStatus(sentStatus);
+    ODocument sentStatus = notificationDao.getSentStatus();
+    List<ODocument> notificationsDocs = notificationDao.findNotificationsExceptStatus(sentStatus);
 
     int executorSize = computeExecutorSize(module.getNotificationsPerWorker(), notificationsDocs);
     int notificationsPerWorker = module.getNotificationsPerWorker();

@@ -19,8 +19,6 @@ public interface OMailNotification extends ONotification {
 
   @DAOField(linkedClass = OPreparedMail.CLASS_NAME, type = OType.LINK)
   ODocument getPreparedMail();
-
-  @DAOField(linkedClass = OPreparedMail.CLASS_NAME, type = OType.LINK)
   OMailNotification setPreparedMail(ODocument preparedMail);
 
 }

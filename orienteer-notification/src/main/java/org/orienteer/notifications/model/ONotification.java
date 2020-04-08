@@ -29,20 +29,14 @@ public interface ONotification extends IODocumentWrapper {
 
   @DAOField(linkedClass = ONotificationStatus.CLASS_NAME, type = OType.LINK)
   ODocument getStatus();
-
-  @DAOField(linkedClass = ONotificationStatus.CLASS_NAME, type = OType.LINK)
   ONotification setStatus(ODocument status);
 
   @DAOField(linkedClass = ONotificationStatusHistory.CLASS_NAME, type = OType.LINKLIST, inverse = "notification")
   List<ODocument> getStatusHistories();
-
-  @DAOField(linkedClass = ONotificationStatusHistory.CLASS_NAME, type = OType.LINKLIST, inverse = "notification")
   ONotification setStatusHistories(List<ODocument> histories);
 
   @DAOField(linkedClass = ONotificationTransport.CLASS_NAME, type = OType.LINK)
   ODocument getTransport();
-
-  @DAOField(linkedClass = ONotificationTransport.CLASS_NAME, type = OType.LINK)
   ONotification setTransport(ODocument transport);
 
   default ONotification addStatusHistory(ODocument history) {

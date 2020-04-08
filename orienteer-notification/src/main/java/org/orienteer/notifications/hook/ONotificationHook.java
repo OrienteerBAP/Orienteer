@@ -5,8 +5,8 @@ import com.orientechnologies.orient.core.exception.OValidationException;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.notifications.dao.ONotificationStatusDao;
 import org.orienteer.notifications.model.ONotification;
+import org.orienteer.notifications.model.ONotificationDAO;
 import org.orienteer.notifications.model.ONotificationStatusHistory;
 import org.orienteer.notifications.service.IONotificationFactory;
 
@@ -51,7 +51,7 @@ public class ONotificationHook extends ODocumentHookAbstract {
     }
 
     if (notification.getStatus() == null) {
-      ODocument pendingStatus = ONotificationStatusDao.get().getPending();
+      ODocument pendingStatus = ONotificationDAO.get().getPendingStatus();
 
       notification.setStatus(pendingStatus);
 

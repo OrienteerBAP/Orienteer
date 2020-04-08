@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.Sudo;
-import org.orienteer.notifications.dao.ONotificationTransportDao;
 import org.orienteer.notifications.model.ONotification;
+import org.orienteer.notifications.model.ONotificationDAO;
 import org.orienteer.notifications.model.ONotificationTransport;
 import org.orienteer.notifications.service.IONotificationFactory;
 import org.orienteer.notifications.service.IONotificationTransportFactory;
@@ -36,12 +36,12 @@ public class TestNotificationFactories {
   private IONotificationTransportFactory transportFactory;
 
   @Inject
-  private ONotificationTransportDao transportDao;
+  private ONotificationDAO notificationDao;
 
   @Before
   @Sudo
   public void init() {
-    ODocument testTransport = transportDao.findByAlias(TestDataModule.TRANSPORT_TEST);
+    ODocument testTransport = notificationDao.findTransportByAlias(TestDataModule.TRANSPORT_TEST);
 
     if (testTransport == null) {
       throw new IllegalStateException("There is no configured test notification transport");

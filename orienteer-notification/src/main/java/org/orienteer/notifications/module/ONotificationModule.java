@@ -12,7 +12,6 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.mail.OMailModule;
-import org.orienteer.notifications.dao.ONotificationStatusDao;
 import org.orienteer.notifications.hook.ONotificationHook;
 import org.orienteer.notifications.model.*;
 import org.orienteer.notifications.scheduler.ONotificationScheduler;
@@ -70,30 +69,30 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
   private void installNotificationStatus(OSchemaHelper helper) {
     ONotificationStatus status = DAO.create(ONotificationStatus.class);
-    ONotificationStatusDao statusDao = ONotificationStatusDao.get();
+    ONotificationDAO statusDao = ONotificationDAO.get();
 
-    if (statusDao.getPending() == null) {
+    if (statusDao.getPendingStatus() == null) {
       status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
       status.setAlias(ONotificationStatus.ALIAS_PENDING);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.pending").getObject()));
       status.save();
     }
 
-    if (statusDao.getSending() == null) {
+    if (statusDao.getSendingStatus() == null) {
       status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
       status.setAlias(ONotificationStatus.ALIAS_SENDING);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.sending").getObject()));
       status.save();
     }
 
-    if (statusDao.getSent() == null) {
+    if (statusDao.getSentStatus() == null) {
       status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
       status.setAlias(ONotificationStatus.ALIAS_SENT);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.sent").getObject()));
       status.save();
     }
 
-    if (statusDao.getFailed() == null) {
+    if (statusDao.getFailedStatus() == null) {
       status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
       status.setAlias(ONotificationStatus.ALIAS_FAILED);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.failed").getObject()));

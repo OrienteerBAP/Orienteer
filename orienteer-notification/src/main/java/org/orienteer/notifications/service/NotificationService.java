@@ -6,8 +6,8 @@ import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.notifications.dao.ONotificationStatusDao;
 import org.orienteer.notifications.model.ONotification;
+import org.orienteer.notifications.model.ONotificationDAO;
 import org.orienteer.notifications.model.ONotificationStatusHistory;
 import org.orienteer.notifications.model.ONotificationTransport;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class NotificationService implements INotificationService {
   private final OTransportPool transportPool = new OTransportPool();
 
   @Inject
-  private ONotificationStatusDao notificationStatusDao;
+  private ONotificationDAO notificationDAO;
 
   @Override
   @SuppressWarnings("unchecked")
@@ -67,17 +67,17 @@ public class NotificationService implements INotificationService {
   }
 
   private void handleSendingNotificationStatus(ODatabaseDocument db, ONotification notification) {
-    ODocument status = notificationStatusDao.getSending();
+    ODocument status = notificationDAO.getSendingStatus();
     updateNotificationStatus(db, notification, status);
   }
 
   private void handleSentNotificationStatus(ODatabaseDocument db, ONotification notification) {
-    ODocument status = notificationStatusDao.getSent();
+    ODocument status = notificationDAO.getSentStatus();
     updateNotificationStatus(db, notification, status);
   }
 
   private void handleFailedNotificationStatus(ODatabaseDocument db, ONotification notification, Exception e) {
-    ODocument status = notificationStatusDao.getFailed();
+    ODocument status = notificationDAO.getFailedStatus();
     LOG.warn("Couldn't send notification: {}", notification.getDocument(), e);
     updateNotificationStatus(db, notification, status);
   }

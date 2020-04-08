@@ -11,9 +11,8 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.Sudo;
-import org.orienteer.notifications.dao.ONotificationStatusDao;
-import org.orienteer.notifications.dao.ONotificationTransportDao;
 import org.orienteer.notifications.model.ONotification;
+import org.orienteer.notifications.model.ONotificationDAO;
 import org.orienteer.notifications.model.ONotificationStatusHistory;
 import org.orienteer.notifications.service.INotificationService;
 import org.orienteer.notifications.testenv.OTestNotification;
@@ -33,15 +32,13 @@ public class TestNotificationLifecycle {
   private INotificationService notificationService;
 
   @Inject
-  private ONotificationTransportDao transportDao;
+  private ONotificationDAO notificationDAO;
 
-  @Inject
-  private ONotificationStatusDao statusDao;
 
   @Before
   @Sudo
   public void init() {
-    ODocument testTransport = transportDao.findByAlias(TestDataModule.TRANSPORT_TEST);
+    ODocument testTransport = notificationDAO.findTransportByAlias(TestDataModule.TRANSPORT_TEST);
 
     if (testTransport == null) {
       throw new IllegalStateException("There is no configured test notification transport");
@@ -82,15 +79,15 @@ public class TestNotificationLifecycle {
 
     assertNotNull(statusHistories.get(0));
     statusHistory.fromStream(statusHistories.get(0));
-    assertEquals(statusHistory.getStatus(), statusDao.getPending());
+    assertEquals(statusHistory.getStatus(), notificationDAO.getPendingStatus());
 
     assertNotNull(statusHistories.get(1));
     statusHistory.fromStream(statusHistories.get(1));
-    assertEquals(statusHistory.getStatus(), statusDao.getSending());
+    assertEquals(statusHistory.getStatus(), notificationDAO.getSendingStatus());
 
     assertNotNull(statusHistories.get(2));
     statusHistory.fromStream(statusHistories.get(2));
-    assertEquals(statusHistory.getStatus(), statusDao.getSent());
+    assertEquals(statusHistory.getStatus(), notificationDAO.getSentStatus());
   }
 
 }

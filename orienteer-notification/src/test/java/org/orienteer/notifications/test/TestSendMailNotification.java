@@ -15,8 +15,8 @@ import org.orienteer.junit.Sudo;
 import org.orienteer.mail.model.OMail;
 import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.mail.util.OMailUtils;
-import org.orienteer.notifications.dao.ONotificationTransportDao;
 import org.orienteer.notifications.model.OMailNotification;
+import org.orienteer.notifications.model.ONotificationDAO;
 import org.orienteer.notifications.service.INotificationService;
 import org.orienteer.notifications.testenv.module.TestDataModule;
 
@@ -29,7 +29,7 @@ public class TestSendMailNotification {
   private INotificationService notificationService;
 
   @Inject
-  private ONotificationTransportDao transportDao;
+  private ONotificationDAO notificationDAO;
 
   @Before
   @Sudo
@@ -42,7 +42,7 @@ public class TestSendMailNotification {
     preparedMail.save();
 
 
-    ODocument mailTransport = transportDao.findByAlias(TestDataModule.TRANSPORT_MAIL);
+    ODocument mailTransport = notificationDAO.findTransportByAlias(TestDataModule.TRANSPORT_MAIL);
 
     if (mailTransport == null) {
       throw new IllegalStateException("There is no configured mail notification transport");

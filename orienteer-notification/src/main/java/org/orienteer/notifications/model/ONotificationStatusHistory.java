@@ -21,14 +21,10 @@ public interface ONotificationStatusHistory extends IODocumentWrapper {
 
   @DAOField(linkedClass = ONotification.CLASS_NAME, inverse = "statusHistories", type = OType.LINK)
   ODocument getNotification();
-
-  @DAOField(linkedClass = ONotification.CLASS_NAME, inverse = "statusHistories", type = OType.LINK)
   ONotificationStatusHistory setNotification(ODocument notification);
 
   @DAOField(linkedClass = ONotificationStatus.CLASS_NAME, type = OType.LINK)
   ODocument getStatus();
-
-  @DAOField(linkedClass = ONotificationStatus.CLASS_NAME, type = OType.LINK)
   ONotificationStatusHistory setStatus(ODocument status);
 
   static ONotificationStatusHistory create(Date timestamp, ONotificationStatus status) {
