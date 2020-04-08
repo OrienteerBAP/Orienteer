@@ -14,7 +14,8 @@ import java.util.function.Supplier;
 
 import org.apache.wicket.util.string.Strings;
 import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
-import org.orienteer.core.util.CommonUtils;
+import static org.orienteer.core.util.CommonUtils.toMap;
+import static org.orienteer.core.util.CommonUtils.decapitalize;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,11 @@ public final class DAO {
 	private static final Logger LOG = LoggerFactory.getLogger(DAO.class);
 	
 	private static final Class<?>[] NO_CLASSES = new Class<?>[0];
+	
+	private static final Map<OType, OType> EMBEDDED_TO_LINKS_MAP = toMap(OType.EMBEDDED, OType.LINK,
+																		 OType.EMBEDDEDLIST, OType.LINKLIST,
+																		 OType.EMBEDDEDSET, OType.LINKSET,
+																		 OType.EMBEDDEDMAP, OType.LINKMAP);
 	
 	private DAO() {
 		
@@ -115,17 +121,17 @@ public final class DAO {
 			final Class<?> javaType;
 			Class<?> subJavaTypeCandidate = null;
 			if(methodName.startsWith("set") && params.length==1) {
-				fieldNameCandidate = CommonUtils.decapitalize(methodName.substring(3));
+				fieldNameCandidate = decapitalize(methodName.substring(3));
 				javaType = params[0].getType();
-				subJavaTypeCandidate = typeToRequiredClass(params[0].getParameterizedType());
+				subJavaTypeCandidate = typeToRequiredClass(params[0].getParameterizedType(), javaType);
 			} else if(methodName.startsWith("get") && params.length==0) {
-				fieldNameCandidate = CommonUtils.decapitalize(methodName.substring(3));
+				fieldNameCandidate = decapitalize(methodName.substring(3));
 				javaType = method.getReturnType();
-				subJavaTypeCandidate = typeToRequiredClass(method.getGenericReturnType());
+				subJavaTypeCandidate = typeToRequiredClass(method.getGenericReturnType(), javaType);
 			} else if(methodName.startsWith("is") && params.length==0) {
-				fieldNameCandidate = CommonUtils.decapitalize(methodName.substring(2));
+				fieldNameCandidate = decapitalize(methodName.substring(2));
 				javaType = method.getReturnType();
-				subJavaTypeCandidate = typeToRequiredClass(method.getGenericReturnType());
+				subJavaTypeCandidate = typeToRequiredClass(method.getGenericReturnType(), javaType);
 			} else continue;
 			if(subJavaTypeCandidate!=null && subJavaTypeCandidate.equals(javaType)) subJavaTypeCandidate = null;
 			final Class<?> subJavaType = subJavaTypeCandidate;
@@ -134,7 +140,7 @@ public final class DAO {
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
 											?daoField.type()
 											:OType.getTypeByClass(javaType);
-			final OType linkedType = daoField!=null && !OType.ANY.equals(daoField.linkedType())
+			OType linkedTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.linkedType())
 											?daoField.linkedType()
 											:(subJavaType!=null?OType.getTypeByClass(subJavaType):null);
 			final int order = daoField!=null && daoField.order()>=0
@@ -144,11 +150,16 @@ public final class DAO {
 			if(linkedClassCandidate==null) linkedClassCandidate = ctx.resolveOClass(javaType, () -> describe(helper, javaType, ctx));
 			if(linkedClassCandidate==null && daoField!=null && !Strings.isEmpty(daoField.linkedClass())) linkedClassCandidate = daoField.linkedClass();
 			if(oTypeCandidate==null && linkedClassCandidate!=null) {
-				oTypeCandidate = OType.LINK;
+				oTypeCandidate = OType.EMBEDDED;
+			}
+			if(linkedClassCandidate!=null && EMBEDDED_TO_LINKS_MAP.containsKey(oTypeCandidate) &&(daoField==null || !daoField.embedded())) {
+				oTypeCandidate = EMBEDDED_TO_LINKS_MAP.get(oTypeCandidate);
+				linkedTypeCandidate = null;
 			}
 			
 			final String fieldName = fieldNameCandidate;
-			final OType oType = oTypeCandidate;
+			final OType oType = oTypeCandidate!=null?oTypeCandidate:OType.ANY;
+			final OType linkedType = linkedTypeCandidate;
 			final String linkedClass = linkedClassCandidate;
 			LOG.info("Method: {} OCLass: {} Field: {} Type: {} LinkedType: {} LinkedClass: {}",methodName, daooClass.value(), fieldName, oType, linkedType, linkedClass);
 			

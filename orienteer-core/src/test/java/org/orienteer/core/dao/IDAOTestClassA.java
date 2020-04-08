@@ -25,6 +25,6 @@ public interface IDAOTestClassA extends IDAOTestClassRoot{
 	public ODocument getLinkAsDoc();
 	
 	@DAOField(linkedClass = "DAOTestClassB")
-	public List<ODocument> getEmbeddedDocsList();
+	public List<ODocument> getLinkList();
 	public IDAOTestClassA getSelfType();
 }

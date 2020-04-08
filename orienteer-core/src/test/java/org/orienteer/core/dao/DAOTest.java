@@ -174,6 +174,7 @@ public class DAOTest {
 			assertProperty(daoTestClassA, "selfType", OType.LINK, daoTestClassA, null);
 			assertProperty(daoTestClassA, "linkAsDoc", OType.LINK, daoTestClassB, null);
 			assertProperty(daoTestClassA, "embeddedStringList", OType.EMBEDDEDLIST, OType.STRING);
+			assertProperty(daoTestClassA, "linkList", OType.LINKLIST, daoTestClassB, null);
 			
 			assertProperty(daoTestClassB, "alias", OType.STRING);
 			assertProperty(daoTestClassB, "linkToA", OType.LINK, daoTestClassA, null);
@@ -181,6 +182,56 @@ public class DAOTest {
 			if(schema.existsClass("DAOTestClassA")) schema.dropClass("DAOTestClassA");
 			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
 			if(schema.existsClass("DAOTestClassRoot")) schema.dropClass("DAOTestClassRoot");
+		}
+	}
+	
+	@Test
+	@Sudo
+	public void testDescribeAllTypes() {
+		OSchema schema = tester.getMetadata().getSchema();
+		try {
+			DAO.describe(OSchemaHelper.bind(tester.getDatabase()), IDAOAllTypesTestClass.class);
+			assertTrue(schema.existsClass("DAOAllTypesTestClass"));
+			assertTrue(schema.existsClass("IDAODummyClass"));
+			OClass oClass = schema.getClass("DAOAllTypesTestClass");
+			OClass dummyClass = schema.getClass("IDAODummyClass");
+			
+			assertTrue(!oClass.isAbstract());
+			
+			assertProperty(oClass, "boolean", OType.BOOLEAN);
+			assertProperty(oClass, "integer", OType.INTEGER);
+			assertProperty(oClass, "short", OType.SHORT);
+			assertProperty(oClass, "long", OType.LONG);
+			assertProperty(oClass, "float", OType.FLOAT);
+			assertProperty(oClass, "double", OType.DOUBLE);
+			assertProperty(oClass, "dateTime", OType.DATETIME);
+			assertProperty(oClass, "date", OType.DATE);
+			assertProperty(oClass, "string", OType.STRING);
+			assertProperty(oClass, "binary", OType.BINARY);
+			assertProperty(oClass, "decimal", OType.DECIMAL);
+			assertProperty(oClass, "byte", OType.BYTE);
+			assertProperty(oClass, "custom", OType.CUSTOM);
+			assertProperty(oClass, "transient", OType.TRANSIENT);
+			assertProperty(oClass, "any", OType.ANY);
+			
+			assertProperty(oClass, "link", OType.LINK, dummyClass, null);
+			assertProperty(oClass, "linkList", OType.LINKLIST, dummyClass, null);
+			assertProperty(oClass, "linkSet", OType.LINKSET, dummyClass, null);
+			assertProperty(oClass, "linkMap", OType.LINKMAP, dummyClass, null);
+			assertProperty(oClass, "linkBag", OType.LINKBAG, dummyClass, null);
+			
+			assertProperty(oClass, "embedded", OType.EMBEDDED, dummyClass, null);
+			assertProperty(oClass, "embeddedList", OType.EMBEDDEDLIST, dummyClass, null);
+			assertProperty(oClass, "embeddedSet", OType.EMBEDDEDSET, dummyClass, null);
+			assertProperty(oClass, "embeddedMap", OType.EMBEDDEDMAP, dummyClass, null);
+			
+			assertProperty(oClass, "embeddedStringSet", OType.EMBEDDEDSET, OType.STRING);
+			assertProperty(oClass, "embeddedStringList", OType.EMBEDDEDLIST, OType.STRING);
+			assertProperty(oClass, "embeddedStringMap", OType.EMBEDDEDMAP, OType.STRING);
+			
+		} finally {
+			if(schema.existsClass("DAOAllTypesTestClass")) schema.dropClass("DAOAllTypesTestClass");
+			if(schema.existsClass("IDAODummyClass")) schema.dropClass("IDAODummyClass");
 		}
 	}
 	

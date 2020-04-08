@@ -20,4 +20,5 @@ public @interface DAOField {
 	String linkedClass() default "";
 	int order() default -1; 
 	String inverse() default "";
+	boolean embedded() default false;
 }

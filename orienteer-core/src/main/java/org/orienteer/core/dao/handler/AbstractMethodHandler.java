@@ -97,11 +97,19 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 	}
 	
 	public static Class<?> typeToRequiredClass(Type type) {
+		return typeToRequiredClass(type, false);
+	}
+	
+	public static Class<?> typeToRequiredClass(Type type, Class<?> parentClass) {
+		return typeToRequiredClass(type, parentClass==null?false:Map.class.isAssignableFrom(parentClass));
+	}
+	
+	private static Class<?> typeToRequiredClass(Type type, boolean isParentMap) {
 		if(type instanceof Class) return (Class<?>) type;
 		else if(type instanceof WildcardType) 
-			return typeToRequiredClass(((WildcardType)type).getUpperBounds()[0]);
+			return typeToRequiredClass(((WildcardType)type).getUpperBounds()[0], false);
 		else if(type instanceof ParameterizedType)
-			return typeToRequiredClass(((ParameterizedType)type).getActualTypeArguments()[0]);
+			return typeToRequiredClass(((ParameterizedType)type).getActualTypeArguments()[isParentMap?1:0], false);
 		return null;
 	}
 	
