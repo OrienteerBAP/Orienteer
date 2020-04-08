@@ -106,7 +106,14 @@ public final class DAO {
 		
 		int currentOrder=0;
 		
-		for(Method method : clazz.getDeclaredMethods()) {
+		List<Method> methods = Arrays.asList(clazz.getDeclaredMethods());
+		//Give priority for methods with DAOField annotation
+		methods.sort((a, b) -> {
+			int ret = -Boolean.compare(a.isAnnotationPresent(DAOField.class), b.isAnnotationPresent(DAOField.class));
+			return ret!=0?ret:a.getName().compareTo(b.getName());
+		});
+		
+		for(Method method : methods) {
 			String methodName = method.getName();
 			Parameter[] params =  method.getParameters();
 			String fieldNameCandidate = null;
@@ -148,13 +155,12 @@ public final class DAO {
 			}
 			if(linkedClassCandidate!=null && EMBEDDED_TO_LINKS_MAP.containsKey(oTypeCandidate) &&(daoField==null || !daoField.embedded())) {
 				oTypeCandidate = EMBEDDED_TO_LINKS_MAP.get(oTypeCandidate);
-				linkedTypeCandidate = null;
 			}
 			
 			final String fieldName = fieldNameCandidate;
 			final OType oType = oTypeCandidate!=null?oTypeCandidate:OType.ANY;
-			final OType linkedType = resolveLinkedType(oType, linkedTypeCandidate);
 			final String linkedClass = linkedClassCandidate;
+			final OType linkedType = linkedClass==null?linkedTypeCandidate:null;
 			final boolean notNull = javaType.isPrimitive() || (daoField!=null && daoField.notNull());
 			LOG.info("Method: {} OCLass: {} Field: {} Type: {} LinkedType: {} LinkedClass: {}",methodName, daooClass.value(), fieldName, oType, linkedType, linkedClass);
 			
@@ -185,17 +191,6 @@ public final class DAO {
 		ctx.exiting(clazz, daooClass.value());
 		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
-	}
-
-	private static OType resolveLinkedType(OType type, OType linkedTypeCandidate) {
-		switch (type) {
-			case LINK:
-			case LINKLIST:
-			case LINKSET:
-			case LINKBAG:
-				return null;
-		}
-		return linkedTypeCandidate;
 	}
 
 }
