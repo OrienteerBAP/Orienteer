@@ -19,7 +19,7 @@ class DescribeContext {
 	class ContextItem {
 		private Class<?> daoClass;
 		private String oClass;
-		private List<Supplier<Boolean>> postponedTillExit = new ArrayList<Supplier<Boolean>>();
+		private Map<String, Supplier<Boolean>> postponedTillExit = new HashMap<String, Supplier<Boolean>>();
 		private MultiMap<String, Supplier<Boolean>> postponedTillDefined = new MultiMap<String, Supplier<Boolean>>();
 		
 		ContextItem(Class<?> daoClass, String oClass) {
@@ -47,7 +47,7 @@ class DescribeContext {
 		if(!clazz.equals(exiting)) throw new IllegalStateException("Exiting from wrong execution: expected "+clazz.getName()+" but in a stack "+exiting.getName());
 		ContextItem last = processingStack.pop();
 		if(!oClassName.equals(last.oClass))  throw new IllegalStateException("Exiting from wrong execution: expected "+oClassName+" but in a stack "+last.oClass);
-		for (Supplier<Boolean> postponed : last.postponedTillExit) {
+		for (Supplier<Boolean> postponed : last.postponedTillExit.values()) {
 			postponed.get();
 		}
 		describedClasses.put(clazz, oClassName);
@@ -97,13 +97,18 @@ class DescribeContext {
 		return !Strings.isEmpty(ret) ? ret : supplier.get();
 	}
 	
-	public void postponeTillExit(Supplier<Boolean> supplier) {
-		processingStack.lastElement().postponedTillExit.add(supplier);
+	public boolean isPropertyCreationScheduled(String propertyName) {
+		return processingStack.lastElement().postponedTillExit.containsKey(propertyName);
+	}
+	
+	public void postponeTillExit(String propertyName, Supplier<Boolean> supplier) {
+		processingStack.lastElement().postponedTillExit.put(propertyName, supplier);
 	}
 	
 	public void postponeTillDefined(String linkedClass, Supplier<Boolean> supplier) {
-		if(wasDescribed(linkedClass)) postponeTillExit(supplier);
-		else processingStack.lastElement().postponedTillDefined.addValue(linkedClass, supplier);
+		processingStack.lastElement().postponedTillDefined.addValue(linkedClass, supplier);
+//		if(wasDescribed(linkedClass)) postponeTillExit(propertyName, supplier);
+//		else processingStack.lastElement().postponedTillDefined.addValue(linkedClass, supplier);
 //		if(wasDescribed(linkedClass) || processingStack.lastElement().oClass.equals(linkedClass)) postponTillExit(supplier);
 	}
 	

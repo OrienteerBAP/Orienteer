@@ -137,6 +137,8 @@ public final class DAO {
 			final Class<?> subJavaType = subJavaTypeCandidate;
 			final DAOField daoField = method.getAnnotation(DAOField.class);
 			if(daoField!=null && !Strings.isEmpty(daoField.value())) fieldNameCandidate = daoField.value();
+			//Skip second+ attempt to create a property
+			if(ctx.isPropertyCreationScheduled(fieldNameCandidate)) continue;
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
 											?daoField.type()
 											:OType.getTypeByClass(javaType);
@@ -163,7 +165,7 @@ public final class DAO {
 			final String linkedClass = linkedClassCandidate;
 			LOG.info("Method: {} OCLass: {} Field: {} Type: {} LinkedType: {} LinkedClass: {}",methodName, daooClass.value(), fieldName, oType, linkedType, linkedClass);
 			
-			ctx.postponeTillExit(() -> {
+			ctx.postponeTillExit(fieldName, () -> {
 				LOG.info("Create property {} ({}) order {}. LinkedType: {}", fieldName, oType, order, linkedType);
 				helper.oProperty(fieldName, oType, order);
 				if(linkedType!=null) helper.linkedType(linkedType);
