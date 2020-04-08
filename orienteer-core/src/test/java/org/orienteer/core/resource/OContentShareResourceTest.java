@@ -81,11 +81,15 @@ public class OContentShareResourceTest {
     	tester.executeUrl("./api/echo/"+doc.getIdentity().toString().substring(1)+"/phone?full=false");
     	MockHttpServletResponse response = tester.getLastResponse();
     	String ret = response.getDocument();
-    	assertEquals(OContentShareResource.urlFor(doc, "phone", "text/plain", false), ret);
+    	assertEquals(excludeVersion(OContentShareResource.urlFor(doc, "phone", "text/plain", false)), excludeVersion(ret));
     	
     	tester.executeUrl("./api/echo/"+doc.getIdentity().toString().substring(1)+"/phone?full=true");
     	response = tester.getLastResponse();
     	ret = response.getDocument();
-    	assertEquals(OContentShareResource.urlFor(doc, "phone", "text/plain", true), ret);
+    	assertEquals(excludeVersion(OContentShareResource.urlFor(doc, "phone", "text/plain", true)), excludeVersion(ret));
+    }
+    
+    private static String excludeVersion(CharSequence str) {
+    	return str.toString().replaceAll("v=\\d+\\&?", "");
     }
 }
