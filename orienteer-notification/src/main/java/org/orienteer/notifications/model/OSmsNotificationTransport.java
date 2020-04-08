@@ -8,6 +8,9 @@ import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.twilio.model.OSmsSettings;
 
+/**
+ * Wrapper class for {@link OSmsNotificationTransport#CLASS_NAME}
+ */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = OSmsNotificationTransport.CLASS_NAME, superClasses = ONotificationTransport.CLASS_NAME)
 public interface OSmsNotificationTransport extends ONotificationTransport {

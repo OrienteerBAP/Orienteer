@@ -7,6 +7,9 @@ import org.orienteer.core.dao.*;
 
 import java.util.Date;
 
+/**
+ * Wrapper class for {@link ONotificationStatusHistory#CLASS_NAME}
+ */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = ONotificationStatusHistory.CLASS_NAME)
 public interface ONotificationStatusHistory extends IODocumentWrapper {

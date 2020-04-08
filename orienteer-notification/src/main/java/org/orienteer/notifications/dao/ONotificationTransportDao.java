@@ -6,6 +6,9 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.dao.DAOProvider;
 import org.orienteer.core.dao.Query;
 
+/**
+ * Provide access for class {@link org.orienteer.notifications.model.ONotificationTransport#CLASS_NAME}
+ */
 @ProvidedBy(DAOProvider.class)
 public interface ONotificationTransportDao {
 

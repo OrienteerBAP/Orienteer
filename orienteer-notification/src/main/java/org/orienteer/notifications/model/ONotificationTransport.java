@@ -11,6 +11,9 @@ import org.orienteer.notifications.service.ITransport;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 
+/**
+ * Wrapper class for {@link ONotificationTransport#CLASS_NAME}
+ */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = ONotificationTransport.CLASS_NAME, isAbstract = true)
 public interface ONotificationTransport extends IODocumentWrapper {

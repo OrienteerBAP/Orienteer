@@ -8,6 +8,9 @@ import org.orienteer.core.dao.Query;
 
 import java.util.List;
 
+/**
+ * Provide access for class {@link org.orienteer.notifications.model.ONotification#CLASS_NAME}
+ */
 @ProvidedBy(DAOProvider.class)
 public interface ONotificationDao {
 

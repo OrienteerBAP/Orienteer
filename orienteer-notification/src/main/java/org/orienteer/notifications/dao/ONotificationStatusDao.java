@@ -7,6 +7,9 @@ import org.orienteer.core.dao.DAOProvider;
 import org.orienteer.core.dao.Query;
 import org.orienteer.notifications.model.ONotificationStatus;
 
+/**
+ * Provide access for class {@link org.orienteer.notifications.model.ONotificationStatus#CLASS_NAME}
+ */
 @ProvidedBy(DAOProvider.class)
 public interface ONotificationStatusDao {
 

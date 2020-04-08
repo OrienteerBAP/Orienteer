@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Wrapper class for {@link ONotification#CLASS_NAME}
+ */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = ONotification.CLASS_NAME, isAbstract = true)
 public interface ONotification extends IODocumentWrapper {

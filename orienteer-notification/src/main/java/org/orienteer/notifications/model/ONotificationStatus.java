@@ -7,6 +7,9 @@ import org.orienteer.core.dao.ODocumentWrapperProvider;
 
 import java.util.Map;
 
+/**
+ * Wrapper class for {@link ONotificationStatus#CLASS_NAME}
+ */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = ONotificationStatus.CLASS_NAME)
 public interface ONotificationStatus extends IODocumentWrapper {

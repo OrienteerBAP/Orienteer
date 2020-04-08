@@ -8,6 +8,9 @@ import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.mail.model.OMailSettings;
 
+/**
+ * Wrapper for class {@link OMailNotificationTransport#CLASS_NAME}
+ */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = OMailNotificationTransport.CLASS_NAME, superClasses = ONotificationTransport.CLASS_NAME)
 public interface OMailNotificationTransport extends ONotificationTransport {

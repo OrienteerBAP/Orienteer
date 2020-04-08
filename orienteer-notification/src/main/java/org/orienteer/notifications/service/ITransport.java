@@ -6,7 +6,6 @@ import java.io.Closeable;
 
 /**
  * Transport for given notification
- * @param <T> notification type for send
  */
 public interface ITransport extends Closeable {
 
