@@ -2,7 +2,7 @@ package org.orienteer.notifications.service;
 
 import com.google.inject.ImplementedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.orienteer.notifications.model.ONotification;
+import org.orienteer.notifications.model.IONotification;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +19,7 @@ public interface INotificationService {
     send(Collections.singletonList(notification));
   }
 
-  default void send(ONotification notification) {
+  default void send(IONotification notification) {
     send(notification.getDocument());
   }
 

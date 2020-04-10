@@ -12,23 +12,23 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 
 /**
- * Wrapper class for {@link ONotificationTransport#CLASS_NAME}
+ * Wrapper class for {@link IONotificationTransport#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = ONotificationTransport.CLASS_NAME, isAbstract = true)
-public interface ONotificationTransport extends IODocumentWrapper {
+@DAOOClass(value = IONotificationTransport.CLASS_NAME, isAbstract = true)
+public interface IONotificationTransport extends IODocumentWrapper {
 
   String CLASS_NAME = "ONotificationTransport";
 
 
   String getAlias();
-  ONotificationTransport setAlias(String alias);
+  IONotificationTransport setAlias(String alias);
 
   Map<String, String> getName();
-  ONotificationTransport setName(Map<String, String> name);
+  IONotificationTransport setName(Map<String, String> name);
 
   String getTransportClass();
-  ONotificationTransport setTransportClass(String transportClass);
+  IONotificationTransport setTransportClass(String transportClass);
 
   default ITransport createTransportService() {
     String transportClass = getTransportClass();

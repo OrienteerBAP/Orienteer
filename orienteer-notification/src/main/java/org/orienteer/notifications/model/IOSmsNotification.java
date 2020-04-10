@@ -9,16 +9,16 @@ import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.twilio.model.OPreparedSMS;
 
 /**
- * Wrapper class for {@link OSmsNotification#CLASS_NAME}
+ * Wrapper class for {@link IOSmsNotification#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = OSmsNotification.CLASS_NAME, superClasses = ONotification.CLASS_NAME)
-public interface OSmsNotification extends ONotification {
+@DAOOClass(value = IOSmsNotification.CLASS_NAME)
+public interface IOSmsNotification extends IONotification {
 
   String CLASS_NAME = "OSmsNotification";
 
   @DAOField(linkedClass = OPreparedSMS.CLASS_NAME, type = OType.LINK)
   ODocument getPreparedSms();
-  ONotification setPreparedSms(ODocument preparedSms);
+  IONotification setPreparedSms(ODocument preparedSms);
 
 }

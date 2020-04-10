@@ -12,9 +12,9 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.Sudo;
-import org.orienteer.notifications.model.ONotification;
-import org.orienteer.notifications.model.ONotificationDAO;
-import org.orienteer.notifications.model.ONotificationTransport;
+import org.orienteer.notifications.model.IONotification;
+import org.orienteer.notifications.model.IONotificationDAO;
+import org.orienteer.notifications.model.IONotificationTransport;
 import org.orienteer.notifications.service.IONotificationFactory;
 import org.orienteer.notifications.service.IONotificationTransportFactory;
 import org.orienteer.notifications.testenv.OTestNotification;
@@ -36,7 +36,7 @@ public class TestNotificationFactories {
   private IONotificationTransportFactory transportFactory;
 
   @Inject
-  private ONotificationDAO notificationDao;
+  private IONotificationDAO notificationDao;
 
   @Before
   @Sudo
@@ -79,7 +79,7 @@ public class TestNotificationFactories {
   @Sudo
   @Ignore
   public void testNotificationFactory() {
-    ONotification createdNotification = notificationFactory.create(testNotification.getDocument());
+    IONotification createdNotification = notificationFactory.create(testNotification.getDocument());
     assertEquals(testNotification.getClass(), createdNotification.getClass());
   }
 
@@ -87,7 +87,7 @@ public class TestNotificationFactories {
   @Sudo
   @Ignore
   public void testNotificationTransportFactory() {
-    ONotificationTransport createdTransport = transportFactory.create(testNotificationTransport.getDocument());
+    IONotificationTransport createdTransport = transportFactory.create(testNotificationTransport.getDocument());
     assertEquals(testNotificationTransport.getClass(), createdTransport.getClass());
   }
 

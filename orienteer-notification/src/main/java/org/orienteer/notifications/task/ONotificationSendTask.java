@@ -5,8 +5,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ThreadContext;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.notifications.model.ONotification;
-import org.orienteer.notifications.model.ONotificationDAO;
+import org.orienteer.notifications.model.IONotification;
+import org.orienteer.notifications.model.IONotificationDAO;
 import org.orienteer.notifications.module.ONotificationModule;
 import org.orienteer.notifications.repository.ONotificationModuleRepository;
 import org.orienteer.notifications.scheduler.ONotificationScheduler;
@@ -49,7 +49,7 @@ public class ONotificationSendTask extends ONotificationTask {
   }
 
   private void sendNotifications(ODatabaseDocument db) {
-    ONotificationDAO notificationDao = ONotificationDAO.get();
+    IONotificationDAO notificationDao = IONotificationDAO.get();
 
     ONotificationModule.Module module = ONotificationModuleRepository.getModule(db);
     ODocument sentStatus = notificationDao.getSentStatus();
@@ -82,7 +82,7 @@ public class ONotificationSendTask extends ONotificationTask {
   }
 
   private List<List<ODocument>> groupNotificationsForWorkers(int notificationsPerWorker, List<ODocument> notifications) {
-    ONotification notification = DAO.create(ONotification.class);
+    IONotification notification = DAO.create(IONotification.class);
     Map<ODocument, LinkedList<List<ODocument>>> groupedMap = new LinkedHashMap<>();
 
     notifications.stream()

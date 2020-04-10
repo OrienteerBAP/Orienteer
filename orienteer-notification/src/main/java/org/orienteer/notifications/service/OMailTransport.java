@@ -5,8 +5,8 @@ import org.orienteer.core.dao.DAO;
 import org.orienteer.mail.model.OMailAttachment;
 import org.orienteer.mail.model.OMailSettings;
 import org.orienteer.mail.model.OPreparedMail;
-import org.orienteer.notifications.model.OMailNotification;
-import org.orienteer.notifications.model.OMailNotificationTransport;
+import org.orienteer.notifications.model.IOMailNotification;
+import org.orienteer.notifications.model.IOMailNotificationTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public class OMailTransport implements ITransport {
   private final Transport transport;
 
   public OMailTransport(ODocument transportDocument) {
-    OMailNotificationTransport transport = DAO.create(OMailNotificationTransport.class);
+    IOMailNotificationTransport transport = DAO.create(IOMailNotificationTransport.class);
     transport.fromStream(transportDocument);
     settings = new OMailSettings(transport.getMailSettings());
     session = createSession(settings, createSendMailProperties(settings));
@@ -48,7 +48,7 @@ public class OMailTransport implements ITransport {
 
   @Override
   public void send(ODocument notification) {
-    OMailNotification mailNotification = DAO.create(OMailNotification.class);
+    IOMailNotification mailNotification = DAO.create(IOMailNotification.class);
     mailNotification.fromStream(notification);
     LOG.info("Send mail notification: {} {}", notification, transport.isConnected());
     connect();

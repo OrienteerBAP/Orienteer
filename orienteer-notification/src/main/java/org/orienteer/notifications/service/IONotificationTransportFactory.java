@@ -2,14 +2,14 @@ package org.orienteer.notifications.service;
 
 import com.google.inject.ImplementedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.orienteer.notifications.model.ONotificationTransport;
+import org.orienteer.notifications.model.IONotificationTransport;
 
 /**
- * Factory for {@link ONotificationTransport}
+ * Factory for {@link IONotificationTransport}
  */
 @ImplementedBy(ONotificationTransportFactory.class)
 public interface IONotificationTransportFactory {
 
-  ONotificationTransport create(ODocument document);
+  IONotificationTransport create(ODocument document);
 
 }

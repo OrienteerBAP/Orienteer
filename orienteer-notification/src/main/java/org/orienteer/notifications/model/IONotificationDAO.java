@@ -9,13 +9,13 @@ import org.orienteer.core.dao.Query;
 import java.util.List;
 
 /**
- * Provide access for class {@link org.orienteer.notifications.model.ONotification#CLASS_NAME}
+ * Provide access for class {@link org.orienteer.notifications.model.IONotification#CLASS_NAME}
  */
 @ProvidedBy(DAOProvider.class)
-public interface ONotificationDAO {
+public interface IONotificationDAO {
 
-  static ONotificationDAO get() {
-    return OrienteerWebApplication.lookupApplication().getServiceInstance(ONotificationDAO.class);
+  static IONotificationDAO get() {
+    return OrienteerWebApplication.lookupApplication().getServiceInstance(IONotificationDAO.class);
   }
 
   @Query("select from ONotification where status = :status")
@@ -32,18 +32,18 @@ public interface ONotificationDAO {
   ODocument findTransportByAlias(String alias);
 
   default ODocument getPendingStatus() {
-    return findStatusByAlias(ONotificationStatus.ALIAS_PENDING);
+    return findStatusByAlias(IONotificationStatus.ALIAS_PENDING);
   }
 
   default ODocument getSendingStatus() {
-    return findStatusByAlias(ONotificationStatus.ALIAS_SENDING);
+    return findStatusByAlias(IONotificationStatus.ALIAS_SENDING);
   }
 
   default ODocument getSentStatus() {
-    return findStatusByAlias(ONotificationStatus.ALIAS_SENT);
+    return findStatusByAlias(IONotificationStatus.ALIAS_SENT);
   }
 
   default ODocument getFailedStatus() {
-    return findStatusByAlias(ONotificationStatus.ALIAS_FAILED);
+    return findStatusByAlias(IONotificationStatus.ALIAS_FAILED);
   }
 }

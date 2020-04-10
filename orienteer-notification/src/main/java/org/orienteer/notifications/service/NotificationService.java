@@ -6,10 +6,10 @@ import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.notifications.model.ONotification;
-import org.orienteer.notifications.model.ONotificationDAO;
-import org.orienteer.notifications.model.ONotificationStatusHistory;
-import org.orienteer.notifications.model.ONotificationTransport;
+import org.orienteer.notifications.model.IONotification;
+import org.orienteer.notifications.model.IONotificationDAO;
+import org.orienteer.notifications.model.IONotificationStatusHistory;
+import org.orienteer.notifications.model.IONotificationTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class NotificationService implements INotificationService {
   private final OTransportPool transportPool = new OTransportPool();
 
   @Inject
-  private ONotificationDAO notificationDAO;
+  private IONotificationDAO notificationDAO;
 
   @Override
   @SuppressWarnings("unchecked")
@@ -39,8 +39,8 @@ public class NotificationService implements INotificationService {
     }
     ODatabaseDocument db = ODatabaseRecordThreadLocal.instance().get();
 
-    ONotification notification = DAO.create(ONotification.class);
-    ONotificationTransport transportWrapper = DAO.create(ONotificationTransport.class);
+    IONotification notification = DAO.create(IONotification.class);
+    IONotificationTransport transportWrapper = DAO.create(IONotificationTransport.class);
 
     notifications.forEach(notificationDoc -> {
       notification.fromStream(notificationDoc);
@@ -66,27 +66,27 @@ public class NotificationService implements INotificationService {
     });
   }
 
-  private void handleSendingNotificationStatus(ODatabaseDocument db, ONotification notification) {
+  private void handleSendingNotificationStatus(ODatabaseDocument db, IONotification notification) {
     ODocument status = notificationDAO.getSendingStatus();
     updateNotificationStatus(db, notification, status);
   }
 
-  private void handleSentNotificationStatus(ODatabaseDocument db, ONotification notification) {
+  private void handleSentNotificationStatus(ODatabaseDocument db, IONotification notification) {
     ODocument status = notificationDAO.getSentStatus();
     updateNotificationStatus(db, notification, status);
   }
 
-  private void handleFailedNotificationStatus(ODatabaseDocument db, ONotification notification, Exception e) {
+  private void handleFailedNotificationStatus(ODatabaseDocument db, IONotification notification, Exception e) {
     ODocument status = notificationDAO.getFailedStatus();
     LOG.warn("Couldn't send notification: {}", notification.getDocument(), e);
     updateNotificationStatus(db, notification, status);
   }
 
-  private void updateNotificationStatus(ODatabaseDocument db, ONotification notification, ODocument status) {
+  private void updateNotificationStatus(ODatabaseDocument db, IONotification notification, ODocument status) {
     for (int i = 1; i <= 10; i++) {
       try {
         db.begin();
-        notification.addStatusHistory(ONotificationStatusHistory.create(new Date(), status));
+        notification.addStatusHistory(IONotificationStatusHistory.create(new Date(), status));
         notification.setStatus(status);
         notification.save();
         db.commit();

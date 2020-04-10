@@ -8,11 +8,11 @@ import org.orienteer.core.dao.ODocumentWrapperProvider;
 import java.util.Map;
 
 /**
- * Wrapper class for {@link ONotificationStatus#CLASS_NAME}
+ * Wrapper class for {@link IONotificationStatus#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = ONotificationStatus.CLASS_NAME)
-public interface ONotificationStatus extends IODocumentWrapper {
+@DAOOClass(value = IONotificationStatus.CLASS_NAME)
+public interface IONotificationStatus extends IODocumentWrapper {
 
   String CLASS_NAME = "ONotificationStatus";
 
@@ -23,10 +23,10 @@ public interface ONotificationStatus extends IODocumentWrapper {
 
 
   String getAlias();
-  ONotificationStatus setAlias(String alias);
+  IONotificationStatus setAlias(String alias);
 
   Map<String, String> getName();
-  ONotificationStatus setName(Map<String, String> name);
+  IONotificationStatus setName(Map<String, String> name);
 
 
 }

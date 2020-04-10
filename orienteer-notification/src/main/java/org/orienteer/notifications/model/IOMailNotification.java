@@ -9,16 +9,16 @@ import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.mail.model.OPreparedMail;
 
 /**
- * Wrapper for {@link OMailNotification#CLASS_NAME}
+ * Wrapper for {@link IOMailNotification#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = OMailNotification.CLASS_NAME, superClasses = ONotification.CLASS_NAME)
-public interface OMailNotification extends ONotification {
+@DAOOClass(value = IOMailNotification.CLASS_NAME)
+public interface IOMailNotification extends IONotification {
 
   String CLASS_NAME = "OMailNotification";
 
   @DAOField(linkedClass = OPreparedMail.CLASS_NAME, type = OType.LINK)
   ODocument getPreparedMail();
-  OMailNotification setPreparedMail(ODocument preparedMail);
+  IOMailNotification setPreparedMail(ODocument preparedMail);
 
 }

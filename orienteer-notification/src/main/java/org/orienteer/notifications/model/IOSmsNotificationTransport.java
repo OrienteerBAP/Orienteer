@@ -9,16 +9,16 @@ import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.twilio.model.OSmsSettings;
 
 /**
- * Wrapper class for {@link OSmsNotificationTransport#CLASS_NAME}
+ * Wrapper class for {@link IOSmsNotificationTransport#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = OSmsNotificationTransport.CLASS_NAME, superClasses = ONotificationTransport.CLASS_NAME)
-public interface OSmsNotificationTransport extends ONotificationTransport {
+@DAOOClass(value = IOSmsNotificationTransport.CLASS_NAME)
+public interface IOSmsNotificationTransport extends IONotificationTransport {
 
   String CLASS_NAME = "OSmsNotificationTransport";
 
   @DAOField(linkedClass = OSmsSettings.CLASS_NAME, type = OType.LINK)
   ODocument getSmsSettings();
-  OSmsNotificationTransport setSmsSettings(ODocument smsSettings);
+  IOSmsNotificationTransport setSmsSettings(ODocument smsSettings);
 
 }

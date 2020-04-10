@@ -36,9 +36,9 @@ public class ONotificationModule extends AbstractOrienteerModule {
   public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
 
-    DAO.describe(helper, ONotification.class, ONotificationStatus.class, ONotificationTransport.class, ONotificationStatusHistory.class);
-    DAO.describe(helper, OMailNotification.class, OMailNotificationTransport.class);
-    DAO.describe(helper, OSmsNotification.class, OSmsNotificationTransport.class);
+    DAO.describe(helper, IONotification.class, IONotificationStatus.class, IONotificationTransport.class, IONotificationStatusHistory.class);
+    DAO.describe(helper, IOMailNotification.class, IOMailNotificationTransport.class);
+    DAO.describe(helper, IOSmsNotification.class, IOSmsNotificationTransport.class);
 
     installNotificationStatus(helper);
 
@@ -68,33 +68,33 @@ public class ONotificationModule extends AbstractOrienteerModule {
   }
 
   private void installNotificationStatus(OSchemaHelper helper) {
-    ONotificationStatus status = DAO.create(ONotificationStatus.class);
-    ONotificationDAO statusDao = ONotificationDAO.get();
+    IONotificationStatus status = DAO.create(IONotificationStatus.class);
+    IONotificationDAO statusDao = IONotificationDAO.get();
 
     if (statusDao.getPendingStatus() == null) {
-      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
-      status.setAlias(ONotificationStatus.ALIAS_PENDING);
+      status.fromStream(new ODocument(IONotificationStatus.CLASS_NAME));
+      status.setAlias(IONotificationStatus.ALIAS_PENDING);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.pending").getObject()));
       status.save();
     }
 
     if (statusDao.getSendingStatus() == null) {
-      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
-      status.setAlias(ONotificationStatus.ALIAS_SENDING);
+      status.fromStream(new ODocument(IONotificationStatus.CLASS_NAME));
+      status.setAlias(IONotificationStatus.ALIAS_SENDING);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.sending").getObject()));
       status.save();
     }
 
     if (statusDao.getSentStatus() == null) {
-      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
-      status.setAlias(ONotificationStatus.ALIAS_SENT);
+      status.fromStream(new ODocument(IONotificationStatus.CLASS_NAME));
+      status.setAlias(IONotificationStatus.ALIAS_SENT);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.sent").getObject()));
       status.save();
     }
 
     if (statusDao.getFailedStatus() == null) {
-      status.fromStream(new ODocument(ONotificationStatus.CLASS_NAME));
-      status.setAlias(ONotificationStatus.ALIAS_FAILED);
+      status.fromStream(new ODocument(IONotificationStatus.CLASS_NAME));
+      status.setAlias(IONotificationStatus.ALIAS_FAILED);
       status.setName(CommonUtils.toMap("en", new ResourceModel("notification.status.failed").getObject()));
       status.save();
     }

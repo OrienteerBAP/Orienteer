@@ -13,33 +13,33 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Wrapper class for {@link ONotification#CLASS_NAME}
+ * Wrapper class for {@link IONotification#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = ONotification.CLASS_NAME, isAbstract = true)
-public interface ONotification extends IODocumentWrapper {
+@DAOOClass(value = IONotification.CLASS_NAME, isAbstract = true)
+public interface IONotification extends IODocumentWrapper {
 
   String CLASS_NAME = "ONotification";
 
   String getId();
-  ONotification setId(String id);
+  IONotification setId(String id);
 
   Date getCreated();
-  ONotification setCreated(Date created);
+  IONotification setCreated(Date created);
 
-  @DAOField(linkedClass = ONotificationStatus.CLASS_NAME, type = OType.LINK)
+  @DAOField(linkedClass = IONotificationStatus.CLASS_NAME, type = OType.LINK)
   ODocument getStatus();
-  ONotification setStatus(ODocument status);
+  IONotification setStatus(ODocument status);
 
-  @DAOField(linkedClass = ONotificationStatusHistory.CLASS_NAME, type = OType.LINKLIST, inverse = "notification")
+  @DAOField(linkedClass = IONotificationStatusHistory.CLASS_NAME, type = OType.LINKLIST, inverse = "notification")
   List<ODocument> getStatusHistories();
-  ONotification setStatusHistories(List<ODocument> histories);
+  IONotification setStatusHistories(List<ODocument> histories);
 
-  @DAOField(linkedClass = ONotificationTransport.CLASS_NAME, type = OType.LINK)
+  @DAOField(linkedClass = IONotificationTransport.CLASS_NAME, type = OType.LINK)
   ODocument getTransport();
-  ONotification setTransport(ODocument transport);
+  IONotification setTransport(ODocument transport);
 
-  default ONotification addStatusHistory(ODocument history) {
+  default IONotification addStatusHistory(ODocument history) {
     List<ODocument> histories = getStatusHistories();
     if (histories == null) {
       histories = new LinkedList<>();
@@ -50,7 +50,7 @@ public interface ONotification extends IODocumentWrapper {
     return setStatusHistories(histories);
   }
 
-  default ONotification addStatusHistory(ONotificationStatusHistory history) {
+  default IONotification addStatusHistory(IONotificationStatusHistory history) {
     return addStatusHistory(history.getDocument());
   }
 

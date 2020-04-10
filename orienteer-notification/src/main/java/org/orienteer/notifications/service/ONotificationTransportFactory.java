@@ -3,9 +3,9 @@ package org.orienteer.notifications.service;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.http.util.Args;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.notifications.model.OMailNotificationTransport;
-import org.orienteer.notifications.model.ONotificationTransport;
-import org.orienteer.notifications.model.OSmsNotificationTransport;
+import org.orienteer.notifications.model.IOMailNotificationTransport;
+import org.orienteer.notifications.model.IONotificationTransport;
+import org.orienteer.notifications.model.IOSmsNotificationTransport;
 
 /**
  * Default implementation of {@link IONotificationTransportFactory}
@@ -13,16 +13,16 @@ import org.orienteer.notifications.model.OSmsNotificationTransport;
 public class ONotificationTransportFactory implements IONotificationTransportFactory {
 
   @Override
-  public ONotificationTransport create(ODocument document) {
+  public IONotificationTransport create(ODocument document) {
     Args.notNull(document, "document");
-    ONotificationTransport transport = null;
+    IONotificationTransport transport = null;
 
     switch (document.getSchemaClass().getName()) {
-      case OMailNotificationTransport.CLASS_NAME:
-        transport = DAO.create(OMailNotificationTransport.class);
+      case IOMailNotificationTransport.CLASS_NAME:
+        transport = DAO.create(IOMailNotificationTransport.class);
         break;
-      case OSmsNotificationTransport.CLASS_NAME:
-        transport = DAO.create(OSmsNotificationTransport.class);
+      case IOSmsNotificationTransport.CLASS_NAME:
+        transport = DAO.create(IOSmsNotificationTransport.class);
         break;
     }
 

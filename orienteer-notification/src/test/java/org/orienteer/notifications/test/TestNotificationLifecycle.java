@@ -11,9 +11,9 @@ import org.junit.runner.RunWith;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.Sudo;
-import org.orienteer.notifications.model.ONotification;
-import org.orienteer.notifications.model.ONotificationDAO;
-import org.orienteer.notifications.model.ONotificationStatusHistory;
+import org.orienteer.notifications.model.IONotification;
+import org.orienteer.notifications.model.IONotificationDAO;
+import org.orienteer.notifications.model.IONotificationStatusHistory;
 import org.orienteer.notifications.service.INotificationService;
 import org.orienteer.notifications.testenv.OTestNotification;
 import org.orienteer.notifications.testenv.module.TestDataModule;
@@ -26,13 +26,13 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(OrienteerTestRunner.class)
 public class TestNotificationLifecycle {
 
-  private ONotification testNotification;
+  private IONotification testNotification;
 
   @Inject
   private INotificationService notificationService;
 
   @Inject
-  private ONotificationDAO notificationDAO;
+  private IONotificationDAO notificationDAO;
 
 
   @Before
@@ -45,7 +45,6 @@ public class TestNotificationLifecycle {
     }
 
     testNotification = DAO.create(OTestNotification.class);
-    testNotification.fromStream(new ODocument(OTestNotification.CLASS_NAME));
     testNotification.setTransport(testTransport);
     testNotification.save();
   }
@@ -71,7 +70,7 @@ public class TestNotificationLifecycle {
     notificationService.send(testNotification.getDocument());
     testNotification.reload();
 
-    ONotificationStatusHistory statusHistory = DAO.create(ONotificationStatusHistory.class);
+    IONotificationStatusHistory statusHistory = DAO.create(IONotificationStatusHistory.class);
     statusHistory.fromStream(new ODocument(OTestNotification.CLASS_NAME));
 
     List<ODocument> statusHistories = testNotification.getStatusHistories();

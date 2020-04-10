@@ -5,8 +5,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import io.reactivex.Completable;
 import okhttp3.Credentials;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.notifications.model.OSmsNotification;
-import org.orienteer.notifications.model.OSmsNotificationTransport;
+import org.orienteer.notifications.model.IOSmsNotification;
+import org.orienteer.notifications.model.IOSmsNotificationTransport;
 import org.orienteer.notifications.repository.ONotificationModuleRepository;
 import org.orienteer.twilio.model.OPreparedSMS;
 import org.orienteer.twilio.model.OSmsSettings;
@@ -32,7 +32,7 @@ public class OSmsTransport implements ITransport {
   private final ITwilioService twilioService;
 
   public OSmsTransport(ODocument transportDocument) {
-    OSmsNotificationTransport transport = DAO.create(OSmsNotificationTransport.class);
+    IOSmsNotificationTransport transport = DAO.create(IOSmsNotificationTransport.class);
     transport.fromStream(transportDocument);
     OSmsSettings settings = new OSmsSettings(transport.getSmsSettings());
 
@@ -45,14 +45,14 @@ public class OSmsTransport implements ITransport {
 
   @Override
   public void send(ODocument notification) {
-    OSmsNotification smsNotification = DAO.create(OSmsNotification.class);
+    IOSmsNotification smsNotification = DAO.create(IOSmsNotification.class);
     smsNotification.fromStream(notification);
     LOG.info("Send notification: {}", notification);
 
     sendMessage(smsNotification).blockingAwait();
   }
 
-  private Completable sendMessage(OSmsNotification notification) {
+  private Completable sendMessage(IOSmsNotification notification) {
     OPreparedSMS preparedSms = new OPreparedSMS(notification.getPreparedSms());
     List<String> attachments = preparedSms.getAttachments();
     String auth = Credentials.basic(accountSid, authToken);

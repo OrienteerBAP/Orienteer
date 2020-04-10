@@ -3,9 +3,9 @@ package org.orienteer.notifications.service;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.http.util.Args;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.notifications.model.OMailNotification;
-import org.orienteer.notifications.model.ONotification;
-import org.orienteer.notifications.model.OSmsNotification;
+import org.orienteer.notifications.model.IOMailNotification;
+import org.orienteer.notifications.model.IONotification;
+import org.orienteer.notifications.model.IOSmsNotification;
 
 /**
  * Default implementation of {@link IONotificationFactory}
@@ -13,16 +13,16 @@ import org.orienteer.notifications.model.OSmsNotification;
 public class ONotificationFactory implements IONotificationFactory {
 
   @Override
-  public ONotification create(ODocument document) {
+  public IONotification create(ODocument document) {
     Args.notNull(document, "document");
-    ONotification notification = null;
+    IONotification notification = null;
 
     switch (document.getSchemaClass().getName()) {
-      case OMailNotification.CLASS_NAME:
-        notification = DAO.create(OMailNotification.class);
+      case IOMailNotification.CLASS_NAME:
+        notification = DAO.create(IOMailNotification.class);
         break;
-      case OSmsNotification.CLASS_NAME:
-        notification = DAO.create(OSmsNotification.class);
+      case IOSmsNotification.CLASS_NAME:
+        notification = DAO.create(IOSmsNotification.class);
         break;
     }
 

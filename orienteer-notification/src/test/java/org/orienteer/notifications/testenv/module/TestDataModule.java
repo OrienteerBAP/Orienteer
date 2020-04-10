@@ -10,8 +10,8 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.mail.OMailModule;
 import org.orienteer.mail.model.OMail;
 import org.orienteer.mail.model.OMailSettings;
-import org.orienteer.notifications.model.OMailNotificationTransport;
-import org.orienteer.notifications.model.ONotificationDAO;
+import org.orienteer.notifications.model.IOMailNotificationTransport;
+import org.orienteer.notifications.model.IONotificationDAO;
 import org.orienteer.notifications.module.ONotificationModule;
 import org.orienteer.notifications.service.OMailTransport;
 import org.orienteer.notifications.testenv.OTestNotification;
@@ -43,12 +43,12 @@ public class TestDataModule extends AbstractOrienteerModule {
 
 
   private void installTestNotificationTransports(OSchemaHelper helper, ODocument settings) {
-    ONotificationDAO transportDao = ONotificationDAO.get();
+    IONotificationDAO transportDao = IONotificationDAO.get();
 
     ODocument mailTransport = transportDao.findTransportByAlias(TRANSPORT_MAIL);
     if (mailTransport == null) {
-      OMailNotificationTransport transport = DAO.create(OMailNotificationTransport.class);
-      transport.fromStream(new ODocument(OMailNotificationTransport.CLASS_NAME));
+      IOMailNotificationTransport transport = DAO.create(IOMailNotificationTransport.class);
+      transport.fromStream(new ODocument(IOMailNotificationTransport.CLASS_NAME));
       transport.setName(CommonUtils.toMap("en", "Test Mail Transport"));
       transport.setAlias(TRANSPORT_MAIL);
       transport.setMailSettings(settings);
