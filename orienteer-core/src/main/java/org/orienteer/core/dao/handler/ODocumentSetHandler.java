@@ -20,7 +20,7 @@ public class ODocumentSetHandler extends AbstractMethodHandler<ODocumentWrapper>
 			String name=CommonUtils.decapitalize(method.getName().substring(3));
 			DAOField fieldAnnotation = method.getAnnotation(DAOField.class);
 			if(fieldAnnotation!=null && !Strings.isEmpty(fieldAnnotation.value())) name = fieldAnnotation.value();
-			target.getDocument().field(name, args[0]);
+			target.getDocument().field(name, prepareForDB(args[0]));
 			return returnChained(proxy, method);
 		}
 		return null;

@@ -137,6 +137,7 @@ public final class DAO {
 		});
 		
 		for(Method method : methods) {
+			if(method.isDefault()) continue; //Ignore default methods
 			String methodName = method.getName();
 			Parameter[] params =  method.getParameters();
 			String fieldNameCandidate = null;

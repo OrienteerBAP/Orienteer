@@ -70,12 +70,18 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 	protected static Object prepareForDB(Object arg) {
 		if(arg==null) return null;
 		if(OType.isSimpleType(arg)) return arg;
+		else if (arg instanceof OIdentifiable) return prepareForDB((OIdentifiable)arg);
 		else if (arg instanceof IODocumentWrapper) return prepareForDB(((IODocumentWrapper)arg).getDocument());
 		else if (arg instanceof ODocumentWrapper) return prepareForDB(((ODocumentWrapper)arg).getDocument());
 		else if (arg instanceof Collection<?>) {
 			Collection<?> col = (Collection<?>)arg;
 			List<Object> ret = new ArrayList<>(col.size());
 			for (Object object : col) ret.add(prepareForDB(object));
+			return ret;
+		} else if (arg instanceof Map) {
+			Map<?, ?> map = (Map<?, ?>)arg;
+			Map<Object, Object> ret = new HashMap<Object, Object>(map.size());
+			for (Map.Entry<?, ?> entry : map.entrySet()) ret.put(entry.getKey(), prepareForDB(entry.getValue()));
 			return ret;
 		} else if (arg.getClass().isArray()) {
 			Object[] array = (Object[])arg;
@@ -85,7 +91,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		} else throw new IllegalStateException("Type "+arg.getClass()+" can't be cast to use in DB");
 	}
 	
-	protected static OIdentifiable prepareForDB(ODocument doc) {
+	protected static OIdentifiable prepareForDB(OIdentifiable doc) {
 		ORID orid = doc.getIdentity();
 		return orid.isPersistent()?orid:doc;
 	}
@@ -94,10 +100,6 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		if(Collection.class.isAssignableFrom(method.getReturnType())) 
 			return prepareForJava(query.run(args), method.getReturnType(), method.getGenericReturnType());
 		else return prepareForJava(query.runFirst(args), method.getReturnType());
-	}
-	
-	public static Class<?> typeToRequiredClass(Type type) {
-		return typeToRequiredClass(type, false);
 	}
 	
 	public static Class<?> typeToRequiredClass(Type type, Class<?> parentClass) {
@@ -117,7 +119,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		if(result==null) return null;
 		Class<?> requiredClass = method.getReturnType();
 		Type genericType = method.getGenericReturnType();
-		Class<?> requiredSubType = typeToRequiredClass(genericType);
+		Class<?> requiredSubType = typeToRequiredClass(genericType, requiredClass);
 		if(result instanceof Collection) {
 			Iterator<?> it = ((Collection<?>)result).iterator(); 
 			if(!it.hasNext()) return onRealClass(requiredClass).create().get();
@@ -139,6 +141,21 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 				return collection.get();
 			}
 			else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
+		} else if(result instanceof Map) {
+			
+			Map<?, ?> map = (Map<?, ?>)result;
+			if(map.size()==0) return result;
+			Iterator<?> it = map.values().iterator();
+			Object probe;
+			do {
+				probe = it.next();
+			} while(it.hasNext() && probe == null);
+			if(probe instanceof ODocument) {
+				return prepareForJava((Map<?, ODocument>)map, requiredClass, genericType);
+			} else if(Map.class.isAssignableFrom(requiredClass)) {
+				return map;
+			}
+			else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
 		} else if(requiredClass.isInstance(result)) return result;
 		else if(result instanceof OIdentifiable) return prepareForJava(((OIdentifiable)result).getRecord(), requiredClass);
 		else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
@@ -146,7 +163,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 	
 	protected static Object prepareForJava(List<ODocument> resultSet, Class<?> requiredClass, Type genericType) {
 		if(resultSet==null) return null;
-		Class<?> requiredSubType = typeToRequiredClass(genericType);
+		Class<?> requiredSubType = typeToRequiredClass(genericType, requiredClass);
 		
 		List<?> ret;
 		if(requiredSubType.isAssignableFrom(ODocument.class)) {
@@ -163,6 +180,26 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		if(requiredClass.isAssignableFrom(List.class)) return ret;
 		else if(Collection.class.isAssignableFrom(requiredClass)) 
 			return onRealClass(requiredClass).create().call("addAll", ret).get();
+		else throw new IllegalStateException("Can't prepare required return class: "+requiredClass);
+	}
+	
+	protected static Object prepareForJava(Map<?, ODocument> map, Class<?> requiredClass, Type genericType) {
+		if(map==null) return null;
+		Class<?> requiredSubType = typeToRequiredClass(genericType, requiredClass);
+		
+		Map<?, ?> ret;
+		if(requiredSubType.isAssignableFrom(ODocument.class)) {
+			ret = map;
+		}
+		else {
+			Map<Object, Object> inner = new HashMap<>();
+			for (Map.Entry<?, ODocument> entry : map.entrySet()) {
+				inner.put(entry.getKey(), prepareForJava(entry.getValue(), requiredSubType));
+			}
+			ret = inner;
+		}
+		
+		if(requiredClass.isAssignableFrom(Map.class)) return ret;
 		else throw new IllegalStateException("Can't prepare required return class: "+requiredClass);
 	}
 	

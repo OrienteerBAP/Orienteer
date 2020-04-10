@@ -8,6 +8,10 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+
+import static org.hamcrest.collection.IsCollectionWithSize.*;
+import static org.hamcrest.collection.IsMapWithSize.*;
+import static org.hamcrest.CoreMatchers.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,7 +24,11 @@ import org.orienteer.junit.OrienteerTester;
 import org.orienteer.junit.Sudo;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -47,16 +55,23 @@ public class DAOTest {
 						.oProperty("name", OType.STRING)
 						.oProperty("parent", OType.LINK)
 						.oProperty("child", OType.LINKLIST)
-						.setupRelationship(TEST_CLASS, "parent", TEST_CLASS, "child");
+						.oProperty("linkMap", OType.LINKMAP)
+						.setupRelationship(TEST_CLASS, "parent", TEST_CLASS, "child")
+						.setupRelationship(TEST_CLASS, "linkMap", TEST_CLASS);
 				ODocument root = helper.oDocument()
 						.field("name", "root")
 						.saveDocument().getODocument();
+				Map<String, ODocument> linkMap = new HashMap<String, ODocument>();
 				for(int i=0; i<5; i++) {
+					String name = "Child#"+i;
 					helper.oDocument()
-								.field("name", "Child#"+i)
+								.field("name", name)
 								.field("parent", root)
 								.saveDocument();
+					linkMap.put(name, helper.getODocument());
 				}
+				root.field("linkMap", linkMap);
+				root.save();
 				return true;
 			}
 		}.execute();
@@ -131,16 +146,75 @@ public class DAOTest {
 	}
 	
 	@Test
+	@Sudo
 	public void testConvertions() {
 		ITestDAO dao = tester.getApplication().getServiceInstance(ITestDAO.class);
 		ODocument doc = dao.findSingleAsDocument("root");
-		IDAOTestClass pers = dao.findSingleAsDAO("root");
-		assertEquals(doc.field("name"), pers.getName());
+		IDAOTestClass root = dao.findSingleAsDAO("root");
+		assertEquals(doc.field("name"), root.getName());
 		List<ODocument> listDocs = dao.findAllAsDocument();
 		List<IDAOTestClass> listObjs = dao.findAllAsDAO();
 		assertEquals(listDocs.size(), listObjs.size());
 		assertTrue(listDocs.get(0) instanceof ODocument);
 		assertTrue(listObjs.get(0) instanceof IDAOTestClass);
+		
+		assertConsistent(root.getChild(), root.getChildAsDocuments(), 5);
+		
+		List<ODocument> allExceptOneChild = root.getChildAsDocuments();
+		allExceptOneChild.remove(0);
+		root.setChildAsDocuments(allExceptOneChild);
+		root.save();
+		
+		assertConsistent(root.getChild(), root.getChildAsDocuments(), 4);
+		
+		List<IDAOTestClass> allExceptOneMoreChild = new ArrayList<IDAOTestClass>(root.getChild());
+		allExceptOneMoreChild.remove(0);
+		root.setChild(allExceptOneMoreChild);
+		root.save();
+		
+		assertConsistent(root.getChild(), root.getChildAsDocuments(), 3);
+		
+		assertConsistent(root.getLinkMap(), root.getLinkMapAsDocuments(), 5);
+		
+		Map<String, ODocument> mapDocs = root.getLinkMapAsDocuments();
+//		Map<String, ODocument> mapDocs = new HashMap<String, ODocument>(root.getLinkMapAsDocuments());
+		Iterator<Map.Entry<String, ODocument>> itDocs = mapDocs.entrySet().iterator();
+		itDocs.next();
+		itDocs.remove();
+		root.setLinkMapAsDocuments(mapDocs);
+		root.save();
+		
+		assertConsistent(root.getLinkMap(), root.getLinkMapAsDocuments(), 4);
+		
+		
+		Map<String, IDAOTestClass> map = new HashMap<String, IDAOTestClass>(root.getLinkMap());
+		Iterator<Map.Entry<String, IDAOTestClass>> it = map.entrySet().iterator();
+		it.next();
+		it.remove();
+		root.setLinkMap(map);
+		root.save();
+		
+		assertConsistent(root.getLinkMap(), root.getLinkMapAsDocuments(), 3);
+		
+	}
+	
+	private void assertConsistent(List<IDAOTestClass> child, List<ODocument> childAsDoc, int size) {
+		assertEquals(child.size(), childAsDoc.size());
+		assertThat(child, hasSize(size));
+		assertThat(childAsDoc, hasSize(size));
+		
+		assertThat(child, everyItem(isA(IDAOTestClass.class)));
+		assertThat(childAsDoc, everyItem(isA(ODocument.class)));
+	}
+	
+	private void assertConsistent(Map<String, IDAOTestClass> map, Map<String, ODocument> mapOfDocs, int size) {
+		assertThat(map, aMapWithSize(size));
+		assertThat(map.keySet(), everyItem(isA(String.class)));
+		assertThat(map.values(), everyItem(isA(IDAOTestClass.class)));
+		
+		assertThat(mapOfDocs, aMapWithSize(size));
+		assertThat(mapOfDocs.keySet(), everyItem(isA(String.class)));
+		assertThat(mapOfDocs.values(), everyItem(isA(ODocument.class)));
 	}
 	
 	@Test
