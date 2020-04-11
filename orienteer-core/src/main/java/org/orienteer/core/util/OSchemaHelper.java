@@ -346,4 +346,28 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		super.doOnODocument(consumer);
 		return this;
 	}
+	
+	/**
+	 * Do operation on wrapped ODocument
+	 * @param <T> type of a wrapper
+	 * @param daoClass class of a wrapper
+	 * @param consumer consumer for performing operation
+	 * @return this
+	 */
+	public <T> OSchemaHelper doOnODocument(Class<? extends T> daoClass, Consumer<T> consumer) {
+		checkODocument();
+		consumer.accept(getODocument(daoClass));
+		return this;
+	}
+	
+	/**
+	 * Get ODocument as wrapped in DAO
+	 * @param <T> type of a wrapper
+	 * @param daoClass class of a wrapper
+	 * @return wrapped ODocument
+	 */
+	public <T> T getODocument(Class<? extends T> daoClass) {
+		ODocument doc = getODocument();
+		return doc!=null?DAO.provide(daoClass, doc):null;
+	}
 }

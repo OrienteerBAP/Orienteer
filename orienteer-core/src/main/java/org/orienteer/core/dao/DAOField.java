@@ -22,4 +22,18 @@ public @interface DAOField {
 	String inverse() default "";
 	boolean embedded() default false;
 	boolean notNull() default false;
+	String tab() default "";
+	String visualization() default "default";
+	String feature() default "";
+	boolean mandatory() default false;
+	boolean readOnly() default false;
+	boolean uiReadOnly() default false;
+	String min() default "";
+	String max() default "";
+	String regexp() default "";
+	String collate() default "";
+	boolean displayable() default false;
+	boolean hidden() default false;
+	String script() default "";
+	String defaultValue() default "";
 }

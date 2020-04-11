@@ -1,10 +1,14 @@
 package org.orienteer.core.dao;
 
 import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
+
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,6 +197,7 @@ public final class DAO {
 				helper.oProperty(fieldName, oType, order);
 				if(linkedType!=null) helper.linkedType(linkedType);
 				helper.notNull(notNull);
+				applyDAOFieldAttribute(helper, daoField);
 				return null;
 			});
 			if(linkedClass!=null) ctx.postponeTillDefined(linkedClass, () -> {
@@ -211,10 +216,51 @@ public final class DAO {
 		LOG.info("Creation of OClass {}", daooClass.value());
 		if(daooClass.isAbstract()) helper.oAbstractClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
 		else helper.oClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
+		applyDAOClassAttributes(helper, daooClass);
 		
 		ctx.exiting(clazz, daooClass.value());
 		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
+	}
+	
+	private static void applyDAOClassAttributes(OSchemaHelper helper, DAOOClass daoOClass) {
+		CustomAttribute.DOMAIN.setValue(helper.getOClass(), daoOClass.domain());
+		if(!Strings.isEmpty(daoOClass.nameProperty()))
+			CustomAttribute.PROP_NAME.setValue(helper.getOClass(), daoOClass.nameProperty());
+		if(!Strings.isEmpty(daoOClass.parentProperty()))
+			CustomAttribute.PROP_PARENT.setValue(helper.getOClass(), daoOClass.parentProperty());
+		if(!Strings.isEmpty(daoOClass.defaultTab()))
+			CustomAttribute.TAB.setValue(helper.getOClass(), daoOClass.defaultTab());
+		if(!Strings.isEmpty(daoOClass.sortProperty())) {
+			CustomAttribute.SORT_BY.setValue(helper.getOClass(), daoOClass.sortProperty());
+			CustomAttribute.SORT_ORDER.setValue(helper.getOClass(), !SortOrder.DESCENDING.equals(daoOClass.sortOrder()));
+		}
+		if(!Strings.isEmpty(daoOClass.searchQuery()))
+			CustomAttribute.SEARCH_QUERY.setValue(helper.getOClass(), daoOClass.searchQuery());
+	}
+	
+	private static void applyDAOFieldAttribute(OSchemaHelper helper, DAOField daoField) {
+		if(daoField==null) return;
+		if(!Strings.isEmpty(daoField.tab()))
+			helper.assignTab(daoField.tab());
+		helper.assignVisualization(daoField.visualization());
+		if(!Strings.isEmpty(daoField.feature()))
+			CustomAttribute.FEATURE.setValue(helper.getOProperty(), daoField.feature());
+		helper.getOProperty().setMandatory(daoField.mandatory());
+		helper.getOProperty().setMandatory(daoField.readOnly());
+		CustomAttribute.UI_READONLY.setValue(helper.getOProperty(), daoField.uiReadOnly());
+		if(!Strings.isEmpty(daoField.min())) helper.min(daoField.min());
+		if(!Strings.isEmpty(daoField.max())) helper.max(daoField.max());
+		if(!Strings.isEmpty(daoField.regexp())) helper.getOProperty().setRegexp(daoField.regexp());
+		if(!Strings.isEmpty(daoField.collate())) helper.getOProperty().setCollate(daoField.collate());
+		CustomAttribute.DISPLAYABLE.setValue(helper.getOProperty(), daoField.displayable());
+		CustomAttribute.HIDDEN.setValue(helper.getOProperty(), daoField.hidden());
+		if(!Strings.isEmpty(daoField.script())) {
+			helper.calculateBy(daoField.script());
+		} else {
+			CustomAttribute.CALCULABLE.setValue(helper.getOProperty(), false);
+		}
+		helper.defaultValue(Strings.isEmpty(daoField.defaultValue())?null:daoField.defaultValue());
 	}
 
 }

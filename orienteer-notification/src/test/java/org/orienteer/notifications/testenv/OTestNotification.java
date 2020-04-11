@@ -6,7 +6,7 @@ import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.notifications.model.IONotification;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = OTestNotification.CLASS_NAME, superClasses = IONotification.CLASS_NAME)
+@DAOOClass(value = OTestNotification.CLASS_NAME)
 public interface OTestNotification extends IONotification {
 
   String CLASS_NAME = "OTestNotification";
