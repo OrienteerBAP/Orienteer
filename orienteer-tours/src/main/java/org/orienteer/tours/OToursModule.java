@@ -15,9 +15,9 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.tours.model.AbstractOTourItem;
-import org.orienteer.tours.model.OTour;
-import org.orienteer.tours.model.OTourStep;
+import org.orienteer.tours.model.IOTourItem;
+import org.orienteer.tours.model.IOTour;
+import org.orienteer.tours.model.IOTourStep;
 import org.orienteer.tours.rest.OToursRestResources;
 import org.orienteer.wicketjersey.WicketJersey;
 
@@ -70,29 +70,7 @@ public class OToursModule extends AbstractOrienteerModule{
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oAbstractClass(AbstractOTourItem.OCLASS_NAME)
-					.oProperty(AbstractOTourItem.OPROPERTY_TITLE, OType.EMBEDDEDMAP, 0)
-						.linkedType(OType.STRING)
-						.assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
-						.markAsDocumentName()
-						.markDisplayable()
-					.oProperty(AbstractOTourItem.OPROPERTY_ALIAS, OType.STRING, 10)
-						.notNull()
-						.markDisplayable()
-					.oProperty(AbstractOTourItem.OPROPERTY_PATH, OType.STRING, 20)
-						.markDisplayable()
-			 .oClass(OTour.OCLASS_NAME, AbstractOTourItem.OCLASS_NAME)
-			 		.oProperty(OTour.OPROPERTY_STEPS, OType.LINKLIST, 30)
-			 			.assignVisualization(UIVisualizersRegistry.VISUALIZER_TABLE)
-			 .oClass(OTourStep.OCLASS_NAME, AbstractOTourItem.OCLASS_NAME)
-			 		.oProperty(OTourStep.OPROPERTY_TOUR, OType.LINK, 30)
-			 			.markAsLinkToParent()
-			 		.oProperty(OTourStep.OPROPERTY_ELEMENT, OType.STRING, 40)
-			 			.markDisplayable()
-					.oProperty(OTourStep.OPROPERTY_CONTENT, OType.EMBEDDEDMAP, 50)
-						.linkedType(OType.STRING)
-						.assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
-			.setupRelationship(OTour.OCLASS_NAME, OTour.OPROPERTY_STEPS, OTourStep.OCLASS_NAME, OTourStep.OPROPERTY_TOUR);
+		helper.describeAndInstallSchema(IOTour.class, IOTourStep.class);
 		return null;
 	}
 	

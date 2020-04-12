@@ -1,5 +1,6 @@
 package org.orienteer.tours.model;
 
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -10,8 +11,13 @@ import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.util.LocalizeFunction;
 
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
@@ -19,50 +25,37 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 /**
  * Abstract OTourItem to cover tours and steps 
  */
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = IOTourItem.OCLASS_NAME, 
+		   isAbstract = true,
+		   nameProperty = "title")
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class AbstractOTourItem extends ODocumentWrapper {
+public interface IOTourItem {
 	public static final String OCLASS_NAME = "OTourItem";
 	
-	public static final String OPROPERTY_TITLE = "title";
-	public static final String OPROPERTY_ALIAS = "alias";
-	public static final String OPROPERTY_PATH = "path";
-
-	public AbstractOTourItem(ODocument iDocument) {
-		super(iDocument);
-	}
-
-	public AbstractOTourItem(ORID iRID) {
-		super(iRID);
+	@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION,
+			  displayable = true,
+			  order = 0)
+	public Map<String, String> getTitle();
+	
+	@XmlElement(name = "title")
+	public default String getLocalizedTitle() {
+		return LocalizeFunction.getInstance().apply(getTitle());
 	}
 	
-	protected AbstractOTourItem(String iClassName) {
-		super(iClassName);
-	}
-
+	@DAOField(notNull = true, order = 10, displayable = true)
 	@XmlElement
-	public String getTitle() {
-		return localize(getDocument().field(OPROPERTY_TITLE));
-	}
+	public String getAlias();
 	
+	@DAOField(order = 20, displayable = true)
 	@XmlElement
-	public String getAlias() {
-		return getDocument().field(OPROPERTY_ALIAS);
-	}
+	public String getPath();
 	
-	@XmlElement
-	public String getPath() {
-		return getDocument().field(OPROPERTY_PATH);
-	}
-	
-	protected static String localize(Object object) {
-		return LocalizeFunction.getInstance().apply(object);
-	}
-	
-	public boolean isAllowed() {
+	public default boolean isAllowed() {
 		return isAllowed(RequestCycle.get().getRequest().getUrl());
 	}
 	
-	public boolean isAllowed(Url url) {
+	public default boolean isAllowed(Url url) {
 		String path = getPath();
 		return Strings.isEmpty(path)?true:url.toString().matches(path);
 	}
