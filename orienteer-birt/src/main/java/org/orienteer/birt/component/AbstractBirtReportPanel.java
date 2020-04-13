@@ -1,14 +1,5 @@
 package org.orienteer.birt.component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.IRequestListener;
 import org.apache.wicket.markup.html.basic.Label;
@@ -20,16 +11,7 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.IResource.Attributes;
 import org.eclipse.birt.data.engine.executor.cache.Md5Util;
-import org.eclipse.birt.report.engine.api.EngineException;
-import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
-import org.eclipse.birt.report.engine.api.IHTMLImageHandler;
-import org.eclipse.birt.report.engine.api.IParameterDefnBase;
-import org.eclipse.birt.report.engine.api.IRenderOption;
-import org.eclipse.birt.report.engine.api.IRenderTask;
-import org.eclipse.birt.report.engine.api.IReportDocument;
-import org.eclipse.birt.report.engine.api.IReportEngine;
-import org.eclipse.birt.report.engine.api.IReportRunnable;
-import org.eclipse.birt.report.engine.api.IRunTask;
+import org.eclipse.birt.report.engine.api.*;
 import org.eclipse.birt.report.model.api.DesignElementHandle;
 import org.eclipse.birt.report.model.api.OdaDataSourceHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
@@ -45,9 +27,14 @@ import org.orienteer.birt.orientdb.impl.Driver;
 import org.orienteer.core.OrienteerWebApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
 //import java.io.
 
 /**
@@ -194,7 +181,9 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 				OdaDataSourceHandle odash = (OdaDataSourceHandle)dsHandle;
 				if (odash.getExtensionID().equals(Driver.ODA_DATA_SOURCE_ID)){
 					try {
-						odash.setProperty(Connection.DB_URI_PROPERTY, OrientDbWebApplication.get().getOrientDbSettings().getDBUrl());
+						IOrientDbSettings settings = OrientDbWebApplication.get().getOrientDbSettings();
+
+						odash.setProperty(Connection.DB_URI_PROPERTY, settings.getDbType() + ":" + settings.getDbName());
 						odash.setProperty(Connection.DB_USER_PROPERTY, OrientDbWebSession.get().getUsername());
 						odash.setProperty(Connection.DB_PASSWORD_PROPERTY, OrientDbWebSession.get().getPassword());
 					} catch (SemanticException e) {

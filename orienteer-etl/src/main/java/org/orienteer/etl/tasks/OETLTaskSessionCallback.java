@@ -22,7 +22,7 @@ public class OETLTaskSessionCallback implements ITaskSessionCallback {
 	public void interrupt() throws Exception {
 		initialThread.interrupt();
 		Thread.sleep(200);
-		processor.forceStop();
+//		processor.forceStop();
 	}
 
 }

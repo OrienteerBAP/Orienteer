@@ -1,19 +1,12 @@
 package org.orienteer.core.hook;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * OrientDB {@link ORecordHook} which allows to bind runtime callback to a document.
@@ -23,9 +16,8 @@ public class CallbackHook implements ORecordHook {
 
 	private static final String CALLBACKS_FIELD = "__callbacks__";
 	
-	private static final Set<TYPE> PRESERVE_IN_THREAD = new HashSet<TYPE>(Arrays.asList(TYPE.BEFORE_CREATE, TYPE.BEFORE_READ, TYPE.BEFORE_UPDATE, TYPE.BEFORE_DELETE)); 
-	
-	private static final ThreadLocal<CallbacksHolder> PRESERVED = new ThreadLocal<CallbackHook.CallbacksHolder>(); 
+//	private static final Set<TYPE> PRESERVE_IN_THREAD = new HashSet<TYPE>(Arrays.asList(TYPE.BEFORE_CREATE, TYPE.BEFORE_READ, TYPE.BEFORE_UPDATE, TYPE.BEFORE_DELETE));
+//	private static final ThreadLocal<CallbacksHolder> PRESERVED = new ThreadLocal<>();
 	
 	/**
 	 * Callback to be executed on event
@@ -41,20 +33,22 @@ public class CallbackHook implements ORecordHook {
 	}
 	
 	private static class CallbacksHolder implements Serializable {
-		private final Map<TYPE, List<ICallback>> callbacksMap = new HashMap<ORecordHook.TYPE, List<ICallback>>();
+
+		private final Map<TYPE, List<ICallback>> callbacksMap;
+
+		public CallbacksHolder() {
+			callbacksMap = new HashMap<>();
+		}
+
 		public void registerCallback(TYPE type, ICallback callback) {
-			List<ICallback> list = callbacksMap.get(type);
-			if(list==null) {
-				list = new LinkedList<CallbackHook.ICallback>();
-				callbacksMap.put(type, list);
-			}
+			List<ICallback> list = callbacksMap.computeIfAbsent(type, k -> new LinkedList<>());
 			list.add(callback);
 		}
 		
 		public boolean call(TYPE type, ODocument doc) {
 			List<ICallback> callbacks = callbacksMap.remove(type);
 			boolean ret = false;
-			if(callbacks!=null) {
+			if (callbacks != null) {
 				for (ICallback iCallback : callbacks) {
 					ret= iCallback.call(type, doc) || ret;
 				}
@@ -67,13 +61,7 @@ public class CallbackHook implements ORecordHook {
 		}
 		
 		private void optimize() {
-			if(callbacksMap.isEmpty()) return;
-			Iterator<Map.Entry<TYPE, List<ICallback>>> it = callbacksMap.entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry<TYPE, List<ICallback>> entry = it.next();
-				List<ICallback> list = entry.getValue();
-				if(list==null || list.isEmpty()) it.remove();
-			}
+			callbacksMap.entrySet().removeIf(entry -> entry.getValue() == null || entry.getValue().isEmpty());
 		}
 		
 		public boolean isEmpty() {
@@ -83,8 +71,8 @@ public class CallbackHook implements ORecordHook {
 	}
 	
 	public static void registerCallback(ODocument doc, TYPE type, ICallback callback) {
-		CallbacksHolder ret = (CallbacksHolder) doc.field(CALLBACKS_FIELD);
-		if(ret==null) {
+		CallbacksHolder ret = doc.field(CALLBACKS_FIELD, CallbacksHolder.class);
+		if (ret == null) {
 			ret = new CallbacksHolder();
 			//Field type should be CUSTOM: to allow callback be serialized and still preserved in a doc
 			doc.field(CALLBACKS_FIELD, ret, OType.CUSTOM);
@@ -94,20 +82,15 @@ public class CallbackHook implements ORecordHook {
 
 	@Override
 	public RESULT onTrigger(TYPE iType, ORecord iRecord) {
-		if(!(iRecord instanceof ODocument)) return RESULT.RECORD_NOT_CHANGED;
-		ODocument doc = (ODocument) iRecord;
-		CallbacksHolder callbacks=null;
-		if(doc.containsField(CALLBACKS_FIELD)) callbacks = (CallbacksHolder) doc.field(CALLBACKS_FIELD);
-		else callbacks = PRESERVED.get();
-		if(callbacks==null) return RESULT.RECORD_NOT_CHANGED; 
-		boolean docWasChanged = callbacks.call(iType, doc);
-		PRESERVED.remove();
-		if(PRESERVE_IN_THREAD.contains(iType)) {
-			doc.removeField(CALLBACKS_FIELD);
-			PRESERVED.set(callbacks);
+		if (iRecord instanceof ODocument) {
+			ODocument doc = (ODocument) iRecord;
+			CallbacksHolder callbacks = getCallbacksHolder(doc);
+
+			if (callbacks != null && executeCallbacks(iType, doc, callbacks)) {
+				return RESULT.RECORD_CHANGED;
+			}
 		}
-		if(callbacks.isEmpty()) doc.removeField(CALLBACKS_FIELD);
-		return docWasChanged?RESULT.RECORD_CHANGED:RESULT.RECORD_NOT_CHANGED;
+		return RESULT.RECORD_NOT_CHANGED;
 	}
 
 	@Override
@@ -120,5 +103,19 @@ public class CallbackHook implements ORecordHook {
 		
 	}
 	
+	private CallbacksHolder getCallbacksHolder(ODocument doc) {
+		CallbacksHolder callbacks = null;
+		if (doc.containsField(CALLBACKS_FIELD)) {
+			callbacks = doc.field(CALLBACKS_FIELD, CallbacksHolder.class);
+		}
+		return callbacks;
+	}
 
+	private boolean executeCallbacks(TYPE iType, ODocument doc, CallbacksHolder callbacks) {
+		boolean docWasChanged = callbacks.call(iType, doc);
+		if (callbacks.isEmpty()) {
+			doc.removeField(CALLBACKS_FIELD);
+		}
+		return docWasChanged;
+	}
 }

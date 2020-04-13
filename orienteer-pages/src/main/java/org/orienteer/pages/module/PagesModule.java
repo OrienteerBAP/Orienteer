@@ -2,6 +2,7 @@ package org.orienteer.pages.module;
 
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.request.mapper.ICompoundRequestMapper;
@@ -13,6 +14,9 @@ import org.orienteer.pages.wicket.mapper.PagesCompoundRequestMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentAliasCompoundMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentAliasMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentsAliasMapper;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * {@link AbstractOrienteerModule} to provide extentions for Orienteer Pages
@@ -82,6 +86,7 @@ public class PagesModule extends AbstractOrienteerModule {
 		app.mount(pagesCompoundRequestMapper = new PagesCompoundRequestMapper());
 		app.mount(documentAliasCompoundMapper = new ODocumentAliasCompoundMapper(ODocumentAliasMapper::new));
 		app.mount(documentsAliasCompoundMapper = new ODocumentAliasCompoundMapper(ODocumentsAliasMapper::new));
+
 		app.getOrientDbSettings().getORecordHooks().add(PagesHook.class);
 	}
 	

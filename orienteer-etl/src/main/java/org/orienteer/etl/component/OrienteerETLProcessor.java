@@ -1,24 +1,18 @@
 package org.orienteer.etl.component;
 
-import org.orienteer.etl.tasks.OETLTaskSession;
-
-import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.etl.OETLProcessor;
-
 /**
  * 
  * OETLProcessor for Orienteer
  *
  */
-public class OrienteerETLProcessor extends OETLProcessor{
-	
+public class OrienteerETLProcessor /*extends OETLProcessor */{
+	/*
 	private OETLTaskSession taskSession;
 	
 	public OrienteerETLProcessor(OETLTaskSession taskSession) {
 		this.taskSession = taskSession;
 	}
-	
+
 	public void doExecute(){
 		execute();
 	}
@@ -47,4 +41,5 @@ public class OrienteerETLProcessor extends OETLProcessor{
 	public void forceStop(){
 		end();
 	}
+	 */
 }

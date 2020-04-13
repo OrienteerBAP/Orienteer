@@ -9,7 +9,6 @@ import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
@@ -172,7 +171,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		OClass widgetClass = helper.oClass(OCLASS_WIDGET).getOClass();
 		if(!widgetClass.existsProperty(OPROPERTY_TITLE)) {
-			db.command(new OSQLSynchQuery<Void>("UPDATE "+OCLASS_WIDGET+" REMOVE title"));
+			db.command("UPDATE "+OCLASS_WIDGET+" REMOVE title");
 		}
 		OClass classToFix = db.getMetadata().getSchema()
 						.getClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME);

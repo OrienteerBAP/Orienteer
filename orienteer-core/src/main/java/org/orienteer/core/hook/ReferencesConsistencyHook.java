@@ -1,5 +1,6 @@
 package org.orienteer.core.hook;
 
+import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -9,6 +10,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeEvent;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeTimeLine;
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -18,7 +20,11 @@ import org.orienteer.core.CustomAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -82,10 +88,8 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 		return DISTRIBUTED_EXECUTION_MODE.SOURCE_NODE;
 	}
 	
-	private LoadingCache<OClass, Collection<OProperty>> getCache()
-	{
-		@SuppressWarnings("deprecation")
-		int version = ODatabaseRecordThreadLocal.INSTANCE.get().getMetadata().getSchema().getVersion();
+	private LoadingCache<OClass, Collection<OProperty>> getCache() {
+		int version = ODatabaseRecordThreadLocal.instance().get().getMetadata().getSchema().getVersion();
 		if(version>currentSchemaVersion)
 		{
 			CACHE.invalidateAll();
@@ -112,7 +116,18 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 							if(otherObj instanceof OIdentifiable)
 							{
 								ODocument otherDoc = ((OIdentifiable) otherObj).getRecord();
-								addLink(otherDoc, inverseProperty, doc);
+
+								for (int i = 0; i <= 10; i++) {
+									try {
+										addLink(otherDoc, inverseProperty, doc);
+										database.commit();
+									} catch (OConcurrentModificationException e) {
+										otherDoc.reload();
+										if (i == 10) {
+											throw new IllegalStateException(e);
+										}
+									}
+								}
 							}
 						}
 					}
@@ -326,5 +341,5 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			}
 		}
 	}
-	
+
 }

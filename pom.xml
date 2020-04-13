@@ -72,10 +72,10 @@
         <java.version>1.8</java.version>
 		<wicket.version>8.7.0</wicket.version>
 		<wicketstuff.version>8.7.0</wicketstuff.version>
-		<orientdb.version>2.2.37</orientdb.version>
+		<orientdb.version>3.1.0-SNAPSHOT</orientdb.version>
 		<guice.version>4.2.0</guice.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
-		<wicket.orientdb.version>1.5-SNAPSHOT</wicket.orientdb.version>
+		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -254,7 +254,13 @@
 				<artifactId>flexmark-all</artifactId>
 				<version>0.40.16</version>
 			</dependency>
-		    <!-- LOGGING DEPENDENCIES - LOG4J -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>2.9.9</version>
+			</dependency>
+
+			<!-- LOGGING DEPENDENCIES - LOG4J -->
 		    <dependency>
 			    <groupId>org.slf4j</groupId>
 			    <artifactId>slf4j-log4j12</artifactId>
@@ -497,7 +503,6 @@
 				<module>orienteer-architect</module>
 				<module>orienteer-mail</module>
 				<module>orienteer-users</module>
-				<module>orienteer-object</module>
 				<module>orienteer-tours</module>
 				<module>orienteer-notification</module>
 				<module>orienteer-twilio</module>
@@ -590,6 +595,21 @@
 				<module>orienteer-graph</module>
 				<module>orienteer-war</module>
 			</modules>
+		</profile>
+		<profile>
+			<id>github</id>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>github</id>
+					<name>GitHub OrienteerBAP Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/OrienteerBAP</url>
+				</snapshotRepository>
+				<repository>
+					<id>github</id>
+					<name>GitHub OrienteerBAP Apache Maven Packages</name>
+					<url>https://maven.pkg.github.com/OrienteerBAP</url>
+				</repository>
+			</distributionManagement>
 		</profile>
 	</profiles>
 </project>

@@ -2,7 +2,6 @@ package org.orienteer.users.repository;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -84,8 +83,7 @@ public final class DatabaseHelper {
     }
 
     public static void delete(ODatabaseDocument db, List<ODocument> docs) {
-        db.command(new OCommandSQL(DELETE_RECORDS_TEMPLATE))
-                .execute(docs);
+        db.command(DELETE_RECORDS_TEMPLATE, docs);
     }
 
     public static void delete(ODatabaseDocument db, ODocumentWrapper wrapper) {

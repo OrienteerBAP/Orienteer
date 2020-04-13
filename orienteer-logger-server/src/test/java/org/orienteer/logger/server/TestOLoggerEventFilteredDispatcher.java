@@ -13,6 +13,8 @@ import org.orienteer.logger.server.model.OLoggerEventModel;
 import org.orienteer.logger.server.repository.OLoggerModuleRepository;
 import org.orienteer.logger.server.repository.OLoggerRepository;
 import org.orienteer.logger.server.service.dispatcher.OLoggerEventFilteredDispatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.HashSet;
@@ -25,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(OrienteerTestRunner.class)
 public class TestOLoggerEventFilteredDispatcher {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TestOLoggerEventFilteredDispatcher.class);
 
     private OLoggerEventFilteredDispatcherModel filteredDispatcher;
     private OCorrelationIdGeneratorModel correlationIdGenerator;
@@ -57,6 +61,9 @@ public class TestOLoggerEventFilteredDispatcher {
     public void destroy() {
         DBClosure.sudoConsumer(db -> {
             db.delete(filteredDispatcher.getDocument());
+
+            db.command("delete from " + OLoggerEventModel.CLASS_NAME);
+
             OLoggerRepository.getOLoggerEventDispatcherAsDocument(db, OLoggerModule.DISPATCHER_DEFAULT)
                     .ifPresent(d ->
                         OLoggerModuleRepository.getModule(db)

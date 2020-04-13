@@ -8,10 +8,8 @@ import com.google.inject.name.Named;
 import com.hazelcast.core.HazelcastInstance;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.metadata.security.OUser;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
-
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -44,7 +42,7 @@ import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
 import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
 import org.orienteer.core.service.IOClassIntrospector;
-import org.orienteer.core.service.listener.OrienteerEmeddOrientDbListener;
+import org.orienteer.core.service.OrienteerEmbeddedStartupListener;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.util.WicketProtector;
 import org.orienteer.core.util.converter.ODateConverter;
@@ -57,9 +55,11 @@ import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.ydn.wicket.wicketorientdb.*;
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
-import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
@@ -159,13 +159,12 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	 * @see org.apache.wicket.Application#init()
 	 */
 	@Override
-	public void init()
-	{
+	public void init() {
 		super.init();
 		Reflections.log = null; // Disable logging in reflections lib everywhere
-		if(embedded) {
-			getApplicationListeners().add(new OrienteerEmeddOrientDbListener(dbConfig));
-		}
+
+		initListeners();
+
 		WicketWebjars.install(this, webjarSettings);
 		mountPackage("org.orienteer.core.web");
 		mountPackage("org.orienteer.core.resource");
@@ -174,26 +173,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountResource("favicon.ico", new SharedResourceReference(imageIconPath));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
-		getApplicationListeners().add(new ModuledDataInstallator());
-		getApplicationListeners().add(new IApplicationListener() {
-			
-			@Override
-			public void onAfterInitialized(Application application) {
-				new DBClosure<Boolean>() {
 
-					@Override
-					protected Boolean execute(ODatabaseDocument db) {
-						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
-						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
-						return true;
-					}
-				}.execute();
-			}
-			
-			@Override
-			public void onBeforeDestroyed(Application application) {/*NOP*/}
-			
-		});
 		WicketProtector.install(this);
 		getPageSettings().addComponentResolver(new WicketPropertyResolver());
 		//Remove default BookmarkableMapper to disallow direct accessing of pages through /wicket/bookmarkable/<class>
@@ -225,6 +205,33 @@ public class OrienteerWebApplication extends OrientDbWebApplication
         if (isDistributedMode()) { // set session store and page provider for distributed mode
             setPageManagerProvider(createPageManagerProvider());
         }
+	}
+
+	private void initListeners() {
+		if (embedded) {
+			getApplicationListeners().add(new OrienteerEmbeddedStartupListener(OrienteerWebApplication.class.getResource("db.config.xml")));
+		}
+
+		getApplicationListeners().add(new ModuledDataInstallator());
+		getApplicationListeners().add(new IApplicationListener() {
+
+			@Override
+			public void onAfterInitialized(Application application) {
+				new DBClosure<Boolean>() {
+
+					@Override
+					protected Boolean execute(ODatabaseDocument db) {
+						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
+						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
+						return true;
+					}
+				}.execute();
+			}
+
+			@Override
+			public void onBeforeDestroyed(Application application) {/*NOP*/}
+
+		});
 	}
 
 	@Override

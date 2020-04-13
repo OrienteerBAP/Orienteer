@@ -1,16 +1,14 @@
 package org.orienteer.core.tasks;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.apache.wicket.model.Model;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
@@ -91,41 +89,33 @@ public class OTaskSession extends ODocumentWrapper implements ITaskSession {
 	
 	
 	private void sudoSave(){
-		new DBClosure<Boolean>() {
-			@Override
-			protected Boolean execute(ODatabaseDocument db) {
-				document.save();
-				if (document.getDatabase().getTransaction().isActive()){
-					document.getDatabase().commit();
-				}
-				return true;
+		DBClosure.sudoConsumer(db -> {
+			document.save();
+			if (document.getDatabase().getTransaction().isActive()){
+				document.getDatabase().commit();
 			}
-		}.execute();
+		});
 	}
 
-	public void atomicChange(final String field, final Object value,final String changeCommand){
-		new DBClosure<Boolean>() {
-			@Override
-			protected Boolean execute(ODatabaseDocument db) {
-				int maxRetries = 50;
-				OCommandSQL command = new OCommandSQL("update "+document.getIdentity()+" "+changeCommand);
-				int retry = 0;					
-				while(true){
-					try {
-						command.execute(value);
-						break;
-					} catch (OConcurrentModificationException  e) {
-						retry++;
-						try { Thread.sleep((long) (Math.random()*150));} catch (InterruptedException e1) {}
-						if (retry>=maxRetries){
-							throw e;//if all retries failed
-						}
+	public void atomicChange(final String field, final Object value, final String changeCommand){
+		DBClosure.sudoConsumer(db -> {
+			int maxRetries = 50;
+			String sql = "update " + document.getIdentity() + " " + changeCommand;
+			int retry = 0;
+			while(true){
+				try {
+					db.command(sql, value);
+					break;
+				} catch (OConcurrentModificationException  e) {
+					retry++;
+					try { Thread.sleep((long) (Math.random()*150));} catch (InterruptedException e1) {}
+					if (retry>=maxRetries){
+						throw e;//if all retries failed
 					}
 				}
-				document.reload();
-				return true;
 			}
-		}.execute();
+			document.reload();
+		});
 	}
 	
 	/**

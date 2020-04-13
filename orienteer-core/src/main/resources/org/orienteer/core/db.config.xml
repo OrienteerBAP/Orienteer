@@ -13,4 +13,7 @@
     <users>
 		<user name="root" password="${root.password}" resources="*"/>
     </users>
+	<properties>
+		<entry name="db.custom.support" value="true"/>
+	</properties>
 </orient-server>

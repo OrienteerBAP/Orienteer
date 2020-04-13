@@ -3,7 +3,6 @@ package org.orienteer.users;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.tester.FormTester;
@@ -12,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.web.HomePage;
+import org.orienteer.core.web.LoginPage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.users.component.DefaultRegistrationPanel;
@@ -56,7 +55,7 @@ public class RegistrationComponentTest {
     public void destroy() {
         DBClosure.sudoConsumer(db -> {
             String sql = String.format("delete from %s where %s = ?", OUser.CLASS_NAME, OrienteerUser.PROP_EMAIL);
-            db.command(new OCommandSQL(sql)).execute(testUser.getEmail());
+            db.command(sql, testUser.getEmail());
         });
         tester.signOut();
     }
@@ -96,7 +95,7 @@ public class RegistrationComponentTest {
     public void testRegistrationUser() {
         OrienteerUser user = registerUser();
         openRegistrationLink(user);
-        DBClosure.sudoConsumer(db -> user.load());
+        DBClosure.sudoConsumer(db -> user.getDocument().load());
         login(user);
     }
 
@@ -126,7 +125,7 @@ public class RegistrationComponentTest {
     }
 
     private void login(OrienteerUser user) {
-        tester.startPage(HomePage.class);
+        tester.startPage(LoginPage.class);
         FormTester formTester = tester.newFormTester("container:loginPanel:form");
         formTester.setValue("username", user.getName());
         formTester.setValue("password", testUser.getPassword());

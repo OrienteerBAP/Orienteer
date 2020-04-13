@@ -18,8 +18,10 @@ import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
 
@@ -85,11 +87,12 @@ public class DefaultDashboardManager implements IDashboardManager{
 	@Override
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel) {
 		ODatabaseDocument db = getDatabase();
-		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_DASHBOARD+
-											" where "+OPROPERTY_DOMAIN+" = ?"+
-											" and "+OPROPERTY_TAB+" = ?"), domain, tab);
-		if(dashboards==null || dashboards.isEmpty()) return null;
-		else return dashboards.get(0);
+		String sql = String.format("select from %s where %s = ? and %s = ?", OCLASS_DASHBOARD, OPROPERTY_DOMAIN, OPROPERTY_TAB);
+		return db.query(sql, domain, tab)
+				.elementStream()
+				.findFirst()
+				.map(e -> (ODocument) e)
+				.orElse(null);
 	}
 	
 	@Override
@@ -120,9 +123,13 @@ public class DefaultDashboardManager implements IDashboardManager{
 			}
 		}
 		ODatabaseDocument db = getDatabase();
-		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>(sql.toString()), args.toArray());
-		if(dashboards==null || dashboards.isEmpty()) return null;
-		else if(oClass!=null) {
+		List<ODocument>  dashboards = db.query(sql.toString(), args.toArray()).elementStream()
+				.map(e -> (ODocument) e)
+				.collect(Collectors.toCollection(LinkedList::new));
+
+		if(dashboards.isEmpty()) {
+			return null;
+		} else if (oClass != null) {
 			ODocument selected=null;
 			int level = Integer.MAX_VALUE;
 			OSchema schema = db.getMetadata().getSchema();

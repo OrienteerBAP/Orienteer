@@ -1,16 +1,9 @@
 package org.orienteer.bpm.camunda.handler;
 
-import com.github.raymanrt.orientqb.query.Clause;
-import com.github.raymanrt.orientqb.query.Operator;
-import com.github.raymanrt.orientqb.query.Parameter;
-import com.github.raymanrt.orientqb.query.Projection;
-import com.github.raymanrt.orientqb.query.ProjectionFunction;
-import com.github.raymanrt.orientqb.query.Query;
+import com.github.raymanrt.orientqb.query.*;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.MeterLogEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
@@ -40,6 +33,7 @@ public class MeterLogEntityHandler extends AbstractEntityHandler<MeterLogEntity>
     }
 
     @Statement
+    @SuppressWarnings("unchecked")
     public Long selectMeterLogSum(OPersistenceSession session, final ListQueryParameterObject params) {
         Map<String, Object> map = (Map<String, Object>) params.getParameter();
         
@@ -64,7 +58,8 @@ public class MeterLogEntityHandler extends AbstractEntityHandler<MeterLogEntity>
         }
         
         ODatabaseDocument db = session.getDatabase();
-        List<ODocument> ret = db.query(new OSQLSynchQuery<>(q.toString()), args.toArray());
-        return (Long)(ret!=null && !ret.isEmpty()? ret.get(0).field("value", OType.LONG):null);
+        OResultSet result = db.query(q.toString(), args.toArray());
+
+        return result.hasNext() ? result.next().getProperty("value") : null;
     }
 }

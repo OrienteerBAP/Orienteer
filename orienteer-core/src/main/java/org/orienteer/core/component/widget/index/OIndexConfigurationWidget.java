@@ -23,15 +23,15 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  * Widget to show and modify {@link OIndex} configuration
  */
 @Widget(id="index-configuration", domain="index", tab="configuration", autoEnable=true)
-public class OIndexConfigurationWidget extends AbstractModeAwareWidget<OIndex<?>> {
+public class OIndexConfigurationWidget extends AbstractModeAwareWidget<OIndex> {
 	
-	private OrienteerStructureTable<OIndex<?>, String> structureTable;
+	private OrienteerStructureTable<OIndex, String> structureTable;
 	
-	public OIndexConfigurationWidget(String id, IModel<OIndex<?>> model,
+	public OIndexConfigurationWidget(String id, IModel<OIndex> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		Form<OIndex<?>> form = new Form<OIndex<?>>("form");
-		structureTable  = new OrienteerStructureTable<OIndex<?>, String>("attributes", getModel(), OIndexPrototyper.OINDEX_ATTRS) {
+		Form<OIndex> form = new Form<>("form");
+		structureTable  = new OrienteerStructureTable<OIndex, String>("attributes", getModel(), OIndexPrototyper.OINDEX_ATTRS) {
 
 			@Override
 			protected Component getValueComponent(String id, final IModel<String> rowModel) {
@@ -47,8 +47,8 @@ public class OIndexConfigurationWidget extends AbstractModeAwareWidget<OIndex<?>
 	@Override
 	protected void onInitialize() {
 		super.onInitialize();
-		structureTable.addCommand(new EditSchemaCommand<OIndex<?>>(structureTable, getModeModel()));
-		structureTable.addCommand(new SaveSchemaCommand<OIndex<?>>(structureTable, getModeModel(), getModel()));
+		structureTable.addCommand(new EditSchemaCommand<>(structureTable, getModeModel()));
+		structureTable.addCommand(new SaveSchemaCommand<>(structureTable, getModeModel(), getModel()));
 		structureTable.addCommand(new RebuildOIndexCommand(structureTable));
 	}
 

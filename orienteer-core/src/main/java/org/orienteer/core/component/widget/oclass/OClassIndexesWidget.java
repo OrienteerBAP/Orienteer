@@ -21,7 +21,7 @@ public class OClassIndexesWidget extends AbstractIndexesWidget<OClass> {
 	public OClassIndexesWidget(String id, IModel<OClass> model,
 			IModel<ODocument> widgetDocumentModel) {
 		super(id, model, widgetDocumentModel);
-		iTable.addCommand(new ShowHideParentsCommand<OIndex<?>>(getModel(), iTable, showParentIndexesModel));
+		iTable.addCommand(new ShowHideParentsCommand<>(getModel(), iTable, showParentIndexesModel));
 	}
 
 	@Override

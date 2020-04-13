@@ -44,7 +44,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 		{
 			perspective=null;
 
-			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
+			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.PROP_OUSER_LOCALE);
 			onlineModule.updateOnlineUser(getUser(), true);
 
 			if (!Strings.isNullOrEmpty(locale)) {

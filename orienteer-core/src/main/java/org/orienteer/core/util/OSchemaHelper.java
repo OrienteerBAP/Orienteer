@@ -12,11 +12,17 @@ import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OIndex;
-import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.OClassDomain;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Enhanced {@link ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper} from wicket-orientdb library to allow Orienteer specific things
@@ -337,7 +343,7 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	}
 	
 	@Override
-	public OSchemaHelper doOnOIndex(Consumer<OIndex<?>> consumer) {
+	public OSchemaHelper doOnOIndex(Consumer<OIndex> consumer) {
 		super.doOnOIndex(consumer);
 		return this;
 	}

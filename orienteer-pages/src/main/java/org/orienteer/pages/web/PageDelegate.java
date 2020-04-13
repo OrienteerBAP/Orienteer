@@ -1,10 +1,14 @@
 package org.orienteer.pages.web;
 
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-
+import com.orientechnologies.common.concur.resource.OPartitionedObjectPool;
+import com.orientechnologies.orient.core.command.script.OScriptManager;
+import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBInternal;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.markup.DefaultMarkupCacheKeyProvider;
 import org.apache.wicket.markup.DefaultMarkupResourceStreamProvider;
@@ -20,20 +24,16 @@ import org.apache.wicket.util.resource.AbstractStringResourceStream;
 import org.apache.wicket.util.resource.IFixedLocationResourceStream;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.pages.wicket.mapper.OPageParametersEncoder;
 import org.orienteer.pages.module.PagesModule;
-
-import com.orientechnologies.common.concur.resource.OPartitionedObjectPool;
-import com.orientechnologies.orient.core.Orient;
-import com.orientechnologies.orient.core.command.script.OScriptManager;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
+import org.orienteer.pages.wicket.mapper.OPageParametersEncoder;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
+
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 /**
  * Delegate for functions which commonly used in wrapped pages
@@ -84,14 +84,15 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 		if(doc!=null) page.setDefaultModel(new ODocumentModel(doc));
 		String script = pageDocumentModel.getObject().field(PagesModule.OPROPERTY_SCRIPT);
 		if(!Strings.isEmpty(script)) {
-			OScriptManager scriptManager = Orient.instance().getScriptManager();
+			OrientDB context = OrienteerWebApplication.lookupApplication().getOrientDbSettings().getContext();
+			OScriptManager scriptManager = OrientDBInternal.extract(context).getScriptManager();
 			ODatabaseDocument db = OrienteerWebSession.get().getDatabase();
 			final OPartitionedObjectPool.PoolEntry<ScriptEngine> entry = 
 					scriptManager.acquireDatabaseEngine(db.getName(), "javascript");
 			final ScriptEngine scriptEngine = entry.object;
 			Bindings binding = null;
 		    try {
-				binding = scriptManager.bind(scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE), 
+				binding = scriptManager.bind(scriptEngine, scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE),
 												(ODatabaseDocumentTx) db, null, null);
 				binding.put("page", page);
 				binding.put("pageDoc", pageDocumentModel.getObject());
@@ -103,7 +104,7 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 				}
 			} finally {
 				if (scriptManager != null && binding != null) {
-					scriptManager.unbind(binding, null, null);
+					scriptManager.unbind(scriptEngine, binding, null, null);
 					scriptManager.releaseDatabaseEngine("javascript", db.getName(), entry);
 				}
 			}

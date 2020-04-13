@@ -6,7 +6,6 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
 import org.orienteer.core.OrienteerWebApplication;
@@ -80,7 +79,7 @@ public class UserOnlineModule extends AbstractOrienteerModule {
                 DBClosure.sudoConsumer(db -> {
                     String sql = String.format("update %s set %s = ? where %s = ?", OUser.CLASS_NAME,
                             PROP_ONLINE, PROP_LAST_SESSION_FIELD);
-                    db.command(new OCommandSQL(sql)).execute(false, sessionId);
+                    db.command(sql, false, sessionId);
                 });
             }
         };
@@ -88,6 +87,6 @@ public class UserOnlineModule extends AbstractOrienteerModule {
 
     private void resetUsersOnline(ODatabaseDocument db) {
         String sql = String.format("update %s set %s = ?", OUser.CLASS_NAME, PROP_ONLINE);
-        db.command(new OCommandSQL(sql)).execute(false);
+        db.command(sql, false);
     }
 }

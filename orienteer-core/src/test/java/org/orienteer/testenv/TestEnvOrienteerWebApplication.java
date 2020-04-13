@@ -5,10 +5,13 @@ import org.orienteer.core.SchemaInstallerTest;
 import org.orienteer.core.resource.EchoUrlResource;
 
 import com.google.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class TestEnvOrienteerWebApplication extends OrienteerWebApplication
 {
+	private static final Logger LOG = LoggerFactory.getLogger(TestEnvOrienteerWebApplication.class);
 
 	@Override
 	public void init() {
@@ -17,4 +20,9 @@ public class TestEnvOrienteerWebApplication extends OrienteerWebApplication
 		mountPackage(EchoUrlResource.class.getPackage().getName());
 	}
 
+	@Override
+	protected void onDestroy() {
+		LOG.info("On destroy");
+		super.onDestroy();
+	}
 }

@@ -1,23 +1,18 @@
 package org.orienteer.users.repository;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
-import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
-import static org.orienteer.core.util.CommonUtils.getDocument;
-import static org.orienteer.core.util.CommonUtils.getFromIdentifiables;
-import static org.orienteer.users.repository.DatabaseHelper.selectFromBy;
+import static org.orienteer.core.util.CommonUtils.getFromIdentifiable;
 
 /**
  * Repository for work with user models
@@ -116,11 +111,9 @@ public final class OrienteerUserRepository {
      */
     private static boolean isUserExistsBy(String field, String value) {
         return DBClosure.sudo(db -> {
-            String sql = String.format("select count(*) from %s where %s = ?", OrienteerUser.CLASS_NAME, field);
-            List<OIdentifiable> documents = db.query(new OSQLSynchQuery<>(sql, 1), value);
-            return getDocument(documents)
-                    .map(d -> (long) d.field("count") == 1)
-                    .orElse(false);
+            String sql = String.format("select count(*) as count from %s where %s = ? limit 1", OrienteerUser.CLASS_NAME, field);
+            return db.query(sql, 1, value).elementStream()
+                    .anyMatch(d -> (long) d.getProperty("count") == 1);
         });
     }
 
@@ -135,8 +128,9 @@ public final class OrienteerUserRepository {
     }
 
     public static Optional<OrienteerUser> getUserBy(ODatabaseDocument db, String field, String value) {
-        String sql = selectFromBy(OrienteerUser.CLASS_NAME, field);
-        List<OIdentifiable> identifiables  = db.query(new OSQLSynchQuery<>(sql, 1), value);
-        return getFromIdentifiables(identifiables, OrienteerUser::new);
+        String sql = String.format("select from %s where %s = ? limit 1", OrienteerUser.CLASS_NAME, field);
+        return db.query(sql, value).elementStream()
+                .map(e -> getFromIdentifiable(e.getRecord(), OrienteerUser::new).orElse(null))
+                .findFirst();
     }
 }

@@ -1,23 +1,5 @@
 package org.orienteer.bpm.camunda.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.regex.Pattern;
-
-import org.camunda.bpm.engine.impl.EventSubscriptionQueryValue;
-import org.camunda.bpm.engine.impl.ExecutionQueryImpl;
-import org.camunda.bpm.engine.impl.ProcessInstanceQueryImpl;
-import org.camunda.bpm.engine.impl.QueryOperator;
-import org.camunda.bpm.engine.impl.QueryVariableValue;
-import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
-import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
-import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.core.util.OSchemaHelper;
-
 import com.github.raymanrt.orientqb.query.Clause;
 import com.github.raymanrt.orientqb.query.Operator;
 import com.github.raymanrt.orientqb.query.Query;
@@ -27,8 +9,18 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-
+import org.camunda.bpm.engine.impl.*;
+import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
+import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
+import org.camunda.bpm.engine.impl.persistence.entity.SuspensionState;
+import org.orienteer.bpm.camunda.OPersistenceSession;
+import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
+
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * {@link IEntityHandler} for {@link ExecutionEntity} 
@@ -97,28 +89,22 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 	
 	@Statement
 	public List<ExecutionEntity> selectExecutionsByQueryCriteria(final OPersistenceSession session, final ExecutionQueryImpl query) {
-		/*List<ExecutionEntity> ret =  queryList(session, "SELECT FROM BPMExecution WHERE processInstanceId = ?", query.getProcessInstanceId());
-		LOG.info("Ret!!: "+ret);
-		return ret;*/
-		List<ExecutionEntity> ret = query(session, query, new Function<Query, Query>() {
-			
-			@Override
-			public Query apply(Query input) {
-				SuspensionState state = query.getSuspensionState();
-				if(state!=null) input.where(Clause.clause("suspensionState", Operator.EQ, state.getStateCode()));
-				
-				String businessKey = query.getBusinessKey();
-				if(businessKey!=null) {
-					List<ODocument> proc = session.getDatabase()
-										.query(new OSQLSynchQuery<>("select processInstanceId from "+getSchemaClass()+" where businessKey=?", 1)
-												, businessKey);
-					if(proc!=null && !proc.isEmpty()) {
-						String processInstanceId = proc.get(0).field("processInstanceId");
-						input.where(Clause.clause("processInstanceId", Operator.EQ,  processInstanceId));
-					}
+		List<ExecutionEntity> ret = query(session, query, input -> {
+			SuspensionState state = query.getSuspensionState();
+			if(state!=null) input.where(Clause.clause("suspensionState", Operator.EQ, state.getStateCode()));
+
+			String businessKey = query.getBusinessKey();
+			if(businessKey!=null) {
+				String sql = String.format("select processInstanceId from %s where businessKey=? limit 1", getSchemaClass());
+				List<ODocument> proc = session.getDatabase().query(sql, businessKey).elementStream()
+						.map(e -> (ODocument) e)
+						.collect(Collectors.toCollection(LinkedList::new));
+				if(!proc.isEmpty()) {
+					String processInstanceId = proc.get(0).field("processInstanceId");
+					input.where(Clause.clause("processInstanceId", Operator.EQ,  processInstanceId));
 				}
-				return input;
 			}
+			return input;
 		},"suspensionState", "businessKey");
 		
 		List<EventSubscriptionQueryValue> subscriptionsQueries = query.getEventSubscriptions();
@@ -197,13 +183,14 @@ public class ExecutionEntityHandler extends AbstractEntityHandler<ExecutionEntit
 		return queryList(session, "select from "+getSchemaClass()+" where parentId = ?", parameter.getParameter());
 	}
 	
-	private static final Function<ODocument, String> GET_ID_FUNCTION = new GetODocumentFieldValueFunction<String>("id");
-	
 	@Statement
 	public List<String> selectProcessInstanceIdsByProcessDefinitionId(OPersistenceSession session, ListQueryParameterObject parameter) {
 		ODatabaseDocument db = session.getDatabase();
-		List<ODocument> resultSet = db.query(new OSQLSynchQuery<>("select id from "+getSchemaClass()+" where processDefinition.id = ?"), parameter.getParameter());
-		return Lists.transform(resultSet, GET_ID_FUNCTION);
+		String sql = String.format("select id from %s where processDefinition.id = ?", getSchemaClass());
+
+		return db.query(sql, parameter.getParameter()).stream()
+				.map(r -> (String) r.getProperty("id"))
+				.collect(Collectors.toCollection(LinkedList::new));
 	}
 	
 }

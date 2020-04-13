@@ -10,6 +10,7 @@ import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.utils.ODbUtils;
 
 import javax.inject.Singleton;
 
@@ -49,7 +50,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 			case 2:
 				//Required for explicit update of rights due to changes in OrientDB 2.2.23
 				//Related issue: https://github.com/orientechnologies/orientdb/issues/7549
-				app.fixOrientDBRights(db);
+				ODbUtils.fixOrientDBRights(db);
 				break;
 			case 3:
 				assignSchemaFeature(app, db); //By default schema was available to everyone, so lets keep it

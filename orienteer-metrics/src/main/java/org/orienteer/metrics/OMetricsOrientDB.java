@@ -45,7 +45,8 @@ public class OMetricsOrientDB extends Collector {
 			@Override
 			protected List<MetricFamilySamples> execute(ODatabaseDocument db) {
 				List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
-				mfs.add(new GaugeMetricFamily("orientdb_frozen", "Is DB frozen and in RO mode", db.isFrozen()?1.0:0.0));
+				//TODO: Check how to support in OrientDB 3
+//				mfs.add(new GaugeMetricFamily("orientdb_frozen", "Is DB frozen and in RO mode", db.isFrozen()?1.0:0.0));
 				
 				GaugeMetricFamily count = new GaugeMetricFamily("orientdb_count", "Count of instances per class including subclasses", Collections.singletonList("class"));
 				long total = 0;
