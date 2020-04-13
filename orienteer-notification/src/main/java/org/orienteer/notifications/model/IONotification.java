@@ -24,10 +24,11 @@ public interface IONotification extends IODocumentWrapper {
   String getId();
   IONotification setId(String id);
 
+  @DAOField(notNull = true)
   Date getCreated();
   IONotification setCreated(Date created);
 
-  @DAOField(linkedClass = IONotificationStatus.CLASS_NAME, type = OType.LINK)
+  @DAOField(linkedClass = IONotificationStatus.CLASS_NAME, type = OType.LINK, notNull = true)
   ODocument getStatus();
   IONotification setStatus(ODocument status);
 
@@ -35,7 +36,7 @@ public interface IONotification extends IODocumentWrapper {
   List<ODocument> getStatusHistories();
   IONotification setStatusHistories(List<ODocument> histories);
 
-  @DAOField(linkedClass = IONotificationTransport.CLASS_NAME, type = OType.LINK)
+  @DAOField(linkedClass = IONotificationTransport.CLASS_NAME, type = OType.LINK, notNull = true)
   ODocument getTransport();
   IONotification setTransport(ODocument transport);
 
