@@ -1,5 +1,9 @@
 package org.orienteer.users.util;
 
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Named;
+import com.google.inject.name.Names;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -10,6 +14,8 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.users.model.*;
+import org.orienteer.users.repository.OAuth2Repository;
 
 import java.util.*;
 
@@ -21,6 +27,16 @@ import static org.orienteer.core.module.OWidgetsModule.*;
 public final class OUsersCommonUtils {
 	
 	private OUsersCommonUtils() {}
+
+	public static List<IOAuth2Provider> getOAuth2Providers() {
+        OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
+        if (app == null) {
+            return Collections.emptyList();
+        }
+        Named named = Names.named("orienteer.oauth2.providers");
+        Key<List<IOAuth2Provider>> key = Key.get(new TypeLiteral<List<IOAuth2Provider>>() {}, named);
+        return app.getInjector().getInstance(key);
+    }
 
     public static void setRestricted(ODatabaseDocument db, OClass oClass) {
         OClass restricted = db.getMetadata().getSchema().getClass("ORestricted");
@@ -67,12 +83,13 @@ public final class OUsersCommonUtils {
         OrienteerWebApplication app = OrienteerWebApplication.get();
         Map<String, String> localizedStrings = getLocalizedStrings(app, key, tags);
         PerspectivesModule perspectivesModule = app.getServiceInstance(PerspectivesModule.class);
-        ODocument doc = perspectivesModule.getPerspectiveByName(db, localizedStrings.get("en"));
-        if (doc == null) {
-            doc = new ODocument(PerspectivesModule.OCLASS_PERSPECTIVE);
-            doc.field("name", localizedStrings);
-        }
-        return doc;
+        return perspectivesModule.getPerspectiveByAliasAsDocument(db, key)
+                .orElseGet(() -> {
+                    ODocument newDoc = new ODocument(PerspectivesModule.OPerspective.CLASS_NAME);
+                    newDoc.field(PerspectivesModule.OPerspective.PROP_NAME, localizedStrings);
+                    newDoc.field(PerspectivesModule.OPerspective.PROP_ALIAS, key);
+                    return newDoc;
+                });
     }
 
     public static ODocument getOrCreatePerspectiveItem(ODatabaseDocument db, ODocument perspective, String key) {
@@ -81,14 +98,16 @@ public final class OUsersCommonUtils {
 
     public static ODocument getOrCreatePerspectiveItem(ODatabaseDocument db, ODocument perspective, String key, List<String> tags) {
         Map<String, String> localizedStrings = getLocalizedStrings(OrienteerWebApplication.get(), key, tags);
-        List<ODocument> docs = db.query(new OSQLSynchQuery<>("select from " + PerspectivesModule.OCLASS_ITEM
-                + " where name.values() contains ? and perspective = ?"), localizedStrings.get("en"), perspective);
-        ODocument doc = docs != null && !docs.isEmpty() ? docs.get(0) : null;
-        if (doc == null) {
-            doc = new ODocument(PerspectivesModule.OCLASS_ITEM);
-            doc.field("name", localizedStrings);
-        }
-        return doc;
+        PerspectivesModule perspectivesModule = OrienteerWebApplication.lookupApplication().getServiceInstance(PerspectivesModule.class);
+
+        return perspectivesModule.getPerspectiveItemByAliasAsDocument(db, key)
+                .orElseGet(() -> {
+                    ODocument doc = new ODocument(PerspectivesModule.OPerspectiveItem.CLASS_NAME);
+                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_NAME, localizedStrings);
+                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_ALIAS, key);
+                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_PERSPECTIVE, perspective);
+                    return doc;
+                });
     }
 
     public static boolean isWidgetExists(ODocument dashboard, String typeId) {
@@ -111,5 +130,25 @@ public final class OUsersCommonUtils {
 
     public static List<String> createDefaultLanguageTags() {
         return Arrays.asList("en", "ru", "uk");
+    }
+
+    public static void createOUserSocialNetworkIfNotExists(ODatabaseDocument db, OAuth2Provider provider, String userId, OrienteerUser user) {
+        if (!isProviderContainsInUserSocialNetworks(provider, user)) {
+            OAuth2Repository.getOAuth2ServiceByProvider(db, provider, true)
+                    .ifPresent(service -> {
+                        OUserSocialNetwork network = new OUserSocialNetwork();
+                        network.setService(service);
+                        network.setUser(user);
+                        network.setUserId(userId);
+                        network.save();
+                    });
+        }
+    }
+
+    private static boolean isProviderContainsInUserSocialNetworks(OAuth2Provider provider, OrienteerUser user) {
+        return user.getSocialNetworks().stream()
+                .map(OUserSocialNetwork::getService)
+                .map(OAuth2Service::getProvider)
+                .anyMatch(sp -> sp.equals(provider));
     }
 }

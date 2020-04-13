@@ -227,6 +227,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 	}
 	
 	
+	@Override
 	public IReportDocument getReportCache() throws EngineException{
 		return getReportEngine().openReportDocument(getReportCachePath());
 	}
@@ -237,6 +238,7 @@ public abstract class AbstractBirtReportPanel extends Panel implements IPageable
 		return path;
 	}
 	
+	@Override
 	public IReportEngine getReportEngine(){
 		Module module = (Module)OrienteerWebApplication.get().getModuleByName("orienteer-birt");
 		return module.getEngine();

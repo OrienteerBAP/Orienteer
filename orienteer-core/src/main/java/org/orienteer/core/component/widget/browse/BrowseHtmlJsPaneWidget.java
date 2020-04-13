@@ -8,8 +8,6 @@ import org.apache.wicket.util.string.interpolator.MapVariableInterpolator;
 import org.orienteer.core.component.widget.AbstractHtmlJsPaneWidget;
 import org.orienteer.core.widget.Widget;
 
-import ru.ydn.wicket.wicketorientdb.model.ODocumentMapWrapper;
-
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -24,6 +22,7 @@ public class BrowseHtmlJsPaneWidget extends AbstractHtmlJsPaneWidget<OClass> {
 		super(id, model, widgetDocumentModel);
 	}
 	
+	@Override
 	protected String interpolate(String content) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("className", getModelObject().getName());

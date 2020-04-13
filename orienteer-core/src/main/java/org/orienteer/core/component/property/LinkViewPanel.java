@@ -7,7 +7,6 @@ import org.orienteer.core.component.IExportable;
 import org.orienteer.core.component.ODocumentPageLink;
 import org.orienteer.core.model.ODocumentNameModel;
 
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**

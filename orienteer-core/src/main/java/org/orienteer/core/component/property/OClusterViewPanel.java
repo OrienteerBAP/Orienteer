@@ -2,7 +2,6 @@ package org.orienteer.core.component.property;
 
 import com.orientechnologies.orient.core.storage.OCluster;
 import org.apache.wicket.markup.html.link.AbstractLink;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.OClusterPageLink;

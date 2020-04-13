@@ -14,7 +14,8 @@ public class TestTask extends OTask {
 		public static final long PROGRESS_FINAL = 20;
 		
 		/**
-		 * Register fields in db 
+		 * Register fields in db
+		 * @param db - db to register in
 		 */
 		public static void init(ODatabaseDocument db){
 			OSchemaHelper helper = OSchemaHelper.bind(db);

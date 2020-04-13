@@ -4,7 +4,6 @@ import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.application.ProcessApplicationUnavailableException;
 import org.orienteer.bpm.camunda.BpmnHook;
 import org.orienteer.bpm.camunda.OProcessApplication;
-import org.orienteer.bpm.camunda.handler.AbstractEntityHandler;
 import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.core.CustomAttribute;

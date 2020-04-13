@@ -7,7 +7,6 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.util.tester.FormTester;
-import org.apache.wicket.util.tester.WicketTester;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +17,9 @@ import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.users.component.DefaultRegistrationPanel;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OrienteerUserRepository;
 import org.orienteer.users.resource.RegistrationResource;
 import org.orienteer.users.service.IOrienteerUsersService;
-import org.orienteer.users.util.OUsersDbUtils;
 import org.orienteer.users.web.DefaultRegistrationPage;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -116,7 +115,7 @@ public class RegistrationComponentTest {
         tester.assertInvisible("container:registrationPanel");
         tester.assertVisible("container:registrationSuccessLabel");
 
-        return OUsersDbUtils.getUserByEmail(testUser.getEmail())
+        return OrienteerUserRepository.getUserByEmail(testUser.getEmail())
                 .orElseThrow(IllegalStateException::new);
     }
 

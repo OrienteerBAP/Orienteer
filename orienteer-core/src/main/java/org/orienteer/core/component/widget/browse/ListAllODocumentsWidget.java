@@ -14,7 +14,6 @@ import org.orienteer.core.component.command.*;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
-import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractWidget;

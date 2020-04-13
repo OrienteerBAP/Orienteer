@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import org.apache.wicket.util.io.IClusterable;
 import org.camunda.bpm.engine.ProcessEngine;
 
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;

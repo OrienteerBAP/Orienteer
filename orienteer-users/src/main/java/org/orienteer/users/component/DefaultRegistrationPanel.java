@@ -7,16 +7,24 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.EqualPasswordInputValidator;
+import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.ListModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
 import org.orienteer.core.component.command.AjaxFormCommand;
+import org.orienteer.users.model.OAuth2Service;
+import org.orienteer.users.model.OAuth2ServiceContext;
 import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.repository.OAuth2Repository;
 import org.orienteer.users.validation.UserEmailValidator;
+
+import java.util.List;
 
 /**
  * Default registration panel.
@@ -28,8 +36,8 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
 
     /**
      * Constructor
-     * @param id {@link String} component id
-     * @param model {@link IModel<OrienteerUser>} model which contains new {@link OrienteerUser}
+     * @param id component id
+     * @param model model which contains new {@link OrienteerUser}
      */
     public DefaultRegistrationPanel(String id, IModel<OrienteerUser> model) {
         super(id, model);
@@ -54,16 +62,33 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
         form.add(confirmPasswordField);
         form.add(new EqualPasswordInputValidator(passwordField, confirmPasswordField));
         form.add(createRegisterButton("registerButton"));
+        form.add(createSocialNetworksPanel("socialNetworks"));
 
         add(form);
         add(createFeedbackPanel("feedback"));
         setOutputMarkupPlaceholderTag(true);
     }
 
+    private Panel createSocialNetworksPanel(String id) {
+        List<OAuth2Service> services = OAuth2Repository.getOAuth2Services(true);
+        if (services.isEmpty()) {
+            return new EmptyPanel(id);
+        }
+
+        return new SocialNetworkPanel(id, "panel.registration.social.networks.title", new ListModel<>(services)) {
+            @Override
+            protected OAuth2ServiceContext createOAuth2ServiceContext(OAuth2Service service) {
+                OAuth2ServiceContext ctx = super.createOAuth2ServiceContext(service);
+                ctx.setRegistration(true);
+                return ctx;
+            }
+        };
+    }
+
     /**
      * Calls when form was success submitted
-     * @param target {@link AjaxRequestTarget} target for update components
-     * @param model {@link IModel<OrienteerUser>} model which contains filled user
+     * @param target target for update components
+     * @param model model which contains filled user
      */
     protected void onRegister(AjaxRequestTarget target, IModel<OrienteerUser> model) {
         // Override in subclass
@@ -78,8 +103,8 @@ public class DefaultRegistrationPanel extends GenericPanel<OrienteerUser> {
 
     /**
      * Create register button, which set user password and then calls {@link DefaultRegistrationPanel#onRegister(AjaxRequestTarget, IModel)}
-     * @param id {@link String} component id
-     * @return {@link AjaxFormCommand<Void>}
+     * @param id component id
+     * @return register button
      */
     private AjaxFormCommand<Void> createRegisterButton(String id) {
         return new AjaxFormCommand<Void>(id, "panel.registration.button.register") {

@@ -42,11 +42,16 @@ public enum DisplayMode {
 	}
 	
 	public static DisplayMode parse(String string) {
-		if(string==null) return null;
+		return parse(string, null);
+	}
+	
+	public static DisplayMode parse(String string, DisplayMode defaultMode)
+	{
+		if(string==null) return defaultMode;
 		try {
 			return DisplayMode.valueOf(string.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			return null;
+			return defaultMode;
 		}
 	}
 

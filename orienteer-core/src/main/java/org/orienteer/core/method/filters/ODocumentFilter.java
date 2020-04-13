@@ -3,6 +3,8 @@ package org.orienteer.core.method.filters;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.method.IMethodContext;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -10,13 +12,20 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  */
 public class ODocumentFilter extends AbstractStringFilter{
-	
+
+	private static final Logger LOG = LoggerFactory.getLogger(ODocumentFilter.class);
+
 	@Override
 	public boolean isSupportedMethod(IMethodContext dataObject) {
 		IModel<?> model = dataObject.getDisplayObjectModel();
-		if (model!=null && model.getObject()!=null && model.getObject() instanceof ODocument){
-			return ((ODocument) (model.getObject())).getSchemaClass().isSubClassOf(this.filterData);
+		try {
+			if (model!=null && model.getObject()!=null && model.getObject() instanceof ODocument){
+				return ((ODocument) (model.getObject())).getSchemaClass().isSubClassOf(this.filterData);
+			}
+		} catch (Exception e) {
+			LOG.error("Error for model: {} and context: {}", model, dataObject, e);
 		}
+
 		return false;
 	}
 

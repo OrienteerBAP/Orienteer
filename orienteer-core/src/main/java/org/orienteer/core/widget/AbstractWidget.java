@@ -9,6 +9,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.EmptyPanel;
 import org.apache.wicket.markup.html.panel.GenericPanel;
@@ -54,8 +55,12 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		super(id, model);
 		this.widgetDocumentModel = widgetDocumentModel;
 		setOutputMarkupId(true);
-//		setOutputMarkupPlaceholderTag(true);
-		add(commands = new RepeatingView("commands"));
+
+		WebMarkupContainer commandsContainer = new WebMarkupContainer("commandsContainer");
+
+		commandsContainer.add(commands = new RepeatingView("commands"));
+		add(commandsContainer);
+
 		addCommand(new AjaxCommand<T>(commands.newChildId(), "command.settings") {
 			
 			@Override

@@ -14,8 +14,6 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
-import com.orientechnologies.orient.core.metadata.security.ORule;
 
 /**
  * {@link Command} to import schema.

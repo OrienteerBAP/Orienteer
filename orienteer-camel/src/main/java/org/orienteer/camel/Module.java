@@ -1,13 +1,8 @@
 package org.orienteer.camel;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.impl.DefaultCamelContext;
-import org.apache.camel.model.RoutesDefinition;
 import org.orienteer.camel.component.OIntegrationConfig;
 import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.core.OrienteerWebApplication;

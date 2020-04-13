@@ -1,13 +1,10 @@
 package org.orienteer.core.component;
 
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.Command;
-
-import ru.ydn.wicket.wicketorientdb.components.RootForm;
 
 /**
  * Panel with Commands on top

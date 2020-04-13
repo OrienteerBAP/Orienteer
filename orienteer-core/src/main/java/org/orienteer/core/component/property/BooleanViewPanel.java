@@ -2,10 +2,8 @@ package org.orienteer.core.component.property;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Objects;
 
 /**
  * {@link GenericPanel} to view {@link Boolean} parameters

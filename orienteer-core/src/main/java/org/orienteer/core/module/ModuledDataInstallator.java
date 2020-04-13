@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Application;
-import org.apache.wicket.util.lang.Objects;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;

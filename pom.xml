@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
    Licensed to the Apache Software Foundation (ASF) under one or more
    contributor license agreements.  See the NOTICE file distributed with
@@ -20,8 +20,8 @@
 	<groupId>org.orienteer</groupId>
 	<artifactId>orienteer-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.4-SNAPSHOT</version>
-	<name>Orienteer</name>
+	<version>2.0-SNAPSHOT</version>
+    <name>Orienteer</name>
 	<description>Orienteer - Business Application Platform</description>
 	<url>http://orienteer.org</url>
 	<scm>
@@ -53,6 +53,11 @@
             <name>Ilia Naryzhny</name>
             <email>phantom@ydn.ru</email>
 	    </developer>
+		<developer>
+			<id>developer</id>
+			<name>Vitaliy Gonchar</name>
+			<email>weaxme@gmail.com</email>
+		</developer>
 	</developers>
 
 	<licenses>
@@ -65,12 +70,12 @@
 
 	<properties>
         <java.version>1.8</java.version>
-		<wicket.version>8.1.0</wicket.version>
-		<wicketstuff.version>8.0.0</wicketstuff.version>
+		<wicket.version>8.7.0</wicket.version>
+		<wicketstuff.version>8.7.0</wicketstuff.version>
 		<orientdb.version>2.2.37</orientdb.version>
 		<guice.version>4.2.0</guice.version>
-		<wicket.orientdb.version>1.4-SNAPSHOT</wicket.orientdb.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
+		<wicket.orientdb.version>1.5-SNAPSHOT</wicket.orientdb.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -83,43 +88,39 @@
 	</properties>
 
      <repositories>
-           <repository>
-             <id>snapshots-repo</id>
-             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-             <releases><enabled>false</enabled></releases>
-             <snapshots><enabled>true</enabled></snapshots>
-           </repository>
-         <repository>
-             <snapshots>
+		 <repository>
+			 <id>snapshots-repo</id>
+			 <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+             <releases>
                  <enabled>false</enabled>
+             </releases>
+             <snapshots>
+                 <enabled>true</enabled>
              </snapshots>
-             <id>central</id>
-             <name>bintray</name>
-             <url>http://jcenter.bintray.com</url>
          </repository>
+	 <!--<repository>
+		<id>bintray</id>
+		<name>bintray</name>
+		<url>http://jcenter.bintray.com</url>
+		<releases><enabled>true</enabled></releases>
+		<snapshots><enabled>false</enabled></snapshots>
+	</repository>-->
+	<repository>
+		<id>spring-release</id>
+		<name>Spring Lib</name>
+		<url>https://repo.spring.io/libs-release/</url>
+		<snapshots>
+			<enabled>true</enabled>
+			<updatePolicy>daily</updatePolicy>
+		</snapshots>
+		<releases>
+			<enabled>true</enabled>
+			<updatePolicy>never</updatePolicy>
+		</releases>
+	</repository>
      </repositories>
 
-	<modules>
-		<module>orienteer-birt</module>
-		<module>orienteer-bpm</module>
-		<module>orienteer-camel</module>
-		<module>orienteer-core</module>
-		<module>orienteer-devutils</module>
-		<module>orienteer-graph</module>
-		<module>orienteer-logger-server</module>
-		<module>orienteer-pages</module>
-		<module>orienteer-pivottable</module>
-		<module>orienteer-etl</module>
-		<module>orienteer-taucharts</module>
-		<module>orienteer-standalone</module>
-		<module>orienteer-war</module>
-		<module>orienteer-archetype-jar</module>
-		<module>orienteer-archetype-war</module>
-		<module>orienteer-architect</module>
-		<module>orienteer-mail</module>
-        <module>orienteer-users</module>
-        <module>orienteer-object</module>
-    </modules>
+	<!-- IMPORTANT: to support quick docker builds: modules were moved to default profile below -->
 	<dependencyManagement>
 	    <dependencies>
                 <!--wicket-orientdb-->
@@ -196,7 +197,7 @@
 		    <dependency>
 			    <groupId>de.agilecoders.wicket.webjars</groupId>
 			    <artifactId>wicket-webjars</artifactId>
-			    <version>0.5.6</version>
+			    <version>2.0.15</version>
 		    </dependency>
 		    <dependency>
 				<groupId>org.webjars</groupId>
@@ -206,12 +207,12 @@
 		    <dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>bootstrap</artifactId>
-				<version>4.0.0</version>
+				<version>4.3.1</version>
 		    </dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>bootstrap-datepicker</artifactId>
-				<version>1.6.4</version>
+				<version>1.9.0</version>
 			</dependency>
 		    <dependency>
 			    <groupId>org.webjars</groupId>
@@ -226,7 +227,7 @@
 			<dependency>
 				<groupId>org.webjars</groupId>
 				<artifactId>jquery</artifactId>
-				<version>3.3.1</version>
+				<version>3.4.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.webjars</groupId>
@@ -248,6 +249,11 @@
 				<artifactId>coreui__ajax</artifactId>
 				<version>1.0.6</version>
 			</dependency>
+			<dependency>
+				<groupId>com.vladsch.flexmark</groupId>
+				<artifactId>flexmark-all</artifactId>
+				<version>0.40.16</version>
+			</dependency>
 		    <!-- LOGGING DEPENDENCIES - LOG4J -->
 		    <dependency>
 			    <groupId>org.slf4j</groupId>
@@ -263,7 +269,7 @@
             <dependency>
                 <groupId>org.bitsofinfo</groupId>
                 <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
-                <version>1.0-RC8</version>
+                <version>1.0-RC14</version>
             </dependency>
             <dependency>
                 <groupId>com.spotify</groupId>
@@ -368,14 +374,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-                <dependencies>
-			        <dependency>
-				        <groupId>com.puppycrawl.tools</groupId>
-				        <artifactId>checkstyle</artifactId>
-				        <version>6.19</version>
-			        </dependency>
-			    </dependencies>
+                <version>3.0.0</version>
                 <configuration>
                     <configLocation>check_style.xml</configLocation>
                     <failOnViolation>true</failOnViolation>
@@ -436,6 +435,9 @@
 					    <encoding>UTF-8</encoding>
 					    <showWarnings>true</showWarnings>
 					    <showDeprecation>true</showDeprecation>
+					    <compilerArgs>
+	                        <arg>-parameters</arg>
+	                    </compilerArgs>
 				    </configuration>
 			    </plugin>
 				<plugin>
@@ -469,6 +471,38 @@
 	</build>
 
 	<profiles>
+		<profile>
+			<id>default-modules</id>
+			<activation>
+				<property>
+					<name>!docker-build</name>
+				</property>
+			</activation>
+			<modules>
+				<module>orienteer-birt</module>
+				<module>orienteer-bpm</module>
+				<module>orienteer-camel</module>
+				<module>orienteer-core</module>
+				<module>orienteer-devutils</module>
+				<module>orienteer-graph</module>
+				<module>orienteer-logger-server</module>
+				<module>orienteer-pages</module>
+				<module>orienteer-pivottable</module>
+				<module>orienteer-etl</module>
+				<module>orienteer-taucharts</module>
+				<module>orienteer-standalone</module>
+				<module>orienteer-war</module>
+				<module>orienteer-archetype-jar</module>
+				<module>orienteer-archetype-war</module>
+				<module>orienteer-architect</module>
+				<module>orienteer-mail</module>
+				<module>orienteer-users</module>
+				<module>orienteer-object</module>
+				<module>orienteer-tours</module>
+				<module>orienteer-notification</module>
+				<module>orienteer-twilio</module>
+			</modules>
+		</profile>
 	    <profile> 
 		<id>release</id>
 		<build>
@@ -545,38 +579,17 @@
 		</profile>
 		<profile>
 			<id>dockerbuild</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<version>2.10</version>
-						<inherited>false</inherited>
-						<executions>
-							<execution>
-								<id>copy</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-                                        <artifactItem>
-                                            <groupId>org.eclipse.jetty</groupId>
-                                            <artifactId>jetty-runner</artifactId>
-                                            <version>${jetty.version}</version>
-                                            <type>jar</type>
-                                            <overWrite>true</overWrite>
-                                            <outputDirectory>${project.basedir}/target/</outputDirectory>
-                                            <destFileName>jetty-runner.jar</destFileName>
-                                        </artifactItem>
-									</artifactItems>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
+			<activation>
+				<property>
+					<name>docker-build</name>
+				</property>
+			</activation>
+			<!-- Only modules which are required for initial docker build -->
+			<modules>
+				<module>orienteer-core</module>
+				<module>orienteer-graph</module>
+				<module>orienteer-war</module>
+			</modules>
 		</profile>
 	</profiles>
 </project>

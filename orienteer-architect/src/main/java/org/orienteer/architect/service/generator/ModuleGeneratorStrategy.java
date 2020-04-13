@@ -1,6 +1,5 @@
 package org.orienteer.architect.service.generator;
 
-import com.google.common.base.Strings;
 import org.orienteer.architect.model.OArchitectOClass;
 import org.orienteer.architect.model.OArchitectOProperty;
 import org.orienteer.architect.model.generator.GeneratorMode;
@@ -46,7 +45,10 @@ import static org.orienteer.architect.util.OSourceUtil.wrapString;
  */
 public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
+    private List<OSourceConstant> constants;
+
     public ModuleGeneratorStrategy() {
+
     }
 
     @Override
@@ -59,21 +61,23 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     private ISource toSourceFragment(List<OArchitectOClass> classes) {
         OSourceFragment result = new OSourceFragment();
+
+        constants = createConstants(classes);
+
         result.addSource(new OSourceBlankLine());
-        result.addSources(createConstants(classes));
-        result.addSource(new OSourceBlankLine(2));
+        result.addSources(constants);
+        result.addSource(new OSourceBlankLine(3));
         result.addSources(createSchemaHelperBindings(classes));
         result.addSource(new OSourceBlankLine());
         result.addSources(createRelationships(classes));
         return result;
     }
 
-    private List<ISource> createConstants(List<OArchitectOClass> classes) {
-        List<ISource> constants = new LinkedList<>();
+    private List<OSourceConstant> createConstants(List<OArchitectOClass> classes) {
+        List<OSourceConstant> constants = new LinkedList<>();
         for (OArchitectOClass oClass : classes) {
             constants.add(createOClassConstant(oClass));
             constants.addAll(createPropertiesConstants(oClass));
-            constants.add(new OSourceBlankLine(2));
         }
         return constants;
     }
@@ -86,7 +90,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         return bindings;
     }
 
-    private ISource createOClassConstant(OArchitectOClass oClass) {
+    private OSourceConstant createOClassConstant(OArchitectOClass oClass) {
         return new OSourceConstant(
                 "public static final",
                 "String",
@@ -95,17 +99,15 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         );
     }
 
-    private List<ISource> createPropertiesConstants(OArchitectOClass oClass) {
+    private List<OSourceConstant> createPropertiesConstants(OArchitectOClass oClass) {
         return oClass.getProperties().stream()
-                .flatMap(property ->
-                        Stream.of(
-                                new OSourceBlankLine(),
-                                new OSourceConstant(
-                                        "public static final",
-                                        "String",
-                                        constantOProperty(oClass.getName(), property.getName()),
-                                        new OSourceNewInstance(null, wrapString(property.getName()))
-                                )
+                .filter(p -> !p.isSubClassProperty())
+                .map(property ->
+                        new OSourceConstant(
+                                "public static final",
+                                "String",
+                                constantOProperty(oClass.getName(), property.getName()),
+                                new OSourceNewInstance(null, wrapString(property.getName()))
                         )
                 ).collect(Collectors.toCollection(LinkedList::new));
     }
@@ -122,7 +124,7 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         List<ISource> sources = new LinkedList<>();
         for (OArchitectOClass oClass : classes) {
             sources.add(createOClass(oClass));
-            sources.addAll(createOClassProperties(classes, oClass));
+            sources.addAll(createOClassProperties(oClass));
             sources.add(new OSourceSymbol(";\n\n"));
         }
         return sources;
@@ -130,35 +132,58 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     private List<ISource> createRelationships(List<OArchitectOClass> classes) {
         List<ISource> sources = new LinkedList<>();
-        Map<OArchitectOClass, List<OArchitectOProperty>> inverseClasses = getInverseEnabledClasses(classes);
-        inverseClasses.forEach((oClass, properties) -> sources.addAll(createRelationships(classes, oClass, properties)));
+
+        Map<String, Set<String>> inverseProperties = new HashMap<>();
+
+        for (OArchitectOClass oClass : classes) {
+            List<OArchitectOProperty> properties = oClass.getProperties();
+            for (OArchitectOProperty property : properties) {
+                boolean isInverse = property.isInversePropertyEnable();
+                boolean isLink = property.getLinkedClass() != null;
+
+                if (isInverse || isLink) {
+                    sources.add(new OSourceBlankLine());
+                }
+
+                if (isInverse) {
+                    OArchitectOProperty inverseProperty = property.getInverseProperty();
+                    boolean propContains = isContainsProperty(oClass.getName(), property.getName(), inverseProperties);
+                    boolean inversePropContains = isContainsProperty(property.getLinkedClass(), inverseProperty.getName(), inverseProperties);
+
+                    if (!propContains && !inversePropContains) {
+                        sources.add(createInverseBinding(classes, oClass, property));
+
+                        cacheProperties(property, inverseProperty, inverseProperties);
+                    }
+                } else if (isLink) {
+                    sources.add(createLinkBinding(classes, oClass, property));
+                }
+
+                if (isInverse || isLink) {
+                    sources.add(new OSourceSymbol(";"));
+                }
+            }
+        }
+
         return sources;
     }
 
     private ISource createOClass(OArchitectOClass oClass) {
-        LinkedList<String> args = new LinkedList<>(oClass.getSuperClasses());
+        LinkedList<String> args = new LinkedList<>(constantSuperClasses(oClass.getSuperClasses()));
         args.addFirst(constantOClass(oClass.getName()));
         return new OSourceCall(helper(), "oClass", args.toArray(new String[0]));
     }
 
-    private List<ISource> createOClassProperties(List<OArchitectOClass> classes, OArchitectOClass oClass) {
+    private List<ISource> createOClassProperties(OArchitectOClass oClass) {
         return oClass.getProperties().stream()
+                .filter(p -> !p.isSubClassProperty())
                 .flatMap(prop ->
                         Stream.of(
                                 new OSourceBlankLine(),
                                 new OSourceSpace(4),
-                                createProperty(classes, oClass, prop)
+                                createProperty(oClass, prop)
                         )
                 ).collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    private List<ISource> createRelationships(List<OArchitectOClass> classes, OArchitectOClass oClass, List<OArchitectOProperty> properties) {
-        return properties.stream()
-                .flatMap(prop -> Stream.of(
-                        new OSourceBlankLine(),
-                        createInverseBinding(classes, oClass, prop),
-                        new OSourceSymbol(";")
-                )).collect(Collectors.toCollection(LinkedList::new));
     }
 
     private ISource createInverseBinding(List<OArchitectOClass> classes, OArchitectOClass oClass, OArchitectOProperty property) {
@@ -176,22 +201,28 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         return new OSourceCall(helper(), "setupRelationship", class1, prop1, class2, prop2);
     }
 
-    private ISource createProperty(List<OArchitectOClass> classes, OArchitectOClass oClass, OArchitectOProperty property) {
+    private ISource createLinkBinding(List<OArchitectOClass> classes, OArchitectOClass oClass, OArchitectOProperty property) {
+        String className = "\"" + oClass.getName() + "\"";
+
+        className = getConstantByValue(className).map(OSourceConstant::getName).orElse(className);
+
+        String propName = constantOProperty(oClass.getName(), property.getName());
+        String linkedClass = property.getLinkedClass();
+
+        if (isClassContainsIn(linkedClass, classes)) {
+            linkedClass = constantOClass(linkedClass);
+        } else {
+            linkedClass = wrapString(linkedClass);
+        }
+        return new OSourceCall("helper", "setupRelationship", className, propName, linkedClass);
+    }
+
+    private ISource createProperty(OArchitectOClass oClass, OArchitectOProperty property) {
         OSourceFragment fragment = new OSourceFragment();
         String propName = constantOProperty(oClass.getName(), property.getName());
         String type = "OType." + property.getType().name();
         String order = "" + property.getOrder();
-        String linkedClass = property.getLinkedClass();
-
         fragment.addSource(new OSourceChainCall("oProperty", propName, type, order));
-        if (!property.isInversePropertyEnable() && !Strings.isNullOrEmpty(linkedClass)) {
-            if (isClassContainsIn(linkedClass, classes)) {
-                linkedClass = constantOClass(linkedClass);
-            } else {
-                linkedClass = wrapString(linkedClass);
-            }
-            fragment.addSource(new OSourceChainCall("linkedClass", linkedClass));
-        }
         return fragment;
     }
 
@@ -204,32 +235,13 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
         return false;
     }
 
-    private Map<OArchitectOClass, List<OArchitectOProperty>> getInverseEnabledClasses(List<OArchitectOClass> classes) {
-        Map<OArchitectOClass, List<OArchitectOProperty>> inverseClasses = new LinkedHashMap<>();
-        Set<String> alreadyLinked = new HashSet<>();
-
-        classes.stream()
-                .filter(oClass -> !alreadyLinked.contains(oClass.getName()))
-                .forEach(oClass -> {
-                    List<OArchitectOProperty> properties = getInverseProperties(oClass.getProperties());
-                    if (!properties.isEmpty()) {
-                        inverseClasses.put(oClass, properties);
-                        alreadyLinked.addAll(getClassNamesFromInverseProperties(properties));
-                    }
-                });
-        return inverseClasses;
-    }
-
-    private List<OArchitectOProperty> getInverseProperties(List<OArchitectOProperty> properties) {
-        return properties.stream()
-                .filter(OArchitectOProperty::isInversePropertyEnable)
-                .collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    private Set<String> getClassNamesFromInverseProperties(List<OArchitectOProperty> properties) {
-        return properties.stream()
-                .map(OArchitectOProperty::getLinkedClass)
-                .collect(Collectors.toSet());
+    private List<String> constantSuperClasses(List<String> superClasses) {
+        return superClasses.stream()
+                .map(cls -> "\"" + cls + "\"")
+                .map(cls -> getConstantByValue(cls)
+                        .map(OSourceVariableDeclaration::getName)
+                        .orElse(cls)
+                ).collect(Collectors.toCollection(LinkedList::new));
     }
 
     private String constantOClass(String name) {
@@ -242,5 +254,38 @@ public class ModuleGeneratorStrategy implements IGeneratorStrategy {
 
     protected String helper() {
         return "helper";
+    }
+
+    private Optional<OSourceConstant> getConstantByValue(String value) {
+        return constants.stream()
+                .filter(c -> {
+                    OSourceNewInstance instance = c.getInstance();
+                    List<String> args = instance.getArgs();
+                    return !args.isEmpty() && value.equals(args.get(0));
+                }).findFirst();
+    }
+
+    private boolean isContainsProperty(String className, String property, Map<String, Set<String>> properties) {
+        if (!properties.containsKey(className)) {
+            return false;
+        }
+        return properties.get(className).stream()
+                .anyMatch(p -> Objects.equals(p, property));
+    }
+
+    private void cacheProperties(OArchitectOProperty property, OArchitectOProperty inverseProperty, Map<String, Set<String>> cache) {
+        Set<String> p = cache.get(inverseProperty.getLinkedClass());
+        if (p == null) {
+            p = new HashSet<>();
+        }
+        p.add(property.getName());
+        cache.put(inverseProperty.getLinkedClass(), p);
+
+        p = cache.get(property.getLinkedClass());
+        if (p == null) {
+            p = new HashSet<>();
+        }
+        p.add(inverseProperty.getName());
+        cache.put(property.getLinkedClass(), p);
     }
 }

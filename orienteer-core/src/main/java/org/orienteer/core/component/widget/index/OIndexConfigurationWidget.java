@@ -11,14 +11,12 @@ import org.orienteer.core.component.command.RebuildOIndexCommand;
 import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.meta.OIndexMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.web.schema.OIndexPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 
 import com.orientechnologies.orient.core.index.OIndex;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**

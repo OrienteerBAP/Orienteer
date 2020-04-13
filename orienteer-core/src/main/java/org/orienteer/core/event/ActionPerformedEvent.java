@@ -1,15 +1,10 @@
 package org.orienteer.core.event;
 
-import java.util.Objects;
 import java.util.Optional;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.component.command.Command;
-
-import com.google.common.reflect.TypeToken;
 
 /**
  * Event to be submitted by {@link Command}s when some action performed

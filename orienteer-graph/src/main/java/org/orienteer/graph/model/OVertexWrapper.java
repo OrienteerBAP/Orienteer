@@ -2,14 +2,12 @@ package org.orienteer.graph.model;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.OrienteerWebSession;
 
 /**
  * {@link ODocumentWrapper} for vertexes 

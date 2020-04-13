@@ -1,6 +1,5 @@
 package org.orienteer.users.web;
 
-import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -10,15 +9,14 @@ import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.orienteer.users.model.OrienteerUser;
-import org.orienteer.users.resource.RegistrationResource;
-import org.orienteer.users.service.IOrienteerUsersService;
-import org.orienteer.users.util.OUsersDbUtils;
-import org.orienteer.users.component.DefaultRegistrationPanel;
 import org.orienteer.core.MountPath;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.web.BasePage;
 import org.orienteer.core.web.HomePage;
+import org.orienteer.users.component.DefaultRegistrationPanel;
+import org.orienteer.users.model.OrienteerUser;
+import org.orienteer.users.resource.RegistrationResource;
+import org.orienteer.users.service.IOrienteerUsersService;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentWrapperModel;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
@@ -54,17 +52,6 @@ public class DefaultRegistrationPage extends BasePage<OrienteerUser> {
      */
     public DefaultRegistrationPage(PageParameters parameters) {
         super(parameters);
-        String id = parameters.get(RegistrationResource.PARAMETER_ID).toOptionalString();
-        if (!Strings.isNullOrEmpty(id)) {
-            OUsersDbUtils.getUserById(id)
-                    .ifPresent(user -> {
-                        if (user.getAccountStatus() == OSecurityUser.STATUSES.SUSPENDED) {
-                            user.setAccountStatus(OSecurityUser.STATUSES.ACTIVE);
-                            DBClosure.sudoSave(user);
-                        }
-                        setResponsePage(HomePage.class);
-                    });
-        }
         setModel(new ODocumentWrapperModel<>(service.createUser()));
     }
 
@@ -132,7 +119,7 @@ public class DefaultRegistrationPage extends BasePage<OrienteerUser> {
     }
 
     /**
-     * @return {@link IModel<String>} which uses in registration card title
+     * @return model which uses in registration card title
      */
     protected IModel<String> getRegistrationTitleModel() {
         return new ResourceModel("page.registration.title");
@@ -141,8 +128,8 @@ public class DefaultRegistrationPage extends BasePage<OrienteerUser> {
     /**
      * Creates label which will be displayed when user successfully registered
      * If user document didn't saved in database, so component doesn't visible
-     * @param id {@link String} component id
-     * @return {@link Label}
+     * @param id component id
+     * @return registration success label
      */
     protected Label createRegistrationSuccessLabel(String id) {
         return new Label(id, new ResourceModel("page.registration.success")) {

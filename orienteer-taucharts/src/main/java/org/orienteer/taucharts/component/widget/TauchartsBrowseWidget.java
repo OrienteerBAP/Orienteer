@@ -1,11 +1,5 @@
 package org.orienteer.taucharts.component.widget;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.taucharts.component.TauchartsConfig;
@@ -25,6 +19,7 @@ public class TauchartsBrowseWidget extends AbstractTauchartsWidget<OClass>{
 		super(id, model, widgetDocumentModel);
 	}
 	
+	@Override
 	protected boolean isConfigValid() {
 		return getWidgetDocument().field(TYPE_PROPERTY_NAME)!=null;
 	}

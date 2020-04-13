@@ -1,11 +1,9 @@
-FROM orienteer/orienteer:latest
-
+FROM maven:3.6-jdk-8-alpine AS builder
 WORKDIR /tmp/src/
 ADD . /tmp/src/
-RUN mvn -s /usr/share/maven/ref/settings-docker.xml clean install && \
-    mv target/${artifactId}.war /app/ && \
-    cp orienteer.properties /app/ && \
-    rm -rf /tmp/src/ && \
-    ln -s -f /app/${artifactId}.war /app/active.war
+RUN mvn -Ddocker-build clean package
 
-WORKDIR /app/runtime
+
+FROM orienteer/orienteer:latest
+COPY --from=builder /tmp/src/target/${artifactId}.war ${JETTY_BASE}/webapps/ROOT.war
+COPY --from=builder /tmp/src/orienteer.properties ${ORIENTEER_HOME}

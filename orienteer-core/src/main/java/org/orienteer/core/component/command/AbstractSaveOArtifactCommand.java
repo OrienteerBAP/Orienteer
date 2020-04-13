@@ -40,6 +40,7 @@ public abstract class AbstractSaveOArtifactCommand extends AbstractSaveCommand<O
 
     /**
      * Validate user OArtifact and send error message if OModuleConfiguration is not valid.
+     * @param targetOptional - ajax target
      * @param module - user OoArtifact
      * @return true - if user OoArtifact is valid
      *         false - if user OoArtifact is not valid

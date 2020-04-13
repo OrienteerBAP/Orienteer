@@ -12,7 +12,6 @@ import org.orienteer.core.widget.Widget;
 
 import com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper;
 import com.orientechnologies.orient.core.command.script.OScriptOrientWrapper;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper;
 import com.orientechnologies.orient.core.record.impl.ODocument;

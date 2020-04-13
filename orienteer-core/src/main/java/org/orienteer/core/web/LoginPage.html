@@ -1,14 +1,16 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
     <div class="app-body container">
         <div class="main row justify-content-center">
-            <div class="col-md-4 card-group">
-                <div class="card" wicket:id="container">
+            <div wicket:id="container">
+                <div class="card">
                     <div class="card-header">
                         <h6 class="card-title m-0" wicket:id="loginTitle"></h6>
                     </div>
                     <div class="card-body pb-0">
                         <div wicket:id="prompt"></div>
+                        <div wicket:id="feedback"></div>
                         <div wicket:id="loginPanel" class="p-0"></div>
+                        <wicket:child></wicket:child>
                     </div>
                     <div class="card-footer" wicket:id="loginFooter"></div>
                 </div>

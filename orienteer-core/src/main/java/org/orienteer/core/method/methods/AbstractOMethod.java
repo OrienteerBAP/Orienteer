@@ -49,22 +49,35 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 		return methodDefinition;
 	}
 	
-	protected void applyBehaviors(Component component){
+	protected Command<?> applyBehaviors(Command<?> commandComponent){
 		for ( Class<? extends Behavior> behavior : getDefinition().getBehaviors()) {
 			try {
-				component.add(behavior.newInstance());
+				commandComponent.add(behavior.newInstance());
 			} catch (InstantiationException | IllegalAccessException e) {
 				LOG.error("Can't apply behaviors", e);
 			}
-		}		
+		}
+		return commandComponent;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	protected void applyVisualSettings(Command commandComponent){
-		commandComponent.setIcon(getDefinition().getIcon());
-		commandComponent.setBootstrapType(getDefinition().getBootstrapType());
-		commandComponent.setChangingDisplayMode(getDefinition().isChangingDisplayMode());	
-		commandComponent.setChandingModel(getDefinition().isChangingModel());		
+	protected Command<?> applyVisualSettings(Command<?> commandComponent){
+		IMethodDefinition definition = getDefinition();
+		if(commandComponent.getIcon()==null) commandComponent.setIcon(definition.getIcon());
+		if(commandComponent.getBootstrapType()==null) commandComponent.setBootstrapType(definition.getBootstrapType());
+		commandComponent.setChangingDisplayMode(commandComponent.isChangingDisplayMode() 
+														|| definition.isChangingDisplayMode());	
+		commandComponent.setChandingModel(commandComponent.isChangingModel()
+														|| definition.isChangingModel());		
+		return commandComponent;
+	}
+	
+	/**
+	 * Apply both visual settings and behavior 
+	 * @param commandComponent command to apply to
+	 * @return provided command
+	 */
+	protected Command<?> applySettings(Command<?> commandComponent) {
+		return applyBehaviors(applyVisualSettings(commandComponent));
 	}
 	
 	protected void invoke(){

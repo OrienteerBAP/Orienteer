@@ -67,7 +67,8 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 		super.onConfigure();
 		IVisitor<Component, Boolean> visitor = new IVisitor<Component, Boolean>()
         {
-            public void component(Component component, IVisit<Boolean> visit)
+            @Override
+			public void component(Component component, IVisit<Boolean> visit)
             {
             	component.configure();
                 if(component.determineVisibility())

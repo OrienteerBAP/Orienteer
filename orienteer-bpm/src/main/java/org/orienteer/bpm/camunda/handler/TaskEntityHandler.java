@@ -1,25 +1,15 @@
 package org.orienteer.bpm.camunda.handler;
 
-import com.github.raymanrt.orientqb.query.Operator;
-import com.github.raymanrt.orientqb.query.Parameter;
-import com.github.raymanrt.orientqb.query.core.AbstractQuery;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import org.camunda.bpm.engine.impl.TaskQueryImpl;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
-import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.HistoricCaseActivityInstanceEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.task.TaskQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.handler.history.*;
 import org.orienteer.core.util.OSchemaHelper;
 
-import static com.github.raymanrt.orientqb.query.Clause.clause;
-
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;

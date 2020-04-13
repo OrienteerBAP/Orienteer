@@ -30,13 +30,13 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		app.mountPages("${package}.web");
+		app.mountPackage("${package}.web");
 	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
-		app.unmountPages("${package}.web");
+		app.unmountPackage("${package}.web");
 	}
 	
 }

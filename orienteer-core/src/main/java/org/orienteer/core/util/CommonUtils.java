@@ -3,7 +3,6 @@ package org.orienteer.core.util;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
-import org.apache.wicket.Application;
 import org.apache.wicket.Session;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.util.convert.IConverter;
@@ -13,8 +12,10 @@ import org.orienteer.core.OrienteerWebSession;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
@@ -38,7 +39,7 @@ public class CommonUtils {
 	 * @param objects {@link Object[]} array of objects which will be used for create new map
 	 * @param <K> type of map key
 	 * @param <V> type of map value
-	 * @return {@link Map<K, V>} created from objects
+	 * @return {@link Map} created from objects
 	 * @throws IllegalStateException if objects are not pair
 	 */
 	public static final <K, V> Map<K, V> toMap(Object... objects) {
@@ -97,6 +98,7 @@ public class CommonUtils {
 		else {
 			content = JavaScriptUtils.escapeQuotes(content);
 			content = "\"" + content + "\""; 
+			content = Strings.replaceAll(content, "\r", "");
 			content = Strings.replaceAll(content, "\n", "\" + \n\"");
 			return content;
 		}
@@ -112,6 +114,7 @@ public class CommonUtils {
 	public static final CharSequence escapeStringForJSON(CharSequence content) {
 		if(content==null) return "";
 		else {
+			content = Strings.replaceAll(content, "\r", "");
 			content = Strings.replaceAll(content, "\"", "\\\"");
 			content = Strings.replaceAll(content, "\n", "\" + \n\"");
 			return content;
@@ -123,26 +126,41 @@ public class CommonUtils {
 	 * Before apply mapFunc loads record and cast it to {@link ODocument} from identifiable, by calling {@link OIdentifiable#getRecord()}
 	 * If record is null, so discard this identifiable and doesn't apply mapFunc to it.
 	 * @param identifiables {@link OIdentifiable} list of {@link OIdentifiable} for map to value
-	 * @param mapFunc {@link Function<ODocument, T>} map function
+	 * @param mapFunc  map function
 	 * @param <T> - type of return value in map function
-	 * @return {@link List<T>} mapped list of {@link OIdentifiable} or empty list if identifiables is null
+	 * @return mapped list of {@link OIdentifiable} or empty list if identifiables is null
 	 */
 	public static <T> List<T> mapIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> mapFunc) {
+		return mapIdentifiables(identifiables, mapFunc, null);
+	}
+	
+	/**
+	 * Map given list of {@link OIdentifiable} uses given mapping function mapFunc and apply filter
+	 * Before apply mapFunc loads record and cast it to {@link ODocument} from identifiable, by calling {@link OIdentifiable#getRecord()}
+	 * If record is null, so discard this identifiable and doesn't apply mapFunc to it.
+	 * @param identifiables {@link OIdentifiable} list of {@link OIdentifiable} for map to value
+	 * @param mapFunc  map function
+	 * @param filter filter to be applied
+	 * @param <T> - type of return value in map function
+	 * @return mapped list of {@link OIdentifiable} or empty list if identifiables is null
+	 */
+	public static <T> List<T> mapIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> mapFunc, Predicate<? super T> filter) {
 		if (identifiables == null) {
 			return Collections.emptyList();
 		}
-		return identifiables.stream()
-				.map(i -> (ODocument) i.getRecord())
-				.filter(Objects::nonNull)
-				.map(mapFunc)
-				.collect(Collectors.toList());
+		Stream<T> stream  = identifiables.stream()
+											.map(i -> (ODocument) i.getRecord())
+											.filter(Objects::nonNull)
+											.map(mapFunc);
+		if(filter!=null) stream = stream.filter(filter);
+		return stream.collect(Collectors.toList());
 	}
 
 	/**
 	 * Get list of documents from list of identifiables.
 	 * Uses {@link CommonUtils#mapIdentifiables(List, Function)}
-	 * @param identifiables {@link List<OIdentifiable>} identifiables
-	 * @return {@link List<ODocument>} list of documents
+	 * @param identifiables list of identifiables
+	 * @return list of documents
 	 */
 	public static List<ODocument> getDocuments(List<OIdentifiable> identifiables) {
 		return mapIdentifiables(identifiables, d -> d);
@@ -152,10 +170,10 @@ public class CommonUtils {
 	 * Get first item in identifiables and apply mapFunc
 	 * First {@link OIdentifiable} from identifiables load record and cast it to {@link ODocument}.
 	 * If record is null, so mapFunc doesn't apply to it and returns null.
-	 * @param identifiables {@link List<OIdentifiable>} identifiables
-	 * @param mapFunc {@link Function<ODocument, T>} map function which will by apply for record from first item in identifiables
+	 * @param identifiables list of identifiables
+	 * @param mapFunc map function which will by apply for record from first item in identifiables
 	 * @param <T> type of return value by mapFunc
-	 * @return {@link Optional<T>} mapped record from first item in identifiables or {@link Optional#empty()}
+	 * @return optional mapped record from first item in identifiables or {@link Optional#empty()}
 	 * if identifiable is empty or can't load record from first identifiable
 	 */
 	public static <T> Optional<T> getFromIdentifiables(List<OIdentifiable> identifiables, Function<ODocument, T> mapFunc) {
@@ -166,9 +184,9 @@ public class CommonUtils {
 	 * Map record from identifiable, using map function
 	 * If can't load record and cast it to {@link ODocument} from identifiable, so returns null
 	 * @param identifiable {@link OIdentifiable} identifiable for map
-	 * @param mapFunc {@link Function<ODocument, T>} map function which will be apply for record loaded from identifiable
+	 * @param mapFunc map function which will be apply for record loaded from identifiable
 	 * @param <T> type of return value by mapFunc
-	 * @return {@link Optional<T>} mapped record or {@link Optional#empty()} if identifiable is null, or can't load record
+	 * @return optional mapped record or {@link Optional#empty()} if identifiable is null, or can't load record
 	 */
 	public static <T> Optional<T> getFromIdentifiable(OIdentifiable identifiable, Function<ODocument, T> mapFunc) {
 		if (identifiable != null) {
@@ -180,7 +198,7 @@ public class CommonUtils {
 
 	/**
 	 * Check if given collection is not empty
-	 * @param collection {@link Collection<T>} collection
+	 * @param collection collection to test
 	 * @param <T> type of collection
 	 * @return true if collection is not empty
 	 */
@@ -190,8 +208,8 @@ public class CommonUtils {
 
 	/**
 	 * Load record and cast it to {@link ODocument} from first ite in identifiables
-	 * @param identifiables {@link List <OIdentifiable>} identifiables
-	 * @return {@link Optional<ODocument>} get first document or {@link Optional#empty()}
+	 * @param identifiables {@link List} identifiables
+	 * @return get first document or {@link Optional#empty()}
 	 */
 	public static Optional<ODocument> getDocument(List<OIdentifiable> identifiables) {
 		return isNotEmpty(identifiables) ? ofNullable(identifiables.get(0).getRecord()) : empty();
@@ -199,6 +217,7 @@ public class CommonUtils {
 	
 	/**
 	 * Return main object if it's not null or default
+	 * @param <T> required return type
 	 * @param object main object
 	 * @param def default object
 	 * @return main object if it's not null or default
@@ -209,8 +228,9 @@ public class CommonUtils {
 	
 	/**
 	 * Return main object if it's not null or supplied default
+	 * @param <T> required return type
 	 * @param object main object
-	 * @param def default object
+	 * @param supplier supplier of default object
 	 * @return main object if it's not null or supplied default
 	 */
 	public static <T> T defaultIfNull(T object, Supplier<T> supplier) {
@@ -218,7 +238,21 @@ public class CommonUtils {
 	}
 	
 	/**
+	 * Combine array of {@link Optional} and return first not empty
+	 * @param <T> type of required {@link Optional} 
+	 * @param optionals array of {@link Optional}s
+	 * @return first not empty {@link Optional}
+	 */
+	public static <T> Optional<T> orOptional(Optional<T>... optionals) {
+		for (Optional<T> optional : optionals) {
+			if(optional.isPresent()) return optional;
+		}
+		return Optional.empty();
+	}
+	
+	/**
 	 * Safe method to merge sets. Always return not null
+	 * @param <T> type of sets and required result
 	 * @param mainSet main set to merge into
 	 * @param mergeSet set to merge
 	 * @return mergedSet - not null
@@ -231,6 +265,8 @@ public class CommonUtils {
 	
 	/**
 	 * Safe method to merge maps
+	 * @param <K> type of keys in map
+	 * @param <V> type of values in map
 	 * @param mainMap main map to merge into
 	 * @param mergeMap map to merge
 	 * @return merged map - not null
@@ -272,5 +308,39 @@ public class CommonUtils {
 				return data.toString();
 			}
 		}
+	}
+	
+	/**
+	 * Capitalizes a string.
+	 * 
+	 * @param s
+	 *            The string
+	 * @return The capitalized string
+	 */
+	public static String capitalize(final String s) {
+		return Strings.capitalize(s);
+	}
+	
+	/**
+	 * DeCapitalizes a string.
+	 * 
+	 * @param s
+	 *            The string
+	 * @return The de-capitalized string
+	 */
+	public static String decapitalize(final String s)
+	{
+		if (s == null)
+		{
+			return null;
+		}
+		final char[] chars = s.toCharArray();
+
+		if (chars.length > 0)
+		{
+			chars[0] = Character.toLowerCase(chars[0]);
+		}
+
+		return new String(chars);
 	}
 }

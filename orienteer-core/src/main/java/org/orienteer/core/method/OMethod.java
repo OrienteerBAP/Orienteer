@@ -36,13 +36,14 @@ public @interface OMethod{
 	public FAIconType icon() default FAIconType.list;
 	public BootstrapType bootstrap() default BootstrapType.DEFAULT;
 	public boolean changingDisplayMode() default false;
-	public boolean changingModel() default true;	
+	public boolean changingModel() default false;	
 	public int order() default 0;
 	
 	
 	public String selector() default ""; // hardcode link to SelectorFilter
 	/**
 	 * CREATE, READ, UPDATE, DELETE, EXECUTE
+	 * @return permissions filter
 	 */
 	public String permission() default ""; // hardcode link to PermissionFilter
 	OFilter[] filters() default {};

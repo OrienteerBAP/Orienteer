@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.event.CompensationEventHandler;
 import org.camunda.bpm.engine.impl.persistence.entity.CompensateEventSubscriptionEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.DeploymentEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.EventSubscriptionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.MessageEventSubscriptionEntity;
@@ -17,10 +16,6 @@ import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
-import com.github.raymanrt.orientqb.query.Clause;
-import com.github.raymanrt.orientqb.query.Operator;
-import com.github.raymanrt.orientqb.query.Query;
-import com.google.common.base.Function;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 

@@ -1,7 +1,5 @@
 package org.orienteer.core;
 
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.orienteer.core.OrienteerWebApplication;
@@ -10,7 +8,6 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 @Singleton

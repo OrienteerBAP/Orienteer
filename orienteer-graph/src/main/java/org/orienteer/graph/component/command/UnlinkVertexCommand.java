@@ -8,7 +8,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
-import com.tinkerpop.blueprints.impls.orient.OrientGraphFactory;
 import com.tinkerpop.blueprints.impls.orient.OrientVertex;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -17,9 +16,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.command.AbstractDeleteCommand;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
-import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.graph.module.GraphModule;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;

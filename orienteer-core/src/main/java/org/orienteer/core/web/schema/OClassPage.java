@@ -14,7 +14,6 @@ import org.orienteer.core.MountPath;
 import org.orienteer.core.component.SchemaPageHeader;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
-import org.orienteer.core.web.BrowseOClassPage;
 import org.orienteer.core.widget.ByOClassWidgetFilter;
 
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;

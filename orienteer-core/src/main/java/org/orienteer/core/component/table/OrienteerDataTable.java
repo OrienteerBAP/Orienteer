@@ -17,8 +17,11 @@ import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
+import org.apache.wicket.util.visit.IVisit;
+import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
+import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
@@ -207,5 +210,18 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 				headersToolbar.changeColorForFilteredColumn(tag, model.getObject());
 			}
 		};
+	}
+	
+	@Override
+	protected void onComponentTag(ComponentTag tag) {
+		super.onComponentTag(tag);
+		boolean hideCheckboxes = !commandsToolbar.determineVisibility();
+		if(!hideCheckboxes) {
+			Boolean noBulkCommands = getCommandsToolbar()
+					.visitChildren(AbstractCheckBoxEnabledCommand.class, 
+							(c, visit) -> {if(c.determineVisibility()) visit.stop(false);});
+			hideCheckboxes = noBulkCommands==null || noBulkCommands;
+		}
+		if(hideCheckboxes) tag.append("class", "no-checkboxes", " ");
 	}
 }

@@ -15,8 +15,6 @@ import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.ITaskSessionCallback;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
-import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
-
 import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * OTask class for system console commands

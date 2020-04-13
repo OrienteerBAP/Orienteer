@@ -2,6 +2,7 @@ package org.orienteer.core.method;
 
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.definitions.JavaClassOMethodDefinition;
+import org.orienteer.core.method.definitions.JavaClassOMethodDefinitionStorage;
 
 /**
  * 

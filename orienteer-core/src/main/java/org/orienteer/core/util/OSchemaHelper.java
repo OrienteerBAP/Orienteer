@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.orienteer.core.OClassDomain;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.CustomAttribute;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
@@ -16,7 +17,6 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * Enhanced {@link ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper} from wicket-orientdb library to allow Orienteer specific things
@@ -36,6 +36,11 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public static OSchemaHelper bind(ODatabaseDocument db)
 	{
 		return new OSchemaHelper(db);
+	}
+	
+	public OSchemaHelper describeAndInstallSchema(Class<?>... classes) {
+		DAO.describe(this, classes);
+		return this;
 	}
 
 	@Override
@@ -87,42 +92,49 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	}
 	
 	
+	@Override
 	public OSchemaHelper set(OClass.ATTRIBUTES attr, Object value) 
 	{
 		super.set(attr, value);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper set(OProperty.ATTRIBUTES attr, Object value) 
 	{
 		super.set(attr, value);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper defaultValue(String defaultValue)
 	{
 		super.defaultValue(defaultValue);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper min(String min)
 	{
 		super.min(min);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper max(String max)
 	{
 		super.max(max);
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper notNull()
 	{
 		super.notNull();
 		return this;
 	}
 	
+	@Override
 	public OSchemaHelper notNull(boolean value)
 	{
 		super.notNull(value);
@@ -334,5 +346,29 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public OSchemaHelper doOnODocument(Consumer<ODocument> consumer) {
 		super.doOnODocument(consumer);
 		return this;
+	}
+	
+	/**
+	 * Do operation on wrapped ODocument
+	 * @param <T> type of a wrapper
+	 * @param daoClass class of a wrapper
+	 * @param consumer consumer for performing operation
+	 * @return this
+	 */
+	public <T> OSchemaHelper doOnODocument(Class<? extends T> daoClass, Consumer<T> consumer) {
+		checkODocument();
+		consumer.accept(getODocument(daoClass));
+		return this;
+	}
+	
+	/**
+	 * Get ODocument as wrapped in DAO
+	 * @param <T> type of a wrapper
+	 * @param daoClass class of a wrapper
+	 * @return wrapped ODocument
+	 */
+	public <T> T getODocument(Class<? extends T> daoClass) {
+		ODocument doc = getODocument();
+		return doc!=null?DAO.provide(daoClass, doc):null;
 	}
 }

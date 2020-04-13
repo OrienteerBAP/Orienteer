@@ -3,11 +3,9 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
 import com.orientechnologies.orient.core.hook.ORecordHook.TYPE;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.camunda.bpm.engine.ProcessEngineException;
-import org.camunda.bpm.engine.identity.TenantQuery;
 import org.camunda.bpm.engine.impl.db.entitymanager.operation.DbBulkOperation;
 import org.camunda.bpm.engine.impl.persistence.entity.TenantEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
@@ -83,10 +81,12 @@ public class TenantEntityHandler implements IEntityHandler<TenantEntity> {
 
 	@Override
 	public void applySchema(OSchemaHelper helper) {
+		//It's already applied
 	}
 
 	@Override
 	public void applyRelationships(OSchemaHelper helper) {
+		//It's already applied
 	}
 
 	@Override
@@ -101,15 +101,17 @@ public class TenantEntityHandler implements IEntityHandler<TenantEntity> {
 
 	@Override
 	public void lock(String statement, Object parameter, OPersistenceSession session) {
+		//TODO: Not implemented
 	}
 
 	@Override
 	public void deleteBulk(DbBulkOperation operation, OPersistenceSession session) {
-		
+		//TODO: Not implemented
 	}
 
 	@Override
 	public void updateBulk(DbBulkOperation operation, OPersistenceSession session) {
+		//TODO: Not implemented
 	}
 	
 	@Override

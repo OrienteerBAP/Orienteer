@@ -5,12 +5,10 @@ import java.util.Set;
 
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.widget.IWidgetFilter;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.scanners.TypeElementsScanner;
 
 /**
  * 

@@ -1,0 +1,11 @@
+<wicket:panel xmlns:wicket="http://www.w3.org/1999/xhtml">
+<form wicket:id="addTabForm">
+  <div class="form-group">
+    <label wicket:for="tabName"><wicket:message key="command.add.tab.modal.tabname">Tab Name</wicket:message></label>
+    <input type="text" class="form-control" wicket:id="tabName">
+  </div>
+  <button type="submit" class="btn btn-primary" wicket:id="addTab">
+  	<wicket:message key="command.add.tab">Add tab</wicket:message>
+  </button>
+</form>
+</wicket:panel>

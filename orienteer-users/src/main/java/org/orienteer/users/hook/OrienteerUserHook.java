@@ -9,9 +9,12 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
-import org.orienteer.users.util.OUsersDbUtils;
+import org.orienteer.users.repository.OrienteerUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +22,8 @@ import java.util.UUID;
  * Hook to initialize OUser.
  */
 public class OrienteerUserHook extends ODocumentHookAbstract {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OrienteerUserHook.class);
 
     public OrienteerUserHook(ODatabaseDocument database) {
         super(database);
@@ -29,7 +34,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
      * Update document {@link OUser} before create document.
      * Fill field {@link OrienteerUser#PROP_ID} using {@link UUID#randomUUID()}
      * If field {@link PerspectivesModule#PROP_PERSPECTIVE} in user document is empty, so will be used default perspective for
-     * orienteer users by calling {@link OUsersDbUtils#getDefaultOrienteerUserPerspective()}.
+     * orienteer users by calling {@link OrienteerUserRepository#getDefaultOrienteerUserPerspective()}.
      * If filed "roles" is empty or null, so it will be fill by role {@link OrienteerUsersModule#ORIENTEER_USER_ROLE}
      * Allows user read and update herself
      * @param doc {@link ODocument} user document
@@ -37,28 +42,38 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
      */
     @Override
     public RESULT onRecordBeforeCreate(ODocument doc) {
-        doc.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
+        if (doc.field(OrienteerUser.PROP_ID) == null) {
+            doc.field(OrienteerUser.PROP_ID, UUID.randomUUID().toString());
+        }
 
         if (doc.field(PerspectivesModule.PROP_PERSPECTIVE) == null) {
-            OUsersDbUtils.getDefaultOrienteerUserPerspective()
+            OrienteerUserRepository.getDefaultOrienteerUserPerspective()
                     .ifPresent(
                             perspective -> doc.field(PerspectivesModule.PROP_PERSPECTIVE, perspective)
                     );
         }
 
+        ODocument orienteerRole = getOrienteerUserRole();
+
         List<ODocument> roles = doc.field("roles", List.class);
         if (roles == null || roles.isEmpty()) {
-            OUsersDbUtils.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
-                    .map(ORole::getDocument)
-                    .ifPresent(
-                            role -> doc.field("roles", Collections.singleton(role))
-                    );
+            doc.field("roles", Collections.singleton(orienteerRole));
         }
 
-        doc.field(ORestrictedOperation.ALLOW_READ.getFieldName(), doc);
-        doc.field(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_READ.getFieldName(), doc);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc);
 
-        return super.onRecordBeforeCreate(doc);
+        return RESULT.RECORD_CHANGED;
+    }
+
+    private void updateAllowPermissions(String field, ODocument user) {
+        List<ODocument> allows = user.field(field, List.class);
+        if (allows == null) {
+            allows = new LinkedList<>();
+        } else allows = new LinkedList<>(allows);
+
+        allows.add(user);
+        user.field(field, allows);
     }
 
     @Override
@@ -66,4 +81,9 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
         return DISTRIBUTED_EXECUTION_MODE.SOURCE_NODE;
     }
 
+    private ODocument getOrienteerUserRole() {
+        return OrienteerUserRepository.getRoleByName(OrienteerUsersModule.ORIENTEER_USER_ROLE)
+                .map(ORole::getDocument)
+                .orElseThrow(() -> new IllegalStateException("Role " + OrienteerUsersModule.ORIENTEER_USER_ROLE + " not exists"));
+    }
 }

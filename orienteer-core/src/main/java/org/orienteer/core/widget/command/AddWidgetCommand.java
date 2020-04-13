@@ -6,8 +6,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.BootstrapSize;
-import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.method.OFilter;
@@ -15,6 +13,7 @@ import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
+import org.orienteer.core.widget.IDashboardContainer;
 import org.orienteer.core.widget.IWidgetType;
 import org.orienteer.core.widget.command.modal.AddWidgetDialog;
 
@@ -25,9 +24,10 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-@OMethod(order=1,filters={
-		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
-})
+@OMethod(order=900+60,
+	filters={
+			@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
+	})
 public class AddWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
 	private static final long serialVersionUID = 1L;
 
@@ -53,6 +53,13 @@ public class AddWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {
 		});
 		modal.setAutoSize(true);
 		modal.setMinimalWidth(300);
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		IDashboardContainer<?> dashboardContainer = findParent(IDashboardContainer.class);
+		setVisible(dashboardContainer.hasDashboard() && dashboardContainer.getDashboardModeObject().canModify());
 	}
 
 }

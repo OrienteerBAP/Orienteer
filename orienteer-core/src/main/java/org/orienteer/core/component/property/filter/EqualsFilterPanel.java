@@ -19,7 +19,7 @@ import java.io.Serializable;
  * SELECT FROM aClass WHERE a = 'value'
  * @param <T> type of value
  */
-public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPanel<T> {
+public class EqualsFilterPanel<T extends Serializable> extends AbstractOPropertyFilterPanel<T> {
 
     private FormComponent<T> formComponent;
 
@@ -47,7 +47,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     @Override
     @SuppressWarnings("unchecked")
     public FormComponent<?> createFilterComponent(IModel<?> model) {
-        if (getPropertyModel().getObject().getType() == OType.BOOLEAN) {
+        if (getEntityModel().getObject().getType() == OType.BOOLEAN) {
             return new BooleanFilterPanel(getFilterId(), (IModel<Boolean>) model);
         }
         return super.createFilterComponent(model);
@@ -59,7 +59,7 @@ public class EqualsFilterPanel<T extends Serializable> extends AbstractFilterPan
     }
 
     @Override
-    protected T getFilterInput() {
+    public T getFilterInput() {
         return formComponent.getConvertedInput();
     }
 

@@ -10,6 +10,7 @@ import org.apache.wicket.markup.IMarkupFragment;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
+import org.orienteer.core.component.filter.AbstractFilterPanel;
 import org.orienteer.core.component.property.date.ODateTimeField;
 import org.orienteer.core.service.IMarkupProvider;
 

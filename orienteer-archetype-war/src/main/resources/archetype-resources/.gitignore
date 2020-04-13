@@ -1,0 +1,13 @@
+#orienteer-test.properties
+#orienteer.properties
+target/
+databases/
+libs/
+plugins/
+.idea/
+*.iml
+*.tar.gz
+/Orienteer
+.classpath
+.project
+.settings/

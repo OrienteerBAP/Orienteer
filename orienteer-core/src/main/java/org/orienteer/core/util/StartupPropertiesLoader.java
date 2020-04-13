@@ -1,14 +1,14 @@
 package org.orienteer.core.util;
 
+import org.apache.wicket.util.string.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
-
-import org.apache.wicket.util.string.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class for startup loader properties
@@ -21,7 +21,8 @@ public class StartupPropertiesLoader {
 	public static final String DEFAULT_ORENTEER_PROPERTIES_QUALIFIER 		= "orienteer";
 	public static final String PROPERTIES_RESOURCE_PATH_SYSTEM_DEFAULT 		= "orienteer-default.properties";
 	
-	
+	public static final String ENV_ORIENTEER_HOME = "ORIENTEER_HOME";
+	public static final String ENV_ORIENTEER_RUNTIME = "ORIENTEER_RUNTIME";
 	
 	public final static Properties PROPERTIES_DEFAULT = new Properties();
 
@@ -31,6 +32,7 @@ public class StartupPropertiesLoader {
 															 LookupResourceHelper.SystemPropertyURLLookuper.INSTANCE,
 															 LookupResourceHelper.UpDirectoriesFileLookuper.INSTANCE,
 															 LookupResourceHelper.DirFileLookuper.CONFIG_DIR_INSTANCE,
+															 new LookupResourceHelper.DirFileLookuper(getAppHome()),
 															 LookupResourceHelper.SystemPropertyResourceLookuper.INSTANCE);
 	
 	static {
@@ -120,5 +122,22 @@ public class StartupPropertiesLoader {
 		//Load from Java system properties
 		loadedProperties.putAll(System.getProperties());
 		return loadedProperties;
+	}
+
+	public static String getAppHome() {
+		String appHome = System.getenv(ENV_ORIENTEER_HOME);
+		if(Strings.isEmpty(appHome))
+			return "./";
+		else 
+			return appHome.endsWith("/") ? appHome : appHome+"/"; 
+	}
+	
+	public static String getRuntime() {
+		String runtime = System.getenv(ENV_ORIENTEER_RUNTIME);
+		if(Strings.isEmpty(runtime)) {
+			String appHome = getAppHome();
+			return appHome.equals("./")? appHome : appHome +"runtime/";
+		}
+		else return runtime.endsWith("/") ? runtime : runtime+"/";
 	}
 }

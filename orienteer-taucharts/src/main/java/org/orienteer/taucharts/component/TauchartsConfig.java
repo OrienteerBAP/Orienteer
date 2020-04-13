@@ -1,25 +1,19 @@
 package org.orienteer.taucharts.component;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.crypt.StringUtils;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.util.CommonUtils;
-import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.taucharts.component.widget.AbstractTauchartsWidget;
 
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 

@@ -21,6 +21,7 @@ public class ODocumentHtmlJsPaneWidget extends
 		super(id, model, widgetDocumentModel);
 	}
 
+	@Override
 	protected String interpolate(String content) {
 		return MapVariableInterpolator.interpolate(super.interpolate(content), new ODocumentMapWrapper(getModelObject()));
 	}

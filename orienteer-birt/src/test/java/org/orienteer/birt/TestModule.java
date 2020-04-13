@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import static org.junit.Assert.*;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
@@ -68,7 +67,7 @@ public class TestModule
 	    	savedStream.close();
 	    }
 	    
-	    assertEquals(oldResult,newResult);
+	    assertEquals(oldResult.replace("\r\n",  "\n"),newResult.replace("\r\n",  "\n"));
 	    //ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 	    //OutputStream stream = response.getOutputStream();
 	    

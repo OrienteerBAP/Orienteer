@@ -12,6 +12,7 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
+import org.orienteer.core.component.table.filter.IFilterSupportedColumn;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
@@ -23,7 +24,7 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
  * @param <C> the type of criteria for this column
  * @param <S> the type of the sort property
  */
-public abstract class AbstractMetaColumn<T, C, S> extends FilteredAbstractColumn<T, S> implements IExportableColumn<T, S>
+public abstract class AbstractMetaColumn<T, C, S> extends FilteredAbstractColumn<T, S> implements IExportableColumn<T, S>, IFilterSupportedColumn<C>
 {
 	private static final long serialVersionUID = 1L;
 	private IModel<C> criteryModel;
@@ -89,10 +90,16 @@ public abstract class AbstractMetaColumn<T, C, S> extends FilteredAbstractColumn
 		return null;
 	}
 
+	@Override
+	public String getFilterName() {
+		return null;
+	}
+
 	/**
 	 * Get component for supported filtering column
 	 * @param id - component id
 	 * @param propertyModel - property model for view
+	 * @param filterForm - form for filters
 	 * @return component which support filtering
 	 */
 	protected Component getComponentForFiltering(String id, IModel<OProperty> propertyModel, FilterForm<OQueryModel<?>> filterForm) {

@@ -36,7 +36,7 @@ OPropertyCreateCommand.prototype.executeCommand = function () {
             this.oClass.properties.push(this.property);
             this.oClass.createCellForProperty(this.property);
             this.oClass.notifySubClassesAboutChangesInProperty(this.property);
-        } else this.property = this.oClass.createProperty(this.property.name, this.property.type, this.property.cell);
+        } else this.property = this.oClass.createProperty(this.property.name, this.property.type, this.property.cell, this.property.order);
         this.property.removed = false;
         this.property.exists = true;
         this.remove = true;
@@ -124,6 +124,12 @@ OPropertyInverseChangeCommand.prototype.constructor = OPropertyInverseChangeComm
 OPropertyInverseChangeCommand.prototype.executeCommand = function () {
     var prop = this.init(this.property);
     if (prop !== null) this.property = prop;
+    function initInverseProperty(command, existsIgnore) {
+    	if (command.inverseProperty !== null && (command.inverseProperty.isExists() || existsIgnore))  {
+    		command.inverseProperty = command.init(command.inverseProperty);
+    	}
+    }
+    
     initInverseProperty(this, false);
 
     if (this.commands === null && this.inverseProperty !== null && !this.inverseProperty.isExists()) {
@@ -152,11 +158,6 @@ OPropertyInverseChangeCommand.prototype.executeCommand = function () {
         this.removed = false;
     }
     this.executed = !this.executed;
-    function initInverseProperty(command, existsIgnore) {
-        if (command.inverseProperty !== null && (command.inverseProperty.isExists() || existsIgnore))  {
-            command.inverseProperty = command.init(command.inverseProperty);
-        }
-    }
 };
 
 OPropertyInverseChangeCommand.prototype.getCommands = function () {
@@ -382,54 +383,6 @@ OPropertyRemoveCommand.prototype.getRemovePropertyCommands = function (property)
     return commands;
 };
 
-
-var OClassRemoveCommand = function (oClass) {
-    OArchitectRemoveCommand.apply(this, []);
-    this.oClass = oClass;
-};
-
-OClassRemoveCommand.prototype = Object.create(OArchitectRemoveCommand.prototype);
-OClassRemoveCommand.prototype.constructor = OClassRemoveCommand;
-
-OClassRemoveCommand.prototype.executeCommand = function () {
-    if (this.commands === null) {
-        this.commands = this.getRemoveOClassCommands();
-    } else OArchitectUtil.inverseArray(this.commands);
-    if (this.oClass.existsInDb) {
-        this.prepareCommandsForExistsInDb();
-    }
-    this.executeCommands(this.commands);
-    this.removed = !this.removed;
-    this.oClass.removed = this.removed;
-};
-
-OClassRemoveCommand.prototype.getRemoveOClassCommands = function () {
-    var commands = [];
-    var geometry = this.oClass.cell.geometry;
-    
-    function addRemovePropertiesCommand(properties) {
-    	OArchitectUtil.forEach(properties, function (property) {
-    		if (!property.isSubClassProperty() || !property.isSuperClassExistsInEditor()) {
-    			commands.push(new OPropertyRemoveCommand(property));
-    		}
-    	});
-    }
-    
-    function addRemoveEdgesCommand(cell) {
-    	var edges = app.editor.graph.getEdges(cell);
-    	OArchitectUtil.forEach(edges, function (edge) {
-    		commands.push(new OConnectionManageCommand(edge.source, edge.target, true));
-    	});
-    }
-    
-    addRemoveEdgesCommand(this.oClass.cell);
-    addRemovePropertiesCommand(this.oClass.properties);
-    commands.push(new OClassCreateCommand(this.oClass, geometry.x, geometry.y, true));
-
-
-    return commands;
-};
-
 /**
  * Connection command
  **/
@@ -482,6 +435,54 @@ OConnectionManageCommand.prototype.getCommands = function (remove) {
     } else if (sourceValue instanceof OArchitectOClass) {
         commands.push(new OClassInheritanceCommand(sourceValue, targetValue, remove));
     }
+
+    return commands;
+};
+
+
+var OClassRemoveCommand = function (oClass) {
+    OArchitectRemoveCommand.apply(this, []);
+    this.oClass = oClass;
+};
+
+OClassRemoveCommand.prototype = Object.create(OArchitectRemoveCommand.prototype);
+OClassRemoveCommand.prototype.constructor = OClassRemoveCommand;
+
+OClassRemoveCommand.prototype.executeCommand = function () {
+    if (this.commands === null) {
+        this.commands = this.getRemoveOClassCommands();
+    } else OArchitectUtil.inverseArray(this.commands);
+    if (this.oClass.existsInDb) {
+        this.prepareCommandsForExistsInDb();
+    }
+    this.executeCommands(this.commands);
+    this.removed = !this.removed;
+    this.oClass.removed = this.removed;
+};
+
+OClassRemoveCommand.prototype.getRemoveOClassCommands = function () {
+    var commands = [];
+    var geometry = this.oClass.cell.geometry;
+    
+    function addRemovePropertiesCommand(properties) {
+    	OArchitectUtil.forEach(properties, function (property) {
+    		if (!property.isSubClassProperty() || !property.isSuperClassExistsInEditor()) {
+    			commands.push(new OPropertyRemoveCommand(property));
+    		}
+    	});
+    }
+    
+    function addRemoveEdgesCommand(cell) {
+    	var edges = app.editor.graph.getEdges(cell);
+    	OArchitectUtil.forEach(edges, function (edge) {
+    		commands.push(new OConnectionManageCommand(edge.source, edge.target, true));
+    	});
+    }
+    
+    addRemoveEdgesCommand(this.oClass.cell);
+    addRemovePropertiesCommand(this.oClass.properties);
+    commands.push(new OClassCreateCommand(this.oClass, geometry.x, geometry.y, true));
+
 
     return commands;
 };

@@ -1,7 +1,5 @@
 package org.orienteer.core.service.impl;
 
-import java.util.regex.Pattern;
-
 import org.apache.wicket.util.time.Duration;
 
 import com.google.inject.Inject;

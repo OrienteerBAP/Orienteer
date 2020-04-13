@@ -1,7 +1,6 @@
 package org.orienteer.core.component.widget.document;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.AttributeModifier;

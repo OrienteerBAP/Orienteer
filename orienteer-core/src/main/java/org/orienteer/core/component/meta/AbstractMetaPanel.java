@@ -1,6 +1,8 @@
 package org.orienteer.core.component.meta;
 
-import com.google.inject.Inject;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.WicketRuntimeException;
@@ -18,9 +20,9 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.IExportable;
 import org.orienteer.core.service.IMarkupProvider;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
 import java.util.Objects;
+
+import javax.inject.Inject;
 
 /**
  * {@link Panel} that can substitute required component according to a provided criteria
@@ -185,6 +187,7 @@ public abstract class AbstractMetaPanel<T, C, V> extends AbstractEntityAndProper
 		});
 	}
 	
+	@Override
 	public IModel<?> getExportableDataModel() {
 		configure();
 		if(component instanceof IExportable){

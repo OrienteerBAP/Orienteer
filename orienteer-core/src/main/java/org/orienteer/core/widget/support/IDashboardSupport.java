@@ -1,13 +1,9 @@
 package org.orienteer.core.widget.support;
 
-import java.util.Map;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.util.io.IClusterable;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.DashboardPanel;
-import org.orienteer.core.widget.support.gridster.GridsterDashboardSupport;
 import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
 
 import com.google.inject.ImplementedBy;

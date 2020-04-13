@@ -2,7 +2,6 @@ package org.orienteer.core.method.methods;
 
 import java.util.Optional;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.AjaxCommand;

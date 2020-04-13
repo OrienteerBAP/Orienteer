@@ -1,7 +1,6 @@
 package org.orienteer.core.component.command;
 
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 

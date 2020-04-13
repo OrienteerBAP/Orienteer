@@ -5,7 +5,6 @@ import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.JobDefinitionEntity;
 import org.camunda.bpm.engine.management.JobDefinitionQuery;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.history.HistoricDetailEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricIncidentEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricJobLogEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.UserOperationLogEntryEventEntityHandler;

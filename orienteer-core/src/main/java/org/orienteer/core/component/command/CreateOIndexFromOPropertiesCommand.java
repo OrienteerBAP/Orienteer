@@ -9,11 +9,8 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.web.schema.OIndexPage;
-import org.orienteer.core.web.schema.OIndexPage;
-
 import ru.ydn.wicket.wicketorientdb.model.OIndexModel;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
@@ -26,8 +23,6 @@ import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.security.ODatabaseSecurityResources;
-import com.orientechnologies.orient.core.metadata.security.ORule;
 
 /**
  * {@link Command} to create an {@link OIndex} for a selected set of properties

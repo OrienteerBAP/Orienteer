@@ -1,30 +1,15 @@
 package org.orienteer.bpm.camunda;
 
-import java.util.List;
-
-import org.apache.wicket.util.string.Strings;
 import org.camunda.bpm.BpmPlatform;
-import org.camunda.bpm.engine.impl.context.Context;
-import org.camunda.bpm.engine.impl.persistence.deploy.DeploymentCache;
-import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.camunda.bpm.model.bpmn.Bpmn;
-import org.orienteer.bpm.BPMModule;
-import org.orienteer.bpm.camunda.handler.DeploymentEntityHandler;
 import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
-import org.orienteer.bpm.camunda.handler.ProcessDefinitionEntityHandler;
-
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.ODatabase.STATUS;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.hook.ORecordHook;
-import com.orientechnologies.orient.core.hook.ORecordHook.RESULT;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 /**
  * Hook to handle BPMN specific entities 

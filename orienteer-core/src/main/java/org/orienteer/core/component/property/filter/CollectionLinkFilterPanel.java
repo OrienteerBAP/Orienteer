@@ -31,7 +31,7 @@ import static org.orienteer.core.component.meta.OClassMetaPanel.BOOTSTRAP_SELECT
 /**
  * SELECT FROM Class WHERE link IN [#21:0, #22:0]
  */
-public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<ODocument>> {
+public class CollectionLinkFilterPanel extends AbstractOPropertyFilterPanel<Collection<ODocument>> {
 
 
     private FormComponent<Collection<String>> classesFormComponent;
@@ -68,12 +68,12 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
     }
 
     @Override
-    protected Collection<ODocument> getFilterInput() {
+    public Collection<ODocument> getFilterInput() {
         return docsFormComponent.getConvertedInput();
     }
 
     @Override
-    protected void focus(AjaxRequestTarget target) {
+    public void focus(AjaxRequestTarget target) {
         if (classesFormComponent.isEnabled()) {
             target.focusComponent(classesFormComponent);
         } else target.focusComponent(docsFormComponent);
@@ -85,7 +85,7 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
             @Override
             protected void onInitialize() {
                 super.onInitialize();
-                OProperty property = CollectionLinkFilterPanel.this.getPropertyModel().getObject();
+                OProperty property = CollectionLinkFilterPanel.this.getEntityModel().getObject();
                 if (property != null && property.getLinkedClass() != null) {
                     setModelObject(Arrays.asList(property.getLinkedClass().getName()));
                     setEnabled(false);
@@ -116,7 +116,7 @@ public class CollectionLinkFilterPanel extends AbstractFilterPanel<Collection<OD
 
     @Override
     public FilterCriteriaType getFilterCriteriaType() {
-        OProperty property = getPropertyModel().getObject();
+        OProperty property = getEntityModel().getObject();
         if (property != null) {
             OType type = property.getType();
             return type.equals(OType.LINKSET) ? FilterCriteriaType.LINKSET : FilterCriteriaType.LINKLIST;

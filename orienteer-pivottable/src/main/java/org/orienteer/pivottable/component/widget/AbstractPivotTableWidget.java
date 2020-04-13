@@ -1,19 +1,10 @@
 package org.orienteer.pivottable.component.widget;
 
-import static org.orienteer.core.module.OWidgetsModule.OPROPERTY_HIDDEN;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.event.IEvent;
-import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.util.encoding.UrlEncoder;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
@@ -22,18 +13,10 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.event.ActionPerformedEvent;
-import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
-import org.orienteer.core.widget.Widget;
-import org.orienteer.core.widget.support.jquery.JQueryDashboardSupport;
 import org.orienteer.pivottable.PivotTableModule;
 import org.orienteer.pivottable.component.PivotPanel;
 
-import com.google.common.base.Objects;
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**

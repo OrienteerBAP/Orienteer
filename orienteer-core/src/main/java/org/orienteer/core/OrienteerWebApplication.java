@@ -8,6 +8,10 @@ import com.google.inject.name.Named;
 import com.hazelcast.core.HazelcastInstance;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
+import com.orientechnologies.orient.core.metadata.security.OUser;
+import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
+
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -24,6 +28,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.serialize.ISerializer;
 import org.apache.wicket.settings.RequestCycleSettings;
@@ -38,28 +43,28 @@ import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
 import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
-import org.orienteer.core.wicket.pageStore.OrientDbDataStore;
-import org.orienteer.core.resource.OContentShareResource;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.service.listener.OrienteerEmeddOrientDbListener;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
+import org.orienteer.core.util.WicketProtector;
 import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.wicket.pageStore.HazelcastPageStore;
+import org.orienteer.core.wicket.pageStore.OrientDbDataStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
-import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.*;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -72,7 +77,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	private static final Logger LOG = LoggerFactory.getLogger(OrienteerWebApplication.class);
 	
 	public static final DateConverter DATE_CONVERTER      = new ODateConverter(false);
-	public static final DateConverter DATE_TIME_CONVERTER = new ODateConverter(true);
+	public static final DateConverter DATE_TIME_CONVERTER = new ODateConverter(true, true);
 	
 	private LinkedHashMap<String, IOrienteerModule> registeredModules = new LinkedHashMap<String, IOrienteerModule>();
 	private boolean registeredModulesSorted = false;
@@ -102,7 +107,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orienteer.image.logo")
 	private String imageLogoPath;
-	
+
+	@Inject
+	@Named("orienteer.image.icon")
+	private String imageIconPath;
+
 	@Inject
 	@Named("orienteer.version")
 	private String version;
@@ -158,9 +167,11 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			getApplicationListeners().add(new OrienteerEmeddOrientDbListener(dbConfig));
 		}
 		WicketWebjars.install(this, webjarSettings);
-		mountPages("org.orienteer.core.web");
+		mountPackage("org.orienteer.core.web");
+		mountPackage("org.orienteer.core.resource");
 		mountResource("logo.png", new SharedResourceReference(imageLogoPath));
-		OContentShareResource.mount(this);
+		mountResource("icon.png", new SharedResourceReference(imageIconPath));
+		mountResource("favicon.ico", new SharedResourceReference(imageIconPath));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
 		getApplicationListeners().add(new ModuledDataInstallator());
@@ -183,6 +194,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			public void onBeforeDestroyed(Application application) {/*NOP*/}
 			
 		});
+		WicketProtector.install(this);
 		getPageSettings().addComponentResolver(new WicketPropertyResolver());
 		//Remove default BookmarkableMapper to disallow direct accessing of pages through /wicket/bookmarkable/<class>
 		for(IRequestMapper mapper : getRootRequestMapperAsCompound()){
@@ -318,23 +330,61 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return getServiceInstance(IOClassIntrospector.class);
 	}
 	
+	@Deprecated
 	public void mountPages(String packageName) {
 		mountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
+	@Deprecated
 	public void mountPages(String packageName, ClassLoader classLoader) {
-		mountOrUnmountPages(packageName, classLoader, true);
+		mountOrUnmountPackage(packageName, classLoader, true);
 	}
 
+	@Deprecated
 	public void unmountPages(String packageName) {
 		unmountPages(packageName, OrienteerClassLoader.getClassLoader());
 	}
 	
+	@Deprecated
 	public void unmountPages(String packageName, ClassLoader classLoader) {
-		mountOrUnmountPages(packageName, classLoader, false);
+		mountOrUnmountPackage(packageName, classLoader, false);
 	}
 	
-	private void mountOrUnmountPages(String packageName, ClassLoader classLoader, boolean mount) {
+	/**
+	 * Mount all pages and resources in a package
+	 * @param packageName to mount
+	 */
+	public void mountPackage(String packageName) {
+		mountPackage(packageName, OrienteerClassLoader.getClassLoader());
+	}
+	
+	/**
+	 * Mount all pages and resources in a package
+	 * @param packageName to mount
+	 * @param classLoader {@link ClassLoader} where stuff defined
+	 */
+	public void mountPackage(String packageName, ClassLoader classLoader) {
+		mountOrUnmountPackage(packageName, classLoader, true);
+	}
+
+	/**
+	 * Unmount all pages or resources which are defined in a package
+	 * @param packageName to unmount from
+	 */
+	public void unmountPackage(String packageName) {
+		unmountPackage(packageName, OrienteerClassLoader.getClassLoader());
+	}
+	
+	/**
+	 * Unmount all pages or resources which are defined in a package
+	 * @param packageName to unmount from
+	 * @param classLoader {@link ClassLoader} where stuff defined
+	 */
+	public void unmountPackage(String packageName, ClassLoader classLoader) {
+		mountOrUnmountPackage(packageName, classLoader, false);
+	}
+	
+	private void mountOrUnmountPackage(String packageName, ClassLoader classLoader, boolean mount) {
 		ClassPath classPath;
 		try {
 			classPath = ClassPath.from(classLoader);
@@ -346,25 +396,38 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 			Class<?> clazz = classInfo.load();
 			MountPath mountPath = clazz.getAnnotation(MountPath.class);
 			if(mountPath!=null) {
-				if(!IRequestablePage.class.isAssignableFrom(clazz)) 
-					throw new WicketRuntimeException("@"+MountPath.class.getSimpleName()+" should be only on pages");
-				Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
-				String mainPath = mountPath.value();
-				String[] alt = mountPath.alt();
-				for(int i=alt.length-1;i>=-1;i--)
-				{
-					String path = i<0?mainPath:alt[i];
+				if(IRequestablePage.class.isAssignableFrom(clazz)) { 
+					Class<? extends IRequestablePage> pageClass = (Class<? extends IRequestablePage>) clazz;
+					forEachOnMountPath(mountPath, path -> {
+										if(mount) {
+											if ("/".equals(path)) {
+												mount(new HomePageMapper(pageClass));
+											}
+											mount(new MountedMapper(path, pageClass));
+										} else {
+											unmount(path);
+										}
+									});
+				} else if(IResource.class.isAssignableFrom(clazz)) {
 					if(mount) {
-						if ("/".equals(path)) {
-							mount(new HomePageMapper(pageClass));
-						}
-						mount(new MountedMapper(path, pageClass));
+						String resourceKey = clazz.getName();
+						getSharedResources().add(resourceKey, (IResource) getServiceInstance(clazz));
+						SharedResourceReference reference = new SharedResourceReference(resourceKey);
+						forEachOnMountPath(mountPath, path -> mountResource(path, reference));
 					} else {
-						unmount(path);
+						forEachOnMountPath(mountPath, this::unmount);
 					}
+				} else {
+					throw new WicketRuntimeException("@"+MountPath.class.getSimpleName()+" should be only on pages or resources");
 				}
 			}
 		}
+	}
+	
+	private void forEachOnMountPath(MountPath mountPath, Consumer<String> consumer) {
+		consumer.accept(mountPath.value());
+		for(String altPath : mountPath.alt()) consumer.accept(altPath);
+		
 	}
 	
 	public void registerWidgets(String packageName) {
@@ -443,4 +506,17 @@ public class OrienteerWebApplication extends OrientDbWebApplication
             }
         };
     }
+	
+	@Override
+	public boolean checkResource(ResourceGeneric resource, String specific, int iOperation) {
+	
+		if(OSecurityHelper.FEATURE_RESOURCE.equals(resource)) {
+			if(Strings.isEmpty(specific)) return true;
+			else 
+				return super.checkResource(resource, specific, iOperation) 
+						|| OrienteerWebSession.get().getOPerspective().providesFeature(specific);
+		} else {
+			return super.checkResource(resource, specific, iOperation);
+		}
+	}
 }

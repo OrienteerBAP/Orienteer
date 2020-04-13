@@ -1,16 +1,12 @@
 package org.orienteer.core.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.inject.Inject;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.extensions.markup.html.tabs.ITab;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.string.Strings;
@@ -20,12 +16,11 @@ import org.orienteer.core.event.SwitchDashboardTabEvent;
 import org.orienteer.core.widget.DashboardPanel;
 import org.orienteer.core.widget.IDashboardManager;
 import org.orienteer.core.widget.IWidgetFilter;
-import org.orienteer.core.widget.IWidgetType;
-
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 
-import com.google.common.base.Predicate;
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Abstract class for all pages that use widgets approach
@@ -39,7 +34,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		private String tab;
 		private IModel<String> titleModel;
 		
-		private DashboardPanel dashboard;
+		private DashboardPanel<T> dashboard;
 		
 		public DashboardTab(String tab) {
 			this(tab, newTabNameModel(tab));
@@ -96,7 +91,7 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 			@Override
 			protected void onLinkClick(AjaxRequestTarget target) {
 				super.onLinkClick(target);
-				send(AbstractWidgetPage.this, Broadcast.DEPTH, new SwitchDashboardTabEvent(target));
+				send(AbstractWidgetPage.this, Broadcast.DEPTH, new SwitchDashboardTabEvent(Optional.ofNullable(target)));
 			}
 		});
 	}
@@ -142,8 +137,22 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		return ret;
 	}
 	
+	public boolean addTab(String name) {
+		if(Strings.isEmpty(name)) return false;
+		List<DashboardTab> tabs = tabbedPanel.getTabs();
+		for(DashboardTab tab:tabs) {
+			if(name.equals(tab.tab)) return false;
+		}
+		tabbedPanel.getTabs().add(new DashboardTab(name));
+		return false;
+	}
+	
 	public List<String> getTabs() {
-		return dashboardManager.listTabs(getDomain(), getWidgetsFilter());
+		List<String> tabs = dashboardManager.listTabs(getDomain(), getWidgetsFilter(), getModelObject());
+		List<String> registeredTabs = dashboardManager.listExistingTabs(getDomain(), getModel());
+		registeredTabs.removeAll(tabs);
+		tabs.addAll(registeredTabs);
+		return tabs;
 	}
 	
 	/**
@@ -157,8 +166,23 @@ public abstract class AbstractWidgetPage<T> extends OrienteerBasePage<T> {
 		for(int i=0; i<tabs.size();i++) {
 			if(tab.equals(tabs.get(i).tab)) {
 				tabbedPanel.setSelectedTab(i);
+				setCurrentDashboard(tabs.get(i).dashboard);
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Select tab
+	 * @param tab the name of tab to select
+	 * @param optionalTarget - {@link AjaxRequestTarget} to be updated
+	 * @return true if tab was switched and false if there is no such tab;
+	 */
+	public boolean selectTab(String tab, Optional<AjaxRequestTarget> optionalTarget) {
+		if(selectTab(tab)) {
+			optionalTarget.ifPresent(target -> target.add(tabbedPanel));
+			return true;
 		}
 		return false;
 	}

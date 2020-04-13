@@ -4,15 +4,12 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.event.Broadcast;
-import org.apache.wicket.event.IEvent;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
-import org.orienteer.core.event.ActionPerformedEvent;
 
 /**
  * {@link StructureTable} which allow to use meta micro-framework ( {@link IMetaContext} )
@@ -69,6 +66,7 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	@Override
 	protected abstract Component getValueComponent(String id, IModel<C> rowModel);
 
+	@Override
 	public OrienteerStructureTable<T, C> setCaptionModel(IModel<String> captionModel)
 	{
 		super.setCaptionModel(captionModel);

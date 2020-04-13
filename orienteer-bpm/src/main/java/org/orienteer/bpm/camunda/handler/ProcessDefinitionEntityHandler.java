@@ -12,7 +12,6 @@ import org.orienteer.bpm.camunda.BpmnHook;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.bpm.camunda.OProcessEngineConfiguration;
 import org.orienteer.bpm.camunda.handler.history.HistoricEventHandler;
-import org.orienteer.bpm.camunda.handler.history.HistoricProcessInstanceEventEntityHandler;
 import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
 import org.orienteer.core.util.OSchemaHelper;
 

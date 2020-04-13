@@ -2,17 +2,20 @@ package org.orienteer.core.component.meta;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.function.Function;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.crypt.StringUtils;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.ITooltipProvider;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.model.OPropertyTooltipModel;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -29,10 +32,11 @@ import ru.ydn.wicket.wicketorientdb.validation.OPropertyValueValidator;
  *
  * @param <V> type of a value
  */
-public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> implements IDisplayModeAware {
+public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, DisplayMode, OProperty, V> implements IDisplayModeAware, ITooltipProvider<String> {
 	
 	private static final long serialVersionUID = 1L;
 	private String featureSpecification;
+	private String visualization;
 	
 	public ODocumentMetaPanel(String id, IModel<DisplayMode> modeModel,
 			IModel<ODocument> entityModel, IModel<OProperty> propertyModel,
@@ -94,18 +98,20 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 			OProperty property) {
 		OType oType = property.getType();
 		UIVisualizersRegistry registry = OrienteerWebApplication.get().getUIVisualizersRegistry();
-		String visualizationComponent = CustomAttribute.VISUALIZATION_TYPE.getValue(property);
-		if(visualizationComponent!=null)
-		{
-			IVisualizer visualizer = registry.getComponentFactory(oType, visualizationComponent);
-			if(visualizer!=null) 
-			{
-				Component ret = visualizer.createComponent(id, mode, getEntityModel(), getPropertyModel(), getModel());
-				if(ret!=null) return ret;
-			}
+		
+		Function<String, Component> createComp = (String vis) -> {
+			if(vis==null) return null;
+			IVisualizer visualizer = registry.getComponentFactory(oType, vis);
+			return visualizer!=null?visualizer.createComponent(id, mode, getEntityModel(), getPropertyModel(), getModel()):null;
+		};
+		
+		Component ret = null; 
+		if(this.visualization!=null) ret = createComp.apply(this.visualization);
+		if(ret==null) {
+			String visualizationComponent = CustomAttribute.VISUALIZATION_TYPE.getValue(property);
+			ret = createComp.apply(visualizationComponent);
 		}
-		return registry.getComponentFactory(oType, IVisualizer.DEFAULT_VISUALIZER)
-							.createComponent(id, mode, getEntityModel(), getPropertyModel(), getModel());
+		return ret!=null?ret:createComp.apply(IVisualizer.DEFAULT_VISUALIZER);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -125,6 +131,20 @@ public class ODocumentMetaPanel<V> extends AbstractModeMetaPanel<ODocument, Disp
 	@Override
 	public IModel<String> newLabelModel() {
 		return new OPropertyNamingModel(getPropertyModel());
+	}
+	
+	public String getVisualization() {
+		return visualization;
+	}
+	
+	public ODocumentMetaPanel<V> setVisualization(String visualization) {
+		this.visualization = visualization;
+		return this;
+	}
+
+	@Override
+	public IModel<String> getTooltip() {
+		return new OPropertyTooltipModel(getPropertyModel());
 	}
 	
 }

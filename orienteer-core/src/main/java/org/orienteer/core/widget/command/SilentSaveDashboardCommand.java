@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * Command to save silently current dashboard
  */
-@OMethod(order=3,filters={
+@OMethod(order=900+80,filters={
 		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
 })
 public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
@@ -31,13 +31,20 @@ public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {
 	
 	@Override
 	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-		IDashboardContainer container = findParent(IDashboardContainer.class);
+		IDashboardContainer<?> container = findParent(IDashboardContainer.class);
 		DashboardPanel<?> dashboard = container.getCurrentDashboard().getSelfComponent();
 		dashboard.storeDashboard();
-		dashboard.getModeModel().setObject(DisplayMode.VIEW);
+		container.setDashboardModeObject(DisplayMode.VIEW);
 		targetOptional.ifPresent(target -> {
-			target.add(container.getSelf().get("pageHeader"));
+			target.add(container.getSelfComponent().get("pageHeader"));
 			target.add(dashboard);
 		});
+	}
+	
+	@Override
+	protected void onConfigure() {
+		super.onConfigure();
+		IDashboardContainer<?> dashboardContainer = findParent(IDashboardContainer.class);
+		setVisible(dashboardContainer.hasDashboard() && dashboardContainer.getDashboardModeObject().canModify());
 	}
 }

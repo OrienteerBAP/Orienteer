@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.orientechnologies.common.collection.OCollection;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -36,11 +35,13 @@ import org.orienteer.core.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.converter.ODocumentORIDConverter;
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.ODocumentLinksDataProvider;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link IOClassIntrospector}
@@ -79,32 +80,23 @@ public class OClassIntrospector implements IOClassIntrospector
 		List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
 		if(oClass!=null) {
 			List<OProperty> properties = getDisplayableProperties(oClass);
-			if(withCheckbox) columns.add(new CheckBoxColumn<ODocument, ORID, String>(ODocumentORIDConverter.INSTANCE));
+			if(withCheckbox) columns.add(new CheckBoxColumn<>(ODocumentORIDConverter.INSTANCE));
 			OProperty nameProperty = getNameProperty(oClass);
 			OEntityColumn entityColumn = new OEntityColumn(nameProperty, true, modeModel);
 			columns.add(entityColumn);
 			if (!oClass.getSubclasses().isEmpty()) {
-				columns.add(new ODocumentClassColumn<String>());
+				columns.add(new ODocumentClassColumn(new OClassModel(oClass)));
 			}
 			for (OProperty oProperty : properties)
 			{
 				if(nameProperty==null || !nameProperty.equals(oProperty))
 				{
-					Class<?> javaType = oProperty.getType().getDefaultJavaType();
-					if(javaType!=null && Comparable.class.isAssignableFrom(javaType)) {
-						columns.add(new OPropertyValueColumn(oProperty.getName(), oProperty, modeModel));
-					} else if (LocalizationVisualizer.NAME.equals(CustomAttribute.VISUALIZATION_TYPE.getValue(oProperty))) {
-						columns.add(new OPropertyValueColumn(
-								String.format("%s['%s']", oProperty.getName(),
-										OrienteerWebSession.get().getLocale().getLanguage()), oProperty, modeModel));
-					} else {
-						columns.add(new OPropertyValueColumn(oProperty, modeModel));
-					}
+					columns.add(new OPropertyValueColumn(oProperty, true, modeModel));
 				}
 			}
 		} else {
 			columns.add(new OUnknownEntityColumn(new ResourceModel("document.name")));
-			columns.add(new ODocumentClassColumn<String>());
+			columns.add(new ODocumentClassColumn(new OClassModel(oClass)));
 		}
 		return columns;
 	}
@@ -157,13 +149,10 @@ public class OClassIntrospector implements IOClassIntrospector
 	public List<String> listTabs(OClass oClass) {
 		IFilterPredicateFactory factory = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class);
 		SerializablePredicate<OProperty> predicate = factory.getPredicateForListProperties();
-		Set<String> tabs = new HashSet<>();
+		List<String> tabs = new ArrayList<String>();
 		for (OProperty prop : oClass.properties()) {
-			if (predicate.test(prop)) {
-				String tab = CustomAttribute.TAB.getValue(prop);
-				if (tab == null) tab = DEFAULT_TAB;
-				tabs.add(tab);
-			}
+			String tab = CustomAttribute.TAB.getValue(prop, DEFAULT_TAB);
+			if(!tabs.contains(tab) && predicate.test(prop)) tabs.add(tab); 
 		}
 		return new ArrayList<>(tabs);
 	}

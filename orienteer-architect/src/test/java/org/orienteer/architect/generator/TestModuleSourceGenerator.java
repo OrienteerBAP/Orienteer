@@ -46,7 +46,6 @@ public class TestModuleSourceGenerator {
         OModuleSource source = optSource.get();
         assertEquals(GeneratorMode.MODULE.getName(), source.getName());
 
-
         assertNotPrettyPrint(new BufferedReader(new StringReader(source.getSrc())));
         assertPrettyPrint(new BufferedReader(new StringReader(source.getSrc())));
     }
@@ -58,7 +57,6 @@ public class TestModuleSourceGenerator {
         assertNextLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_WORKPLACE = \"workPlace\";", reader);
         assertNextLine("public static final String EMPLOYEE_PROP_TESTLINK = \"testLink\";", reader);
-        assertNextLine("", reader);
         assertNextLine("public static final String WORKPLACE_CLASS_NAME = \"WorkPlace\";", reader);
         assertNextLine("public static final String WORKPLACE_PROP_NAME = \"name\";", reader);
         assertNextLine("public static final String WORKPLACE_PROP_ID = \"id\";", reader);
@@ -71,7 +69,7 @@ public class TestModuleSourceGenerator {
         assertNextLine(".oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 0)", reader);
         assertNextLine(".oProperty(EMPLOYEE_PROP_ID, OType.INTEGER, 10)", reader);
         assertNextLine(".oProperty(EMPLOYEE_PROP_WORKPLACE, OType.LINK, 20)", reader);
-        assertNextLine(".oProperty(EMPLOYEE_PROP_TESTLINK, OType.LINK, 30).linkedClass(WORKPLACE_CLASS_NAME);", reader);
+        assertNextLine(".oProperty(EMPLOYEE_PROP_TESTLINK, OType.LINK, 30);", reader);
         assertNextLine("", reader);
         assertNextLine("helper.oClass(WORKPLACE_CLASS_NAME)", reader);
         assertNextLine(".oProperty(WORKPLACE_PROP_NAME, OType.STRING, 0)", reader);
@@ -81,6 +79,7 @@ public class TestModuleSourceGenerator {
         assertNextLine("", reader);
         assertNextLine("", reader);
         assertNextLine("helper.setupRelationship(EMPLOYEE_CLASS_NAME, EMPLOYEE_PROP_WORKPLACE, WORKPLACE_CLASS_NAME, WORKPLACE_PROP_EMPLOYEES);", reader);
+        assertNextLine("helper.setupRelationship(EMPLOYEE_CLASS_NAME, EMPLOYEE_PROP_TESTLINK, WORKPLACE_CLASS_NAME);", reader);
     }
 
     private void assertPrettyPrint(BufferedReader reader) throws IOException {
@@ -90,7 +89,6 @@ public class TestModuleSourceGenerator {
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_ID = \"id\";", reader);
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_WORKPLACE = \"workPlace\";", reader);
         assertNextPrettyLine("public static final String EMPLOYEE_PROP_TESTLINK = \"testLink\";", reader);
-        assertNextPrettyLine("", reader);
         assertNextPrettyLine("public static final String WORKPLACE_CLASS_NAME = \"WorkPlace\";", reader);
         assertNextPrettyLine("public static final String WORKPLACE_PROP_NAME = \"name\";", reader);
         assertNextPrettyLine("public static final String WORKPLACE_PROP_ID = \"id\";", reader);
@@ -103,7 +101,7 @@ public class TestModuleSourceGenerator {
         assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_NAME, OType.STRING, 0)", reader);
         assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_ID, OType.INTEGER, 10)", reader);
         assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_WORKPLACE, OType.LINK, 20)", reader);
-        assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_TESTLINK, OType.LINK, 30).linkedClass(WORKPLACE_CLASS_NAME);", reader);
+        assertNextPrettyLine("    .oProperty(EMPLOYEE_PROP_TESTLINK, OType.LINK, 30);", reader);
         assertNextPrettyLine("", reader);
         assertNextPrettyLine("helper.oClass(WORKPLACE_CLASS_NAME)", reader);
         assertNextPrettyLine("    .oProperty(WORKPLACE_PROP_NAME, OType.STRING, 0)", reader);
@@ -113,5 +111,6 @@ public class TestModuleSourceGenerator {
         assertNextPrettyLine("", reader);
         assertNextPrettyLine("", reader);
         assertNextPrettyLine("helper.setupRelationship(EMPLOYEE_CLASS_NAME, EMPLOYEE_PROP_WORKPLACE, WORKPLACE_CLASS_NAME, WORKPLACE_PROP_EMPLOYEES);", reader);
+        assertNextPrettyLine("helper.setupRelationship(EMPLOYEE_CLASS_NAME, EMPLOYEE_PROP_TESTLINK, WORKPLACE_CLASS_NAME);", reader);
     }
 }

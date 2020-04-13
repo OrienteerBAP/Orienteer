@@ -79,7 +79,7 @@ public class ODateField extends FormComponentPanel<Date> {
         params.put("language", getLocale().getLanguage());
         params.put("orientation", "bottom");
         params.put("weekStart", Integer.toString(1));
-        params.put("format", getJavaDatePattern());
+        params.put("format", getJavaScriptDatePattern());
         return params;
     }
 
@@ -92,7 +92,14 @@ public class ODateField extends FormComponentPanel<Date> {
      */
     private String getJavaDatePattern() {
         Locale locale = getLocale();
-        return DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null, Chronology.ofLocale(locale), locale).toLowerCase();
+        String pattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.SHORT, null, Chronology.ofLocale(locale), locale);
+        //To convert yy->yyyy but keep yyyy as is
+        pattern = pattern.replace("yyyy", "yy").replace("yy", "yyyy");
+        return pattern;
+    }
+    
+    private String getJavaScriptDatePattern() {
+    	return getJavaDatePattern().toLowerCase();
     }
 
     private IModel<String> getDateAsString(IModel<Date> model) {
@@ -106,8 +113,7 @@ public class ODateField extends FormComponentPanel<Date> {
     }
 
     private DateTimeFormatter getDateFormatter() {
-        return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-                .withLocale(getLocale());
+    	return DateTimeFormatter.ofPattern(getJavaDatePattern(), getLocale());
     }
 
 }

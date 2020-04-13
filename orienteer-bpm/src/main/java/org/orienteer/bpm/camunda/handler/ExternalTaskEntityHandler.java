@@ -5,13 +5,11 @@ import java.util.Map;
 
 import org.camunda.bpm.engine.externaltask.ExternalTaskQuery;
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
-import org.camunda.bpm.engine.impl.persistence.entity.ByteArrayEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ExternalTaskEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 
-import com.github.raymanrt.orientqb.query.Query;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**

@@ -6,7 +6,6 @@ import org.camunda.bpm.engine.ProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.camunda.bpm.engine.impl.jobexecutor.FoxFailedJobCommandFactory;
 import org.camunda.bpm.engine.impl.persistence.GenericManagerFactory;
-import org.camunda.bpm.model.bpmn.Bpmn;
 import org.orienteer.bpm.camunda.scripting.OResolverFactory;
 
 /**

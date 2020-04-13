@@ -3,8 +3,6 @@ package org.orienteer.bpm.camunda.handler;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import org.camunda.bpm.engine.impl.persistence.entity.ByteArrayEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
-import org.orienteer.bpm.camunda.handler.history.HistoricDecisionInputInstanceEntityHandler;
-import org.orienteer.bpm.camunda.handler.history.HistoricVariableInstanceEntityHandler;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;
 

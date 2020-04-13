@@ -8,7 +8,6 @@ import org.orienteer.core.widget.Widget;
 
 import ru.ydn.wicket.wicketorientdb.model.OPropertyCustomModel;
 
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 

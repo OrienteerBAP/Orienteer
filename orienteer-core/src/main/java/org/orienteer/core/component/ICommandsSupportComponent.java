@@ -1,8 +1,6 @@
 package org.orienteer.core.component;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.IGenericComponent;
-import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.Command;
 
 /**

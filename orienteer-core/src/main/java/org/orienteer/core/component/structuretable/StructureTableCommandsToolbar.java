@@ -55,7 +55,8 @@ public class StructureTableCommandsToolbar<P> extends
 		super.onConfigure();
 		IVisitor<Component, Boolean> visitor = new IVisitor<Component, Boolean>()
         {
-            public void component(Component component, IVisit<Boolean> visit)
+            @Override
+			public void component(Component component, IVisit<Boolean> visit)
             {
             	component.configure();
                 if(component.determineVisibility())

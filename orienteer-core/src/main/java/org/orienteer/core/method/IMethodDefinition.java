@@ -6,9 +6,6 @@ import java.util.List;
 import org.apache.wicket.behavior.Behavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
-import org.orienteer.core.method.methods.OClassOMethod;
-import org.orienteer.core.method.methods.OClassTableOMethod;
-
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**

@@ -21,12 +21,12 @@ public class OPropertyLocalizationWidget extends AbstractSchemaLocalizationWidge
 
     @Override
     protected String getLocalizationKey(OProperty oProperty) {
-        return oProperty.getOwnerClass().getName() + "." + oProperty.getName();
+    	return oProperty.getFullName();
     }
 
     @Override
     protected IModel<String> getDefaultTitleModel() {
-        return new ResourceModel("class.localization");
+        return new ResourceModel("property.localization");
     }
 
 }

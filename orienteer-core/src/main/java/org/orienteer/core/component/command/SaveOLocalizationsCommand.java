@@ -6,8 +6,6 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
-import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
-
 import java.util.Optional;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;

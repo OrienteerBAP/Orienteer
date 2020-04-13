@@ -1,12 +1,11 @@
 package org.orienteer.core.component.table;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.sort.AjaxFallbackOrderByBorder;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortState;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.ISortStateLocator;
@@ -15,6 +14,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColu
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IStyledColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilteredColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.NoFilter;
@@ -22,7 +22,9 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.table.filter.IFilterSupportedColumn;
 
 import java.util.List;
 
@@ -38,14 +40,34 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
     private FilterForm<?> filterForm;
     private final ISortStateLocator<S> stateLocator;
 
-    private final List<S> filteredColumns = Lists.newArrayList();
+    private final List<String> filteredColumns = Lists.newArrayList();
     private final String filteredColumnClass;
+    
+    static abstract class CssAttributeBehavior extends Behavior
+	{
+		private static final long serialVersionUID = 1L;
+
+		protected abstract String getCssClass();
+
+		/**
+		 * @see Behavior#onComponentTag(Component, ComponentTag)
+		 */
+		@Override
+		public void onComponentTag(final Component component, final ComponentTag tag)
+		{
+			String className = getCssClass();
+			if (!Strings.isEmpty(className))
+			{
+				tag.append("class", className, " ");
+			}
+		}
+	}
 
     /**
      * Constructor
      *
-     * @param table
-     * @param stateLocator
+     * @param table table to add this toolbar to
+     * @param stateLocator locator for sort state
      */
     public OrienteerHeadersToolbar(DataTable<T, S> table, ISortStateLocator<S> stateLocator) {
         super(table);
@@ -96,6 +118,22 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
                         header.add(AttributeModifier.replace("rowspan", abstractColumn.getHeaderRowspan()));
                     }
                 }
+                
+                if (column instanceof IStyledColumn)
+				{
+					CssAttributeBehavior cssAttributeBehavior = new CssAttributeBehavior()
+					{
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						protected String getCssClass()
+						{
+							return ((IStyledColumn<?, S>)column).getCssClass();
+						}
+					};
+
+					container.add(cssAttributeBehavior);
+				}
                 header.add(column.getHeader("label"));
                 container.add(header);
                 item.add(container);
@@ -165,7 +203,7 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
                 } else {
                     iconClass = FAIconType.sort.getCssClass();
                 }
-                if (!Strings.isNullOrEmpty(iconClass)) {
+                if (!Strings.isEmpty(iconClass)) {
                     tag.append("class", iconClass, " ");
                 }
             }
@@ -178,31 +216,18 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
      * @param column {@link IColumn} column for change color
      */
     public void changeColorForFilteredColumn(ComponentTag tag, IColumn<T, S> column) {
-        if (filteredColumnClass == null)
-            return;
-        String aClass = tag.getAttribute("class");
-        if (needChangeColor(column)) {
-            aClass = aClass != null ? aClass + " " + filteredColumnClass : filteredColumnClass;
-        } else {
-            if (aClass != null && aClass.contains(filteredColumnClass)) {
-                aClass = aClass.substring(0, aClass.indexOf(filteredColumnClass));
-            } else if (aClass == null) aClass = "";
-        }
-        if (!Strings.isNullOrEmpty(aClass)) {
-            tag.put("class", aClass);
-        } else tag.put("class", "");
+        if(filteredColumnClass!=null && needChangeColor(column)) tag.append("class", filteredColumnClass, " ");
     }
 
     private boolean needChangeColor(IColumn<T, S> column) {
-        boolean filter = false;
-        if (column instanceof OPropertyValueColumn) {
-            OPropertyValueColumn valueColumn = (OPropertyValueColumn) column;
-            OProperty property = valueColumn.getCriteryModel().getObject();
-            if (property != null) {
-                filter = filteredColumns.contains(property.getName());
-            }
-        } else filteredColumns.contains(column.getSortProperty());
-        return filter;
+        if (column instanceof IFilterSupportedColumn) {
+            IFilterSupportedColumn valueColumn = (IFilterSupportedColumn) column;
+            return filteredColumns.contains(valueColumn.getFilterName());
+        }
+
+        S sort = column.getSortProperty();
+
+        return sort instanceof String && filteredColumns.contains(sort);
     }
 
     public OrienteerHeadersToolbar<T, S> setFilterForm(FilterForm<?> filterForm) {
@@ -216,8 +241,8 @@ public class OrienteerHeadersToolbar<T, S> extends AbstractToolbar {
         return (DataTable<T, S>) super.getTable();
     }
 
-    public void addFilteredColumn(S sort) {
-        filteredColumns.add(sort);
+    public void addFilteredColumn(String column) {
+        filteredColumns.add(column);
     }
 
     public void clearFilteredColumns() {

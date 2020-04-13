@@ -9,17 +9,12 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.model.IModel;
-import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.DefaultVisualizer;
-import org.orienteer.core.component.visualizer.IVisualizer;
 import org.orienteer.core.service.IMarkupProvider;
 
 import ru.ydn.wicket.wicketorientdb.model.CollectionAdapterModel;
 import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
-import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
-
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;

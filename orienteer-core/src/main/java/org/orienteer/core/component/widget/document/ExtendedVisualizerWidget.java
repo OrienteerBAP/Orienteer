@@ -1,6 +1,5 @@
 package org.orienteer.core.component.widget.document;
 
-import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -12,8 +11,6 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.BookmarkablePageLinkCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.visualizer.IVisualizer;
-import org.orienteer.core.event.ActionPerformedEvent;
-import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.web.schema.OPropertyPage;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
@@ -23,7 +20,6 @@ import ru.ydn.wicket.wicketorientdb.model.DynamicPropertyValueModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OPropertyNamingModel;
 
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 

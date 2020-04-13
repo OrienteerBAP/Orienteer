@@ -36,10 +36,16 @@ tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
 	margin-right:0.5em;
 }
 
-td.checkbox-column
+/*Checkbox column*/ 
+td.cb-clmn
 {
 	width: 15px;
 }
+
+table.no-checkboxes th.cb-clmn, table.no-checkboxes td.cb-clmn 
+{
+	display: none;	
+} 
 
 td.combobox-column
 {
@@ -72,18 +78,37 @@ td.st-label
 	width: 30%;
 }
 
-td.st-label label{
-	font-weight: 700;
-}
-
 .form-control {
 	/* width: auto; */
 	display: inline-block;
 }
 
-table.structure-table label.required:after {
+td.st-label label{
+	font-weight: 700;
+}
+
+td.st-label label:after {
+	display: inline-block;
+	font: normal normal normal 14px/1 FontAwesome;
+	font-size: inherit;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+}
+
+td.st-label label[title]:after {
+	content: "\f05a";
+	padding-left: 0.2em;
+}
+
+
+td.st-label label.required:after {
 	color: red;
 	content: "*";
+}
+
+td.st-label label[title].required:after {
+	content: "* \f05a";
+	padding-left: 0;
 }
 
 td.st-value textarea
@@ -256,7 +281,7 @@ li.strict div.panel-body {
 		display: table-cell;
 	}
 
-	.classes-table-panel > form > table > thead > .headers > th:first-child, tbody > tr > .checkbox-column {
+	.classes-table-panel > form > table > thead > .headers > th.cb-clmn, tbody > tr > .cb-clmn {
 		display: none !important;
 	}
 

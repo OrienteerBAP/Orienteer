@@ -20,6 +20,7 @@ public class GridsterDashboardSupport implements IDashboardSupport {
 	final static WebjarsCssResourceReference GRIDSTER_CSS = new WebjarsCssResourceReference("/gridster.js/current/jquery.gridster.min.css");
 	final static CssResourceReference WIDGET_CSS = new CssResourceReference(GridsterDashboardSupport.class, "widget.css");
 
+	@Override
 	public void initDashboardPanel(DashboardPanel<?> dashboard) {
 		dashboard.add(new GridsterAjaxBehavior());
 	}

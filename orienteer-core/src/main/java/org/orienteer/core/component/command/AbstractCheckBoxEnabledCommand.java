@@ -1,22 +1,12 @@
 package org.orienteer.core.component.command;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.event.Broadcast;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.ResourceModel;
-import org.orienteer.core.component.BootstrapType;
-import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.CheckBoxColumn;
-import org.orienteer.core.component.table.DataTableCommandsToolbar;
 import org.orienteer.core.component.table.OrienteerDataTable;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * {@link AjaxFormCommand} that require checking of a set of entities for execution

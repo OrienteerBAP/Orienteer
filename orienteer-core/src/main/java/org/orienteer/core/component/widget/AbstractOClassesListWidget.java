@@ -58,7 +58,8 @@ public abstract class AbstractOClassesListWidget<T> extends AbstractWidget<T> {
             public void populateItem(Item<ICellPopulator<OClass>> cellItem,
                                      String componentId, final IModel<OClass> rowModel) {
                 cellItem.add(new BookmarkablePageLinkCommand<OClass>(componentId, "class.browse", BrowseOClassPage.class) {
-                    public PageParameters getPageParameters() {
+                    @Override
+					public PageParameters getPageParameters() {
                         return BrowseOClassPage.preparePageParameters(rowModel.getObject(), DisplayMode.VIEW);
                     }
                 }.setIcon(FAIconType.angle_double_down).setBootstrapType(BootstrapType.INFO));

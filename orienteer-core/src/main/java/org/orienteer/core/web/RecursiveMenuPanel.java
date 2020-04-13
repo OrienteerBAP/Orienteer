@@ -1,8 +1,6 @@
 package org.orienteer.core.web;
 
-import java.util.List;
-
-import org.apache.wicket.AttributeModifier;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
@@ -17,7 +15,7 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.List;
 
 /**
  * Panel to display recursive tree menu.
@@ -62,10 +60,10 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
     public List<ODocument> getItems(ODocument doc) {
     	List<ODocument> items = null;
     	if(doc!=null) {
-	    	if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_PERSPECTIVE)) {
-	    		items = (List<ODocument>)doc.field("menu");
-	    	} else if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OCLASS_ITEM)) {
-	    		items = (List<ODocument>)doc.field("subItems");
+	    	if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OPerspective.CLASS_NAME)) {
+	    		items = doc.field(PerspectivesModule.OPerspective.PROP_MENU);
+	    	} else if(doc.getSchemaClass().isSubClassOf(PerspectivesModule.OPerspectiveItem.CLASS_NAME)) {
+	    		items = doc.field(PerspectivesModule.OPerspectiveItem.PROP_SUB_ITEMS);
 	    	}
     	}
     	if(items!=null) items.remove(null); //Remove deleted records

@@ -38,13 +38,6 @@ public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPane
 	public IModel<K> getModeModel() {
 		return modeModel;
 	}
-	
-	@Override
-	public K getModeObject()
-	{
-		return getModeModel().getObject();
-	}
-	
 
 	@Override
 	protected Component resolveComponent(String id, C critery) {
@@ -76,6 +69,4 @@ public abstract class AbstractModeMetaPanel<T, K, C, V> extends AbstractMetaPane
 		modeModel.detach();
 	}
 	
-	
-
 }

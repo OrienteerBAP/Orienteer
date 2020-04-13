@@ -22,8 +22,8 @@ public final class OMailUtils {
 
     /**
      * Apply macros for given string
-     * @param str {@link String} string
-     * @param macros {@link Map<String, Object>} macros
+     * @param str original string
+     * @param macros map of macroses
      * @return string with applied macros
      */
     public static String applyMacros(String str, Map<String, Object> macros) {
@@ -32,8 +32,8 @@ public final class OMailUtils {
 
     /**
      * Search {@link OMail} by given name
-     * @param name {@link String} mail name
-     * @return {@link Optional<OMail>} mail or empty optional if mail with given name doesn't exists
+     * @param name mail name
+     * @return optional mail or empty optional if mail with given name doesn't exists
      */
     public static Optional<OMail> getOMailByName(String name) {
         return DBClosure.sudo(db -> {

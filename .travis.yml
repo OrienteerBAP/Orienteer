@@ -1,7 +1,10 @@
 language: java
 
-after_success:
-  - mvn clean cobertura:cobertura coveralls:cobertura
+jdk:
+  - openjdk8
+
+#after_success:
+#  - mvn clean cobertura:cobertura coveralls:report
 
 notifications:
   webhooks:

@@ -16,7 +16,7 @@ public class HomePage extends BasePage<Object>
 	public HomePage()
 	{
 		ODocument perspective = getPerspective();
-		String homeUrl = perspective.field("homeUrl");
+		String homeUrl = perspective!=null?perspective.field("homeUrl"):null;
 		if(Strings.isEmpty(homeUrl)) homeUrl="/schema";
 		if(!OrienteerWebSession.get().isSignedIn()) {
 			if(homeUrl.indexOf('?')>=0) homeUrl+='&';

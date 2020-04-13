@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import org.apache.wicket.util.string.Strings;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.util.StartupPropertiesLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public class OModulesMicroFrameworkConfig {
      */
     public String getMavenLocalRepository() {
         String path = properties.getProperty(MAVEN_LOCAL_REPOSITORY);
-        return path == null ? DEFAULT_MAVEN_LOCAL_REPOSITORY : path;
+        return path == null ? getDefaultMavenLocalRepository() : path;
     }
 
     /**
@@ -67,9 +68,20 @@ public class OModulesMicroFrameworkConfig {
         Path modulesFolder = getOrCreateModulesFolder();
         return modulesFolder.resolve(METADATA_FILE);
     }
-
+    
     public Path getOrCreateModulesFolder() {
         return createIfNotExistsDirectory(resolvePathToModulesFolder());
+    }
+
+    /**
+     * @return {@link Path} of modules folder
+     */
+    public Path getPathToModulesFolder() {
+        if (properties == null)
+            return createIfNotExistsDirectory(Paths.get(getDefaultLibsFolder()));
+        String folder = properties.getProperty(LIBS_FOLDER);
+        Path pathToModules = folder == null ? Paths.get(getDefaultLibsFolder()) : Paths.get(folder);
+        return createIfNotExistsDirectory(pathToModules);
     }
 
     /**
@@ -160,5 +172,13 @@ public class OModulesMicroFrameworkConfig {
     public String getOrienteerVersion() {
         String version = properties.getProperty(ORIENTEER_VERSION);
         return Strings.isEmpty(version)?OrienteerWebApplication.class.getPackage().getImplementationVersion():version;
+    }
+
+    private String getDefaultLibsFolder() {
+    	return StartupPropertiesLoader.getRuntime()+DEFAULT_LIBS_FOLDER;
+    }
+
+    private String getDefaultMavenLocalRepository() {
+    	return StartupPropertiesLoader.getRuntime()+DEFAULT_MAVEN_LOCAL_REPOSITORY;
     }
 }

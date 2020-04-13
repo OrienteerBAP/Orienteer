@@ -7,8 +7,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.web.schema.OPropertyPage;
-import org.orienteer.core.web.schema.OPropertyPage;
-
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
 /**

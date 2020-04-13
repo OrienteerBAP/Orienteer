@@ -32,6 +32,7 @@ public class OrienteerUserRoleHook extends ODocumentHookAbstract {
             allowRead = allowRead != null ? new LinkedHashSet<>(allowRead) : new LinkedHashSet<>();
             allowRead.add(doc);
             doc.field(ORestrictedOperation.ALLOW_READ.getFieldName(), allowRead);
+            return RESULT.RECORD_CHANGED;
         }
         return super.onRecordBeforeCreate(doc);
     }

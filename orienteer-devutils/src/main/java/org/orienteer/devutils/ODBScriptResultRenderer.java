@@ -1,6 +1,5 @@
 package org.orienteer.devutils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -12,8 +11,6 @@ import org.orienteer.devutils.component.OQueryModelResultsPanel;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OResultSet;
-
 import ru.ydn.wicket.wicketconsole.IScriptResultRenderer;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 

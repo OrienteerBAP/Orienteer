@@ -12,6 +12,7 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
  */
 @MountPath(value="/tools")
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
+@RequiredOrientResource(value = OSecurityHelper.FEATURE, specific = "devutils")
 public class ToolsPage extends AbstractWidgetPage<Void> {
 
 	@Override

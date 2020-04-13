@@ -4,7 +4,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.wicket.util.string.Strings;

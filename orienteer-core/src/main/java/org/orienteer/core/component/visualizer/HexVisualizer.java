@@ -1,24 +1,14 @@
 package org.orienteer.core.component.visualizer;
 
-import java.util.regex.Pattern;
-
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.wicket.Component;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.LambdaModel;
-import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.validation.validator.PatternValidator;
 import org.orienteer.core.component.property.DisplayMode;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-
-import ru.ydn.wicket.wicketorientdb.model.FunctionModel;
 
 /**
  * {@link IVisualizer} to work with binary in hex representation

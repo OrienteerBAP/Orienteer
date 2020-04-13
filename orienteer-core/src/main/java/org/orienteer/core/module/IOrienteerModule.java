@@ -1,13 +1,11 @@
 package org.orienteer.core.module;
 
-import java.util.Set;
-
-import org.orienteer.core.OrienteerWebApplication;
-
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.OrienteerWebApplication;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+
+import java.util.Set;
 
 /**
  * Interface for Orienteer modules

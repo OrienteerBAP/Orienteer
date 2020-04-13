@@ -5,17 +5,12 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
-import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 /**
@@ -25,10 +20,9 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 public class UserOnlineModule extends AbstractOrienteerModule {
 
     public static final String NAME = "user-online";
-    public static final String OCLASS_USER = "OUser";
 
-    public static final String ONLINE_FIELD = "online";
-    public static final String LAST_SESSION_FIELD = "lastSessionId";
+    public static final String PROP_ONLINE             = "online";
+    public static final String PROP_LAST_SESSION_FIELD = "lastSessionId";
 
     public UserOnlineModule() {
         super(NAME, 1);
@@ -39,10 +33,10 @@ public class UserOnlineModule extends AbstractOrienteerModule {
         super.onInstall(app, db);
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
-        helper.oClass(OCLASS_USER)
-                .oProperty(ONLINE_FIELD, OType.BOOLEAN)
-                .oProperty(LAST_SESSION_FIELD, OType.STRING)
-                .switchDisplayable(true, ONLINE_FIELD, LAST_SESSION_FIELD);
+        helper.oClass(OUser.CLASS_NAME)
+                .oProperty(PROP_ONLINE, OType.BOOLEAN)
+                .oProperty(PROP_LAST_SESSION_FIELD, OType.STRING)
+                .switchDisplayable(true, PROP_ONLINE, PROP_LAST_SESSION_FIELD);
 
         return null;
     }
@@ -50,49 +44,50 @@ public class UserOnlineModule extends AbstractOrienteerModule {
     @Override
     public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
         super.onInitialize(app, db);
-        app.getSessionListeners().add(new ISessionListener() {
-            @Override
-            public void onCreated(Session session) { }
-
-            @Override
-            public void onUnbound(final String sessionId) {
-                new DBClosure<Void>() {
-                    @Override
-                    protected Void execute(ODatabaseDocument db) {
-                        db.command(new OCommandSQL("UPDATE " + OCLASS_USER + " set " +
-                                ONLINE_FIELD + "=false where " + LAST_SESSION_FIELD + "= ?")).execute(sessionId);
-                        return null;
-                    }
-                }.execute();
-            }
-        });
+        resetUsersOnline(db);
+        app.getSessionListeners().add(createUserOnlineListener());
     }
 
     public ODocument updateOnlineUser(final OSecurityUser user, final boolean online) {
-        return new DBClosure<ODocument>() {
-            @Override
-            protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
-            	ODocument document = user.getDocument();
-            	document = (ODocument) document.reload();
-                document.field(ONLINE_FIELD, online);
-                document.save();
-                return document;
-            }
-        }.execute();
+        return updateUserFieldAndGetUser(user, PROP_ONLINE, online);
     }
 
     public void updateSessionUser(final OSecurityUser user, final String sessionId) {
-    	if(user!=null) { 
-	        new DBClosure<ODocument>() {
-	            @Override
-	            protected ODocument execute(ODatabaseDocument oDatabaseDocument) {
-	            	ODocument document = user.getDocument();
-	            	document = (ODocument) document.reload();
-	                document.field(LAST_SESSION_FIELD, sessionId);
-	                document.save();
-	                return document;
-	            }
-	        }.execute();
-    	}
+    	updateUserFieldAndGetUser(user, PROP_LAST_SESSION_FIELD, sessionId);
+    }
+
+    private ODocument updateUserFieldAndGetUser(OSecurityUser user, String field, Object data) {
+        if (user == null) {
+            return null;
+        }
+
+        return DBClosure.sudo(db -> {
+            ODocument document = user.getDocument();
+            document = (ODocument) document.reload();
+            document.field(field, data);
+            document.save();
+            return document;
+        });
+    }
+
+    private ISessionListener createUserOnlineListener() {
+        return new ISessionListener() {
+            @Override
+            public void onCreated(Session session) {}
+
+            @Override
+            public void onUnbound(final String sessionId) {
+                DBClosure.sudoConsumer(db -> {
+                    String sql = String.format("update %s set %s = ? where %s = ?", OUser.CLASS_NAME,
+                            PROP_ONLINE, PROP_LAST_SESSION_FIELD);
+                    db.command(new OCommandSQL(sql)).execute(false, sessionId);
+                });
+            }
+        };
+    }
+
+    private void resetUsersOnline(ODatabaseDocument db) {
+        String sql = String.format("update %s set %s = ?", OUser.CLASS_NAME, PROP_ONLINE);
+        db.command(new OCommandSQL(sql)).execute(false);
     }
 }

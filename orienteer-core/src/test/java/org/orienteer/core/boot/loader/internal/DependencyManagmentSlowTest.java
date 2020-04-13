@@ -18,12 +18,11 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(OrienteerTestRunner.class)
 public class DependencyManagmentSlowTest {
 
-    @Inject
+	@Inject
     private InternalOModuleManager moduleManager;
-
+	
     @Test
     public void resolveDependencies() {
         String groupId = "org.orienteer";

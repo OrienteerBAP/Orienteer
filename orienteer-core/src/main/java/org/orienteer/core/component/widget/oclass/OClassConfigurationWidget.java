@@ -15,10 +15,8 @@ import org.orienteer.core.component.command.SaveSchemaCommand;
 import org.orienteer.core.component.meta.OClassMetaPanel;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
-import org.orienteer.core.component.widget.document.ODocumentPropertiesWidget;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.web.BrowseOClassPage;
-import org.orienteer.core.web.schema.OClassPage;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
 

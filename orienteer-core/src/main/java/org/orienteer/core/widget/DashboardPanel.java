@@ -8,8 +8,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ReorderableRepeatingView;
 import org.orienteer.core.component.meta.IDisplayModeAware;
 import org.orienteer.core.component.property.DisplayMode;
@@ -27,7 +25,7 @@ import static org.orienteer.core.module.OWidgetsModule.*;
  *
  * @param <T> the type of main data object
  */
-public class DashboardPanel<T> extends GenericPanel<T> implements IDisplayModeAware,IDashboard<T> {
+public class DashboardPanel<T> extends GenericPanel<T> implements IDashboard<T> {
 	private static final long serialVersionUID = 1L;
 
 	@Inject

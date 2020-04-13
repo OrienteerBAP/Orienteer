@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
-		<version>1.4-SNAPSHOT</version>
+		<version>2.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>orienteer-core</artifactId>
 	<packaging>jar</packaging>
@@ -70,12 +70,17 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.19.1</version>
+			<version>1.22</version>
 		</dependency>
 		<dependency>
     		<groupId>org.reflections</groupId>
  			<artifactId>reflections</artifactId>
     		<version>0.9.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>joor-java-8</artifactId>
+			<version>0.9.12</version>
 		</dependency>
 		<!-- WEB JARS -->
 		<dependency>
@@ -126,6 +131,10 @@
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>codemirror</artifactId>
 			<version>5.27.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vladsch.flexmark</groupId>
+			<artifactId>flexmark-all</artifactId>
 		</dependency>
 
 		<!-- ECLIPSE AETHER -->
@@ -224,19 +233,24 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<!-- ORIENTDB SQL GENERATOR DEPENDENCY-->
 		<dependency>
 			<groupId>com.github.raymanrt</groupId>
 			<artifactId>orientqb</artifactId>
 			<version>0.2.0</version>
 		</dependency>
-
+		<!-- Thumbnailing  -->
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
+			<groupId>net.coobird</groupId>
+			<artifactId>thumbnailator</artifactId>
+			<version>[0.4, 0.5)</version>
 		</dependency>
-    </dependencies>
+	</dependencies>
 
 	<build>
 		<finalName>orienteer</finalName>

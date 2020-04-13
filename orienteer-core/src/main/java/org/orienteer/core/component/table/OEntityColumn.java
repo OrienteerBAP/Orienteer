@@ -1,8 +1,6 @@
 package org.orienteer.core.component.table;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
-import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
@@ -35,7 +33,7 @@ public class OEntityColumn extends OPropertyValueColumn
 	
 	public OEntityColumn(OProperty oProperty, boolean sortColumn, IModel<DisplayMode> modeModel)
 	{
-		super(sortColumn?resolveSortExpression(oProperty):null, oProperty, modeModel);
+		super(oProperty, sortColumn, modeModel);
 	}
 
 	public OEntityColumn(OProperty oProperty, IModel<DisplayMode> modeModel)
@@ -55,13 +53,6 @@ public class OEntityColumn extends OPropertyValueColumn
 		super(sortProperty, oProperty, modeModel);
 	}
 	
-	private static String resolveSortExpression(OProperty property)
-	{
-		if(property==null || property.getType()==null) return null;
-		Class<?> defType = property.getType().getDefaultJavaType();
-		return defType!=null && Comparable.class.isAssignableFrom(defType)?property.getName():null;
-	}
-		
 	public String getNameProperty()
 	{
 		return getSortProperty();

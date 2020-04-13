@@ -254,6 +254,7 @@ public class PlantUmlService implements IUmlService
 		return writer instanceof PrintWriter?(PrintWriter)writer:new PrintWriter(writer);
 	}
 	
+	@Override
 	public String asImage(String content)
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);

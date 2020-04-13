@@ -10,14 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import org.apache.wicket.Component;
-import org.apache.wicket.MarkupContainer;
-import org.apache.wicket.markup.repeater.RepeatingView;
-import org.apache.wicket.model.IModel;
 
 /**
  * {@link RepeatingView} implementation with ability to reorder components

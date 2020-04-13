@@ -8,6 +8,15 @@ import org.apache.wicket.model.IModel;
  * @param <M> the display mode type
  */
 public interface IModeAware<M> {
+	
 	public IModel<M> getModeModel();
-	public M getModeObject();
+	
+	default public M getModeObject() {
+		return getModeModel().getObject();
+	}
+	
+	default public IModeAware<M> setModeObject(M mode) {
+		getModeModel().setObject(mode);
+		return this;
+	}
 }

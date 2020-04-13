@@ -12,7 +12,6 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.PropertyModel;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.behavior.RefreshMetaContextOnChangeBehaviour;
 import org.orienteer.core.component.meta.ODocumentMetaPanel;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.model.SubClassesModel;
@@ -102,13 +101,9 @@ public class EmbeddedDocumentPanel extends FormComponentPanel<ODocument> {
 	protected void onBeforeRender() {
 		ODocument currentDocument = getModelObject();
 		inputDocumentModel.setObject(currentDocument!=null?currentDocument:prepareEmbeddedDocument()); 
+		embeddedClassChoice.setVisible(DisplayMode.EDIT.equals(modeModel.getObject()) 
+										&& (currentDocument==null || !currentDocument.getIdentity().isPersistent()));
 		super.onBeforeRender();
-	}
-	
-	@Override
-	protected void onConfigure() {
-		super.onConfigure();
-		embeddedClassChoice.setVisible(DisplayMode.EDIT.equals(modeModel.getObject()));
 	}
 	
 	@Override

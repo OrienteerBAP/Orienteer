@@ -1,23 +1,7 @@
 package org.orienteer.core.widget;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Objects;
-import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.OrienteerWebSession;
-
-import static org.orienteer.core.module.OWidgetsModule.*;
-
 import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -25,6 +9,19 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+
+import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
+
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.model.IModel;
+import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OrienteerWebSession;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.orienteer.core.module.OWidgetsModule.*;
 
 /**
  * Default implementation of {@link IDashboardManager}
@@ -40,7 +37,7 @@ public class DefaultDashboardManager implements IDashboardManager{
 	}
 
 	@Override
-	public <T> List<String> listTabs(String domain, Predicate<IWidgetType<T>> filter) {
+	public <T> List<String> listTabs(String domain, Predicate<IWidgetType<T>> filter, T data) {
 		List<String> tabs = new ArrayList<String>();
 		if(domain!=null)
 		{
@@ -53,6 +50,36 @@ public class DefaultDashboardManager implements IDashboardManager{
 			}
 		}
 		return tabs;
+	}
+	
+	@Override
+	public List<String> listExistingTabs(String domain, IModel<?> dataModel) {
+		ODatabaseDocument db = getDatabase();
+		List<String> ret = new ArrayList<String>();
+		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_DASHBOARD+
+														" where "+OPROPERTY_DOMAIN+" = ?"), domain);
+		if(dashboards!=null && !dashboards.isEmpty()) {
+			ret.addAll(Lists.transform(dashboards, new GetODocumentFieldValueFunction<String>(OPROPERTY_TAB)));
+		}
+		return ret;
+	}
+	
+	@Override
+	public List<String> listExistingTabs(String domain, IModel<?> dataModel, OClass oClass) {
+		if(oClass==null) return listExistingTabs(domain, dataModel);
+		ODatabaseDocument db = getDatabase();
+		List<String> ret = new ArrayList<String>();
+		List<String> oClassAndSuper = new ArrayList<>();
+		oClassAndSuper.add(oClass.getName());
+		oClassAndSuper.addAll(oClass.getSuperClassesNames());
+		List<ODocument>  dashboards = db.query(
+				new OSQLSynchQuery<ODocument>("select distinct("+OPROPERTY_TAB+") as "+OPROPERTY_TAB+" from "+OCLASS_DASHBOARD+
+										" where "+OPROPERTY_DOMAIN+" = ?"+
+										" and "+OPROPERTY_CLASS+" IN ?"), domain, oClassAndSuper);
+		if(dashboards!=null && !dashboards.isEmpty()) {
+			ret.addAll(Lists.transform(dashboards, new GetODocumentFieldValueFunction<String>(OPROPERTY_TAB)));
+		}
+		return ret;
 	}
 	
 	@Override

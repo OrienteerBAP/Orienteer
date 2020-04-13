@@ -54,18 +54,22 @@ public class BirtReportODocumentConfig implements IBirtReportConfig{
 		this.useLocalDB = isUseLocalDB;
 	}
 	
+	@Override
 	public InputStream getReportDataStream() {
 		return new ByteArrayInputStream((byte[]) configDocModel.getObject().field(AbstractBirtWidget.REPORT_FIELD_NAME));
 	}
 	
+	@Override
 	public Map<String, Object> getParameters() {
 		return parameters;
 	}
 	
+	@Override
 	public boolean isUseLocalDB() {
 		return useLocalDB;
 	}
 
+	@Override
 	public Set<Object> getVisibleParameters() {
 		return visibleParameters;
 	}

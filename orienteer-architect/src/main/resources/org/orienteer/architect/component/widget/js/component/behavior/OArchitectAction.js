@@ -70,11 +70,14 @@ var OArchitectAction = {
             graph.stopEditing(false);
             var classCell = cell != null ? OArchitectUtil.getClassCellByPropertyCell(cell) : null;
             if (classCell !== null) {
-                if (OArchitectAction.isAvailableActionForClass(classCell.value)) {
-                    OArchitectAction.lockActionsForClass(classCell.value);
-                    var property = new OArchitectOProperty(classCell.value);
+                var oClass = classCell.value;
+                if (OArchitectAction.isAvailableActionForClass(oClass)) {
+                    OArchitectAction.lockActionsForClass(oClass);
+                    var property = new OArchitectOProperty(oClass);
+                    property.order = oClass.getLastPropertyOrder() + oClass.getPropertyOrderStep();
+
                     var modal = new OPropertyEditModalWindow(property, app.editorId, function () {
-                        OArchitectAction.unlockActionsForClass(classCell.value);
+                        OArchitectAction.unlockActionsForClass(oClass);
                     }, true);
                     modal.updateProperty = function (property, propertyWithChanges) {
                         var model = graph.getModel();
@@ -353,7 +356,6 @@ var OArchitectAction = {
     },
 
     generateJavaSrcAction: function (editor) {
-        console.dir('generateJavaSrcAction');
         app.editor.toolbar.elementExecuted = true;
         app.generateJavaSources(OArchitectUtil.getOClassesAsJSON(editor.graph), function (response) {
 

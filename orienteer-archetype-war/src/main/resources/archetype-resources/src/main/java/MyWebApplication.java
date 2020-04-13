@@ -9,7 +9,7 @@ public class MyWebApplication extends OrienteerWebApplication
 	public void init()
 	{
 		super.init();
-		mountPages("${package}.web");
+		mountPackage("${package}.web");
 		registerModule(DataModel.class);
 	}
 	

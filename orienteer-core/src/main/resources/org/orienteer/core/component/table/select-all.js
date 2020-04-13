@@ -5,14 +5,14 @@ function installSelectAll(id)
 	sa.click(function(event)
 	{
 		var to = this.checked;
-		t.find('>tbody>tr>td.checkbox-column :checkbox').each(function(){this.checked = to});
+		t.find('>tbody>tr>td.cb-clmn :checkbox').each(function(){this.checked = to});
 	});
 	
-	t.find('>tbody>tr>td.checkbox-column :checkbox').click(function(event)
+	t.find('>tbody>tr>td.cb-clmn :checkbox').click(function(event)
 	{
 		if(this.checked)
 		{
-			var allCb = t.find('>tbody>tr>td.checkbox-column :checkbox');
+			var allCb = t.find('>tbody>tr>td.cb-clmn :checkbox');
 			var res = true;
 			for(var i=0; i<allCb.length; i++)
 			{

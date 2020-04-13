@@ -12,12 +12,15 @@ public class OSourceConstant extends OSourceVariableDeclaration {
         this.instance = instance;
     }
 
+    public OSourceNewInstance getInstance() {
+        return instance;
+    }
 
     @Override
     public void appendJavaSrc(StringBuilder sb) {
         super.appendJavaSrc(sb);
         sb.append(" = ");
         instance.appendJavaSrc(sb);
-        sb.append(";");
+        sb.append(";\n");
     }
 }

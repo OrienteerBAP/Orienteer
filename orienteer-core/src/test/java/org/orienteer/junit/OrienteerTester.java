@@ -6,8 +6,6 @@ import org.orienteer.core.OrienteerWebSession;
 
 import com.google.inject.Inject;
 
-import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.junit.WicketOrientDbTester;
 
 public class OrienteerTester extends WicketOrientDbTester

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.entity.IdentityLinkEntity;
-import org.camunda.bpm.engine.impl.persistence.entity.UserEntity;
 import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.util.OSchemaHelper;

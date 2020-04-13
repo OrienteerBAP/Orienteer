@@ -5,7 +5,7 @@ import com.github.raymanrt.orientqb.query.Operator;
 import com.github.raymanrt.orientqb.query.Parameter;
 import com.github.raymanrt.orientqb.query.Projection;
 import com.github.raymanrt.orientqb.query.ProjectionFunction;
-import com.github.raymanrt.orientqb.query.Query;import com.orientechnologies.orient.core.db.ODatabase;
+import com.github.raymanrt.orientqb.query.Query;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -17,7 +17,6 @@ import org.orienteer.bpm.camunda.OPersistenceSession;
 import org.orienteer.core.util.OSchemaHelper;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 

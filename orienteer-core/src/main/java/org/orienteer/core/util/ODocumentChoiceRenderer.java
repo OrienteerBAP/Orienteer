@@ -7,10 +7,6 @@ import org.apache.wicket.model.IModel;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.service.IOClassIntrospector;
 
-import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
-
-import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
