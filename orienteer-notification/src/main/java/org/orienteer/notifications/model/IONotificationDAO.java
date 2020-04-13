@@ -21,7 +21,7 @@ public interface IONotificationDAO {
   @Query("select from ONotification where status = :status")
   List<ODocument> findNotificationsByStatus(ODocument status);
 
-  @Query("select from ONotification where status != status")
+  @Query("select from ONotification where status != :status")
   List<ODocument> findNotificationsExceptStatus(ODocument status);
 
 
