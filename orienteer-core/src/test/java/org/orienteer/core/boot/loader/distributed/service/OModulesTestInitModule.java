@@ -34,7 +34,7 @@ public class OModulesTestInitModule extends AbstractModule {
         Optional<OArtifact> artifact = createArtifact(
                 "org.orienteer",
                 "orienteer-pages",
-                "1.4-SNAPSHOT",
+                "2.0-SNAPSHOT",
                 "orienteer-pages.jar"
         );
         return artifact
@@ -49,14 +49,14 @@ public class OModulesTestInitModule extends AbstractModule {
         OArtifact artifact1 = createArtifact(
                 "org.orienteer",
                 "orienteer-devutils",
-                "1.4-SNAPSHOT",
+                "2.0-SNAPSHOT",
                 "orienteer-devutils.jar"
         ).orElseThrow(IllegalStateException::new);
 
         OArtifact artifact2 = createArtifact(
                 "org.orienteer",
                 "orienteer-birt",
-                "1.4-SNAPSHOT",
+                "2.0-SNAPSHOT",
                 null
         ).orElseThrow(IllegalStateException::new);
 

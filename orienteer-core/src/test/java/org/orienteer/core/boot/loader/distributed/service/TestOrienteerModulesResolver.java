@@ -25,7 +25,7 @@ public class TestOrienteerModulesResolver implements IOrienteerModulesResolver {
 
 
     protected void setAvailableVersions(List<OArtifact> artifacts) {
-        List<String> versions = Collections.singletonList("1.4-SNAPSHOT");
+        List<String> versions = Collections.singletonList("2.0-SNAPSHOT");
 
         artifacts.stream()
                 .map(OArtifact::getArtifactReference)

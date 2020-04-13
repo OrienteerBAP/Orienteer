@@ -197,10 +197,10 @@
             <groupId>org.bitsofinfo</groupId>
             <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>

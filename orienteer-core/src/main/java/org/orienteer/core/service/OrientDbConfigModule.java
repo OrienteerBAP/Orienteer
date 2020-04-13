@@ -7,6 +7,7 @@ import com.google.inject.name.Named;
 import org.apache.commons.io.IOUtils;
 import org.orienteer.core.OrienteerWebApplication;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +22,8 @@ public class OrientDbConfigModule extends AbstractModule {
     @Inject(optional = true)
     public String provideOrientDBConfig(@Named("orientdb.distributed") boolean distributed) {
         String config = readOrientDBConfigToString(distributed);
-        config = config.replaceAll("\\$\\{root.password\\}", System.getProperty("root.password"));
+        String rootPass = System.getProperty("root.password", "");
+        config = config.replaceAll("\\$\\{root.password\\}", rootPass);
         if (distributed) {
             config = config.replaceAll("\\$\\{configuration.db.default\\}", System.getProperty("configuration.db.default"));
             config = config.replaceAll("\\$\\{configuration.hazelcast\\}", System.getProperty("configuration.hazelcast"));
@@ -33,8 +35,8 @@ public class OrientDbConfigModule extends AbstractModule {
     }
 
     private String readOrientDBConfigToString(boolean distributed) {
+    	StringWriter writer = new StringWriter();
         try {
-            StringWriter writer = new StringWriter();
             InputStream in;
             if (distributed) {
                 in = OrienteerWebApplication.class.getResource("distributed.db.config.xml").openStream();
@@ -44,6 +46,11 @@ public class OrientDbConfigModule extends AbstractModule {
         } catch (Exception e) {
             // never return null, because one of configurations always is available in classpath
             return null;
-        }
+        } finally {
+			try {
+				writer.close();
+			} catch (IOException e) {
+			}
+		}
     }
 }
