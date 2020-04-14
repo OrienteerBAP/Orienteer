@@ -87,7 +87,7 @@ public class PagesModule extends AbstractOrienteerModule {
 		app.mount(documentAliasCompoundMapper = new ODocumentAliasCompoundMapper(ODocumentAliasMapper::new));
 		app.mount(documentsAliasCompoundMapper = new ODocumentAliasCompoundMapper(ODocumentsAliasMapper::new));
 
-		app.getOrientDbSettings().getORecordHooks().add(PagesHook.class);
+		app.getOrientDbSettings().addORecordHooks(PagesHook.class);
 	}
 	
 	@Override
@@ -99,7 +99,7 @@ public class PagesModule extends AbstractOrienteerModule {
 		rootMapper.remove(documentAliasCompoundMapper);
 		rootMapper.remove(documentsAliasCompoundMapper);
 
-		app.getOrientDbSettings().getORecordHooks().remove(PagesHook.class);
+		app.getOrientDbSettings().removeORecordHooks(PagesHook.class);
 	}
 	
 	public PagesCompoundRequestMapper getPagesCompoundRequestMapper() {

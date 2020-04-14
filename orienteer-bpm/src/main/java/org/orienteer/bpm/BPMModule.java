@@ -57,11 +57,11 @@ public class BPMModule extends AbstractOrienteerModule{
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onInitialize(app, db);
-		app.mountPages("org.orienteer.bpm.web");
+		app.mountPackage("org.orienteer.bpm.web");
 
 		app.registerWidgets("org.orienteer.bpm.component.widget");
 		
-		app.getOrientDbSettings().getORecordHooks().add(BpmnHook.class);
+		app.getOrientDbSettings().addORecordHooks(BpmnHook.class);
 
 		processApplicationReference = deployApplication();
 	}
@@ -70,8 +70,8 @@ public class BPMModule extends AbstractOrienteerModule{
 	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
 		super.onDestroy(app, db);
 		app.unregisterWidgets("org.orienteer.bpm.component.widget");
-		app.unmountPages("org.orienteer.bpm.web");
-		app.getOrientDbSettings().getORecordHooks().remove(BpmnHook.class);
+		app.unmountPackage("org.orienteer.bpm.web");
+		app.getOrientDbSettings().removeORecordHooks(BpmnHook.class);
 
 		if (processApplicationReference != null) {
 			undeployApplication(processApplicationReference);

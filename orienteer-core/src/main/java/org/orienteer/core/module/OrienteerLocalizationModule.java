@@ -78,7 +78,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
 		app.getResourceSettings().getStringResourceLoaders().add(new OrienteerStringResourceLoader());
 
-		app.getOrientDbSettings().getORecordHooks().add(LocalizationInvalidationHook.class);
+		app.getOrientDbSettings().addORecordHooks(LocalizationInvalidationHook.class);
 	}
 	
 	@Override
@@ -86,7 +86,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
         app.getResourceSettings().getStringResourceLoaders()
                 .removeIf(iStringResourceLoader -> iStringResourceLoader instanceof OrienteerStringResourceLoader);
 
-        app.getOrientDbSettings().getORecordHooks().remove(LocalizationInvalidationHook.class);
+        app.getOrientDbSettings().removeORecordHooks(LocalizationInvalidationHook.class);
 	}
 
 

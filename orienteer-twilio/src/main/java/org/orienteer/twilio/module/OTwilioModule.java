@@ -96,14 +96,14 @@ public class OTwilioModule extends AbstractOrienteerModule {
   @Override
   public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
     super.onInitialize(app, db);
-    app.getOrientDbSettings().getORecordHooks().add(OPreparedSMSHook.class);
+    app.getOrientDbSettings().addORecordHooks(OPreparedSMSHook.class);
     app.mountPackage("org.orienteer.twilio.resource");
   }
 
   @Override
   public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
     super.onDestroy(app, db);
-    app.getOrientDbSettings().getORecordHooks().remove(OPreparedSMSHook.class);
+    app.getOrientDbSettings().removeORecordHooks(OPreparedSMSHook.class);
 
     app.unmountPackage("org.orienteer.twilio.resource");
   }

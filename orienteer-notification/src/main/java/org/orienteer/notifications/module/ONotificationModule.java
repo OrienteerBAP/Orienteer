@@ -214,8 +214,7 @@ public class ONotificationModule extends AbstractOrienteerModule {
   public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
     super.onInitialize(app, db, moduleDoc);
 
-    List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
-    hooks.add(ONotificationHook.class);
+    app.getOrientDbSettings().addORecordHooks(ONotificationHook.class);
 
     long period = new Module(moduleDoc).getSendPeriod();
 
@@ -226,8 +225,7 @@ public class ONotificationModule extends AbstractOrienteerModule {
   public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
     super.onDestroy(app, db, moduleDoc);
 
-    List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
-    hooks.remove(ONotificationHook.class);
+    app.getOrientDbSettings().removeORecordHooks(ONotificationHook.class);
 
     ONotificationScheduler.stopAll();
   }

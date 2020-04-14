@@ -68,7 +68,7 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 		ODatabaseDocument db = (ODatabaseDocument)database;
 		updateOModuleSchema(db);
 
-		app.getOrientDbSettings().getORecordHooks().add(OModulesHook.class);
+		app.getOrientDbSettings().addORecordHooks(OModulesHook.class);
 
 		loadOrienteerModules(app, db);
 	}

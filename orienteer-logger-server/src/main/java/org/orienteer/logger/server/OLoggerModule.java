@@ -193,7 +193,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		OLoggerReceiverResource.mount(app);
 		app.getRequestCycleListeners().add(new OLoggerExceptionListener());
 
-		app.getOrientDbSettings().getORecordHooks().add(OLoggerEventHook.class);
+		app.getOrientDbSettings().addORecordHooks(OLoggerEventHook.class);
 	}
 	
 	@Override
@@ -230,7 +230,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		app.unmountPackage("org.orienteer.inclogger.web");
 		OLoggerReceiverResource.unmount(app);
 
-		app.getOrientDbSettings().getORecordHooks().remove(OLoggerEventHook.class);
+		app.getOrientDbSettings().removeORecordHooks(OLoggerEventHook.class);
 	}
 
 	private void createDefaultOLoggerEventDispatcher(OSchemaHelper helper) {
