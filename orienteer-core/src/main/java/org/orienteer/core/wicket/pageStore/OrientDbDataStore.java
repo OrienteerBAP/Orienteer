@@ -1,7 +1,9 @@
 package org.orienteer.core.wicket.pageStore;
 
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.pageStore.IDataStore;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -28,7 +30,7 @@ public class OrientDbDataStore implements IDataStore {
         DBClosure.sudoConsumer(db -> {
             String sql = String.format("delete from %s where %s = ? and %s = ?", OWicketData.CLASS_NAME,
                     OWicketData.PROP_SESSION_ID, OWicketData.PROP_ID);
-            db.command(new OCommandSQL(sql)).execute(sessionId, id);
+            db.command(sql, sessionId, id).close();
         });
     }
 
@@ -36,7 +38,7 @@ public class OrientDbDataStore implements IDataStore {
     public void removeData(String sessionId) {
         DBClosure.sudoConsumer(db -> {
             String sql = String.format("delete from %s where %s = ?", OWicketData.CLASS_NAME, OWicketData.PROP_SESSION_ID);
-            db.command(new OCommandSQL(sql)).execute(sessionId);
+            db.command(sql, sessionId).close();
         });
     }
 
@@ -65,16 +67,12 @@ public class OrientDbDataStore implements IDataStore {
 
     private Optional<OWicketData> getWicketData(String sessionId, int id) {
         return DBClosure.sudo(db -> {
-            String sql = String.format("select from %s where %s = ? and %s = ?", OWicketData.CLASS_NAME,
+            String sql = String.format("select from %s where %s = ? and %s = ? limit 1", OWicketData.CLASS_NAME,
                     OWicketData.PROP_SESSION_ID, OWicketData.PROP_ID);
-            List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), sessionId, id);
-            return ofNullable(identifiables)
-                    .filter(list -> !list.isEmpty())
-                    .map(this::toOWicketData);
+            try(OResultSet result = db.query(sql, sessionId, id)) {
+            	return result.elementStream().findFirst().map(e -> new OWicketData((ODocument)e));
+            }
         });
     }
 
-    private OWicketData toOWicketData(List<OIdentifiable> identifiables) {
-        return new OWicketData(identifiables.get(0).getRecord());
-    }
 }

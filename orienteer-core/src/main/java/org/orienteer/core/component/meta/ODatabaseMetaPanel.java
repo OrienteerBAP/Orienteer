@@ -2,6 +2,7 @@ package org.orienteer.core.component.meta;
 
 import com.orientechnologies.orient.core.config.OStorageEntryConfiguration;
 import com.orientechnologies.orient.core.db.ODatabase;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.OBalancedClusterSelectionStrategy;
 import com.orientechnologies.orient.core.metadata.schema.clusterselection.ODefaultClusterSelectionStrategy;
@@ -85,7 +86,7 @@ public class ODatabaseMetaPanel<V> extends AbstractComplexModeMetaPanel<ODatabas
 
     @Override
     protected void setValue(ODatabase<?> entity, String critery, V value) {
-        ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+        ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
         db.commit();
         try
         {

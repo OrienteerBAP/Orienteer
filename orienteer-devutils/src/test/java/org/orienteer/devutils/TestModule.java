@@ -32,7 +32,7 @@ public class TestModule
 	
 	@Before
 	public void activateModel() {
-		if(!isDevUtilsActivated) OSchemaHelper.bind(tester.getDatabase()).oClass(IOrienteerModule.OMODULE_CLASS)
+		if(!isDevUtilsActivated) OSchemaHelper.bind(tester.getDatabaseSession()).oClass(IOrienteerModule.OMODULE_CLASS)
 					.oDocument(IOrienteerModule.OMODULE_NAME, "devutils")
 					.doOnODocument(doc -> {
 						doc.field(IOrienteerModule.OMODULE_ACTIVATE, true);
@@ -63,6 +63,7 @@ public class TestModule
 	@Test
 	@Sudo
 	public void testPageLoad() {
+		assertTrue(tester.getSession().isSignedIn());
 		tester.startPage(ToolsPage.class, new PageParameters().add("tab", "console"));
 		tester.assertRenderedPage(ToolsPage.class);
 		tester.startPage(ToolsPage.class, new PageParameters().add("tab", "monitoring"));

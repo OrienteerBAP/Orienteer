@@ -3,11 +3,14 @@
  */
 package org.orienteer.core.component.widget.oclass;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OClassTrigger;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
@@ -98,11 +101,10 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 								else if (ORecordId.isA(idStr)){
 									return new ORecordId(idStr).getRecord();
 								}else{
-							    	ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
-									return (ODocument) db.query("select from OFunction where name = ?", idStr)
-											.elementStream()
-											.findFirst()
-											.orElse(null);
+							    	ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
+							    	try(OResultSet result = db.query("select from OFunction where name = ?", idStr)) {
+							    		return (ODocument) result.elementStream().findFirst().orElse(null);
+							    	}
 								}
 							}
 							

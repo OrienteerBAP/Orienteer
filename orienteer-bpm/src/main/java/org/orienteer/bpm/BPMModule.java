@@ -1,6 +1,6 @@
 package org.orienteer.bpm;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -37,7 +37,7 @@ public class BPMModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oAbstractClass(IEntityHandler.BPM_ENTITY_CLASS)
@@ -49,13 +49,13 @@ public class BPMModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
 		super.onUpdate(app, db, oldVersion, newVersion);
 		onInstall(app, db);
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPackage("org.orienteer.bpm.web");
 
@@ -67,7 +67,7 @@ public class BPMModule extends AbstractOrienteerModule{
 	}
 
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		app.unregisterWidgets("org.orienteer.bpm.component.widget");
 		app.unmountPackage("org.orienteer.bpm.web");

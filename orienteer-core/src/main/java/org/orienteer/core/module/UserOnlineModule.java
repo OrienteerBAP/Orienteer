@@ -1,6 +1,7 @@
 package org.orienteer.core.module;
 
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
@@ -28,7 +29,7 @@ public class UserOnlineModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+    public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
         super.onInstall(app, db);
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
@@ -41,7 +42,7 @@ public class UserOnlineModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+    public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
         super.onInitialize(app, db);
         resetUsersOnline(db);
         app.getSessionListeners().add(createUserOnlineListener());

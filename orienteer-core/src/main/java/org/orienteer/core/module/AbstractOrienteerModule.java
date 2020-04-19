@@ -1,6 +1,6 @@
 package org.orienteer.core.module;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
 
@@ -49,51 +49,51 @@ public abstract class AbstractOrienteerModule implements IOrienteerModule
 	}
 
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		return null;
 	}
 	
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		
 	}
 
 	@Override
-	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc,
+	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc,
 			int oldVersion, int newVersion) {
 		onUpdate(app, db, oldVersion, newVersion);
 		return moduleDoc;
 	}
 	
-	public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onUninstall(OrienteerWebApplication app, ODatabaseSession db) {
 		
 	}
 
 	@Override
-	public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+	public void onUninstall(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
 		onUninstall(app, db);
 	}
 	
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		
 	}
 
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
 		onInitialize(app, db);
 	}
 	
 	@Override
-	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
 		
 	}
 	
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		
 	}
 
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
 		onDestroy(app, db);
 	}
 }

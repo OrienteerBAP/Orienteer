@@ -37,7 +37,7 @@ public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 
 	@Override
 	public void onClick(Optional<AjaxRequestTarget> target) {
-		getDatabase().getMetadata().reload();
+		getDatabaseSession().getMetadata().reload();
 	}
 
 }

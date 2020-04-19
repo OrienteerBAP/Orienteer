@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.table.OrienteerDataTable;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -39,7 +40,7 @@ public class DeleteODocumentCommand extends AbstractDeleteCommand<ODocument>  im
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
 		super.performMultiAction(target, objects);
-		ODatabaseDocument db = getDatabase();
+		ODatabaseSession db = getDatabaseSession();
 		db.commit(true);
 		db.begin();
 		DBClosure.sudoConsumer(sudoDb -> sudoDb.getMetadata().reload());

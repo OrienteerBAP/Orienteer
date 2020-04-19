@@ -65,14 +65,10 @@ public class OModulesMicroFrameworkConfig {
      * @return {@link Path} of file metadata.xml
      */
     public Path getMetadataPath() {
-        Path modulesFolder = getOrCreateModulesFolder();
+        Path modulesFolder = getPathToModulesFolder();
         return modulesFolder.resolve(METADATA_FILE);
     }
     
-    public Path getOrCreateModulesFolder() {
-        return createIfNotExistsDirectory(resolvePathToModulesFolder());
-    }
-
     /**
      * @return {@link Path} of modules folder
      */
@@ -97,13 +93,6 @@ public class OModulesMicroFrameworkConfig {
             LOG.error("Cannot create folder: " + pathToDir.toAbsolutePath(), e);
         }
         return pathToDir;
-    }
-
-    protected Path resolvePathToModulesFolder() {
-        if (properties == null)
-            return Paths.get(DEFAULT_LIBS_FOLDER);
-        String folder = properties.getProperty(LIBS_FOLDER);
-        return folder == null ? Paths.get(DEFAULT_LIBS_FOLDER) : Paths.get(folder);
     }
 
     /**

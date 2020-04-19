@@ -2,6 +2,7 @@ package org.orienteer.core.component.meta;
 
 import com.google.common.collect.Lists;
 import com.orientechnologies.orient.core.collate.OCollate;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OCompositeIndexDefinition;
 import com.orientechnologies.orient.core.index.OIndex;
@@ -80,7 +81,7 @@ public class OIndexMetaPanel<V> extends AbstractComplexModeMetaPanel<OIndex, Dis
 
 	@Override
 	protected void setValue(OIndex entity, String critery, V value) {
-		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
 		db.commit();
 		try
 		{

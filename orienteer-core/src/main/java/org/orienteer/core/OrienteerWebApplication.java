@@ -7,6 +7,8 @@ import com.google.inject.Injector;
 import com.google.inject.name.Named;
 import com.hazelcast.core.HazelcastInstance;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
@@ -220,7 +222,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 				new DBClosure<Boolean>() {
 
 					@Override
-					protected Boolean execute(ODatabaseDocument db) {
+					protected Boolean execute(ODatabaseSession db) {
 						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
 						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
 						return true;
@@ -254,9 +256,20 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return getInjector().getInstance(serviceType);
 	}
 	
+	@Deprecated
 	public ODatabaseDocument getDatabase()
 	{
 		return OrientDbWebSession.get().getDatabase();
+	}
+	
+	public ODatabaseSession getDatabaseSession()
+	{
+		return OrientDbWebSession.get().getDatabaseSession();
+	}
+	
+	public ODatabaseDocumentInternal getDatabaseDocumentInternal()
+	{
+		return OrientDbWebSession.get().getDatabaseDocumentInternal();
 	}
 
  	public boolean isDistributedMode() {

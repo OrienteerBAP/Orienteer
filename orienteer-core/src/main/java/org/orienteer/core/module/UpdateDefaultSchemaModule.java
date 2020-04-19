@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -33,13 +34,13 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	}
 
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		onUpdate(app, db, 0, getVersion());
 		return null;
 	}
 
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		if(oldVersion>=newVersion) return;
 		switch (oldVersion+1)
@@ -60,7 +61,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 		if(oldVersion+1<newVersion) onUpdate(app, db, oldVersion+1, newVersion);
 	}
 	
-	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
+	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseSession db)
 	{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		if(helper.existsClass(OCLASS_FUNCTION))

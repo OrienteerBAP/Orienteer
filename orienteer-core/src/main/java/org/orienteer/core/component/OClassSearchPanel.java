@@ -62,7 +62,7 @@ public class OClassSearchPanel extends GenericPanel<String> {
     }
 
     public OClassSearchPanel(String id, IModel<String> model) {
-        this(id, model, () -> CLASSES_ORDERING.sortedCopy(OrienteerWebSession.get().getDatabase().getMetadata().getSchema().getClasses()));
+        this(id, model, () -> CLASSES_ORDERING.sortedCopy(OrienteerWebSession.get().getSchema().getClasses()));
     }
 
     public OClassSearchPanel(String id, IModel<String> model, SerializableSupplier<List<OClass>> classesGetter) {

@@ -10,6 +10,7 @@ import org.orienteer.core.CustomAttribute;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -29,17 +30,17 @@ import java.util.function.Consumer;
  */
 public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper
 {
-	protected OSchemaHelper(ODatabaseDocument db)
+	protected OSchemaHelper(ODatabaseSession db)
 	{
 		super(db);
 	}
 	
 	public static OSchemaHelper bind()
 	{
-		return new OSchemaHelper(OrientDbWebSession.get().getDatabase());
+		return new OSchemaHelper(OrientDbWebSession.get().getDatabaseSession());
 	}
 	
-	public static OSchemaHelper bind(ODatabaseDocument db)
+	public static OSchemaHelper bind(ODatabaseSession db)
 	{
 		return new OSchemaHelper(db);
 	}

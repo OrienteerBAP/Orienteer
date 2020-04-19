@@ -4,7 +4,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.storage.impl.local.statistic.OPerformanceStatisticManager;
 
@@ -23,13 +23,13 @@ public class OMetricsModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		return null;
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		DefaultExports.initialize();
 		OMetricsRequestCycleListener.install(app);
@@ -49,7 +49,7 @@ public class OMetricsModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		app.unmountPackage(OMetricsModule.class.getPackage().getName());
 //		OMetricsOrientDB.getPerformanceStatisticManager().stopMonitoring();
 		OMetricSessionListener.deinstall(app);

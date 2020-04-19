@@ -97,7 +97,7 @@ public class OClassSecurityWidget extends AbstractWidget<OClass> {
 
 		
 		List<IColumn<ORole, String>> sColumns = new ArrayList<IColumn<ORole,String>>();
-		OClass oRoleClass = OrientDbWebSession.get().getDatabase().getMetadata().getSchema().getClass("ORole");
+		OClass oRoleClass = OrientDbWebSession.get().getSchema().getClass("ORole");
 		sColumns.add(new AbstractColumn<ORole, String>(new OClassNamingModel(oRoleClass), "name") {
 
 			@Override

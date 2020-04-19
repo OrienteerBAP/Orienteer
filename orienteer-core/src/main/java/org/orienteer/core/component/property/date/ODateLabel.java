@@ -62,7 +62,7 @@ public class ODateLabel extends Label {
         return formatter.withLocale(getLocale())
         				.withZone(convertTimeZone&&zoneId!=null
         									?zoneId
-        									:OrienteerWebSession.get().getDatabase().getStorage()
+        									:OrienteerWebSession.get().getDatabaseDocumentInternal().getStorage()
         												.getConfiguration().getTimeZone().toZoneId());
     }
 }

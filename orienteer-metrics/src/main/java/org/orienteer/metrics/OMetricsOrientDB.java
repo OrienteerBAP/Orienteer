@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.Orient;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -43,14 +45,14 @@ public class OMetricsOrientDB extends Collector {
 	public List<MetricFamilySamples> collect() {
 		return new DBClosure<List<MetricFamilySamples>>() {
 			@Override
-			protected List<MetricFamilySamples> execute(ODatabaseDocument db) {
+			protected List<MetricFamilySamples> execute(ODatabaseSession db) {
 				List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
 				//TODO: Check how to support in OrientDB 3
 //				mfs.add(new GaugeMetricFamily("orientdb_frozen", "Is DB frozen and in RO mode", db.isFrozen()?1.0:0.0));
 				
 				GaugeMetricFamily count = new GaugeMetricFamily("orientdb_count", "Count of instances per class including subclasses", Collections.singletonList("class"));
 				long total = 0;
-				Collection<OClass> classes = ((ODatabaseDocumentTx)db).getMetadata().getImmutableSchemaSnapshot().getClasses();
+				Collection<OClass> classes = ((ODatabaseDocumentInternal)db).getMetadata().getImmutableSchemaSnapshot().getClasses();
 				for (OClass oClass : classes) {
 					count.addMetric(Collections.singletonList(oClass.getName()), oClass.count());
 					total+=oClass.count(false);

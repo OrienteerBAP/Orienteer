@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -33,7 +34,7 @@ public class OEntityFilter implements IMethodFilter {
 			if (strOClasses.length>0){
 				oClasses = new ArrayList<OClass>(strOClasses.length);
 				for (String strClass : strOClasses) {
-					OClass oClass = OrienteerWebApplication.get().getDatabase().getMetadata().getSchema().getClass(strClass);
+					OClass oClass = OrienteerWebSession.get().getSchema().getClass(strClass);
 					if (oClass!=null){
 						oClasses.add(oClass);
 					}

@@ -30,7 +30,7 @@ public class OJarsManager implements IReindexSupport {
 
     @Override
     public void reindex(OModulesMicroFrameworkConfig config) {
-        modulesFolder = config.getOrCreateModulesFolder();
+        modulesFolder = config.getPathToModulesFolder();
     }
 
     /**

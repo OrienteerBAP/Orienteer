@@ -1,5 +1,6 @@
 package org.orienteer.core.tasks;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -86,7 +87,7 @@ public class OTaskSessionRuntime implements ITaskSession {
 	private void delSelf(){
 		new DBClosure<Boolean>() {
 			@Override
-			protected Boolean execute(ODatabaseDocument db) {
+			protected Boolean execute(ODatabaseSession db) {
 				db.delete(getOTaskSessionPersisted().getDocument());
 				return true;
 			}

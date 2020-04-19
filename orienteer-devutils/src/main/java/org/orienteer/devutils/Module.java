@@ -20,7 +20,7 @@ import org.orienteer.core.web.BasePage;
 import org.orienteer.devutils.web.ToolsPage;
 
 import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -51,7 +51,7 @@ public class Module extends AbstractOrienteerModule implements IComponentInitial
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		//Install data model
@@ -61,7 +61,7 @@ public class Module extends AbstractOrienteerModule implements IComponentInitial
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPackage("org.orienteer.devutils.web");
 		WicketConsolePage.setWicketConsolePageImplementation(ToolsPage.class);
@@ -79,7 +79,7 @@ public class Module extends AbstractOrienteerModule implements IComponentInitial
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		app.getDebugSettings()
 				.setDevelopmentUtilitiesEnabled(app.getConfigurationType() == RuntimeConfigurationType.DEVELOPMENT);

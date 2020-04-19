@@ -43,8 +43,8 @@ public abstract class AbstractDistributedModulesTest {
 
     @After
     public void removeModulesFolder() throws IOException {
-        removeFolder(config1.getOrCreateModulesFolder());
-        removeFolder(config2.getOrCreateModulesFolder());
+        removeFolder(config1.getPathToModulesFolder());
+        removeFolder(config2.getPathToModulesFolder());
         internalManager1.reindex(config1);
         internalManager2.reindex(config2);
     }

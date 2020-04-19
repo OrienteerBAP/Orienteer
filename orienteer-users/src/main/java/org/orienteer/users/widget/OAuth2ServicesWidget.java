@@ -64,7 +64,7 @@ public class OAuth2ServicesWidget extends CalculatedDocumentsWidget {
     protected OClass getExpectedClass(OQueryDataProvider<ODocument> provider) {
         OClass expectedClass = super.getExpectedClass(provider);
         if (expectedClass == null) {
-            expectedClass = getDatabase().getMetadata().getSchema().getClass(OAuth2Service.CLASS_NAME);
+            expectedClass = getSchema().getClass(OAuth2Service.CLASS_NAME);
         }
         return expectedClass;
     }

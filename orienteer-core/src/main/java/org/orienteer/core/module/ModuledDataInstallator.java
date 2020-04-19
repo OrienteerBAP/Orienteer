@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.hook.ORecordHook;
@@ -42,7 +43,7 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 				String moduleName = iDocument.field(IOrienteerModule.OMODULE_NAME);
 				IOrienteerModule module = app.getModuleByName(moduleName);
 				if(module!=null) {
-					ODatabaseDocument db = iDocument.getDatabase();
+					ODatabaseSession db = iDocument.getDatabase();
 					Object previousActivate = iDocument.getOriginalValue(IOrienteerModule.OMODULE_ACTIVATE);
 					Object activated = iDocument.field(IOrienteerModule.OMODULE_ACTIVATE);
 					boolean active = activated==null || Boolean.TRUE.equals(activated);
@@ -63,17 +64,16 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 	}
 	
 	@Override
-	protected void installData(OrientDbWebApplication application, ODatabaseDocument database) {
+	protected void installData(OrientDbWebApplication application, ODatabaseSession database) {
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
-		ODatabaseDocument db = (ODatabaseDocument)database;
-		updateOModuleSchema(db);
+		updateOModuleSchema(database);
 
 		app.getOrientDbSettings().addORecordHooks(OModulesHook.class);
 
-		loadOrienteerModules(app, db);
+		loadOrienteerModules(app, database);
 	}
 	
-	protected void updateOModuleSchema(ODatabaseDocument db) {
+	protected void updateOModuleSchema(ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(IOrienteerModule.OMODULE_CLASS)
 				.oProperty(IOrienteerModule.OMODULE_NAME, OType.STRING, 0).markDisplayable().markAsDocumentName()
@@ -92,7 +92,7 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 		return installedModules;
 	}
 	
-	protected void loadOrienteerModules(OrienteerWebApplication app, ODatabaseDocument db) {
+	protected void loadOrienteerModules(OrienteerWebApplication app, ODatabaseSession db) {
 		Map<String, ODocument> installedModules = getInstalledModules(db);
 		
 		for(IOrienteerModule module: app.getRegisteredModules())
@@ -125,7 +125,7 @@ public class ModuledDataInstallator extends AbstractDataInstallator
 	public void onBeforeDestroyed(Application application) {
 		super.onBeforeDestroyed(application);
 		OrienteerWebApplication app = (OrienteerWebApplication)application;
-		ODatabaseDocument db = (ODatabaseDocument)getDatabase(app);
+		ODatabaseSession db = getDatabase(app);
 		try
 		{
 			Map<String, ODocument> installedModules = getInstalledModules(db);

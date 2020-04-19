@@ -2,6 +2,8 @@ package org.orienteer.pages.web;
 
 import com.orientechnologies.common.concur.resource.OPartitionedObjectPool;
 import com.orientechnologies.orient.core.command.script.OScriptManager;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.OrientDBInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -86,14 +88,14 @@ public class PageDelegate implements IMarkupResourceStreamProvider, IMarkupCache
 		if(!Strings.isEmpty(script)) {
 			OrientDB context = OrienteerWebApplication.lookupApplication().getOrientDbSettings().getContext();
 			OScriptManager scriptManager = OrientDBInternal.extract(context).getScriptManager();
-			ODatabaseDocument db = OrienteerWebSession.get().getDatabase();
+			ODatabaseDocumentInternal db = OrienteerWebSession.get().getDatabaseDocumentInternal();
 			final OPartitionedObjectPool.PoolEntry<ScriptEngine> entry = 
 					scriptManager.acquireDatabaseEngine(db.getName(), "javascript");
 			final ScriptEngine scriptEngine = entry.object;
 			Bindings binding = null;
 		    try {
 				binding = scriptManager.bind(scriptEngine, scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE),
-												(ODatabaseDocumentTx) db, null, null);
+												 db, null, null);
 				binding.put("page", page);
 				binding.put("pageDoc", pageDocumentModel.getObject());
 				binding.put("doc", doc);

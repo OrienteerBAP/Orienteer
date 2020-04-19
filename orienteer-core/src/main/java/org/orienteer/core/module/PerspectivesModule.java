@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.index.OIndex;
@@ -50,7 +51,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 
 		helper.oClass(OPerspective.CLASS_NAME)
@@ -158,7 +159,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		int toVersion = oldVersion+1;
 		switch (toVersion) {
@@ -258,7 +259,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				.findFirst();
     }
 	
-	public ODocument getDefaultPerspective(ODatabaseDocument db, OSecurityUser user) {
+	public ODocument getDefaultPerspective(ODatabaseSession db, OSecurityUser user) {
 		if (user != null) {
 			if (user.getDocument().field(PROP_PERSPECTIVE) != null) {
 				return ((OIdentifiable) user.getDocument().field(PROP_PERSPECTIVE)).getRecord();
@@ -300,7 +301,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchema schema = db.getMetadata().getSchema();
 		if (schema.getClass(OPerspective.CLASS_NAME) == null || schema.getClass(OPerspectiveItem.CLASS_NAME) == null) {
 			//Repair

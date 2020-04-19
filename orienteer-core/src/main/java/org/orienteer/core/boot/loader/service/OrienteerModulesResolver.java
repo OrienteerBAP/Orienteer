@@ -49,7 +49,7 @@ public class OrienteerModulesResolver implements IOrienteerModulesResolver {
 
     //TODO: optimize resolving Orienteer modules. Download xml file only if it really need
     protected Path downloadMetadata() {
-        File localFile = new File(config.getOrCreateModulesFolder().toAbsolutePath().toString(), config.getOrienteerModulesFile());
+        File localFile = new File(config.getPathToModulesFolder().toAbsolutePath().toString(), config.getOrienteerModulesFile());
         try (FileOutputStream fos = new FileOutputStream(localFile)) {
             URL website = new URL(config.getOrienteerModulesUrl());
             IOUtils.copy(website.openStream(), fos);

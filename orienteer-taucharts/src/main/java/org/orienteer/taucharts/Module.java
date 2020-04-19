@@ -8,6 +8,7 @@ import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.taucharts.component.widget.AbstractTauchartsWidget;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
@@ -24,34 +25,34 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		makeSchema(db);
 		return null;
 	}
 	
 	@Override
-	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc, int oldVersion,
+	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc, int oldVersion,
 			int newVersion) {
 		makeSchema(db);
 		return null;
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPages("org.orienteer.taucharts.web");
 		app.registerWidgets("org.orienteer.taucharts.component.widget");
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.taucharts.web");
 		app.unregisterWidgets("org.orienteer.taucharts.component.widget");
 	}
 	
-	public void makeSchema(ODatabaseDocument db){
+	public void makeSchema(ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 
 		helper.oClass(AbstractTauchartsWidget.TYPE_OCLASS).domain(OClassDomain.SYSTEM)

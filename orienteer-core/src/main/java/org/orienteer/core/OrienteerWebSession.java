@@ -44,7 +44,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 		{
 			perspective=null;
 
-			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.PROP_OUSER_LOCALE);
+			String locale = getDatabaseSession().getUser().getDocument().field(OrienteerLocalizationModule.PROP_OUSER_LOCALE);
 			onlineModule.updateOnlineUser(getUser(), true);
 
 			if (!Strings.isNullOrEmpty(locale)) {
@@ -83,7 +83,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 			if(perspective==null)
 			{
 				PerspectivesModule perspectivesModule = OrienteerWebApplication.get().getServiceInstance(PerspectivesModule.class);
-				perspective = perspectivesModule.getDefaultPerspective(getDatabase(), getEffectiveUser());
+				perspective = perspectivesModule.getDefaultPerspective(getDatabaseSession(), getEffectiveUser());
 			}
 			return (ODocument)perspective;
 			

@@ -3,6 +3,8 @@ package org.orienteer.graph.service;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.tinkerpop.blueprints.impls.orient.OrientGraph;
 
@@ -18,7 +20,7 @@ public class GraphGuiceModule extends AbstractModule {
 	
 	@Provides
 	@RequestScoped
-	public OrientGraph provideOrientGraph(ODatabaseDocumentTx dbTx)
+	public OrientGraph provideOrientGraph(ODatabaseDocumentInternal dbTx)
 	{
 		return new OrientGraph(dbTx, false);
 	}

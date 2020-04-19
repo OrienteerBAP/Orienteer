@@ -51,7 +51,7 @@ public class InternalOModuleManager implements IReindexSupport, Serializable {
 
     public InternalOModuleManager(OModulesMicroFrameworkConfig config) {
         pomXmlUtils = new PomXmlHandler();
-        jarsManager = new OJarsManager(config.getOrCreateModulesFolder());
+        jarsManager = new OJarsManager(config.getPathToModulesFolder());
         metadataUtil = new MetadataUtil(config.getMetadataPath());
         aetherUtils = new AetherUtils(config.getMavenLocalRepository(), config.getRemoteRepositories());
         mavenResolver = new MavenResolver(config.isResolvingDependenciesRecursively());

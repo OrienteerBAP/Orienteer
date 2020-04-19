@@ -2,6 +2,7 @@ package org.orienteer.users.module;
 
 
 import com.google.common.base.Strings;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.hook.ORecordHook;
@@ -91,7 +92,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+    public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
         createOAuth2Services(helper);
@@ -403,12 +404,12 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+    public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
         onInstall(app, db);
     }
 
     @Override
-    public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+    public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
     	
     	app.getOrientDbSettings().getORecordHooks().addAll(HOOKS);
 
@@ -428,7 +429,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+    public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
     	app.getOrientDbSettings().getORecordHooks().removeAll(HOOKS);
 
         RegistrationResource.unmount(app);

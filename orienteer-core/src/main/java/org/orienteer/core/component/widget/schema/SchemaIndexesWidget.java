@@ -34,7 +34,7 @@ public class SchemaIndexesWidget extends AbstractIndexesWidget<Void> {
 			@Override
 			@SuppressWarnings("unchecked")
 			protected Collection<OIndex> getData() {
-				ODatabaseDocumentInternal db = OrientDbWebSession.get().getDatabase();
+				ODatabaseDocumentInternal db = OrientDbWebSession.get().getDatabaseDocumentInternal();
 				return (Collection<OIndex>) db.getMetadata().getIndexManagerInternal().getIndexes(db);
 			}
 		};

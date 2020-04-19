@@ -1,6 +1,6 @@
 package org.orienteer.twilio.module;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -27,7 +27,7 @@ public class OTwilioModule extends AbstractOrienteerModule {
   }
 
   @Override
-  public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+  public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
     installSmsSettings(helper);
     installSms(helper);
@@ -94,14 +94,14 @@ public class OTwilioModule extends AbstractOrienteerModule {
   }
 
   @Override
-  public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+  public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
     super.onInitialize(app, db);
     app.getOrientDbSettings().addORecordHooks(OPreparedSMSHook.class);
     app.mountPackage("org.orienteer.twilio.resource");
   }
 
   @Override
-  public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+  public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
     super.onDestroy(app, db);
     app.getOrientDbSettings().removeORecordHooks(OPreparedSMSHook.class);
 
@@ -109,7 +109,7 @@ public class OTwilioModule extends AbstractOrienteerModule {
   }
 
   @Override
-  public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+  public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
     super.onUpdate(app, db, oldVersion, newVersion);
 
     onInstall(app, db);

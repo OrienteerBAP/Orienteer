@@ -3,6 +3,7 @@ package org.orienteer.core.module;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.hazelcast.core.IMap;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -28,7 +29,7 @@ public class OrienteerClusterModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+    public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
         helper.oClass(OWicketData.CLASS_NAME)
                 .domain(OClassDomain.SYSTEM)
@@ -39,12 +40,12 @@ public class OrienteerClusterModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+    public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
         onInstall(app, db);
     }
 
     @Override
-    public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+    public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
         app.getHazelcast().ifPresent(hazelcast -> {
             IMap<String, Object> sessionMap = hazelcast.getMap(mapName);
             removeOutdatedPages(db, sessionMap.keySet());
@@ -56,13 +57,12 @@ public class OrienteerClusterModule extends AbstractOrienteerModule {
      * @param db database
      * @param sessionIds active session ids
      */
-    private void removeOutdatedPages(ODatabaseDocument db, Set<String> sessionIds) {
+    private void removeOutdatedPages(ODatabaseSession db, Set<String> sessionIds) {
         db.begin();
         String sql = String.format("delete from %s where not(%s in ?)", OWicketData.CLASS_NAME, OWicketData.PROP_SESSION_ID);
-        OCommandSQL command = new OCommandSQL(sql);
         for (int i = 0; i <= 10; i++) {
             try {
-                db.command(command).execute(sessionIds);
+                db.command(sql, sessionIds).close();
                 db.commit();
                 break;
             } catch (Exception ex) {

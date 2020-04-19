@@ -5,7 +5,9 @@ import com.google.inject.name.Names;
 import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import org.apache.wicket.guice.GuiceComponentInjector;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -41,13 +43,18 @@ public class OrienteerTestModule extends AbstractModule
 	}
 	
 	@Provides
-	public ODatabaseDocument getDatabaseRecord()
+	public ODatabaseSession getDatabaseSession() {
+		return getDatabaseDocumentInternal();
+	}
+	
+	@Provides
+	public ODatabaseDocumentInternal getDatabaseDocumentInternal()
 	{
-		ODatabaseDocument db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
+		ODatabaseDocumentInternal db =ODatabaseRecordThreadLocal.instance().get();
 		if(db.isClosed())
 		{
 			ODatabaseRecordThreadLocal.instance().remove();
-			db = DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
+			db = ODatabaseRecordThreadLocal.instance().get();
 		}
 		return db;
 	}

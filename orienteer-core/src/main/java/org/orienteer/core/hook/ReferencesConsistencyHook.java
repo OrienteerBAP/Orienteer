@@ -89,7 +89,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 	}
 	
 	private LoadingCache<OClass, Collection<OProperty>> getCache() {
-		int version = ODatabaseRecordThreadLocal.instance().get().getMetadata().getSchema().getVersion();
+		int version = ODatabaseRecordThreadLocal.instance().get().getMetadata().getImmutableSchemaSnapshot().getVersion();
 		if(version>currentSchemaVersion)
 		{
 			CACHE.invalidateAll();

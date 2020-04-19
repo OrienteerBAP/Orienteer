@@ -2,6 +2,7 @@ package org.orienteer.core.tasks;
 
 import org.orienteer.core.util.OSchemaHelper;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -17,7 +18,7 @@ public class TestTask extends OTask {
 		 * Register fields in db
 		 * @param db - db to register in
 		 */
-		public static void init(ODatabaseDocument db){
+		public static void init(ODatabaseSession db){
 			OSchemaHelper helper = OSchemaHelper.bind(db);
 			helper.oClass(TASK_CLASS,OTask.TASK_CLASS);
 			OTask.TASK_JAVA_CLASS_ATTRIBUTE.setValue(helper.getOClass(), TestTask.class.getName());

@@ -48,7 +48,7 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
 
     public AbstractSchemaLocalizationWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
-        OClass oLocalizationClass = getDatabase().getMetadata().getSchema().getClass(OLocalization.CLASS_NAME);
+        OClass oLocalizationClass = getSchema().getClass(OLocalization.CLASS_NAME);
 
         final OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from OLocalization where key = :key");
         provider.setParameter("key", Model.of(getLocalizationKey(getModelObject())));
@@ -80,7 +80,7 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
                 newLocalization.field(OLocalization.PROP_VARIATION, "");
                 newLocalization.field(OLocalization.PROP_VALUE, "");
                 newLocalization.field(OLocalization.PROP_ACTIVE, false);
-                getDatabase().save(newLocalization);
+                newLocalization.save();
                 targetOptional.ifPresent(target -> target.add(table));
             }
 

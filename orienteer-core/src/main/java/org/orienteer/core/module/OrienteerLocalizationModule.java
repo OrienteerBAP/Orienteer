@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.hook.ORecordHook;
@@ -43,7 +44,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	}
 
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 
 		helper.oClass(OLocalization.CLASS_NAME)
@@ -66,8 +67,8 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	}
 
 	@Override
-	public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db) {
-		OSchema schema = app.getDatabase().getMetadata().getSchema();
+	public void onUninstall(OrienteerWebApplication app, ODatabaseSession db) {
+		OSchema schema = app.getDatabaseSession().getMetadata().getSchema();
 
 		if (schema.existsClass(OLocalization.CLASS_NAME)) {
             schema.dropClass(OLocalization.CLASS_NAME);
@@ -75,14 +76,14 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	}
 
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		app.getResourceSettings().getStringResourceLoaders().add(new OrienteerStringResourceLoader());
 
 		app.getOrientDbSettings().addORecordHooks(LocalizationInvalidationHook.class);
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
         app.getResourceSettings().getStringResourceLoaders()
                 .removeIf(iStringResourceLoader -> iStringResourceLoader instanceof OrienteerStringResourceLoader);
 
@@ -209,6 +210,8 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
      * Wrapper for represent OLocalization
      */
 	public static class OLocalization extends ODocumentWrapper {
+
+		private static final long serialVersionUID = 1L;
 
 		public static final String CLASS_NAME = "OLocalization";
 

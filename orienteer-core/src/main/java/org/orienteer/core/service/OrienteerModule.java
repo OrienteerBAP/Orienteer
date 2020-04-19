@@ -1,11 +1,13 @@
 package org.orienteer.core.service;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provider;
 import com.google.inject.Provides;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabasePool;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.server.OServer;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -20,7 +22,6 @@ import org.orienteer.core.service.impl.GuiceOrientDbSettings;
 import org.orienteer.core.service.impl.OClassIntrospector;
 import org.orienteer.core.service.impl.OrienteerWebjarsSettings;
 import org.orienteer.core.tasks.OTaskManager;
-import ru.ydn.wicket.wicketorientdb.DefaultODatabaseThreadLocalFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
 import ru.ydn.wicket.wicketorientdb.security.IResourceCheckingStrategy;
 
@@ -59,17 +60,14 @@ public class OrienteerModule extends AbstractModule {
 		bind(UIVisualizersRegistry.class).asEagerSingleton();
 		bind(IWebjarsSettings.class).to(OrienteerWebjarsSettings.class).asEagerSingleton();
 		bind(IDataExporter.class).to(CSVDataExporter.class);
+		Provider<ODatabaseDocumentInternal> dbProvider = binder().getProvider(ODatabaseDocumentInternal.class);
+		bind(ODatabaseSession.class).toProvider(dbProvider);
+		bind(ODatabaseDocument.class).toProvider(dbProvider);
 	}
 
 	@Provides
-	public ODatabaseDocumentTx getDatabaseDocumentTx(ODatabaseDocument db) {
-		return (ODatabaseDocumentTx)db;
-	}
-
-	@Provides
-	public ODatabaseDocument getDatabaseRecord()
-	{
-		return DefaultODatabaseThreadLocalFactory.castToODatabaseDocument(ODatabaseRecordThreadLocal.instance().get().getDatabaseOwner());
+	public ODatabaseDocumentInternal getDatabaseDocumentInternal() {
+		return ODatabaseRecordThreadLocal.instance().get();
 	}
 	
 	@Provides
@@ -79,7 +77,7 @@ public class OrienteerModule extends AbstractModule {
 	}
 
 	@Provides
-	public OSchema getSchema(ODatabaseDocument db)
+	public OSchema getSchema(ODatabaseSession db)
 	{
 		return db.getMetadata().getSchema();
 	}

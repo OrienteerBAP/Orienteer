@@ -22,7 +22,7 @@ import org.orienteer.tours.rest.OToursRestResources;
 import org.orienteer.wicketjersey.WicketJersey;
 
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
@@ -67,7 +67,7 @@ public class OToursModule extends AbstractOrienteerModule{
 	
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.describeAndInstallSchema(IOTour.class, IOTourStep.class);
@@ -75,7 +75,7 @@ public class OToursModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPackage("org.orienteer.tours.web");
 		WicketJersey.mount("/otours", OToursRestResources.class.getPackage().getName());
@@ -83,7 +83,7 @@ public class OToursModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		app.getComponentInstantiationListeners().remove(customizationListener);
 		app.unmount("/otours");
 		app.unmountPackage("org.orienteer.tours.web");

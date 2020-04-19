@@ -1,7 +1,7 @@
 package org.orienteer.logger.server;
 
 import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -69,7 +69,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		installOLoggerEvent(helper);
@@ -179,13 +179,13 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	}
 
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
 		super.onUpdate(app, db, oldVersion, newVersion);
 		onInstall(app, db);
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
 		super.onInitialize(app, db);
 		LOG.info("Initialize OLoggerModule");
 		installOLogger(app, new Module(moduleDoc));
@@ -197,7 +197,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
 		super.onConfigurationChange(app, db, moduleDoc);
 		installOLogger(app, new Module(moduleDoc));
 	}
@@ -224,7 +224,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		OLogger.set(null);
 		app.unmountPackage("org.orienteer.inclogger.web");

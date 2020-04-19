@@ -16,6 +16,7 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -45,7 +46,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		//Install data model
 		makeSchema(db);
@@ -53,13 +54,13 @@ public class Module extends AbstractOrienteerModule{
 		return null;
 	}
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
 		makeSchema(db);
 		
 		super.onUpdate(app, db, oldVersion, newVersion);
 	}
 	
-	private void makeSchema(ODatabaseDocument db){
+	private void makeSchema(ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(AbstractBirtWidget.OCLASS_NAME, OWidgetsModule.OCLASS_WIDGET).domain(OClassDomain.SYSTEM)
 			.oProperty(AbstractBirtWidget.REPORT_FIELD_NAME, OType.BINARY, 100)
@@ -74,7 +75,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPages("org.orienteer.birt.web");
 		app.registerWidgets("org.orienteer.birt.component.widget");
@@ -100,7 +101,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.birt.web");
 		app.unregisterWidgets("org.orienteer.birt.component.widget");

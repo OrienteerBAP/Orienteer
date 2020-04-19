@@ -1,6 +1,7 @@
 package org.orienteer.devutils;
 
 import com.google.common.base.Throwables;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.exception.OSecurityAccessException;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -38,7 +39,7 @@ public class ODBScriptEngine implements IScriptEngine {
 					returnModel.probeOClass(10);
 					result.setResultModel(returnModel);
 				} else {
-					ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+					ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
 					result.start();
 					result.setResult(db.command(command));
 				}

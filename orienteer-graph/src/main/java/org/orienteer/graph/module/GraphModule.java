@@ -5,6 +5,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -23,13 +24,13 @@ public class GraphModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		onUpdate(app, db, 0, getVersion());
 		return null;
 	}
 
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		if(oldVersion>=newVersion) return;
 		switch (oldVersion+1)
@@ -43,7 +44,7 @@ public class GraphModule extends AbstractOrienteerModule {
 		if(oldVersion+1<newVersion) onUpdate(app, db, oldVersion + 1, newVersion);
 	}
 
-	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
+	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseSession db)
 	{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(VERTEX_CLASS_NAME)
@@ -51,12 +52,12 @@ public class GraphModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		app.registerWidgets("org.orienteer.graph.component.widget");
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		app.unregisterWidgets("org.orienteer.graph.component.widget");
 	}
 
