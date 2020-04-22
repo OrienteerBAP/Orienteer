@@ -43,8 +43,7 @@ public class OrienteerEmbeddedStartupListener extends EmbeddOrientDbApplicationL
             throws Exception {
         IOrientDbSettings settings = app.getOrientDbSettings();
         OrientDB orientDB = app.getServer().getContext();
-        if (!orientDB.exists(settings.getDbName())) {
-            orientDB.create(settings.getDbName(), settings.getDbType());
+        if (orientDB.createIfNotExists(settings.getDbName(), settings.getDbType())) {
             ODatabasePool pool = orientDB.cachedPool(settings.getDbName(), settings.getAdminUserName(), settings.getAdminPassword());
             onDbCreated(pool.acquire(), settings);
             pool.close();

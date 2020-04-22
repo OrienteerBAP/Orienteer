@@ -61,7 +61,7 @@ public class OrienteerInitModule extends ServletModule {
 	protected void configureServlets() {
         bindProperties();
         bindWicket();
-		installModules();
+        install(loadFromClasspath(new OrienteerModule()));
 	}
 
 	protected void bindProperties() {
@@ -84,7 +84,9 @@ public class OrienteerInitModule extends ServletModule {
 
 	protected void bindWicket() {
 	    bindHazelcastFilter();
-	    bindWicketFilter();
+	    if(Boolean.parseBoolean(properties.getProperty("orientdb.distributed"))) {
+	    	bindWicketFilter();
+	    }
 	    bindApplication();
     }
 
@@ -135,12 +137,6 @@ public class OrienteerInitModule extends ServletModule {
         }
         bind(OrientDbWebApplication.class).toProvider(appProvider);
         bind(WebApplication.class).toProvider(appProvider);
-    }
-
-	protected void installModules() {
-        install(
-                loadFromClasspath(new OrienteerModule(), new OrientDbConfigModule())
-        );
     }
 
     /**

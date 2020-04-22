@@ -120,7 +120,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 
 	@Inject
 	@Named("orientdb.server.config")
-	private String dbConfig;
+	private String serverConfig;
 
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
@@ -211,7 +211,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 
 	private void initListeners() {
 		if (embedded) {
-			getApplicationListeners().add(new OrienteerEmbeddedStartupListener(OrienteerWebApplication.class.getResource("db.config.xml")));
+			getApplicationListeners().add(new OrienteerEmbeddedStartupListener(serverConfig));
 		}
 
 		getApplicationListeners().add(new ModuledDataInstallator());

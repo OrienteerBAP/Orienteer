@@ -1,8 +1,10 @@
 package org.orienteer.core.service;
 
+import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
+import com.google.inject.name.Named;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabasePool;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
@@ -11,10 +13,18 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.server.OServer;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.Properties;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.wicket.Localizer;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.CSVDataExporter;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.export.IDataExporter;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.util.string.interpolator.MapVariableInterpolator;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
@@ -64,6 +74,17 @@ public class OrienteerModule extends AbstractModule {
 		bind(ODatabaseSession.class).toProvider(dbProvider);
 		bind(ODatabaseDocument.class).toProvider(dbProvider);
 	}
+	
+	@Provides
+    @Named("orientdb.server.config")
+    public String provideOrientDBConfig(@Named("orientdb.distributed") boolean distributed, @Orienteer Properties properties) throws IOException {
+		String dbConfigName = distributed?"distributed.db.config.xml":"db.config.xml";
+		URL resourceURL = OrienteerWebApplication.class.getResource(dbConfigName);
+		return new MapVariableInterpolator(IOUtils.toString(resourceURL, Charset.forName("UTF8")), 
+										   Maps.fromProperties(properties), 
+										   true).toString();
+		
+    }
 
 	@Provides
 	public ODatabaseDocumentInternal getDatabaseDocumentInternal() {

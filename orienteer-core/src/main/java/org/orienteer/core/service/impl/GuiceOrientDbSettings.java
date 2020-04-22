@@ -35,31 +35,6 @@ public class GuiceOrientDbSettings extends OrientDbSettings {
 	}
 	
 	@Inject(optional=true)
-	@Deprecated
-    public void setDBUserName(@Named("orientdb.db.username") String userName) {
-		setGuestUserName(userName);
-	}
-
-    @Inject(optional=true)
-    @Deprecated
-    public void setDBUserPassword(@Named("orientdb.db.password")String password) {
-    	setGuestPassword(password);
-    }
-
-    @Inject(optional=true)
-    @Deprecated
-    public void setDBInstallatorUserName(@Named("orientdb.db.installator.username") String userName) {
-    	setAdminUserName(userName);
-    }
-
-    @Inject(optional=true)
-    @Deprecated
-    public void setDBInstallatorUserPassword(@Named("orientdb.db.installator.password")String password) {
-    	setAdminPassword(password);
-    }
-
-
-	@Inject(optional=true)
 	@Override
 	public void setOrientDBRestApiUrl(@Named("orientdb.rest.url") String orientDbRestApiUrl) {
 		super.setOrientDBRestApiUrl(orientDbRestApiUrl);
