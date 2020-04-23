@@ -24,7 +24,7 @@ public class NotificationService implements INotificationService {
 
   private static final Logger LOG = LoggerFactory.getLogger(NotificationService.class);
 
-  public static final int ATTEMPTS = 10;
+  public static final int ATTEMPTS = 3;
 
   private final OTransportPool transportPool = new OTransportPool();
 
