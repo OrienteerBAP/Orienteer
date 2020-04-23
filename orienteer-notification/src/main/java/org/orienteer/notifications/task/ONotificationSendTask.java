@@ -52,8 +52,8 @@ public class ONotificationSendTask extends ONotificationTask {
     IONotificationDAO notificationDao = IONotificationDAO.get();
 
     ONotificationModule.Module module = ONotificationModuleRepository.getModule(db);
-    ODocument sentStatus = notificationDao.getSentStatus();
-    List<ODocument> notificationsDocs = notificationDao.findNotificationsExceptStatus(sentStatus);
+    ODocument pendingStatus = notificationDao.getPendingStatus();
+    List<ODocument> notificationsDocs = notificationDao.findNotificationsByStatus(pendingStatus);
 
     int executorSize = computeExecutorSize(module.getNotificationsPerWorker(), notificationsDocs);
     int notificationsPerWorker = module.getNotificationsPerWorker();
