@@ -42,13 +42,6 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
     installNotificationStatus(helper);
 
-  /*  installNotificationStatus(helper);
-    installNotificationTransport(helper);
-    installNotification(helper);
-    installMailNotification(helper);
-    installSmsNotification(helper);
-    installSmsNotificationTransport(helper);
-*/
     return createModuleDocument(helper);
   }
 
@@ -101,109 +94,6 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
   }
 
-
-/*  private void installNotification(OSchemaHelper helper) {
-
-    helper.oClass(ONotificationStatusHistory.CLASS_NAME)
-            .oProperty(ONotificationStatusHistory.PROP_TIMESTAMP, OType.DATETIME, 0)
-              .markDisplayable()
-              .markAsDocumentName()
-            .oProperty(ONotificationStatusHistory.PROP_STATUS, OType.LINK, 10)
-              .linkedClass(ONotificationStatus.CLASS_NAME)
-              .markDisplayable()
-            .oProperty(ONotificationStatusHistory.PROP_NOTIFICATION, OType.LINK, 20)
-              .markAsLinkToParent()
-              .markDisplayable();
-
-    helper.oAbstractClass(ONotification.CLASS_NAME)
-            .oProperty(ONotification.PROP_ID, OType.STRING, 0)
-              .notNull()
-            .oProperty(ONotification.PROP_STATUS, OType.LINK, 10)
-              .notNull()
-              .markDisplayable()
-              .markAsDocumentName()
-              .linkedClass(ONotificationStatus.CLASS_NAME)
-            .oProperty(ONotification.PROP_TRANSPORT, OType.LINK, 20)
-              .linkedClass(ONotificationTransport.CLASS_NAME)
-              .markAsLinkToParent()
-              .markDisplayable()
-            .oProperty(ONotification.PROP_CREATED, OType.DATETIME, 30)
-              .notNull()
-              .markDisplayable()
-            .oProperty(ONotification.PROP_STATUS_HISTORIES, OType.LINKLIST, 40)
-              .assignVisualization(UIVisualizersRegistry.VISUALIZER_TABLE);
-
-    helper.setupRelationship(ONotification.CLASS_NAME, ONotification.PROP_STATUS_HISTORIES,
-            ONotificationStatusHistory.CLASS_NAME, ONotificationStatusHistory.PROP_NOTIFICATION);
-  }
-
-  private void installMailNotification(OSchemaHelper helper) {
-    helper.oClass(OMailNotification.CLASS_NAME, ONotification.CLASS_NAME)
-            .oProperty(OMailNotification.PROP_PREPARED_MAIL, OType.LINK)
-              .linkedClass(OPreparedMail.CLASS_NAME);
-  }
-
-  private void installSmsNotification(OSchemaHelper helper) {
-    helper.oClass(OSmsNotification.CLASS_NAME, ONotification.CLASS_NAME)
-            .oProperty(OSmsNotification.PROP_PREPARED_SMS, OType.LINK)
-              .linkedClass(OPreparedSMS.CLASS_NAME);
-  }
-
-  private void installSmsNotificationTransport(OSchemaHelper helper) {
-    helper.oClass(OSmsNotificationTransport.CLASS_NAME, ONotificationTransport.CLASS_NAME)
-            .oProperty(OSmsNotificationTransport.PROP_SMS_SETTINGS, OType.LINK)
-              .linkedClass(OSmsSettings.CLASS_NAME);
-  }
-
-  private void installNotificationStatus(OSchemaHelper helper) {
-    helper.oClass(ONotificationStatus.CLASS_NAME)
-            .oProperty(ONotificationStatus.PROP_NAME, OType.EMBEDDEDMAP, 0)
-              .linkedType(OType.STRING)
-              .assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
-              .markAsDocumentName()
-            .oProperty(ONotificationStatus.PROP_ALIAS, OType.STRING, 10)
-              .notNull()
-              .oIndex(OClass.INDEX_TYPE.UNIQUE);
-
-    helper.oDocument(ONotificationStatus.PROP_ALIAS, ONotificationStatus.ALIAS_PENDING)
-            .field(ONotificationStatus.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("notification.status.pending").getObject()))
-            .saveDocument();
-
-    helper.oDocument(ONotificationStatus.PROP_ALIAS, ONotificationStatus.ALIAS_SENDING)
-            .field(ONotificationStatus.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("notification.status.sending").getObject()))
-            .saveDocument();
-
-    helper.oDocument(ONotificationStatus.PROP_ALIAS, ONotificationStatus.ALIAS_SENT)
-            .field(ONotificationStatus.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("notification.status.sent").getObject()))
-            .saveDocument();
-
-    helper.oDocument(ONotificationStatus.PROP_ALIAS, ONotificationStatus.ALIAS_FAILED)
-            .field(ONotificationStatus.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("notification.status.failed").getObject()))
-            .saveDocument();
-  }
-
-  private void installNotificationTransport(OSchemaHelper helper) {
-    helper.oAbstractClass(ONotificationTransport.CLASS_NAME)
-            .oProperty(ONotificationTransport.PROP_NAME, OType.EMBEDDEDMAP)
-              .linkedType(OType.STRING)
-              .assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
-              .notNull()
-              .markAsDocumentName()
-              .markDisplayable()
-            .oProperty(ONotificationTransport.PROP_ALIAS, OType.STRING)
-              .notNull()
-              .oIndex(OClass.INDEX_TYPE.UNIQUE)
-              .markAsDocumentName();
-
-    helper.oClass(OMailNotificationTransport.CLASS_NAME, ONotificationTransport.CLASS_NAME)
-            .oProperty(OMailNotificationTransport.PROP_MAIL_SETTINGS, OType.LINK)
-              .linkedClass(OMailSettings.CLASS_NAME)
-              .notNull()
-            .oProperty(OMailNotificationTransport.PROP_CONNECTIONS_LIMIT, OType.INTEGER)
-              .notNull()
-              .defaultValue("1")
-              .min("1");
-  }*/
 
   @Override
   public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
