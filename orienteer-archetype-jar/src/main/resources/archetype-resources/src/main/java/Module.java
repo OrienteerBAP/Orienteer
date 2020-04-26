@@ -5,7 +5,7 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
@@ -19,7 +19,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		//Install data model
@@ -28,13 +28,13 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPackage("${package}.web");
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		app.unmountPackage("${package}.web");
 	}

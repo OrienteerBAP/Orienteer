@@ -11,6 +11,7 @@ import com.orientechnologies.orient.core.schedule.OScheduledEventBuilder;
 import com.orientechnologies.orient.core.schedule.OScheduler;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.util.CommonUtils;
@@ -30,6 +31,7 @@ import java.util.UUID;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@Ignore
 @RunWith(OrienteerTestRunner.class)
 public class RestorePasswordTest {
 

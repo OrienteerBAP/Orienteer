@@ -109,8 +109,12 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 		for(ODocument oRoleDoc : db.getMetadata().getSecurity().getAllRoles()) {
 			ORole oRole = new ORole(oRoleDoc);
 			if(oRole.getParentRole()==null) {
-				oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, OrientPermission.READ.getPermissionFlag());
-				oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, OrientPermission.READ.getPermissionFlag());
+				if("admin".equals(oRole.getName())) {
+					oRole.grant(OSecurityHelper.FEATURE_RESOURCE, "*", ORole.PERMISSION_ALL);
+				} else {
+					oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, OrientPermission.READ.getPermissionFlag());
+					oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, OrientPermission.READ.getPermissionFlag());
+				}
 				oRole.save();
 			}
 		}

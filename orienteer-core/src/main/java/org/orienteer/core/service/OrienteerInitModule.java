@@ -83,10 +83,10 @@ public class OrienteerInitModule extends ServletModule {
 	}
 
 	protected void bindWicket() {
-	    bindHazelcastFilter();
-	    if(Boolean.parseBoolean(properties.getProperty("orientdb.distributed"))) {
-	    	bindWicketFilter();
-	    }
+		if(Boolean.parseBoolean(properties.getProperty("orientdb.distributed"))) {
+			bindHazelcastFilter();
+		}
+    	bindWicketFilter();
 	    bindApplication();
     }
 

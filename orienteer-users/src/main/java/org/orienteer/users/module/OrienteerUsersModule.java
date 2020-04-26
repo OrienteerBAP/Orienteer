@@ -84,8 +84,6 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     public static final String MAIL_MACROS_LINK = "link";
 
     public static final String TAB_SOCIAL_NETWORKS = "social-networks";
-    
-    private static final List<Class<? extends ORecordHook>> HOOKS = Arrays.asList(OrienteerUserHook.class, OrienteerUserRoleHook.class);
 
     protected OrienteerUsersModule() {
         super(MODULE_NAME, VERSION,  PerspectivesModule.NAME, OMailModule.NAME);
@@ -411,7 +409,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     @Override
     public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
     	
-    	app.getOrientDbSettings().getORecordHooks().addAll(HOOKS);
+    	app.getOrientDbSettings().addORecordHooks(OrienteerUserHook.class, OrienteerUserRoleHook.class);
 
         RegistrationResource.mount(app);
         RestorePasswordResource.mount(app);
@@ -430,7 +428,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     @Override
     public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
-    	app.getOrientDbSettings().getORecordHooks().removeAll(HOOKS);
+    	app.getOrientDbSettings().removeORecordHooks(OrienteerUserHook.class, OrienteerUserRoleHook.class);
 
         RegistrationResource.unmount(app);
         RestorePasswordResource.unmount(app);
