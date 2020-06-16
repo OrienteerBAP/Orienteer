@@ -31,11 +31,11 @@ import java.util.UUID;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@Ignore
 @RunWith(OrienteerTestRunner.class)
 public class RestorePasswordTest {
 
     private static Logger LOG = LoggerFactory.getLogger(RestorePasswordTest.class);
+    private static final String TEST_RESTORE_FUNCTION = "TestRestorePasswordFunction";
 
     @Inject
     private IOrienteerUsersService usersService;
@@ -94,6 +94,11 @@ public class RestorePasswordTest {
     }
 
     @Test
+    @Ignore
+    /**
+     * TODO: Rework later. Right now this test do almost nothing
+     * @throws InterruptedException
+     */
     public void testUpdate() throws InterruptedException {
 
         LOG.info("Start");
@@ -105,12 +110,15 @@ public class RestorePasswordTest {
 
             OFunctionLibrary functionLibrary = db.getMetadata().getFunctionLibrary();
 
-            OFunction test = functionLibrary.createFunction("Test");
-
-            test.setLanguage("JavaScript");
-            test.setCode("print(\"Start execute\");var res = db.command(\"update OUser set firstName='Test' where name = ?\", name);print(res.next());");
-            test.setParameters(Collections.singletonList("name"));
-            test.save();
+            OFunction test = functionLibrary.getFunction(TEST_RESTORE_FUNCTION);
+            if(test==null) {
+	            test = functionLibrary.createFunction(TEST_RESTORE_FUNCTION);
+	
+	            test.setLanguage("JavaScript");
+	            test.setCode("print(\"Start execute\");var res = db.command(\"update OUser set firstName='Test' where name = ?\", name);print(res.next());");
+	            test.setParameters(Collections.singletonList("name"));
+	            test.save();
+            }
 
             OScheduler scheduler = db.getMetadata().getScheduler();
             OScheduledEvent event = new OScheduledEventBuilder()
