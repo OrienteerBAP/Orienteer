@@ -1,6 +1,7 @@
 package org.orienteer.core.service;
 
 import com.orientechnologies.orient.core.db.ODatabasePool;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OUser;
@@ -44,9 +45,9 @@ public class OrienteerEmbeddedStartupListener extends EmbeddOrientDbApplicationL
         IOrientDbSettings settings = app.getOrientDbSettings();
         OrientDB orientDB = app.getServer().getContext();
         if (orientDB.createIfNotExists(settings.getDbName(), settings.getDbType())) {
-            ODatabasePool pool = orientDB.cachedPool(settings.getDbName(), settings.getAdminUserName(), settings.getAdminPassword());
-            onDbCreated(pool.acquire(), settings);
-            pool.close();
+        	try(ODatabaseSession session = orientDB.open(settings.getDbName(), OrientDbSettings.ADMIN_DEFAULT_USERNAME, OrientDbSettings.ADMIN_DEFAULT_PASSWORD)){
+        		onDbCreated(session, settings);
+        	}
         }
     }
 
