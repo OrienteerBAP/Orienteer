@@ -38,9 +38,10 @@ public class SuggestVisualizer extends AbstractSimpleVisualizer {
             OProperty property = propertyModel.getObject();
             OClass oClass = property.getLinkedClass();
             if(oClass!=null) {
+            	ODocumentChoiceProvider<ODocument> choiceProvider = new ODocumentChoiceProvider<ODocument>(oClass);
 	            AbstractSelect2Choice<?, ?> choice = property.getType().isMultiValue() ?
-	            		new Select2MultiChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, new ODocumentChoiceProvider(oClass))
-	            		: new Select2Choice<ODocument>(id, (IModel<ODocument>) valueModel, new ODocumentChoiceProvider(oClass));
+	            		new Select2MultiChoice<ODocument>(id, (IModel<Collection<ODocument>>) valueModel, choiceProvider)
+	            		: new Select2Choice<ODocument>(id, (IModel<ODocument>) valueModel, choiceProvider);
 	            choice.getSettings()
 							.setWidth("100%")
 							.setCloseOnSelect(true)
