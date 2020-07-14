@@ -26,7 +26,7 @@ public class OMailTransport implements ITransport {
 
   private static final Logger LOG = LoggerFactory.getLogger(OMailTransport.class);
 
-  public static final int CONNECTION_ATTEMPTS = 10;
+  public static final int CONNECTION_ATTEMPTS = 3;
 
   private final OMailSettings settings;
   private final Session session;
