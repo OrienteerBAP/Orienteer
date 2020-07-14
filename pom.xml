@@ -72,7 +72,7 @@
         <java.version>1.8</java.version>
 		<wicket.version>8.7.0</wicket.version>
 		<wicketstuff.version>8.7.0</wicketstuff.version>
-		<orientdb.version>3.1.1-SNAPSHOT</orientdb.version>
+		<orientdb.version>3.1.1</orientdb.version>
 		<guice.version>4.2.0</guice.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
