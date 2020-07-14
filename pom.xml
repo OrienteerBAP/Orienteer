@@ -444,6 +444,7 @@
 				<module>orienteer-archetype-war</module>
 				<module>orienteer-architect</module>
 				<module>orienteer-mail</module>
+				<module>orienteer-metrics</module>
 				<module>orienteer-users</module>
 				<module>orienteer-object</module>
 				<module>orienteer-tours</module>
