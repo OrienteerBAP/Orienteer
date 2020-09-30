@@ -1,6 +1,7 @@
 package org.orienteer.core.boot.loader.internal.artifact;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -80,7 +81,7 @@ public class OArtifact implements Comparable<OArtifact>, Serializable {
     }
 
     public List<OArtifactReference> getDependencies() {
-        return dependencies;
+    	return dependencies!=null?dependencies:Collections.EMPTY_LIST;
     }
 
     public boolean isLoad() {
