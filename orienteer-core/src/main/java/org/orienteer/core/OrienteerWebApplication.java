@@ -27,7 +27,9 @@ import org.apache.wicket.pageStore.IPageStore;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.serialize.ISerializer;
@@ -101,6 +103,10 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Inject
 	@Named("orienteer.authenticatelazy")
 	private boolean authenticateLazy;
+	
+	@Inject(optional=true)
+	@Named("orienteer.cors.origin")
+	private String corsOrigin;
 	
 	@Inject(optional=true)
 	@Named("wicket.render.strategy")
@@ -198,6 +204,14 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 											  CallbackHook.class);
 		mountOrientDbRestApi();
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
+		if(!Strings.isEmpty(corsOrigin)) {
+			getRequestCycleListeners().add(new IRequestCycleListener() {
+				@Override
+				public void onEndRequest(RequestCycle cycle) {
+					((WebResponse) cycle.getResponse()).addHeader("Access-Control-Allow-Origin", corsOrigin);
+				}
+			});
+		}
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 
