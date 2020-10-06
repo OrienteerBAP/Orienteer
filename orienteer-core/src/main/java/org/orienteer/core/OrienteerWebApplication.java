@@ -207,8 +207,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		if(!Strings.isEmpty(corsOrigin)) {
 			getRequestCycleListeners().add(new IRequestCycleListener() {
 				@Override
-				public void onEndRequest(RequestCycle cycle) {
-					((WebResponse) cycle.getResponse()).addHeader("Access-Control-Allow-Origin", corsOrigin);
+				public void onBeginRequest(RequestCycle cycle) {
+					((WebResponse) cycle.getResponse()).setHeader("Access-Control-Allow-Origin", corsOrigin);
 				}
 			});
 		}
