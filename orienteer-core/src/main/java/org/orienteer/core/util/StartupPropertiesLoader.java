@@ -32,7 +32,10 @@ public class StartupPropertiesLoader {
 															 LookupResourceHelper.SystemPropertyURLLookuper.INSTANCE,
 															 LookupResourceHelper.UpDirectoriesFileLookuper.INSTANCE,
 															 LookupResourceHelper.DirFileLookuper.CONFIG_DIR_INSTANCE,
+															 new LookupResourceHelper.DirFileLookuper(getRuntime()),
 															 new LookupResourceHelper.DirFileLookuper(getAppHome()),
+															 new LookupResourceHelper.UpDirectoriesFileLookuper(getRuntime()),
+															 new LookupResourceHelper.UpDirectoriesFileLookuper(getAppHome()),
 															 LookupResourceHelper.SystemPropertyResourceLookuper.INSTANCE);
 	
 	static {

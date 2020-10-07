@@ -104,6 +104,10 @@ public class LookupResourceHelper {
 			this.startDir = startDir;
 		}
 		
+		public UpDirectoriesFileLookuper(String startDir) {
+			this(new File(startDir));
+		}
+		
 		@Override
 		public URL lookup(String identifier) {
 			File dir = startDir;
