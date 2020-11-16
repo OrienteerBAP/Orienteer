@@ -14,6 +14,9 @@ import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
+
+import lombok.experimental.ExtensionMethod;
+
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
@@ -21,6 +24,7 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+import ru.ydn.wicket.wicketorientdb.utils.LombokExtensions;
 
 import javax.inject.Singleton;
 import java.util.*;
@@ -30,6 +34,7 @@ import java.util.stream.Collectors;
  * {@link IOrienteerModule} for "perspectives" feature of Orienteer
  */
 @Singleton
+@ExtensionMethod({LombokExtensions.class})
 public class PerspectivesModule extends AbstractOrienteerModule {
 
 	public static final String NAME = "perspectives";

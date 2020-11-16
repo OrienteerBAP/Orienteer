@@ -13,6 +13,7 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
@@ -168,10 +169,10 @@ public final class DAO {
 			if(ctx.isPropertyCreationScheduled(fieldNameCandidate)) continue;
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
 											?daoField.type()
-											:OType.getTypeByClass(javaType);
+											:getTypeByClass(javaType);
 			OType linkedTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.linkedType())
 											?daoField.linkedType()
-											:(subJavaType!=null?OType.getTypeByClass(subJavaType):null);
+											:(subJavaType!=null?getTypeByClass(subJavaType):null);
 			final int order = daoField!=null && daoField.order()>=0
 									?daoField.order()
 									:10*currentOrder++;
@@ -237,6 +238,12 @@ public final class DAO {
 		}
 		if(!Strings.isEmpty(daoOClass.searchQuery()))
 			CustomAttribute.SEARCH_QUERY.setValue(helper.getOClass(), daoOClass.searchQuery());
+	}
+	
+	private static OType getTypeByClass(Class<?> clazz) {
+		OType ret = OType.getTypeByClass(clazz);
+		if(OType.CUSTOM.equals(ret) && Serializable.class.isAssignableFrom(clazz)) ret = null;
+		return ret;
 	}
 	
 	private static void applyDAOFieldAttribute(OSchemaHelper helper, DAOField daoField) {

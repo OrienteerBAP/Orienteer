@@ -74,6 +74,7 @@ public class TestNotificationLifecycle {
     statusHistory.fromStream(new ODocument(OTestNotification.CLASS_NAME));
 
     List<ODocument> statusHistories = testNotification.getStatusHistories();
+//    List<ODocument> statusHistories = testNotification.getDocument().field("statusHistories");
     assertEquals(3, statusHistories.size());
 
     assertNotNull(statusHistories.get(0));

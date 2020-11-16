@@ -7,16 +7,21 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import lombok.experimental.ExtensionMethod;
+
 import org.apache.wicket.ISessionListener;
 import org.apache.wicket.Session;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+import ru.ydn.wicket.wicketorientdb.utils.LombokExtensions;
 
 /**
  * Module to support user's online/offline lifecycle
  */
 @Singleton
+@ExtensionMethod({LombokExtensions.class})
 public class UserOnlineModule extends AbstractOrienteerModule {
 
     public static final String NAME = "user-online";

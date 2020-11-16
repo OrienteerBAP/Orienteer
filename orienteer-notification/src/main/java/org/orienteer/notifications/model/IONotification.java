@@ -44,9 +44,9 @@ public interface IONotification extends IODocumentWrapper {
     List<ODocument> histories = getStatusHistories();
     if (histories == null) {
       histories = new LinkedList<>();
-    } else {
+    }/* else {
       histories = new LinkedList<>(histories);
-    }
+    }*/
     histories.add(history);
     return setStatusHistories(histories);
   }

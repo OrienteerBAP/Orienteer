@@ -287,9 +287,13 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public OSchemaHelper setupRelationship(String class1Name, String property1Name, String class2Name, String property2Name)
 	{
 		OClass class1 = schema.getClass(class1Name);
+		if(class1==null) throw new IllegalStateException("Class '"+class1Name+"' was not found for setting up relationships");
 		OProperty property1 = class1.getProperty(property1Name);
+		if(property1==null) throw new IllegalStateException("Property '"+class1Name+"."+property1Name+"' was not found for setting up relationships");
 		OClass class2 = schema.getClass(class2Name);
+		if(class2==null) throw new IllegalStateException("Class '"+class2Name+"' was not found for setting up relationships");
 		OProperty property2 = class2.getProperty(property2Name);
+		if(property2==null) throw new IllegalStateException("Property '"+class2Name+"."+property2Name+"' was not found for setting up relationships");
 		if(!Objects.equals(property1.getLinkedClass(), class2)) property1.setLinkedClass(class2);
 		if(!Objects.equals(property2.getLinkedClass(), class1)) property2.setLinkedClass(class1);
 		CustomAttribute.PROP_INVERSE.setValue(property1, property2);
