@@ -15,7 +15,7 @@
     <parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
-		<version>1.5</version>
+		<version>1.6-SNAPSHOT</version>
 	</parent>
     <artifactId>orienteer-graph</artifactId>
 	<name>orienteer-graph</name>
