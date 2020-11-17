@@ -21,7 +21,7 @@
 	<parent>
 	    <artifactId>orienteer-parent</artifactId>
 	    <groupId>org.orienteer</groupId>
-	    <version>1.5-SNAPSHOT</version>
+	    <version>1.5</version>
     </parent>
     <artifactId>orienteer-mail</artifactId>
 	<name>orienteer-mail</name>

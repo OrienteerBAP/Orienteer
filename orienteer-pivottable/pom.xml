@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.orienteer</groupId>
 		<artifactId>orienteer-parent</artifactId>
-		<version>1.5-SNAPSHOT</version>
+		<version>1.5</version>
 	</parent>
 	<artifactId>orienteer-pivottable</artifactId>
 	<name>orienteer-pivottable</name>
