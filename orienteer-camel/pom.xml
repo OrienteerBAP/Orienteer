@@ -22,8 +22,9 @@
 	<name>orienteer-camel</name>
 
     <properties>
-        <camel.version>2.23.3</camel.version>
-        <camel.core.version>2.24.1</camel.core.version>
+        <camel.version>2.25.2</camel.version>
+        <camel.core.version>2.25.2</camel.core.version>
+        <camel.deprecated.version>2.23.4</camel.deprecated.version>
     </properties>
 
 	<dependencies>
@@ -35,7 +36,7 @@
 		<dependency>
 			<groupId>org.orienteer.camel.component</groupId>
 			<artifactId>camel-orientdb</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
@@ -55,7 +56,7 @@
 		<dependency>
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-xmljson</artifactId>
-			<version>${camel.version}</version>
+			<version>${camel.deprecated.version}</version>
 			<!-- Use the same version as camel-core, but remember that this component 
 				is only available from 2.10 onwards -->
 		</dependency>
