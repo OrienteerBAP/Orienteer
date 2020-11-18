@@ -91,7 +91,7 @@ public class OFunctionExecuteWidget extends AbstractWidget<ODocument> {
 		
 		Object ret = null;
 		try {
-			ret = getDatabase().getMetadata().getFunctionLibrary()
+			ret = getDatabaseSession().getMetadata().getFunctionLibrary()
 					.getFunction((String)getModelObject().field("name")).execute(values.toArray());
 		} catch (Exception e) {
 			ret = Strings.toString(e);

@@ -13,10 +13,7 @@ import org.orienteer.users.repository.OrienteerUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Hook to initialize OUser.
@@ -60,19 +57,21 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
             doc.field("roles", Collections.singleton(orienteerRole));
         }
 
-        updateAllowPermissions(ORestrictedOperation.ALLOW_READ.getFieldName(), doc);
-        updateAllowPermissions(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_READ.getFieldName(), doc, orienteerRole);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_READ.getFieldName(), doc, doc);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc, orienteerRole);
+        updateAllowPermissions(ORestrictedOperation.ALLOW_UPDATE.getFieldName(), doc, doc);
 
         return RESULT.RECORD_CHANGED;
     }
 
-    private void updateAllowPermissions(String field, ODocument user) {
-        List<ODocument> allows = user.field(field, List.class);
+    private void updateAllowPermissions(String field, ODocument user, ODocument doc) {
+        Set<ODocument> allows = user.field(field, Set.class);
         if (allows == null) {
-            allows = new LinkedList<>();
-        } else allows = new LinkedList<>(allows);
+            allows = new HashSet<>();
+        } else allows = new HashSet<>(allows);
 
-        allows.add(user);
+        allows.add(doc);
         user.field(field, allows);
     }
 

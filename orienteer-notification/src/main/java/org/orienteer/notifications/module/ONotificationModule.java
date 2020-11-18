@@ -1,6 +1,6 @@
 package org.orienteer.notifications.module;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -33,7 +33,7 @@ public class ONotificationModule extends AbstractOrienteerModule {
   }
 
   @Override
-  public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+  public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
 
     DAO.describe(helper, IONotification.class, IONotificationStatus.class, IONotificationTransport.class, IONotificationStatusHistory.class);
@@ -96,16 +96,15 @@ public class ONotificationModule extends AbstractOrienteerModule {
 
 
   @Override
-  public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+  public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
     onInstall(app, db);
   }
 
   @Override
-  public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+  public void onInitialize(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
     super.onInitialize(app, db, moduleDoc);
 
-    List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
-    hooks.add(ONotificationHook.class);
+    app.getOrientDbSettings().addORecordHooks(ONotificationHook.class);
 
     long period = new Module(moduleDoc).getSendPeriod();
 
@@ -113,11 +112,10 @@ public class ONotificationModule extends AbstractOrienteerModule {
   }
 
   @Override
-  public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc) {
+  public void onDestroy(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc) {
     super.onDestroy(app, db, moduleDoc);
 
-    List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
-    hooks.remove(ONotificationHook.class);
+    app.getOrientDbSettings().removeORecordHooks(ONotificationHook.class);
 
     ONotificationScheduler.stopAll();
   }

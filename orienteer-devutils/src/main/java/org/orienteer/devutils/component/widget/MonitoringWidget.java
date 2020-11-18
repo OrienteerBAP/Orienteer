@@ -1,10 +1,6 @@
 package org.orienteer.devutils.component.widget;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
@@ -18,13 +14,12 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Widget to show wicket-console on tools dashboard page
@@ -33,18 +28,11 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 public class MonitoringWidget extends AbstractWidget<Void> {
 	
 	private final Map<String, IModel<?>> monitoringParams = new HashMap<>();
-	
-	@Inject
-	private Provider<OPartitionedDatabasePool> poolProvider;
+
 	
 	private void registerAll() {
 		register("monitoring.configurationType", () -> OrienteerWebApplication.get().getConfigurationType());
 		register("monitoring.activeThreads", Thread::activeCount);
-		register("monitoring.maxPoolCount", () -> OrienteerWebApplication.get().getOrientDbSettings().getDatabasePoolFactory().getMaxPoolSize());
-		register("monitoring.availableConnections", () -> poolProvider.get().getAvailableConnections());
-		register("monitoring.createdInstances", () -> poolProvider.get().getCreatedInstances());
-		register("monitoring.maxPartitionSize", () -> poolProvider.get().getMaxPartitonSize());
-		
 	}
 	
 	private void register(String key, SerializableSupplier<?> supplier) {

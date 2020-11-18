@@ -30,7 +30,7 @@ public class DatabaseExportResource extends AbstractResource
 			public void writeData(Attributes attributes) throws IOException {
 				OutputStream out = attributes.getResponse().getOutputStream();
 				GZIPOutputStream gzipOut = new GZIPOutputStream(out);
-				ODatabaseDocumentInternal db = (ODatabaseDocumentInternal)OrientDbWebSession.get().getDatabase();
+				ODatabaseDocumentInternal db = (ODatabaseDocumentInternal)OrientDbWebSession.get().getDatabaseDocumentInternal();
 				ODatabaseExport dbExport = new ODatabaseExport(db, gzipOut, LoggerOCommandOutputListener.INSTANCE);
 				configureODatabaseExport(dbExport);
 				dbExport.exportDatabase();

@@ -1,15 +1,15 @@
 package org.orienteer.bpm.camunda.scripting;
 
+import com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper;
+import com.orientechnologies.orient.core.command.script.OScriptOrientWrapper;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper;
+import org.camunda.bpm.engine.impl.scripting.engine.Resolver;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.camunda.bpm.engine.impl.scripting.engine.Resolver;
-
-import com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper;
-import com.orientechnologies.orient.core.command.script.OScriptOrientWrapper;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper;
 
 /**
  * Resolver to bind OrientDB objects 
@@ -18,8 +18,8 @@ public class OResolver implements Resolver{
 	
 	private Map<String, Object> variables = new HashMap<>();
 	
-	public OResolver(ODatabaseDocumentTx db) {
-		variables.put("db", new OScriptDocumentDatabaseWrapper(db));
+	public OResolver(ODatabaseSession db) {
+		variables.put("db", new OScriptDocumentDatabaseWrapper((ODatabaseDocumentInternal) db));
 		variables.put("orient", new OScriptOrientWrapper(db));
 		variables.put("util", new OFunctionUtilWrapper());
 	}

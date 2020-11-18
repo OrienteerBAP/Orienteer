@@ -12,6 +12,7 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -36,13 +37,14 @@ public class SaveSchemaCommand<T> extends SavePrototypeCommand<T> implements ISe
 
 	@Override
 	public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-		boolean isActiveTransaction = getDatabase().getTransaction().isActive();
-		if(isActiveTransaction) getDatabase().commit(); // Schema changes should be done outside of transaction
+		ODatabaseSession db = getDatabaseSession();
+		boolean isActiveTransaction = db.getTransaction().isActive();
+		if(isActiveTransaction) db.commit(); // Schema changes should be done outside of transaction
 		try {
 			super.onClick(targetOptional);
-			getDatabase().getMetadata().reload();
+			db.getMetadata().reload();
 		} finally {
-			if(isActiveTransaction) getDatabase().begin();
+			if(isActiveTransaction) db.begin();
 		}
 	}
 

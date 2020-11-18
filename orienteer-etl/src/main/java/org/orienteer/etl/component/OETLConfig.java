@@ -1,12 +1,16 @@
 package org.orienteer.etl.component;
 
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.etl.OETLProcessor;
+import com.orientechnologies.orient.etl.OETLProcessorConfigurator;
+
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
-import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
+import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.OTask;
@@ -14,9 +18,6 @@ import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
 import org.orienteer.core.web.ODocumentPage;
 import org.orienteer.etl.tasks.OETLTaskSession;
-import org.orienteer.etl.tasks.OETLTaskSessionCallback;
-
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 /**
@@ -56,13 +57,15 @@ public class OETLConfig extends OTask {
 
 		try {
 			final String configuration = getDocument().field(ETL_CONFIG_FIELD);
-			final OrienteerETLProcessor processor = OrienteerETLProcessor.parseConfigRecord(session,configuration);
+			final OETLProcessor processor = new OrienteerETLProcessorConfigurator()
+													.parseConfigRecord(session,configuration);
+//			final OrienteerETLProcessorConfigurator processor = OrienteerETLProcessorConfigurator.parseConfigRecord(session,configuration);
 
 			Thread thread = new Thread(new Runnable(){
 				@Override
 				public void run() {
 					try {
-						processor.doExecute();
+						processor.execute();
 					} catch (Exception e) {
 						session.appendOut("ETL Processor runtime error!");
 						printCause(e, session);
@@ -72,7 +75,6 @@ public class OETLConfig extends OTask {
 				}
 			});
 
-			session.setCallback(new OETLTaskSessionCallback(thread,processor));
 			session.setDeleteOnFinish((Boolean) document.field(OTask.Field.AUTODELETE_SESSIONS.fieldName()));
 			session.setOTask(this);
 

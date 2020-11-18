@@ -1,7 +1,6 @@
 package org.orienteer.core.web.schema;
 
-import javax.servlet.http.HttpServletResponse;
-
+import com.orientechnologies.orient.core.index.OIndex;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
@@ -15,7 +14,6 @@ import org.orienteer.core.component.SchemaPageHeader;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.property.OClassViewPanel;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
-
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OIndexModel;
 import ru.ydn.wicket.wicketorientdb.proto.OIndexPrototyper;
@@ -23,7 +21,7 @@ import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
-import com.orientechnologies.orient.core.index.OIndex;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Page to display {@link OIndex} specific parameters
@@ -32,9 +30,9 @@ import com.orientechnologies.orient.core.index.OIndex;
 @RequiredOrientResource(value=OSecurityHelper.SCHEMA, permissions=OrientPermission.READ)
 @RequiredOrientResource(value = OSecurityHelper.FEATURE, specific=SchemaPage.SCHEMA_FEATURE, permissions=OrientPermission.READ)
 public class OIndexPage extends
-		AbstractWidgetDisplayModeAwarePage<OIndex<?>> {
+		AbstractWidgetDisplayModeAwarePage<OIndex> {
 
-	public OIndexPage(IModel<OIndex<?>> model) {
+	public OIndexPage(IModel<OIndex> model) {
 		super(model);
 	}
 
@@ -45,7 +43,7 @@ public class OIndexPage extends
 	}
 
 	@Override
-	protected IModel<OIndex<?>> resolveByPageParameters(
+	protected IModel<OIndex> resolveByPageParameters(
 			PageParameters pageParameters) {
 		String indexName = pageParameters.get("indexName").toOptionalString();
 		return Strings.isEmpty(indexName)?null:new OIndexModel(indexName);

@@ -48,7 +48,7 @@ public class ODBConsoleEngine implements IScriptEngine {
 			console.setOutput(out);
 			result.start();
 			try {
-				console.setCurrentDatabase((ODatabaseDocumentTx)OrienteerWebApplication.lookupApplication().getDatabase());
+				console.setCurrentDatabase(OrienteerWebApplication.lookupApplication().getDatabaseDocumentInternal());
 				console.run();
 				result.setOut(baos.toString("UTF8"));
 			} catch (Exception e) {

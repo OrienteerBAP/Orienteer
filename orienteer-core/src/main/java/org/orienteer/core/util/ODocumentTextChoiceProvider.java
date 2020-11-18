@@ -45,7 +45,7 @@ public class ODocumentTextChoiceProvider extends ChoiceProvider<ODocument> {
 
     @Override
     public void query(String term, int page, Response<ODocument> response) {
-        OSchema schema = OrienteerWebApplication.lookupApplication().getDatabase().getMetadata().getSchema();
+        OSchema schema = OrienteerWebApplication.lookupApplication().getDatabaseSession().getMetadata().getSchema();
         if (classNamesModel.getObject() != null && !classNamesModel.getObject().isEmpty()) {
             for (String className : classNamesModel.getObject()) {
                 OClass oClass = schema.getClass(className);

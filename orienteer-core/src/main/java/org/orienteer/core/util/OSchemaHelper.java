@@ -1,5 +1,6 @@
 package org.orienteer.core.util;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -9,30 +10,37 @@ import org.orienteer.core.CustomAttribute;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.index.OIndex;
-import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.OClassDomain;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+
+import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Enhanced {@link ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper} from wicket-orientdb library to allow Orienteer specific things
  */
 public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHelper
 {
-	protected OSchemaHelper(ODatabaseDocument db)
+	protected OSchemaHelper(ODatabaseSession db)
 	{
 		super(db);
 	}
 	
 	public static OSchemaHelper bind()
 	{
-		return new OSchemaHelper(OrientDbWebSession.get().getDatabase());
+		return new OSchemaHelper(OrientDbWebSession.get().getDatabaseSession());
 	}
 	
-	public static OSchemaHelper bind(ODatabaseDocument db)
+	public static OSchemaHelper bind(ODatabaseSession db)
 	{
 		return new OSchemaHelper(db);
 	}
@@ -279,9 +287,13 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	public OSchemaHelper setupRelationship(String class1Name, String property1Name, String class2Name, String property2Name)
 	{
 		OClass class1 = schema.getClass(class1Name);
+		if(class1==null) throw new IllegalStateException("Class '"+class1Name+"' was not found for setting up relationships");
 		OProperty property1 = class1.getProperty(property1Name);
+		if(property1==null) throw new IllegalStateException("Property '"+class1Name+"."+property1Name+"' was not found for setting up relationships");
 		OClass class2 = schema.getClass(class2Name);
+		if(class2==null) throw new IllegalStateException("Class '"+class2Name+"' was not found for setting up relationships");
 		OProperty property2 = class2.getProperty(property2Name);
+		if(property2==null) throw new IllegalStateException("Property '"+class2Name+"."+property2Name+"' was not found for setting up relationships");
 		if(!Objects.equals(property1.getLinkedClass(), class2)) property1.setLinkedClass(class2);
 		if(!Objects.equals(property2.getLinkedClass(), class1)) property2.setLinkedClass(class1);
 		CustomAttribute.PROP_INVERSE.setValue(property1, property2);
@@ -336,7 +348,7 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 	}
 	
 	@Override
-	public OSchemaHelper doOnOIndex(Consumer<OIndex<?>> consumer) {
+	public OSchemaHelper doOnOIndex(Consumer<OIndex> consumer) {
 		super.doOnOIndex(consumer);
 		return this;
 	}

@@ -23,9 +23,9 @@ public class DeleteOPropertyCommand extends AbstractDeleteCommand<OProperty> {
 	
 	@Override
 	protected void performMultiAction(AjaxRequestTarget target, List<OProperty> objects) {
-		getDatabase().commit();
+		getDatabaseSession().commit();
 		super.performMultiAction(target, objects);
-		getDatabase().begin();
+		getDatabaseSession().begin();
 	}
 
 	@Override

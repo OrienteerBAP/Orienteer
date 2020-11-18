@@ -12,30 +12,30 @@ import com.orientechnologies.orient.core.index.OIndex;
 /**
  * {@link BookmarkablePageLink} for {@link OIndex}
  */
-public class OIndexPageLink extends BookmarkablePageLink<OIndex<?>>
+public class OIndexPageLink extends BookmarkablePageLink<OIndex>
 {
 	private static final long serialVersionUID = 1L;
 	private IModel<DisplayMode> displayModeModel;
-	public OIndexPageLink(String id, IModel<OIndex<?>> oIndexModel, PageParameters parameters)
+	public OIndexPageLink(String id, IModel<OIndex> oIndexModel, PageParameters parameters)
 	{
 		this(id, oIndexModel, DisplayMode.VIEW, parameters);
 	}
 	
-	public OIndexPageLink(String id, IModel<OIndex<?>> oIndexModel)
+	public OIndexPageLink(String id, IModel<OIndex> oIndexModel)
 	{
 		this(id, oIndexModel, DisplayMode.VIEW);
 	}
 	
-	public OIndexPageLink(String id, IModel<OIndex<?>> oIndexModel, DisplayMode mode, PageParameters parameters)
+	public OIndexPageLink(String id, IModel<OIndex> oIndexModel, DisplayMode mode, PageParameters parameters)
 	{
 		this(id, oIndexModel, resolvePageClass(mode), mode.asModel(), parameters);
 	}
 	
-	public OIndexPageLink(String id, IModel<OIndex<?>> oIndexModel, DisplayMode mode)
+	public OIndexPageLink(String id, IModel<OIndex> oIndexModel, DisplayMode mode)
 	{
 		this(id, oIndexModel, resolvePageClass(mode), mode.asModel());
 	}
-	public <C extends Page> OIndexPageLink(String id, IModel<OIndex<?>> oIndexModel, Class<C> pageClass, 
+	public <C extends Page> OIndexPageLink(String id, IModel<OIndex> oIndexModel, Class<C> pageClass,
 			IModel<DisplayMode> displayModeModel, PageParameters parameters) {
 		super(id, pageClass, parameters);
 		setModel(oIndexModel);
@@ -43,7 +43,7 @@ public class OIndexPageLink extends BookmarkablePageLink<OIndex<?>>
 	}
 	
 
-	public <C extends Page> OIndexPageLink(String id, IModel<OIndex<?>> oClassModel, Class<C> pageClass,
+	public <C extends Page> OIndexPageLink(String id, IModel<OIndex> oClassModel, Class<C> pageClass,
 			IModel<DisplayMode> displayModeModel) {
 		super(id, pageClass);
 		setModel(oClassModel);

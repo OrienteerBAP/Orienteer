@@ -1,6 +1,6 @@
 package org.orienteer.core.module;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
@@ -41,7 +41,7 @@ public interface IOrienteerModule
 	 * @param db database
 	 * @return {@link ODocument} for a module or null of default OModule is OK
 	 */
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db);
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db);
 	
 	/**
 	 * Update installed module
@@ -52,7 +52,7 @@ public interface IOrienteerModule
 	 * @param newVersion new version
 	 * @return {@link ODocument} of a module or null if document was not exchanged
 	 */
-	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc, int oldVersion, int newVersion);
+	public ODocument onUpdate(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc, int oldVersion, int newVersion);
 	
 	/**
 	 * Uninstall this module
@@ -60,7 +60,7 @@ public interface IOrienteerModule
 	 * @param db database
 	 * @param moduleDoc module {@link ODocument}
 	 */
-	public void onUninstall(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc);
+	public void onUninstall(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc);
 	
 	/**
 	 * Run this module
@@ -68,7 +68,7 @@ public interface IOrienteerModule
 	 * @param db database
 	 * @param moduleDoc module {@link ODocument}
 	 */
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc);
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc);
 	
 	/**
 	 * Invoked when module configuration was changed
@@ -76,7 +76,7 @@ public interface IOrienteerModule
 	 * @param db database
 	 * @param moduleDoc module {@link ODocument}
 	 */
-	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc);
+	public void onConfigurationChange(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc);
 	
 	/**
 	 * Stop this module
@@ -84,5 +84,5 @@ public interface IOrienteerModule
 	 * @param db database
 	 * @param moduleDoc module {@link ODocument}
 	 */
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db, ODocument moduleDoc);
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db, ODocument moduleDoc);
 }

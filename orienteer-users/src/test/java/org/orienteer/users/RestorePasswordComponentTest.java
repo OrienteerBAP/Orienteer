@@ -3,7 +3,6 @@ package org.orienteer.users;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.tester.FormTester;
 import org.junit.After;
@@ -11,13 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.web.HomePage;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.resource.RestorePasswordResource;
 import org.orienteer.users.service.IOrienteerUsersService;
 import org.orienteer.users.web.DefaultRestorePasswordPage;
+import org.orienteer.users.web.OUsersLoginPage;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.UUID;
@@ -56,7 +55,7 @@ public class RestorePasswordComponentTest {
     @After
     public void destroy() {
         DBClosure.sudoConsumer(db -> {
-            db.command(new OCommandSQL("delete from ?")).execute(testUser.getDocument());
+            db.command("delete from ?", testUser.getDocument());
         });
         tester.signOut();
     }
@@ -91,7 +90,7 @@ public class RestorePasswordComponentTest {
     }
 
     private void login(String password) {
-        tester.startPage(HomePage.class);
+        tester.startPage(OUsersLoginPage.class);
         FormTester formTester = tester.newFormTester("container:loginPanel:form");
         formTester.setValue("username", testUser.getName());
         formTester.setValue("password", password);
@@ -99,6 +98,7 @@ public class RestorePasswordComponentTest {
         tester.clickLink("container:loginPanel:form:loginButtonsPanel:loginButton:command", true);
 
         OrienteerWebSession session = (OrienteerWebSession) tester.getSession();
+
         assertNotNull(session.getUser());
         assertEquals(testUser.getName(), session.getUser().getName());
     }

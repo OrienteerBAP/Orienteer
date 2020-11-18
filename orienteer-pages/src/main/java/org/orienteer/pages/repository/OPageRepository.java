@@ -1,14 +1,13 @@
 package org.orienteer.pages.repository;
 
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-import org.orienteer.core.util.CommonUtils;
 import org.orienteer.pages.module.PagesModule;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Repository for get pages documents
@@ -23,7 +22,8 @@ public final class OPageRepository {
 
     public static List<ODocument> getPages(ODatabaseDocument db) {
         String sql = String.format("select from %s", PagesModule.OCLASS_PAGE);
-        List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql));
-        return CommonUtils.getDocuments(identifiables);
+        return db.query(sql).elementStream()
+                .map(e -> (ODocument) e)
+                .collect(Collectors.toCollection(LinkedList::new));
     }
 }

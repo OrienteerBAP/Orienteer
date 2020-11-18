@@ -1,5 +1,6 @@
 package org.orienteer.core.service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.inject.Injector;
 import com.google.inject.Module;
@@ -8,6 +9,7 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.google.inject.util.Modules;
+import com.hazelcast.web.WebFilter;
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WicketFilter;
@@ -57,43 +59,15 @@ public class OrienteerInitModule extends ServletModule {
 	
 	@Override
 	protected void configureServlets() {
-		Map<String, String> params = new HashMap<String, String>();    
-        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");  
-        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
-        params.put("injectorContextAttribute", Injector.class.getName());
-        bind(WicketFilter.class).in(Singleton.class);
-        filter("/*").through(WicketFilter.class, params);  
-		
-		Names.bindProperties(binder(), properties);
-		bindOrientDbProperties(properties);
-		String applicationClass = properties.getProperty("orienteer.application");
-		Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
-		if (applicationClass != null) {
-			try {
-				Class<?> customAppClass = Class.forName(applicationClass);
+        bindProperties();
+        bindWicket();
+        install(loadFromClasspath(new OrienteerModule()));
+	}
 
-				if (OrienteerWebApplication.class.isAssignableFrom(appClass)) {
-					appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
-				} else {
-					LOG.error("Orienteer application class '" + applicationClass + "' is not child class of '" + OrienteerWebApplication.class + "'. Using default.");
-				}
-			} catch (ClassNotFoundException e) {
-				LOG.error("Orienteer application class '" + applicationClass + "' was not found. Using default.");
-			}
-		}
-		bind(appClass).asEagerSingleton();
-		Provider<? extends OrienteerWebApplication> appProvider = binder().getProvider(appClass);
-		if (!OrienteerWebApplication.class.equals(appClass)) {
-			bind(OrienteerWebApplication.class).toProvider(appProvider);
-		}
-		bind(OrientDbWebApplication.class).toProvider(appProvider);
-		bind(WebApplication.class).toProvider(appProvider);
-
-		bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
-
-		install(
-		        loadFromClasspath(new OrienteerModule())
-        );
+	protected void bindProperties() {
+        Names.bindProperties(binder(), properties);
+        bindOrientDbProperties(properties);
+        bind(Properties.class).annotatedWith(Orienteer.class).toInstance(properties);
 	}
 
 	protected void bindOrientDbProperties(Properties properties) {
@@ -103,7 +77,67 @@ public class OrienteerInitModule extends ServletModule {
 				System.setProperty(subKey, properties.getProperty(key));
 			}
 		}
+		if (Strings.isNullOrEmpty(System.getProperty("ORIENTDB_HOME"))) {
+		    System.setProperty("ORIENTDB_HOME", "runtime/");
+        }
 	}
+
+	protected void bindWicket() {
+		if(Boolean.parseBoolean(properties.getProperty("orientdb.distributed"))) {
+			bindHazelcastFilter();
+		}
+    	bindWicketFilter();
+	    bindApplication();
+    }
+
+    protected void bindWicketFilter() {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put(WicketFilter.FILTER_MAPPING_PARAM, "/*");
+        params.put("applicationFactoryClassName", GuiceWebApplicationFactory.class.getName());
+        params.put("injectorContextAttribute", Injector.class.getName());
+        bind(WicketFilter.class).in(Singleton.class);
+        filter("/*").through(WicketFilter.class, params);
+    }
+
+    protected void bindHazelcastFilter() {
+	    Map<String, String> params = new HashMap<>();
+	    params.put("config-location", properties.getProperty("orientdb.configuration.hazelcast"));
+	    params.put("map-name", "wicket-sessions");
+	    params.put("sticky-session", "true");
+	    params.put("deferred-write", "true");
+	    params.put("debug", "true");
+	    params.put("cookie-name", "JSESSIONID");
+        params.put("map-name", properties.getProperty("orienteer.sessions.map.name"));
+
+	    bind(WebFilter.class).in(Singleton.class);
+        filter("/*").through(WebFilter.class, params);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void bindApplication() {
+        String applicationClass = properties.getProperty("orienteer.application");
+        Class<? extends OrienteerWebApplication> appClass = OrienteerWebApplication.class;
+        if (applicationClass != null) {
+            try {
+                Class<?> customAppClass = Class.forName(applicationClass);
+
+                if (OrienteerWebApplication.class.isAssignableFrom(appClass)) {
+                    appClass = (Class<? extends OrienteerWebApplication>) customAppClass;
+                } else {
+                    LOG.error("Orienteer application class '" + applicationClass + "' is not child class of '" + OrienteerWebApplication.class + "'. Using default.");
+                }
+            } catch (ClassNotFoundException e) {
+                LOG.error("Orienteer application class '" + applicationClass + "' was not found. Using default.");
+            }
+        }
+        bind(appClass).asEagerSingleton();
+        Provider<? extends OrienteerWebApplication> appProvider = binder().getProvider(appClass);
+        if (!OrienteerWebApplication.class.equals(appClass)) {
+            bind(OrienteerWebApplication.class).toProvider(appProvider);
+        }
+        bind(OrientDbWebApplication.class).toProvider(appProvider);
+        bind(WebApplication.class).toProvider(appProvider);
+    }
 
     /**
      * <p>

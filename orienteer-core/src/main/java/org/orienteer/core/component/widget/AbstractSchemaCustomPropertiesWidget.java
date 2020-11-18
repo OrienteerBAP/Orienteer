@@ -42,6 +42,7 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -121,12 +122,13 @@ public abstract class AbstractSchemaCustomPropertiesWidget<T> extends AbstractMo
 							protected void onSubmit(AjaxRequestTarget target) {
 								String key = keyModel.getObject();
 								String value = valueModel.getObject();
-								boolean isTransactionActive = getDatabase().getTransaction().isActive();
-								if(isTransactionActive) getDatabase().commit();
+								ODatabaseSession db = getDatabaseSession();
+								boolean isTransactionActive = db.getTransaction().isActive();
+								if(isTransactionActive) db.commit();
 								try {
 									addCustom(key, value);
 								} finally {
-									if(isTransactionActive) getDatabase().begin();
+									if(isTransactionActive) db.begin();
 								}
 								modal.close(target);
 								target.add(AbstractSchemaCustomPropertiesWidget.this);

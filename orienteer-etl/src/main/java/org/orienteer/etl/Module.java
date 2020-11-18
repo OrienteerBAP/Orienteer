@@ -6,6 +6,7 @@ import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.etl.tasks.OETLTaskSession;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -20,7 +21,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		//Install data model
 		//Return null of default OModule is enough
@@ -28,19 +29,19 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPages("org.orienteer.etl.web");
 		makeSchema(app, db);
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.etl.web");
 	}
 	
-	public void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
+	public void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass("OETLConfig", "OTask")
 			.oProperty("config", OType.STRING).assignVisualization("javascript");

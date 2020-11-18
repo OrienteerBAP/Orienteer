@@ -54,5 +54,6 @@ public enum DisplayMode {
 			return defaultMode;
 		}
 	}
+
 	
 }

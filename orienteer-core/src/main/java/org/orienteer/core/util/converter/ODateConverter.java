@@ -74,8 +74,8 @@ public class ODateConverter extends DateConverter {
     }
     
     private ZoneId getServerZoneId() {
-    	ZoneId zoneId = ((ODatabaseDocumentInternal)OrienteerWebApplication.lookupApplication().getDatabase())
-				.getStorage().getConfiguration().getTimeZone().toZoneId();
+    	ZoneId zoneId = OrienteerWebApplication.lookupApplication().getDatabaseDocumentInternal()
+													.getStorage().getConfiguration().getTimeZone().toZoneId();
 		if(zoneId==null) {
 			zoneId = ZoneId.systemDefault();
 		}

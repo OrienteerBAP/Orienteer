@@ -7,7 +7,7 @@ import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -25,7 +25,7 @@ public class TaskManagerModule extends AbstractOrienteerModule {
     }
     
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 
 		
 		OSchemaHelper helper = OSchemaHelper.bind(db);
@@ -55,7 +55,7 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		onInstall(app, db);
 	}

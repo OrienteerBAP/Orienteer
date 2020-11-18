@@ -14,6 +14,7 @@
 **/.settings/
 build.cmd
 */databases/
+*/runtime/
 */Orienteer/
 */Orienteer*/
 **/.idea/

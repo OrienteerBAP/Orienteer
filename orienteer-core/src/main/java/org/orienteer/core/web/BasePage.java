@@ -1,7 +1,7 @@
 package org.orienteer.core.web;
 
 import com.google.inject.Inject;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsCssResourceReference;
@@ -92,7 +92,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 			String perspective = parameters.get("_perspective").toOptionalString();
 			if(!Strings.isEmpty(perspective))
 			{
-				perspectivesModule.getPerspectiveByAliasAsDocument(getDatabase(), perspective)
+				perspectivesModule.getPerspectiveByAliasAsDocument(getDatabaseSession(), perspective)
 						.ifPresent(perspectiveDoc -> OrienteerWebSession.get().setPerspecive(perspectiveDoc));
 			}
 		}
@@ -108,7 +108,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 	public void initialize()
 	{
 		//TO BO sure that DB was initialized
-		getDatabase();
+		getDatabaseSession();
 		uiPlugins = new RepeatingView("uiPlugins");
 		add(uiPlugins);
 		if(isClientInfoRequired() && !OrienteerWebSession.get().isClientInfoAvailable()) add(new AjaxClientInfoBehavior());
@@ -170,9 +170,9 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		}
 	}
 
-	public ODatabaseDocument getDatabase()
+	public ODatabaseSession getDatabaseSession()
 	{
-		return OrientDbWebSession.get().getDatabase();
+		return OrientDbWebSession.get().getDatabaseSession();
 	}
 	
 	public OSchema getSchema()

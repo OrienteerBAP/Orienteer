@@ -9,11 +9,11 @@ import com.orientechnologies.orient.core.index.OIndex;
 /**
  * {@link Panel} to view a link to an {@link OIndex}
  */
-public class OIndexViewPanel extends AbstractLinkViewPanel<OIndex<?>> {
+public class OIndexViewPanel extends AbstractLinkViewPanel<OIndex> {
 
 	private static final long serialVersionUID = 1L;
 
-	public OIndexViewPanel(String id, IModel<OIndex<?>> model) {
+	public OIndexViewPanel(String id, IModel<OIndex> model) {
 		super(id, model);
 	}
 

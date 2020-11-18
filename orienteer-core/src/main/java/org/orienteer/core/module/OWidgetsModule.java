@@ -3,13 +3,13 @@ package org.orienteer.core.module;
 import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OClassDomain;
@@ -65,7 +65,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(OCLASS_DASHBOARD)
@@ -93,7 +93,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		switch(oldVersion) {
 			case 2:
@@ -110,7 +110,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		List<IWidgetType<?>> notInstalled = checkWidgetClassesInstallation(db);
 		if(!notInstalled.isEmpty()) {
 			LOG.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -152,7 +152,7 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		return sb.toString();
 	}
 	
-	protected void installWidgetsSchemaV2(ODatabaseDocument db) {
+	protected void installWidgetsSchemaV2(ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
 				.oProperty("html", OType.STRING, 10).assignVisualization("html")
@@ -168,11 +168,11 @@ public class OWidgetsModule extends AbstractOrienteerModule {
                 .oProperty("query", OType.STRING, 0).assignVisualization("textarea");
 	}
 	
-	protected void installWidgetsSchemaV3(ODatabaseDocument db) {
+	protected void installWidgetsSchemaV3(ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		OClass widgetClass = helper.oClass(OCLASS_WIDGET).getOClass();
 		if(!widgetClass.existsProperty(OPROPERTY_TITLE)) {
-			db.command(new OSQLSynchQuery<Void>("UPDATE "+OCLASS_WIDGET+" REMOVE title"));
+			db.command("UPDATE "+OCLASS_WIDGET+" REMOVE title");
 		}
 		OClass classToFix = db.getMetadata().getSchema()
 						.getClass(AbstractHtmlJsPaneWidget.WIDGET_OCLASS_NAME);
@@ -188,13 +188,13 @@ public class OWidgetsModule extends AbstractOrienteerModule {
 		}
 	}
 	
-	protected void installWidgetsSchemaV5(ODatabaseDocument db) {
+	protected void installWidgetsSchemaV5(ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
         helper.oClass(AbstractCalculatedDocumentsWidget.WIDGET_OCLASS_NAME, OCLASS_WIDGET)
                 .oProperty("class", OType.STRING, 10).notNull(true);
 	}
 	
-	protected void installWidgetsSchemaV6(ODatabaseDocument db) {
+	protected void installWidgetsSchemaV6(ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(ExternalViewWidget.EXTERNAL_VIEW_WIDGET_CLASS, OWidgetsModule.OCLASS_WIDGET)
 			.oProperty(ExternalViewWidget.TABS_PROPERTY_NAME, OType.EMBEDDEDMAP, 50 ).linkedType(OType.STRING);

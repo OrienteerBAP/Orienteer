@@ -1,6 +1,8 @@
 package org.orienteer.core.widget;
 
 import com.google.common.base.MoreObjects;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -249,8 +251,12 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 		//for soft overriding
 	}
 	
-	protected ODatabaseDocument getDatabase() {
-		return OrientDbWebSession.get().getDatabase();
+	protected ODatabaseSession getDatabaseSession() {
+		return OrientDbWebSession.get().getDatabaseSession();
+	}
+	
+	protected ODatabaseDocumentInternal getDatabaseDocumentInternal() {
+		return OrientDbWebSession.get().getDatabaseDocumentInternal();
 	}
 	
 	protected OSchema getSchema() {

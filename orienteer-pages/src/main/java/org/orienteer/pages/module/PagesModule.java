@@ -1,7 +1,9 @@
 package org.orienteer.pages.module;
 
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.request.mapper.ICompoundRequestMapper;
@@ -13,6 +15,9 @@ import org.orienteer.pages.wicket.mapper.PagesCompoundRequestMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentAliasCompoundMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentAliasMapper;
 import org.orienteer.pages.wicket.mapper.ODocumentsAliasMapper;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * {@link AbstractOrienteerModule} to provide extentions for Orienteer Pages
@@ -42,13 +47,13 @@ public class PagesModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		onUpdate(app, db, 0, getVersion());
 		return null;
 	}
 
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		if(oldVersion>=newVersion) return;
 		switch (oldVersion+1)
@@ -62,7 +67,7 @@ public class PagesModule extends AbstractOrienteerModule {
 		if(oldVersion+1<newVersion) onUpdate(app, db, oldVersion + 1, newVersion);
 	}
 
-	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
+	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseSession db)
 	{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(OCLASS_PAGE)
@@ -76,17 +81,18 @@ public class PagesModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.registerWidgets("org.orienteer.pages.component.widget");
 		app.mount(pagesCompoundRequestMapper = new PagesCompoundRequestMapper());
 		app.mount(documentAliasCompoundMapper = new ODocumentAliasCompoundMapper(ODocumentAliasMapper::new));
 		app.mount(documentsAliasCompoundMapper = new ODocumentAliasCompoundMapper(ODocumentsAliasMapper::new));
-		app.getOrientDbSettings().getORecordHooks().add(PagesHook.class);
+
+		app.getOrientDbSettings().addORecordHooks(PagesHook.class);
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		app.unregisterWidgets("org.orienteer.pages.component.widget");
 
 		ICompoundRequestMapper rootMapper = app.getRootRequestMapperAsCompound();
@@ -94,7 +100,7 @@ public class PagesModule extends AbstractOrienteerModule {
 		rootMapper.remove(documentAliasCompoundMapper);
 		rootMapper.remove(documentsAliasCompoundMapper);
 
-		app.getOrientDbSettings().getORecordHooks().remove(PagesHook.class);
+		app.getOrientDbSettings().removeORecordHooks(PagesHook.class);
 	}
 	
 	public PagesCompoundRequestMapper getPagesCompoundRequestMapper() {

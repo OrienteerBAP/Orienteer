@@ -45,13 +45,13 @@ public class CopyODocumentCommand extends AbstractCopyCommand<ODocument> impleme
         }
 
         super.performMultiAction(target, objects);
-        getDatabase().commit(true);
-        getDatabase().begin();
+        getDatabaseSession().commit(true);
+        getDatabaseSession().begin();
     }
 
     @Override
     protected void perfromSingleAction(AjaxRequestTarget target, ODocument object) {
-        ODocument copy = getDatabase().newInstance(object.getClassName());
+        ODocument copy = getDatabaseSession().newInstance(object.getClassName());
         for (String fieldName : object.fieldNames()) {
             copy.field(fieldName, (Object) object.field(fieldName));
         }

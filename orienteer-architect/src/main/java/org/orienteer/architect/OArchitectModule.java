@@ -1,6 +1,6 @@
 package org.orienteer.architect;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.CustomAttribute;
@@ -24,7 +24,7 @@ public class OArchitectModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+    public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
         helper.oClass(ODATA_MODEL_OCLASS)
                 .oProperty(NAME_OPROPERTY, OType.STRING, 10)
@@ -41,17 +41,17 @@ public class OArchitectModule extends AbstractOrienteerModule {
     }
     
     @Override
-    public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+    public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
     	onInstall(app, db);
     }
 
     @Override
-    public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+    public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
         app.registerWidgets("org.orienteer.architect.component.widget");
     }
 
     @Override
-    public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+    public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
         app.unregisterWidgets("org.orienteer.architect.component.widget");
     }
 

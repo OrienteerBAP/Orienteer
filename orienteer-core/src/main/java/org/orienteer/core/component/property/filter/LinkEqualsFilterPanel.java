@@ -75,7 +75,7 @@ public class LinkEqualsFilterPanel extends AbstractOPropertyFilterPanel<ODocumen
     }
 
     private Select2Choice<ODocument> createDocumentChoiceComponent(String id, IModel<OClass> classModel) {
-        Select2Choice<ODocument> choice = new Select2Choice<>(id, getModel(), new ODocumentChoiceProvider(classModel));
+        Select2Choice<ODocument> choice = new Select2Choice<>(id, getModel(), new ODocumentChoiceProvider<ODocument>(classModel));
         choice.getSettings()
                 .setWidth("100%")
                 .setCloseOnSelect(true)

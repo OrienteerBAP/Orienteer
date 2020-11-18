@@ -1,5 +1,6 @@
 package org.orienteer.core.component.widget.schema;
 
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
@@ -29,10 +30,12 @@ public class SchemaIndexesWidget extends AbstractIndexesWidget<Void> {
 
 	@Override
 	protected OIndexesDataProvider getIndexDataProvider() {
-		AbstractListModel<OIndex<?>> allIndexesModel = new AbstractListModel<OIndex<?>>() {
+		AbstractListModel<OIndex> allIndexesModel = new AbstractListModel<OIndex>() {
 			@Override
-			protected Collection<OIndex<?>> getData() {
-				return (Collection<OIndex<?>>) OrientDbWebSession.get().getDatabase().getMetadata().getIndexManager().getIndexes();
+			@SuppressWarnings("unchecked")
+			protected Collection<OIndex> getData() {
+				ODatabaseDocumentInternal db = OrientDbWebSession.get().getDatabaseDocumentInternal();
+				return (Collection<OIndex>) db.getMetadata().getIndexManagerInternal().getIndexes(db);
 			}
 		};
 

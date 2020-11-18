@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -10,6 +11,7 @@ import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.utils.ODbUtils;
 
 import javax.inject.Singleton;
 
@@ -32,13 +34,13 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 	}
 
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		onUpdate(app, db, 0, getVersion());
 		return null;
 	}
 
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		if(oldVersion>=newVersion) return;
 		switch (oldVersion+1)
@@ -49,7 +51,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 			case 2:
 				//Required for explicit update of rights due to changes in OrientDB 2.2.23
 				//Related issue: https://github.com/orientechnologies/orientdb/issues/7549
-				app.fixOrientDBRights(db);
+				ODbUtils.fixOrientDBRights(db);
 				break;
 			case 3:
 				assignSchemaFeature(app, db); //By default schema was available to everyone, so lets keep it
@@ -59,7 +61,7 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 		if(oldVersion+1<newVersion) onUpdate(app, db, oldVersion+1, newVersion);
 	}
 	
-	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseDocument db)
+	public void onUpdateToFirstVesion(OrienteerWebApplication app, ODatabaseSession db)
 	{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		if(helper.existsClass(OCLASS_FUNCTION))
@@ -107,8 +109,12 @@ public class UpdateDefaultSchemaModule extends AbstractOrienteerModule
 		for(ODocument oRoleDoc : db.getMetadata().getSecurity().getAllRoles()) {
 			ORole oRole = new ORole(oRoleDoc);
 			if(oRole.getParentRole()==null) {
-				oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, OrientPermission.READ.getPermissionFlag());
-				oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, OrientPermission.READ.getPermissionFlag());
+				if("admin".equals(oRole.getName())) {
+					oRole.grant(OSecurityHelper.FEATURE_RESOURCE, "*", ORole.PERMISSION_ALL);
+				} else {
+					oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, OrientPermission.READ.getPermissionFlag());
+					oRole.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, OrientPermission.READ.getPermissionFlag());
+				}
 				oRole.save();
 			}
 		}

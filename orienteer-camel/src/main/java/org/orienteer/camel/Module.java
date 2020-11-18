@@ -12,6 +12,7 @@ import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.tasks.OTask;
 import org.orienteer.core.util.OSchemaHelper;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
@@ -27,7 +28,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 //		OSchemaHelper helper = OSchemaHelper.bind(db);
 		makeSchema(app,db);
@@ -37,7 +38,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
 		super.onUpdate(app, db, oldVersion, newVersion);
 		onInstall(app, db);
 		db.commit();
@@ -45,7 +46,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		
 		app.setMetaData(OIntegrationConfig.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
@@ -57,7 +58,7 @@ public class Module extends AbstractOrienteerModule{
 
 	}
 	
-	private void makeSchema(OrienteerWebApplication app, ODatabaseDocument db){
+	private void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(OIntegrationConfig.TASK_CLASS,OTask.TASK_CLASS)
 			.oProperty("script", OType.STRING, 15).assignVisualization("script");
@@ -65,7 +66,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	@Override
-	public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
 		app.unmountPages("org.orienteer.camel.web");
 		//app.unregisterWidgets("org.orienteer.camel.widget");

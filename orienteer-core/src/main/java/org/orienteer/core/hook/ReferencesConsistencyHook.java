@@ -1,15 +1,5 @@
 package org.orienteer.core.hook;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import org.orienteer.core.CustomAttribute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -20,11 +10,22 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeEvent;
 import com.orientechnologies.orient.core.db.record.OMultiValueChangeTimeLine;
+import com.orientechnologies.orient.core.exception.OConcurrentModificationException;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import org.orienteer.core.CustomAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * {@link ODocumentHookAbstract} for keeping references consistency between documents
@@ -39,37 +40,20 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 									@Override
 									public Collection<OProperty> load(OClass key)
 											throws Exception {
-										return Collections2.filter(key.properties(), new Predicate<OProperty>() {
-												@Override
-												public boolean apply(OProperty property) {
-													return property.getType().isLink() 
-															&& CustomAttribute.PROP_INVERSE.getValue(property)!=null;
-												}
-											});
+										return Collections2.filter(key.properties(), property -> property.getType().isLink()
+												&& CustomAttribute.PROP_INVERSE.getValue(property)!=null);
 									}
 								});
-	private static final ThreadLocal<List<ODocument>> ENTRY_LOCK = new ThreadLocal<List<ODocument>>()
-			{
-				@Override
-				protected List<ODocument> initialValue() {
-					return new ArrayList<ODocument>(3);
-				}
-			};
-	private static final ThreadLocal<Boolean> HOOK_DISABLED = new ThreadLocal<Boolean>()
-			{
-				@Override
-				protected Boolean initialValue() {
-					return false;
-				}
-			};
+
+	private static final ThreadLocal<List<ODocument>> ENTRY_LOCK = ThreadLocal.withInitial(() -> new ArrayList<ODocument>(3));
+	private static final ThreadLocal<Boolean> HOOK_DISABLED      = ThreadLocal.withInitial(() -> false);
 			
 	public ReferencesConsistencyHook(ODatabaseDocument database) {
 		super(database);
 	}
 
-	private boolean enter(ODocument doc)
-	{
-		if(doc.getSchemaClass()==null || HOOK_DISABLED.get()) return false;
+	private boolean enter(ODocument doc) {
+		if(doc.getSchemaClass() == null || HOOK_DISABLED.get()) return false;
 		List<ODocument> docs = ENTRY_LOCK.get();
 		boolean ret = !docs.contains(doc);
 		if(ret) docs.add(doc);
@@ -101,13 +85,11 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 	
 	@Override
 	public DISTRIBUTED_EXECUTION_MODE getDistributedExecutionMode() {
-		return DISTRIBUTED_EXECUTION_MODE.TARGET_NODE;
+		return DISTRIBUTED_EXECUTION_MODE.SOURCE_NODE;
 	}
 	
-	private LoadingCache<OClass, Collection<OProperty>> getCache()
-	{
-		@SuppressWarnings("deprecation")
-		int version = ODatabaseRecordThreadLocal.INSTANCE.get().getMetadata().getSchema().getVersion();
+	private LoadingCache<OClass, Collection<OProperty>> getCache() {
+		int version = ODatabaseRecordThreadLocal.instance().get().getMetadata().getImmutableSchemaSnapshot().getVersion();
 		if(version>currentSchemaVersion)
 		{
 			CACHE.invalidateAll();
@@ -118,26 +100,34 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 
 	@Override
 	public void onRecordAfterCreate(ODocument doc) {
-		if(enter(doc))
-		{
-			try
-			{
-				OClass thisOClass = doc.getSchemaClass();
-//				if(thisOClass==null) return;
+		if(enter(doc)) {
+			try {
 				Collection<OProperty> refProperties = getCache().get(doc.getSchemaClass());
-				for (OProperty oProperty : refProperties)
-				{
+				for (OProperty oProperty : refProperties) {
 					OProperty inverseProperty = CustomAttribute.PROP_INVERSE.getValue(oProperty);
 					Object value = doc.field(oProperty.getName());
-					if(value instanceof OIdentifiable) value = Arrays.asList(value);
-					if(inverseProperty!=null && value!=null && value instanceof Collection)
+					if(value instanceof OIdentifiable) {
+					    value = Collections.singletonList(value);
+                    }
+					if(inverseProperty != null && value instanceof Collection)
 					{
 						for(Object otherObj: (Collection<?>)value)
 						{
 							if(otherObj instanceof OIdentifiable)
 							{
 								ODocument otherDoc = ((OIdentifiable) otherObj).getRecord();
-								addLink(otherDoc, inverseProperty, doc);
+
+								for (int i = 0; i <= 10; i++) {
+									try {
+										addLink(otherDoc, inverseProperty, doc);
+										database.commit();
+									} catch (OConcurrentModificationException e) {
+										otherDoc.reload();
+										if (i == 10) {
+											throw new IllegalStateException(e);
+										}
+									}
+								}
 							}
 						}
 					}
@@ -351,5 +341,5 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 			}
 		}
 	}
-	
+
 }

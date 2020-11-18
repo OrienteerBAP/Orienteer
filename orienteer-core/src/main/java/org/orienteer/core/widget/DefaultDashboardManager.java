@@ -4,10 +4,12 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
 import ru.ydn.wicket.wicketorientdb.utils.GetODocumentFieldValueFunction;
@@ -18,8 +20,10 @@ import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebSession;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
 
@@ -54,42 +58,38 @@ public class DefaultDashboardManager implements IDashboardManager{
 	
 	@Override
 	public List<String> listExistingTabs(String domain, IModel<?> dataModel) {
-		ODatabaseDocument db = getDatabase();
-		List<String> ret = new ArrayList<String>();
-		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_DASHBOARD+
-														" where "+OPROPERTY_DOMAIN+" = ?"), domain);
-		if(dashboards!=null && !dashboards.isEmpty()) {
-			ret.addAll(Lists.transform(dashboards, new GetODocumentFieldValueFunction<String>(OPROPERTY_TAB)));
+		ODatabaseDocument db = getDatabaseSession();
+		try(OResultSet result = db.query("select tab from "+OCLASS_DASHBOARD+" where "+OPROPERTY_DOMAIN+" = ?", domain)) {
+			return result.stream().map(r -> (String)r.getProperty(OPROPERTY_TAB)).collect(Collectors.toList());
 		}
-		return ret;
 	}
 	
 	@Override
 	public List<String> listExistingTabs(String domain, IModel<?> dataModel, OClass oClass) {
 		if(oClass==null) return listExistingTabs(domain, dataModel);
-		ODatabaseDocument db = getDatabase();
+		ODatabaseDocument db = getDatabaseSession();
 		List<String> ret = new ArrayList<String>();
 		List<String> oClassAndSuper = new ArrayList<>();
 		oClassAndSuper.add(oClass.getName());
 		oClassAndSuper.addAll(oClass.getSuperClassesNames());
-		List<ODocument>  dashboards = db.query(
-				new OSQLSynchQuery<ODocument>("select distinct("+OPROPERTY_TAB+") as "+OPROPERTY_TAB+" from "+OCLASS_DASHBOARD+
-										" where "+OPROPERTY_DOMAIN+" = ?"+
-										" and "+OPROPERTY_CLASS+" IN ?"), domain, oClassAndSuper);
-		if(dashboards!=null && !dashboards.isEmpty()) {
-			ret.addAll(Lists.transform(dashboards, new GetODocumentFieldValueFunction<String>(OPROPERTY_TAB)));
+		String sql = "select distinct("+OPROPERTY_TAB+") as "+OPROPERTY_TAB+" from "+OCLASS_DASHBOARD+
+				" where "+OPROPERTY_DOMAIN+" = ?"+
+				" and "+OPROPERTY_CLASS+" IN ?";
+		try(OResultSet result = db.query(sql, domain, oClassAndSuper)) {
+			return result.stream().map(r -> (String)r.getProperty(OPROPERTY_TAB)).collect(Collectors.toList());
 		}
-		return ret;
 	}
 	
 	@Override
 	public ODocument getExistingDashboard(String domain, String tab, IModel<?> dataModel) {
-		ODatabaseDocument db = getDatabase();
-		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>("select from "+OCLASS_DASHBOARD+
-											" where "+OPROPERTY_DOMAIN+" = ?"+
-											" and "+OPROPERTY_TAB+" = ?"), domain, tab);
-		if(dashboards==null || dashboards.isEmpty()) return null;
-		else return dashboards.get(0);
+		ODatabaseDocument db = getDatabaseSession();
+		String sql = String.format("select from %s where %s = ? and %s = ?", OCLASS_DASHBOARD, OPROPERTY_DOMAIN, OPROPERTY_TAB);
+		try(OResultSet result = db.query(sql, domain, tab)) {
+				return result.elementStream()
+								.findFirst()
+								.map(e -> (ODocument) e)
+								.orElse(null);
+		}
 	}
 	
 	@Override
@@ -119,10 +119,18 @@ public class DefaultDashboardManager implements IDashboardManager{
 				args.add(entry.getValue());
 			}
 		}
-		ODatabaseDocument db = getDatabase();
-		List<ODocument>  dashboards = db.query(new OSQLSynchQuery<ODocument>(sql.toString()), args.toArray());
-		if(dashboards==null || dashboards.isEmpty()) return null;
-		else if(oClass!=null) {
+		ODatabaseSession db = getDatabaseSession();
+		List<ODocument>  dashboards;
+		try(OResultSet result = db.query(sql.toString(), args.toArray())) {
+			
+			dashboards = result.elementStream()
+									.map(e -> (ODocument) e)
+									.collect(Collectors.toCollection(LinkedList::new));
+		}
+
+		if(dashboards.isEmpty()) {
+			return null;
+		} else if (oClass != null) {
 			ODocument selected=null;
 			int level = Integer.MAX_VALUE;
 			OSchema schema = db.getMetadata().getSchema();
@@ -161,7 +169,7 @@ public class DefaultDashboardManager implements IDashboardManager{
 	public ODocument createWidgetDocument(IWidgetType<?> widgetType) {
 		String oClassName = widgetType.getOClassName();
 		if(oClassName==null) oClassName = OCLASS_WIDGET;
-		OClass oClass = getDatabase().getMetadata().getSchema().getClass(oClassName);
+		OClass oClass = getDatabaseSession().getMetadata().getSchema().getClass(oClassName);
 		if(oClass==null || !oClass.isSubClassOf(OCLASS_WIDGET)) throw new WicketRuntimeException("Wrong OClass specified for widget settings: "+oClassName);
 		ODocument widgetDoc = new ODocument(oClass);
 		widgetDoc.field(OPROPERTY_TYPE_ID, widgetType.getId());
@@ -174,9 +182,9 @@ public class DefaultDashboardManager implements IDashboardManager{
 		return createWidgetDocument(widgetRegistry.lookupByWidgetClass(widgetClass));
 	}
 	
-	private ODatabaseDocument getDatabase()
+	private ODatabaseSession getDatabaseSession()
 	{
-		return OrienteerWebSession.get().getDatabase();
+		return OrienteerWebSession.get().getDatabaseSession();
 	}
 	
 }

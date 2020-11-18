@@ -3,8 +3,13 @@
  */
 package org.orienteer.core.component.widget.oclass;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.record.OClassTrigger;
+import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -24,18 +29,13 @@ import org.orienteer.core.component.structuretable.OrienteerStructureTable;
 import org.orienteer.core.util.ODocumentChoiceRenderer;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import org.orienteer.core.widget.Widget;
-
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.record.OClassTrigger;
-import com.orientechnologies.orient.core.id.ORecordId;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.components.TransactionlessForm;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Widget for class-linked hooks
@@ -101,10 +101,10 @@ public class OClassHooksWidget extends AbstractModeAwareWidget<OClass> {
 								else if (ORecordId.isA(idStr)){
 									return new ORecordId(idStr).getRecord();
 								}else{
-							    	ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
-							    	OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>("SELECT FROM OFunction WHERE name=?");
-							    	List<ODocument> ret = db.query(query, idStr);
-							    	return ret!=null && !ret.isEmpty() ? ret.get(0):null;
+							    	ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
+							    	try(OResultSet result = db.query("select from OFunction where name = ?", idStr)) {
+							    		return (ODocument) result.elementStream().findFirst().orElse(null);
+							    	}
 								}
 							}
 							

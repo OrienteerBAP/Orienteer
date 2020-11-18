@@ -187,6 +187,7 @@ public interface IDAOAllTypesTestClass {
 	/**
 	 * CUSTOM("Custom", 20, OSerializableStream.class, new Class<?>[] { OSerializableStream.class, Serializable.class }),
 	 */
+	@DAOField(type = OType.CUSTOM)
 	public Serializable getCustom();
 	public void setCustom(Serializable val);
 

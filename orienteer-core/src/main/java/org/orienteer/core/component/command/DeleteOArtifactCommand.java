@@ -1,8 +1,9 @@
 package org.orienteer.core.component.command;
 
+import com.google.inject.Inject;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
+import org.orienteer.core.boot.loader.service.IModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
@@ -14,6 +15,8 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 @RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions = OrientPermission.EXECUTE)
 public class DeleteOArtifactCommand extends AbstractDeleteCommand<OArtifact> {
 
+    @Inject
+    private IModuleManager manager;
 
     public DeleteOArtifactCommand(OrienteerDataTable<OArtifact, ?> table) {
         super(table);
@@ -21,7 +24,6 @@ public class DeleteOArtifactCommand extends AbstractDeleteCommand<OArtifact> {
 
     @Override
     protected void perfromSingleAction(AjaxRequestTarget target, final OArtifact module) {
-        OrienteerClassLoaderUtil.deleteOArtifactFile(module);
-        OrienteerClassLoaderUtil.deleteOArtifactFromMetadata(module);
+        manager.deleteArtifact(module);
     }
 }

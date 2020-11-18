@@ -12,6 +12,8 @@ import org.orienteer.core.widget.Widget;
 
 import com.orientechnologies.orient.core.command.script.OScriptDocumentDatabaseWrapper;
 import com.orientechnologies.orient.core.command.script.OScriptOrientWrapper;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
 import com.orientechnologies.orient.core.metadata.function.OFunctionUtilWrapper;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -32,7 +34,7 @@ public class WicketConsoleWidget extends AbstractWidget<Void> {
 			@Override
 			public Map<String, Object> getBindings() {
 				Map<String, Object> bindings = new HashMap<String, Object>();
-				ODatabaseDocumentTx db = (ODatabaseDocumentTx) getDatabase();
+				ODatabaseDocumentInternal db = getDatabaseDocumentInternal();
 				bindings.put("db", new OScriptDocumentDatabaseWrapper(db));
 				bindings.put("orient", new OScriptOrientWrapper(db));
 				bindings.put("util", new OFunctionUtilWrapper());

@@ -1,6 +1,7 @@
 package org.orienteer.core.dao;
 
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -49,7 +50,7 @@ public class DAOTest {
 		new DBClosure<Boolean>() {
 
 			@Override
-			protected Boolean execute(ODatabaseDocument db) {
+			protected Boolean execute(ODatabaseSession db) {
 				OSchemaHelper helper = OSchemaHelper.bind(db)
 						.oClass(TEST_CLASS)
 						.oProperty("name", OType.STRING)
@@ -82,7 +83,7 @@ public class DAOTest {
 		new DBClosure<Boolean>() {
 
 			@Override
-			protected Boolean execute(ODatabaseDocument db) {
+			protected Boolean execute(ODatabaseSession db) {
 				db.getMetadata().getSchema().dropClass(TEST_CLASS);
 				return true;
 			}
@@ -222,7 +223,7 @@ public class DAOTest {
 	public void testDescriber() {
 		OSchema schema = tester.getMetadata().getSchema();
 		try {
-			DAO.describe(OSchemaHelper.bind(tester.getDatabase()), IDAOTestClassA.class);
+			DAO.describe(OSchemaHelper.bind(tester.getDatabaseSession()), IDAOTestClassA.class);
 			assertTrue(schema.existsClass("DAOTestClassRoot"));
 			assertTrue(schema.existsClass("DAOTestClassA"));
 			assertTrue(schema.existsClass("DAOTestClassB"));
@@ -258,7 +259,7 @@ public class DAOTest {
 	public void testDescribeAllTypes() {
 		OSchema schema = tester.getMetadata().getSchema();
 		try {
-			DAO.describe(OSchemaHelper.bind(tester.getDatabase()), IDAOAllTypesTestClass.class);
+			DAO.describe(OSchemaHelper.bind(tester.getDatabaseSession()), IDAOAllTypesTestClass.class);
 			assertTrue(schema.existsClass("DAOAllTypesTestClass"));
 			assertTrue(schema.existsClass("IDAODummyClass"));
 			OClass oClass = schema.getClass("DAOAllTypesTestClass");

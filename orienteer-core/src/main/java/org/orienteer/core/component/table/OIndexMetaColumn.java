@@ -11,7 +11,7 @@ import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
 /**
  * {@link AbstractModeMetaColumn} for {@link OIndex}ies
  */
-public class OIndexMetaColumn extends AbstractModeMetaColumn<OIndex<?>, DisplayMode, String, String>
+public class OIndexMetaColumn extends AbstractModeMetaColumn<OIndex, DisplayMode, String, String>
 {
 
 	public OIndexMetaColumn(String critery, IModel<DisplayMode> modeModel)
@@ -25,9 +25,9 @@ public class OIndexMetaColumn extends AbstractModeMetaColumn<OIndex<?>, DisplayM
 	}
 
 	@Override
-	protected <V> AbstractMetaPanel<OIndex<?>, String, V> newMetaPanel(
+	protected <V> AbstractMetaPanel<OIndex, String, V> newMetaPanel(
 			String componentId, IModel<String> criteryModel,
-			IModel<OIndex<?>> rowModel) {
+			IModel<OIndex> rowModel) {
 		return new OIndexMetaPanel<V>(componentId, getModeModel(), rowModel, criteryModel);
 	}
 

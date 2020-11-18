@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import net.coobird.thumbnailator.Thumbnails;
@@ -124,8 +125,19 @@ public class OContentShareResource extends AbstractResource {
     
     protected byte[] getContent(OIdentifiable rid, String field) {
     	ODocument doc = rid.getRecord();
-    	if(doc==null) return null;
-    	return doc.field(field, byte[].class);
+    	Object data = doc != null ? doc.field(field) : null;
+    	byte[] result = null;
+
+    	if (data != null) {
+            OType type = doc.fieldType(field);
+            if (type == OType.STRING) {
+                result = ((String) data).getBytes();
+            } else {
+                result = (byte[]) OType.convert(data, byte[].class);
+            }
+        }
+
+    	return result;
     }
 
     private WriteCallback createWriteCallback(byte [] data) {

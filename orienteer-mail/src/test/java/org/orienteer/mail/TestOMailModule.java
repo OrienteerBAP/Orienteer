@@ -2,6 +2,7 @@ package org.orienteer.mail;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.junit.*;
@@ -79,9 +80,9 @@ public class TestOMailModule {
 	public void destroy() {
 		new DBClosure<Void>() {
 			@Override
-			protected Void execute(ODatabaseDocument db) {
-				db.command(new OCommandSQL("delete from ?")).execute(mail.getDocument());
-				db.command(new OCommandSQL("delete from ?")).execute(mail.getMailSettings().getDocument());
+			protected Void execute(ODatabaseSession db) {
+				db.command("delete from ?", mail.getDocument()).close();
+				db.command("delete from ?", mail.getMailSettings().getDocument());
 				return null;
 			}
 		}.execute();

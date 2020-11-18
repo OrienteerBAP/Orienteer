@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ~ Copyright (c) 2008-2012, Hazel Bilisim Ltd. All Rights Reserved. ~ 
+	~ Licensed under the Apache License, Version 2.0 (the "License"); ~ you may 
+	not use this file except in compliance with the License. ~ You may obtain 
+	a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 ~ 
+	~ Unless required by applicable law or agreed to in writing, software ~ distributed 
+	under the License is distributed on an "AS IS" BASIS, ~ WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. ~ See the License for 
+	the specific language governing permissions and ~ limitations under the License. -->
+
+<hazelcast
+        xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.9.xsd"
+        xmlns="http://www.hazelcast.com/schema/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<group>
+		<name>orienteer</name>
+		<password>orienteer</password>
+	</group>
+    <instance-name>orienteer-hazelcast</instance-name>
+
+    <properties>
+        <property name="hazelcast.shutdownhook.enabled">false</property>
+    </properties>
+
+    <map name="registeredNodes">
+        <backup-count>6</backup-count>
+        <in-memory-format>OBJECT</in-memory-format>
+    </map>
+	<map name="wicket-sessions">
+		<backup-count>5</backup-count>
+        <async-backup-count>1</async-backup-count>
+        <eviction-policy>LRU</eviction-policy>
+        <max-size policy="USED_HEAP_SIZE">256</max-size>
+        <in-memory-format>OBJECT</in-memory-format>
+    </map>
+	<map name="wicket-data-store">
+        <backup-count>5</backup-count>
+        <async-backup-count>1</async-backup-count>
+        <eviction-policy>LRU</eviction-policy>
+        <max-size policy="USED_HEAP_SIZE">256</max-size>
+        <in-memory-format>OBJECT</in-memory-format>
+	</map>
+    <map name="wicket-pages-caches">
+        <backup-count>5</backup-count>
+        <async-backup-count>1</async-backup-count>
+        <eviction-policy>LRU</eviction-policy>
+        <max-size policy="USED_HEAP_SIZE">256</max-size>
+        <in-memory-format>OBJECT</in-memory-format>
+    </map>
+    <map name="orientdb">
+        <merge-policy>com.orientechnologies.orient.server.hazelcast.OHazelcastMergeStrategy</merge-policy>
+        <in-memory-format>OBJECT</in-memory-format>
+    </map>
+
+	<network>
+		<port auto-increment="true">5701</port>
+		<join>
+			<multicast enabled="true">
+				<multicast-group>235.1.1.1</multicast-group>
+				<multicast-port>5701</multicast-port>
+			</multicast>
+		</join>
+        <interfaces enabled="false">
+            <interface>10.0.0.*</interface>
+        </interfaces>
+	</network>
+	<executor-service>
+		<pool-size>16</pool-size>
+	</executor-service>
+</hazelcast>

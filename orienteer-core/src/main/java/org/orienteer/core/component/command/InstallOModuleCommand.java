@@ -1,19 +1,23 @@
 package org.orienteer.core.component.command;
 
+import com.google.inject.Inject;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.ResourceModel;
 import org.eclipse.aether.artifact.Artifact;
-import org.orienteer.core.boot.loader.util.OrienteerClassLoaderUtil;
-import org.orienteer.core.boot.loader.util.artifact.OArtifact;
-import org.orienteer.core.boot.loader.util.artifact.OArtifactReference;
+import org.orienteer.core.boot.loader.service.IModuleManager;
+import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
+import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.widget.loader.OArtifactsModalWindowPage;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Command for download and install Orienteer module from server
@@ -31,6 +35,8 @@ public class InstallOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtif
     private final OArtifactsModalWindowPage windowPage;
     private final boolean trusted;
 
+    @Inject
+    private IModuleManager manager;
 
     public InstallOModuleCommand(OrienteerDataTable<OArtifact, ?> table, OArtifactsModalWindowPage windowPage, boolean trusted, Label feedback) {
         super(new ResourceModel(trusted ? "command.install.module.trusted" : "command.install.module.untrusted"), table);
@@ -46,17 +52,24 @@ public class InstallOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtif
     protected void performMultiAction(AjaxRequestTarget target, List<OArtifact> availableArtifacts) {
         int success = 0;
         int failed = 0;
+        Set<OArtifact> preparedArtifacts = new LinkedHashSet<>();
+
         for (OArtifact availableArtifact : availableArtifacts) {
-            Artifact artifact = OrienteerClassLoaderUtil.downloadArtifact(
-                    availableArtifact.getArtifactReference().toAetherArtifact());
+            Artifact artifact = InternalOModuleManager.get().downloadArtifact(
+                    availableArtifact.getArtifactReference().toAetherArtifact()
+            );
             if (artifact!=null) {
                 availableArtifact.setDownloaded(true);
-                saveOArtifact(artifact, availableArtifact.getArtifactReference());
+                OArtifact preparedArtifact = prepareOArtifact(artifact, availableArtifact.getArtifactReference());
+                preparedArtifacts.add(preparedArtifact);
                 success++;
             } else {
                 failed++;
             }
         }
+
+        manager.addArtifacts(preparedArtifacts);
+
         if (success > 0) {
             windowPage.closeModalWindow(target);
         } else configureFeedback(success, failed);
@@ -66,11 +79,11 @@ public class InstallOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtif
 
 
     /**
-     * Create and save downloaded OArtifact from server
+     * Create from server
      * @param artifact  - downloaded {@link Artifact} from server
      * @param reference - {@link OArtifactReference} of OArtifact
      */
-    private void saveOArtifact(Artifact artifact, OArtifactReference reference) {
+    private OArtifact prepareOArtifact(Artifact artifact, OArtifactReference reference) {
         OArtifact ooArtifact = new OArtifact();
         ooArtifact.setTrusted(trusted);
         ooArtifact.setLoad(true);
@@ -79,7 +92,8 @@ public class InstallOModuleCommand extends AbstractCheckBoxEnabledCommand<OArtif
         OArtifactReference oArtifactReference = OArtifactReference.valueOf(artifact.setVersion(reference.getVersion()));
         oArtifactReference.setDescription(reference.getDescription());
         ooArtifact.setArtifactReference(oArtifactReference);
-        OrienteerClassLoaderUtil.updateOArtifactInMetadata(ooArtifact);
+
+        return ooArtifact;
     }
 
 

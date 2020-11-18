@@ -37,7 +37,7 @@ public abstract class ImportDialogPanel extends Panel
 			@Override
 			protected void onSubmit(AjaxRequestTarget target) {
 				FileUpload file = inputFile.getFileUpload();
-				ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+				ODatabaseDocumentInternal db = OrientDbWebSession.get().getDatabaseDocumentInternal();
 				db.commit();
 				try
 				{
@@ -46,7 +46,7 @@ public abstract class ImportDialogPanel extends Panel
 					{
 						is = new GZIPInputStream(is);
 					}
-					ODatabaseImport dbImport = new ODatabaseImport((ODatabaseDocumentInternal)db, is, LoggerOCommandOutputListener.INSTANCE);
+					ODatabaseImport dbImport = new ODatabaseImport(db, is, LoggerOCommandOutputListener.INSTANCE);
 					dbImport.setOptions("-merge=true");
 					dbImport.importDatabase();
 					success(getLocalizer().getString("success.import", this));

@@ -24,6 +24,8 @@ import org.orienteer.core.event.ActionPerformedEvent;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 
@@ -207,14 +209,19 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 		return bootstrapSize;
 	}
 	
-	public ODatabaseDocument	getDatabase()
+	public ODatabaseDocumentInternal getDatabaseDocumentInternal()
 	{
-		return OrientDbWebSession.get().getDatabase();
+		return OrientDbWebSession.get().getDatabaseDocumentInternal();
+	}
+	
+	public ODatabaseSession getDatabaseSession()
+	{
+		return OrientDbWebSession.get().getDatabaseSession();
 	}
 	
 	public OSchema getSchema()
 	{
-		return getDatabase().getMetadata().getSchema();
+		return getDatabaseSession().getMetadata().getSchema();
 	}
 	
 	public boolean isChangingModel() {

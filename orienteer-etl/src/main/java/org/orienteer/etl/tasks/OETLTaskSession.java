@@ -6,6 +6,7 @@ import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.etl.component.OETLConfig;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
@@ -34,7 +35,7 @@ public class OETLTaskSession extends OTaskSessionRuntime{
 	/**
 	 * Register fields in db 
 	 */
-	public static final void onInstallModule(OrienteerWebApplication app, ODatabaseDocument db){
+	public static final void onInstallModule(OrienteerWebApplication app, ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(TASK_SESSION_CLASS,OTaskSessionRuntime.TASK_SESSION_CLASS);
 			helper.oProperty(ITaskSession.Field.THREAD_NAME.fieldName(),OType.STRING,10).markAsDocumentName();

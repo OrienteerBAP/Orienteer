@@ -19,7 +19,6 @@ public class CalculatedDocumentsWidget extends AbstractCalculatedDocumentsWidget
 	@Override
 	protected OQueryDataProvider<ODocument> newDataProvider(String sql) {
 		return super.newDataProvider(sql)
-						.setParameter("doc", getModel())
-						.setContextVariable("doc", getModel());
+						.setParameter("doc", getModel());
 	}
 }

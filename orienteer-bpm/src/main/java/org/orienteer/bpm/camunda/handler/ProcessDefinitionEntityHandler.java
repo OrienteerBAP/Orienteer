@@ -1,8 +1,10 @@
 package org.orienteer.bpm.camunda.handler;
 
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.camunda.bpm.engine.impl.db.ListQueryParameterObject;
 import org.camunda.bpm.engine.impl.persistence.deploy.DeploymentCache;
@@ -64,8 +66,12 @@ public class ProcessDefinitionEntityHandler extends AbstractEntityHandler<Proces
 		if(iType.equals(TYPE.BEFORE_CREATE)) {
 			ODocument deployment = doc.field("deployment");
 			if(deployment==null) {
-				List<ODocument> deployments = db.query(new OSQLSynchQuery<>("select from "+DeploymentEntityHandler.OCLASS_NAME, 1));
-				deployment = deployments!=null && !deployments.isEmpty()?deployments.get(0):null;
+				String sql = String.format("select from %s limit 1", DeploymentEntityHandler.OCLASS_NAME);
+				List<ODocument> deployments = db.query(sql).elementStream()
+						.map(e -> (ODocument) e)
+						.collect(Collectors.toCollection(LinkedList::new));
+
+				deployment = !deployments.isEmpty() ? deployments.get(0) : null;
 				if(deployment==null) {
 					deployment = new ODocument(DeploymentEntityHandler.OCLASS_NAME);
 					deployment.field("id", BpmnHook.getNextId());

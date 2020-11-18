@@ -65,7 +65,7 @@ public class SearchPage extends OrienteerBasePage<String> {
 	private SerializableSupplier<List<OClass>> createClassesGetter() {
 		Predicate<OClass> predicate = OrienteerWebApplication.get().getServiceInstance(IFilterPredicateFactory.class)
 				.getPredicateForClassesSearch();
-		return () -> OClassSearchPanel.CLASSES_ORDERING.sortedCopy(getDatabase().getMetadata().getSchema().getClasses())
+		return () -> OClassSearchPanel.CLASSES_ORDERING.sortedCopy(getDatabaseSession().getMetadata().getSchema().getClasses())
 				.stream()
 				.filter(predicate)
 				.sorted()

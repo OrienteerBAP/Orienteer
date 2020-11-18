@@ -52,14 +52,14 @@ public class SubClassesModel extends ChainingModel<List<OClass>>{
 				if(includingRoot && CAN_BE_INSTANTIATED.apply(oClass)) ret.add(oClass);
 				ret.addAll(Collections2.filter(oClass.getAllSubclasses(), CAN_BE_INSTANTIATED));
 			} else {
-				ret.addAll(Collections2.filter(OrienteerWebSession.get().getDatabase().getMetadata().getSchema().getClasses(), CAN_BE_INSTANTIATED));
+				ret.addAll(Collections2.filter(OrienteerWebSession.get().getSchema().getClasses(), CAN_BE_INSTANTIATED));
 			}
 		} else {
 			if(oClass!=null) {
 				if(includingRoot) ret.add(oClass);
 				ret.addAll(oClass.getAllSubclasses());
 			} else {
-				ret.addAll(OrienteerWebSession.get().getDatabase().getMetadata().getSchema().getClasses());
+				ret.addAll(OrienteerWebSession.get().getSchema().getClasses());
 			}
 		}
 		return ret;

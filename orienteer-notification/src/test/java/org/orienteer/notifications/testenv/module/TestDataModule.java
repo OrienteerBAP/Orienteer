@@ -1,6 +1,6 @@
 package org.orienteer.notifications.testenv.module;
 
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.dao.DAO;
@@ -30,7 +30,7 @@ public class TestDataModule extends AbstractOrienteerModule {
   }
 
   @Override
-  public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+  public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
     ODocument mailSettings = installTestMailSettings(helper);
     DAO.describe(helper, OTestNotification.class, OTestNotificationTransport.class);
@@ -91,7 +91,7 @@ public class TestDataModule extends AbstractOrienteerModule {
   }
 
   @Override
-  public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+  public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
     onInstall(app, db);
   }
 }

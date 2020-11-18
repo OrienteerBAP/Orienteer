@@ -24,7 +24,6 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.model.LanguagesChoiceProvider;
-import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -34,6 +33,8 @@ import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.orienteer.core.module.OrienteerLocalizationModule.OLocalization;
 
 /**
  * Base class for widgets showing and modifying schema localizations.
@@ -47,39 +48,39 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
 
     public AbstractSchemaLocalizationWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
-        OClass oLocalizationClass = getDatabase().getMetadata().getSchema().getClass(OrienteerLocalizationModule.OCLASS_LOCALIZATION);
+        OClass oLocalizationClass = getSchema().getClass(OLocalization.CLASS_NAME);
 
         final OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from OLocalization where key = :key");
         provider.setParameter("key", Model.of(getLocalizationKey(getModelObject())));
 
 
         List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
-        columns.add(new OPropertyValueColumn(oLocalizationClass.getProperty(OrienteerLocalizationModule.OPROPERTY_VALUE), getModeModel()));
-        OProperty langProperty = oLocalizationClass.getProperty(OrienteerLocalizationModule.OPROPERTY_LANG);
-        columns.add(new OPropertyValueComboBoxColumn<String>(langProperty, LanguagesChoiceProvider.INSTANCE, getModeModel()));
+        columns.add(new OPropertyValueColumn(oLocalizationClass.getProperty(OLocalization.PROP_VALUE), getModeModel()));
+        OProperty langProperty = oLocalizationClass.getProperty(OLocalization.PROP_LANGUAGE);
+        columns.add(new OPropertyValueComboBoxColumn<>(langProperty, LanguagesChoiceProvider.INSTANCE, getModeModel()));
         columns.add(new DeleteRowCommandColumn(getModeModel()));
         GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<ODocument>("localizations", columns, provider, 20);
         table = tablePanel.getDataTable();
 
-        table.addCommand(new EditODocumentsCommand(table, getModeModel(), new OClassModel(OrienteerLocalizationModule.OCLASS_LOCALIZATION)));
+        table.addCommand(new EditODocumentsCommand(table, getModeModel(), new OClassModel(OLocalization.CLASS_NAME)));
         table.addCommand(new SaveOLocalizationsCommand(table, getModeModel()));
         table.setCaptionModel(new ResourceModel("class.localization"));
 
         ajaxFormCommand = new AjaxCommand<ODocument>("add", "command.add") {
         	{
-        		OSecurityHelper.secureComponent(this, OSecurityHelper.requireOClass(OrienteerLocalizationModule.OCLASS_LOCALIZATION, OrientPermission.CREATE));
+        		OSecurityHelper.secureComponent(this, OSecurityHelper.requireOClass(OLocalization.CLASS_NAME, OrientPermission.CREATE));
         	}
             @Override
             public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-                ODocument newLocalization = new ODocument(OrienteerLocalizationModule.OCLASS_LOCALIZATION);
+                ODocument newLocalization = new ODocument(OLocalization.CLASS_NAME);
                 T schemaObject = AbstractSchemaLocalizationWidget.this.getModelObject();
-                newLocalization.field(OrienteerLocalizationModule.OPROPERTY_KEY, getLocalizationKey(schemaObject));
-                newLocalization.field(OrienteerLocalizationModule.OPROPERTY_LANG, "");
-                newLocalization.field(OrienteerLocalizationModule.OPROPERTY_STYLE, "");
-                newLocalization.field(OrienteerLocalizationModule.OPROPERTY_VARIATION, "");
-                newLocalization.field(OrienteerLocalizationModule.OPROPERTY_VALUE, "");
-                newLocalization.field(OrienteerLocalizationModule.OPROPERTY_ACTIVE, false);
-                getDatabase().save(newLocalization);
+                newLocalization.field(OLocalization.PROP_KEY, getLocalizationKey(schemaObject));
+                newLocalization.field(OLocalization.PROP_LANGUAGE, "");
+                newLocalization.field(OLocalization.PROP_STYLE, "");
+                newLocalization.field(OLocalization.PROP_VARIATION, "");
+                newLocalization.field(OLocalization.PROP_VALUE, "");
+                newLocalization.field(OLocalization.PROP_ACTIVE, false);
+                newLocalization.save();
                 targetOptional.ifPresent(target -> target.add(table));
             }
 

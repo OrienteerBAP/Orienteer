@@ -1,5 +1,6 @@
 package org.orienteer.core.util;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -13,13 +14,18 @@ import org.wicketstuff.select2.Response;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
+ * 
  * Choice provider for Select2 control
+ *
+ * @param <M> type of main object for ChoiceProvider: should be subtype of {@link OIdentifiable}
  */
-public class ODocumentChoiceProvider extends ChoiceProvider<ODocument> {
+public class ODocumentChoiceProvider<M extends OIdentifiable> extends ChoiceProvider<M> {
 
-    private String className;
+	private static final long serialVersionUID = 1L;
+	private String className;
     private String propertyName;
     
     private IModel<OClass> classModel;
@@ -43,17 +49,17 @@ public class ODocumentChoiceProvider extends ChoiceProvider<ODocument> {
     }
 
     @Override
-    public String getDisplayValue(ODocument document) {
-        return getOClassIntrospector().getDocumentName(document);
+    public String getDisplayValue(M document) {
+        return getOClassIntrospector().getDocumentName(document.getRecord());
     }
 
     @Override
-    public String getIdValue(ODocument document) {
+    public String getIdValue(M document) {
         return document.getIdentity().toString();
     }
 
     @Override
-    public void query(String query, int i, Response<ODocument> response) {
+    public void query(String query, int i, Response<M> response) {
     	String className = this.className;
     	String propertyName = this.propertyName;
     	if(className==null && classModel!=null) {
@@ -73,16 +79,15 @@ public class ODocumentChoiceProvider extends ChoiceProvider<ODocument> {
         sql.append(" LIMIT 20");
         OQueryModel<ODocument> choicesModel = new OQueryModel<ODocument>(sql.toString());
         choicesModel.setParameter("query", new Model<String>(query));
-        response.addAll(choicesModel.getObject());
+        response.addAll((List<M>)choicesModel.getObject());
     }
 
     @Override
-    public Collection<ODocument> toChoices(Collection<String> ids) {
-        ArrayList<ODocument> documents = new ArrayList<ODocument>();
+    public Collection<M> toChoices(Collection<String> ids) {
+        ArrayList<M> documents = new ArrayList<M>();
         for (String id : ids) {
             ORecordId rid = new ORecordId(id);
-            ODocument ret = rid.getRecord();
-            documents.add(ret);
+            documents.add(rid.getRecord());
         }
         return documents;
     }

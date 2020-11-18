@@ -1,10 +1,13 @@
 package org.orienteer.bpm.camunda;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.camunda.bpm.engine.impl.db.AbstractPersistenceSession;
 import org.camunda.bpm.engine.impl.db.DbEntity;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
@@ -15,14 +18,10 @@ import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * OrientDB enalbes {@link PersistenceSession} 
@@ -31,12 +30,12 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OPersistenceSession.class);
 	
-	private ODatabaseDocumentTx db;
+	private ODatabaseSession db;
 	
 	private BiMap<String, OIdentifiable> idToOIdentifiableCache = HashBiMap.create(10);
 	private Map<String, DbEntity> entitiesCache = new HashMap<>();
 	
-	public OPersistenceSession(ODatabaseDocumentTx db) {
+	public OPersistenceSession(ODatabaseSession db) {
 		this.db = db;
 	}
 
@@ -44,7 +43,7 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 		
 	}
 	
-	public ODatabaseDocumentTx getDatabase() {
+	public ODatabaseSession getDatabase() {
 		return db;
 	}
 	

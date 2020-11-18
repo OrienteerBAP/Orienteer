@@ -42,7 +42,7 @@ public class ListOClassesModel extends LoadableDetachableModel<List<OClass>>
 	}
 	
 	public static List<OClass> load(Predicate<OClass> filter) {
-		Collection<OClass> classes = OrientDbWebSession.get().getDatabase().getMetadata().getSchema().getClasses();
+		Collection<OClass> classes = OrientDbWebSession.get().getSchema().getClasses();
 		if(filter!=null) classes = Collections2.filter(classes, filter);
 		return ORDERING.sortedCopy(classes);
 	}

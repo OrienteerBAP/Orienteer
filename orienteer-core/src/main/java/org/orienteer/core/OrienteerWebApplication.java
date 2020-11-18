@@ -5,12 +5,13 @@ import com.google.common.reflect.ClassPath.ClassInfo;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
+import com.hazelcast.core.HazelcastInstance;
 import com.orientechnologies.orient.core.db.ODatabase.ATTRIBUTES;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocumentTx;
-import com.orientechnologies.orient.core.metadata.security.OUser;
+import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
-
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -21,12 +22,17 @@ import org.apache.wicket.core.request.mapper.MountedMapper;
 import org.apache.wicket.guice.GuiceInjectorHolder;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.ResourceModel;
+import org.apache.wicket.pageStore.IDataStore;
+import org.apache.wicket.pageStore.IPageStore;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestMapper;
 import org.apache.wicket.request.component.IRequestablePage;
+import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.SharedResourceReference;
+import org.apache.wicket.serialize.ISerializer;
 import org.apache.wicket.settings.RequestCycleSettings;
 import org.apache.wicket.util.convert.converter.DateConverter;
 import org.apache.wicket.util.string.Strings;
@@ -38,25 +44,34 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
+import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
 import org.orienteer.core.service.IOClassIntrospector;
+import org.orienteer.core.service.OrienteerEmbeddedStartupListener;
 import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.util.WicketProtector;
 import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
 import org.orienteer.core.web.LoginPage;
 import org.orienteer.core.web.UnauthorizedPage;
+import org.orienteer.core.wicket.pageStore.HazelcastPageStore;
+import org.orienteer.core.wicket.pageStore.OrientDbDataStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.ydn.wicket.wicketorientdb.*;
+import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
+import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
+import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
-import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 /**
  * Main {@link WebApplication} for Orienteer bases applications
@@ -82,8 +97,16 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	private boolean embedded;
 
 	@Inject
+	@Named("orientdb.distributed")
+	private boolean distributed;
+
+	@Inject
 	@Named("orienteer.authenticatelazy")
 	private boolean authenticateLazy;
+	
+	@Inject(optional=true)
+	@Named("orienteer.cors.origin")
+	private String corsOrigin;
 	
 	@Inject(optional=true)
 	@Named("wicket.render.strategy")
@@ -101,6 +124,9 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Named("orienteer.version")
 	private String version;
 
+	@Inject
+	@Named("orientdb.server.config")
+	private String serverConfig;
 
 	@Inject(optional=true)
 	public OrienteerWebApplication setConfigurationType(@Named("orienteer.production") boolean production) {
@@ -136,51 +162,17 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return OrienteerWebSession.class;
 	}
 
+
 	/**
 	 * @see org.apache.wicket.Application#init()
 	 */
 	@Override
-	public void init()
-	{
+	public void init() {
 		super.init();
 		Reflections.log = null; // Disable logging in reflections lib everywhere
-		if(embedded)
-		{
-			getApplicationListeners().add(new EmbeddOrientDbApplicationListener(OrienteerWebApplication.class.getResource("db.config.xml"))
-			{
 
-				@Override
-				public void onAfterServerStartupAndActivation(OrientDbWebApplication app)
-						throws Exception {
-					IOrientDbSettings settings = app.getOrientDbSettings();
-					ODatabaseDocumentTx db = new ODatabaseDocumentTx(settings.getDBUrl());
-					if(!db.exists()) {
-						db = db.create();
-						onDbCreated(db, settings);
-					}
-					if(db.isClosed())
-						db.open(settings.getAdminUserName(), settings.getAdminPassword());
-					db.getMetadata().load();
-					db.close();
-				}
-				
-				private void onDbCreated(ODatabaseDocumentTx db, IOrientDbSettings settings) {
-					if(OrientDbSettings.ADMIN_DEFAULT_USERNAME.equals(settings.getAdminUserName()) 
-							&& !OrientDbSettings.ADMIN_DEFAULT_PASSWORD.equals(settings.getAdminPassword())) {
-						OUser admin = db.getMetadata().getSecurity().getUser(OrientDbSettings.ADMIN_DEFAULT_USERNAME);
-						admin.setPassword(settings.getAdminPassword());
-						admin.save();
-					}
-					if(OrientDbSettings.READER_DEFAULT_USERNAME.equals(settings.getGuestUserName()) 
-							&& !OrientDbSettings.READER_DEFAULT_PASSWORD.equals(settings.getGuestPassword())) {
-						OUser reader = db.getMetadata().getSecurity().getUser(OrientDbSettings.READER_DEFAULT_USERNAME);
-						reader.setPassword(settings.getGuestPassword());
-						reader.save();
-					}
-				}
-				
-			});
-		}
+		initListeners();
+
 		WicketWebjars.install(this, webjarSettings);
 		mountPackage("org.orienteer.core.web");
 		mountPackage("org.orienteer.core.resource");
@@ -189,26 +181,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		mountResource("favicon.ico", new SharedResourceReference(imageIconPath));
 		getMarkupSettings().setStripWicketTags(true);
 		getResourceSettings().setThrowExceptionOnMissingResource(false);
-		getApplicationListeners().add(new ModuledDataInstallator());
-		getApplicationListeners().add(new IApplicationListener() {
-			
-			@Override
-			public void onAfterInitialized(Application application) {
-				new DBClosure<Boolean>() {
 
-					@Override
-					protected Boolean execute(ODatabaseDocument db) {
-						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
-						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
-						return true;
-					}
-				}.execute();
-			}
-			
-			@Override
-			public void onBeforeDestroyed(Application application) {/*NOP*/}
-			
-		});
 		WicketProtector.install(this);
 		getPageSettings().addComponentResolver(new WicketPropertyResolver());
 		//Remove default BookmarkableMapper to disallow direct accessing of pages through /wicket/bookmarkable/<class>
@@ -225,15 +198,56 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
 		registerModule(OConsoleTasksModule.class);
-		getOrientDbSettings().getORecordHooks().add(CalculablePropertiesHook.class);
-		getOrientDbSettings().getORecordHooks().add(ReferencesConsistencyHook.class);
-		getOrientDbSettings().getORecordHooks().add(CallbackHook.class);
+		registerModule(OrienteerClusterModule.class);
+		getOrientDbSettings().addORecordHooks(CalculablePropertiesHook.class, 
+											  ReferencesConsistencyHook.class,
+											  CallbackHook.class);
 		mountOrientDbRestApi();
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
+		if(!Strings.isEmpty(corsOrigin)) {
+			getRequestCycleListeners().add(new IRequestCycleListener() {
+				@Override
+				public void onBeginRequest(RequestCycle cycle) {
+					((WebResponse) cycle.getResponse()).setHeader("Access-Control-Allow-Origin", corsOrigin);
+				}
+			});
+		}
 		registerWidgets("org.orienteer.core.component.widget");
 		if(renderStrategy!=null) getRequestCycleSettings().setRenderStrategy(renderStrategy);
 
 		getJavaScriptLibrarySettings().setJQueryReference(new WebjarsJavaScriptResourceReference("jquery/current/jquery.min.js"));
+
+
+        if (isDistributedMode()) { // set session store and page provider for distributed mode
+            setPageManagerProvider(createPageManagerProvider());
+        }
+	}
+
+	private void initListeners() {
+		if (embedded) {
+			getApplicationListeners().add(new OrienteerEmbeddedStartupListener(serverConfig));
+		}
+
+		getApplicationListeners().add(new ModuledDataInstallator());
+		getApplicationListeners().add(new IApplicationListener() {
+
+			@Override
+			public void onAfterInitialized(Application application) {
+				new DBClosure<Boolean>() {
+
+					@Override
+					protected Boolean execute(ODatabaseSession db) {
+						String timeZoneId = (String) db.get(ATTRIBUTES.TIMEZONE);
+						TimeZone.setDefault(TimeZone.getTimeZone(timeZoneId));
+						return true;
+					}
+				}.execute();
+			}
+
+			@Override
+			public void onBeforeDestroyed(Application application) {/*NOP*/}
+
+		});
 	}
 
 	@Override
@@ -256,10 +270,33 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		return getInjector().getInstance(serviceType);
 	}
 	
+	@Deprecated
 	public ODatabaseDocument getDatabase()
 	{
 		return OrientDbWebSession.get().getDatabase();
 	}
+	
+	public ODatabaseSession getDatabaseSession()
+	{
+		return OrientDbWebSession.get().getDatabaseSession();
+	}
+	
+	public ODatabaseDocumentInternal getDatabaseDocumentInternal()
+	{
+		return OrientDbWebSession.get().getDatabaseDocumentInternal();
+	}
+
+ 	public boolean isDistributedMode() {
+        return distributed;
+	}
+
+	public Optional<HazelcastInstance> getHazelcast() {
+	    if (isDistributedMode()) {
+            OrienteerHazelcastPlugin plugin = getServer().getPluginByClass(OrienteerHazelcastPlugin.class);
+            return of(plugin.getHazelcastInstance());
+        }
+        return empty();
+    }
 
 	public synchronized List<IOrienteerModule> getRegisteredModules() {
 		if(!registeredModulesSorted){
@@ -484,6 +521,25 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		this.loadWithoutModules = loadWithoutModules;
 		this.loadModeInfo = null;
 	}
+
+    /**
+     * Create page manager provider for application
+     * @return {@link IPageManagerProvider} default - {@link DefaultPageManagerProvider}
+     */
+	protected IPageManagerProvider createPageManagerProvider() {
+	    return new DefaultPageManagerProvider(this) {
+            @Override
+            protected IDataStore newDataStore() {
+				return new OrientDbDataStore();
+            }
+
+            @Override
+            protected IPageStore newPageStore(IDataStore dataStore) {
+                ISerializer pageSerializer = application.getFrameworkSettings().getSerializer();
+                return new HazelcastPageStore(pageSerializer, dataStore);
+            }
+        };
+    }
 	
 	@Override
 	public boolean checkResource(ResourceGeneric resource, String specific, int iOperation) {

@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
@@ -130,7 +131,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 
 	@Override
 	protected void setValue(OClass entity, String critery, V value) {
-		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
 		db.commit();
 		try
 		{

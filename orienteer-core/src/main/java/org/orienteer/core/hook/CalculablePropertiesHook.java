@@ -1,20 +1,6 @@
 package org.orienteer.core.hook;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
-
-import org.apache.wicket.util.string.Strings;
-import org.orienteer.core.CustomAttribute;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
@@ -24,20 +10,34 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.CustomAttribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * {@link ODocumentHookAbstract} for automatic calculation of some properties.
  * Properties to be automatically calculated should be marked by {@link CustomAttribute}.CALCULABLE
  * Logic for calculation should be stored in {@link CustomAttribute}.CALC_SCRIPT
  */
-public class CalculablePropertiesHook extends ODocumentHookAbstract
-{
+public class CalculablePropertiesHook extends ODocumentHookAbstract {
+
 	private static final Logger LOG = LoggerFactory.getLogger(CalculablePropertiesHook.class);
+
 	private final static Pattern FULL_QUERY_PATTERN = Pattern.compile("^\\s*(select|traverse)", Pattern.CASE_INSENSITIVE);
 	
-	private Map<String, Integer> schemaVersions = new ConcurrentHashMap<String, Integer>();
+	private Map<String, Integer> schemaVersions                = new ConcurrentHashMap<String, Integer>();
 	private Table<String, String, List<String>> calcProperties = HashBasedTable.create();
+
+	public static final String VALUE = "value";
 	
 	public CalculablePropertiesHook(ODatabaseDocument database) {
 		super(database);
@@ -122,71 +122,67 @@ public class CalculablePropertiesHook extends ODocumentHookAbstract
 
 
 	@Override
-	public void onRecordAfterRead(ODocument iDocument) {
-		super.onRecordAfterRead(iDocument);
-		OClass oClass = iDocument.getSchemaClass();
-		if(oClass!=null)
-		{
-			List<String> calcProperties = getCalcProperties(iDocument);
+	public void onRecordAfterRead(ODocument document) {
+		super.onRecordAfterRead(document);
+		OClass oClass = document.getSchemaClass();
+		if (oClass != null) {
+			List<String> calcProperties = getCalcProperties(document);
 			
-			if(calcProperties!=null && calcProperties.size()>0)
-			{
-				for (String calcProperty :calcProperties) {
-					//Force calculation. Required for work around issue in OrientDB
-					//if(iDocument.field(calcProperty)!=null) continue;
-					final OProperty property = oClass.getProperty(calcProperty);
-					String script = CustomAttribute.CALC_SCRIPT.getValue(property);
-					if(!Strings.isEmpty(script))
-					{
-						try {
-							List<ODocument> calculated;
-							if(FULL_QUERY_PATTERN.matcher(script).find())
-							{
-								calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>(script), iDocument);
-							}
-							else
-							{
-								script = "select "+script+" as value from "+iDocument.getIdentity();
-								calculated = iDocument.getDatabase().query(new OSQLSynchQuery<Object>(script));
-							}
-							if(calculated!=null && calculated.size()>0)
-							{
-								OType type = property.getType();
-								Object value;
-								if(type.isMultiValue())
-								{
-									final OType linkedType = property.getLinkedType();
-									value = linkedType==null
-											?calculated
-											:Lists.transform(calculated, new Function<ODocument, Object>() {
-												
-												@Override
-												public Object apply(ODocument input) {
-													return OType.convert(input.field("value"), linkedType.getDefaultJavaType());
-												}
-											});
-								}
-								else
-								{
-									value = calculated.get(0).field("value");
-								}
-								value = OType.convert(value, type.getDefaultJavaType());
-								Object oldValue = iDocument.field(calcProperty); 
-								if (oldValue!=value && (oldValue==null || !oldValue.equals(value))){
-									iDocument.field(calcProperty, value);
-								}
-							}
-						} catch (OCommandSQLParsingException e) { //TODO: Refactor because one exception prevent calculation for others
-							LOG.warn("Can't parse SQL for calculable property", e);
-							iDocument.field(calcProperty, e.getLocalizedMessage());
-						}
-					}
-				}
-				
+			if (calcProperties != null && !calcProperties.isEmpty()) {
+				propertiesForCalculate(calcProperties, oClass)
+						.map(p -> getData(p, document))
+						.filter(p -> p.getKey() != null && p.getValue() != null)
+						.filter(p -> p.getValue().hasNext())
+						.map(this::convertToPropertyValue)
+						.forEach(pair -> document.field(pair.getKey().getName(), pair.getValue()));
 			}
 		}
 	}
-	
-	
-	
+
+	private Stream<OProperty> propertiesForCalculate(List<String> properties, OClass oClass) {
+		return properties.stream()
+				.map(oClass::getProperty)
+				.filter(p -> !Strings.isEmpty(CustomAttribute.CALC_SCRIPT.getValue(p)));
+	}
+
+	private Pair<OProperty, Object> convertToPropertyValue(Pair<OProperty, OResultSet> pair) {
+		OType type = pair.getKey().getType();
+		OType linkedType = pair.getKey().getLinkedType();
+
+		Object value;
+
+		if (type.isMultiValue() && linkedType != null) {
+			value = OType.convert(convertToPropertyListValue(pair.getValue(), linkedType), type.getDefaultJavaType());
+		} else {
+			value = OType.convert(pair.getValue().next().getProperty(VALUE), type.getDefaultJavaType());
+		}
+
+		return Pair.of(pair.getKey(), value);
+	}
+
+	private List<Object> convertToPropertyListValue(OResultSet resultSet, OType linkedType) {
+		return resultSet.stream()
+				.map(result -> result.getProperty(VALUE))
+				.map(value -> OType.convert(value, linkedType.getDefaultJavaType()))
+				.collect(Collectors.toCollection(LinkedList::new));
+	}
+
+	private Pair<OProperty, OResultSet> getData(OProperty property, ODocument document) {
+		String script = CustomAttribute.CALC_SCRIPT.getValue(property);
+		try {
+			OResultSet data;
+
+			if (FULL_QUERY_PATTERN.matcher(script).find()) {
+				data = database.query(script, document);
+			} else {
+				data = database.query(String.format("select %s as %s from ?", script, VALUE), document);
+			}
+
+			return Pair.of(property, data);
+		} catch (OCommandSQLParsingException e) {
+			LOG.warn("Can't parse SQL for calculable property: {}\nScript: {}", property.getFullName(), script, e);
+		}
+
+		return Pair.of(null, null);
+	}
 }

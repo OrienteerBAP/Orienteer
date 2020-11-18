@@ -4,6 +4,10 @@ import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import lombok.experimental.ExtensionMethod;
+import ru.ydn.wicket.wicketorientdb.utils.LombokExtensions;
+
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -24,6 +28,7 @@ import java.io.IOException;
  * Redirect user to {@link IOrienteerUsersService#getRestorePasswordPage()} if user with given restore id exists in system.
  * Otherwise redirect user to {@link OrienteerWebApplication#getHomePage()}
  */
+@ExtensionMethod({LombokExtensions.class})
 public class RestorePasswordResource extends AbstractResource {
 
     public static final String MOUNT_PATH = "/restore/${id}/";

@@ -1,9 +1,15 @@
 package org.orienteer.core.component.meta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
+import com.orientechnologies.orient.core.collate.OCollate;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.sql.OSQLEngine;
 import org.apache.wicket.Component;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.markup.html.basic.Label;
@@ -25,17 +31,6 @@ import org.orienteer.core.component.property.OPropertyViewPanel;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.model.ListAvailableOTypesModel;
 import org.orienteer.core.model.ListOClassesModel;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
-import com.orientechnologies.orient.core.collate.OCollate;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.sql.OSQLEngine;
-
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.model.ListOPropertiesModel;
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
@@ -43,14 +38,18 @@ import ru.ydn.wicket.wicketorientdb.proto.OPropertyPrototyper;
 import ru.ydn.wicket.wicketorientdb.utils.OClassChoiceRenderer;
 import ru.ydn.wicket.wicketorientdb.validation.OSchemaNamesValidator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Meta panel for {@link OProperty}
  *
  * @param <V> type of a value
  */
-public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V> implements IDisplayModeAware
-{
-	public static final List<String> OPROPERTY_ATTRS = new ArrayList<String>();
+public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OProperty, DisplayMode, String, V> implements IDisplayModeAware {
+
+	public static final List<String> OPROPERTY_ATTRS = new ArrayList<>();
 	public static final List<OType> LINKED_TYPE_OPTIONS;
 	
 	static
@@ -131,7 +130,7 @@ public class OPropertyMetaPanel<V> extends AbstractComplexModeMetaPanel<OPropert
 
 	@Override
 	protected void setValue(OProperty entity, String critery, V value) {
-		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
 		db.commit();
 		try
 		{

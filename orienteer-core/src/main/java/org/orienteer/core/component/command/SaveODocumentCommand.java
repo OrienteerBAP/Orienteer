@@ -10,6 +10,8 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.structuretable.OrienteerStructureTable;
+
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -50,7 +52,7 @@ public class SaveODocumentCommand extends AbstractSaveCommand<ODocument> impleme
 		if(doc.getIdentity().isNew()) realizeMandatory(doc);
 		doc.save();
 		if(forceCommit) {
-			ODatabaseDocument db = getDatabase();
+			ODatabaseSession db = getDatabaseSession();
 			boolean active = db.getTransaction().isActive();
 			db.commit();
 			if(active) db.begin();

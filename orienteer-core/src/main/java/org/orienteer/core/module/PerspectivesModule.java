@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.index.OIndex;
@@ -12,9 +13,10 @@ import com.orientechnologies.orient.core.metadata.security.OIdentity;
 import com.orientechnologies.orient.core.metadata.security.OSecurityRole;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
+
+import lombok.experimental.ExtensionMethod;
+
 import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
@@ -22,6 +24,7 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
+import ru.ydn.wicket.wicketorientdb.utils.LombokExtensions;
 
 import javax.inject.Singleton;
 import java.util.*;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
  * {@link IOrienteerModule} for "perspectives" feature of Orienteer
  */
 @Singleton
+@ExtensionMethod({LombokExtensions.class})
 public class PerspectivesModule extends AbstractOrienteerModule {
 
 	public static final String NAME = "perspectives";
@@ -52,7 +56,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 
 	@Override
-	public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 
 		helper.oClass(OPerspective.CLASS_NAME)
@@ -160,7 +164,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 	
 	@Override
-	public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db,
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
 			int oldVersion, int newVersion) {
 		int toVersion = oldVersion+1;
 		switch (toVersion) {
@@ -172,7 +176,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				onInstall(app, db);
 				break;
 			case 4:
-				OIndex<?> index = db.getMetadata().getIndexManager().getIndex(OPerspective.CLASS_NAME + ".name");
+				OIndex index = db.getMetadata().getIndexManager().getIndex(OPerspective.CLASS_NAME + ".name");
 				if(index!=null) index.delete();
 				onInstall(app, db);
 				break;
@@ -186,15 +190,13 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				
 				helper.oClass(OPerspective.CLASS_NAME)
 					.oProperty(OPerspective.PROP_ALIAS, OType.STRING, 10);
-				db.command(new OCommandSQL("update OPerspective set alias=name['en'].toLowerCase() where alias is null"))
-					.execute();
+				db.command("update OPerspective set alias=name['en'].toLowerCase() where alias is null");
 				helper.notNull()
 					.oIndex(INDEX_TYPE.UNIQUE);
 				//update aliases
 				helper.oClass(OPerspectiveItem.CLASS_NAME)
 					.oProperty(OPerspectiveItem.PROP_ALIAS, OType.STRING, 10);
-				db.command(new OCommandSQL("update OPerspectiveItem set alias=name['en'].toLowerCase() where alias is null"))
-					.execute();
+				db.command("update OPerspectiveItem set alias=name['en'].toLowerCase() where alias is null");
 				helper.notNull();
 				break;
 			case 7:
@@ -240,9 +242,12 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 
 	public Optional<ODocument> getPerspectiveByAliasAsDocument(ODatabaseDocument db, String alias) {
-		String sql = String.format("select from %s where %s = ?", OPerspective.CLASS_NAME, OPerspective.PROP_ALIAS);
-		List<OIdentifiable> identifiables = db.query(new OSQLSynchQuery<>(sql, 1), alias);
-		return CommonUtils.getDocument(identifiables);
+		String sql = String.format("select from %s where %s = ? limit 1", OPerspective.CLASS_NAME, OPerspective.PROP_ALIAS);
+
+		return db.query(sql, alias)
+				.elementStream()
+				.map(e -> (ODocument) e)
+				.findFirst();
 	}
 
 	public Optional<OPerspectiveItem> getPerspectiveItemByAlias(ODatabaseDocument db, String alias) {
@@ -251,12 +256,15 @@ public class PerspectivesModule extends AbstractOrienteerModule {
     }
 
 	public Optional<ODocument> getPerspectiveItemByAliasAsDocument(ODatabaseDocument db, String alias) {
-	    String sql = String.format("select from %s where %s =?", OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_ALIAS);
-	    List<OIdentifiable> identifiable = db.query(new OSQLSynchQuery<>(sql, 1), alias);
-	    return CommonUtils.getDocument(identifiable);
+	    String sql = String.format("select from %s where %s = ? limit 1", OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_ALIAS);
+
+	    return db.query(sql, alias)
+				.elementStream()
+				.map(e -> (ODocument) e)
+				.findFirst();
     }
 	
-	public ODocument getDefaultPerspective(ODatabaseDocument db, OSecurityUser user) {
+	public ODocument getDefaultPerspective(ODatabaseSession db, OSecurityUser user) {
 		if (user != null) {
 			if (user.getDocument().field(PROP_PERSPECTIVE) != null) {
 				return ((OIdentifiable) user.getDocument().field(PROP_PERSPECTIVE)).getRecord();
@@ -298,7 +306,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 
 	@Override
-	public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
+	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchema schema = db.getMetadata().getSchema();
 		if (schema.getClass(OPerspective.CLASS_NAME) == null || schema.getClass(OPerspectiveItem.CLASS_NAME) == null) {
 			//Repair

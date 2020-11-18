@@ -2,6 +2,7 @@ package org.orienteer.users.module;
 
 
 import com.google.common.base.Strings;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.hook.ORecordHook;
@@ -14,7 +15,7 @@ import com.orientechnologies.orient.core.metadata.security.*;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.schedule.OScheduledEvent;
 import com.orientechnologies.orient.core.schedule.OScheduler;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
@@ -58,6 +59,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     public static final String ORIENTEER_USER_ROLE = "orienteerUser";
 
+    public static final String ROLE_ADMIN = "admin";
+
     public static final String ORIENTEER_USER_PERSPECTIVE = "orienteerUserPerspective";
     public static final String READER_PERSPECTIVE         = "readerPerspective";
 
@@ -87,7 +90,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public ODocument onInstall(OrienteerWebApplication app, ODatabaseDocument db) {
+    public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
         OSchemaHelper helper = OSchemaHelper.bind(db);
 
         createOAuth2Services(helper);
@@ -113,13 +116,17 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         configureModuleClass(helper);
 
+        updateDefaultPerspective(helper);
+
+        db.command(String.format("alter role %s set policy default_2 on database.class.OUser", "reader"));
+
         return createModuleDocument(db);
     }
 
     private ODocument createModuleDocument(ODatabaseDocument db) {
-        List<ODocument> docs = db.query(new OSQLSynchQuery<>("select from " + ModuleModel.CLASS_NAME, 1));
+        OResultSet result = db.query("select from " + ModuleModel.CLASS_NAME, 1);
 
-        if (docs != null && !docs.isEmpty()) {
+        if (result.hasNext()) {
             return null;
         }
         return new ODocument(ModuleModel.CLASS_NAME);
@@ -188,7 +195,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_WIDGET, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, READ.getPermissionFlag());
-
+        role.grant(ResourceGeneric.CLASS, "OSecurityPolicy", READ.getPermissionFlag());
         // TODO: remove this after release with fix for roles in OrientDB: https://github.com/orientechnologies/orientdb/issues/8338
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspective.CLASS_NAME, READ.getPermissionFlag());
@@ -210,6 +217,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
         role.save();
+
+        db.command(String.format("alter role %s set policy default_2 on database.class.OUser", role.getName()));
 
         perspective.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
         perspective.save();
@@ -261,9 +270,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     private ODocument updateAndGetUserReader(ODatabaseDocument db) {
-        String sql = String.format("select from %s where name = ?", OUser.CLASS_NAME);
-        List<ODocument> docs = db.query(new OSQLSynchQuery<>(sql, 1), "reader");
-        ODocument reader = docs.get(0);
+        ORole role = db.getMetadata().getSecurity().getRole("reader");
+        ODocument reader = role.getDocument();
         Set<OIdentifiable> users = reader.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Set.class);
         if (users == null || users.isEmpty()) {
             reader.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singleton(reader));
@@ -271,8 +279,19 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
             users.add(reader);
             reader.field(ORestrictedOperation.ALLOW_READ.getFieldName(), users);
         }
+        role.grant(ResourceGeneric.CLASS, "OSecurityPolicy", READ.getPermissionFlag());
         reader.save();
         return reader;
+    }
+
+    private void updateDefaultPerspective(OSchemaHelper helper) {
+        ORole adminRole = helper.getDatabase().getMetadata().getSecurity().getRole(ROLE_ADMIN);
+
+        helper.oClass(PerspectivesModule.OPerspective.CLASS_NAME)
+                .oDocument(PerspectivesModule.OPerspective.PROP_ALIAS, PerspectivesModule.ALIAS_PERSPECTIVE_DEFAULT)
+                .field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singleton(adminRole.getDocument()))
+                .field(ORestrictedOperation.ALLOW_ALL.getFieldName(), Collections.singleton(adminRole.getDocument()))
+                .saveDocument();
     }
 
     /**
@@ -293,8 +312,13 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     private String createCodeForRemoveRestoreIdFunction() {
-        return String.format("var res = db.command('UPDATE %s SET %s = null, %s = null WHERE %s = ? AND %s <= (sysdate() - ?)', %s, %s);\n"
-                        + "if (res > 0) db.command('DELETE FROM OSchedule WHERE name = ?', %s);",
+        return String.format("print(\"test\");var res = db.command('UPDATE %s SET %s = null, %s = null WHERE %s = ? AND %s <= (sysdate().asLong() - ?)', %s, %s);\n"
+                        + "print(res);" +
+                        "var next = res.next();print(next);" +
+                        "var count = next.getProperty(\"count\");"
+                        + "print(count);\n"
+                        + "print(restoreId);print(timeout);print(eventName);"
+                        + "if (count > 0) db.command('DELETE FROM OSchedule WHERE name = ?', %s);",
                 OrienteerUser.CLASS_NAME, OrienteerUser.PROP_RESTORE_ID, OrienteerUser.PROP_RESTORE_ID_CREATED,
                 OrienteerUser.PROP_RESTORE_ID,
                 OrienteerUser.PROP_RESTORE_ID_CREATED,
@@ -378,15 +402,14 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public void onUpdate(OrienteerWebApplication app, ODatabaseDocument db, int oldVersion, int newVersion) {
+    public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
         onInstall(app, db);
     }
 
     @Override
-    public void onInitialize(OrienteerWebApplication app, ODatabaseDocument db) {
-        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
-        hooks.add(OrienteerUserHook.class);
-        hooks.add(OrienteerUserRoleHook.class);
+    public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
+    	
+    	app.getOrientDbSettings().addORecordHooks(OrienteerUserHook.class, OrienteerUserRoleHook.class);
 
         RegistrationResource.mount(app);
         RestorePasswordResource.mount(app);
@@ -404,10 +427,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     }
 
     @Override
-    public void onDestroy(OrienteerWebApplication app, ODatabaseDocument db) {
-        List<Class<? extends ORecordHook>> hooks = app.getOrientDbSettings().getORecordHooks();
-        hooks.remove(OrienteerUserHook.class);
-        hooks.remove(OrienteerUserRoleHook.class);
+    public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
+    	app.getOrientDbSettings().removeORecordHooks(OrienteerUserHook.class, OrienteerUserRoleHook.class);
 
         RegistrationResource.unmount(app);
         RestorePasswordResource.unmount(app);

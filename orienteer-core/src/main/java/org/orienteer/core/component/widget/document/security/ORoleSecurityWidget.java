@@ -94,7 +94,7 @@ public class ORoleSecurityWidget extends AbstractWidget<ODocument> {
 
 		@Override
 		protected ORole load() {
-			return getDatabase().getMetadata().getSecurity().getRole(ORoleSecurityWidget.this.getModelObject());
+			return getDatabaseSession().getMetadata().getSecurity().getRole(ORoleSecurityWidget.this.getModelObject());
 		}
 	};
 	

@@ -129,7 +129,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		//Support of case when metadata was changed in parallel
 		else if(Strings.isEmpty(doc.getClassName()) && doc.getIdentity().isValid())
 		{
-			getDatabase().reload();
+			getDatabaseSession().reload();
 			if(Strings.isEmpty(doc.getClassName()))  throw new AbortWithHttpErrorCodeException(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}

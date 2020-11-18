@@ -6,6 +6,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.property.DisplayMode;
+
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+
 import ru.ydn.wicket.wicketorientdb.proto.IPrototype;
 
 /**
@@ -30,13 +33,14 @@ public class SavePrototypeCommand<T> extends AbstractSaveCommand<T>
 		T object = model!=null?model.getObject():null;
 		if(object instanceof IPrototype)
 		{
-			boolean isActiveTransaction = getDatabase().getTransaction().isActive();
-			if(isActiveTransaction) getDatabase().commit();
+			ODatabaseSession db = getDatabaseSession();
+			boolean isActiveTransaction = db.getTransaction().isActive();
+			if(isActiveTransaction) db.commit();
 			try {
 				((IPrototype<?>)object).realizePrototype();
 				model.detach();
 			} finally {
-				if(isActiveTransaction) getDatabase().begin();
+				if(isActiveTransaction) db.begin();
 			}
 		}
 		super.onClick(targetOptional);

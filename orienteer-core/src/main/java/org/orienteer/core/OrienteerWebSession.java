@@ -3,6 +3,9 @@ package org.orienteer.core;
 import com.google.common.base.Strings;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import lombok.experimental.ExtensionMethod;
+
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
@@ -10,6 +13,7 @@ import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.core.module.UserOnlineModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
+import ru.ydn.wicket.wicketorientdb.utils.LombokExtensions;
 
 import java.time.ZoneId;
 import java.util.Locale;
@@ -19,6 +23,7 @@ import java.util.TimeZone;
  * Orienteer's {@link WebSession} class.
  * Mainly used for perspectives manipulation 
  */
+@ExtensionMethod({LombokExtensions.class})
 public class OrienteerWebSession extends OrientDbWebSession
 {
 	private OIdentifiable perspective;
@@ -44,7 +49,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 		{
 			perspective=null;
 
-			String locale = getDatabase().getUser().getDocument().field(OrienteerLocalizationModule.OPROPERTY_LOCALE);
+			String locale = getDatabaseSession().getUser().getDocument().field(OrienteerLocalizationModule.PROP_OUSER_LOCALE);
 			onlineModule.updateOnlineUser(getUser(), true);
 
 			if (!Strings.isNullOrEmpty(locale)) {
@@ -55,12 +60,14 @@ public class OrienteerWebSession extends OrientDbWebSession
 			}
 			onlineModule.updateSessionUser(getUser(), getId());
 		}
+		dirty();
 		return ret;
 	}
 
 	@Override
 	public void signOut() {
 		perspective=null;
+        dirty();
 		super.signOut();
 	}
 
@@ -81,7 +88,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 			if(perspective==null)
 			{
 				PerspectivesModule perspectivesModule = OrienteerWebApplication.get().getServiceInstance(PerspectivesModule.class);
-				perspective = perspectivesModule.getDefaultPerspective(getDatabase(), getEffectiveUser());
+				perspective = perspectivesModule.getDefaultPerspective(getDatabaseSession(), getEffectiveUser());
 			}
 			return (ODocument)perspective;
 			

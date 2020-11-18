@@ -14,6 +14,7 @@ import org.orienteer.junit.OrienteerTestRunner;
 import static org.junit.Assert.*;
 
 import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -81,7 +82,7 @@ public class OTasksTest {
 	@Ignore
 	public void taskTestAndTaskSessionTest() throws Exception{
 		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
-		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
 		assertFalse(db.isClosed());
 		db.commit();
 
