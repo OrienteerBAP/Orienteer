@@ -1,0 +1,130 @@
+package org.orienteer.rproxy;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.wicket.SharedResources;
+import org.apache.wicket.request.IRequestParameters;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.request.resource.SharedResourceReference;
+import org.apache.wicket.util.string.StringValue;
+import org.apache.wicket.util.string.Strings;
+import org.apache.wicket.util.string.interpolator.VariableInterpolator;
+import org.orienteer.core.OrienteerWebApplication;
+
+import okhttp3.HttpUrl;
+import okhttp3.Credentials;
+import okhttp3.Headers;
+import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
+import ru.ydn.wicket.wicketorientdb.rest.ReverseProxyResource;
+
+/**
+ * {@link ReverseProxyResource} configured by ORProxyEndPoint
+ */
+public final class ORProxyResource extends ReverseProxyResource {
+	
+	private static final long serialVersionUID = 1L;
+	private String baseUrl;
+	private String username;
+	private String password;
+	private Map<String, String> cookies;
+	private Map<String, String> headers;
+	private List<String> protectedParameters;
+	
+	private ORProxyResource(IORProxyEndPoint endPoint) {
+		this.baseUrl = endPoint.getBaseUrl();
+		this.username = endPoint.getUsername();
+		this.password = endPoint.getPassword();
+		this.cookies = new HashMap<String, String>(endPoint.getCookies());
+		this.headers = new HashMap<String, String>(endPoint.getHeaders());
+		this.protectedParameters = endPoint.getProtectedParameters();
+	}
+	
+	@Override
+	protected HttpUrl getBaseUrl(Attributes attributes) {
+		return HttpUrl.get(interpolate(baseUrl, attributes));
+	}
+	
+	@Override
+	protected void onMapUrl(Attributes attributes, HttpUrl.Builder builder) {
+		if(protectedParameters!=null) {
+			for (String parameter : protectedParameters) {
+				builder.removeAllQueryParameters(parameter);
+			}
+		}
+	}
+	
+	@Override
+	protected void onMapHeaders(Attributes attributes, Headers.Builder builder) {
+		for (Map.Entry<String, String> headerItem : headers.entrySet()) {
+			builder.add(headerItem.getKey(), interpolate(headerItem.getValue(), attributes));
+		}
+		if(!cookies.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			for (Map.Entry<String, String> cookiesItem : cookies.entrySet()) {
+				sb.append(cookiesItem.getKey()).append('=').append(cookiesItem.getValue()).append("; ");
+			}
+			builder.add("Cookie", sb.toString());
+		}
+		if(!Strings.isEmpty(username) && !Strings.isEmpty(password))
+			builder.add(LazyAuthorizationRequestCycleListener.AUTHORIZATION_HEADER, Credentials.basic(username, password));
+	}
+	
+	private String interpolate(final String template, final Attributes attributes) {
+		if(template==null || !template.contains("${")) return template;
+		return new VariableInterpolator(template) {
+			
+			@Override
+			protected String getValue(String variableName) {
+				if(variableName==null) return null;
+				PageParameters pageParameters = attributes.getParameters();
+				if(pageParameters.getPosition(variableName)>=0) {
+					return pageParameters.get(variableName).toString();
+				}
+				IRequestParameters requestParamters = attributes.getRequest().getRequestParameters();
+				StringValue sv = requestParamters.getParameterValue(variableName);
+				if(!sv.isNull()) return sv.toString();
+				try {
+					int index = Integer.parseInt(variableName);
+					return pageParameters.get(index).toString();
+				} catch (NumberFormatException e) {
+					//It's not number and it's OK
+				}
+				return null;
+			}
+		}.toString();
+	}
+	
+	public static boolean mount(IORProxyEndPoint endPoint) {
+		return mount(OrienteerWebApplication.lookupApplication(), endPoint);
+	}
+	
+	public static boolean mount(OrienteerWebApplication app, IORProxyEndPoint endPoint) {
+		return mount(app, endPoint, true);
+	}
+
+	public static boolean mount(OrienteerWebApplication app, IORProxyEndPoint endPoint, boolean remount) {
+		SharedResources sharedResources = app.getSharedResources();
+		if(sharedResources.get(endPoint.getSharedResourceName())!=null) {
+			if(!remount) return false;
+			unmount(app, endPoint);
+		}
+		app.getSharedResources().add(endPoint.getSharedResourceName(), new ORProxyResource(endPoint));
+	    app.mountResource(endPoint.getMountPath(), new SharedResourceReference(endPoint.getSharedResourceName()));
+	    return true;
+	}
+	
+	public static boolean unmount(IORProxyEndPoint endPoint) {
+		return unmount(OrienteerWebApplication.lookupApplication(), endPoint);
+	}
+	
+	public static boolean unmount(OrienteerWebApplication app, IORProxyEndPoint endPoint) {
+		SharedResources sharedResources = app.getSharedResources();
+		ResourceReference reference = sharedResources.get(endPoint.getSharedResourceName());
+		if(reference!=null) sharedResources.remove(new ResourceReference.Key(reference));
+		app.unmount(endPoint.getMountPath());
+		return true;
+	}
+}

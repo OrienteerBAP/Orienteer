@@ -102,8 +102,12 @@
 		<id>bintray</id>
 		<name>bintray</name>
 		<url>https://jcenter.bintray.com</url>
-		<releases><enabled>true</enabled></releases>
-		<snapshots><enabled>false</enabled></snapshots>
+		<releases>
+        <enabled>true</enabled>
+      </releases>
+		<snapshots>
+        <enabled>false</enabled>
+      </snapshots>
 	 </repository>
 	<repository>
 		<id>spring-release</id>
@@ -373,7 +377,7 @@
                     <maxmem>256m</maxmem>
                     <!-- aggregated reports for multi-module projects -->
                     <aggregate>true</aggregate>
-                    <check />
+                    <check/>
                 </configuration>
 		    </plugin>
 		    <plugin>
@@ -431,7 +435,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -621,4 +625,6 @@
 			</distributionManagement>
 		</profile>
 	</profiles>
+<modules>  <module>orienteer-rproxy</module>
+  </modules>
 </project>

@@ -86,4 +86,9 @@
 	    <artifactId>orienteer-metrics</artifactId>
         <description>Module to gather metrics from Orienteer instance</description>
     </module>
+    <module>
+        <groupId>org.orienteer</groupId>
+	    <artifactId>orienteer-rproxy</artifactId>
+        <description>Module to provide built-in reverse proxy for external REST APIs</description>
+    </module>
 </metadata>
