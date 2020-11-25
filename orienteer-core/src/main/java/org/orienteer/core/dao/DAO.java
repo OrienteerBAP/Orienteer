@@ -1,27 +1,39 @@
 package org.orienteer.core.dao;
 
-import com.orientechnologies.orient.core.id.ORID;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.type.ODocumentWrapper;
+import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
+import static org.orienteer.core.util.CommonUtils.decapitalize;
+import static org.orienteer.core.util.CommonUtils.toMap;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.util.string.Strings;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Proxy;
-import java.util.*;
-
-import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
-import static org.orienteer.core.util.CommonUtils.decapitalize;
-import static org.orienteer.core.util.CommonUtils.toMap;
+import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 /**
  * Utility class for creating implementations for required interfaces
@@ -132,14 +144,10 @@ public final class DAO {
 		Set<String> superClasses = describe(helper, interfaces, ctx);
 		superClasses.addAll(Arrays.asList(daooClass.superClasses()));
 		
+		int orderOffset = daooClass.orderOffset();
 		int currentOrder=0;
 		
-		List<Method> methods = Arrays.asList(clazz.getDeclaredMethods());
-		//Give priority for methods with DAOField annotation
-		methods.sort((a, b) -> {
-			int ret = -Boolean.compare(a.isAnnotationPresent(DAOField.class), b.isAnnotationPresent(DAOField.class));
-			return ret!=0?ret:a.getName().compareTo(b.getName());
-		});
+		List<Method> methods = listMethods(clazz);
 		
 		for(Method method : methods) {
 			if(method.isDefault()) continue; //Ignore default methods
@@ -165,8 +173,9 @@ public final class DAO {
 			final Class<?> subJavaType = subJavaTypeCandidate;
 			final DAOField daoField = method.getAnnotation(DAOField.class);
 			if(daoField!=null && !Strings.isEmpty(daoField.value())) fieldNameCandidate = daoField.value();
-			//Skip second+ attempt to create a property
-			if(ctx.isPropertyCreationScheduled(fieldNameCandidate)) continue;
+			final boolean wasPreviouslyScheduled = ctx.isPropertyCreationScheduled(fieldNameCandidate);
+			//Skip second+ attempt to create a property, except if @DAOField is present
+			if(wasPreviouslyScheduled && daoField==null) continue;
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
 											?daoField.type()
 											:getTypeByClass(javaType);
@@ -175,7 +184,7 @@ public final class DAO {
 											:(subJavaType!=null?getTypeByClass(subJavaType):null);
 			final int order = daoField!=null && daoField.order()>=0
 									?daoField.order()
-									:10*currentOrder++;
+									:(orderOffset+10*currentOrder++);
 			String linkedClassCandidate = ctx.resolveOClass(subJavaType, () -> describe(helper, subJavaType, ctx));
 			if(linkedClassCandidate==null) linkedClassCandidate = ctx.resolveOClass(javaType, () -> describe(helper, javaType, ctx));
 			if(linkedClassCandidate==null && daoField!=null && !Strings.isEmpty(daoField.linkedClass())) linkedClassCandidate = daoField.linkedClass();
@@ -201,7 +210,7 @@ public final class DAO {
 				applyDAOFieldAttribute(helper, daoField);
 				return null;
 			});
-			if(linkedClass!=null) ctx.postponeTillDefined(linkedClass, () -> {
+			if(linkedClass!=null && !wasPreviouslyScheduled) ctx.postponeTillDefined(linkedClass, () -> {
 				String inverse = daoField!=null?daoField.inverse():null;
 				if(Strings.isEmpty(inverse)) {
 					LOG.info("Setup relationship {}.{} -> {}", daooClass.value(), fieldName, linkedClass);
@@ -222,6 +231,34 @@ public final class DAO {
 		ctx.exiting(clazz, daooClass.value());
 		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
+	}
+	
+	static List<Method> listMethods(Class<?> clazz) {
+		Method[] unsortedMethods = clazz.getDeclaredMethods();
+		Map<String, Method> methodMapping = new HashMap<>();
+		for (Method method : unsortedMethods) {
+			methodMapping.put(method.getName()+Type.getMethodDescriptor(method), method);
+		}
+		//Sort by line number, but if no info: give priority for methods with DAOField annotation
+		List<Method> sortedMethods = new ArrayList<Method>(unsortedMethods.length);
+		try(InputStream in = clazz.getResourceAsStream("/" + clazz.getName().replace('.', '/') + ".class")) {
+	      if (in != null) {
+	          new ClassReader(in).accept(new ClassVisitor(Opcodes.ASM7) {
+	        	  @Override
+		        	public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
+		        			String[] exceptions) {
+	        		  Method methodToAdd = methodMapping.get(name+descriptor);
+	        		  if(methodToAdd!=null) sortedMethods.add(methodToAdd);
+	        		  return null;
+		        	}
+				}, ClassReader.SKIP_FRAMES);
+	          return sortedMethods;
+	      }
+		} catch (IOException exc) {
+		}
+		//Ubnormal termination: so lets return original order
+		return Arrays.asList(unsortedMethods);
+		
 	}
 	
 	private static void applyDAOClassAttributes(OSchemaHelper helper, DAOOClass daoOClass) {

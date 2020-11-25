@@ -1,18 +1,23 @@
 package org.orienteer.core.dao;
 
-import com.google.inject.Singleton;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
-import com.orientechnologies.orient.core.metadata.schema.OProperty;
-import com.orientechnologies.orient.core.metadata.schema.OSchema;
-import com.orientechnologies.orient.core.metadata.schema.OType;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import static org.hamcrest.CoreMatchers.everyItem;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
-import static org.hamcrest.collection.IsCollectionWithSize.*;
-import static org.hamcrest.collection.IsMapWithSize.*;
-import static org.hamcrest.CoreMatchers.*;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -23,15 +28,17 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.junit.Sudo;
+
+import com.google.inject.Singleton;
+import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.metadata.schema.OType;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
@@ -232,26 +239,35 @@ public class DAOTest {
 			OClass daoTestClassB = schema.getClass("DAOTestClassB");
 			
 			assertTrue(daoTestClassRoot.isAbstract());
-			assertProperty(daoTestClassRoot, "root", OType.STRING);
+			assertProperty(daoTestClassRoot, "root", OType.STRING, 0);
 			
-			OProperty root = assertProperty(daoTestClassA, "root", OType.STRING);
+			OProperty root = assertProperty(daoTestClassA, "root", OType.STRING, 0);
 			assertEquals("DAOTestClassRoot.root", root.getFullName());
 			
-			assertProperty(daoTestClassA, "name", OType.STRING);
-			assertProperty(daoTestClassA, "bSingle", OType.LINK, daoTestClassB, null);
-			assertProperty(daoTestClassA, "bOtherField", OType.LINK, daoTestClassB, null);
-			assertProperty(daoTestClassA, "selfType", OType.LINK, daoTestClassA, null);
-			assertProperty(daoTestClassA, "linkAsDoc", OType.LINK, daoTestClassB, null);
-			assertProperty(daoTestClassA, "embeddedStringList", OType.EMBEDDEDLIST, OType.STRING);
-			assertProperty(daoTestClassA, "linkList", OType.LINKLIST, daoTestClassB, null);
+			assertProperty(daoTestClassA, "name", OType.STRING, 0);
+			assertProperty(daoTestClassA, "bSingle", OType.LINK, 10, daoTestClassB, null);
+			assertProperty(daoTestClassA, "bOtherField", OType.LINK, 20, daoTestClassB, null);
+			assertProperty(daoTestClassA, "selfType", OType.LINK, 60, daoTestClassA, null);
+			assertProperty(daoTestClassA, "linkAsDoc", OType.LINK, 40, daoTestClassB, null);
+			assertProperty(daoTestClassA, "embeddedStringList", OType.EMBEDDEDLIST, 30, OType.STRING);
+			assertProperty(daoTestClassA, "linkList", OType.LINKLIST, 50, daoTestClassB, null);
 			
-			assertProperty(daoTestClassB, "alias", OType.STRING);
-			assertProperty(daoTestClassB, "linkToA", OType.LINK, daoTestClassA, null);
+			assertProperty(daoTestClassB, "alias", OType.STRING, 0);
+			assertProperty(daoTestClassB, "linkToA", OType.LINK, 10, daoTestClassA, null);
 		} finally {
 			if(schema.existsClass("DAOTestClassA")) schema.dropClass("DAOTestClassA");
 			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
 			if(schema.existsClass("DAOTestClassRoot")) schema.dropClass("DAOTestClassRoot");
 		}
+	}
+	
+	@Test
+	public void testProperMethodListOrder() throws Exception {
+		Class<?> type = IDAOTestClassA.class;
+		
+		List<Method> methods = DAO.listMethods(type);
+		assertEquals("getName", methods.get(0).getName());
+		assertEquals("setName", methods.get(1).getName());
 	}
 	
 	@Test
@@ -267,41 +283,41 @@ public class DAOTest {
 			
 			assertTrue(!oClass.isAbstract());
 			
-			assertProperty(oClass, "boolean", OType.BOOLEAN, false);
-			assertProperty(oClass, "booleanPrimitive", OType.BOOLEAN, true);
-			assertProperty(oClass, "booleanDeclared", OType.BOOLEAN, true);
+			assertProperty(oClass, "boolean", OType.BOOLEAN, 10, false);
+			assertProperty(oClass, "booleanPrimitive", OType.BOOLEAN, 20, true);
+			assertProperty(oClass, "booleanDeclared", OType.BOOLEAN, 30, true);
 			
-			assertProperty(oClass, "integer", OType.INTEGER);
-			assertProperty(oClass, "short", OType.SHORT);
-			assertProperty(oClass, "long", OType.LONG);
-			assertProperty(oClass, "float", OType.FLOAT);
-			assertProperty(oClass, "double", OType.DOUBLE);
-			assertProperty(oClass, "dateTime", OType.DATETIME);
-			assertProperty(oClass, "date", OType.DATE);
-			assertProperty(oClass, "string", OType.STRING);
-			assertProperty(oClass, "binary", OType.BINARY);
-			assertProperty(oClass, "decimal", OType.DECIMAL);
-			assertProperty(oClass, "byte", OType.BYTE);
-			assertProperty(oClass, "custom", OType.CUSTOM);
-			assertProperty(oClass, "transient", OType.TRANSIENT);
-			assertProperty(oClass, "any", OType.ANY);
+			assertProperty(oClass, "integer", OType.INTEGER, 40);
+			assertProperty(oClass, "short", OType.SHORT, 50);
+			assertProperty(oClass, "long", OType.LONG, 60);
+			assertProperty(oClass, "float", OType.FLOAT, 70);
+			assertProperty(oClass, "double", OType.DOUBLE, 80);
+			assertProperty(oClass, "dateTime", OType.DATETIME, 90);
+			assertProperty(oClass, "date", OType.DATE, 250);
+			assertProperty(oClass, "string", OType.STRING, 100);
+			assertProperty(oClass, "binary", OType.BINARY, 110); //
+			assertProperty(oClass, "decimal", OType.DECIMAL, 270);
+			assertProperty(oClass, "byte", OType.BYTE, 230);
+			assertProperty(oClass, "custom", OType.CUSTOM, 260);
+			assertProperty(oClass, "transient", OType.TRANSIENT, 240);
+			assertProperty(oClass, "any", OType.ANY, 290);
 			
-			assertProperty(oClass, "link", OType.LINK, dummyClass, null);
-			assertProperty(oClass, "linkList", OType.LINKLIST, dummyClass, null);
-			assertProperty(oClass, "linkSet", OType.LINKSET, dummyClass, null);
-			assertProperty(oClass, "linkMap", OType.LINKMAP, dummyClass, null);
-			assertProperty(oClass, "linkBag", OType.LINKBAG, dummyClass, null);
+			assertProperty(oClass, "link", OType.LINK, 190, dummyClass, null);
+			assertProperty(oClass, "linkList", OType.LINKLIST, 200, dummyClass, null);
+			assertProperty(oClass, "linkSet", OType.LINKSET, 210, dummyClass, null);
+			assertProperty(oClass, "linkMap", OType.LINKMAP, 220, dummyClass, null);
+			assertProperty(oClass, "linkBag", OType.LINKBAG, 280, dummyClass, null);
 			
-			assertProperty(oClass, "embedded", OType.EMBEDDED, dummyClass, null);
-			assertProperty(oClass, "embeddedList", OType.EMBEDDEDLIST, dummyClass, null);
-			assertProperty(oClass, "embeddedSet", OType.EMBEDDEDSET, dummyClass, null);
-			assertProperty(oClass, "embeddedMap", OType.EMBEDDEDMAP, dummyClass, null);
+			assertProperty(oClass, "embedded", OType.EMBEDDED, 120, dummyClass, null);
+			assertProperty(oClass, "embeddedList", OType.EMBEDDEDLIST, 130, dummyClass, null);
+			assertProperty(oClass, "embeddedSet", OType.EMBEDDEDSET, 150, dummyClass, null);
+			assertProperty(oClass, "embeddedMap", OType.EMBEDDEDMAP, 170, dummyClass, null);
 			
-			assertProperty(oClass, "embeddedStringSet", OType.EMBEDDEDSET, OType.STRING);
-			assertProperty(oClass, "embeddedStringList", OType.EMBEDDEDLIST, OType.STRING);
-			assertProperty(oClass, "embeddedStringMap", OType.EMBEDDEDMAP, OType.STRING);
+			assertProperty(oClass, "embeddedStringSet", OType.EMBEDDEDSET, 160, OType.STRING);
+			assertProperty(oClass, "embeddedStringList", OType.EMBEDDEDLIST, 140, OType.STRING);
+			assertProperty(oClass, "embeddedStringMap", OType.EMBEDDEDMAP, 180, OType.STRING);
 
-			assertProperty(oClass, "docs", OType.LINKLIST, dummyClass, null);
+			assertProperty(oClass, "docs", OType.LINKLIST, 0, dummyClass, null);
 
 		} finally {
 			if(schema.existsClass("DAOAllTypesTestClass")) schema.dropClass("DAOAllTypesTestClass");
@@ -309,29 +325,30 @@ public class DAOTest {
 		}
 	}
 	
-	private OProperty assertProperty(OClass oClass, String property, OType oType, OClass linkedClass, String inverse) {
-		OProperty prop = assertProperty(oClass, property, oType);
+	private OProperty assertProperty(OClass oClass, String property, OType oType, Integer order, OClass linkedClass, String inverse) {
+		OProperty prop = assertProperty(oClass, property, oType, order);
 		assertEquals(linkedClass, prop.getLinkedClass());
 		assertEquals(inverse, CustomAttribute.PROP_INVERSE.getValue(prop));
 		return prop;
 	}
 	
-	private OProperty assertProperty(OClass oClass, String property, OType oType, OType linkedType) {
-		OProperty prop = assertProperty(oClass, property, oType);
+	private OProperty assertProperty(OClass oClass, String property, OType oType, Integer order, OType linkedType) {
+		OProperty prop = assertProperty(oClass, property, oType, order);
 		assertEquals(linkedType, prop.getLinkedType());
 		return prop;
 	}
 	
-	private OProperty assertProperty(OClass oClass, String property, OType oType, boolean notNull) {
-		OProperty prop = assertProperty(oClass, property, oType);
+	private OProperty assertProperty(OClass oClass, String property, OType oType, Integer order, boolean notNull) {
+		OProperty prop = assertProperty(oClass, property, oType, order);
 		assertEquals(notNull, prop.isNotNull());
 		return prop;
 	}
 	
-	private OProperty assertProperty(OClass oClass, String property, OType oType) {
+	private OProperty assertProperty(OClass oClass, String property, OType oType, Integer order) {
 		OProperty prop = oClass.getProperty(property);
 		assertNotNull("Property was not found", prop);
 		assertEquals(oType, prop.getType());
+		assertEquals(order, CustomAttribute.ORDER.getValue(prop));
 		return prop;
 	}
 }

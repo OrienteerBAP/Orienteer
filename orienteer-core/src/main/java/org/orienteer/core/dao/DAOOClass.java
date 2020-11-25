@@ -26,4 +26,5 @@ public @interface DAOOClass {
 	String sortProperty() default "";
 	SortOrder sortOrder() default SortOrder.NONE;
 	String searchQuery() default "";
+	int orderOffset() default 0;
 }

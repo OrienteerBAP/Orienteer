@@ -11,7 +11,7 @@ public interface IDAOTestClassA extends IDAOTestClassRoot{
 
 
 	public String getName();
-	public void setName();
+	public void setName(String name);
 	
 	public IDAOTestClassB getBSingle();
 	

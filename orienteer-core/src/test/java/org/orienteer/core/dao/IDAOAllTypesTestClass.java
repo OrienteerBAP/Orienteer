@@ -18,7 +18,6 @@ public interface IDAOAllTypesTestClass {
 
 	@DAOField(linkedClass = "IDAODummyClass", type = OType.LINKLIST)
 	public List<ODocument> getDocs();
-	@DAOField(linkedClass = "IDAODummyClass", type = OType.LINKLIST)
 	public void setDocs(List<ODocument> val);
 
 	  /**
@@ -95,7 +94,6 @@ public interface IDAOAllTypesTestClass {
 	 */
 	@DAOField(embedded = true)
 	public IDAODummyClass getEmbedded();
-	@DAOField(embedded = true)
 	public void setEmbedded(IDAODummyClass val);
 
 	/**
@@ -103,7 +101,6 @@ public interface IDAOAllTypesTestClass {
 	 */
 	@DAOField(embedded = true)
 	public List<IDAODummyClass> getEmbeddedList();
-	@DAOField(embedded = true)
 	public void setEmbeddedList(List<IDAODummyClass> val);
 	
 	public List<String> getEmbeddedStringList();
@@ -115,7 +112,6 @@ public interface IDAOAllTypesTestClass {
 
 	@DAOField(embedded = true)
 	public Set<IDAODummyClass> getEmbeddedSet();
-	@DAOField(embedded = true)
 	public void setEmbeddedSet(Set<IDAODummyClass> val);
 	
 	public Set<String> getEmbeddedStringSet();
@@ -125,7 +121,6 @@ public interface IDAOAllTypesTestClass {
 	 */
 	@DAOField(embedded = true)
 	public Map<String, IDAODummyClass> getEmbeddedMap();
-	@DAOField(embedded = true)
 	public void setEmbeddedMap(Map<String, IDAODummyClass> val);
 	
 	public Map<String, String> getEmbeddedStringMap();
@@ -172,7 +167,6 @@ public interface IDAOAllTypesTestClass {
 	
 	@DAOField(type = OType.TRANSIENT)
 	public Object getTransient();
-	@DAOField(type = OType.TRANSIENT)
 	public void setTransient(Object val);
 
 	/**
@@ -181,7 +175,6 @@ public interface IDAOAllTypesTestClass {
 	
 	@DAOField(type = OType.DATE)
 	public Date getDate();
-	@DAOField(type = OType.DATE)
 	public void setDate(Date val);
 
 	/**
@@ -204,7 +197,6 @@ public interface IDAOAllTypesTestClass {
 	
 	@DAOField(linkedClass = "IDAODummyClass")
 	public ORidBag getLinkBag();
-	@DAOField(linkedClass = "IDAODummyClass")
 	public void setLinkBag(ORidBag val);
 
 	/**
@@ -212,6 +204,5 @@ public interface IDAOAllTypesTestClass {
 	 */
 	@DAOField(type = OType.ANY)
 	public Object getAny();
-	@DAOField(type = OType.ANY)
 	public void setAny(Object val);
 }
