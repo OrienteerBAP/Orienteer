@@ -136,7 +136,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 				}
 				return prepareForJava(list, requiredClass, genericType);
 			} else if(Collection.class.isAssignableFrom(requiredClass)) {
-				Reflect collection = onRealClass(requiredClass);
+				Reflect collection = onRealClass(requiredClass).create();
 				collection.call("addAll", result);
 				return collection.get();
 			}
