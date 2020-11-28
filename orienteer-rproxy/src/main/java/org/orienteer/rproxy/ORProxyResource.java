@@ -14,9 +14,9 @@ import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.string.interpolator.VariableInterpolator;
 import org.orienteer.core.OrienteerWebApplication;
 
-import okhttp3.HttpUrl;
 import okhttp3.Credentials;
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
 import ru.ydn.wicket.wicketorientdb.rest.ReverseProxyResource;
 
@@ -32,6 +32,7 @@ public final class ORProxyResource extends ReverseProxyResource {
 	private Map<String, String> cookies;
 	private Map<String, String> headers;
 	private List<String> protectedParameters;
+	private Boolean loggingEnabled;
 	
 	private ORProxyResource(IORProxyEndPoint endPoint) {
 		this.baseUrl = endPoint.getBaseUrl();
@@ -40,6 +41,7 @@ public final class ORProxyResource extends ReverseProxyResource {
 		this.cookies = new HashMap<String, String>(endPoint.getCookies());
 		this.headers = new HashMap<String, String>(endPoint.getHeaders());
 		this.protectedParameters = endPoint.getProtectedParameters();
+		this.loggingEnabled = endPoint.isLoggingEnabled();
 	}
 	
 	@Override
@@ -70,6 +72,11 @@ public final class ORProxyResource extends ReverseProxyResource {
 		}
 		if(!Strings.isEmpty(username) && !Strings.isEmpty(password))
 			builder.add(LazyAuthorizationRequestCycleListener.AUTHORIZATION_HEADER, Credentials.basic(username, password));
+	}
+	
+	@Override
+	protected boolean isDebugLoggingEnabled(Attributes attributes) {
+		return Boolean.TRUE.equals(loggingEnabled) || super.isDebugLoggingEnabled(attributes);
 	}
 	
 	private String interpolate(final String template, final Attributes attributes) {
