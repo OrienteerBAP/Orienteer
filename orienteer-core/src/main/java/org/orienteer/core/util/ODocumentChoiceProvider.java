@@ -3,6 +3,8 @@ package org.orienteer.core.util;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -11,6 +13,9 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.wicketstuff.select2.ChoiceProvider;
 import org.wicketstuff.select2.Response;
+
+import ru.ydn.wicket.wicketorientdb.model.OClassModel;
+import ru.ydn.wicket.wicketorientdb.model.OPropertyModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,8 +30,6 @@ import java.util.List;
 public class ODocumentChoiceProvider<M extends OIdentifiable> extends ChoiceProvider<M> {
 
 	private static final long serialVersionUID = 1L;
-	private String className;
-    private String propertyName;
     
     private IModel<OClass> classModel;
 
@@ -37,8 +40,7 @@ public class ODocumentChoiceProvider<M extends OIdentifiable> extends ChoiceProv
     }
 
     public ODocumentChoiceProvider(OClass oClass) {
-        this.className =  oClass.getName();
-        this.propertyName = getOClassIntrospector().getNameProperty(oClass).getName();
+    	this(new OClassModel(oClass));
     }
 
     protected IOClassIntrospector getOClassIntrospector() {
@@ -60,21 +62,16 @@ public class ODocumentChoiceProvider<M extends OIdentifiable> extends ChoiceProv
 
     @Override
     public void query(String query, int i, Response<M> response) {
-    	String className = this.className;
-    	String propertyName = this.propertyName;
-    	if(className==null && classModel!=null) {
-    		OClass oClass = classModel.getObject();
-    		if(oClass!=null) {
-    			className = oClass.getName();
-    			propertyName = getOClassIntrospector().getNameProperty(oClass).getName(); 
-    		}
-    	}
-    	if(className==null || propertyName==null) return;
-        StringBuilder sql = new StringBuilder("SELECT FROM ").append(className);
+    	OClass oClass = classModel.getObject();
+    	if(oClass==null) return;
+    	OProperty property = getOClassIntrospector().getNameProperty(oClass);
+    	if(property==null) return;
+        StringBuilder sql = new StringBuilder("SELECT FROM ").append(oClass.getName());
         if (!Strings.isEmpty(query)) {
             sql.append(" WHERE ")
-                    .append(propertyName)
-                    .append(" CONTAINSTEXT :query");
+                    .append(property.getName());
+            if(!OType.STRING.equals(property.getType())) sql.append(".asString()");
+            sql.append(" CONTAINSTEXT :query");
         }
         sql.append(" LIMIT 20");
         OQueryModel<ODocument> choicesModel = new OQueryModel<ODocument>(sql.toString());
@@ -90,5 +87,11 @@ public class ODocumentChoiceProvider<M extends OIdentifiable> extends ChoiceProv
             documents.add(rid.getRecord());
         }
         return documents;
+    }
+    
+    @Override
+    public void detach() {
+    	super.detach();
+    	if(classModel!=null) classModel.detach();
     }
 }

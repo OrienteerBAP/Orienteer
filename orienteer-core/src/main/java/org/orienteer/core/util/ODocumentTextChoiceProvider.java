@@ -2,7 +2,9 @@ package org.orienteer.core.util;
 
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -51,11 +53,12 @@ public class ODocumentTextChoiceProvider extends ChoiceProvider<ODocument> {
                 OClass oClass = schema.getClass(className);
                 if (oClass != null) {
                     OQueryModel<ODocument> queryModel = new OQueryModel<>("SELECT FROM " + className);
-                    String nameProperty = getOClassIntrospector().getNameProperty(oClass).getName();
+                    OProperty nameProperty = getOClassIntrospector().getNameProperty(oClass);
+                    String namePropertyName = getOClassIntrospector().getNameProperty(oClass).getName();
                     IFilterCriteriaManager manager = new FilterCriteriaManager(
-                            new OPropertyModel(getOClassIntrospector().getNameProperty(oClass)));
-                    manager.addFilterCriteria(manager.createContainsStringFilterCriteria(Model.of(term), Model.of(true)));
-                    queryModel.addFilterCriteriaManager(nameProperty, manager);
+                            new OPropertyModel(nameProperty));
+                    manager.addFilterCriteria(manager.createContainsStringFilterCriteria(Model.of(term), !OType.STRING.equals(nameProperty.getType()), Model.of(true)));
+                    queryModel.addFilterCriteriaManager(namePropertyName, manager);
                     response.addAll(queryModel.getObject());
                 }
             }
@@ -82,5 +85,11 @@ public class ODocumentTextChoiceProvider extends ChoiceProvider<ODocument> {
             documents.add(ret);
         }
         return documents;
+    }
+    
+    @Override
+    public void detach() {
+    	super.detach();
+    	if(classNamesModel!=null) classNamesModel.detach();
     }
 }
