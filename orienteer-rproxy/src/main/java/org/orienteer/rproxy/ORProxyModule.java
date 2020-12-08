@@ -17,7 +17,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class ORProxyModule extends AbstractOrienteerModule{
 
 	protected ORProxyModule() {
-		super("orienteer-rproxy", 1);
+		super("orienteer-rproxy", 2);
 	}
 	
 	@Override
@@ -26,6 +26,11 @@ public class ORProxyModule extends AbstractOrienteerModule{
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		DAO.describe(helper, IORProxyEndPoint.class);
 		return null;
+	}
+	
+	@Override
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
+		onInstall(app, db);
 	}
 	
 	@Override

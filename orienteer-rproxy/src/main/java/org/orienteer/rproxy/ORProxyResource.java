@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.SharedResources;
+import org.apache.wicket.core.util.lang.WicketObjects;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.ResourceReference;
@@ -17,6 +18,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import okhttp3.Credentials;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
+import okhttp3.Request.Builder;
 import ru.ydn.wicket.wicketorientdb.LazyAuthorizationRequestCycleListener;
 import ru.ydn.wicket.wicketorientdb.rest.ReverseProxyResource;
 
@@ -34,6 +36,8 @@ public final class ORProxyResource extends ReverseProxyResource {
 	private List<String> protectedParameters;
 	private Boolean loggingEnabled;
 	
+	private IORProxyExtension extension;
+	
 	private ORProxyResource(IORProxyEndPoint endPoint) {
 		this.baseUrl = endPoint.getBaseUrl();
 		this.username = endPoint.getUsername();
@@ -42,6 +46,14 @@ public final class ORProxyResource extends ReverseProxyResource {
 		this.headers = new HashMap<String, String>(endPoint.getHeaders());
 		this.protectedParameters = endPoint.getProtectedParameters();
 		this.loggingEnabled = endPoint.isLoggingEnabled();
+		Class<? extends IORProxyExtension> extension = endPoint.getExtensionClass();
+		if(extension!=null) {
+			try {
+				this.extension = OrienteerWebApplication.get().getServiceInstance(extension);
+				this.extension.init(endPoint, this);
+			} catch (Exception e) {
+			} 
+		}
 	}
 	
 	@Override
@@ -56,6 +68,7 @@ public final class ORProxyResource extends ReverseProxyResource {
 				builder.removeAllQueryParameters(parameter);
 			}
 		}
+		if(extension!=null) extension.onMapUrl(attributes, builder);
 	}
 	
 	@Override
@@ -72,6 +85,12 @@ public final class ORProxyResource extends ReverseProxyResource {
 		}
 		if(!Strings.isEmpty(username) && !Strings.isEmpty(password))
 			builder.add(LazyAuthorizationRequestCycleListener.AUTHORIZATION_HEADER, Credentials.basic(username, password));
+		if(extension!=null) extension.onMapHeaders(attributes, builder);
+	}
+	
+	@Override
+	protected void onMapRequest(Attributes attributes, Builder builder) {
+		if(extension!=null) extension.onMapRequest(attributes, builder);
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package org.orienteer.rproxy;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.DAOField;
@@ -48,7 +49,23 @@ public interface IORProxyEndPoint {
 	public List<String> getProtectedParameters();
 	public void setProtectedParameters(List<String> protectedParameters);
 	
+	public String getExtensionClassName();
+	public void setExtensionClassName(String className);
+	
 	public default String getSharedResourceName() {
 		return "ORProxy"+DAO.asWrapper(this).getDocument().getIdentity();
+	}
+	
+	public default Class<? extends IORProxyExtension> getExtensionClass() {
+		String className = getExtensionClassName();
+		if(!Strings.isEmpty(className)) {
+			try {
+				Class<?> clazz = Class.forName(className);
+				if(IORProxyExtension.class.isAssignableFrom(clazz)) return (Class<? extends IORProxyExtension>) clazz;
+			} catch (ClassNotFoundException e) {
+				// It's OK
+			}
+		}
+		return null;
 	}
 }
