@@ -208,7 +208,6 @@ public final class DAO {
 				if(linkedType!=null) helper.linkedType(linkedType);
 				helper.notNull(notNull);
 				applyDAOFieldAttribute(helper, daoField);
-				return null;
 			});
 			if(linkedClass!=null && !wasPreviouslyScheduled) ctx.postponeTillDefined(linkedClass, () -> {
 				String inverse = daoField!=null?daoField.inverse():null;
@@ -219,16 +218,15 @@ public final class DAO {
 					LOG.info("Setup relationship {}.{} -> {} ({})", daooClass.value(), fieldName, linkedClass, inverse);
 					helper.setupRelationship(daooClass.value(), fieldName, linkedClass, inverse); 
 				}
-				return null;
 			});
 		}
 		
 		LOG.info("Creation of OClass {}", daooClass.value());
 		if(daooClass.isAbstract()) helper.oAbstractClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
 		else helper.oClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
-		applyDAOClassAttributes(helper, daooClass);
 		
 		ctx.exiting(clazz, daooClass.value());
+		applyDAOClassAttributes(helper, daooClass);
 		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
 	}
@@ -275,6 +273,7 @@ public final class DAO {
 		}
 		if(!Strings.isEmpty(daoOClass.searchQuery()))
 			CustomAttribute.SEARCH_QUERY.setValue(helper.getOClass(), daoOClass.searchQuery());
+		helper.switchDisplayable(true, daoOClass.displayable());
 	}
 	
 	private static OType getTypeByClass(Class<?> clazz) {

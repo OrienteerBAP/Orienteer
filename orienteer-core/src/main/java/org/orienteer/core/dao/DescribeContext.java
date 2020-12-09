@@ -19,8 +19,8 @@ class DescribeContext {
 	class ContextItem {
 		private Class<?> daoClass;
 		private String oClass;
-		private Map<String, Supplier<Boolean>> postponedTillExit = new HashMap<String, Supplier<Boolean>>();
-		private MultiMap<String, Supplier<Boolean>> postponedTillDefined = new MultiMap<String, Supplier<Boolean>>();
+		private Map<String, Runnable> postponedTillExit = new HashMap<String, Runnable>();
+		private MultiMap<String, Runnable> postponedTillDefined = new MultiMap<String, Runnable>();
 		
 		ContextItem(Class<?> daoClass, String oClass) {
 			this.daoClass = daoClass;
@@ -33,7 +33,7 @@ class DescribeContext {
 	private Stack<Class<?>> processingStackIndex = new Stack<Class<?>>();
 	private Stack<ContextItem> processingStack = new Stack<ContextItem>();
 	
-	private MultiMap<String, Supplier<Boolean>> globalPostponedTillDefined = new MultiMap<String, Supplier<Boolean>>();
+	private MultiMap<String, Runnable> globalPostponedTillDefined = new MultiMap<>();
 	
 
 	public void entering(Class<?> clazz, String oClass) {
@@ -47,22 +47,22 @@ class DescribeContext {
 		if(!clazz.equals(exiting)) throw new IllegalStateException("Exiting from wrong execution: expected "+clazz.getName()+" but in a stack "+exiting.getName());
 		ContextItem last = processingStack.pop();
 		if(!oClassName.equals(last.oClass))  throw new IllegalStateException("Exiting from wrong execution: expected "+oClassName+" but in a stack "+last.oClass);
-		for (Supplier<Boolean> postponed : last.postponedTillExit.values()) {
-			postponed.get();
+		for (Runnable postponed : last.postponedTillExit.values()) {
+			postponed.run();
 		}
 		describedClasses.put(clazz, oClassName);
 		
-		MultiMap<String, Supplier<Boolean>> mergeTo = processingStack.empty()?globalPostponedTillDefined:processingStack.lastElement().postponedTillDefined;
-		Iterator<Map.Entry<String, List<Supplier<Boolean>>>> it = last.postponedTillDefined.entrySet().iterator();
+		MultiMap<String, Runnable> mergeTo = processingStack.empty()?globalPostponedTillDefined:processingStack.lastElement().postponedTillDefined;
+		Iterator<Map.Entry<String, List<Runnable>>> it = last.postponedTillDefined.entrySet().iterator();
 		while(it.hasNext()) {
-			Map.Entry<String, List<Supplier<Boolean>>> entry = it.next();
+			Map.Entry<String, List<Runnable>> entry = it.next();
 			if(wasDescribed(entry.getKey())) {
-				for (Supplier<Boolean> supplier : entry.getValue()) {
-					supplier.get();
+				for (Runnable runnable : entry.getValue()) {
+					runnable.run();
 				}
 				it.remove();
 			} else {
-				List<Supplier<Boolean>> mergeToValue = mergeTo.get(entry.getKey());
+				List<Runnable> mergeToValue = mergeTo.get(entry.getKey());
 				if(mergeToValue!=null) mergeToValue.addAll(entry.getValue());
 				else mergeTo.put(entry.getKey(), entry.getValue());
 			}
@@ -101,11 +101,11 @@ class DescribeContext {
 		return processingStack.lastElement().postponedTillExit.containsKey(propertyName);
 	}
 	
-	public void postponeTillExit(String propertyName, Supplier<Boolean> supplier) {
+	public void postponeTillExit(String propertyName, Runnable supplier) {
 		processingStack.lastElement().postponedTillExit.put(propertyName, supplier);
 	}
 	
-	public void postponeTillDefined(String linkedClass, Supplier<Boolean> supplier) {
+	public void postponeTillDefined(String linkedClass, Runnable supplier) {
 		processingStack.lastElement().postponedTillDefined.addValue(linkedClass, supplier);
 //		if(wasDescribed(linkedClass)) postponeTillExit(propertyName, supplier);
 //		else processingStack.lastElement().postponedTillDefined.addValue(linkedClass, supplier);
@@ -114,11 +114,11 @@ class DescribeContext {
 	
 	public void close(boolean restrictDependencies) {
 		if(processingStackIndex.size()>0) throw new IllegalStateException("Can't close context because stack is not null");
-		Collection<List<Supplier<Boolean>>> remaining = globalPostponedTillDefined.values();
+		Collection<List<Runnable>> remaining = globalPostponedTillDefined.values();
 		if(restrictDependencies && remaining.size()>0) throw new IllegalStateException("There are unsitisfied dependencies");
-		for (List<Supplier<Boolean>> list : remaining) {
-			for (Supplier<Boolean> supplier : list) {
-				supplier.get();
+		for (List<Runnable> list : remaining) {
+			for (Runnable runnable : list) {
+				runnable.run();
 			}
 		}
 	}

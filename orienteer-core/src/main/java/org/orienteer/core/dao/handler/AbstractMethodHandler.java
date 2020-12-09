@@ -178,8 +178,11 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		}
 		
 		if(requiredClass.isAssignableFrom(List.class)) return ret;
-		else if(Collection.class.isAssignableFrom(requiredClass)) 
-			return onRealClass(requiredClass).create().call("addAll", ret).get();
+		else if(Collection.class.isAssignableFrom(requiredClass)) {
+			Reflect instance = onRealClass(requiredClass).create();
+			instance.call("addAll", ret);
+			return instance.get();
+		}
 		else throw new IllegalStateException("Can't prepare required return class: "+requiredClass);
 	}
 	
