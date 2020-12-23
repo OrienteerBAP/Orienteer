@@ -315,8 +315,10 @@ class OMetadataUpdater extends AbstractXmlHandler {
                         element.setTextContent(artifactReference.getDescription());
                         break;
                     case JAR:
-                        element.setTextContent(artifactReference.getFile().getAbsolutePath());
+                        element.setTextContent(artifactReference.getFilePath());
                         break;
+                    default:
+                    	break;
                 }
             }
         }

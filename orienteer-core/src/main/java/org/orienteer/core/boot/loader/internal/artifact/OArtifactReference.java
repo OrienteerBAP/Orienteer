@@ -145,6 +145,10 @@ public class OArtifactReference implements Serializable {
     public File getFile() {
         return file;
     }
+    
+    public String getFilePath() {
+    	return file!=null?file.getAbsolutePath():null;
+    }
 
     public List<String> getAvailableVersions() {
         return availableVersions;

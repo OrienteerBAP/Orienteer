@@ -42,8 +42,10 @@ public final class ORProxyResource extends ReverseProxyResource {
 		this.baseUrl = endPoint.getBaseUrl();
 		this.username = endPoint.getUsername();
 		this.password = endPoint.getPassword();
-		this.cookies = new HashMap<String, String>(endPoint.getCookies());
-		this.headers = new HashMap<String, String>(endPoint.getHeaders());
+		this.cookies = new HashMap<String, String>();
+		if(endPoint.getCookies()!=null) cookies.putAll(endPoint.getCookies());
+		this.headers = new HashMap<String, String>();
+		if(endPoint.getHeaders()!=null) cookies.putAll(endPoint.getHeaders());
 		this.protectedParameters = endPoint.getProtectedParameters();
 		this.loggingEnabled = endPoint.isLoggingEnabled();
 		Class<? extends IORProxyExtension> extension = endPoint.getExtensionClass();
