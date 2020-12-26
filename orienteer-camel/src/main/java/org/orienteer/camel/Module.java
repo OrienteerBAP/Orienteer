@@ -6,6 +6,7 @@ import org.apache.camel.CamelContext;
 import org.orienteer.camel.component.OIntegrationConfig;
 import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
@@ -41,8 +42,6 @@ public class Module extends AbstractOrienteerModule{
 	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
 		super.onUpdate(app, db, oldVersion, newVersion);
 		onInstall(app, db);
-		db.commit();
-		db.command(new OCommandSQL("ALTER CLASS "+OIntegrationConfig.TASK_CLASS+" SUPERCLASS "+OTask.TASK_CLASS)).execute();
 	}
 	
 	@Override
@@ -50,7 +49,7 @@ public class Module extends AbstractOrienteerModule{
 		super.onInitialize(app, db);
 		
 		app.setMetaData(OIntegrationConfig.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
-		app.mountPages("org.orienteer.camel.web");
+		app.mountPackage("org.orienteer.camel.web");
 		//app.registerWidgets("org.orienteer.camel.widget");
 		OMethodsManager.get().addModule(Module.class);
 		OMethodsManager.get().reload();
@@ -61,14 +60,14 @@ public class Module extends AbstractOrienteerModule{
 	private void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.oClass(OIntegrationConfig.TASK_CLASS,OTask.TASK_CLASS)
-			.oProperty("script", OType.STRING, 15).assignVisualization("script");
+			.oProperty("script", OType.STRING, 15).assignVisualization(UIVisualizersRegistry.VISUALIZER_CODE);
 		OCamelTaskSession.onInstallModule(app, db);
 	}
 	
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
-		app.unmountPages("org.orienteer.camel.web");
+		app.unmountPackage("org.orienteer.camel.web");
 		//app.unregisterWidgets("org.orienteer.camel.widget");
 		
 		OMethodsManager.get().removeModule(Module.class);
