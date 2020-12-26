@@ -193,14 +193,14 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>org.bitsofinfo</groupId>
             <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
         </dependency>
-        <!-- <dependency>
+        <dependency>
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
-        </dependency> -->
+        </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
@@ -208,7 +208,7 @@
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-wm</artifactId>
-        </dependency>
+        </dependency> -->
 
         <!-- NEED FOR LOAD TELEGRAM BOT-->
 		<dependency>

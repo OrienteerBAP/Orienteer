@@ -9,7 +9,6 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
 import com.google.inject.util.Modules;
-import com.hazelcast.web.WebFilter;
 import org.apache.wicket.guice.GuiceWebApplicationFactory;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WicketFilter;
@@ -20,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebApplication;
 
 import java.util.*;
+
+import javax.servlet.Filter;
 
 
 /**
@@ -100,17 +101,24 @@ public class OrienteerInitModule extends ServletModule {
     }
 
     protected void bindHazelcastFilter() {
-	    Map<String, String> params = new HashMap<>();
-	    params.put("config-location", properties.getProperty("orientdb.configuration.hazelcast"));
-	    params.put("map-name", "wicket-sessions");
-	    params.put("sticky-session", "true");
-	    params.put("deferred-write", "true");
-	    params.put("debug", "true");
-	    params.put("cookie-name", "JSESSIONID");
-        params.put("map-name", properties.getProperty("orienteer.sessions.map.name"));
+    	try {
+			Class<? extends Filter> webFilterClass = 
+					(Class<? extends Filter>)Class.forName("com.hazelcast.web.WebFilter");
+			Map<String, String> params = new HashMap<>();
+			params.put("config-location", properties.getProperty("orientdb.configuration.hazelcast"));
+			params.put("map-name", "wicket-sessions");
+			params.put("sticky-session", "true");
+			params.put("deferred-write", "true");
+			params.put("debug", "true");
+			params.put("cookie-name", "JSESSIONID");
+			params.put("map-name", properties.getProperty("orienteer.sessions.map.name"));
 
-	    bind(WebFilter.class).in(Singleton.class);
-        filter("/*").through(WebFilter.class, params);
+			bind(webFilterClass).in(Singleton.class);
+			filter("/*").through(webFilterClass, params);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @SuppressWarnings("unchecked")

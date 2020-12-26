@@ -605,7 +605,6 @@
 			<!-- Only modules which are required for initial docker build -->
 			<modules>
 				<module>orienteer-core</module>
-				<module>orienteer-graph</module>
 				<module>orienteer-war</module>
 			</modules>
 		</profile>

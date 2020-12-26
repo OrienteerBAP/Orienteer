@@ -27,7 +27,7 @@
 	<artifactId>orienteer-war</artifactId>
 	<name>orienteer-war</name>
 
-    <packaging>war</packaging>
+	<packaging>war</packaging>
 
 	<dependencies>
 		<dependency>
@@ -35,31 +35,6 @@
 			<artifactId>orienteer-core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		<dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-graph</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pages</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-pivottable</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-devutils</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.orienteer</groupId>
-            <artifactId>orienteer-logger-server</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
 	</dependencies>
 
 	<build>
