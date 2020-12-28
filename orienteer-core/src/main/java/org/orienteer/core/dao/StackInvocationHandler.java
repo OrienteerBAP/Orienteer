@@ -33,5 +33,9 @@ public class StackInvocationHandler<T> implements InvocationHandler {
 		if(holder!=null) return holder.result;
 		else throw new IllegalStateException("Can't proxy method: "+method);
 	}
+	
+	public T getTarget() {
+		return target;
+	}
 
 }

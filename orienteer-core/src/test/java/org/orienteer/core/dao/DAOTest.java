@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,6 +97,11 @@ public class DAOTest {
 				return true;
 			}
 		}.execute();
+	}
+	
+	@Before
+	public void makeSureThatDBInThecurrentThread() {
+		tester.getDatabaseSession().activateOnCurrentThread();
 	}
 	
 	@Test
@@ -238,6 +245,10 @@ public class DAOTest {
 			OClass daoTestClassA = schema.getClass("DAOTestClassA");
 			OClass daoTestClassB = schema.getClass("DAOTestClassB");
 			
+			assertEquals(IDAOTestClassRoot.class.getName(), CustomAttribute.DAO_CLASS.getValue(daoTestClassRoot));
+			assertEquals(IDAOTestClassA.class.getName(), CustomAttribute.DAO_CLASS.getValue(daoTestClassA));
+			assertEquals(IDAOTestClassB.class.getName(), CustomAttribute.DAO_CLASS.getValue(daoTestClassB));
+			
 			assertTrue(daoTestClassRoot.isAbstract());
 			assertProperty(daoTestClassRoot, "root", OType.STRING, 0);
 			
@@ -346,9 +357,33 @@ public class DAOTest {
 	
 	private OProperty assertProperty(OClass oClass, String property, OType oType, Integer order) {
 		OProperty prop = oClass.getProperty(property);
-		assertNotNull("Property was not found", prop);
+		assertNotNull("Property '"+property+"'was not found on OClass:"+oClass, prop);
 		assertEquals(oType, prop.getType());
 		assertEquals(order, CustomAttribute.ORDER.getValue(prop));
 		return prop;
+	}
+	
+	@Test
+	@Sudo
+	public void testInheritedClass() {
+		OSchema schema = tester.getMetadata().getSchema();
+		try {
+			DAO.describe(OSchemaHelper.bind(tester.getDatabaseSession()), IDAOTestClassA.class);
+			IDAOTestClassA obj = DAO.create(IDAOTestClassA.class);
+			obj.setName("TestInheritedClass");
+			DAO.save(obj);
+			IDAOTestClassRoot obj2 = DAO.provide(IDAOTestClassRoot.class, DAO.asDocument(obj));
+			assertTrue(obj2 instanceof IDAOTestClassA);
+			assertEquals(obj.hashCode(), obj2.hashCode());
+			assertTrue(obj2.equals(obj));
+			
+			IDAOTestClassB obj3 = DAO.create(IDAOTestClassB.class);
+			DAO.save(obj3);
+			assertFalse(obj.equals(obj3));
+		} finally {
+			if(schema.existsClass("DAOTestClassA")) schema.dropClass("DAOTestClassA");
+			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
+			if(schema.existsClass("DAOTestClassRoot")) schema.dropClass("DAOTestClassRoot");
+		}
 	}
 }

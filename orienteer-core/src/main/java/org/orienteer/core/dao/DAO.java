@@ -97,15 +97,32 @@ public final class DAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T provide(Class<T> interfaceClass, ODocumentWrapper docWrapper, Class<?>... additionalInterfaces) {
+	public static <T> T provide(Class<? extends T> interfaceClass, ODocumentWrapper docWrapper, Class<?>... additionalInterfaces) {
 		if(additionalInterfaces == null) additionalInterfaces = NO_CLASSES;
 		Class<?>[] builtInInterfaces = docWrapper.getClass().getInterfaces();
 		Class<?>[] interfaces = new Class[2+builtInInterfaces.length+additionalInterfaces.length];
-		interfaces[0] = interfaceClass;
+		ClassLoader classLoader = interfaceClass.getClassLoader();
+		interfaces[0] = tryToGetInheritedInterface(interfaceClass, docWrapper);
 		interfaces[1] = IODocumentWrapper.class;
 		if(builtInInterfaces.length>0) System.arraycopy(builtInInterfaces, 0, interfaces, 2, builtInInterfaces.length);
 		if(additionalInterfaces.length>0) System.arraycopy(additionalInterfaces, 0, interfaces, 2+builtInInterfaces.length, additionalInterfaces.length);
-		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), interfaces,  new ODocumentWrapperInvocationHandler(docWrapper));
+		return (T) Proxy.newProxyInstance(classLoader, interfaces,  new ODocumentWrapperInvocationHandler(docWrapper));
+	}
+	
+	private static <T> Class<? extends T> tryToGetInheritedInterface(Class<? extends T> clazz, ODocumentWrapper docWrapper) {
+		ODocument doc = docWrapper.getDocument();
+		if(doc!=null) {
+			String daoClassName = CustomAttribute.DAO_CLASS.getValue(doc.getSchemaClass());
+			if(daoClassName!=null) {
+				try {
+					Class<? extends T> daoClass = (Class<? extends T>)Class.forName(daoClassName);
+					if(clazz.isAssignableFrom(daoClass)) return daoClass;
+				} catch (ClassNotFoundException e) {
+					//NOP
+				}
+			}
+		}
+		return clazz;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -224,6 +241,7 @@ public final class DAO {
 		LOG.info("Creation of OClass {}", daooClass.value());
 		if(daooClass.isAbstract()) helper.oAbstractClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
 		else helper.oClass(daooClass.value(), superClasses.toArray(new String[superClasses.size()]));
+		CustomAttribute.DAO_CLASS.setValue(helper.getOClass(), clazz.getName());
 		
 		ctx.exiting(clazz, daooClass.value());
 		applyDAOClassAttributes(helper, daooClass);

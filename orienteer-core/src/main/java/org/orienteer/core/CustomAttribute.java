@@ -96,6 +96,11 @@ public final class CustomAttribute implements Serializable
 	 * Feature ID for a property
 	 */
 	public static final CustomAttribute FEATURE = create("orienteer.feature",OType.STRING,null,true, true);
+	
+	/**
+	 * DAO InterfaceClass
+	 */
+	public static final CustomAttribute DAO_CLASS = create("orienteer.dao.class",OType.STRING,null,true, true);
 
 	private final String name;
 	private final OType type;
