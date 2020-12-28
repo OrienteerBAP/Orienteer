@@ -1,5 +1,6 @@
 package org.orienteer.core.component.command;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -91,7 +93,12 @@ public class CreateODocumentCommand extends AbstractModalWindowCommand<ODocument
 				OProperty inverseProperty = CustomAttribute.PROP_INVERSE.getValue(property);
 				if(inverseProperty!=null)
 				{
-					doc.field(inverseProperty.getName(), documentModel.getObject());
+					OType oType = inverseProperty.getType();
+					if(oType.isLink()) {
+						doc.field(inverseProperty.getName(), oType.isMultiValue()?
+																Arrays.asList(documentModel.getObject())
+																: documentModel.getObject());
+					}
 				}
 			}
 		}
