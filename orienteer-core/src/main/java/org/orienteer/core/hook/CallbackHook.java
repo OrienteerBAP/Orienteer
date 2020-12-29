@@ -1,12 +1,17 @@
 package org.orienteer.core.hook;
 
+import com.orientechnologies.orient.core.db.record.ORecordElement.STATUS;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.record.impl.ODocumentEntry;
+import com.orientechnologies.orient.core.record.impl.ODocumentInternal;
 
 import java.io.Serializable;
 import java.util.*;
+
+import org.joor.Reflect;
 
 /**
  * OrientDB {@link ORecordHook} which allows to bind runtime callback to a document.
@@ -22,6 +27,7 @@ public class CallbackHook implements ORecordHook {
 	/**
 	 * Callback to be executed on event
 	 */
+	@FunctionalInterface
 	public static interface ICallback extends Serializable {
 		/**
 		 * Called when required event occur
@@ -71,13 +77,7 @@ public class CallbackHook implements ORecordHook {
 	}
 	
 	public static void registerCallback(ODocument doc, TYPE type, ICallback callback) {
-		CallbacksHolder ret = doc.field(CALLBACKS_FIELD, CallbacksHolder.class);
-		if (ret == null) {
-			ret = new CallbacksHolder();
-			//Field type should be CUSTOM: to allow callback be serialized and still preserved in a doc
-			doc.field(CALLBACKS_FIELD, ret, OType.CUSTOM);
-		}
-		ret.registerCallback(type, callback);
+		getOrCreateCallbacksHolder(doc).registerCallback(type, callback);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class CallbackHook implements ORecordHook {
 			ODocument doc = (ODocument) iRecord;
 			CallbacksHolder callbacks = getCallbacksHolder(doc);
 
-			if (callbacks != null && executeCallbacks(iType, doc, callbacks)) {
+			if (callbacks != null && !callbacks.isEmpty() && executeCallbacks(iType, doc, callbacks)) {
 				return RESULT.RECORD_CHANGED;
 			}
 		}
@@ -103,18 +103,38 @@ public class CallbackHook implements ORecordHook {
 		
 	}
 	
-	private CallbacksHolder getCallbacksHolder(ODocument doc) {
-		CallbacksHolder callbacks = null;
-		if (doc.containsField(CALLBACKS_FIELD)) {
-			callbacks = doc.field(CALLBACKS_FIELD, CallbacksHolder.class);
+	private static CallbacksHolder getOrCreateCallbacksHolder(ODocument doc) {
+		CallbacksHolder ret = getCallbacksHolder(doc);
+		if(ret==null) {
+			ret = new CallbacksHolder();
+			doc.field(CALLBACKS_FIELD, ret, OType.CUSTOM);
 		}
-		return callbacks;
+		return ret;
+	}
+	
+	private static CallbacksHolder getCallbacksHolder(ODocument doc) {
+		if (ODocumentInternal.rawContainsField(doc, CALLBACKS_FIELD)) {
+			Object value = ODocumentInternal.rawEntry(doc, CALLBACKS_FIELD).value;
+			if(value instanceof CallbacksHolder) 
+				return (CallbacksHolder)value;
+		} else if(!doc.getInternalStatus().equals(STATUS.NOT_LOADED) && doc.hasProperty(CALLBACKS_FIELD)) {
+			return doc.field(CALLBACKS_FIELD, CallbacksHolder.class);
+		}
+		return null;
 	}
 
 	private boolean executeCallbacks(TYPE iType, ODocument doc, CallbacksHolder callbacks) {
 		boolean docWasChanged = callbacks.call(iType, doc);
 		if (callbacks.isEmpty()) {
-			doc.removeField(CALLBACKS_FIELD);
+			if(doc.isTrackingChanges()) doc.undo(CALLBACKS_FIELD);
+			else {
+				ODocumentEntry entry = ODocumentInternal.rawEntry(doc, CALLBACKS_FIELD);
+				if(entry!=null && entry.exists()) {
+					entry.setExists(false);
+					entry.value = null;
+					Reflect.on(doc).set("fieldSize", ODocumentInternal.rawEntries(doc).size());
+				}
+			}
 		}
 		return docWasChanged;
 	}

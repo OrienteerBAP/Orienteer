@@ -9,6 +9,9 @@ import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.hook.CallbackHook;
@@ -24,6 +27,7 @@ import static org.junit.Assert.*;
 
 @RunWith(OrienteerTestRunner.class)
 @Singleton
+@Slf4j
 public class HooksTest
 {
 	private static final String TEST_CLASS_A = "TestClassA";
@@ -285,6 +289,7 @@ public class HooksTest
 		@Override
 		public boolean call(TYPE iType, ODocument doc) {
 			assertEquals("testname", doc.field("name"));
+			log.info("Invokect for "+iType+" Document: "+doc.toJSON());
 			doc.field("callback"+iType, "executed", OType.STRING);
 			return true;
 		}
@@ -311,7 +316,9 @@ public class HooksTest
 			assertFalse(doc.containsField("__callbacks__"));
 			assertFalse(doc.containsField("callback"+TYPE.AFTER_READ)); 
 			CallbackHook.registerCallback(doc, TYPE.AFTER_READ, callback);
+			assertTrue(doc.containsField("__callbacks__"));
 			doc.save();
+			assertTrue(doc.containsField("__callbacks__"));
 			doc.reload();
 			assertEquals("executed", doc.field("callback"+TYPE.AFTER_READ));
 		} finally {
