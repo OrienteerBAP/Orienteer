@@ -120,7 +120,7 @@ public class ReferencesConsistencyHook extends ODocumentHookAbstract
 								for (int i = 0; i <= 10; i++) {
 									try {
 										addLink(otherDoc, inverseProperty, doc);
-										database.commit();
+//										database.commit();
 									} catch (OConcurrentModificationException e) {
 										otherDoc.reload();
 										if (i == 10) {
