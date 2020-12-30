@@ -308,7 +308,7 @@ public final class DAO {
 		if(!Strings.isEmpty(daoField.feature()))
 			CustomAttribute.FEATURE.setValue(helper.getOProperty(), daoField.feature());
 		helper.getOProperty().setMandatory(daoField.mandatory());
-		helper.getOProperty().setMandatory(daoField.readOnly());
+		helper.getOProperty().setReadonly(daoField.readOnly());
 		CustomAttribute.UI_READONLY.setValue(helper.getOProperty(), daoField.uiReadOnly());
 		if(!Strings.isEmpty(daoField.min())) helper.min(daoField.min());
 		if(!Strings.isEmpty(daoField.max())) helper.max(daoField.max());
