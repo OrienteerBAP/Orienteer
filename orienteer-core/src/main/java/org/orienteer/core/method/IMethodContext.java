@@ -1,6 +1,8 @@
 package org.orienteer.core.method;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.widget.AbstractWidget;
 
@@ -37,5 +39,15 @@ public interface IMethodContext {
 	 * @return table object
 	 */
 	public Component getRelatedComponent();
+	
+	public default void showFeedback(final int feedbackLevel, final String messageKey, final IModel<?> model) {
+		AbstractWidget<?> widget = getCurrentWidget();
+		if(widget!=null) {
+			String message = widget.getLocalizer().getString(messageKey, widget, model);
+			widget.getFeedbackMessages().add(new FeedbackMessage(widget, message, feedbackLevel));
+			final Page page = widget.findParent(Page.class);
+			if (page != null)page.dirty();
+		}
+	}
 	
 }
