@@ -1,5 +1,7 @@
 package org.orienteer.logger.server.model;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
@@ -25,6 +27,9 @@ public class OLoggerEventModel extends ODocumentWrapper {
     public static final String PROP_SUMMARY         = "summary";
     public static final String PROP_MESSAGE         = "message";
     public static final String PROP_SEED_CLASS      = "seedClass";
+    public static final String PROP_SOURCE      	= "source";
+    public static final String PROP_SOURCE_DOC      = "sourceDoc";
+    
 
     public OLoggerEventModel() {
         this(CLASS_NAME);
@@ -32,6 +37,7 @@ public class OLoggerEventModel extends ODocumentWrapper {
 
     public OLoggerEventModel(ODocument doc) {
         super(doc);
+        checkForSourceDoc();
     }
 
     public OLoggerEventModel(String iClassName) {
@@ -148,5 +154,31 @@ public class OLoggerEventModel extends ODocumentWrapper {
     public OLoggerEventModel setSeedClass(String seedClass) {
         document.field(PROP_SEED_CLASS, seedClass);
         return this;
+    }
+    
+    public String getSource() {
+    	return document.field(PROP_SOURCE);
+    }
+    
+    public OLoggerEventModel setSource(String source) {
+    	document.field(PROP_SOURCE, source);
+    	checkForSourceDoc();
+        return this;
+    }
+    
+    public ODocument getSourceDoc() {
+    	return document.field(PROP_SOURCE_DOC);
+    }
+    
+    public OLoggerEventModel setSourceDoc(OIdentifiable source) {
+    	document.field(PROP_SOURCE_DOC, source);
+        return this;
+    }
+    
+    protected void checkForSourceDoc() {
+    	String source = getSource();
+    	if(source!=null && ORecordId.isA(source)) {
+    		setSourceDoc(new ORecordId(source));
+    	}
     }
 }

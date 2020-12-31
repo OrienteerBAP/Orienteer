@@ -57,7 +57,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 11;
+	public static final int VERSION = 12;
 
 	public static final String DISPATCHER_DEFAULT = "default";
 
@@ -105,7 +105,9 @@ public class OLoggerModule extends AbstractOrienteerModule{
 					.markDisplayable()
 					.updateCustomAttribute(CustomAttribute.UI_READONLY, true)
 				.oProperty(OLoggerEventModel.PROP_MESSAGE, OType.STRING, 120)
-					.assignVisualization("code");
+					.assignVisualization("code")
+				.oProperty(OLoggerEventModel.PROP_SOURCE, OType.STRING, 130)
+				.oProperty(OLoggerEventModel.PROP_SOURCE_DOC, OType.LINK, 140);
 
 
 		helper.oClass(OLoggerEventDispatcherModel.CLASS_NAME)
