@@ -63,7 +63,7 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 	protected Command<?> applyVisualSettings(Command<?> commandComponent){
 		IMethodDefinition definition = getDefinition();
 		if(commandComponent.getIcon()==null) commandComponent.setIcon(definition.getIcon());
-		if(commandComponent.getBootstrapType()==null) commandComponent.setBootstrapType(definition.getBootstrapType());
+		if(definition.getBootstrapType()!=null) commandComponent.setBootstrapType(definition.getBootstrapType());
 		commandComponent.setChangingDisplayMode(commandComponent.isChangingDisplayMode() 
 														|| definition.isChangingDisplayMode());	
 		commandComponent.setChandingModel(commandComponent.isChangingModel()

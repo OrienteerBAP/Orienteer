@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
@@ -63,21 +65,20 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 	@Override
 	public void invokeLinkedFunction(IMethodContext dataObject,ODocument doc) {
 		try {
-			Constructor<?> constructor=null;
-			try {
-				constructor = javaClass.getConstructor(ODocument.class);
-			} catch (NoSuchMethodException e1) {
-				// TODO it is correct catch block with muffling
-			}
-			
 			Method javaMethod = javaClass.getMethod(javaMethodName, IMethodContext.class);
-			Object inputDoc = doc!=null?doc:dataObject.getDisplayObjectModel().getObject();
-			if (constructor!=null && inputDoc instanceof ODocument){
-				Object newInstance = constructor.newInstance(inputDoc);
-				javaMethod.invoke(newInstance,dataObject);
-			}else{
-				javaMethod.invoke(null,dataObject);
+			ODocument inputDoc = doc!=null?doc:(ODocument)dataObject.getDisplayObjectModel().getObject();
+			
+			Object instance = null;
+			if(javaClass.isInterface()) {
+				if(javaClass.isAnnotationPresent(DAOOClass.class))instance = DAO.provide(javaClass, inputDoc);
+			} else {
+				try {
+					instance = javaClass.getConstructor(ODocument.class).newInstance(inputDoc);
+				} catch (NoSuchMethodException e1) {
+					// TODO it is correct catch block with muffling
+				}
 			}
+			javaMethod.invoke(instance, dataObject);
 		} catch (IllegalAccessException | IllegalArgumentException 
 				| InvocationTargetException | NoSuchMethodException 
 				| SecurityException | InstantiationException e) {
@@ -96,8 +97,11 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 	@Override
 	protected List<IMethodFilter> makeFilters(OFilter[] filters) {
 		List<IMethodFilter> ret = super.makeFilters(filters);
-		if(getSelector().isEmpty()) 
-			ret.add(new SelectorFilter().setFilterData(javaClass.getSimpleName()));
+		if(getSelector().isEmpty()) {
+			DAOOClass daoOClass = javaClass.getAnnotation(DAOOClass.class);
+			String selector = daoOClass!=null?daoOClass.value():javaClass.getSimpleName();
+			ret.add(new SelectorFilter().setFilterData(selector));
+		}
 		return ret;
 	}
 
