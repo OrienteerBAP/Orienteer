@@ -139,6 +139,13 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 		return listView.getReuseItems();
 	}
 	
+	public void structureChanged() {
+		listView.modelChanging();
+		criteriesModel.detach();
+		listView.modelChanged();
+		listView.removeAll();
+	}
+	
 	String newToolbarId()
 	{
 		toolbarIdCounter++;
