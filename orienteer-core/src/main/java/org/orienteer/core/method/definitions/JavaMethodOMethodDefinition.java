@@ -5,6 +5,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.wicket.request.RequestHandlerExecutor.ReplaceHandlerException;
+import org.apache.wicket.util.lang.Exceptions;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.method.IMethod;
@@ -82,7 +84,9 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 		} catch (IllegalAccessException | IllegalArgumentException 
 				| InvocationTargetException | NoSuchMethodException 
 				| SecurityException | InstantiationException e) {
-			LOG.error("Error during method invokation", e);
+			ReplaceHandlerException replaceHandlerException = Exceptions.findCause(e, ReplaceHandlerException.class);
+			if(replaceHandlerException!=null) throw replaceHandlerException;
+			else LOG.error("Error during method invokation", e);
 		} 
 	}
 

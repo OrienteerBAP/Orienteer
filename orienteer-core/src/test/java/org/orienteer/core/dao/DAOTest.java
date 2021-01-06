@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.WicketRuntimeException;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -40,6 +41,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 
+import junit.framework.AssertionFailedError;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 @RunWith(OrienteerTestRunner.class)
@@ -158,6 +160,21 @@ public class DAOTest {
 		assertNotNull(doc.getDocument());
 		Object reloadRet = doc.reload();
 		assertTrue(reloadRet == doc);
+	}
+	
+	@Test
+	public void testParentChildDefaultMethods() {
+		IDAOChild obj = DAO.create(IDAOChild.class);
+		assertEquals(-1, obj.methodWithNoBodyInParent());
+		assertEquals(IDAOChild.class, obj.methodWithDefaultBodyInParent());
+		obj.methodVoidWithException();
+		
+		try {
+			obj.methodVoid();
+			throw new AssertionFailedError("We shouldn't be there");
+		} catch (WicketRuntimeException e) {
+			//It's expected
+		}
 	}
 	
 	@Test

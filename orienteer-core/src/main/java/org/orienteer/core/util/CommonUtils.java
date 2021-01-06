@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
@@ -49,6 +50,27 @@ public class CommonUtils {
 			ret.put((K)objects[i], (V)objects[i+1]);
 		}
 		return ret;
+	}
+	
+	/**
+	 * Localize string by resource key and set of named parameters
+	 * @param key resource key
+	 * @param objects array of objects which will be transformed into Map by toMap
+	 * @return localized String
+	 */
+	public static String localize(String key, Object... objects) {
+		return localize(key, toMap(objects));
+	}
+	
+	/**
+	 * Localize string by resource key
+	 * @param key resoruce key
+	 * @param map named parameters
+	 * @return localized String
+	 */
+	public static String localize(String key, Map<String, ?> map) {
+		return OrienteerWebApplication.lookupApplication().getResourceSettings()
+						.getLocalizer().getString(key, null, Model.ofMap(map));
 	}
 	
 	public static final Object localizeByMap(Map<String, ?> map, boolean returnFirstIfNoMatch, String... languages) {
