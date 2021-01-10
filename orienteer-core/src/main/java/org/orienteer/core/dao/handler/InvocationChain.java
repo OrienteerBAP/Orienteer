@@ -2,6 +2,7 @@ package org.orienteer.core.dao.handler;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -14,6 +15,8 @@ import com.google.common.collect.Iterators;
  * @param <T> type of target/delegate object
  */
 public class InvocationChain<T> implements IMethodHandler<T> {
+	
+	private static final InvocationChain<?> EMPTY = new InvocationChain<Object>(Collections.emptyList());
 	
 	private Iterator<IMethodHandler<T>> it;
 	
@@ -50,5 +53,9 @@ public class InvocationChain<T> implements IMethodHandler<T> {
 	public InvocationChain<T> append(Iterable<IMethodHandler<T>> iterable) {
 		this.it = Iterators.concat(it, iterable.iterator());
 		return this;
+	}
+	
+	public static <T> InvocationChain<T> empty() {
+		return (InvocationChain<T>)EMPTY;
 	}
 }

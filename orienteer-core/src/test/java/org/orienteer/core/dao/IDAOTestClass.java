@@ -3,6 +3,8 @@ package org.orienteer.core.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.orienteer.core.dao.handler.extra.LogMethodHandler;
+
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
@@ -40,6 +42,7 @@ public interface IDAOTestClass extends IODocumentWrapper {
 	}
 	
 	@Lookup("select from DAOTestClass where name = :name")
+	@DAOHandler(LogMethodHandler.class)
 	public boolean lookupToBoolean(String name);
 	
 	@Lookup("select from DAOTestClass where name = :name")
@@ -47,5 +50,10 @@ public interface IDAOTestClass extends IODocumentWrapper {
 	
 	@Query("select expand(child) from DAOTestClass where @rid = :target")
 	public List<ODocument> listAllChild();
+	
+	@DAOHandler(TestDAOMethodHandler.class)
+	public default Integer interceptedInvocation() {
+		return 0;
+	}
 	
 }

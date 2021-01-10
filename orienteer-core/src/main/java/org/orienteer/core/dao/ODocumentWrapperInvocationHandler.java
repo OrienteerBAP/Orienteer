@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.joor.Reflect;
+import org.orienteer.core.dao.handler.DAOHandlersMethodHandler;
 import org.orienteer.core.dao.handler.DefaultInterfaceMethodHandler;
 import org.orienteer.core.dao.handler.EqualsMethodHandler;
 import org.orienteer.core.dao.handler.LookupMethodHandler;
@@ -18,6 +19,7 @@ import org.orienteer.core.dao.handler.ODocumentGetHandler;
 import org.orienteer.core.dao.handler.ODocumentSetHandler;
 import org.orienteer.core.dao.handler.QueryMethodHandler;
 import org.orienteer.core.dao.handler.RetargetMethodHandler;
+import org.orienteer.core.dao.handler.StackMethodHandler;
 import org.orienteer.core.util.CommonUtils;
 
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
@@ -29,14 +31,17 @@ class ODocumentWrapperInvocationHandler extends StackInvocationHandler<ODocument
 	
 	
 	private static final List<IMethodHandler<ODocumentWrapper>> STACK = Arrays.asList(
-											new EqualsMethodHandler<ODocumentWrapper>(),
-											new MirrorMethodHandler<ODocumentWrapper>(IODocumentWrapper.class),
-											new RetargetMethodHandler<ODocumentWrapper>(),
-											new DefaultInterfaceMethodHandler<ODocumentWrapper>(),
-											new ODocumentGetHandler(),
-											new ODocumentSetHandler(),
-											new LookupMethodHandler(),
-											new QueryMethodHandler<ODocumentWrapper>(ODocumentWrapper::getDocument)
+											new DAOHandlersMethodHandler<ODocumentWrapper>(),
+											new StackMethodHandler<ODocumentWrapper>(
+												new EqualsMethodHandler<ODocumentWrapper>(),
+												new MirrorMethodHandler<ODocumentWrapper>(IODocumentWrapper.class),
+												new RetargetMethodHandler<ODocumentWrapper>(),
+												new DefaultInterfaceMethodHandler<ODocumentWrapper>(),
+												new ODocumentGetHandler(),
+												new ODocumentSetHandler(),
+												new LookupMethodHandler(),
+												new QueryMethodHandler<ODocumentWrapper>(ODocumentWrapper::getDocument)
+											)
 										);
 	
 	public ODocumentWrapperInvocationHandler(ODocumentWrapper wrapper) {

@@ -163,6 +163,12 @@ public class DAOTest {
 	}
 	
 	@Test
+	public void testInterceptors() {
+		IDAOTestClass doc = tester.getApplication().getServiceInstance(IDAOTestClass.class);
+		assertEquals(TestDAOMethodHandler.RETURN, doc.interceptedInvocation());
+	}
+	
+	@Test
 	public void testParentChildDefaultMethods() {
 		IDAOChild obj = DAO.create(IDAOChild.class);
 		assertEquals(-1, obj.methodWithNoBodyInParent());
