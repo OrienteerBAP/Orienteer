@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.joor.Reflect;
 import org.orienteer.core.dao.DAO;
@@ -31,15 +32,15 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
  */
 public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 	
-	protected static ResultHolder returnChained(Object proxy, Method method, boolean present) {
+	protected static Optional<Object> returnChained(Object proxy, Method method, boolean present) {
 		if(Boolean.class.equals(method.getReturnType())
 			|| boolean.class.equals(method.getReturnType())) 
-			return new ResultHolder(Boolean.valueOf(present));
-		else return present?returnChained(proxy, method) : NULL_RESULT;
+			return Optional.of(present);
+		else return present?returnChained(proxy, method) : Optional.empty();
 	}
 	
-	protected static ResultHolder returnChained(Object proxy, Method method) {
-		return method.getDeclaringClass().isInstance(proxy) ? new ResultHolder(proxy) : NULL_RESULT;
+	protected static Optional<Object> returnChained(Object proxy, Method method) {
+		return method.getReturnType().isInstance(proxy) ? Optional.of(proxy) : Optional.empty();
 	}
 	
 	protected static Map<String, Object> toArguments(Method method, Object[] values) {

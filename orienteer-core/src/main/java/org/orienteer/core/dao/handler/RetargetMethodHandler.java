@@ -1,6 +1,7 @@
 package org.orienteer.core.dao.handler;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.orienteer.core.dao.IMethodHandler;
 
@@ -11,10 +12,10 @@ import org.orienteer.core.dao.IMethodHandler;
 public class RetargetMethodHandler<T> implements IMethodHandler<T>{
 
 	@Override
-	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
 		Class<?> declaringClass = method.getDeclaringClass();
 		if(declaringClass.isInstance(target)) {
-			return new ResultHolder(method.invoke(target, args));
+			return Optional.ofNullable(method.invoke(target, args));
 		} else return null;
 	}
 

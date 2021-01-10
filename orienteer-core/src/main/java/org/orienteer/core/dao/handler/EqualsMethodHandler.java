@@ -3,6 +3,7 @@ package org.orienteer.core.dao.handler;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Optional;
 
 import org.orienteer.core.dao.IMethodHandler;
 import org.orienteer.core.dao.StackInvocationHandler;
@@ -14,19 +15,19 @@ import org.orienteer.core.dao.StackInvocationHandler;
 public class EqualsMethodHandler<T> implements IMethodHandler<T> {
 
 	@Override
-	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
 		if(method.getName().equals("equals") && args.length==1) {
 			Object other = args[0];
-			if(other==null) return new ResultHolder(false);
+			if(other==null) return Optional.of(false);
 			if(Proxy.isProxyClass(other.getClass())) {
 				if(proxy.getClass().equals(other.getClass())) {
 					InvocationHandler handler = Proxy.getInvocationHandler(other);
 					if(handler instanceof StackInvocationHandler) {
 						Object otherTarget = ((StackInvocationHandler<?>)handler).getTarget();
-						return new ResultHolder(target.equals(otherTarget));
+						return Optional.of(target.equals(otherTarget));
 					}
 				}
-				return new ResultHolder(false);
+				return Optional.of(false);
 			}
 		}
 		return null;

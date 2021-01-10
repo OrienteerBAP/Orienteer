@@ -1,9 +1,9 @@
 package org.orienteer.core.dao.handler;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.orienteer.core.dao.IMethodHandler;
-import org.orienteer.core.dao.IMethodHandler.ResultHolder;
 
 /**
  * {@link IMethodHandler} which use stacked other {@link IMethodHandler}s
@@ -18,8 +18,8 @@ public class StackMethodHandler<T> implements IMethodHandler<T> {
 	}
 
 	@Override
-	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
-		ResultHolder holder = null;
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+		Optional<Object> holder = null;
 		for (IMethodHandler<T> handler : stack) {
 			if((holder=handler.handle(target, proxy, method, args))!=null) break;
 		}

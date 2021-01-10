@@ -1,26 +1,13 @@
 package org.orienteer.core.dao;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Interface to allow to stack method invocation handlers
  * @param <T> - type of target/delegate object
  */
 public interface IMethodHandler<T> {
-	
-	public static final ResultHolder NULL_RESULT = new ResultHolder(null);
-	
-	/**
-	 * Holder for results out of {@link IMethodHandler}.
-	 * It's needed to cover results "null" which also should be recognized as results
-	 */
-	public static class ResultHolder {
-		public final Object result;
-		
-		public ResultHolder(Object result) {
-			this.result = result;
-		}
-	}
 	
 	/**
 	 * Handle the method invocation on proxy 
@@ -30,5 +17,5 @@ public interface IMethodHandler<T> {
 	 * @param args arguments
 	 * @return null if invocation was not handled and not-null otherwise
 	 */
-	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable;
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable;
 }

@@ -3,6 +3,7 @@ package org.orienteer.core.dao.handler;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import org.danekja.java.util.function.serializable.SerializableFunction;
 import org.orienteer.core.dao.IMethodHandler;
@@ -29,13 +30,13 @@ public class QueryMethodHandler<T> extends AbstractMethodHandler<T>{
 	}
 
 	@Override
-	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
 		if(method.isAnnotationPresent(Query.class)) {
 			String sql = method.getAnnotation(Query.class).value();
 			OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>(sql);
 			Map<String, Object> argumets = toArguments(method, args);
 			if(converter!=null) argumets.putIfAbsent("target", converter.apply(target));
-			return new ResultHolder(queryDB(query, argumets, method));
+			return Optional.ofNullable(queryDB(query, argumets, method));
 		} else return null;
 	}
 

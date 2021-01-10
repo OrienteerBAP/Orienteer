@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.dao.IMethodHandler;
@@ -20,7 +21,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 public class LookupMethodHandler extends AbstractMethodHandler<ODocumentWrapper> {
 
 	@Override
-	public ResultHolder handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
 		if(method.isAnnotationPresent(Lookup.class)) {
 			String sql = method.getAnnotation(Lookup.class).value();
 			ODocument ret = new OSQLSynchQuery<ODocument>(sql).runFirst(toArguments(method, args));

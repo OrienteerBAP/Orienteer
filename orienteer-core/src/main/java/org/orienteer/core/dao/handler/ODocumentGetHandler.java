@@ -1,6 +1,7 @@
 package org.orienteer.core.dao.handler;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.dao.DAOField;
@@ -15,7 +16,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 public class ODocumentGetHandler extends AbstractMethodHandler<ODocumentWrapper>{
 
 	@Override
-	public ResultHolder handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
 		if(args.length==0) {
 			String name=null;
 			String methodName = method.getName();
@@ -25,7 +26,7 @@ public class ODocumentGetHandler extends AbstractMethodHandler<ODocumentWrapper>
 			if(fieldAnnotation!=null && !Strings.isEmpty(fieldAnnotation.value())) name = fieldAnnotation.value();
 			if(name!=null) {
 				Object value = target.getDocument().field(name, method.getReturnType());
-				return new ResultHolder(prepareForJava(value, method));
+				return Optional.ofNullable(prepareForJava(value, method));
 			}
 		}
 		return null;

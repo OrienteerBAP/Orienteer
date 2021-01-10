@@ -1,6 +1,7 @@
 package org.orienteer.core.dao.handler;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.orienteer.core.dao.IMethodHandler;
 
@@ -17,11 +18,11 @@ public class MirrorMethodHandler<T> implements IMethodHandler<T>{
 	}
 
 	@Override
-	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
 		if(method.getDeclaringClass().equals(mirrorInterface)) {
 			Object ret = target.getClass().getMethod(method.getName(), method.getParameterTypes())
 					.invoke(target, args);
-			return new ResultHolder(target == ret? proxy : ret);
+			return Optional.ofNullable(target == ret? proxy : ret);
 		} else return null;
 	}
 

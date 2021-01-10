@@ -2,6 +2,7 @@ package org.orienteer.core.dao.handler;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import org.joor.Reflect;
 import org.orienteer.core.dao.IMethodHandler;
@@ -13,14 +14,14 @@ import org.orienteer.core.dao.IMethodHandler;
 public class DefaultInterfaceMethodHandler<T> implements IMethodHandler<T> {
 
 	@Override
-	public ResultHolder handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
 		if(method.isDefault()) {
 		Class<?> declaringClass = method.getDeclaringClass();
 		MethodHandles.Lookup lookup = Reflect.onClass(MethodHandles.Lookup.class)
 				.create(declaringClass, MethodHandles.Lookup.PRIVATE).get();
-		return new ResultHolder(lookup.unreflectSpecial(method, declaringClass)
-					  .bindTo(proxy)
-					  .invokeWithArguments(args));
+		return Optional.ofNullable(lookup.unreflectSpecial(method, declaringClass)
+									  .bindTo(proxy)
+									  .invokeWithArguments(args));
 		} else return null;
 	}
 
