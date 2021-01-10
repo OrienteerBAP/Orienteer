@@ -18,12 +18,12 @@ public class MirrorMethodHandler<T> implements IMethodHandler<T>{
 	}
 
 	@Override
-	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain) throws Throwable {
 		if(method.getDeclaringClass().equals(mirrorInterface)) {
 			Object ret = target.getClass().getMethod(method.getName(), method.getParameterTypes())
 					.invoke(target, args);
 			return Optional.ofNullable(target == ret? proxy : ret);
-		} else return null;
+		} else return chain.handle(target, proxy, method, args);
 	}
 
 }

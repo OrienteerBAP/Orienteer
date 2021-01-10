@@ -12,11 +12,11 @@ import org.orienteer.core.dao.IMethodHandler;
 public class RetargetMethodHandler<T> implements IMethodHandler<T>{
 
 	@Override
-	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain) throws Throwable {
 		Class<?> declaringClass = method.getDeclaringClass();
 		if(declaringClass.isInstance(target)) {
 			return Optional.ofNullable(method.invoke(target, args));
-		} else return null;
+		} else return chain.handle(target, proxy, method, args);
 	}
 
 }

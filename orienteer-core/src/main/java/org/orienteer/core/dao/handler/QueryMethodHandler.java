@@ -30,14 +30,14 @@ public class QueryMethodHandler<T> extends AbstractMethodHandler<T>{
 	}
 
 	@Override
-	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain) throws Throwable {
 		if(method.isAnnotationPresent(Query.class)) {
 			String sql = method.getAnnotation(Query.class).value();
 			OSQLSynchQuery<ODocument> query = new OSQLSynchQuery<ODocument>(sql);
 			Map<String, Object> argumets = toArguments(method, args);
 			if(converter!=null) argumets.putIfAbsent("target", converter.apply(target));
 			return Optional.ofNullable(queryDB(query, argumets, method));
-		} else return null;
+		} else return chain.handle(target, proxy, method, args);
 	}
 
 }

@@ -3,6 +3,8 @@ package org.orienteer.core.dao;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+import org.orienteer.core.dao.handler.InvocationChain;
+
 /**
  * Interface to allow to stack method invocation handlers
  * @param <T> - type of target/delegate object
@@ -17,5 +19,5 @@ public interface IMethodHandler<T> {
 	 * @param args arguments
 	 * @return null if invocation was not handled and not-null otherwise
 	 */
-	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable;
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain) throws Throwable;
 }

@@ -15,7 +15,7 @@ import org.orienteer.core.dao.StackInvocationHandler;
 public class EqualsMethodHandler<T> implements IMethodHandler<T> {
 
 	@Override
-	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain) throws Throwable {
 		if(method.getName().equals("equals") && args.length==1) {
 			Object other = args[0];
 			if(other==null) return Optional.of(false);
@@ -30,7 +30,7 @@ public class EqualsMethodHandler<T> implements IMethodHandler<T> {
 				return Optional.of(false);
 			}
 		}
-		return null;
+		return chain.handle(target, proxy, method, args);
 	}
 
 }

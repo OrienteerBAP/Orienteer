@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.joor.Reflect;
@@ -17,7 +18,6 @@ import org.orienteer.core.dao.handler.ODocumentGetHandler;
 import org.orienteer.core.dao.handler.ODocumentSetHandler;
 import org.orienteer.core.dao.handler.QueryMethodHandler;
 import org.orienteer.core.dao.handler.RetargetMethodHandler;
-import org.orienteer.core.dao.handler.StackMethodHandler;
 import org.orienteer.core.util.CommonUtils;
 
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
@@ -27,8 +27,8 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
  */
 class ODocumentWrapperInvocationHandler extends StackInvocationHandler<ODocumentWrapper> {
 	
-	private static final StackMethodHandler<ODocumentWrapper> STACK = 
-									new StackMethodHandler<ODocumentWrapper>(
+	
+	private static final List<IMethodHandler<ODocumentWrapper>> STACK = Arrays.asList(
 											new EqualsMethodHandler<ODocumentWrapper>(),
 											new MirrorMethodHandler<ODocumentWrapper>(IODocumentWrapper.class),
 											new RetargetMethodHandler<ODocumentWrapper>(),
@@ -37,7 +37,7 @@ class ODocumentWrapperInvocationHandler extends StackInvocationHandler<ODocument
 											new ODocumentSetHandler(),
 											new LookupMethodHandler(),
 											new QueryMethodHandler<ODocumentWrapper>(ODocumentWrapper::getDocument)
-											);
+										);
 	
 	public ODocumentWrapperInvocationHandler(ODocumentWrapper wrapper) {
 		super(wrapper, STACK);

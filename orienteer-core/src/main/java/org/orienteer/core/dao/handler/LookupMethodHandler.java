@@ -21,13 +21,13 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 public class LookupMethodHandler extends AbstractMethodHandler<ODocumentWrapper> {
 
 	@Override
-	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args, InvocationChain<ODocumentWrapper> chain) throws Throwable {
 		if(method.isAnnotationPresent(Lookup.class)) {
 			String sql = method.getAnnotation(Lookup.class).value();
 			ODocument ret = new OSQLSynchQuery<ODocument>(sql).runFirst(toArguments(method, args));
 			target.fromStream(ret);
 			return returnChained(proxy, method, ret!=null);
-		} else return null;
+		} else return chain.handle(target, proxy, method, args);
 	}
 
 }

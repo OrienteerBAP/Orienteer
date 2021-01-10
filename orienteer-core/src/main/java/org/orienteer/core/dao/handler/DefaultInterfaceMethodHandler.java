@@ -14,7 +14,7 @@ import org.orienteer.core.dao.IMethodHandler;
 public class DefaultInterfaceMethodHandler<T> implements IMethodHandler<T> {
 
 	@Override
-	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain) throws Throwable {
 		if(method.isDefault()) {
 		Class<?> declaringClass = method.getDeclaringClass();
 		MethodHandles.Lookup lookup = Reflect.onClass(MethodHandles.Lookup.class)
@@ -22,7 +22,7 @@ public class DefaultInterfaceMethodHandler<T> implements IMethodHandler<T> {
 		return Optional.ofNullable(lookup.unreflectSpecial(method, declaringClass)
 									  .bindTo(proxy)
 									  .invokeWithArguments(args));
-		} else return null;
+		} else return chain.handle(target, proxy, method, args);
 	}
 
 }

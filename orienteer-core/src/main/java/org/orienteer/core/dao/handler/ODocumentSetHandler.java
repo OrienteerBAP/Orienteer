@@ -16,7 +16,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 public class ODocumentSetHandler extends AbstractMethodHandler<ODocumentWrapper>{
 
 	@Override
-	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args, InvocationChain<ODocumentWrapper> chain) throws Throwable {
 		if (method.getName().startsWith("set") && args.length==1) {
 			String name=CommonUtils.decapitalize(method.getName().substring(3));
 			DAOField fieldAnnotation = method.getAnnotation(DAOField.class);
@@ -24,7 +24,7 @@ public class ODocumentSetHandler extends AbstractMethodHandler<ODocumentWrapper>
 			target.getDocument().field(name, prepareForDB(args[0]));
 			return returnChained(proxy, method);
 		}
-		return null;
+		return chain.handle(target, proxy, method, args);
 	}
 
 }

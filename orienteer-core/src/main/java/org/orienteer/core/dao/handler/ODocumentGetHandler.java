@@ -16,7 +16,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 public class ODocumentGetHandler extends AbstractMethodHandler<ODocumentWrapper>{
 
 	@Override
-	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args) throws Throwable {
+	public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args, InvocationChain<ODocumentWrapper> chain) throws Throwable {
 		if(args.length==0) {
 			String name=null;
 			String methodName = method.getName();
@@ -29,7 +29,7 @@ public class ODocumentGetHandler extends AbstractMethodHandler<ODocumentWrapper>
 				return Optional.ofNullable(prepareForJava(value, method));
 			}
 		}
-		return null;
+		return chain.handle(target, proxy, method, args);
 	}
 
 }
