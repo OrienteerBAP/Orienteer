@@ -1,5 +1,6 @@
 package org.orienteer.core.dao.handler;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -89,6 +90,8 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 			List<Object> ret = new ArrayList<>(array.length);
 			for (Object object : array) ret.add(prepareForDB(object));
 			return ret;
+		} else if(arg instanceof Serializable) {
+			return arg;
 		} else throw new IllegalStateException("Type "+arg.getClass()+" can't be cast to use in DB");
 	}
 	

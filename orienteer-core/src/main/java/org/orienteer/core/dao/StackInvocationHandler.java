@@ -6,13 +6,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.wicket.util.io.IClusterable;
 import org.orienteer.core.dao.handler.InvocationChain;
 
 /**
  * {@link InvocationHandler} which use {@link StackMethodHandler} to handle invocation
  * @param <T>
  */
-public class StackInvocationHandler<T> implements InvocationHandler {
+public class StackInvocationHandler<T> implements InvocationHandler, IClusterable {
 
 	private static final Object[] NO_ARGS = new Object[0];
 	
