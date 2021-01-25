@@ -3,6 +3,7 @@ package org.orienteer.core.module;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.exception.OSecurityAccessException;
 import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
@@ -263,6 +264,14 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				.map(e -> (ODocument) e)
 				.findFirst();
     }
+	
+	public ODocument getDefaultPerspectiveSafe(ODatabaseSession db, OSecurityUser user) {
+		try {
+			return getDefaultPerspective(db, user);
+		} catch (OSecurityAccessException exc) {
+			return null;
+		}
+	}
 	
 	public ODocument getDefaultPerspective(ODatabaseSession db, OSecurityUser user) {
 		if (user != null) {

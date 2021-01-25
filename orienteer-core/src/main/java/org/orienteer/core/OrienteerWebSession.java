@@ -88,7 +88,7 @@ public class OrienteerWebSession extends OrientDbWebSession
 			if(perspective==null)
 			{
 				PerspectivesModule perspectivesModule = OrienteerWebApplication.get().getServiceInstance(PerspectivesModule.class);
-				perspective = perspectivesModule.getDefaultPerspective(getDatabaseSession(), getEffectiveUser());
+				perspective = perspectivesModule.getDefaultPerspectiveSafe(getDatabaseSession(), getEffectiveUser());
 			}
 			return (ODocument)perspective;
 			
