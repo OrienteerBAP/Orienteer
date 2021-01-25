@@ -109,19 +109,6 @@
         <enabled>false</enabled>
       </snapshots>
 	 </repository>
-	<repository>
-		<id>spring-release</id>
-		<name>Spring Lib</name>
-		<url>https://repo.spring.io/libs-release/</url>
-		<snapshots>
-			<enabled>true</enabled>
-			<updatePolicy>daily</updatePolicy>
-		</snapshots>
-		<releases>
-			<enabled>true</enabled>
-			<updatePolicy>never</updatePolicy>
-		</releases>
-	</repository>
      </repositories>
 
 	<!-- IMPORTANT: to support quick docker builds: modules were moved to default profile below -->
@@ -524,6 +511,7 @@
 				<module>orienteer-tours</module>
 				<module>orienteer-notification</module>
 				<module>orienteer-twilio</module>
+				<module>orienteer-rproxy</module>
 			</modules>
 		</profile>
 	    <profile> 
@@ -629,6 +617,4 @@
 			</distributionManagement>
 		</profile>
 	</profiles>
-<modules>  <module>orienteer-rproxy</module>
-  </modules>
 </project>
