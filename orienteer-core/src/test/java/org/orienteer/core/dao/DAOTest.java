@@ -190,6 +190,8 @@ public class DAOTest {
 		ODocument doc = dao.findSingleAsDocument("root");
 		IDAOTestClass root = dao.findSingleAsDAO("root");
 		assertEquals(doc.field("name"), root.getName());
+		root.setPrimitiveSupported(true);
+		assertEquals(true, root.isPrimitiveSupported()); 
 		List<ODocument> listDocs = dao.findAllAsDocument();
 		List<IDAOTestClass> listObjs = dao.findAllAsDAO();
 		assertEquals(listDocs.size(), listObjs.size());

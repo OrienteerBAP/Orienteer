@@ -1,5 +1,7 @@
 package org.orienteer.core.dao.handler;
 
+import static com.google.common.primitives.Primitives.wrap;
+
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -25,7 +27,7 @@ public class ODocumentGetHandler extends AbstractMethodHandler<ODocumentWrapper>
 			DAOField fieldAnnotation = method.getAnnotation(DAOField.class);
 			if(fieldAnnotation!=null && !Strings.isEmpty(fieldAnnotation.value())) name = fieldAnnotation.value();
 			if(name!=null) {
-				Object value = target.getDocument().field(name, method.getReturnType());
+				Object value = target.getDocument().field(name, wrap(method.getReturnType()));
 				return Optional.ofNullable(prepareForJava(value, method));
 			}
 		}

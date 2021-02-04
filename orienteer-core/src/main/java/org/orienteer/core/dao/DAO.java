@@ -1,5 +1,6 @@
 package org.orienteer.core.dao;
 
+//import static com.google.common.primitives.Primitives.wrap;
 import static org.orienteer.core.dao.handler.AbstractMethodHandler.typeToRequiredClass;
 import static org.orienteer.core.util.CommonUtils.decapitalize;
 import static org.orienteer.core.util.CommonUtils.toMap;

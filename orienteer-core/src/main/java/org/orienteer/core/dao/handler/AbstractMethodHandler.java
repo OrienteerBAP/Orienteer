@@ -1,5 +1,7 @@
 package org.orienteer.core.dao.handler;
 
+import static com.google.common.primitives.Primitives.wrap;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -34,8 +36,7 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 	
 	protected static Optional<Object> returnChained(Object proxy, Method method, boolean present) {
-		if(Boolean.class.equals(method.getReturnType())
-			|| boolean.class.equals(method.getReturnType())) 
+		if(Boolean.class.equals(wrap(method.getReturnType()))) 
 			return Optional.of(present);
 		else return present?returnChained(proxy, method) : Optional.empty();
 	}
@@ -121,7 +122,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 	
 	protected static Object prepareForJava(Object result, Method method) {
 		if(result==null) return null;
-		Class<?> requiredClass = method.getReturnType();
+		Class<?> requiredClass = wrap(method.getReturnType());
 		Type genericType = method.getGenericReturnType();
 		Class<?> requiredSubType = typeToRequiredClass(genericType, requiredClass);
 		if(result instanceof Collection) {
@@ -211,6 +212,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 	}
 	
 	protected static Object prepareForJava(ODocument result, Class<?> requiredClass) {
+		requiredClass = wrap(requiredClass);
 		if(result==null) return null;
 		else if(requiredClass.isInstance(result)) return result;
 		else if(ODocumentWrapper.class.isAssignableFrom(requiredClass)) 

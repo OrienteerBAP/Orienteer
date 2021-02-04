@@ -29,6 +29,11 @@ public interface IDAOTestClass extends IODocumentWrapper {
 	public List<ODocument> getChildAsDocuments();
 	public IDAOTestClass setChildAsDocuments(List<ODocument> val);
 	
+	@DAOField(defaultValue = "true")
+	public boolean isPrimitiveSupported();
+	public void setPrimitiveSupported(boolean value);
+	
+	
 	default public String getTestName() {
 		return "test"+getName();
 	}
