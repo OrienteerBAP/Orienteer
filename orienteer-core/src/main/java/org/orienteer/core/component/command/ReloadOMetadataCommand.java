@@ -21,7 +21,7 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
  */
 @RequiredOrientResources({
 	@RequiredOrientResource(value = OSecurityHelper.DATABASE, permissions=OrientPermission.READ),
-	@RequiredOrientResource(value = OSecurityHelper.SYSTEM_CLUSTERS, permissions=OrientPermission.READ),
+	@RequiredOrientResource(value = OSecurityHelper.SYSTEM_CLUSTER, permissions=OrientPermission.READ),
 })
 public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 {
@@ -38,6 +38,7 @@ public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 	@Override
 	public void onClick(Optional<AjaxRequestTarget> target) {
 		getDatabaseSession().getMetadata().reload();
+		info(getLocalizer().getString("info.reload.success", this));
 	}
 
 }

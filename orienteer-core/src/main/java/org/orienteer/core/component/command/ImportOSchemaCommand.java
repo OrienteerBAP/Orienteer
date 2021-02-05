@@ -21,7 +21,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
  */
 @RequiredOrientResources({
 	@RequiredOrientResource(value = OSecurityHelper.SCHEMA, permissions={OrientPermission.CREATE, OrientPermission.UPDATE}),
-	@RequiredOrientResource(value = OSecurityHelper.SYSTEM_CLUSTERS, permissions={OrientPermission.CREATE, OrientPermission.UPDATE})
+	@RequiredOrientResource(value = OSecurityHelper.SYSTEM_CLUSTER, permissions={OrientPermission.CREATE, OrientPermission.UPDATE})
 })
 public class ImportOSchemaCommand extends AbstractModalWindowCommand<OClass>
 {
