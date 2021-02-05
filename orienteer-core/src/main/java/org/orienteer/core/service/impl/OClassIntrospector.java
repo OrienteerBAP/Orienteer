@@ -379,7 +379,7 @@ public class OClassIntrospector implements IOClassIntrospector
 
 	@Override
 	public Map<String, Command<ODocument>> getCommandsForDocumentsTable(OrienteerDataTable<ODocument, ?> table, IModel<DisplayMode> modeModel, IModel<OClass> model) {
-		Map<String, Command<ODocument>> result = new HashMap<>();
+		Map<String, Command<ODocument>> result = new LinkedHashMap<>();
 
 		result.put(CreateODocumentCommand.class.getName(), new CreateODocumentCommand(table, model));
 		result.put(EditODocumentsCommand.class.getName(), new EditODocumentsCommand(table, modeModel, model));
