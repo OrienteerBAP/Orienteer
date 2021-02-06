@@ -459,9 +459,8 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	}
 	
 	private void forEachOnMountPath(MountPath mountPath, Consumer<String> consumer) {
-		consumer.accept(mountPath.value());
 		for(String altPath : mountPath.alt()) consumer.accept(altPath);
-		
+		consumer.accept(mountPath.value());
 	}
 	
 	public void registerWidgets(String packageName) {

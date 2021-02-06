@@ -20,8 +20,8 @@ import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResources;
  * {@link Command} to reload {@link OMetadata}/{@link OSchema}
  */
 @RequiredOrientResources({
-	@RequiredOrientResource(value = OSecurityHelper.DATABASE, permissions=OrientPermission.READ),
-	@RequiredOrientResource(value = OSecurityHelper.SYSTEM_CLUSTER, permissions=OrientPermission.READ),
+	@RequiredOrientResource(value = OSecurityHelper.DATABASE, permissions=OrientPermission.UPDATE),
+	@RequiredOrientResource(value = OSecurityHelper.SYSTEM_CLUSTER, permissions=OrientPermission.UPDATE),
 })
 public class ReloadOMetadataCommand extends AjaxCommand<OClass>
 {
