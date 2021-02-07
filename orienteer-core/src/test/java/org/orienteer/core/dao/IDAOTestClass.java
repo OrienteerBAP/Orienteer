@@ -61,4 +61,9 @@ public interface IDAOTestClass extends IODocumentWrapper {
 		return 0;
 	}
 	
+	@DAODefaultValue("-100")
+	public default Integer returnDefaultValue() {
+		return null;
+	}
+	
 }

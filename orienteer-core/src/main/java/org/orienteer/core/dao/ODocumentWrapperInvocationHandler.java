@@ -12,6 +12,7 @@ import java.util.Set;
 import org.joor.Reflect;
 import org.orienteer.core.dao.handler.DAOHandlersMethodHandler;
 import org.orienteer.core.dao.handler.DefaultInterfaceMethodHandler;
+import org.orienteer.core.dao.handler.DefaultValueMethodHandler;
 import org.orienteer.core.dao.handler.EqualsMethodHandler;
 import org.orienteer.core.dao.handler.LookupMethodHandler;
 import org.orienteer.core.dao.handler.MirrorMethodHandler;
@@ -31,6 +32,7 @@ class ODocumentWrapperInvocationHandler extends StackInvocationHandler<ODocument
 	
 	
 	private static final List<IMethodHandler<ODocumentWrapper>> STACK = Arrays.asList(
+											new DefaultValueMethodHandler<ODocumentWrapper>(),
 											new DAOHandlersMethodHandler<ODocumentWrapper>(),
 											new StackMethodHandler<ODocumentWrapper>(
 												new EqualsMethodHandler<ODocumentWrapper>(),

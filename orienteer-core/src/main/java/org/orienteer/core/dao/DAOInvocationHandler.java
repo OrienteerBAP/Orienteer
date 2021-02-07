@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.orienteer.core.dao.handler.DAOHandlersMethodHandler;
 import org.orienteer.core.dao.handler.DefaultInterfaceMethodHandler;
+import org.orienteer.core.dao.handler.DefaultValueMethodHandler;
 import org.orienteer.core.dao.handler.QueryMethodHandler;
 import org.orienteer.core.dao.handler.RetargetMethodHandler;
 import org.orienteer.core.dao.handler.StackMethodHandler;
@@ -19,6 +20,7 @@ class DAOInvocationHandler extends StackInvocationHandler<Object> {
 	
 	private static final List<IMethodHandler<Object>> STACK = 
 									Arrays.asList(
+											new DefaultValueMethodHandler<Object>(),
 											new DAOHandlersMethodHandler<Object>(),
 											new StackMethodHandler<Object>(
 												new RetargetMethodHandler<Object>(),
