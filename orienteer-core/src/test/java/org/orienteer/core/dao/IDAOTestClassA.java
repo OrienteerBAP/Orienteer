@@ -3,10 +3,12 @@ package org.orienteer.core.dao;
 import java.util.List;
 
 import com.google.inject.ProvidedBy;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass("DAOTestClassA")
+@DAOIndex(name="rootname", type=OClass.INDEX_TYPE.NOTUNIQUE, fields = {"name", "root"})
 public interface IDAOTestClassA extends IDAOTestClassRoot{
 
 

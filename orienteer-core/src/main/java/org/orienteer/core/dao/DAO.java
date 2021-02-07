@@ -218,6 +218,7 @@ public final class DAO {
 			final String linkedClass = linkedClassCandidate;
 			final OType linkedType = linkedClass==null?linkedTypeCandidate:null;
 			final boolean notNull = javaType.isPrimitive() || (daoField!=null && daoField.notNull());
+			final DAOFieldIndex fieldIndex = method.getAnnotation(DAOFieldIndex.class);
 			LOG.info("Method: {} OCLass: {} Field: {} Type: {} LinkedType: {} LinkedClass: {}",methodName, daooClass.value(), fieldName, oType, linkedType, linkedClass);
 			
 			ctx.postponeTillExit(fieldName, () -> {
@@ -226,6 +227,7 @@ public final class DAO {
 				if(linkedType!=null) helper.linkedType(linkedType);
 				helper.notNull(notNull);
 				applyDAOFieldAttribute(helper, daoField);
+				if(fieldIndex!=null) helper.oIndex(fieldIndex.name(), fieldIndex.type());
 			});
 			if(linkedClass!=null && !wasPreviouslyScheduled) ctx.postponeTillDefined(linkedClass, () -> {
 				String inverse = daoField!=null?daoField.inverse():null;
@@ -246,6 +248,9 @@ public final class DAO {
 		
 		ctx.exiting(clazz, daooClass.value());
 		applyDAOClassAttributes(helper, daooClass);
+		for (DAOIndex index : clazz.getAnnotationsByType(DAOIndex.class)) {
+			helper.oIndex(index.name(), index.type(), index.fields());
+		}
 		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
 	}

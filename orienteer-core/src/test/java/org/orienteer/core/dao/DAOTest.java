@@ -278,6 +278,7 @@ public class DAOTest {
 			
 			assertTrue(daoTestClassRoot.isAbstract());
 			assertProperty(daoTestClassRoot, "root", OType.STRING, 0);
+			assertNotNull(daoTestClassRoot.getClassIndex("DAOTestClassRoot.root"));
 			
 			OProperty root = assertProperty(daoTestClassA, "root", OType.STRING, 0);
 			assertEquals("DAOTestClassRoot.root", root.getFullName());
@@ -289,6 +290,7 @@ public class DAOTest {
 			assertProperty(daoTestClassA, "linkAsDoc", OType.LINK, 40, daoTestClassB, null);
 			assertProperty(daoTestClassA, "embeddedStringList", OType.EMBEDDEDLIST, 30, OType.STRING);
 			assertProperty(daoTestClassA, "linkList", OType.LINKLIST, 50, daoTestClassB, null);
+			assertNotNull(daoTestClassA.getClassIndex("rootname"));
 			
 			assertProperty(daoTestClassB, "alias", OType.STRING, 0);
 			assertProperty(daoTestClassB, "linkToA", OType.LINK, 10, daoTestClassA, null);
