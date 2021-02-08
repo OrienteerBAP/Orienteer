@@ -44,7 +44,7 @@ public class DefaultValueMethodHandler<T> implements IMethodHandler<T> {
 	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain)
 			throws Throwable {
 		Optional<Object> result = chain.handle(target, proxy, method, args);
-		if(!result.isPresent()) {
+		if(result==null || !result.isPresent()) {
 			DAODefaultValue defaultValue = method.getAnnotation(DAODefaultValue.class);
 			if(defaultValue!=null) {
 				Class<? extends IDefaultValueProvider> providerClass = defaultValue.provider();

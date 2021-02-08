@@ -25,7 +25,7 @@ public class LookupMethodHandler extends AbstractMethodHandler<ODocumentWrapper>
 		if(method.isAnnotationPresent(Lookup.class)) {
 			String sql = method.getAnnotation(Lookup.class).value();
 			ODocument ret = new OSQLSynchQuery<ODocument>(sql).runFirst(toArguments(method, args));
-			target.fromStream(ret);
+			if(ret!=null) target.fromStream(ret);
 			return returnChained(proxy, method, ret!=null);
 		} else return chain.handle(target, proxy, method, args);
 	}

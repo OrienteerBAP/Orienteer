@@ -9,8 +9,10 @@ import lombok.experimental.ExtensionMethod;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.Request;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.OrienteerLocalizationModule;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.module.PerspectivesModule.IOPerspective;
 import org.orienteer.core.module.UserOnlineModule;
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 import ru.ydn.wicket.wicketorientdb.utils.LombokExtensions;
@@ -88,16 +90,16 @@ public class OrienteerWebSession extends OrientDbWebSession
 			if(perspective==null)
 			{
 				PerspectivesModule perspectivesModule = OrienteerWebApplication.get().getServiceInstance(PerspectivesModule.class);
-				perspective = perspectivesModule.getDefaultPerspectiveSafe(getDatabaseSession(), getEffectiveUser());
+				perspective = perspectivesModule.getDefaultPerspectiveSafe(getEffectiveUser());
 			}
 			return (ODocument)perspective;
 			
 		}
 	}
 	
-	public PerspectivesModule.OPerspective getOPerspective()
+	public PerspectivesModule.IOPerspective getOPerspective()
 	{
-		return new PerspectivesModule.OPerspective(getPerspective());
+		return DAO.provide(IOPerspective.class, (ODocument)perspective.getRecord());
 	}
 	
 	public boolean isClientInfoAvailable() {

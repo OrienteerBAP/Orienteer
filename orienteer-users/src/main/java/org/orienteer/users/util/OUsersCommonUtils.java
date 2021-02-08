@@ -13,13 +13,17 @@ import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.commons.collections4.map.HashedMap;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.module.PerspectivesModule.IOPerspective;
+import org.orienteer.core.util.CommonUtils;
 import org.orienteer.users.model.*;
 import org.orienteer.users.repository.OAuth2Repository;
 
 import java.util.*;
 
 import static org.orienteer.core.module.OWidgetsModule.*;
+import static org.orienteer.core.util.CommonUtils.*;
 
 /**
  * Specialized utils for users security 
@@ -75,61 +79,10 @@ public final class OUsersCommonUtils {
         return doc;
     }
 
-    public static ODocument getOrCreatePerspective(ODatabaseDocument db, String key) {
-        return getOrCreatePerspective(db, key, createDefaultLanguageTags());
-    }
-
-    public static ODocument getOrCreatePerspective(ODatabaseDocument db, String key, List<String> tags) {
-        OrienteerWebApplication app = OrienteerWebApplication.get();
-        Map<String, String> localizedStrings = getLocalizedStrings(app, key, tags);
-        PerspectivesModule perspectivesModule = app.getServiceInstance(PerspectivesModule.class);
-        return perspectivesModule.getPerspectiveByAliasAsDocument(db, key)
-                .orElseGet(() -> {
-                    ODocument newDoc = new ODocument(PerspectivesModule.OPerspective.CLASS_NAME);
-                    newDoc.field(PerspectivesModule.OPerspective.PROP_NAME, localizedStrings);
-                    newDoc.field(PerspectivesModule.OPerspective.PROP_ALIAS, key);
-                    return newDoc;
-                });
-    }
-
-    public static ODocument getOrCreatePerspectiveItem(ODatabaseDocument db, ODocument perspective, String key) {
-        return getOrCreatePerspectiveItem(db, perspective, key, createDefaultLanguageTags());
-    }
-
-    public static ODocument getOrCreatePerspectiveItem(ODatabaseDocument db, ODocument perspective, String key, List<String> tags) {
-        Map<String, String> localizedStrings = getLocalizedStrings(OrienteerWebApplication.get(), key, tags);
-        PerspectivesModule perspectivesModule = OrienteerWebApplication.lookupApplication().getServiceInstance(PerspectivesModule.class);
-
-        return perspectivesModule.getPerspectiveItemByAliasAsDocument(db, key)
-                .orElseGet(() -> {
-                    ODocument doc = new ODocument(PerspectivesModule.OPerspectiveItem.CLASS_NAME);
-                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_NAME, localizedStrings);
-                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_ALIAS, key);
-                    doc.field(PerspectivesModule.OPerspectiveItem.PROP_PERSPECTIVE, perspective);
-                    return doc;
-                });
-    }
-
     public static boolean isWidgetExists(ODocument dashboard, String typeId) {
         List<OIdentifiable> widgets = dashboard.field(OPROPERTY_WIDGETS, List.class);
         return widgets != null && !widgets.isEmpty() && widgets.stream()
                 .anyMatch(widget -> typeId.equals(((ODocument)widget.getRecord()).field(OPROPERTY_TYPE_ID)));
-    }
-
-    private static Map<String, String> getLocalizedStrings(OrienteerWebApplication app, String key, List<String> tags) {
-        Map<String, String> localized = new HashedMap<>(3);
-        for (String tag : tags) {
-            localized.put(tag, getString(app, key, Locale.forLanguageTag(tag)));
-        }
-        return localized;
-    }
-
-    public static String getString(OrienteerWebApplication app, String key, Locale locale) {
-        return app.getResourceSettings().getLocalizer().getString(key, null, null, locale, null, "");
-    }
-
-    public static List<String> createDefaultLanguageTags() {
-        return Arrays.asList("en", "ru", "uk");
     }
 
     public static void createOUserSocialNetworkIfNotExists(ODatabaseDocument db, OAuth2Provider provider, String userId, OrienteerUser user) {

@@ -21,12 +21,15 @@ import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.IORestricted;
 import org.orienteer.core.method.MethodStorage;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.module.OWidgetsModule;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.module.PerspectivesModule.IOPerspective;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
@@ -102,10 +105,10 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         helper.oIndex(user.getProperty(OrienteerUser.PROP_ID).getFullName(), OClass.INDEX_TYPE.UNIQUE, OrienteerUser.PROP_ID);
 
         OUsersCommonUtils.setRestricted(db, helper.oClass(OIdentity.CLASS_NAME).getOClass());
-        OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.OPerspective.CLASS_NAME).getOClass());
+        OUsersCommonUtils.setRestricted(db, helper.oClass(PerspectivesModule.IOPerspective.CLASS_NAME).getOClass());
 
-        ODocument perspective = createOrienteerUsersPerspective(db);
-        ODocument readerPerspective = createReaderPerspective(db);
+        IOPerspective perspective = createOrienteerUsersPerspective(db);
+        IOPerspective readerPerspective = createReaderPerspective(db);
 
         ODocument reader = updateAndGetUserReader(db);
         updateReaderPermissions(db, reader, readerPerspective);
@@ -185,7 +188,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         return helper.getOClass();
     }
 
-    private void updateOrienteerUserRoleDoc(ODatabaseDocument db, ODocument perspective) {
+    private void updateOrienteerUserRoleDoc(ODatabaseDocument db, IOPerspective perspective) {
         OSecurity security = db.getMetadata().getSecurity();
         ORole role = security.getRole(ORIENTEER_USER_ROLE);
         if (role == null) {
@@ -197,8 +200,8 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.CLASS, OWidgetsModule.OCLASS_DASHBOARD, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, "OSecurityPolicy", READ.getPermissionFlag());
         // TODO: remove this after release with fix for roles in OrientDB: https://github.com/orientechnologies/orientdb/issues/8338
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspective.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.IOPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.IOPerspective.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.SCHEMA, null, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLUSTER, "internal", READ.getPermissionFlag());
@@ -220,14 +223,15 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         db.command(String.format("alter role %s set policy default_2 on database.class.OUser", role.getName()));
 
-        perspective.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
-        perspective.save();
+        DAO.upgradeTo(perspective, IORestricted.class)
+        		.addToAllowRead(role.getDocument())
+        		.save();
     }
 
-    private void updateReaderPermissions(ODatabaseDocument db, ODocument reader, ODocument perspective) {
+    private void updateReaderPermissions(ODatabaseDocument db, ODocument reader, IOPerspective perspective) {
         ORole role = db.getMetadata().getSecurity().getRole("reader");
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
-        role.grant(ResourceGeneric.CLASS, PerspectivesModule.OPerspective.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.IOPerspectiveItem.CLASS_NAME, READ.getPermissionFlag());
+        role.grant(ResourceGeneric.CLASS, PerspectivesModule.IOPerspective.CLASS_NAME, READ.getPermissionFlag());
         role.grant(ResourceGeneric.CLASS, null, 0);
         role.grant(ResourceGeneric.CLASS, ORole.CLASS_NAME, READ.getPermissionFlag());
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SearchPage.SEARCH_FEATURE, 0);
@@ -238,35 +242,26 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         role.save();
 
-
-        perspective.field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singleton(role.getDocument()));
-        perspective.save();
+        DAO.upgradeTo(perspective, IORestricted.class)
+        		.addToAllowRead(role.getDocument())
+        		.save();
     }
 
-    private ODocument createOrienteerUsersPerspective(ODatabaseDocument db) {
-        ODocument perspective = OUsersCommonUtils.getOrCreatePerspective(db, ORIENTEER_USER_PERSPECTIVE);
-        perspective.field(PerspectivesModule.OPerspective.PROP_ICON, FAIconType.user_o.name());
-        perspective.field(PerspectivesModule.OPerspective.PROP_HOME_URL, "/browse/" + OrienteerUser.CLASS_NAME);
-        perspective.save();
-
-        ODocument item1 = OUsersCommonUtils.getOrCreatePerspectiveItem(db, perspective, "perspective.menu.item.profile");
-        item1.field(PerspectivesModule.OPerspectiveItem.PROP_ICON, FAIconType.user_o.name());
-        item1.field(PerspectivesModule.OPerspectiveItem.PROP_PERSPECTIVE, perspective);
-        item1.field(PerspectivesModule.OPerspectiveItem.PROP_URL, "/browse/" + OrienteerUser.CLASS_NAME); // TODO: add macros for links
-        item1.save();
-
-        perspective.save();
+    private IOPerspective createOrienteerUsersPerspective(ODatabaseDocument db) {
+    	IOPerspective perspective = IOPerspective.getOrCreateByAlias(ORIENTEER_USER_PERSPECTIVE, 
+    															     ORIENTEER_USER_PERSPECTIVE, 
+    															     FAIconType.user_o.name(), 
+    															     "/browse/" + OrienteerUser.CLASS_NAME);
+    	perspective.createPerspectiveItem("perspective.menu.item.profile", "perspective.menu.item.profile", FAIconType.user_o.name(), "/browse/" + OrienteerUser.CLASS_NAME);
 
         return perspective;
     }
 
-    private ODocument createReaderPerspective(ODatabaseDocument db) {
-        ODocument perspective = OUsersCommonUtils.getOrCreatePerspective(db, READER_PERSPECTIVE);
-        perspective.field("icon", FAIconType.database.name());
-        perspective.field("homeUrl", "/browse/" + OUser.CLASS_NAME);
-        perspective.save();
-
-        return perspective;
+    private IOPerspective createReaderPerspective(ODatabaseDocument db) {
+    	return IOPerspective.getOrCreateByAlias(READER_PERSPECTIVE, 
+								    			READER_PERSPECTIVE, 
+								    			FAIconType.database.name(), 
+											    "/browse/" + OUser.CLASS_NAME);
     }
 
     private ODocument updateAndGetUserReader(ODatabaseDocument db) {
@@ -286,12 +281,9 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     private void updateDefaultPerspective(OSchemaHelper helper) {
         ORole adminRole = helper.getDatabase().getMetadata().getSecurity().getRole(ROLE_ADMIN);
-
-        helper.oClass(PerspectivesModule.OPerspective.CLASS_NAME)
-                .oDocument(PerspectivesModule.OPerspective.PROP_ALIAS, PerspectivesModule.ALIAS_PERSPECTIVE_DEFAULT)
-                .field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singleton(adminRole.getDocument()))
-                .field(ORestrictedOperation.ALLOW_ALL.getFieldName(), Collections.singleton(adminRole.getDocument()))
-                .saveDocument();
+        IORestricted perspective = (IORestricted)DAO.create(IOPerspective.class, IORestricted.class)
+        											.lookupByAlias(PerspectivesModule.ALIAS_PERSPECTIVE_DEFAULT);
+        perspective.addToAllowAll(adminRole.getDocument()).save();
     }
 
     /**

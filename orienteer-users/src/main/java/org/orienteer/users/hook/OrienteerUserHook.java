@@ -6,6 +6,8 @@ import com.orientechnologies.orient.core.metadata.security.ORestrictedOperation;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.OUser;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.PerspectivesModule;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
@@ -46,7 +48,7 @@ public class OrienteerUserHook extends ODocumentHookAbstract {
         if (doc.field(PerspectivesModule.PROP_PERSPECTIVE) == null) {
             OrienteerUserRepository.getDefaultOrienteerUserPerspective()
                     .ifPresent(
-                            perspective -> doc.field(PerspectivesModule.PROP_PERSPECTIVE, perspective)
+                            perspective -> doc.field(PerspectivesModule.PROP_PERSPECTIVE, DAO.asDocument(perspective))
                     );
         }
 

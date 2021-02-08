@@ -1,5 +1,6 @@
 package org.orienteer.core.module;
 
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
@@ -22,6 +23,14 @@ import org.apache.wicket.model.ResourceModel;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOFieldIndex;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.IODocumentWrapper;
+import org.orienteer.core.dao.Lookup;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.module.OrienteerLocalizationModule.IOLocalization;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -60,109 +69,33 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 
-		helper.oClass(OPerspective.CLASS_NAME)
-				.oProperty(OPerspective.PROP_NAME, OType.EMBEDDEDMAP, 0)
-					.assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
-					.markAsDocumentName()
-					.linkedType(OType.STRING)
-				.oProperty(OPerspective.PROP_ALIAS, OType.STRING, 10)
-					.notNull()
-					.oIndex(INDEX_TYPE.UNIQUE)
-				.oProperty(OPerspective.PROP_ICON, OType.STRING, 20)
-				.oProperty(OPerspective.PROP_HOME_URL, OType.STRING, 30)
-				.oProperty(OPerspective.PROP_MENU, OType.LINKLIST, 40)
-					.assignVisualization(UIVisualizersRegistry.VISUALIZER_TABLE)
-				.oProperty(OPerspective.PROP_FOOTER, OType.STRING, 50)
-					.assignVisualization(UIVisualizersRegistry.VISUALIZER_TEXTAREA)
-				.oProperty(OPerspective.PROP_FEATURES, OType.EMBEDDEDSET, 60)
-					.linkedType(OType.STRING)	
-				.switchDisplayable(true, OPerspective.PROP_NAME, OPerspective.PROP_ICON, OPerspective.PROP_HOME_URL);
-
-		helper.oClass(OPerspectiveItem.CLASS_NAME)
-				.oProperty(OPerspectiveItem.PROP_NAME, OType.EMBEDDEDMAP, 0)
-					.assignVisualization(UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
-					.markAsDocumentName()
-				.oProperty(OPerspectiveItem.PROP_ALIAS, OType.STRING, 10)
-					.notNull()
-				.oProperty(OPerspectiveItem.PROP_ICON, OType.STRING, 20)
-				.oProperty(OPerspectiveItem.PROP_URL, OType.STRING, 30)
-				.oProperty(OPerspectiveItem.PROP_PERSPECTIVE, OType.LINK, 40)
-					.markAsLinkToParent()
-				.oProperty(OPerspectiveItem.PROP_PERSPECTIVE_ITEM, OType.LINK, 50)
-					.markAsLinkToParent()
-				.oProperty(OPerspectiveItem.PROP_SUB_ITEMS, OType.LINKLIST, 60)
-					.assignVisualization(UIVisualizersRegistry.VISUALIZER_TABLE)
-				.switchDisplayable(true, OPerspectiveItem.PROP_NAME, OPerspectiveItem.PROP_ICON, OPerspectiveItem.PROP_URL);
-
-		helper.setupRelationship(OPerspective.CLASS_NAME, OPerspective.PROP_MENU, OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_PERSPECTIVE);
-		helper.setupRelationship(OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_SUB_ITEMS, OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_PERSPECTIVE_ITEM);
+		DAO.describe(helper, IOPerspective.class, IOPerspectiveItem.class);
 
 		helper.oClass(OIdentity.CLASS_NAME)
 				.oProperty(PROP_PERSPECTIVE, OType.LINK)
-					.linkedClass(OPerspective.CLASS_NAME);
+					.linkedClass(IOPerspective.CLASS_NAME);
 
-		createDefaultPerspective(helper);
+		createDefaultPerspective();
 
 		return null;
 	}
 
-	private ODocument createDefaultPerspective(OSchemaHelper helper) {
-
-		helper.oClass(OPerspective.CLASS_NAME);
-
-		ODocument defaultPerspective = helper.oDocument(OPerspective.PROP_ALIAS, ALIAS_PERSPECTIVE_DEFAULT)
-				.field(OPerspective.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.default.name").getObject()))
-				.field(OPerspective.PROP_HOME_URL, "/schema")
-				.field(OPerspective.PROP_ICON, "fa fa-cog")
-				.saveDocument()
-				.getODocument();
-
-		helper.oClass(OPerspectiveItem.CLASS_NAME);
-
-		helper.oDocument(OPerspectiveItem.PROP_ALIAS, ALIAS_ITEM_USERS)
-				.field(OPerspectiveItem.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.item.default.users").getObject()))
-				.field(OPerspectiveItem.PROP_ICON, "fa fa-users")
-				.field(OPerspectiveItem.PROP_URL, "/browse/OUser")
-				.field(OPerspectiveItem.PROP_PERSPECTIVE, defaultPerspective)
-				.saveDocument();
-
-
-		helper.oDocument(OPerspectiveItem.PROP_ALIAS, ALIAS_ITEM_ROLES)
-				.field(OPerspectiveItem.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.item.default.roles").getObject()))
-				.field(OPerspectiveItem.PROP_ICON, "fa fa-user-circle")
-				.field(OPerspectiveItem.PROP_URL, "/browse/ORole")
-				.field(OPerspectiveItem.PROP_PERSPECTIVE, defaultPerspective)
-				.saveDocument();
-
-		helper.oDocument(OPerspectiveItem.PROP_ALIAS, ALIAS_ITEM_SCHEMA)
-				.field(OPerspectiveItem.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.item.default.schema").getObject()))
-				.field(OPerspectiveItem.PROP_ICON, "fa fa-cubes")
-				.field(OPerspectiveItem.PROP_URL, "/schema")
-				.field(OPerspectiveItem.PROP_PERSPECTIVE, defaultPerspective)
-				.saveDocument();
-
-		helper.oDocument(OPerspectiveItem.PROP_ALIAS, ALIAS_ITEM_LOCALIZATION)
-				.field(OPerspectiveItem.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.item.default.localization").getObject()))
-				.field(OPerspectiveItem.PROP_ICON, "fa fa-language")
-				.field(OPerspectiveItem.PROP_URL, "/browse/OLocalization")
-				.field(OPerspectiveItem.PROP_PERSPECTIVE, defaultPerspective)
-				.saveDocument();
-
-		helper.oDocument(OPerspectiveItem.PROP_ALIAS, ALIAS_ITEM_PERSPECTIVES)
-				.field(OPerspectiveItem.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.item.default.perspectives").getObject()))
-				.field(OPerspectiveItem.PROP_ICON, "fa fa-desktop")
-				.field(OPerspectiveItem.PROP_URL, "/browse/" + OPerspective.CLASS_NAME)
-				.field(OPerspectiveItem.PROP_PERSPECTIVE, defaultPerspective)
-				.saveDocument();
-
-		helper.oDocument(OPerspectiveItem.PROP_ALIAS, ALIAS_ITEM_MODULES)
-				.field(OPerspectiveItem.PROP_NAME, CommonUtils.toMap("en", new ResourceModel("perspective.item.default.modules").getObject()))
-				.field(OPerspectiveItem.PROP_ICON, "fa fa-archive")
-				.field(OPerspectiveItem.PROP_URL, "/browse/" + AbstractOrienteerModule.OMODULE_CLASS)
-				.field(OPerspectiveItem.PROP_PERSPECTIVE, defaultPerspective)
-				.saveDocument();
+	private IOPerspective createDefaultPerspective() {
+		
+		IOPerspective defaultPerspective = IOPerspective.getOrCreateByAlias(ALIAS_PERSPECTIVE_DEFAULT,
+																			"perspective.default.name", 
+																			"fa fa-cog", 
+																			"/schema");
+		
+		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_USERS, "perspective.item.default.users", "fa fa-users", "/browse/OUser");
+		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_ROLES, "perspective.item.default.roles", "fa fa-user-circle", "/browse/ORole");
+		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_SCHEMA, "perspective.item.default.schema", "fa fa-cubes", "/schema");
+		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_LOCALIZATION, "perspective.item.default.localization", "fa fa-language", "/browse/OLocalization");
+		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_PERSPECTIVES, "perspective.item.default.perspectives", "fa fa-desktop", "/browse/" + IOPerspective.CLASS_NAME);
+		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_MODULES, "perspective.item.default.modules", "fa fa-archive", "/browse/" + AbstractOrienteerModule.OMODULE_CLASS);
 		return defaultPerspective;
 	}
+	
 	
 	@Override
 	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db,
@@ -170,40 +103,40 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		int toVersion = oldVersion+1;
 		switch (toVersion) {
 			case 2:
-				convertNameProperty(app, db, OPerspective.CLASS_NAME);
-				convertNameProperty(app, db, OPerspectiveItem.CLASS_NAME);
+				convertNameProperty(app, db, IOPerspective.CLASS_NAME);
+				convertNameProperty(app, db, IOPerspectiveItem.CLASS_NAME);
 				break;
 			case 3:
 				onInstall(app, db);
 				break;
 			case 4:
-				OIndex index = db.getMetadata().getIndexManager().getIndex(OPerspective.CLASS_NAME + ".name");
+				OIndex index = db.getMetadata().getIndexManager().getIndex(IOPerspective.CLASS_NAME + ".name");
 				if(index!=null) index.delete();
 				onInstall(app, db);
 				break;
 			case 5:
 				OSchemaHelper.bind(db)
 					.oClass(OIdentity.CLASS_NAME)
-					.oProperty(PROP_PERSPECTIVE, OType.LINK).linkedClass(OPerspective.CLASS_NAME);
+					.oProperty(PROP_PERSPECTIVE, OType.LINK).linkedClass(IOPerspective.CLASS_NAME);
 				break;
 			case 6:
 				OSchemaHelper helper = OSchemaHelper.bind(db);
 				
-				helper.oClass(OPerspective.CLASS_NAME)
-					.oProperty(OPerspective.PROP_ALIAS, OType.STRING, 10);
+				helper.oClass(IOPerspective.CLASS_NAME)
+					.oProperty("alias", OType.STRING, 10);
 				db.command("update OPerspective set alias=name['en'].toLowerCase() where alias is null");
 				helper.notNull()
 					.oIndex(INDEX_TYPE.UNIQUE);
 				//update aliases
-				helper.oClass(OPerspectiveItem.CLASS_NAME)
-					.oProperty(OPerspectiveItem.PROP_ALIAS, OType.STRING, 10);
+				helper.oClass(IOPerspectiveItem.CLASS_NAME)
+					.oProperty("alias", OType.STRING, 10);
 				db.command("update OPerspectiveItem set alias=name['en'].toLowerCase() where alias is null");
 				helper.notNull();
 				break;
 			case 7:
 				OSchemaHelper.bind(db)
-					.oClass(OPerspective.CLASS_NAME)
-						.oProperty(OPerspective.PROP_FEATURES, OType.EMBEDDEDSET, 60)
+					.oClass(IOPerspective.CLASS_NAME)
+						.oProperty("features", OType.EMBEDDEDSET, 60)
 						.linkedType(OType.STRING);
 			default:
 				break;
@@ -237,43 +170,31 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 
 
-	public Optional<OPerspective> getPerspectiveByAlias(ODatabaseDocument db, String alias) {
-		return getPerspectiveByAliasAsDocument(db, alias)
-				.map(OPerspective::new);
+	public Optional<IOPerspective> getPerspectiveByAlias(String alias) {
+		return Optional.ofNullable(DAO.create(IOPerspective.class).lookupByAlias(alias));
 	}
 
-	public Optional<ODocument> getPerspectiveByAliasAsDocument(ODatabaseDocument db, String alias) {
-		String sql = String.format("select from %s where %s = ? limit 1", OPerspective.CLASS_NAME, OPerspective.PROP_ALIAS);
-
-		return db.query(sql, alias)
-				.elementStream()
-				.map(e -> (ODocument) e)
-				.findFirst();
+	public Optional<ODocument> getPerspectiveByAliasAsDocument(String alias) {
+		return getPerspectiveByAlias(alias).map(IOPerspective::getDocument);
 	}
 
-	public Optional<OPerspectiveItem> getPerspectiveItemByAlias(ODatabaseDocument db, String alias) {
-	    return getPerspectiveItemByAliasAsDocument(db, alias)
-                .map(OPerspectiveItem::new);
+	public Optional<IOPerspectiveItem> getPerspectiveItemByAlias(String alias) {
+		return Optional.ofNullable(DAO.create(IOPerspectiveItem.class).lookupByAlias(alias));
     }
 
 	public Optional<ODocument> getPerspectiveItemByAliasAsDocument(ODatabaseDocument db, String alias) {
-	    String sql = String.format("select from %s where %s = ? limit 1", OPerspectiveItem.CLASS_NAME, OPerspectiveItem.PROP_ALIAS);
-
-	    return db.query(sql, alias)
-				.elementStream()
-				.map(e -> (ODocument) e)
-				.findFirst();
+		return getPerspectiveItemByAlias(alias).map(IOPerspectiveItem::getDocument);
     }
 	
-	public ODocument getDefaultPerspectiveSafe(ODatabaseSession db, OSecurityUser user) {
+	public ODocument getDefaultPerspectiveSafe(OSecurityUser user) {
 		try {
-			return getDefaultPerspective(db, user);
+			return getDefaultPerspective(user);
 		} catch (OSecurityAccessException exc) {
 			return null;
 		}
 	}
 	
-	public ODocument getDefaultPerspective(ODatabaseSession db, OSecurityUser user) {
+	public ODocument getDefaultPerspective(OSecurityUser user) {
 		if (user != null) {
 			if (user.getDocument().field(PROP_PERSPECTIVE) != null) {
 				return ((OIdentifiable) user.getDocument().field(PROP_PERSPECTIVE)).getRecord();
@@ -287,9 +208,9 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 				}
 			}
 		}
-		return getPerspectiveByAliasAsDocument(db, ALIAS_PERSPECTIVE_DEFAULT)
+		return getPerspectiveByAliasAsDocument(ALIAS_PERSPECTIVE_DEFAULT)
 					// Restore default perspective if it was not found
-				.orElseGet(() -> DBClosure.sudo((adminDb)->createDefaultPerspective(OSchemaHelper.bind(adminDb))));
+				.orElseGet(() -> DBClosure.sudo((adminDb)->createDefaultPerspective().getDocument()));
 	}
 	
 	public ODocument getPerspectiveForORole(OSecurityRole role) {
@@ -317,244 +238,143 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchema schema = db.getMetadata().getSchema();
-		if (schema.getClass(OPerspective.CLASS_NAME) == null || schema.getClass(OPerspectiveItem.CLASS_NAME) == null) {
+		if (schema.getClass(IOPerspective.CLASS_NAME) == null || schema.getClass(IOPerspectiveItem.CLASS_NAME) == null) {
 			//Repair
 			onInstall(app, db);
 		}
 	}
-
+	
 	/**
-	 * Model which represents class OPerspective
+	 * DAO for OPerspective
 	 */
-	public static class OPerspective extends ODocumentWrapper {
-
+	@ProvidedBy(ODocumentWrapperProvider.class)
+	@DAOOClass(value = IOPerspective.CLASS_NAME, nameProperty = "name",
+			displayable = {"name", "icon", "homeUrl"})
+	public static interface IOPerspective extends IODocumentWrapper {
 		public static final String CLASS_NAME = "OPerspective";
-
-		public static final String PROP_NAME     = "name";
-		public static final String PROP_ALIAS    = "alias";
-		public static final String PROP_ICON     = "icon";
-		public static final String PROP_HOME_URL = "homeUrl";
-		public static final String PROP_MENU     = "menu";
-		public static final String PROP_FOOTER   = "footer";
-		public static final String PROP_FEATURES   = "features";
-
-		public OPerspective() {
-			super(CLASS_NAME);
-		}
-
-		public OPerspective(String iClassName) {
-			super(iClassName!=null?iClassName:CLASS_NAME);
-		}
-
-		public OPerspective(ODocument iDocument) {
-			super(iDocument!=null?iDocument:new ODocument(CLASS_NAME));
-		}
-
-		public Map<String, String> getName() {
-			return document.field(PROP_NAME);
-		}
-
-		public OPerspective setName(Map<String, String> name) {
-			document.field(PROP_NAME, name);
-			return this;
-		}
-
-		public String getAlias() {
-			return document.field(PROP_ALIAS);
-		}
-
-		public OPerspective setAlias(String alias) {
-			document.field(PROP_ALIAS, alias);
-			return this;
-		}
-
-		public String getIcon() {
-			return document.field(PROP_ICON);
-		}
-
-		public OPerspective setIcon(String icon) {
-			document.field(PROP_ICON, icon);
-			return this;
-		}
-
-		public String getHomeUrl() {
-			return document.field(PROP_HOME_URL);
-		}
-
-		public OPerspective setHomeUrl(String url) {
-			document.field(PROP_HOME_URL, url);
-			return this;
-		}
-
-		public List<OPerspectiveItem> getMenu() {
-			return getMenuAsDocuments().stream()
-					.map(OPerspectiveItem::new)
-					.collect(Collectors.toCollection(LinkedList::new));
-		}
-
-		public List<ODocument> getMenuAsDocuments() {
-			return CommonUtils.getDocuments(document.field(PROP_MENU));
-		}
-
-		public OPerspective setMenu(List<OPerspectiveItem> menu) {
-			List<ODocument> docs = menu == null ? Collections.emptyList() : menu.stream()
-					.map(OPerspectiveItem::getDocument)
-					.collect(Collectors.toCollection(LinkedList::new));
-			return setMenuAsDocuments(docs);
-		}
-
-		public OPerspective setMenuAsDocuments(List<ODocument> menu) {
-			document.field(PROP_MENU, menu);
-			return this;
-		}
-
-		public String getFooter() {
-			return document.field(PROP_FOOTER);
-		}
-
-		public OPerspective setFooter(String footer) {
-			document.field(PROP_FOOTER, footer);
-			return this;
-		}
 		
-		public Collection<String> getFeatures() {
-			return document.field(PROP_FEATURES);
-		}
-
-		public OPerspective setFeatures(Collection<String> features) {
-			document.field(PROP_FEATURES, features);
-			return this;
-		}
+		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+		public Map<String, String> getName();
+		public IOPerspective setName(Map<String, String> value);
 		
-		public boolean providesFeature(String feature) {
+		@DAOField(notNull = true)
+		@DAOFieldIndex(type = OClass.INDEX_TYPE.UNIQUE)
+		public String getAlias();
+		public IOPerspective setAlias(String value);
+		
+		public String getIcon();
+		public IOPerspective setIcon(String value);
+		
+		public String getHomeUrl();
+		public IOPerspective setHomeUrl(String value);
+		
+		@DAOField(value = "menu", inverse = "perspective", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
+		public List<IOPerspectiveItem> getMenu();
+		public IOPerspective setMenu(List<IOPerspectiveItem> value);
+		
+		@DAOField(value = "menu")
+		public List<ODocument> getMenuAsDocuments();
+		@DAOField(value = "menu")
+		public IOPerspective setMenuAsDocuments(List<ODocument> value);
+		
+		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_TEXTAREA)
+		public String getFooter();
+		public void setFooter(String value);
+		
+		@DAOField(type=OType.EMBEDDEDSET)
+		public Collection<String> getFeatures();
+		public IOPerspective setFeatures(Collection<String> features);
+		
+		public default boolean providesFeature(String feature) {
 			Collection<String> features = getFeatures();
 			return features!=null?features.contains(feature):false;
 		}
+		
+		@Lookup("select from "+CLASS_NAME+" where alias = :alias")
+		public IOPerspective lookupByAlias(String alias);
+		
+		public default IOPerspectiveItem createPerspectiveItem(String alias, String nameKey, String icon, String url) {
+			IOPerspectiveItem item = DAO.create(IOPerspectiveItem.class);
+			
+			if(item.lookupByAlias(alias)==null) {
+				item.setName(CommonUtils.getLocalizedStrings(nameKey))
+					.setAlias(alias)
+					.setIcon(icon)
+					.setUrl(url)
+					.setPerspective(this)
+					.save();
+			}
+			return item;
+		}
+		
+		public static IOPerspective getOrCreateByAlias(String alias, String nameKey, String icon, String url) {
+			IOPerspective perspective = DAO.create(IOPerspective.class);
+			if(perspective.lookupByAlias(alias)==null) {
+				perspective.setAlias(alias)
+							.setName(CommonUtils.getLocalizedStrings(nameKey))
+							.setIcon(icon)
+							.setHomeUrl(url)
+						    .save();
+			}
+			return perspective;
+		}
 	}
-
+	
 	/**
-	 * Model which represents class OPerspectiveItem
-	 */
-	public static class OPerspectiveItem extends ODocumentWrapper {
-
-		public static final String CLASS_NAME = "OPerspectiveItem";
-
-		public static final String PROP_NAME             = "name";
+	 * DAO for OPerspective
+	 * 		public static final String PROP_NAME             = "name";
 		public static final String PROP_ALIAS            = "alias";
 		public static final String PROP_ICON             = "icon";
 		public static final String PROP_URL              = "url";
 		public static final String PROP_PERSPECTIVE      = "perspective";
 		public static final String PROP_PERSPECTIVE_ITEM = "perspectiveItem";
 		public static final String PROP_SUB_ITEMS        = "subItems";
-
-		public OPerspectiveItem() {
-			super(CLASS_NAME);
-		}
-
-		public OPerspectiveItem(String iClassName) {
-			super(iClassName);
-		}
-
-		public OPerspectiveItem(ODocument iDocument) {
-			super(iDocument);
-		}
-
-		public Map<String, String> getName() {
-			return document.field(PROP_NAME);
-		}
-
-		public OPerspectiveItem setName(Map<String, String> name) {
-			document.field(PROP_NAME);
-			return this;
-		}
-
-		public String getAlias() {
-			return document.field(PROP_ALIAS);
-		}
-
-		public OPerspectiveItem setAlias(String alias) {
-			document.field(PROP_ALIAS);
-			return this;
-		}
-
-		public String getIcon() {
-			return document.field(PROP_ICON);
-		}
-
-		public OPerspectiveItem setIcon(String icon) {
-			document.field(PROP_ICON, icon);
-			return this;
-		}
-
-		public String getUrl() {
-			return document.field(PROP_URL);
-		}
-
-		public OPerspectiveItem setUrl(String url) {
-			document.field(PROP_URL, url);
-			return this;
-		}
-
-		public OPerspective getPerspective() {
-			ODocument perspective = getPerspectiveAsDocument();
-			return perspective != null ? new OPerspective(perspective) : null;
-		}
-
-		public ODocument getPerspectiveAsDocument() {
-			OIdentifiable perspective = document.field(PROP_PERSPECTIVE);
-			return perspective != null ? perspective.getRecord() : null;
-		}
-
-		public OPerspectiveItem setPerspective(OPerspective perspective) {
-			return setPerspectiveAsDocument(perspective != null ? perspective.getDocument() : null);
-		}
-
-		public OPerspectiveItem setPerspectiveAsDocument(ODocument perspective) {
-			document.field(PROP_PERSPECTIVE, perspective);
-			return this;
-		}
-
-		public OPerspectiveItem getPerspectiveItem() {
-			ODocument perspectiveItem = getPerspectiveItemAsDocument();
-			return perspectiveItem != null ? new OPerspectiveItem(perspectiveItem) : null;
-		}
-
-		public ODocument getPerspectiveItemAsDocument() {
-			OIdentifiable perspectiveItem = document.field(PROP_PERSPECTIVE_ITEM);
-			return perspectiveItem != null ? perspectiveItem.getRecord() : null;
-		}
-
-		public OPerspectiveItem setPerspectiveItem(OPerspectiveItem perspectiveItem) {
-			return setPerspectiveItemAsDocument(perspectiveItem != null ? perspectiveItem.getDocument() : null);
-		}
-
-		public OPerspectiveItem setPerspectiveItemAsDocument(ODocument perspectiveItem) {
-			document.field(PROP_PERSPECTIVE_ITEM, perspectiveItem);
-			return this;
-		}
-
-		public List<OPerspectiveItem> getSubItems() {
-			return getSubItemsAsDocuments().stream()
-					.map(OPerspectiveItem::new)
-					.collect(Collectors.toCollection(LinkedList::new));
-		}
-
-		public List<ODocument> getSubItemsAsDocuments() {
-			List<OIdentifiable> subItems = document.field(PROP_SUB_ITEMS);
-			return CommonUtils.getDocuments(subItems);
-		}
-
-		public OPerspectiveItem setSubItems(List<OPerspectiveItem> subItems) {
-			List<ODocument> docs = subItems == null ? Collections.emptyList() : subItems.stream()
-					.map(OPerspectiveItem::getDocument)
-					.collect(Collectors.toCollection(LinkedList::new));
-			return setSubItemsAsDocuments(docs);
-		}
-
-		public OPerspectiveItem setSubItemsAsDocuments(List<ODocument> subItems) {
-			document.field(PROP_SUB_ITEMS, subItems);
-			return this;
-		}
+	 */
+	@ProvidedBy(ODocumentWrapperProvider.class)
+	@DAOOClass(value = IOPerspectiveItem.CLASS_NAME, nameProperty = "name",
+					displayable = {"name", "icon", "url"})
+	public static interface IOPerspectiveItem extends IODocumentWrapper {
+		public static final String CLASS_NAME = "OPerspectiveItem";
+		
+		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+		public Map<String, String> getName();
+		public IOPerspectiveItem setName(Map<String, String> value);
+		
+		@DAOField(notNull = true)
+		public String getAlias();
+		public IOPerspectiveItem setAlias(String value);
+		
+		public String getIcon();
+		public IOPerspectiveItem setIcon(String value);
+		
+		public String getUrl();
+		public IOPerspectiveItem setUrl(String value);
+		
+		@DAOField(inverse = "menu")
+		public IOPerspective getPerspective();
+		public IOPerspectiveItem setPerspective(IOPerspective value);
+		
+		@DAOField(value = "perspective")
+		public ODocument getPerspectiveAsDocument();
+		@DAOField(value = "perspective")
+		public IOPerspectiveItem setPerspectiveAsDocument(ODocument value);
+		
+		
+		@DAOField(inverse = "subItems")
+		public IOPerspectiveItem getPerspectiveItem();
+		public IOPerspectiveItem setPerspectiveItem(IOPerspectiveItem value);
+		
+		@DAOField(inverse = "perspectiveItem", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
+		public List<IOPerspectiveItem> getSubItems();
+		public IOPerspectiveItem setSubItems(List<IOPerspectiveItem> value);
+		
+		@DAOField(value = "subItems")
+		public List<ODocument> getSubItemsAsDocuments();
+		@DAOField(value = "subItems")
+		public IOPerspectiveItem setSubItemsAsDocuments(List<ODocument> value);
+		
+		@Lookup("select from "+CLASS_NAME+" where alias = :alias")
+		public IOPerspectiveItem lookupByAlias(String alias);
 	}
-
+	
 }

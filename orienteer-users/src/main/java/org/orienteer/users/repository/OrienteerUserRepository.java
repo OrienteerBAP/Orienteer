@@ -4,7 +4,9 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.PerspectivesModule;
+import org.orienteer.core.module.PerspectivesModule.IOPerspective;
 import org.orienteer.users.model.OrienteerUser;
 import org.orienteer.users.module.OrienteerUsersModule;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -24,11 +26,10 @@ public final class OrienteerUserRepository {
     /**
      * @return optional which contains perspective {@link OrienteerUsersModule#ORIENTEER_USER_PERSPECTIVE}
      */
-    public static Optional<ODocument> getDefaultOrienteerUserPerspective() {
-        return DBClosure.sudo(db -> {
-            PerspectivesModule perspectivesModule = OrienteerWebApplication.lookupApplication().getServiceInstance(PerspectivesModule.class);
-            return perspectivesModule.getPerspectiveByAliasAsDocument(db, OrienteerUsersModule.ORIENTEER_USER_PERSPECTIVE);
-        });
+    public static Optional<IOPerspective> getDefaultOrienteerUserPerspective() {
+    	return Optional.ofNullable(DBClosure.sudo((db) -> 
+    					DAO.create(IOPerspective.class)
+    								.lookupByAlias(OrienteerUsersModule.ORIENTEER_USER_PERSPECTIVE)));
     }
 
     /**

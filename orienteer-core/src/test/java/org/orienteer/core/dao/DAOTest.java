@@ -27,6 +27,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.module.PerspectivesModule.IOPerspective;
+import org.orienteer.core.module.PerspectivesModule.IOPerspectiveItem;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
@@ -368,7 +370,8 @@ public class DAOTest {
 	private OProperty assertProperty(OClass oClass, String property, OType oType, Integer order, OClass linkedClass, String inverse) {
 		OProperty prop = assertProperty(oClass, property, oType, order);
 		assertEquals(linkedClass, prop.getLinkedClass());
-		assertEquals(inverse, CustomAttribute.PROP_INVERSE.getValue(prop));
+		OProperty inverseProperty = CustomAttribute.PROP_INVERSE.getValue(prop);
+		assertEquals(inverse, inverseProperty!=null?inverseProperty.getName():null);
 		return prop;
 	}
 	
@@ -388,7 +391,7 @@ public class DAOTest {
 		OProperty prop = oClass.getProperty(property);
 		assertNotNull("Property '"+property+"'was not found on OClass:"+oClass, prop);
 		assertEquals(oType, prop.getType());
-		assertEquals(order, CustomAttribute.ORDER.getValue(prop));
+		if(order!=null) assertEquals(order, CustomAttribute.ORDER.getValue(prop));
 		return prop;
 	}
 	
@@ -414,5 +417,15 @@ public class DAOTest {
 			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
 			if(schema.existsClass("DAOTestClassRoot")) schema.dropClass("DAOTestClassRoot");
 		}
+	}
+	
+	@Test
+	@Sudo
+	public void testPerspectiveCreation() {
+		OSchemaHelper helper = OSchemaHelper.bind(tester.getDatabaseSession());
+		DAO.describe(helper, IOPerspective.class);
+		OClass perspectiveClass = tester.getSchema().getClass(IOPerspective.CLASS_NAME);
+		OClass perspectiveItemClass = tester.getSchema().getClass(IOPerspectiveItem.CLASS_NAME);
+		assertProperty(perspectiveClass, "menu", OType.LINKLIST, null, perspectiveItemClass, "perspective");
 	}
 }

@@ -69,7 +69,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 		showChangedPerspectiveInfo();
 
 		IModel<ODocument> perspectiveModel = PropertyModel.of(this, "perspective");
-		IModel<List<ODocument>> perspectivesModel = new OQueryModel<>("select from " + PerspectivesModule.OPerspective.CLASS_NAME);
+		IModel<List<ODocument>> perspectivesModel = new OQueryModel<>("select from " + PerspectivesModule.IOPerspective.CLASS_NAME);
 		add(createPerspectivesContainer("perspectivesContainer", perspectiveModel, perspectivesModel));
 		add(new RecursiveMenuPanel("perspectiveItems", perspectiveModel));
 

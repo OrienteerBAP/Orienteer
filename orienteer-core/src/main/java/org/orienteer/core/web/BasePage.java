@@ -92,7 +92,7 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 			String perspective = parameters.get("_perspective").toOptionalString();
 			if(!Strings.isEmpty(perspective))
 			{
-				perspectivesModule.getPerspectiveByAliasAsDocument(getDatabaseSession(), perspective)
+				perspectivesModule.getPerspectiveByAliasAsDocument(perspective)
 						.ifPresent(perspectiveDoc -> OrienteerWebSession.get().setPerspecive(perspectiveDoc));
 			}
 		}

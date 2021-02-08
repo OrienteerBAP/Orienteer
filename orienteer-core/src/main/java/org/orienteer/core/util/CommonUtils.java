@@ -3,7 +3,9 @@ package org.orienteer.core.util;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.wicket.Session;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.convert.IConverter;
@@ -21,10 +23,16 @@ import java.util.stream.Stream;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
  * Common for Orienteer utility methods
  */
 public class CommonUtils {
+	
+	public static final String[] DEFAULT_LANGUAGE_TAGS = {"en", "ru", "uk"};
 	
 	private CommonUtils() {
 		
@@ -365,4 +373,39 @@ public class CommonUtils {
 
 		return new String(chars);
 	}
+	
+	public static Map<String, String> getLocalizedStrings(String key) {
+		return getLocalizedStrings(key, DEFAULT_LANGUAGE_TAGS);
+	}
+	
+	public static Map<String, String> getLocalizedStrings(String key, String... languageTags) {
+        Map<String, String> localized = new HashedMap<>(3);
+        for (String languageTag : languageTags) {
+            localized.put(languageTag, getLocalizedString(key, Locale.forLanguageTag(languageTag)));
+        }
+        return localized;
+    }
+
+    public static String getLocalizedString(String key, Locale locale) {
+        return OrienteerWebApplication.lookupApplication()
+        		.getResourceSettings().getLocalizer().getString(key, null, null, locale, null, "");
+    }
+    
+    public static <A extends Annotation> Set<String> diffAnnotations(A ann1, A ann2){
+    	try {
+			Set<Method> methods = new HashSet<Method>(Arrays.asList(ann1.getClass().getInterfaces()[0].getMethods()));
+			methods.removeAll(Arrays.asList(Annotation.class.getMethods()));
+			Set<String> diff = new HashSet<String>();
+			for (Method method : methods) {
+				if(method.getParameterTypes().length==0
+						&& !Objects.equals(method.invoke(ann1), method.invoke(ann2))) {
+					diff.add(method.getName());
+				}
+			}
+			return diff;
+		} catch (Exception e) {
+			throw new WicketRuntimeException("Can't calculat diff due to exception", e);
+		} 
+    }
+
 }

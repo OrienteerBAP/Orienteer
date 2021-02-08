@@ -8,6 +8,7 @@ import static org.orienteer.core.util.CommonUtils.toMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
@@ -28,6 +29,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.orienteer.core.CustomAttribute;
+import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,8 @@ public final class DAO {
 																		 OType.EMBEDDEDSET, OType.LINKSET,
 																		 OType.EMBEDDEDMAP, OType.LINKMAP);
 	
+	private static final DAOField DEFAULT_DAOFIELD = dao(DAOField.class);
+	
 	private DAO() {
 		
 	}
@@ -64,7 +68,11 @@ public final class DAO {
 	}
 	
 	public static ODocument asDocument(Object obj) {
-		return asWrapper(obj).getDocument();
+		return obj!=null?asWrapper(obj).getDocument():null;
+	}
+	
+	public static <T> T as(Object proxy, Class<? extends T> clazz) {
+		return clazz.cast(proxy);
 	}
 	
 	public static <T> T loadFromDocument(T obj, ODocument doc) {
@@ -112,6 +120,40 @@ public final class DAO {
 		if(builtInInterfaces.length>0) System.arraycopy(builtInInterfaces, 0, interfaces, 2, builtInInterfaces.length);
 		if(additionalInterfaces.length>0) System.arraycopy(additionalInterfaces, 0, interfaces, 2+builtInInterfaces.length, additionalInterfaces.length);
 		return (T) Proxy.newProxyInstance(classLoader, interfaces,  new ODocumentWrapperInvocationHandler(docWrapper));
+	}
+	
+	public static <T> T updateBy(T proxy, Class<?>... additionalInterfaces) {
+		if(additionalInterfaces==null 
+				|| additionalInterfaces.length==0 
+				|| compatible(proxy, additionalInterfaces)) return (T) proxy;
+		else {
+			ClassLoader classLoader = additionalInterfaces[0].getClassLoader();
+			InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
+			Set<Class<?>> interfaces = new HashSet<Class<?>>();
+			interfaces.addAll(Arrays.asList(additionalInterfaces));
+			interfaces.addAll(Arrays.asList(proxy.getClass().getInterfaces()));
+			return (T) Proxy.newProxyInstance(classLoader, interfaces.toArray(new Class[interfaces.size()]),  invocationHandler);
+		}
+	}
+	
+	public static <T> T upgradeTo(Object proxy, Class<? extends T> interfaceClass, Class<?>... additionalInterfaces) {
+		if(compatible(proxy, interfaceClass) && compatible(proxy, additionalInterfaces)) return (T) proxy;
+		else {
+			ClassLoader classLoader = interfaceClass.getClassLoader();
+			InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
+			Set<Class<?>> interfaces = new HashSet<Class<?>>();
+			interfaces.add(interfaceClass);
+			interfaces.addAll(Arrays.asList(additionalInterfaces));
+			interfaces.addAll(Arrays.asList(proxy.getClass().getInterfaces()));
+			return (T) Proxy.newProxyInstance(classLoader, interfaces.toArray(new Class[interfaces.size()]),  invocationHandler);
+		}
+	}
+	
+	public static boolean compatible(Object proxy, Class<?>... interfaces) {
+		for (Class<?> inter : interfaces) {
+			if(!inter.isInstance(proxy)) return false;
+		}
+		return true;
 	}
 	
 	private static <T> Class<? extends T> tryToGetInheritedInterface(Class<? extends T> clazz, ODocumentWrapper docWrapper) {
@@ -197,7 +239,7 @@ public final class DAO {
 			if(daoField!=null && !Strings.isEmpty(daoField.value())) fieldNameCandidate = daoField.value();
 			final boolean wasPreviouslyScheduled = ctx.isPropertyCreationScheduled(fieldNameCandidate);
 			//Skip second+ attempt to create a property, except if @DAOField is present
-			if(wasPreviouslyScheduled && daoField==null) continue;
+			if(wasPreviouslyScheduled && canSkipIfAlreadyScheduled(daoField)) continue;
 			OType oTypeCandidate = daoField!=null && !OType.ANY.equals(daoField.type())
 											?daoField.type()
 											:getTypeByClass(javaType);
@@ -257,6 +299,12 @@ public final class DAO {
 		}
 		LOG.info("End of Creation of OClass {}", daooClass.value());
 		return daooClass.value();
+	}
+	
+	private static boolean canSkipIfAlreadyScheduled(DAOField daoField) {
+		if(daoField==null) return true;
+		Set<String> difference = CommonUtils.diffAnnotations(daoField, DEFAULT_DAOFIELD);
+		return difference.size()==1 && difference.contains("value");
 	}
 	
 	static List<Method> listMethods(Class<?> clazz) {
