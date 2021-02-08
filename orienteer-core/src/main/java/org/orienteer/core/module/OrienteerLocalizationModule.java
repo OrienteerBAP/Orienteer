@@ -52,7 +52,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 
 	public OrienteerLocalizationModule()
 	{
-		super(NAME, 1);
+		super(NAME, 2);
 	}
 
 	@Override
