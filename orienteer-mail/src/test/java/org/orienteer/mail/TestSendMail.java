@@ -1,5 +1,6 @@
 package org.orienteer.mail;
 
+import com.google.inject.Inject;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
 import org.junit.After;
 import org.junit.Before;
@@ -7,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.junit.OrienteerTestRunner;
+import org.orienteer.junit.OrienteerTester;
 import org.orienteer.mail.model.OMail;
 import org.orienteer.mail.model.OMailSettings;
 import org.orienteer.mail.model.OPreparedMail;
@@ -26,6 +28,9 @@ import static junit.framework.TestCase.assertEquals;
 @RunWith(OrienteerTestRunner.class)
 public class TestSendMail {
 
+	@Inject
+	private OrienteerTester tester;
+	
     private OMailServiceTest testService;
 
     private OMail mail;
@@ -40,6 +45,7 @@ public class TestSendMail {
         mail = createMail(mailSettings);
         DBClosure.sudoSave(mail);
 
+        tester.getDatabaseSession().begin();
         preparedMail = prepareMail(mail);
         DBClosure.sudoSave(preparedMail);
     }
@@ -53,6 +59,7 @@ public class TestSendMail {
             db.command(new OCommandSQL("delete from ?")).execute(mail.getDocument());
             db.command(new OCommandSQL("delete from ?")).execute(settings.getDocument());
         });
+        tester.getDatabaseSession().commit();
     }
 
     @Test

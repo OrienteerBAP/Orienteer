@@ -22,6 +22,7 @@ import org.orienteer.core.component.table.OPropertyValueColumn;
 import org.orienteer.core.component.table.OPropertyValueComboBoxColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.model.LanguagesChoiceProvider;
 import org.orienteer.core.widget.AbstractModeAwareWidget;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.orienteer.core.module.OrienteerLocalizationModule.OLocalization;
+import static org.orienteer.core.module.OrienteerLocalizationModule.IOLocalization;
 
 /**
  * Base class for widgets showing and modifying schema localizations.
@@ -48,39 +49,34 @@ public abstract class AbstractSchemaLocalizationWidget<T> extends AbstractModeAw
 
     public AbstractSchemaLocalizationWidget(String id, IModel<T> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
-        OClass oLocalizationClass = getSchema().getClass(OLocalization.CLASS_NAME);
+        OClass oLocalizationClass = getSchema().getClass(IOLocalization.CLASS_NAME);
 
         final OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select from OLocalization where key = :key");
         provider.setParameter("key", Model.of(getLocalizationKey(getModelObject())));
 
 
         List<IColumn<ODocument, String>> columns = new ArrayList<IColumn<ODocument,String>>();
-        columns.add(new OPropertyValueColumn(oLocalizationClass.getProperty(OLocalization.PROP_VALUE), getModeModel()));
-        OProperty langProperty = oLocalizationClass.getProperty(OLocalization.PROP_LANGUAGE);
+        columns.add(new OPropertyValueColumn(oLocalizationClass.getProperty("value"), getModeModel()));
+        OProperty langProperty = oLocalizationClass.getProperty("language");
         columns.add(new OPropertyValueComboBoxColumn<>(langProperty, LanguagesChoiceProvider.INSTANCE, getModeModel()));
         columns.add(new DeleteRowCommandColumn(getModeModel()));
         GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<ODocument>("localizations", columns, provider, 20);
         table = tablePanel.getDataTable();
 
-        table.addCommand(new EditODocumentsCommand(table, getModeModel(), new OClassModel(OLocalization.CLASS_NAME)));
+        table.addCommand(new EditODocumentsCommand(table, getModeModel(), new OClassModel(oLocalizationClass)));
         table.addCommand(new SaveOLocalizationsCommand(table, getModeModel()));
         table.setCaptionModel(new ResourceModel("class.localization"));
 
         ajaxFormCommand = new AjaxCommand<ODocument>("add", "command.add") {
         	{
-        		OSecurityHelper.secureComponent(this, OSecurityHelper.requireOClass(OLocalization.CLASS_NAME, OrientPermission.CREATE));
+        		OSecurityHelper.secureComponent(this, OSecurityHelper.requireOClass(IOLocalization.CLASS_NAME, OrientPermission.CREATE));
         	}
             @Override
             public void onClick(Optional<AjaxRequestTarget> targetOptional) {
-                ODocument newLocalization = new ODocument(OLocalization.CLASS_NAME);
-                T schemaObject = AbstractSchemaLocalizationWidget.this.getModelObject();
-                newLocalization.field(OLocalization.PROP_KEY, getLocalizationKey(schemaObject));
-                newLocalization.field(OLocalization.PROP_LANGUAGE, "");
-                newLocalization.field(OLocalization.PROP_STYLE, "");
-                newLocalization.field(OLocalization.PROP_VARIATION, "");
-                newLocalization.field(OLocalization.PROP_VALUE, "");
-                newLocalization.field(OLocalization.PROP_ACTIVE, false);
-                newLocalization.save();
+            	T schemaObject = AbstractSchemaLocalizationWidget.this.getModelObject();
+            	DAO.create(IOLocalization.class)
+            			.setKey(getLocalizationKey(schemaObject))
+            			.save();
                 targetOptional.ifPresent(target -> target.add(table));
             }
 

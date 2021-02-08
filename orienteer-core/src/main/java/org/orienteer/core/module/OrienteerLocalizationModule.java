@@ -1,5 +1,7 @@
 package org.orienteer.core.module;
 
+import com.google.common.collect.Comparators;
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
@@ -16,6 +18,16 @@ import org.apache.wicket.Component;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.DAODefaultValue;
+import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOHandler;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.IODocumentWrapper;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.Query;
+import org.orienteer.core.dao.handler.extra.SudoMethodHandler;
 import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,22 +58,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-
-		helper.oClass(OLocalization.CLASS_NAME)
-			.oProperty(OLocalization.PROP_KEY, OType.STRING, 0)
-				.markAsDocumentName()
-				.oIndex("key_index", INDEX_TYPE.NOTUNIQUE)
-            .oProperty(OLocalization.PROP_ACTIVE, OType.BOOLEAN, 10)
-                .notNull()
-                .defaultValue("false")
-            .oProperty(OLocalization.PROP_LANGUAGE, OType.STRING, 20)
-			.oProperty(OLocalization.PROP_STYLE, OType.STRING, 30)
-			.oProperty(OLocalization.PROP_VARIATION, OType.STRING, 40)
-			.oProperty(OLocalization.PROP_VALUE, OType.STRING, 50)
-                    .assignVisualization("textarea")
-			.switchDisplayable(true, OLocalization.PROP_KEY, OLocalization.PROP_ACTIVE,
-                    OLocalization.PROP_LANGUAGE, OLocalization.PROP_STYLE, OLocalization.PROP_VARIATION, OLocalization.PROP_VALUE);
-
+		DAO.describe(helper, IOLocalization.class);
 		helper.oClass(OUser.CLASS_NAME).oProperty(PROP_OUSER_LOCALE, OType.STRING);
 		return null;
 	}
@@ -70,8 +67,8 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	public void onUninstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchema schema = app.getDatabaseSession().getMetadata().getSchema();
 
-		if (schema.existsClass(OLocalization.CLASS_NAME)) {
-            schema.dropClass(OLocalization.CLASS_NAME);
+		if (schema.existsClass(IOLocalization.CLASS_NAME)) {
+            schema.dropClass(IOLocalization.CLASS_NAME);
         }
 	}
 
@@ -98,7 +95,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 
 		public LocalizationInvalidationHook(ODatabaseDocument database) {
 			super(database);
-			setIncludeClasses(OLocalization.CLASS_NAME);
+			setIncludeClasses(IOLocalization.CLASS_NAME);
 		}
 
 		private void invalidateCache()
@@ -152,149 +149,100 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 			if (Strings.isEmpty(key)) {
 				LOG.warn("Try to load string resource with empty key!");
 			}
-
-			return DBClosure.sudo(db -> {
-				String sql = String.format("select from %s where %s = ?", OLocalization.CLASS_NAME, OLocalization.PROP_KEY);
-				OResultSet result = db.query(sql, key);
-
-				String language = locale != null ? locale.getLanguage() : null;
-                OLocalization localization = new OLocalization(key, language, style, variation);
-
-                if (!result.hasNext()) {
-					localization.save();
-					return null;
-				}
-
-				return loadStringResourceFromQueryResult(result, localization);
-			});
-		}
-
-		private String loadStringResourceFromQueryResult(OResultSet result, OLocalization localization) {
-			Pair<Integer, OLocalization> pair = result.elementStream()
-                    .map(e -> new OLocalization((ODocument) e))
-                    .map(candidate -> Pair.of(computeScore(localization, candidate), candidate))
-                    .reduce((bestCandidate, candidate) -> bestCandidate.getKey() < candidate.getKey() ? candidate : bestCandidate)
-					.orElse(Pair.of(0, null));
-
-			if (!isFullMatchScore(pair.getKey())) {
-				localization.save();
+			String language = locale != null ? locale.getLanguage() : null;
+			IOLocalization localization = DAO.create(IOLocalization.class)
+												.setKey(key)
+												.setLanguage(language)
+												.setStyle(style)
+												.setVariation(variation);
+			List<IOLocalization> others = localization.queryOthersWithTheSameKey();
+			IOLocalization bestMatch = null;
+			if(others!=null && !others.isEmpty())
+			{
+				//Minus is needed to have maxumum first
+				others.sort((a, b) -> -Integer.compare(a.computeScore(localization), b.computeScore(localization)));
+				bestMatch = others.get(0);
 			}
-
-			return pair.getValue() != null ? pair.getValue().getValue() : null;
+			
+			if(bestMatch!=null && bestMatch.isTheBestMatch(localization)) {
+				return bestMatch.isActive()?bestMatch.getValue():null;
+			} else {
+				localization.sudoSave();
+				return null;
+			}
 		}
-
-		private int computeScore(OLocalization localization, OLocalization candidate) {
+	}
+	
+	/**
+	 * DAO for OLocalization
+	 */
+	@ProvidedBy(ODocumentWrapperProvider.class)
+	@DAOOClass(value = IOLocalization.CLASS_NAME, nameProperty = "key")
+	public static interface IOLocalization extends IODocumentWrapper {
+		public static final String CLASS_NAME = "OLocalization";
+		
+		public String getKey();
+		public IOLocalization setKey(String value);
+		
+		public String getLanguage();
+		public IOLocalization setLanguage(String value);
+		
+		public String getStyle();
+		public IOLocalization setStyle(String value);
+		
+		public String getVariation();
+		public IOLocalization setVariation(String value);
+		
+		@DAOField(defaultValue = "false")
+		@DAODefaultValue(value = "false")
+		public boolean isActive();
+		public IOLocalization setActive(boolean value);
+		
+		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_TEXTAREA)
+		public String getValue();
+		public IOLocalization setValue(String value);
+		
+		public default boolean checkActive() {
+			setActive(Strings.isEmpty(getLanguage()) && !Strings.isEmpty(getValue()));
+			return isActive();
+		}
+		
+		public default int computeScore(IOLocalization target) {
 		    int score = 0;
 
-		    if (Strings.isEqual(localization.getLanguage(), candidate.getLanguage())) {
+		    if (Strings.isEqual(target.getLanguage(), getLanguage())) {
                 score |= 1<<2;
             }
 
-            if (Strings.isEqual(localization.getStyle(), candidate.getStyle())) {
+            if (Strings.isEqual(target.getStyle(), getStyle())) {
                 score |= 1<<1;
             }
 
-            if (Strings.isEqual(localization.getVariation(), candidate.getVariation())) {
+            if (Strings.isEqual(target.getVariation(), getVariation())) {
                 score |= 1;
             }
 
             return score;
         }
-
-        private boolean isFullMatchScore(int score) {
-			return score == 7;
+		
+		public default boolean isTheBestMatch(IOLocalization target) {
+			return computeScore(target) == 7;
+		}
+		
+		
+		@Query("select from "+CLASS_NAME+" where key = :key")
+		@DAOHandler(SudoMethodHandler.class)
+		public List<IOLocalization> queryByKey(String key);
+		
+		public default List<IOLocalization> queryOthersWithTheSameKey() {
+			return queryByKey(getKey());
+		}
+		
+		@DAOHandler(SudoMethodHandler.class)
+		public default IOLocalization sudoSave() {
+			save();
+			return this;
 		}
 	}
 
-    /**
-     * Wrapper for represent OLocalization
-     */
-	public static class OLocalization extends ODocumentWrapper {
-
-		private static final long serialVersionUID = 1L;
-
-		public static final String CLASS_NAME = "OLocalization";
-
-		public static final String PROP_KEY       = "key";
-		public static final String PROP_LANGUAGE  = "language";
-		public static final String PROP_STYLE     = "style";
-		public static final String PROP_VARIATION = "variation";
-		public static final String PROP_ACTIVE    = "active";
-		public static final String PROP_VALUE     = "value";
-
-        public OLocalization() {
-            super(CLASS_NAME);
-        }
-
-        public OLocalization(String iClassName) {
-            super(iClassName);
-        }
-
-        public OLocalization(ODocument iDocument) {
-            super(iDocument);
-        }
-
-        public OLocalization(String key, String language, String style, String variation) {
-            this();
-            setKey(key);
-            setLanguage(language);
-            setStyle(style);
-            setVariation(variation);
-        }
-
-        public String getKey() {
-            return document.field(PROP_KEY);
-        }
-
-        public OLocalization setKey(String key) {
-            document.field(PROP_KEY, key);
-            return this;
-        }
-
-        public String getLanguage() {
-            return document.field(PROP_LANGUAGE);
-        }
-
-        public OLocalization setLanguage(String language) {
-            document.field(PROP_LANGUAGE, language);
-            return this;
-        }
-
-        public String getStyle() {
-            return document.field(PROP_STYLE);
-        }
-
-        public OLocalization setStyle(String style) {
-            document.field(PROP_STYLE, style);
-            return this;
-        }
-
-        public String getVariation() {
-            return document.field(PROP_VARIATION);
-        }
-
-        public OLocalization setVariation(String variation) {
-            document.field(PROP_VARIATION, variation);
-            return this;
-        }
-
-        public boolean isActive() {
-            Boolean active = document.field(PROP_ACTIVE);
-            return active != null && active;
-        }
-
-        public OLocalization setActive(boolean active) {
-            document.field(PROP_ACTIVE, active);
-            return this;
-        }
-
-        public String getValue() {
-            return document.field(PROP_VALUE);
-        }
-
-        public OLocalization setValue(String value) {
-            document.field(PROP_VALUE, value);
-            return this;
-        }
-    }
 }

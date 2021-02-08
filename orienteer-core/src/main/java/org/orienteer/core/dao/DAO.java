@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -31,7 +32,9 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.id.ORID;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
@@ -99,6 +102,7 @@ public final class DAO {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T provide(Class<? extends T> interfaceClass, ODocumentWrapper docWrapper, Class<?>... additionalInterfaces) {
+		Args.notNull(ODatabaseRecordThreadLocal.instance().get(), "There is no DatabaseSession");
 		if(additionalInterfaces == null) additionalInterfaces = NO_CLASSES;
 		Class<?>[] builtInInterfaces = docWrapper.getClass().getInterfaces();
 		Class<?>[] interfaces = new Class[2+builtInInterfaces.length+additionalInterfaces.length];
