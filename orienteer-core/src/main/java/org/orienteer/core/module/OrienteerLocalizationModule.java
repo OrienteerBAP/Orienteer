@@ -7,6 +7,7 @@ import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ODocumentHookAbstract;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.schema.OClass.INDEX_TYPE;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.metadata.security.OUser;
@@ -17,11 +18,13 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.wicket.Component;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.DAODefaultValue;
 import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOFieldIndex;
 import org.orienteer.core.dao.DAOHandler;
 import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.IODocumentWrapper;
@@ -181,6 +184,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	public static interface IOLocalization extends IODocumentWrapper {
 		public static final String CLASS_NAME = "OLocalization";
 		
+		@DAOFieldIndex(name = "key_index", type = OClass.INDEX_TYPE.NOTUNIQUE)
 		public String getKey();
 		public IOLocalization setKey(String value);
 		
