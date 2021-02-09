@@ -87,12 +87,12 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 																			"fa fa-cog", 
 																			"/schema");
 		
-		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_USERS, "perspective.item.default.users", "fa fa-users", "/browse/OUser");
-		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_ROLES, "perspective.item.default.roles", "fa fa-user-circle", "/browse/ORole");
-		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_SCHEMA, "perspective.item.default.schema", "fa fa-cubes", "/schema");
-		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_LOCALIZATION, "perspective.item.default.localization", "fa fa-language", "/browse/OLocalization");
-		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_PERSPECTIVES, "perspective.item.default.perspectives", "fa fa-desktop", "/browse/" + IOPerspective.CLASS_NAME);
-		defaultPerspective.createPerspectiveItem(ALIAS_ITEM_MODULES, "perspective.item.default.modules", "fa fa-archive", "/browse/" + AbstractOrienteerModule.OMODULE_CLASS);
+		defaultPerspective.getOrCreatePerspectiveItem(ALIAS_ITEM_USERS, "perspective.item.default.users", "fa fa-users", "/browse/OUser");
+		defaultPerspective.getOrCreatePerspectiveItem(ALIAS_ITEM_ROLES, "perspective.item.default.roles", "fa fa-user-circle", "/browse/ORole");
+		defaultPerspective.getOrCreatePerspectiveItem(ALIAS_ITEM_SCHEMA, "perspective.item.default.schema", "fa fa-cubes", "/schema");
+		defaultPerspective.getOrCreatePerspectiveItem(ALIAS_ITEM_LOCALIZATION, "perspective.item.default.localization", "fa fa-language", "/browse/OLocalization");
+		defaultPerspective.getOrCreatePerspectiveItem(ALIAS_ITEM_PERSPECTIVES, "perspective.item.default.perspectives", "fa fa-desktop", "/browse/" + IOPerspective.CLASS_NAME);
+		defaultPerspective.getOrCreatePerspectiveItem(ALIAS_ITEM_MODULES, "perspective.item.default.modules", "fa fa-archive", "/browse/" + AbstractOrienteerModule.OMODULE_CLASS);
 		return defaultPerspective;
 	}
 	
@@ -293,7 +293,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		@Lookup("select from "+CLASS_NAME+" where alias = :alias")
 		public IOPerspective lookupByAlias(String alias);
 		
-		public default IOPerspectiveItem createPerspectiveItem(String alias, String nameKey, String icon, String url) {
+		public default IOPerspectiveItem getOrCreatePerspectiveItem(String alias, String nameKey, String icon, String url) {
 			IOPerspectiveItem item = DAO.create(IOPerspectiveItem.class);
 			
 			if(item.lookupByAlias(alias)==null) {

@@ -252,7 +252,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
     															     ORIENTEER_USER_PERSPECTIVE, 
     															     FAIconType.user_o.name(), 
     															     "/browse/" + OrienteerUser.CLASS_NAME);
-    	perspective.createPerspectiveItem("perspective.menu.item.profile", "perspective.menu.item.profile", FAIconType.user_o.name(), "/browse/" + OrienteerUser.CLASS_NAME);
+    	perspective.getOrCreatePerspectiveItem("perspective.menu.item.profile", "perspective.menu.item.profile", FAIconType.user_o.name(), "/browse/" + OrienteerUser.CLASS_NAME);
 
         return perspective;
     }

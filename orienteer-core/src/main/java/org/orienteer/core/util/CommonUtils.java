@@ -381,14 +381,15 @@ public class CommonUtils {
 	public static Map<String, String> getLocalizedStrings(String key, String... languageTags) {
         Map<String, String> localized = new HashedMap<>(3);
         for (String languageTag : languageTags) {
-            localized.put(languageTag, getLocalizedString(key, Locale.forLanguageTag(languageTag)));
+        	String localizedValue = getLocalizedString(key, Locale.forLanguageTag(languageTag), null);
+            if(localizedValue!=null) localized.put(languageTag, localizedValue);
         }
         return localized;
     }
 
-    public static String getLocalizedString(String key, Locale locale) {
+    public static String getLocalizedString(String key, Locale locale, String defaultValue) {
         return OrienteerWebApplication.lookupApplication()
-        		.getResourceSettings().getLocalizer().getString(key, null, null, locale, null, "");
+        		.getResourceSettings().getLocalizer().getString(key, null, null, locale, null, defaultValue);
     }
     
     public static <A extends Annotation> Set<String> diffAnnotations(A ann1, A ann2){
