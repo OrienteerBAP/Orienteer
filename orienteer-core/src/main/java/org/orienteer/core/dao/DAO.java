@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -214,7 +215,7 @@ public final class DAO {
 		List<Method> methods = listMethods(clazz);
 		
 		for(Method method : methods) {
-			if(method.isDefault()) continue; //Ignore default methods
+			if(method.isDefault() || Modifier.isStatic(method.getModifiers())) continue; //Ignore default methods
 			String methodName = method.getName();
 			Parameter[] params =  method.getParameters();
 			String fieldNameCandidate = null;

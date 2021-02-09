@@ -61,7 +61,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	
 	public static final String NAME = "orienteer-logger";
 
-	public static final int VERSION = 12;
+	public static final int VERSION = 13;
 
 	public static final String DISPATCHER_DEFAULT = "default";
 
