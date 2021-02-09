@@ -9,6 +9,7 @@ import org.apache.wicket.core.util.lang.WicketObjects;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.DAOField;
 import org.orienteer.core.dao.DAOOClass;
@@ -215,7 +216,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		public String getCollectorUrl();
 		public ILoggerModuleConfiguration setCollectorUrl(String url);
 
-		@DAOField(notNull = true)
+		@DAOField(notNull = true, visualization = UIVisualizersRegistry.VISUALIZER_LISTBOX)
 		public IOLoggerEventDispatcherModel getLoggerEventDispatcher();
 		public ILoggerModuleConfiguration setLoggerEventDispatcher(IOLoggerEventDispatcherModel dispatcher);
 
@@ -236,7 +237,7 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		public String getDomain();
         public ILoggerModuleConfiguration setDomain(String domain);
 
-        @DAOField(notNull = true)
+        @DAOField(notNull = true, visualization = UIVisualizersRegistry.VISUALIZER_LISTBOX)
         public IOCorrelationIdGeneratorModel getCorrelationIdGenerator();
         public ILoggerModuleConfiguration setCorrelationIdGenerator(IOCorrelationIdGeneratorModel correlationIdGenerator);
 

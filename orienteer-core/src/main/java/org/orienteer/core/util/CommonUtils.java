@@ -379,10 +379,12 @@ public class CommonUtils {
 	}
 	
 	public static Map<String, String> getLocalizedStrings(String key, String... languageTags) {
-        Map<String, String> localized = new HashedMap<>(3);
-        for (String languageTag : languageTags) {
-        	String localizedValue = getLocalizedString(key, Locale.forLanguageTag(languageTag), null);
-            if(localizedValue!=null) localized.put(languageTag, localizedValue);
+        Map<String, String> localized = new HashedMap<>();
+        if(languageTags!=null && languageTags.length>0) {
+	        for (String languageTag : languageTags) {
+	        	String localizedValue = getLocalizedString(key, Locale.forLanguageTag(languageTag), null);
+	            if(localizedValue!=null) localized.put(languageTag, localizedValue);
+	        }
         }
         return localized;
     }
