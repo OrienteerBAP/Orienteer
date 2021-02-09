@@ -10,6 +10,7 @@ import org.orienteer.core.dao.handler.InvocationChain;
  * Interface to allow to stack method invocation handlers
  * @param <T> - type of target/delegate object
  */
+@FunctionalInterface
 public interface IMethodHandler<T> extends IClusterable {
 	
 	/**

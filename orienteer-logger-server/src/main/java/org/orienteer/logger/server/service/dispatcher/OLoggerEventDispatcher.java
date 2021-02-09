@@ -8,8 +8,8 @@ import org.orienteer.logger.IOLoggerConfiguration;
 import org.orienteer.logger.IOLoggerEventDispatcher;
 import org.orienteer.logger.OLoggerEvent;
 import org.orienteer.logger.impl.DefaultOLoggerEventDispatcher;
-import org.orienteer.logger.server.model.OLoggerEventModel;
-import org.orienteer.logger.server.repository.OLoggerRepository;
+import org.orienteer.logger.server.model.IOLoggerDAO;
+import org.orienteer.logger.server.model.IOLoggerEventModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +23,13 @@ public class OLoggerEventDispatcher extends DefaultOLoggerEventDispatcher {
 	@Override
 	public void dispatch(OLoggerEvent event) {
 		if (needsToBeLogged(event)) {
-			OLoggerEventModel eventModel = OLoggerRepository.storeOLoggerEvent(event.toJson());
+			IOLoggerEventModel eventModel = IOLoggerDAO.INSTANCE.storeOLoggerEvent(event.toJson());
 			onDispatchEvent(eventModel, event);
 			super.dispatch(event);
 		}
 	}
 
-	protected void onDispatchEvent(OLoggerEventModel eventModel, OLoggerEvent event) {
+	protected void onDispatchEvent(IOLoggerEventModel eventModel, OLoggerEvent event) {
 
 	}
 

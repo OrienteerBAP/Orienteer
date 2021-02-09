@@ -1,7 +1,7 @@
 package org.orienteer.logger.server.service.dispatcher;
 
-import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
-import org.orienteer.logger.server.repository.OLoggerRepository;
+import org.orienteer.logger.server.model.IOLoggerDAO;
+import org.orienteer.logger.server.model.IOLoggerEventFilteredDispatcherModel;
 
 /**
  * Filtered event dispatcher
@@ -16,8 +16,8 @@ public class OLoggerEventFilteredDispatcher extends OLoggerEventDispatcher {
 
     @Override
     protected boolean needsToBeLogged(Throwable event) {
-        OLoggerEventFilteredDispatcherModel dispatcher = OLoggerRepository.getOLoggerEventFilteredDispatcher(alias)
-                .orElseThrow(() -> new IllegalStateException("There is no filtered dispatcher with alias: " + alias));
+        IOLoggerEventFilteredDispatcherModel dispatcher = IOLoggerDAO.INSTANCE.getOLoggerEventFilteredDispatcher(alias);
+        if(dispatcher==null) new IllegalStateException("There is no filtered dispatcher with alias: " + alias);
 
         return super.needsToBeLogged(event) && dispatcher.getExceptions().contains(event.getClass().getName());
     }

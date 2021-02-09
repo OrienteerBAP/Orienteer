@@ -6,7 +6,7 @@ import org.apache.wicket.request.http.WebRequest;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.logger.IOLoggerEventEnhancer;
 import org.orienteer.logger.OLoggerEvent;
-import org.orienteer.logger.server.model.OLoggerEventModel;
+import org.orienteer.logger.server.model.IOLoggerEventModel;
 
 /**
  * {@link IOLoggerEventEnhancer} to add some web specific to an event 
@@ -22,16 +22,16 @@ public class OWebEnhancer implements IOLoggerEventEnhancer {
 			if (session != null) {
 				if (session.isClientInfoAvailable()) {
 					WebClientInfo clientInfo = session.getClientInfo();
-					event.setMetaData(OLoggerEventModel.PROP_REMOTE_ADDRESS, clientInfo.getProperties().getRemoteAddress());
-					event.setMetaData(OLoggerEventModel.PROP_HOST_NAME, clientInfo.getProperties().getHostname());
+					event.setMetaData(IOLoggerEventModel.PROP_REMOTE_ADDRESS, clientInfo.getProperties().getRemoteAddress());
+					event.setMetaData(IOLoggerEventModel.PROP_HOST_NAME, clientInfo.getProperties().getHostname());
 				}
 				if(session.isSignedIn()) {
-					event.setMetaData(OLoggerEventModel.PROP_USERNAME, session.getEffectiveUser().getName());
+					event.setMetaData(IOLoggerEventModel.PROP_USERNAME, session.getEffectiveUser().getName());
 				}
 			}
 
 			WebRequest request = (WebRequest)cycle.getRequest();
-			event.setMetaData(OLoggerEventModel.PROP_CLIENT_URL, request.getClientUrl());
+			event.setMetaData(IOLoggerEventModel.PROP_CLIENT_URL, request.getClientUrl());
 		}
 		return event;
 	}

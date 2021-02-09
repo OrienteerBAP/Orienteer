@@ -4,17 +4,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.logger.OLogger;
-import org.orienteer.logger.server.model.OCorrelationIdGeneratorModel;
-import org.orienteer.logger.server.model.OLoggerEventFilteredDispatcherModel;
-import org.orienteer.logger.server.model.OLoggerEventModel;
-import org.orienteer.logger.server.repository.OLoggerModuleRepository;
-import org.orienteer.logger.server.repository.OLoggerRepository;
+import org.orienteer.logger.server.model.IOCorrelationIdGeneratorModel;
+import org.orienteer.logger.server.model.IOLoggerDAO;
+import org.orienteer.logger.server.model.IOLoggerEventDispatcherModel;
+import org.orienteer.logger.server.model.IOLoggerEventFilteredDispatcherModel;
+import org.orienteer.logger.server.model.IOLoggerEventModel;
 import org.orienteer.logger.server.service.dispatcher.OLoggerEventFilteredDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.inject.Inject;
+
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.HashSet;
@@ -30,8 +34,11 @@ public class TestOLoggerEventFilteredDispatcher {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestOLoggerEventFilteredDispatcher.class);
 
-    private OLoggerEventFilteredDispatcherModel filteredDispatcher;
-    private OCorrelationIdGeneratorModel correlationIdGenerator;
+    private IOLoggerEventFilteredDispatcherModel filteredDispatcher;
+    private IOCorrelationIdGeneratorModel correlationIdGenerator;
+    
+    @Inject
+    private IOLoggerDAO loggerDAO;
 
     @Before
     public void init() {
@@ -39,17 +46,17 @@ public class TestOLoggerEventFilteredDispatcher {
             Set<String> exceptions = new HashSet<>();
             exceptions.add(TestException.class.getName());
 
-            filteredDispatcher = new OLoggerEventFilteredDispatcherModel();
+            filteredDispatcher = DAO.create(IOLoggerEventFilteredDispatcherModel.class);
             filteredDispatcher.setAlias(UUID.randomUUID().toString());
             filteredDispatcher.setDispatcherClass(OLoggerEventFilteredDispatcher.class.getName());
             filteredDispatcher.setName(CommonUtils.toMap("en", "test"));
             filteredDispatcher.setExceptions(exceptions);
             filteredDispatcher.save();
 
-            correlationIdGenerator = OLoggerRepository.getOCorrelationIdGenerator(OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER)
-                    .orElseThrow(() -> new IllegalStateException("There is no correlation id generator with id: " + OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER));
+            correlationIdGenerator = loggerDAO.getOCorrelationIdGenerator(OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER);
+            if(correlationIdGenerator==null) new IllegalStateException("There is no correlation id generator with id: " + OLoggerModule.CORRELATION_ID_GENERATOR_ORIENTEER);
 
-            OLoggerModule.Module module = OLoggerModuleRepository.getModule(db);
+            OLoggerModule.ILoggerModuleConfiguration module = OLoggerModule.ILoggerModuleConfiguration.get();
             module.setLoggerEventDispatcher(filteredDispatcher);
             module.setCorrelationIdGenerator(correlationIdGenerator);
             module.setActivated(true);
@@ -62,15 +69,15 @@ public class TestOLoggerEventFilteredDispatcher {
         DBClosure.sudoConsumer(db -> {
             db.delete(filteredDispatcher.getDocument());
 
-            db.command("delete from " + OLoggerEventModel.CLASS_NAME);
+            db.command("delete from " + IOLoggerEventModel.CLASS_NAME);
 
-            OLoggerRepository.getOLoggerEventDispatcherAsDocument(db, OLoggerModule.DISPATCHER_DEFAULT)
-                    .ifPresent(d ->
-                        OLoggerModuleRepository.getModule(db)
-                                .setLoggerEventDispatcherAsDocument(d)
+            IOLoggerEventDispatcherModel dispatcher = loggerDAO.getOLoggerEventDispatcher(OLoggerModule.DISPATCHER_DEFAULT);
+            if(dispatcher!=null) {
+            		OLoggerModule.ILoggerModuleConfiguration.get()
+                                .setLoggerEventDispatcher(dispatcher)
                                 .setActivated(false)
-                                .save()
-                    );
+                                .save();
+            }
         });
     }
 
@@ -81,7 +88,7 @@ public class TestOLoggerEventFilteredDispatcher {
 
         String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception);
 
-        List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
+        List<IOLoggerEventModel> events = loggerDAO.getEventsByCorrelationId(correlationId);
         assertEquals("There is no events with correlationId: " + correlationId, 1, events.size());
         assertEquals("Seed classes are not equals", exception.getClass().getName(), events.get(0).getSeedClass());
     }
@@ -92,7 +99,7 @@ public class TestOLoggerEventFilteredDispatcher {
         OLogger.log(exception);
 
         String correlationId = correlationIdGenerator.createCorrelationIdGenerator().generate(exception);
-        List<OLoggerEventModel> events = OLoggerRepository.getEventsByCorrelationId(correlationId);
+        List<IOLoggerEventModel> events = loggerDAO.getEventsByCorrelationId(correlationId);
         assertTrue("There is present event with correlationId: " + correlationId, events.isEmpty());
     }
 

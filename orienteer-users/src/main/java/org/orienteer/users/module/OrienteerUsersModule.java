@@ -238,7 +238,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(OSecurityHelper.FEATURE_RESOURCE, SchemaPage.SCHEMA_FEATURE, 0);
 
         role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(reader));
-        role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
+        role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective.getDocument());
 
         role.save();
 

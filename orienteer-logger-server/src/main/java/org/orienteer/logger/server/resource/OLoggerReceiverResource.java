@@ -10,11 +10,12 @@ import org.apache.wicket.request.resource.SharedResourceReference;
 import org.apache.wicket.util.io.IOUtils;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.logger.server.OLoggerModule;
-import org.orienteer.logger.server.model.OLoggerEventModel;
-import org.orienteer.logger.server.repository.OLoggerRepository;
+import org.orienteer.logger.server.model.IOLoggerDAO;
+import org.orienteer.logger.server.model.IOLoggerEventModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Inject;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
@@ -28,6 +29,9 @@ public class OLoggerReceiverResource extends AbstractResource {
 	public static final String REGISTRATION_RES_KEY=OLoggerReceiverResource.class.getSimpleName();
 	
 	private static final Logger LOG = LoggerFactory.getLogger(OLoggerReceiverResource.class);
+	
+	@Inject
+	private IOLoggerDAO oLoggerDao;
 	
 	@Override
 	protected ResourceResponse newResourceResponse(Attributes attributes) {
@@ -45,7 +49,7 @@ public class OLoggerReceiverResource extends AbstractResource {
 				{
 
 					String content = IOUtils.toString(httpRequest.getInputStream());
-					OLoggerEventModel log = OLoggerRepository.storeOLoggerEvent(content);
+					IOLoggerEventModel log = oLoggerDao.storeOLoggerEvent(content);
 					out = log.getDocument().toJSON();
 				}
 			} catch (Throwable e)

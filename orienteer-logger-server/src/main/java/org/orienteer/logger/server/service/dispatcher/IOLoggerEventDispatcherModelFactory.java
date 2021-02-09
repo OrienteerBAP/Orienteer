@@ -2,13 +2,13 @@ package org.orienteer.logger.server.service.dispatcher;
 
 import com.google.inject.ImplementedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.orienteer.logger.server.model.OLoggerEventDispatcherModel;
+import org.orienteer.logger.server.model.IOLoggerEventDispatcherModel;
 
 /**
- * Factory interface for create {@link OLoggerEventDispatcherModel}
+ * Factory interface for create {@link IOLoggerEventDispatcherModel}
  */
 @ImplementedBy(OLoggerEventDispatcherModelFactory.class)
 public interface IOLoggerEventDispatcherModelFactory {
 
-    OLoggerEventDispatcherModel createEventDispatcherModel(ODocument document);
+    IOLoggerEventDispatcherModel createEventDispatcherModel(ODocument document);
 }
