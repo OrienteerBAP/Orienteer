@@ -218,7 +218,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.grant(ResourceGeneric.DATABASE, "cluster", OrientPermission.combinedPermission(READ, UPDATE));
 
         role.getDocument().field(ORestrictedOperation.ALLOW_READ.getFieldName(), Collections.singletonList(role.getDocument()));
-        role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective);
+        role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective.getDocument());
         role.save();
 
         db.command(String.format("alter role %s set policy default_2 on database.class.OUser", role.getName()));
