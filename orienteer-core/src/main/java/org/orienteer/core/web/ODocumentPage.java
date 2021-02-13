@@ -2,6 +2,8 @@ package org.orienteer.core.web;
 
 import com.google.inject.Inject;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.exception.ODatabaseException;
+import com.orientechnologies.orient.core.exception.ORecordNotFoundException;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -65,7 +67,7 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		if (rid != null) {
 			try {
 				return new ODocumentModel(new ORecordId(rid));
-			} catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException | ODatabaseException | ORecordNotFoundException e) {
 				//NOP Support of case with wrong rid
 			}
 		}

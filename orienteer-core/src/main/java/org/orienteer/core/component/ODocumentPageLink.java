@@ -58,8 +58,8 @@ public class ODocumentPageLink extends BookmarkablePageLink<ODocument>
 		super.onConfigure();
 		Object modelObject = getModelObject();
 		ODocument document = modelObject instanceof ODocument ? (ODocument) modelObject : null;
-		if (document == null && modelObject instanceof ORecordId) {
-			document = new ODocument((ORecordId)modelObject);
+		if (document == null && modelObject instanceof OIdentifiable) {
+			document = ((OIdentifiable)modelObject).getRecord();
 		}
 		setVisible(document!=null);
 	}
