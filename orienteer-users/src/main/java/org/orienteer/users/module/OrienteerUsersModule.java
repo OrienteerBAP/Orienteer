@@ -22,7 +22,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.IORestricted;
+import org.orienteer.core.dao.dm.IORestricted;
 import org.orienteer.core.method.MethodStorage;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;

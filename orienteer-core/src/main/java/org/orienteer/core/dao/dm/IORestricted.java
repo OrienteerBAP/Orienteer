@@ -1,14 +1,23 @@
-package org.orienteer.core.dao;
+package org.orienteer.core.dao.dm;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.IODocumentWrapper;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
+
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
+import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
 
 /**
  * Interface helper to simplify work with ORestricted 
  */
-public interface IORestricted extends IODocumentWrapper {
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = OSecurityShared.RESTRICTED_CLASSNAME)
+public interface IORestricted {
 	
 	@DAOField("_allow")
 	public Set<OIdentifiable> getAllowAll();
