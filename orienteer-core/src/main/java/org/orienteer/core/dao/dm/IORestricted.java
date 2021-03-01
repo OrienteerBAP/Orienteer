@@ -17,7 +17,7 @@ import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = OSecurityShared.RESTRICTED_CLASSNAME)
-public interface IORestricted {
+public interface IORestricted extends IODocumentWrapper {
 	
 	@DAOField("_allow")
 	public Set<OIdentifiable> getAllowAll();
