@@ -207,7 +207,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 		public IOLocalization setValue(String value);
 		
 		public default boolean checkActive() {
-			setActive(Strings.isEmpty(getLanguage()) && !Strings.isEmpty(getValue()));
+			setActive(!Strings.isEmpty(getLanguage()) && !Strings.isEmpty(getValue()));
 			return isActive();
 		}
 		
