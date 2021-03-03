@@ -18,7 +18,7 @@ import org.orienteer.core.dao.handler.LookupMethodHandler;
 import org.orienteer.core.dao.handler.MirrorMethodHandler;
 import org.orienteer.core.dao.handler.ODocumentGetHandler;
 import org.orienteer.core.dao.handler.ODocumentSetHandler;
-import org.orienteer.core.dao.handler.QueryMethodHandler;
+import org.orienteer.core.dao.handler.ExecuteSQLMethodHandler;
 import org.orienteer.core.dao.handler.RetargetMethodHandler;
 import org.orienteer.core.dao.handler.StackMethodHandler;
 import org.orienteer.core.util.CommonUtils;
@@ -42,7 +42,7 @@ class ODocumentWrapperInvocationHandler extends StackInvocationHandler<ODocument
 												new ODocumentGetHandler(),
 												new ODocumentSetHandler(),
 												new LookupMethodHandler(),
-												new QueryMethodHandler<ODocumentWrapper>(ODocumentWrapper::getDocument)
+												new ExecuteSQLMethodHandler<ODocumentWrapper>(ODocumentWrapper::getDocument)
 											)
 										);
 	

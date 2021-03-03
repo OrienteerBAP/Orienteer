@@ -22,6 +22,7 @@ import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.IMethodHandler;
 import org.orienteer.core.dao.IODocumentWrapper;
 
+import com.orientechnologies.orient.core.command.OCommandRequest;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -101,10 +102,19 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		return orid.isPersistent()?orid:doc;
 	}
 	
-	protected static Object queryDB(OQuery<ODocument> query, Map<String, Object> args, Method method) {
-		if(Collection.class.isAssignableFrom(method.getReturnType())) 
-			return prepareForJava(query.run(args), method.getReturnType(), method.getGenericReturnType());
-		else return prepareForJava(query.runFirst(args), method.getReturnType());
+	protected static Object executeRequest(OCommandRequest request, Map<String, Object> args, Method method) {
+		if(request instanceof OQuery) {
+			OQuery<ODocument> query = (OQuery<ODocument>) request;
+			if(Collection.class.isAssignableFrom(method.getReturnType())) 
+				return prepareForJava(query.run(args), method.getReturnType(), method.getGenericReturnType());
+			else return prepareForJava(query.runFirst(args), method.getReturnType());
+		} else {
+			Object response = request.execute(args);
+			if(response instanceof Iterable) 
+				return prepareForJava((Iterable<ODocument>)response, method.getReturnType(), method.getGenericReturnType());
+			else 
+				return prepareForJava(response, method);
+		}
 	}
 	
 	public static Class<?> typeToRequiredClass(Type type, Class<?> parentClass) {
@@ -124,22 +134,15 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		if(result==null) return null;
 		Class<?> requiredClass = wrap(method.getReturnType());
 		Type genericType = method.getGenericReturnType();
-		Class<?> requiredSubType = typeToRequiredClass(genericType, requiredClass);
-		if(result instanceof Collection) {
-			Iterator<?> it = ((Collection<?>)result).iterator(); 
+		if(result instanceof Iterable) {
+			Iterator<?> it = ((Iterable<?>)result).iterator(); 
 			if(!it.hasNext()) return onRealClass(requiredClass).create().get();
 			Object probe;
 			do {
 				probe = it.next();
 			} while(it.hasNext() && probe == null);
 			if(probe instanceof ODocument) {
-				List<ODocument> list;
-				if(result instanceof List) list = (List<ODocument>)result;
-				else {
-					list = new ArrayList<>();
-					list.addAll(((Collection<ODocument>)result));
-				}
-				return prepareForJava(list, requiredClass, genericType);
+				return prepareForJava((Iterable<ODocument>)result, requiredClass, genericType);
 			} else if(Collection.class.isAssignableFrom(requiredClass)) {
 				Reflect collection = onRealClass(requiredClass).create();
 				collection.call("addAll", result);
@@ -166,11 +169,11 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
 	}
 	
-	protected static Object prepareForJava(List<ODocument> resultSet, Class<?> requiredClass, Type genericType) {
+	protected static Object prepareForJava(Iterable<ODocument> resultSet, Class<?> requiredClass, Type genericType) {
 		if(resultSet==null) return null;
 		Class<?> requiredSubType = typeToRequiredClass(genericType, requiredClass);
 		
-		List<?> ret;
+		Iterable<?> ret;
 		if(requiredSubType.isAssignableFrom(ODocument.class)) {
 			ret = resultSet;
 		}
