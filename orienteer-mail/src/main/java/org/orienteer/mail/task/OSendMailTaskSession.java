@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import static org.orienteer.core.util.CommonUtils.mapIdentifiables;
 
 /**
- * Task session which prepared during application lifecycle and then used in {@link OSendMailTask} for send mails
+ * Task session which prepared during application lifecycle and then used in {@link IOSendMailTask} for send mails
  */
 public class OSendMailTaskSession extends OTaskSession {
 

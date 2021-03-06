@@ -6,10 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.tasks.ITaskSession;
 import org.orienteer.core.tasks.ITaskSession.Status;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
-import org.orienteer.core.tasks.TestTask;
-import org.orienteer.core.tasks.console.OConsoleTask;
+import org.orienteer.core.tasks.ITestTask;
+import org.orienteer.core.tasks.console.IOConsoleTask;
 import org.orienteer.junit.OrienteerTestRunner;
 import static org.junit.Assert.*;
 
@@ -86,15 +87,13 @@ public class OTasksTest {
 		assertFalse(db.isClosed());
 		db.commit();
 
-		TestTask.init(db);
+		ITestTask.init(db);
 		
 		try{
-			ODocument taskDocument = new ODocument(TestTask.TASK_CLASS);
-			taskDocument.field(OTask.Field.AUTODELETE_SESSIONS.fieldName(),false);
-			taskDocument.save();
-			db.commit();
+			ITestTask task = DAO.create(ITestTask.class);
+			task.setAutodeleteSessions(false);
+			task.save();
 			
-			OTask task = OTask.makeFromODocument(taskDocument);
 			OTaskSessionRuntime taskSession = task.startNewSession();
 			
 			ODocument taskSessionDoc = taskSession.getOTaskSessionPersisted().getDocument();
@@ -103,16 +102,16 @@ public class OTasksTest {
 			assertEquals(ITaskSession.Status.FINISHED,taskSession.getStatus());
 			assertNotNull(taskSessionDoc.field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
 			assertNotNull(taskSessionDoc.field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
-			assertEquals(TestTask.PROGRESS, (Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS.fieldName()));
-			assertEquals(TestTask.PROGRESS_CURRENT,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
-			assertEquals(TestTask.PROGRESS_FINAL,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_FINAL.fieldName()));
+			assertEquals(ITestTask.PROGRESS, (Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS.fieldName()));
+			assertEquals(ITestTask.PROGRESS_CURRENT,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
+			assertEquals(ITestTask.PROGRESS_FINAL,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_FINAL.fieldName()));
 			assertEquals(false,taskSessionDoc.field(ITaskSession.Field.IS_STOPPABLE.fieldName()));
 			assertEquals(false,taskSessionDoc.field(ITaskSession.Field.DELETE_ON_FINISH.fieldName()));
 			assertNull(taskSessionDoc.field(ITaskSession.Field.ERROR_TYPE.fieldName()));
 			assertNull(taskSessionDoc.field(ITaskSession.Field.ERROR.fieldName()));
 		} finally
 		{
-			TestTask.close(db);
+			ITestTask.close(db);
 		}
 		OrientDbWebSession.get().signOut();
 	}
@@ -126,19 +125,15 @@ public class OTasksTest {
 		db.commit();
 		try
 		{
-			ODocument taskDocument = new ODocument(OConsoleTask.TASK_CLASS);
-			taskDocument.field(OTask.Field.AUTODELETE_SESSIONS.fieldName(),false);
-			taskDocument.field(OConsoleTask.Field.INPUT.fieldName(),CONSOLE_TEST_COMMAND);
-			taskDocument.save();
-			db.commit();
-			OTask task = OTask.makeFromODocument(taskDocument);
-	
-			ODocument taskDocumentAD = new ODocument(OConsoleTask.TASK_CLASS);
-			taskDocumentAD.field(OTask.Field.AUTODELETE_SESSIONS.fieldName(),true);
-			taskDocumentAD.field(OConsoleTask.Field.INPUT.fieldName(),CONSOLE_TEST_COMMAND);
-			taskDocumentAD.save();
-			db.commit();
-			OTask taskAD = OTask.makeFromODocument(taskDocumentAD);
+			IOConsoleTask task = DAO.create(IOConsoleTask.class);
+			task.setAutodeleteSessions(false);
+			task.setInput(CONSOLE_TEST_COMMAND);
+			task.save();
+
+			IOConsoleTask taskAD = DAO.create(IOConsoleTask.class);
+			task.setAutodeleteSessions(true);
+			task.setInput(CONSOLE_TEST_COMMAND);
+			task.save();
 			
 			OTaskSessionRuntime taskSession = task.startNewSession();
 			OTaskSessionRuntime taskSessionAD = taskAD.startNewSession();

@@ -3,7 +3,7 @@ package org.orienteer.mail.task;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 
 /**
- * Runtime task session for {@link OSendMailTask}
+ * Runtime task session for {@link IOSendMailTask}
  * Overrides {@link OTaskSessionRuntime#getOTaskSessionPersisted()} for return {@link OSendMailTaskSession}
  */
 public class OSendMailTaskSessionRuntime extends OTaskSessionRuntime {

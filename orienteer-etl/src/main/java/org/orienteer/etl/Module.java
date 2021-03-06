@@ -4,6 +4,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.etl.component.IOETLConfig;
 import org.orienteer.etl.tasks.OETLTaskSession;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
@@ -42,9 +43,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	public void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass("OETLConfig", "OTask")
-			.oProperty("config", OType.STRING).assignVisualization("javascript");
+		OSchemaHelper.bind(db).describeAndInstallSchema(IOETLConfig.class);
 		
 		OETLTaskSession.onInstallModule(app, db);
 	}

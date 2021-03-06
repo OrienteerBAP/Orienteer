@@ -5,12 +5,13 @@ import org.apache.camel.ServiceStatus;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.model.IWrapModel;
-import org.orienteer.camel.component.OIntegrationConfig;
+import org.orienteer.camel.component.IOIntegrationConfig;
+import org.orienteer.core.dao.DAO;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 
 /**
- * Behavior for {@link OIntegrationConfig#stop(org.orienteer.core.method.IMethodContext)} OMethod
+ * Behavior for {@link IOIntegrationConfig#stop(org.orienteer.core.method.IMethodContext)} OMethod
  *
  */
 public class OIntegrationConfigStopBehavior extends Behavior{
@@ -27,7 +28,7 @@ public class OIntegrationConfigStopBehavior extends Behavior{
 				docModel = (ODocumentModel) ((IWrapModel<?>) component.getDefaultModel()).getWrappedModel();
 			}
 			if (docModel!=null && docModel.getObject()!=null){
-				OIntegrationConfig config = new OIntegrationConfig(docModel.getObject());
+				IOIntegrationConfig config = DAO.provide(IOIntegrationConfig.class, docModel.getObject());
 				CamelContext context = config.getOrMakeContext(component);
 				ServiceStatus status = context.getStatus();
 				if (status.isStopped()){

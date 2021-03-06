@@ -168,7 +168,7 @@ public class OTaskSessionRuntime implements ITaskSession {
 		return this;
 	}
 
-	public ITaskSession setOTask(OTask oTask) {
+	public ITaskSession setOTask(IOTask oTask) {
 		getOTaskSessionPersisted().setField( Field.TASK_LINK.fieldName(),oTask.getDocument().getIdentity());
 		return null;
 	}

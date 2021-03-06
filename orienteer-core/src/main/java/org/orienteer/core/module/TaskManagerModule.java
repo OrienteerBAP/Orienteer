@@ -2,8 +2,9 @@ package org.orienteer.core.module;
 
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.tasks.ITaskSession;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
 
@@ -29,18 +30,11 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 
 		
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oAbstractClass(OTask.TASK_CLASS)
-			.oProperty(OTask.Field.NAME.fieldName(),OType.STRING,10).markAsDocumentName()
-			.oProperty(OTask.Field.DESCRIPTION.fieldName(),OType.STRING,20)
-			.oProperty(OTask.Field.AUTODELETE_SESSIONS.fieldName(),OType.BOOLEAN,30)
-			.oProperty(OTask.Field.SESSIONS.fieldName(),OType.LINKLIST,40)
-			.updateCustomAttribute(CustomAttribute.HIDDEN, true);//avoid crosslinking //.linkedClass(OTask.TASK_CLASS);
-		OTask.TASK_JAVA_CLASS_ATTRIBUTE.setValue(helper.getOClass(), OTask.class.getName());
 		
 		helper.oClass(OTaskSessionRuntime.TASK_SESSION_CLASS)
 			.oProperty(ITaskSession.Field.THREAD_NAME.fieldName(),OType.STRING,10).markAsDocumentName()
 			.oProperty(ITaskSession.Field.STATUS.fieldName(),OType.STRING,20)
-			.oProperty(ITaskSession.Field.TASK_LINK.fieldName(),OType.LINK,30).linkedClass(OTask.TASK_CLASS)
+			.oProperty(ITaskSession.Field.TASK_LINK.fieldName(),OType.LINK,30)
 			.oProperty(ITaskSession.Field.START_TIMESTAMP.fieldName(),OType.DATETIME,40)
 			.oProperty(ITaskSession.Field.FINISH_TIMESTAMP.fieldName(),OType.DATETIME,50)
 			.oProperty(ITaskSession.Field.PROGRESS.fieldName(),OType.DOUBLE,60)
@@ -50,7 +44,10 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 			.oProperty(ITaskSession.Field.DELETE_ON_FINISH.fieldName(),OType.BOOLEAN,100)
 			.oProperty(ITaskSession.Field.ERROR_TYPE.fieldName(),OType.INTEGER,110)
 			.oProperty(ITaskSession.Field.ERROR.fieldName(),OType.STRING,120);
-		helper.setupRelationship(OTask.TASK_CLASS, OTask.Field.SESSIONS.fieldName(), OTaskSessionRuntime.TASK_SESSION_CLASS, ITaskSession.Field.TASK_LINK.fieldName());
+		
+		DAO.describe(helper, IOTask.class);
+		
+		helper.setupRelationship(IOTask.CLASS_NAME, "sessions", OTaskSessionRuntime.TASK_SESSION_CLASS, ITaskSession.Field.TASK_LINK.fieldName());
 		return null;
 	}
 	

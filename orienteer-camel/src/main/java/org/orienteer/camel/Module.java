@@ -3,14 +3,14 @@ package org.orienteer.camel;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.camel.CamelContext;
-import org.orienteer.camel.component.OIntegrationConfig;
+import org.orienteer.camel.component.IOIntegrationConfig;
 import org.orienteer.camel.tasks.OCamelTaskSession;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
@@ -48,7 +48,7 @@ public class Module extends AbstractOrienteerModule{
 	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		
-		app.setMetaData(OIntegrationConfig.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
+		app.setMetaData(IOIntegrationConfig.INTEGRATION_SESSIONS_KEY, new ConcurrentHashMap<String,CamelContext>());
 		app.mountPackage("org.orienteer.camel.web");
 		//app.registerWidgets("org.orienteer.camel.widget");
 		OMethodsManager.get().addModule(Module.class);
@@ -59,8 +59,7 @@ public class Module extends AbstractOrienteerModule{
 	
 	private void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.oClass(OIntegrationConfig.TASK_CLASS,OTask.TASK_CLASS)
-			.oProperty("script", OType.STRING, 15).assignVisualization(UIVisualizersRegistry.VISUALIZER_CODE);
+		helper.describeAndInstallSchema(IOIntegrationConfig.class);
 		OCamelTaskSession.onInstallModule(app, db);
 	}
 	

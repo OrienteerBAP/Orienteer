@@ -1,5 +1,6 @@
 package org.orienteer.camel.component;
 
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ServiceStatus;
@@ -15,12 +16,16 @@ import org.orienteer.camel.tasks.CamelEventHandler;
 import org.orienteer.camel.tasks.OCamelTaskSessionCallback;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +42,22 @@ import java.util.Map;
  * Wrapper for OIntegrationConfig ODocuments
  *
  */
-
-public class OIntegrationConfig extends OTask {
-    private static final Logger LOG = LoggerFactory.getLogger(OIntegrationConfig.class);
-	private static final long serialVersionUID = 1L;
-	public static final String TASK_CLASS = "OIntegrationConfig";
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = IOIntegrationConfig.CLASS_NAME)
+public interface IOIntegrationConfig extends IOTask {
+    public static final Logger LOG = LoggerFactory.getLogger(IOIntegrationConfig.class);
+	public static final String CLASS_NAME = "OIntegrationConfig";
 	
 	public static final MetaDataKey<Map<String,CamelContext>> INTEGRATION_SESSIONS_KEY = new MetaDataKey<Map<String,CamelContext>>()
 	{
 		private static final long serialVersionUID = 1L;
 	};
-/////////////////////////////////////////////////////////////////////////////////////////////////////	
+	
+	@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_CODE)
+	public String getScript();
+	public void setScript(String value);
+	
+	
 	@OMethod(
 			order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
 			filters={
@@ -57,7 +67,7 @@ public class OIntegrationConfig extends OTask {
 
 			}
 	)
-	public void start(IMethodContext data){
+	public default void start(IMethodContext data){
 		final CamelContext context = getOrMakeContextByRid(getDocument().getIdentity().toString(),data.getCurrentWidget());
 		new Thread(new Runnable() {
 			@Override
@@ -68,7 +78,7 @@ public class OIntegrationConfig extends OTask {
 						//target.add(CamelWidget.this.form);
 					}else if (!context.getStatus().isStarted()){
 						clearContext(context);
-						String script = getDocument().field("script");
+						String script = getScript();
 						RoutesDefinition routes = context.loadRoutesDefinition(new ByteArrayInputStream( script.getBytes()));
 						context.addRouteDefinitions(routes.getRoutes());
 						context.start();
@@ -89,7 +99,7 @@ public class OIntegrationConfig extends OTask {
 			},
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
-	public void stop(IMethodContext data){
+	public default void stop(IMethodContext data){
 
 		CamelContext context = getOrMakeContextByRid(getDocument().getIdentity().toString(),data.getCurrentWidget());
 		try {
@@ -108,7 +118,7 @@ public class OIntegrationConfig extends OTask {
 					},
 			behaviors={OIntegrationConfigStopBehavior.class}
 	)
-	public void suspend(IMethodContext data){
+	public default void suspend(IMethodContext data){
 			final CamelContext context = getOrMakeContext(data.getCurrentWidget());
 			new Thread(new Runnable() {
 				@Override
@@ -127,12 +137,8 @@ public class OIntegrationConfig extends OTask {
 			}).start();			
 			waitingRefresh(context);
 	}
-/////////////////////////////////////////////////////////////////////////////////////////////////////	
-	public OIntegrationConfig(ODocument doc) {
-		super(doc);
-	}
 
-	public CamelContext getOrMakeContextByRid(String rid,Component component){
+	public default CamelContext getOrMakeContextByRid(String rid,Component component){
 		CamelContext context;
 		Map<String,CamelContext> contextMap = Application.get().getMetaData(INTEGRATION_SESSIONS_KEY);
 		if (contextMap.containsKey(rid)){
@@ -157,19 +163,19 @@ public class OIntegrationConfig extends OTask {
 		return context;
 	}
 	
-	public void clearContext(CamelContext context) throws Exception{
+	public static void clearContext(CamelContext context) throws Exception{
 		List<RouteDefinition> definitions = context.getRouteDefinitions();
 		if (!definitions.isEmpty()){
 			context.removeRouteDefinitions(new ArrayList<RouteDefinition>(definitions));
 		}
 	}
 	
-	public CamelContext getOrMakeContext(Component component){
+	public default CamelContext getOrMakeContext(Component component){
 		return getOrMakeContextByRid(getDocument().getIdentity().toString(),component);
 	}
 	
 	// wait for context status refresh
-	private void waitingRefresh(CamelContext context){
+	static void waitingRefresh(CamelContext context){
 		ServiceStatus oldStatus = context.getStatus();
 		try {
 			for(int i =0 ;i<10;i++){
@@ -183,8 +189,9 @@ public class OIntegrationConfig extends OTask {
 		}
 	}
 
+	//TODO: Refactor: it's strange that for default method handler is needed
 	@Override
-	public OTaskSessionRuntime startNewSession() {
+	public default OTaskSessionRuntime startNewSession() {
 		throw new RuntimeException("Cannot start new Camel session outside CamelEventHandler");
 	}
 

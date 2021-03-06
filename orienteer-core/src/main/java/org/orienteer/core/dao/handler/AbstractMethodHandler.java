@@ -134,7 +134,8 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		if(result==null) return null;
 		Class<?> requiredClass = wrap(method.getReturnType());
 		Type genericType = method.getGenericReturnType();
-		if(result instanceof Iterable) {
+		if(result instanceof OIdentifiable) return prepareForJava(((OIdentifiable)result).getRecord(), requiredClass);
+		else if(result instanceof Iterable) {
 			Iterator<?> it = ((Iterable<?>)result).iterator(); 
 			if(!it.hasNext()) return onRealClass(requiredClass).create().get();
 			Object probe;
@@ -165,7 +166,6 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 			}
 			else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
 		} else if(requiredClass.isInstance(result)) return result;
-		else if(result instanceof OIdentifiable) return prepareForJava(((OIdentifiable)result).getRecord(), requiredClass);
 		else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
 	}
 	

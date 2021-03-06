@@ -4,7 +4,7 @@ import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.tasks.ITaskSession;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
-import org.orienteer.etl.component.OETLConfig;
+import org.orienteer.etl.component.IOETLConfig;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
@@ -12,7 +12,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * 
- * Task session for {@link OETLConfig}
+ * Task session for {@link IOETLConfig}
  *
  */
 public class OETLTaskSession extends OTaskSessionRuntime{

@@ -10,15 +10,15 @@ import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.widget.document.CalculatedDocumentsWidget;
 import org.orienteer.core.tasks.ITaskSession;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
 /**
- * Widget for {@link OTask}
+ * Widget for {@link IOTask}
  *
  */
-@Widget(domain="document",selector=OTask.TASK_CLASS, id=OTaskWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
+@Widget(domain="document",selector=IOTask.CLASS_NAME, id=OTaskWidget.WIDGET_TYPE_ID, order=20, autoEnable=true)
 public class OTaskWidget extends CalculatedDocumentsWidget{
 
 	public static final String WIDGET_TYPE_ID = "task";

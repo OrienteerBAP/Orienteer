@@ -1,19 +1,23 @@
 package org.orienteer.etl.component;
 
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.etl.OETLProcessor;
-import com.orientechnologies.orient.etl.OETLProcessorConfigurator;
 
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.property.DisplayMode;
+import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAOField;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
 import org.orienteer.core.web.ODocumentPage;
@@ -25,13 +29,15 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
  * OrientDB ETL config object
  *
  */
-public class OETLConfig extends OTask {
-	private static final long serialVersionUID = 1L;
-	private static final String ETL_CONFIG_FIELD="config";
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = IOETLConfig.CLASS_NAME)
+public interface IOETLConfig extends IOTask {
+	
+	public static final String CLASS_NAME = "OETLConfig";
 
-	public OETLConfig(ODocument iDocument) {
-		super(iDocument);
-	}
+	@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_CODE)
+	public String getConfig();
+	public void setConfig(String value);
 	
 	@OMethod(
 		order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
@@ -42,7 +48,7 @@ public class OETLConfig extends OTask {
 //					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE|DATA_TABLE"),
 		}
 	)
-	public void run(IMethodContext data){
+	public default void run(IMethodContext data){
 		OTaskSessionRuntime newSession = startNewSession();
 		AbstractWidgetDisplayModeAwarePage<ODocument> page = new ODocumentPage(new ODocumentModel(newSession.getOTaskSessionPersisted().getDocument())).setModeObject(DisplayMode.VIEW);
 		
@@ -50,13 +56,13 @@ public class OETLConfig extends OTask {
 	}
 
 	@Override
-	public OTaskSessionRuntime startNewSession() {
+	public default OTaskSessionRuntime startNewSession() {
 		
 		final OETLTaskSession session = new OETLTaskSession();
 		session.start();
 
 		try {
-			final String configuration = getDocument().field(ETL_CONFIG_FIELD);
+			final String configuration = getConfig();
 			final OETLProcessor processor = new OrienteerETLProcessorConfigurator()
 													.parseConfigRecord(session,configuration);
 //			final OrienteerETLProcessorConfigurator processor = OrienteerETLProcessorConfigurator.parseConfigRecord(session,configuration);
@@ -75,7 +81,7 @@ public class OETLConfig extends OTask {
 				}
 			});
 
-			session.setDeleteOnFinish((Boolean) document.field(OTask.Field.AUTODELETE_SESSIONS.fieldName()));
+			session.setDeleteOnFinish(isAutodeleteSessions());
 			session.setOTask(this);
 
 			thread.start();
@@ -89,7 +95,7 @@ public class OETLConfig extends OTask {
 		return session;
 	}
 
-	private void printCause(Throwable e,OETLTaskSession session){
+	static void printCause(Throwable e,OETLTaskSession session){
 		if (!Strings.isEmpty(e.getMessage())){
 			session.appendOut(e.getMessage());
 		}

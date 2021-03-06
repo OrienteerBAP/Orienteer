@@ -5,9 +5,9 @@ import java.util.EventObject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.management.event.ExchangeSentEvent;
 import org.apache.camel.support.EventNotifierSupport;
-import org.orienteer.camel.component.OIntegrationConfig;
+import org.orienteer.camel.component.IOIntegrationConfig;
 import org.orienteer.core.tasks.ITaskSessionCallback;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.IOTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +20,10 @@ public class CamelEventHandler extends EventNotifierSupport{
 	private static final Logger LOG = LoggerFactory.getLogger(CamelEventHandler.class);
 	private ITaskSessionCallback callback;
 	private volatile OCamelTaskSession taskSession;
-	private OIntegrationConfig config;
+	private IOIntegrationConfig config;
 	private CamelContext context;
 	
-	public CamelEventHandler(ITaskSessionCallback callback,OIntegrationConfig config,CamelContext context) {
+	public CamelEventHandler(ITaskSessionCallback callback,IOIntegrationConfig config,CamelContext context) {
 		this.callback = callback;
 		this.config = config;
 		this.context = context;
@@ -61,8 +61,7 @@ public class CamelEventHandler extends EventNotifierSupport{
 			taskSession = new OCamelTaskSession();
 			taskSession.setOTask(config);
 			taskSession.setCallback(callback);
-			Object deleteOnFinish = config.getDocument().field(OTask.Field.AUTODELETE_SESSIONS.fieldName());
-			taskSession.setDeleteOnFinish(deleteOnFinish!=null?(Boolean)deleteOnFinish:false);
+			taskSession.setDeleteOnFinish(config.isAutodeleteSessions());
 			taskSession.setConfig(config.getDocument().getIdentity().toString());
 			taskSession.setFinalProgress(context.getRoutes().size());
 			taskSession.start();

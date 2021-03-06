@@ -5,36 +5,34 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
+import org.orienteer.core.OClassDomain;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.ITaskSessionCallback;
-import org.orienteer.core.tasks.OTask;
+import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
+
+import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * OTask class for system console commands
  *
  */
-public class OConsoleTask extends OTask {
-	private static final long serialVersionUID = 1L;
-	public static final String TASK_CLASS = "OConsoleTask";
-	/**
-	 * data fields
-	 */
-	public enum Field{
-		INPUT("input");
-		
-		private String fieldName;
-		public String fieldName(){ return fieldName;}
-		private Field(String fieldName){	this.fieldName = fieldName;}
-	}
-	///////////////////////////////////////////////////////////////////////////////////
-	//OMethods
+@ProvidedBy(ODocumentWrapperProvider.class)
+@DAOOClass(value = IOConsoleTask.CLASS_NAME)
+public interface IOConsoleTask extends IOTask {
+	public static final String CLASS_NAME = "OConsoleTask";
+	
+	public String getInput();
+	public IOConsoleTask setInput(String input);
+
 	@OMethod(
 			icon = FAIconType.play, bootstrap=BootstrapType.SUCCESS,titleKey="task.command.start",
 			filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
@@ -42,21 +40,16 @@ public class OConsoleTask extends OTask {
 			},
 			behaviors={}
 		)
-	public void startNewSession( IMethodContext data){
+	public default void startNewSession( IMethodContext data){
 		startNewSession();
-	}
-	///////////////////////////////////////////////////////////////////////////////////
-	
-	public OConsoleTask(ODocument oTask) {
-		super(oTask);
 	}
 
 	@Override
-	public OTaskSessionRuntime startNewSession() {
+	public default OTaskSessionRuntime startNewSession() {
 		final OConsoleTaskSession otaskSession = new OConsoleTaskSession();
-		final String input = (String) getField(Field.INPUT); 
+		final String input = getInput();
 		otaskSession.setInput(input);
-		otaskSession.setDeleteOnFinish((boolean) getField(OTask.Field.AUTODELETE_SESSIONS));
+		otaskSession.setDeleteOnFinish(isAutodeleteSessions());
 		otaskSession.setOTask(this);
 		try{
 			Thread innerThread = new Thread(new Runnable(){
@@ -105,10 +98,5 @@ public class OConsoleTask extends OTask {
 		}
 		return otaskSession;		
 	}
-	//////////////////////////////////////////////////////////////////////
-	protected Object getField(Field field) {
-		return getDocument().field(field.fieldName());
-	}
-	//////////////////////////////////////////////////////////////////////
 	
 }
