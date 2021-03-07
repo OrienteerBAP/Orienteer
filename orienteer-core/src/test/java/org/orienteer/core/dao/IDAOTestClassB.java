@@ -8,4 +8,6 @@ public interface IDAOTestClassB {
 	public String getAlias();
 	
 	public IDAOTestClassA getLinkToA();
+	
+	public IDAOTestParametrized<IDAOTestClassA> getParameterizedLink();
 }

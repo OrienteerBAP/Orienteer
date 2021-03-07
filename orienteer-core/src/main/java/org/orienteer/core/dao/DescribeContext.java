@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 import org.apache.wicket.util.collections.MultiMap;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.util.OSchemaHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +96,13 @@ class DescribeContext {
 		String ret = getOClass(clazz);
 		if(Strings.isEmpty(ret)) ret = getOClassFromStack(clazz);
 		return !Strings.isEmpty(ret) ? ret : supplier.get();
+	}
+	
+	public String resolveOrDescribeOClass(OSchemaHelper helper, Class<?> clazz) {
+		if(clazz==null) return null;
+		String ret = getOClass(clazz);
+		if(Strings.isEmpty(ret)) ret = getOClassFromStack(clazz);
+		return !Strings.isEmpty(ret) ? ret : DAO.describe(helper, clazz, this);
 	}
 	
 	public boolean isPropertyCreationScheduled(String propertyName) {

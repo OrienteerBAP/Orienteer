@@ -199,7 +199,7 @@ public final class DAO {
 		return oClassNames;
 	}
 	
-	private static String describe(OSchemaHelper helper, Class<?> clazz, DescribeContext ctx) {
+	static String describe(OSchemaHelper helper, Class<?> clazz, DescribeContext ctx) {
 		if(clazz==null || !clazz.isInterface()) return null;	
 		DAOOClass daooClass = clazz.getAnnotation(DAOOClass.class);
 		if(daooClass==null) return null;
@@ -250,8 +250,10 @@ public final class DAO {
 			final int order = daoField!=null && daoField.order()>=0
 									?daoField.order()
 									:(orderOffset+10*currentOrder++);
-			String linkedClassCandidate = ctx.resolveOClass(subJavaType, () -> describe(helper, subJavaType, ctx));
-			if(linkedClassCandidate==null) linkedClassCandidate = ctx.resolveOClass(javaType, () -> describe(helper, javaType, ctx));
+			String linkedClassCandidate = ctx.resolveOrDescribeOClass(helper, javaType);
+			if(linkedClassCandidate==null) linkedClassCandidate = ctx.resolveOrDescribeOClass(helper, subJavaType);
+			/*String linkedClassCandidate = ctx.resolveOrDescribeOClass(helper, subJavaType);
+			if(linkedClassCandidate==null) linkedClassCandidate = ctx.resolveOrDescribeOClass(helper, javaType);*/
 			if(linkedClassCandidate==null && daoField!=null && !Strings.isEmpty(daoField.linkedClass())) linkedClassCandidate = daoField.linkedClass();
 			if(oTypeCandidate==null && linkedClassCandidate!=null) {
 				oTypeCandidate = OType.EMBEDDED;

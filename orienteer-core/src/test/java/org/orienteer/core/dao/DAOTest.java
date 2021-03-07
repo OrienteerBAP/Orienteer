@@ -273,6 +273,7 @@ public class DAOTest {
 			OClass daoTestClassRoot = schema.getClass("DAOTestClassRoot");
 			OClass daoTestClassA = schema.getClass("DAOTestClassA");
 			OClass daoTestClassB = schema.getClass("DAOTestClassB");
+			OClass daoTestParametrized = schema.getClass("DAOTestParametrized");
 			
 			assertEquals(IDAOTestClassRoot.class.getName(), CustomAttribute.DAO_CLASS.getValue(daoTestClassRoot));
 			assertEquals(IDAOTestClassA.class.getName(), CustomAttribute.DAO_CLASS.getValue(daoTestClassA));
@@ -296,6 +297,7 @@ public class DAOTest {
 			
 			assertProperty(daoTestClassB, "alias", OType.STRING, 0);
 			assertProperty(daoTestClassB, "linkToA", OType.LINK, 10, daoTestClassA, null);
+			assertProperty(daoTestClassB, "parameterizedLink", OType.LINK, 20, daoTestParametrized, null);
 		} finally {
 			if(schema.existsClass("DAOTestClassA")) schema.dropClass("DAOTestClassA");
 			if(schema.existsClass("DAOTestClassB")) schema.dropClass("DAOTestClassB");
