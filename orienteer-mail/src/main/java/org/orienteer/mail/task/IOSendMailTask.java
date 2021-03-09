@@ -9,6 +9,7 @@ import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.tasks.IOTask;
+import org.orienteer.core.tasks.IOTaskSessionPersisted;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.mail.service.IOMailService;
@@ -21,11 +22,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
- * Task which sends list of {@link OPreparedMail} from prepared {@link OSendMailTaskSession}.
+ * Task which sends list of {@link OPreparedMail} from prepared {@link IOSendMailTaskSession}.
  * Can be used for prepare mails during application lifecycle and send batch of mails in one place via this task
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOSendMailTask.CLASS_NAME)
+@DAOOClass(value = IOSendMailTask.CLASS_NAME, orderOffset = 50)
 public interface IOSendMailTask extends IOTask {
 
     public static final Logger LOG = LoggerFactory.getLogger(IOSendMailTask.class);
@@ -33,11 +34,11 @@ public interface IOSendMailTask extends IOTask {
     public static final String CLASS_NAME = "OSendMailTask";
 
     @Override
-    public default OTaskSessionRuntime startNewSession() {
-    	throw new IllegalStateException("You should precreate "+OSendMailTaskSession.class.getSimpleName()+" first");
+    public default OTaskSessionRuntime<IOSendMailTaskSession> startNewSession() {
+    	throw new IllegalStateException("You should precreate "+IOSendMailTaskSession.class.getSimpleName()+" first");
     }
-    public default OTaskSessionRuntime startNewSession(OSendMailTaskSession session) {
-        OSendMailTaskSessionRuntime runtime = new OSendMailTaskSessionRuntime(session);
+    public default OTaskSessionRuntime<IOSendMailTaskSession> startNewSession(IOSendMailTaskSession session) {
+    	OTaskSessionRuntime<IOSendMailTaskSession> runtime = new OTaskSessionRuntime<>(IOSendMailTaskSession.class);
         runtime.setDeleteOnFinish(isAutodeleteSessions());
         runtime.setOTask(this);
         runtime.start().setProgress(0);
@@ -46,7 +47,7 @@ public interface IOSendMailTask extends IOTask {
         return runtime;
     }
 
-    public default void performTask(OSendMailTaskSessionRuntime runtime) {
+    public default void performTask(OTaskSessionRuntime<IOSendMailTaskSession> runtime) {
         OrienteerWebSession session = OrienteerWebSession.get();
         OrienteerWebApplication app = OrienteerWebApplication.get();
         RequestCycle requestCycle = RequestCycle.get();
@@ -68,7 +69,7 @@ public interface IOSendMailTask extends IOTask {
         }).start();
     }
 
-    static void sendMails(OSendMailTaskSessionRuntime runtime) throws UnsupportedEncodingException, MessagingException {
+    static void sendMails(OTaskSessionRuntime<IOSendMailTaskSession> runtime) throws UnsupportedEncodingException, MessagingException {
         List<OPreparedMail> mails = runtime.getOTaskSessionPersisted().getMails();
         IOMailService service = OrienteerWebApplication.lookupApplication().getServiceInstance(IOMailService.class);
         final int allSize = mails.size();

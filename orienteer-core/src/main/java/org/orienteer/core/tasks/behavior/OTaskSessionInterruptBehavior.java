@@ -3,12 +3,13 @@ package org.orienteer.core.tasks.behavior;
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.model.IWrapModel;
-import org.orienteer.core.tasks.OTaskSession;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.tasks.IOTaskSessionPersisted;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 /**
  * 
- * Behavior for {@link OTaskSession} interrupt OMethod 
+ * Behavior for {@link IOTaskSessionPersisted} interrupt OMethod 
  *
  */
 public class OTaskSessionInterruptBehavior extends Behavior{
@@ -24,7 +25,7 @@ public class OTaskSessionInterruptBehavior extends Behavior{
 				docModel = (ODocumentModel) ((IWrapModel<?>) component.getDefaultModel()).getWrappedModel();
 			}
 			if (docModel!=null && docModel.getObject()!=null){
-				component.setEnabled(new OTaskSession(docModel.getObject()).isInterruptable());
+				component.setEnabled(DAO.provide(IOTaskSessionPersisted.class, docModel.getObject()).isInterruptable());
 			}
 	}
 

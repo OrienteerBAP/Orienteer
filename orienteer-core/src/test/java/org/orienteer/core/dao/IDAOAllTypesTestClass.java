@@ -5,6 +5,8 @@ import com.orientechnologies.orient.core.db.record.ridbag.ORidBag;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -205,4 +207,7 @@ public interface IDAOAllTypesTestClass {
 	@DAOField(type = OType.ANY)
 	public Object getAny();
 	public void setAny(Object val);
+	
+	public OrientPermission getEnum();
+	public void setEnum(OrientPermission value);
 }

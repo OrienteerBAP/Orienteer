@@ -3,21 +3,16 @@ package org.orienteer.camel;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.camel.CamelContext;
-import org.orienteer.camel.component.IOIntegrationConfig;
-import org.orienteer.camel.tasks.OCamelTaskSession;
+import org.orienteer.camel.tasks.IOIntegrationConfig;
 import org.orienteer.core.OrienteerWebApplication;
-import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
-import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.OCommandSQL;
-import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
  * {@link IOrienteerModule} for 'camel' module
@@ -25,7 +20,7 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 public class Module extends AbstractOrienteerModule{
 
 	protected Module() {
-		super("camel", 2);
+		super("camel", 3);
 	}
 	
 	@Override
@@ -41,6 +36,10 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
 		super.onUpdate(app, db, oldVersion, newVersion);
+		if(3>oldVersion && 3<=newVersion) {
+			OSchema schema = db.getMetadata().getSchema();
+			if(schema.getClass("OCamelTaskSession")!=null) schema.dropClass("OCamelTaskSession");
+		}
 		onInstall(app, db);
 	}
 	
@@ -60,7 +59,6 @@ public class Module extends AbstractOrienteerModule{
 	private void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 		helper.describeAndInstallSchema(IOIntegrationConfig.class);
-		OCamelTaskSession.onInstallModule(app, db);
 	}
 	
 	@Override

@@ -360,6 +360,8 @@ public class DAOTest {
 			assertProperty(oClass, "embeddedStringSet", OType.EMBEDDEDSET, 160, OType.STRING);
 			assertProperty(oClass, "embeddedStringList", OType.EMBEDDEDLIST, 140, OType.STRING);
 			assertProperty(oClass, "embeddedStringMap", OType.EMBEDDEDMAP, 180, OType.STRING);
+			
+			assertProperty(oClass, "enum", OType.STRING, 300);
 
 			assertProperty(oClass, "docs", OType.LINKLIST, 0, dummyClass, null);
 

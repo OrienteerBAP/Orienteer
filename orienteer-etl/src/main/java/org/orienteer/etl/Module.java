@@ -5,11 +5,11 @@ import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.etl.component.IOETLConfig;
-import org.orienteer.etl.tasks.OETLTaskSession;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
 /**
@@ -18,22 +18,28 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 public class Module extends AbstractOrienteerModule{
 
 	protected Module() {
-		super("orienteer-etl", 1);
+		super("orienteer-etl", 2);
 	}
 	
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
-		//Install data model
-		//Return null of default OModule is enough
+		OSchemaHelper.bind(db).describeAndInstallSchema(IOETLConfig.class);
 		return null;
+	}
+	
+	@Override
+	public void onUpdate(OrienteerWebApplication app, ODatabaseSession db, int oldVersion, int newVersion) {
+		if(2>oldVersion && 2<=newVersion) {
+			OSchema schema = db.getMetadata().getSchema();
+			if(schema.getClass("OETLTaskSession")!=null) schema.dropClass("OETLTaskSession");
+		}
 	}
 	
 	@Override
 	public void onInitialize(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInitialize(app, db);
 		app.mountPages("org.orienteer.etl.web");
-		makeSchema(app, db);
 	}
 	
 	@Override
@@ -42,9 +48,4 @@ public class Module extends AbstractOrienteerModule{
 		app.unmountPages("org.orienteer.etl.web");
 	}
 	
-	public void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
-		OSchemaHelper.bind(db).describeAndInstallSchema(IOETLConfig.class);
-		
-		OETLTaskSession.onInstallModule(app, db);
-	}
 }

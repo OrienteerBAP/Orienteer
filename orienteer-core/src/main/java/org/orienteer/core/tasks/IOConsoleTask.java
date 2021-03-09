@@ -1,4 +1,4 @@
-package org.orienteer.core.tasks.console;
+package org.orienteer.core.tasks;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import org.orienteer.core.OClassDomain;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.method.OMethod;
@@ -15,9 +16,6 @@ import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
-import org.orienteer.core.tasks.ITaskSessionCallback;
-import org.orienteer.core.tasks.IOTask;
-import org.orienteer.core.tasks.OTaskSessionRuntime;
 
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -26,36 +24,26 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOConsoleTask.CLASS_NAME)
-public interface IOConsoleTask extends IOTask {
+@DAOOClass(value = IOConsoleTask.CLASS_NAME, orderOffset = 50)
+public interface IOConsoleTask extends IOTask<IOTaskSessionPersisted> {
 	public static final String CLASS_NAME = "OConsoleTask";
 	
 	public String getInput();
 	public IOConsoleTask setInput(String input);
 
-	@OMethod(
-			icon = FAIconType.play, bootstrap=BootstrapType.SUCCESS,titleKey="task.command.start",
-			filters={@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
-					@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),		
-			},
-			behaviors={}
-		)
-	public default void startNewSession( IMethodContext data){
-		startNewSession();
-	}
-
 	@Override
-	public default OTaskSessionRuntime startNewSession() {
-		final OConsoleTaskSession otaskSession = new OConsoleTaskSession();
+	public default OTaskSessionRuntime<IOTaskSessionPersisted> startNewSession() {
+		final IOTaskSessionPersisted otaskSession1 = DAO.create(IOTaskSessionPersisted.class);
 		final String input = getInput();
-		otaskSession.setInput(input);
-		otaskSession.setDeleteOnFinish(isAutodeleteSessions());
-		otaskSession.setOTask(this);
+		otaskSession1.setDeleteOnFinish(isAutodeleteSessions());
+		otaskSession1.setTask(this);
+		otaskSession1.persist();
+		OTaskSessionRuntime<IOTaskSessionPersisted> runtime = new OTaskSessionRuntime<>(otaskSession1);
 		try{
 			Thread innerThread = new Thread(new Runnable(){
 				@Override
 				public void run() {
-					otaskSession.start();
+					runtime.start();
 					String charset =  Charset.defaultCharset().displayName();
 					if(System.getProperty("os.name").startsWith("Windows")){
 						if (Charset.isSupported("cp866")){
@@ -65,7 +53,7 @@ public interface IOConsoleTask extends IOTask {
 					try {
 						
 						final Process innerProcess = Runtime.getRuntime().exec(input);
-						otaskSession.setCallback(new ITaskSessionCallback() {
+						runtime.setCallback(new ITaskSessionCallback() {
 								
 								@Override
 								public void interrupt() throws Exception {
@@ -81,22 +69,22 @@ public interface IOConsoleTask extends IOTask {
 						BufferedReader reader =  new BufferedReader(new InputStreamReader(innerProcess.getInputStream(),charset));
 						String curOutString = "";
 							while ((curOutString = reader.readLine())!= null) {
-								otaskSession.incrementCurrentProgress();
-								otaskSession.appendOut(curOutString);
+								runtime.incrementCurrentProgress();
+								runtime.getOTaskSessionPersisted().appendOutput(curOutString).persist();
 							}
 					} catch (IOException e) {
-						otaskSession.appendOut(e.getMessage());
+						runtime.getOTaskSessionPersisted().appendOutput(e.getMessage()).persist();
 					}	
-					otaskSession.finish();
+					runtime.finish();
 				}
 				
 			});
 			innerThread.start();
 
 		} catch (Exception e) {
-			otaskSession.finish();
+			runtime.finish();
 		}
-		return otaskSession;		
+		return runtime.getOTaskSessionRuntime();	
 	}
 	
 }

@@ -18,10 +18,10 @@ import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.tasks.IOTask;
+import org.orienteer.core.tasks.IOTaskSessionPersisted;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.web.AbstractWidgetDisplayModeAwarePage;
 import org.orienteer.core.web.ODocumentPage;
-import org.orienteer.etl.tasks.OETLTaskSession;
 
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 /**
@@ -30,7 +30,7 @@ import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
  *
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOETLConfig.CLASS_NAME)
+@DAOOClass(value = IOETLConfig.CLASS_NAME, orderOffset = 50)
 public interface IOETLConfig extends IOTask {
 	
 	public static final String CLASS_NAME = "OETLConfig";
@@ -39,26 +39,10 @@ public interface IOETLConfig extends IOTask {
 	public String getConfig();
 	public void setConfig(String value);
 	
-	@OMethod(
-		order=10,bootstrap=BootstrapType.SUCCESS,icon = FAIconType.play,
-		permission="EXECUTE",
-		filters={
-				@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE"),
-				@OFilter(fClass = WidgetTypeFilter.class, fData = "parameters"),
-//					@OFilter(fClass = PlaceFilter.class, fData = "STRUCTURE_TABLE|DATA_TABLE"),
-		}
-	)
-	public default void run(IMethodContext data){
-		OTaskSessionRuntime newSession = startNewSession();
-		AbstractWidgetDisplayModeAwarePage<ODocument> page = new ODocumentPage(new ODocumentModel(newSession.getOTaskSessionPersisted().getDocument())).setModeObject(DisplayMode.VIEW);
-		
-		data.getCurrentWidget().setResponsePage(page);
-	}
-
 	@Override
 	public default OTaskSessionRuntime startNewSession() {
 		
-		final OETLTaskSession session = new OETLTaskSession();
+		final OTaskSessionRuntime<IOTaskSessionPersisted> session = OTaskSessionRuntime.simpleSession();
 		session.start();
 
 		try {
@@ -73,7 +57,7 @@ public interface IOETLConfig extends IOTask {
 					try {
 						processor.execute();
 					} catch (Exception e) {
-						session.appendOut("ETL Processor runtime error!");
+						session.getOTaskSessionPersisted().appendError("ETL Processor runtime error!");
 						printCause(e, session);
 					}finally{
 						session.finish();
@@ -86,7 +70,7 @@ public interface IOETLConfig extends IOTask {
 
 			thread.start();
 		} catch (Exception e) {
-			session.appendOut("ETL Processor execute error!");
+			session.getOTaskSessionPersisted().appendError("ETL Processor execute error!");
 			printCause(e, session);
 			session.finish();
 		}
@@ -95,9 +79,9 @@ public interface IOETLConfig extends IOTask {
 		return session;
 	}
 
-	static void printCause(Throwable e,OETLTaskSession session){
+	static void printCause(Throwable e,OTaskSessionRuntime<IOTaskSessionPersisted> session){
 		if (!Strings.isEmpty(e.getMessage())){
-			session.appendOut(e.getMessage());
+			session.getOTaskSessionPersisted().appendError(e.getMessage());
 		}
 		if (e.getCause()!=null){
 			printCause(e.getCause(), session);

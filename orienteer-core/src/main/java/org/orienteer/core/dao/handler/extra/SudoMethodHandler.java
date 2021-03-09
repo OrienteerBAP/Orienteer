@@ -28,7 +28,7 @@ public class SudoMethodHandler<T> implements IMethodHandler<T> {
 				try {
 					if(target instanceof ODocumentWrapper) {
 						ODocumentWrapper wrapper = (ODocumentWrapper) target;
-						if(wrapper.getDocument().getIdentity().isPersistent()) wrapper.reload();
+						if(!wrapper.getDocument().isDirty() && wrapper.getDocument().getIdentity().isPersistent()) wrapper.reload();
 					}
 					return chain.handle(target, proxy, method, args);
 				} catch (Throwable e) {

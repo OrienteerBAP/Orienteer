@@ -19,29 +19,6 @@ public interface ITaskSession {
 		NONE,UNKNOWN_ERROR
 	}
 	
-	public static final String TASK_SESSION_CLASS = "OTaskSession";
-	
-	/**
-	 * fields of task session ODocument 
-	 */
-	public enum Field{
-		THREAD_NAME("threadName"),
-		STATUS("status"),
-		TASK_LINK("task"),
-		START_TIMESTAMP("startTimestamp"),
-		FINISH_TIMESTAMP("finishTimestamp"),
-		PROGRESS("progress"),
-		PROGRESS_CURRENT("progressCurrent"),
-		PROGRESS_FINAL("progressFinal"),
-		IS_STOPPABLE("isStoppable"),
-		DELETE_ON_FINISH("deleteOnFinish"),
-		ERROR_TYPE("errorType"),
-		ERROR("error");
-		
-		private String fieldName;
-		public String fieldName(){ return fieldName;}
-		private Field(String fieldName){	this.fieldName = fieldName;}
-	}
 	
 	public ITaskSession start();
 	public ITaskSession finish();
@@ -50,8 +27,8 @@ public interface ITaskSession {
 	
 	public Status getStatus();
 	
-	public OTaskSessionRuntime getOTaskSessionRuntime();
-	public OTaskSession getOTaskSessionPersisted();
+	public OTaskSessionRuntime<?> getOTaskSessionRuntime();
+	public IOTaskSessionPersisted getOTaskSessionPersisted();
 	
 	public ITaskSession setCallback(ITaskSessionCallback callback);
 	public ITaskSessionCallback getCallback();
@@ -63,7 +40,7 @@ public interface ITaskSession {
 	public double getFinalProgress();
 	public ITaskSession setCurrentProgress(double progress);
 	public double getCurrentProgress();
-	public ITaskSession incrementCurrentProgress(int increment);
+	public ITaskSession incrementCurrentProgress(double increment);
 	
 	public default ITaskSession incrementCurrentProgress() {
 		return incrementCurrentProgress(1);

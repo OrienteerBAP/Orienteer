@@ -9,9 +9,9 @@ import org.orienteer.core.tasks.ITaskSessionCallback;
  */
 public class OCamelTaskSessionCallback implements ITaskSessionCallback{
 
-	private volatile CamelContext context;
+	private volatile OCamelContext context;
 	
-	public OCamelTaskSessionCallback(CamelContext context) {
+	public OCamelTaskSessionCallback(OCamelContext context) {
 		this.context=context;
 	}
 

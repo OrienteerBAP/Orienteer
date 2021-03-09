@@ -8,18 +8,18 @@ import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = ITestTask.CLASS_NAME)
+@DAOOClass(value = ITestTask.CLASS_NAME, orderOffset = 50)
 public interface ITestTask extends IOTask {
 	
 		public static final String CLASS_NAME = "TestTask";
 		
-		public static final int PROGRESS = 100;
-		public static final long PROGRESS_CURRENT = 10;
-		public static final long PROGRESS_FINAL = 20;
+		public static final double PROGRESS = 100;
+		public static final double PROGRESS_CURRENT = 10;
+		public static final double PROGRESS_FINAL = 20;
 		
 		@Override
-		public default OTaskSessionRuntime startNewSession() {
-			final OTaskSessionRuntime otaskSession = new OTaskSessionRuntime();
+		public default OTaskSessionRuntime<IOTaskSessionPersisted> startNewSession() {
+			final OTaskSessionRuntime<IOTaskSessionPersisted> otaskSession = OTaskSessionRuntime.simpleSession();
 			otaskSession
 				.setDeleteOnFinish(isAutodeleteSessions())
 				.setFinalProgress(PROGRESS_FINAL)

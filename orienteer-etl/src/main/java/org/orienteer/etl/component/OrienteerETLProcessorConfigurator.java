@@ -1,6 +1,7 @@
 package org.orienteer.etl.component;
 
-import org.orienteer.etl.tasks.OETLTaskSession;
+import org.orienteer.core.tasks.IOTaskSessionPersisted;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -15,7 +16,7 @@ import com.orientechnologies.orient.etl.OETLProcessorConfigurator;
  */
 public class OrienteerETLProcessorConfigurator extends OETLProcessorConfigurator {
 
-	public OETLProcessor parseConfigRecord(OETLTaskSession taskSession,String config){
+	public OETLProcessor parseConfigRecord(OTaskSessionRuntime<IOTaskSessionPersisted> taskSession,String config){
 	    final OCommandContext context = createDefaultContext();
 	    ODocument configuration = new ODocument().fromJSON("{}");
 	    

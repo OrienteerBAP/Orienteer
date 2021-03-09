@@ -7,42 +7,39 @@ import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 
 import java.util.Date;
 
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.DAOHandler;
+import org.orienteer.core.dao.handler.extra.SudoMethodHandler;
+
 /**
  * Runtime object to hold and manage session status
+ * @param <P> - type of a persisted version of a session
  */
-public class OTaskSessionRuntime implements ITaskSession {
+public class OTaskSessionRuntime<P extends IOTaskSessionPersisted> implements ITaskSession {
 	
-	private OTaskSession persistedSession;
+	private P persistedSession;
 	private ITaskSessionCallback callback;
 	private Status status = Status.NOT_STARTED;
 	
-	public OTaskSessionRuntime() {
-		this(TASK_SESSION_CLASS);
+	private OTaskSessionRuntime() {
+		this((Class<? extends P>)IOTaskSessionPersisted.class);
 	}
 	
-	public OTaskSessionRuntime(String sessionClass) {
-		this(sessionClass,false);
+	public static OTaskSessionRuntime<IOTaskSessionPersisted> simpleSession() {
+		return new OTaskSessionRuntime<IOTaskSessionPersisted>();
+	}
+	
+	public OTaskSessionRuntime(Class<? extends P> persistSessionClass) {
+		this(DAO.create(persistSessionClass));
 	}
 
-	@SuppressWarnings("unchecked")
-	public OTaskSessionRuntime(String sessionClass, boolean forceSave) {
-		this(new OTaskSession(new ODocument(sessionClass)), forceSave);
-	}
-
-	public OTaskSessionRuntime(OTaskSession persistedSession) {
-		this(persistedSession, false);
-	}
-
-	public OTaskSessionRuntime(OTaskSession persistedSession, boolean forceSave) {
+	public OTaskSessionRuntime(P persistedSession) {
 		this.persistedSession = persistedSession;
 		setStatus(Status.NOT_STARTED);
-		if (forceSave){
-			this.persistedSession.persist();
-		}
 	}
 	
 	@Override
-	public OTaskSessionRuntime setCallback(ITaskSessionCallback callback) {
+	public OTaskSessionRuntime<P> setCallback(ITaskSessionCallback callback) {
 		this.callback = callback;
 		return this;
 	}
@@ -53,7 +50,7 @@ public class OTaskSessionRuntime implements ITaskSession {
 	}
 	
 	@Override
-	public OTaskSessionRuntime setDeleteOnFinish(boolean deleteOnFinish) {
+	public OTaskSessionRuntime<P> setDeleteOnFinish(boolean deleteOnFinish) {
 		getOTaskSessionPersisted().setDeleteOnFinish(deleteOnFinish);
 		return this;
 	}
@@ -64,9 +61,9 @@ public class OTaskSessionRuntime implements ITaskSession {
 	}
 
 	@Override
-	public OTaskSessionRuntime start() {
-		getOTaskSessionPersisted().setField(Field.START_TIMESTAMP.fieldName(), new Date());
-		getOTaskSessionPersisted().setField(Field.THREAD_NAME.fieldName(), Thread.currentThread().getName());
+	public OTaskSessionRuntime<P> start() {
+		getOTaskSessionPersisted().setStartTimestamp(new Date());
+		getOTaskSessionPersisted().setThreadName(Thread.currentThread().getName());
 		setStatus(Status.RUNNING);
 		getOTaskSessionPersisted().persist();
 		OTaskManager.get().register(this);
@@ -74,32 +71,27 @@ public class OTaskSessionRuntime implements ITaskSession {
 	}
 
 	@Override
-	public OTaskSessionRuntime finish() {
+	public OTaskSessionRuntime<P> finish() {
 		if (isDeleteOnFinish()){
 			delSelf();
 		}else{
-			getOTaskSessionPersisted().setField(Field.FINISH_TIMESTAMP.fieldName(), new Date());
+			getOTaskSessionPersisted().setFinishTimestamp(new Date());
 			setStatus(Status.FINISHED);
+			getOTaskSessionPersisted().persist();
 		}
 		return this;
 	}
 	
 	private void delSelf(){
-		new DBClosure<Boolean>() {
-			@Override
-			protected Boolean execute(ODatabaseSession db) {
-				db.delete(getOTaskSessionPersisted().getDocument());
-				return true;
-			}
-		}.execute();	
+		getOTaskSessionPersisted().delete();
 	}
-
+	
 	@Override
-	public OTaskSessionRuntime interrupt() throws Exception {
+	public OTaskSessionRuntime<P> interrupt() throws Exception {
 		ITaskSessionCallback callback = getCallback();
 		if(callback==null) throw new IllegalStateException("Session can't be interrupted: no callback specified");
 		callback.interrupt();
-		getOTaskSessionPersisted().setField(Field.FINISH_TIMESTAMP.fieldName(), new Date());
+		getOTaskSessionPersisted().setFinishTimestamp(new Date());
 		setStatus(Status.INTERRUPTED);
 		return this;
 	}
@@ -116,21 +108,21 @@ public class OTaskSessionRuntime implements ITaskSession {
 	
 	void setStatus(Status status) {
 		this.status = status;
-		getOTaskSessionPersisted().setField(Field.STATUS.fieldName(), status.name());
+		getOTaskSessionPersisted().setPersistedStatus(status);
 	}
 
 	@Override
-	public OTaskSessionRuntime getOTaskSessionRuntime() {
+	public OTaskSessionRuntime<P> getOTaskSessionRuntime() {
 		return this;
 	}
 
 	@Override
-	public OTaskSession getOTaskSessionPersisted() {
+	public P getOTaskSessionPersisted() {
 		return persistedSession;
 	}
 
 	@Override
-	public OTaskSessionRuntime setProgress(double progress) {
+	public OTaskSessionRuntime<P> setProgress(double progress) {
 		getOTaskSessionPersisted().setProgress(progress);
 		return this;
 	}
@@ -141,7 +133,7 @@ public class OTaskSessionRuntime implements ITaskSession {
 	}
 
 	@Override
-	public OTaskSessionRuntime setFinalProgress(double progress) {
+	public OTaskSessionRuntime<P> setFinalProgress(double progress) {
 		getOTaskSessionPersisted().setFinalProgress(progress);
 		return this;
 	}
@@ -152,7 +144,7 @@ public class OTaskSessionRuntime implements ITaskSession {
 	}
 
 	@Override
-	public OTaskSessionRuntime setCurrentProgress(double progress) {
+	public OTaskSessionRuntime<P> setCurrentProgress(double progress) {
 		getOTaskSessionPersisted().setCurrentProgress(progress);
 		return this;
 	}
@@ -163,13 +155,13 @@ public class OTaskSessionRuntime implements ITaskSession {
 	}
 	
 	@Override
-	public ITaskSession incrementCurrentProgress(int increment) {
+	public ITaskSession incrementCurrentProgress(double increment) {
 		setCurrentProgress(getCurrentProgress()+increment);
 		return this;
 	}
 
 	public ITaskSession setOTask(IOTask oTask) {
-		getOTaskSessionPersisted().setField( Field.TASK_LINK.fieldName(),oTask.getDocument().getIdentity());
+		getOTaskSessionPersisted().setTask(oTask);
 		return null;
 	}
 

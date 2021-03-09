@@ -47,7 +47,6 @@ import org.orienteer.core.module.*;
 import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.service.OrienteerEmbeddedStartupListener;
-import org.orienteer.core.tasks.console.OConsoleTasksModule;
 import org.orienteer.core.util.WicketProtector;
 import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
@@ -197,7 +196,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		registerModule(OWidgetsModule.class);
 		registerModule(UserOnlineModule.class);
 		registerModule(TaskManagerModule.class);
-		registerModule(OConsoleTasksModule.class);
 		registerModule(OrienteerClusterModule.class);
 		getOrientDbSettings().addORecordHooks(CalculablePropertiesHook.class, 
 											  ReferencesConsistencyHook.class,

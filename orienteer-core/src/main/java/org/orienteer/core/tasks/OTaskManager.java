@@ -16,7 +16,7 @@ public class OTaskManager {
 	
 	private static final MetaDataKey<OTaskManager> TASK_MANAGER_KEY = new MetaDataKey<OTaskManager>(){};
 	
-	private Map<ORID, OTaskSessionRuntime> activeSessions = new MapMaker().weakValues().makeMap(); 
+	private Map<ORID, OTaskSessionRuntime<?>> activeSessions = new MapMaker().weakValues().makeMap(); 
 
 	private OTaskManager() {
 	}
@@ -36,7 +36,7 @@ public class OTaskManager {
 		return taskManager;
 	}
 	
-	public Collection<OTaskSessionRuntime> getActiveTaskSessions() {
+	public Collection<OTaskSessionRuntime<?>> getActiveTaskSessions() {
 		return activeSessions.values();
 	}
 	
@@ -44,19 +44,19 @@ public class OTaskManager {
 		return activeSessions.containsKey(doc.getIdentity());
 	}
 	
-	public boolean isActive(OTaskSession holder) {
+	public boolean isActive(IOTaskSessionPersisted holder) {
 		return isActive(holder.getDocument());
 	}
 	
-	public OTaskSessionRuntime getTaskSession(OTaskSession holder) {
+	public OTaskSessionRuntime<?> getTaskSession(IOTaskSessionPersisted holder) {
 		return activeSessions.get(holder.getDocument().getIdentity());
 	}
 	
-	void register(OTaskSessionRuntime session) {
+	void register(OTaskSessionRuntime<?> session) {
 		activeSessions.put(session.getOTaskSessionPersisted().getDocument().getIdentity(), session);
 	}
 	
-	void unregister(OTaskSessionRuntime session) {
+	void unregister(OTaskSessionRuntime<?> session) {
 		activeSessions.remove(session.getOTaskSessionPersisted().getDocument().getIdentity());
 	}
 

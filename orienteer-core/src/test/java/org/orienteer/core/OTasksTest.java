@@ -1,23 +1,25 @@
 package org.orienteer.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Ignore;
 import org.junit.Test;
-
 import org.junit.runner.RunWith;
+import org.orienteer.core.dao.DAO;
+import org.orienteer.core.tasks.IOConsoleTask;
+import org.orienteer.core.tasks.IOTaskSessionPersisted;
 import org.orienteer.core.tasks.ITaskSession;
 import org.orienteer.core.tasks.ITaskSession.Status;
-import org.orienteer.core.dao.DAO;
-import org.orienteer.core.tasks.IOTask;
-import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.tasks.ITestTask;
-import org.orienteer.core.tasks.console.IOConsoleTask;
+import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.junit.OrienteerTestRunner;
-import static org.junit.Assert.*;
 
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.OrientDbWebSession;
 
@@ -31,32 +33,34 @@ public class OTasksTest {
 	
 	@Test
 	public void testSimpleSession() throws Exception {
-		ITaskSession session = new OTaskSessionRuntime();
+		ITaskSession session = OTaskSessionRuntime.simpleSession();
 		assertEquals(Status.NOT_STARTED, session.getStatus());
 		assertEquals(Status.DETACHED, session.getOTaskSessionPersisted().getStatus());
-		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
-		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
+		IOTaskSessionPersisted persisted = session.getOTaskSessionPersisted();
+		assertNull(persisted.getStartTimestamp());
+		assertNull(persisted.getFinishTimestamp());
 		session.start();
 		assertEquals(Status.RUNNING, session.getStatus());
 		assertEquals(Status.RUNNING, session.getOTaskSessionPersisted().getStatus());
-		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
-		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
+		assertNotNull(persisted.getStartTimestamp());
+		assertNull(persisted.getFinishTimestamp());
 		assertFalse(session.isInterruptable());
 		session.finish();
 		try { Thread.sleep(500);} catch (InterruptedException e) {}
 		assertEquals(Status.FINISHED, session.getStatus());
 		assertEquals(Status.FINISHED, session.getOTaskSessionPersisted().getStatus());
-		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
-		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
+		assertNotNull(persisted.getStartTimestamp());
+		assertNotNull(persisted.getFinishTimestamp());
 	}
 	
 	@Test
 	public void testThreadedSession() throws Exception {
-		final ITaskSession session = new OTaskSessionRuntime();
+		final ITaskSession session = OTaskSessionRuntime.simpleSession();
 		assertEquals(Status.NOT_STARTED, session.getStatus());
+		IOTaskSessionPersisted persisted = session.getOTaskSessionPersisted();
 		assertEquals(Status.DETACHED, session.getOTaskSessionPersisted().getStatus());
-		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
-		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
+		assertNull(persisted.getStartTimestamp());
+		assertNull(persisted.getFinishTimestamp());
 		new Thread(new Runnable() {
 			
 			@Override
@@ -69,14 +73,14 @@ public class OTasksTest {
 		try { Thread.sleep(100);} catch (InterruptedException e) {}
 		assertEquals(Status.RUNNING, session.getStatus());
 		assertEquals(Status.RUNNING, session.getOTaskSessionPersisted().getStatus());
-		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
-		assertNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
+		assertNotNull(persisted.getStartTimestamp());
+		assertNull(persisted.getFinishTimestamp());
 		assertFalse(session.isInterruptable());
 		try { Thread.sleep(2000);} catch (InterruptedException e) {}
 		assertEquals(Status.FINISHED, session.getStatus());
 		assertEquals(Status.FINISHED, session.getOTaskSessionPersisted().getStatus());
-		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
-		assertNotNull(session.getOTaskSessionPersisted().getDocument().field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
+		assertNotNull(persisted.getStartTimestamp());
+		assertNotNull(persisted.getFinishTimestamp());
 	}
 	
 	@Test
@@ -94,21 +98,21 @@ public class OTasksTest {
 			task.setAutodeleteSessions(false);
 			task.save();
 			
-			OTaskSessionRuntime taskSession = task.startNewSession();
+			OTaskSessionRuntime<IOTaskSessionPersisted> taskSession = task.startNewSession();
 			
-			ODocument taskSessionDoc = taskSession.getOTaskSessionPersisted().getDocument();
-
-			assertNotNull(taskSessionDoc.field(ITaskSession.Field.THREAD_NAME.fieldName()));
+			IOTaskSessionPersisted persisted = taskSession.getOTaskSessionPersisted();
+			
+			assertNotNull(persisted.getThreadName());
 			assertEquals(ITaskSession.Status.FINISHED,taskSession.getStatus());
-			assertNotNull(taskSessionDoc.field(ITaskSession.Field.START_TIMESTAMP.fieldName()));
-			assertNotNull(taskSessionDoc.field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
-			assertEquals(ITestTask.PROGRESS, (Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS.fieldName()));
-			assertEquals(ITestTask.PROGRESS_CURRENT,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
-			assertEquals(ITestTask.PROGRESS_FINAL,(Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_FINAL.fieldName()));
-			assertEquals(false,taskSessionDoc.field(ITaskSession.Field.IS_STOPPABLE.fieldName()));
-			assertEquals(false,taskSessionDoc.field(ITaskSession.Field.DELETE_ON_FINISH.fieldName()));
-			assertNull(taskSessionDoc.field(ITaskSession.Field.ERROR_TYPE.fieldName()));
-			assertNull(taskSessionDoc.field(ITaskSession.Field.ERROR.fieldName()));
+			assertNotNull(persisted.getStartTimestamp());
+			assertNotNull(persisted.getFinishTimestamp());
+			assertEquals(ITestTask.PROGRESS, persisted.getProgress(), 0);
+			assertEquals(ITestTask.PROGRESS_CURRENT,persisted.getCurrentProgress(), 0);
+			assertEquals(ITestTask.PROGRESS_FINAL,persisted.getFinalProgress(), 0);
+			assertEquals(false, persisted.isStopable());
+			assertEquals(false, persisted.isDeleteOnFinish());
+			assertNull(persisted.getErrorType());
+			assertNull(persisted.getError());
 		} finally
 		{
 			ITestTask.close(db);
@@ -120,7 +124,7 @@ public class OTasksTest {
 	@Ignore
 	public void consoleTaskTest() throws Exception{
 		assertTrue(OrientDbWebSession.get().signIn("admin", "admin"));
-		ODatabaseDocument db = OrientDbWebSession.get().getDatabase();
+		ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();
 		assertFalse(db.isClosed());
 		db.commit();
 		try
@@ -135,15 +139,13 @@ public class OTasksTest {
 			task.setInput(CONSOLE_TEST_COMMAND);
 			task.save();
 			
-			OTaskSessionRuntime taskSession = task.startNewSession();
-			OTaskSessionRuntime taskSessionAD = taskAD.startNewSession();
+			OTaskSessionRuntime<IOTaskSessionPersisted> taskSession = task.startNewSession();
 			Thread.sleep(CONSOLE_TASK_DELAY);
 			db.commit();
-			ODocument taskSessionDoc = taskSession.getOTaskSessionPersisted().getDocument();
-			taskSessionDoc.load();
-			assertNull(taskSessionDoc.field(ITaskSession.Field.ERROR.fieldName()));
-			assertNotNull(taskSessionDoc.field(ITaskSession.Field.FINISH_TIMESTAMP.fieldName()));
-			assertEquals(12L, (Object) taskSessionDoc.field(ITaskSession.Field.PROGRESS_CURRENT.fieldName()));
+			IOTaskSessionPersisted persisted = taskSession.getOTaskSessionPersisted();
+			assertNull(persisted.getError());
+			assertNotNull(persisted.getFinishTimestamp());
+			assertEquals(12.0, persisted.getCurrentProgress(), 0);
 			assertEquals(ITaskSession.Status.INTERRUPTED,taskSession.getStatus());
 		} finally
 		{

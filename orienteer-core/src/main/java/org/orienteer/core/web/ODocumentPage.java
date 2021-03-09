@@ -182,13 +182,18 @@ public class ODocumentPage extends AbstractWidgetDisplayModeAwarePage<ODocument>
 		};
 	}
 	
+	public static PageParameters getPageParameters(OIdentifiable doc) {
+		return getPageParameters(doc, DisplayMode.VIEW);
+	}
+	
 	public static PageParameters getPageParameters(OIdentifiable doc, DisplayMode mode) {
 		return getPageParameters(doc, mode, new PageParameters());
 	}
 	
 	public static PageParameters getPageParameters(OIdentifiable doc, DisplayMode mode, PageParameters parameters) {
 		parameters.add("rid", buitifyRid(doc));
-		parameters.add("mode", mode.getName());
+		if(mode!=null && !DisplayMode.VIEW.equals(mode))
+			parameters.add("mode", mode.getName());
 		return parameters;
 	}
 	
