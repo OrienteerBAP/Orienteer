@@ -58,6 +58,7 @@ public class RegistrationComponentTest {
             db.command(sql, testUser.getEmail());
         });
         tester.signOut();
+        tester.getSession().invalidateNow();
     }
     
     @Test
