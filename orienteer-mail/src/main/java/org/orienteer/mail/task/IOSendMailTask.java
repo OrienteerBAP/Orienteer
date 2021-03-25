@@ -38,9 +38,8 @@ public interface IOSendMailTask extends IOTask {
     	throw new IllegalStateException("You should precreate "+IOSendMailTaskSession.class.getSimpleName()+" first");
     }
     public default OTaskSessionRuntime<IOSendMailTaskSession> startNewSession(IOSendMailTaskSession session) {
-    	OTaskSessionRuntime<IOSendMailTaskSession> runtime = new OTaskSessionRuntime<>(IOSendMailTaskSession.class);
-        runtime.setDeleteOnFinish(isAutodeleteSessions());
-        runtime.setOTask(this);
+    	OTaskSessionRuntime<IOSendMailTaskSession> runtime = new OTaskSessionRuntime<>(IOSendMailTaskSession.class)
+    															.init(this);
         runtime.start().setProgress(0);
 
         performTask(runtime);

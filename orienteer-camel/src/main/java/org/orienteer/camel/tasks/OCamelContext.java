@@ -25,12 +25,10 @@ public class OCamelContext extends DefaultCamelContext {
 		properties.put(OrientDBComponent.DB_USERNAME, session.getUsername());
 		properties.put(OrientDBComponent.DB_PASSWORD, session.getPassword());
 		setGlobalOptions(properties);
-		runtime = OTaskSessionRuntime.simpleSession();
+		runtime = OTaskSessionRuntime.simpleSession(config);
 		getManagementStrategy().addEventNotifier(new CamelEventHandler(this));
 		runtime.getOTaskSessionPersisted()
-				.setTask(config)
 				.setCallback(new OCamelTaskSessionCallback(this))
-				.setDeleteOnFinish(config.isAutodeleteSessions())
 				.setFinalProgress(getRoutes().size())
 				.getOTaskSessionPersisted().persist();
 	}

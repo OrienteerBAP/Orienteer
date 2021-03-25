@@ -33,7 +33,7 @@ public class OTasksTest {
 	
 	@Test
 	public void testSimpleSession() throws Exception {
-		ITaskSession session = OTaskSessionRuntime.simpleSession();
+		ITaskSession session = OTaskSessionRuntime.simpleSession(null);
 		assertEquals(Status.NOT_STARTED, session.getStatus());
 		assertEquals(Status.DETACHED, session.getOTaskSessionPersisted().getStatus());
 		IOTaskSessionPersisted persisted = session.getOTaskSessionPersisted();
@@ -55,7 +55,7 @@ public class OTasksTest {
 	
 	@Test
 	public void testThreadedSession() throws Exception {
-		final ITaskSession session = OTaskSessionRuntime.simpleSession();
+		final ITaskSession session = OTaskSessionRuntime.simpleSession(null);
 		assertEquals(Status.NOT_STARTED, session.getStatus());
 		IOTaskSessionPersisted persisted = session.getOTaskSessionPersisted();
 		assertEquals(Status.DETACHED, session.getOTaskSessionPersisted().getStatus());

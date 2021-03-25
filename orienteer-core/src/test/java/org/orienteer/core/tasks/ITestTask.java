@@ -9,7 +9,7 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
 @DAOOClass(value = ITestTask.CLASS_NAME, orderOffset = 50)
-public interface ITestTask extends IOTask {
+public interface ITestTask extends IOTask<IOTaskSessionPersisted> {
 	
 		public static final String CLASS_NAME = "TestTask";
 		
@@ -19,9 +19,8 @@ public interface ITestTask extends IOTask {
 		
 		@Override
 		public default OTaskSessionRuntime<IOTaskSessionPersisted> startNewSession() {
-			final OTaskSessionRuntime<IOTaskSessionPersisted> otaskSession = OTaskSessionRuntime.simpleSession();
+			final OTaskSessionRuntime<IOTaskSessionPersisted> otaskSession = OTaskSessionRuntime.simpleSession(this);
 			otaskSession
-				.setDeleteOnFinish(isAutodeleteSessions())
 				.setFinalProgress(PROGRESS_FINAL)
 				.start();
 			for (int i = 0; i < PROGRESS_CURRENT; i++) {

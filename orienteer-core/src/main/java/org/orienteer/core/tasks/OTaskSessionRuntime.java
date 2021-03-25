@@ -25,8 +25,8 @@ public class OTaskSessionRuntime<P extends IOTaskSessionPersisted> implements IT
 		this((Class<? extends P>)IOTaskSessionPersisted.class);
 	}
 	
-	public static OTaskSessionRuntime<IOTaskSessionPersisted> simpleSession() {
-		return new OTaskSessionRuntime<IOTaskSessionPersisted>();
+	public static <P extends IOTaskSessionPersisted> OTaskSessionRuntime<P> simpleSession(IOTask<P> task) {
+		return new OTaskSessionRuntime<P>().init(task);
 	}
 	
 	public OTaskSessionRuntime(Class<? extends P> persistSessionClass) {
@@ -36,6 +36,14 @@ public class OTaskSessionRuntime<P extends IOTaskSessionPersisted> implements IT
 	public OTaskSessionRuntime(P persistedSession) {
 		this.persistedSession = persistedSession;
 		setStatus(Status.NOT_STARTED);
+	}
+	
+	public OTaskSessionRuntime<P> init(IOTask<P> task) {
+		if(task!=null) {
+			setTask(task);
+			setDeleteOnFinish(task.isAutodeleteSessions());
+		}
+		return this;
 	}
 	
 	@Override
@@ -160,7 +168,7 @@ public class OTaskSessionRuntime<P extends IOTaskSessionPersisted> implements IT
 		return this;
 	}
 
-	public ITaskSession setOTask(IOTask oTask) {
+	public ITaskSession setTask(IOTask<P> oTask) {
 		getOTaskSessionPersisted().setTask(oTask);
 		return null;
 	}
