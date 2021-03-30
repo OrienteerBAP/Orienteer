@@ -30,6 +30,7 @@ public class OrienteerETLProcessorConfigurator extends OETLProcessorConfigurator
 		super(new OETLComponentFactory() {
 			{
 				registerLoader(OETLOrienteerLoader.class);
+				registerTransformer(OETLLinkFixedTransformer.class);
 			}
 		});
 	}

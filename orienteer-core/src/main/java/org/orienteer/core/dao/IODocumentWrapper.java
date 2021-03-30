@@ -12,10 +12,7 @@ public interface IODocumentWrapper extends Serializable {
 	
 	public void fromStream(final ODocument iDocument);
 	public ODocument toStream();
-	public <R extends IODocumentWrapper> R load();
-	public <R extends IODocumentWrapper> R load(final String iFetchPlan);
 	public <R extends IODocumentWrapper> R load(final String iFetchPlan, final boolean iIgnoreCache);
-	public <R extends IODocumentWrapper> R load(final String iFetchPlan, final boolean iIgnoreCache, final boolean loadTombstone);
 	public <R extends IODocumentWrapper> R reload();
 	public <R extends IODocumentWrapper> R reload(final String iFetchPlan);
 	public <R extends IODocumentWrapper> R reload(final String iFetchPlan, final boolean iIgnoreCache);

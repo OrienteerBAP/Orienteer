@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OType;
@@ -107,6 +108,11 @@ public final class DAO {
 	
 	public static <T> T provide(Class<T> interfaceClass, ODocument doc, Class<?>... additionalInterfaces) {
 		return provide(interfaceClass, new ODocumentWrapper(doc), additionalInterfaces);
+	}
+	
+	public static <T> T provide(Class<T> interfaceClass, OIdentifiable id, Class<?>... additionalInterfaces) {
+		if(id instanceof ODocument) return provide(interfaceClass, (ODocument) id, additionalInterfaces);
+		else return provide(interfaceClass, id.getIdentity(), additionalInterfaces);
 	}
 	
 	@SuppressWarnings("unchecked")
