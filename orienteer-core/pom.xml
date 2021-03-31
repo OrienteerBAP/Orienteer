@@ -218,12 +218,6 @@
             <artifactId>hazelcast-wm</artifactId>
         </dependency> -->
 
-        <!-- NEED FOR LOAD TELEGRAM BOT-->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.4</version>
-		</dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
