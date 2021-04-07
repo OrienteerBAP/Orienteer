@@ -24,6 +24,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -409,6 +410,15 @@ public class CommonUtils {
 		} catch (Exception e) {
 			throw new WicketRuntimeException("Can't calculat diff due to exception", e);
 		} 
+    }
+    
+    public static Annotation getFirstPresentAnnotation(AnnotatedElement where, Class<? extends Annotation>...classes) {
+    	if(classes==null || classes.length==0) return null;
+    	for (Class<? extends Annotation> class1 : classes) {
+    		Annotation annotation = where.getAnnotation(class1);
+    		if(annotation!=null) return annotation;
+		}
+    	return null;
     }
 
 }

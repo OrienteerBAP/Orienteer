@@ -22,10 +22,10 @@ public interface IOEnum {
 
 	@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
 	public Map<String, String> getName();
-	public void setName(Map<String, String> value);
+	public IOEnum setName(Map<String, String> value);
 	
 	@DAOFieldIndex(type = INDEX_TYPE.UNIQUE)
 	public String getAlias();
-	public void setAlias(String value);
+	public IOEnum setAlias(String value);
 	
 }

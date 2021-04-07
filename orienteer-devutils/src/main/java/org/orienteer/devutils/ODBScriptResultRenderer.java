@@ -2,6 +2,7 @@ package org.orienteer.devutils;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
@@ -11,6 +12,9 @@ import org.orienteer.devutils.component.OQueryModelResultsPanel;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResult;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
+
 import ru.ydn.wicket.wicketconsole.IScriptResultRenderer;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
@@ -48,6 +52,9 @@ public class ODBScriptResultRenderer implements IScriptResultRenderer{
 					//TODO: add more suitable component for visualization of result set
 					return new MultiLineLabel(id, serializeODocuments((Collection<OIdentifiable>)collection));
 				}
+			} else if(value instanceof OResultSet) {
+				String result = ((OResultSet)value).stream().map(OResult::toJSON).collect(Collectors.joining("\n"));
+				return new MultiLineLabel(id, result);
 			}
 		}
 		return null;

@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.joor.Reflect;
 import org.orienteer.core.dao.DAO;
@@ -28,6 +30,7 @@ import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.query.OQuery;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 /**
@@ -150,6 +153,10 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 				return collection.get();
 			}
 			else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
+		} else if(result instanceof OResultSet) {
+			OResultSet rs = (OResultSet)result;
+			List<ODocument> docs = rs.stream().map(r -> (ODocument)r.getRecord().orElse(null)).collect(Collectors.toList());
+			return prepareForJava(docs, requiredClass, genericType);
 		} else if(result instanceof Map) {
 			
 			Map<?, ?> map = (Map<?, ?>)result;

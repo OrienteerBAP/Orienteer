@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 public class ODBScriptEngine implements IScriptEngine {
 	
 	private static final Pattern SELECT_FROM_PATTERN = Pattern.compile("^select\\s+from", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+	private static final Pattern ORDER_CHECK_PATTERN = Pattern.compile("order\\s+by", Pattern.CASE_INSENSITIVE);
 
 	@Override
 	public String getName() {
@@ -34,7 +35,8 @@ public class ODBScriptEngine implements IScriptEngine {
 		if(!Strings.isEmpty(command)) {
 			command = command.trim();
 			try {
-				if(SELECT_FROM_PATTERN.matcher(command).find()) {
+				if(SELECT_FROM_PATTERN.matcher(command).find()
+						&& !ORDER_CHECK_PATTERN.matcher(command).find()) {
 					OQueryModel<ODocument> returnModel =  new OQueryModel<ODocument>(command);
 					returnModel.probeOClass(10);
 					result.setResultModel(returnModel);
