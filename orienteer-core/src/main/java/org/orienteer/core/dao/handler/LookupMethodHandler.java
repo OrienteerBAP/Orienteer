@@ -1,6 +1,7 @@
 package org.orienteer.core.dao.handler;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Optional;
 
 import org.orienteer.core.dao.IMethodHandler;
@@ -24,7 +25,9 @@ public class LookupMethodHandler extends AbstractMethodHandler<ODocumentWrapper>
 		if(method.isAnnotationPresent(Lookup.class)) {
 			String sql = method.getAnnotation(Lookup.class).value();
 			ODatabaseSession db = ODatabaseRecordThreadLocal.instance().get();
-			try(OResultSet rs =  db.query(sql, toArguments(method, args))) {
+			Map<String, Object> preparedArgs = toArguments(method, args);
+			preparedArgs.put("daoClass", target.getDocument().getClassName());
+			try(OResultSet rs =  db.query(sql, preparedArgs)) {
 				ODocument ret = null;
 				if(rs.hasNext()) {
 					ret = (ODocument) rs.next().getRecord().orElse(null);

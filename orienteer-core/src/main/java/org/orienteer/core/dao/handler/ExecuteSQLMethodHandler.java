@@ -26,6 +26,7 @@ import com.orientechnologies.orient.core.sql.OCommandSQL;
 import com.orientechnologies.orient.core.sql.OCommandSQLResultset;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
+import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 /**
  * {@link IMethodHandler} to cover methods to {@link Query}, {@link Command}, {@link Script} or {@link Function}
@@ -53,6 +54,8 @@ public class ExecuteSQLMethodHandler<T> extends AbstractMethodHandler<T>{
 		if(annotation!=null) {
 			Map<String, Object> argumets = toArguments(method, args);
 			if(converter!=null) argumets.putIfAbsent("target", converter.apply(target));
+			if(target instanceof ODocumentWrapper)
+				argumets.put("daoClass", ((ODocumentWrapper)target).getDocument().getClassName());
 			ODatabaseSession db = ODatabaseRecordThreadLocal.instance().get();
 			OResultSet rs = null;
 			OCommandRequest request = null;
