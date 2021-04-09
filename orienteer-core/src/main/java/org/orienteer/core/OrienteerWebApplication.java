@@ -44,6 +44,7 @@ import org.orienteer.core.hook.CallbackHook;
 import org.orienteer.core.hook.ReferencesConsistencyHook;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.*;
+import org.orienteer.core.module.PerspectivesModule.IOPerspective;
 import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.service.OrienteerEmbeddedStartupListener;
@@ -543,9 +544,13 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	
 		if(OSecurityHelper.FEATURE_RESOURCE.equals(resource)) {
 			if(Strings.isEmpty(specific)) return true;
-			else 
-				return super.checkResource(resource, specific, iOperation) 
-						|| OrienteerWebSession.get().getOPerspective().providesFeature(specific);
+			else {
+				if(super.checkResource(resource, specific, iOperation)) return true;
+				else {
+					IOPerspective perspective = OrienteerWebSession.get().getOPerspective();
+					return perspective!=null?perspective.providesFeature(specific):false;
+				}
+			}
 		} else {
 			return super.checkResource(resource, specific, iOperation);
 		}

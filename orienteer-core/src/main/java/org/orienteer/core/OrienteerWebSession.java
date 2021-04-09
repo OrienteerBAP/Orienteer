@@ -99,7 +99,8 @@ public class OrienteerWebSession extends OrientDbWebSession
 	
 	public PerspectivesModule.IOPerspective getOPerspective()
 	{
-		return DAO.provide(IOPerspective.class, getPerspective());
+		ODocument perspective = getPerspective();
+		return perspective!=null?DAO.provide(IOPerspective.class, getPerspective()):null;
 	}
 	
 	public boolean isClientInfoAvailable() {

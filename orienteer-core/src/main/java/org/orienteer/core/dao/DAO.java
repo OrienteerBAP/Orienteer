@@ -99,14 +99,17 @@ public final class DAO {
 	}
 	
 	public static <T> T create(Class<T> interfaceClass, String className, Class<?>... additionalInterfaces) {
+		if(className==null) throw new NullPointerException("ClassName for DAO.create(...) should not be null");
 		return provide(interfaceClass, new ODocumentWrapper(className), additionalInterfaces);
 	}
 	
 	public static <T> T provide(Class<T> interfaceClass, ORID iRID, Class<?>... additionalInterfaces) {
+		if(iRID==null) throw new NullPointerException("ORID for DAO.provide(...) should not be null");
 		return provide(interfaceClass, new ODocumentWrapper(iRID), additionalInterfaces);
 	}
 	
 	public static <T> T provide(Class<T> interfaceClass, ODocument doc, Class<?>... additionalInterfaces) {
+		if(doc==null) throw new NullPointerException("Document for DAO.provide(...) should not be null");
 		return provide(interfaceClass, new ODocumentWrapper(doc), additionalInterfaces);
 	}
 	
