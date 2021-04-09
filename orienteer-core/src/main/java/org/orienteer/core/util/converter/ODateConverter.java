@@ -40,7 +40,7 @@ public class ODateConverter extends DateConverter {
     @Override
     public Date convertToObject(String value, Locale locale) {
     	if(Strings.isEmpty(value)) return null;
-    	DateFormat format = getODateFormat(locale);
+    	DateFormat format = getODateFormat(locale, true, time);
     	if(applyTZ) format.setTimeZone(TimeZone.getTimeZone(getUserZoneId()));
     	try {
 			return format.parse(value);
@@ -51,14 +51,18 @@ public class ODateConverter extends DateConverter {
 
     @Override
     public String convertToString(Date value, Locale locale) {
+    	return convertToString(value, locale, true, time);
+    }
+    
+    public String convertToString(Date value, Locale locale, boolean date, boolean time) {
     	if(value==null) return null;
-    	DateFormat format = getODateFormat(locale);
+    	DateFormat format = getODateFormat(locale, date, time);
     	if(applyTZ) format.setTimeZone(TimeZone.getTimeZone(getUserZoneId()));
     	return format.format(value);
     }
 
-    private DateFormat getODateFormat(Locale locale) {
-    	String pattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(FormatStyle.MEDIUM, time ? FormatStyle.MEDIUM : null,
+    private DateFormat getODateFormat(Locale locale, boolean date, boolean time) {
+    	String pattern = DateTimeFormatterBuilder.getLocalizedDateTimePattern(date ? FormatStyle.MEDIUM : null, time ? FormatStyle.MEDIUM : null,
     			Chronology.ofLocale(locale), locale);
     	return new SimpleDateFormat(pattern, locale);
     }
