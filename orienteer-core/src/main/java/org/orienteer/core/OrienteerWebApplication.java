@@ -12,6 +12,8 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.metadata.security.ORule.ResourceGeneric;
+import com.orientechnologies.orient.core.sql.functions.OCustomSQLFunctionFactory;
+
 import de.agilecoders.wicket.webjars.WicketWebjars;
 import de.agilecoders.wicket.webjars.request.resource.WebjarsJavaScriptResourceReference;
 import de.agilecoders.wicket.webjars.settings.IWebjarsSettings;
@@ -48,6 +50,7 @@ import org.orienteer.core.module.PerspectivesModule.IOPerspective;
 import org.orienteer.core.orientd.plugin.OrienteerHazelcastPlugin;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.service.OrienteerEmbeddedStartupListener;
+import org.orienteer.core.util.OSQLFunctions;
 import org.orienteer.core.util.WicketProtector;
 import org.orienteer.core.util.converter.ODateConverter;
 import org.orienteer.core.web.HomePage;
@@ -201,6 +204,7 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 		getOrientDbSettings().addORecordHooks(CalculablePropertiesHook.class, 
 											  ReferencesConsistencyHook.class,
 											  CallbackHook.class);
+		OCustomSQLFunctionFactory.register("o", OSQLFunctions.class);
 		mountOrientDbRestApi();
 		if(authenticateLazy) getRequestCycleListeners().add(new LazyAuthorizationRequestCycleListener());
 		if(!Strings.isEmpty(corsOrigin)) {
