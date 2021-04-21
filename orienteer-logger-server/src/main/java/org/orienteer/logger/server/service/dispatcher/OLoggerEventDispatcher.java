@@ -13,6 +13,9 @@ import org.orienteer.logger.server.model.IOLoggerEventModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Throwables;
+import com.orientechnologies.orient.core.exception.OSecurityException;
+
 /**
  * {@link IOLoggerEventDispatcher} for handle {@link OLoggerEvent}s within Orienteer: log localy and send to other host 
  */
@@ -42,7 +45,10 @@ public class OLoggerEventDispatcher extends DefaultOLoggerEventDispatcher {
 	}
 	
 	protected boolean needsToBeLogged(Throwable event) {
-		if (event instanceof StalePageException || event instanceof AuthorizationException) {
+		Throwable rootCause = Throwables.getRootCause(event);
+		if (rootCause instanceof StalePageException 
+				|| rootCause instanceof AuthorizationException
+				|| rootCause instanceof OSecurityException) {
 			return false;
 		}
 		return true;
