@@ -22,7 +22,7 @@ import org.orienteer.core.component.table.ODocumentDescriptionColumn;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.model.ODocumentNameModel;
-import org.orienteer.core.service.impl.OClassIntrospector;
+import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import ru.ydn.wicket.wicketorientdb.behavior.DisableIfDocumentNotSavedBehavior;
@@ -39,7 +39,7 @@ import java.util.List;
 public class GraphVerticesWidget extends AbstractWidget<ODocument> {
 
     @Inject
-    private OClassIntrospector oClassIntrospector;
+    private IOClassIntrospector oClassIntrospector;
 
     @SuppressWarnings("unchecked")
     public GraphVerticesWidget(String id, final IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {

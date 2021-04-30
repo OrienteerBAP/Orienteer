@@ -14,7 +14,7 @@ import org.orienteer.core.component.command.CreateODocumentCommand;
 import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
-import org.orienteer.core.service.impl.OClassIntrospector;
+import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
@@ -31,7 +31,7 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
     public static final String WIDGET_OCLASS_NAME = "CalculatedDocumentsWidget";
 
     @Inject
-    protected OClassIntrospector oClassIntrospector;
+    protected IOClassIntrospector oClassIntrospector;
 
     @SuppressWarnings("unchecked")
 	public AbstractCalculatedDocumentsWidget(String id, IModel<T> model,

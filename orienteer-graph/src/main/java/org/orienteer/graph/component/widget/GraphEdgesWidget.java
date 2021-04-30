@@ -23,7 +23,7 @@ import org.orienteer.core.component.property.LinkViewPanel;
 import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.model.ODocumentNameModel;
-import org.orienteer.core.service.impl.OClassIntrospector;
+import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
 import org.orienteer.core.widget.Widget;
 import org.orienteer.graph.component.command.CreateEdgeCommand;
@@ -41,7 +41,7 @@ import java.util.List;
 public class GraphEdgesWidget extends AbstractWidget<ODocument> {
 
     @Inject
-    private OClassIntrospector oClassIntrospector;
+    private IOClassIntrospector oClassIntrospector;
 
     public GraphEdgesWidget(String id, IModel<ODocument> model, IModel<ODocument> widgetDocumentModel) {
         super(id, model, widgetDocumentModel);
