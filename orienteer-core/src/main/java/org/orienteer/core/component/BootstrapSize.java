@@ -7,8 +7,7 @@ public enum BootstrapSize
 {
 	LARGE("large", "btn-lg"),
 	DEFAULT("default", ""),
-	SMALL("success", "btn-sm"),
-	EXTRA_SMALL("info", "btn-xs");
+	SMALL("success", "btn-sm");
 	
 	private final String baseCssClass;
 	private final String btnCssClass;

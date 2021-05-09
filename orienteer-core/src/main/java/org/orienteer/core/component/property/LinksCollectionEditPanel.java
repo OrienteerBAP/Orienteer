@@ -60,7 +60,7 @@ public class LinksCollectionEditPanel<T extends OIdentifiable, M extends Collect
 						{
 							{
 								setBootstrapType(BootstrapType.WARNING);
-								setBootstrapSize(BootstrapSize.EXTRA_SMALL);
+								setBootstrapSize(BootstrapSize.SMALL);
 							}
 
 							@Override
@@ -82,7 +82,7 @@ public class LinksCollectionEditPanel<T extends OIdentifiable, M extends Collect
 		table.getHeadersToolbar().setVisibilityAllowed(false);
 		table.getNoRecordsToolbar().setVisibilityAllowed(false);
 		table.addCommand(new SelectODocumentCommand(table, documentModel, new OPropertyModel(property))
-				.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+				.setBootstrapSize(BootstrapSize.SMALL)
 				.setIcon((String)null));
 		add(tablePanel);
 	}

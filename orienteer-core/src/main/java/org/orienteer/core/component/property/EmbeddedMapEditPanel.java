@@ -142,7 +142,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 							}
 						}.setDefaultFormProcessing(false)
 						 .setAutoNotify(false)
-						 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+						 .setBootstrapSize(BootstrapSize.SMALL)
 						 .setBootstrapType(BootstrapType.DANGER)
 						 .setIcon((String)null));
 			}
@@ -175,7 +175,7 @@ public class EmbeddedMapEditPanel<V> extends FormComponentPanel<Map<String, V>> 
 			
 		}.setDefaultFormProcessing(false)
 		 .setAutoNotify(false)
-		 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+		 .setBootstrapSize(BootstrapSize.SMALL)
 		 .setBootstrapType(BootstrapType.PRIMARY)
 		 .setIcon((String)null));
 	}

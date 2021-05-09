@@ -71,7 +71,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 							}
 						}.setDefaultFormProcessing(false)
 						 .setAutoNotify(false)
-						 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+						 .setBootstrapSize(BootstrapSize.SMALL)
 						 .setBootstrapType(BootstrapType.DANGER)
 						 .setIcon((String)null));
 			}
@@ -104,7 +104,7 @@ public class EmbeddedCollectionEditPanel<T, M extends Collection<T>> extends For
 			
 		}.setDefaultFormProcessing(false)
 		 .setAutoNotify(false)
-		 .setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+		 .setBootstrapSize(BootstrapSize.SMALL)
 		 .setBootstrapType(BootstrapType.PRIMARY)
 		 .setIcon((String)null));
 	}

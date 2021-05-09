@@ -46,7 +46,7 @@ public class DeleteRowCommandColumn extends AbstractColumn<ODocument, String> {
                 setVisibilityAllowed(modeModel.getObject().equals(DisplayMode.EDIT));
             }
 
-        }.setBootstrapSize(BootstrapSize.EXTRA_SMALL)
+        }.setBootstrapSize(BootstrapSize.SMALL)
                 .setBootstrapType(BootstrapType.DANGER)
                 .setIcon((String) null));
 	}

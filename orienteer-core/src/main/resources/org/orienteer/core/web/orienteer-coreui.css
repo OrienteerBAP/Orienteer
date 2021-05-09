@@ -1,4 +1,14 @@
-.app-header.navbar .navbar-brand .img-logo {
+.breadcrumb {
+	width: 100%;
+}
+
+.breadcrumb > .breadcrumb-menu {
+    margin-left: auto !important;
+    margin-right: unset !important;
+}
+
+
+/*.app-header.navbar .navbar-brand .img-logo {
     width: 30px;
     margin-right: 5px;
     overflow: hidden;
@@ -36,7 +46,7 @@ tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
 	margin-right:0.5em;
 }
 
-/*Checkbox column*/ 
+//Checkbox column
 td.cb-clmn
 {
 	width: 15px;
@@ -79,7 +89,6 @@ td.st-label
 }
 
 .form-control {
-	/* width: auto; */
 	display: inline-block;
 }
 
@@ -116,24 +125,17 @@ td.st-value textarea
 	height: 12em;
 }
 
-/*Only in widgets*/
+//Only in widgets
 li.strict caption {
 	display: none;
 }
 
-.btn-xs {
-  line-height: .76rem;
-  padding :.1875rem .375rem;
-  font-size: .844rem; 
-  /*@include button-size($padding-y, $padding-x, $font-size, $line-height, $border-radius);*/
-}
-
-/*widgets headers*/
+//widgets headers
 .ui-sortable:not(.ui-sortable-disabled) .card-header {
     cursor: move;
 }
 
-/*wicket modal window header fix*/
+//wicket modal window header fix
 div.wicket-modal h3.w_captionText {
     font-size: 16.3833px;
 }
@@ -306,3 +308,5 @@ li.strict div.panel-body {
 		display: block;
 	}
 }
+
+*/
