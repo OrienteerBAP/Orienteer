@@ -237,8 +237,8 @@
             </dependency>
 			<dependency>
 				<groupId>org.webjars.npm</groupId>
-				<artifactId>coreui__ajax</artifactId>
-				<version>1.0.6</version>
+				<artifactId>coreui__coreui</artifactId>
+				<version>3.4.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vladsch.flexmark</groupId>

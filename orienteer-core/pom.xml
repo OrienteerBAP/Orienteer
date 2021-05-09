@@ -125,7 +125,7 @@
         </dependency>
         <dependency>
             <groupId>org.webjars.npm</groupId>
-            <artifactId>coreui__ajax</artifactId>
+            <artifactId>coreui__coreui</artifactId>
         </dependency>
 		<dependency>
 			<groupId>org.webjars.npm</groupId>

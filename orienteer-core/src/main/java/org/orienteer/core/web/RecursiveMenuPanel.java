@@ -42,11 +42,11 @@ public class RecursiveMenuPanel extends GenericPanel<ODocument> {
                         new Label("name", new ODocumentNameModel(item.getModel())).setRenderBodyOnly(true));
                 item.add(link);
                 if (isActiveItem(urlModel)) {
-                   	link.add(new AttributeAppender("class", " active"));
+                   	link.add(new AttributeAppender("class", "c-active", " "));
                 }
                 if (hasSubItems){
-                    item.add(new AttributeAppender("class", " nav-dropdown"));
-                	link.add(new AttributeAppender("class", " nav-dropdown-toggle"));
+                    item.add(new AttributeAppender("class", "c-sidebar-nav-dropdown", " "));
+                	link.add(new AttributeAppender("class", "nav-dropdown-toggle", " "));
                 }
                 item.add(new RecursiveMenuPanel("subItems", itemModel));
             }

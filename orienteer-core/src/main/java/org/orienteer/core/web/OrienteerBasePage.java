@@ -21,12 +21,15 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.lang.Objects;
+import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
 import org.orienteer.core.component.DefaultPageHeader;
 import org.orienteer.core.component.FAIcon;
 import org.orienteer.core.component.ODocumentPageLink;
+import org.orienteer.core.component.OModulesLoadFailedPanel;
 import org.orienteer.core.component.OrienteerFeedbackPanel;
 import org.orienteer.core.model.ODocumentNameModel;
 import org.orienteer.core.module.PerspectivesModule;
@@ -83,6 +86,7 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 
 		add(createSearchForm("searchForm", Model.of()));
 	}
+	
 
 	private WebMarkupContainer createPerspectivesContainer(String id, IModel<ODocument> perspectiveModel,
 														   IModel<List<ODocument>> perspectivesModel) {
@@ -190,6 +194,11 @@ public abstract class OrienteerBasePage<T> extends BasePage<T> implements IDashb
 	protected void onInitialize() {
 		super.onInitialize();
 		add(newPageHeaderComponent("pageHeader"));
+		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(
+				OrienteerWebApplication.get().getVersion(), OrienteerWebSession.get().isSignedIn() ? OrienteerWebApplication.get().getLoadModeInfo() : "");
+		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
+		if(get("footer")==null) add(new Label("footer", new PropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
+									.setEscapeModelStrings(false).setRenderBodyOnly(true));
 	}
 
 	protected Component newPageHeaderComponent(String componentId)

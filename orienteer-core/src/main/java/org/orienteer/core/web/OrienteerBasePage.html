@@ -1,22 +1,41 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
-  <header class="app-header navbar">
-    <button class="navbar-toggler mobile-sidebar-toggler d-lg-none mr-0" type="button">
-      <span class="navbar-toggler-icon"></span>
+<div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+<div class="c-sidebar-brand d-lg-down-none">
+<svg class="c-sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
+<use xlink:href="assets/brand/coreui.svg#full"></use>
+</svg>
+<svg class="c-sidebar-brand-minimized" width="46" height="46" alt="CoreUI Logo">
+<use xlink:href="assets/brand/coreui.svg#signet"></use>
+</svg>
+</div>
+<ul class="c-sidebar-nav ps ps--active-y" wicket:id="perspectiveItems">
+</ul>
+<button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
+</div>
+<div class="c-wrapper c-fixed-components">
+  <header class="c-header c-header-light c-header-fixed c-header-with-subheader">
+    <button class="c-header-toggler c-class-toggler d-lg-none mfe-auto" type="button" data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
+      <span class="c-icon c-icon-lg fa fa-bars"></span>
     </button>
-    <a class="navbar-brand" href="./home">
+    <a class="c-header-brand d-lg-none" href="./home">
 	    <img class="img-logo mr-0" src="logo.png" wicket:message="src:logo.png.url"/>
 	    <div class="navbar-title">
 	      <wicket:message key="application.name">Orienteer</wicket:message>
 	    </div>
     </a>
 
-    <button class="navbar-toggler sidebar-toggler d-md-down-none mr-auto" type="button">
-		  <span class="navbar-toggler-icon"></span>
+    <button class="c-header-toggler c-class-toggler mfs-3 d-md-down-none" type="button"  data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
+		  <span class="c-icon c-icon-lg fa fa-bars"></span>
 	  </button>
 
+<!-- <ul class="c-header-nav d-md-down-none">
+<li class="c-header-nav-item px-3"><a class="c-header-nav-link" href="#">Dashboard</a></li>
+<li class="c-header-nav-item px-3"><a class="c-header-nav-link" href="#">Users</a></li>
+<li class="c-header-nav-item px-3"><a class="c-header-nav-link" href="#">Settings</a></li>
+</ul>-->
 
-    <ul class="nav navbar-nav d-md-down-none ml-auto">
-      <li class="nav-item px-1">
+    <ul class="c-header-nav ml-auto mr-4">
+      <li class="c-header-nav-item d-md-down-none mx-2">
         <form wicket:id="searchForm" class="sidebar-search">
           <div class="input-group custom-search-form">
             <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
@@ -28,15 +47,7 @@
           </div>
         </form>
       </li>
-    </ul>
-    <ul class="nav navbar-nav px-2">
-      <li class="nav-item d-lg-none">
-        <a class="nav-link" href="/search">
-          <i class="fa fa-search"></i>
-        </a>
-      </li>
-
-      <li wicket:id="perspectivesContainer" class="nav-item dropdown">
+      <li wicket:id="perspectivesContainer" class="c-header-nav-item d-md-down-none mx-2 dropdown">
         <button class="btn btn-secondary dropdown-toggle" wicket:id="perspectiveButton" type="button" id="perspectiveMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa-fw" wicket:id="icon"></i>
           <span wicket:id="name" class="d-md-down-none"></span>
@@ -50,7 +61,7 @@
           </div>
         </div>
       </li>
-      <li class="nav-item dropdown px-2">
+      <li class="c-header-nav-item d-md-down-none mx-2 dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="accountMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fa fa-user fa-fw"></i>
           <span wicket:id="username"></span>
@@ -73,21 +84,20 @@
         </div>
       </li>
     </ul>
+    <div wicket:id="pageHeader" class="c-subheader px-3"></div>
   </header>
 
-  <div class="app-body">
-    <div class="sidebar">
-      <nav class="sidebar-nav open">
-        <ul class="nav" wicket:id="perspectiveItems"></ul>
-      </nav>
-      <button class="sidebar-minimizer brand-minimizer" type="button"></button>
-    </div>
-    <main class="main">
-      <div wicket:id="pageHeader"></div>
+  <div class="c-body">
+    <main class="c-main">
       <div class="container-fluid">
         <div wicket:id="feedbacks"></div>
         <wicket:child></wicket:child>
       </div>
     </main>
   </div>
+  <footer class="c-footer">
+    <div wicket:id="footer"></div>
+    <div wicket:id="poweredBy" class="powered"></div>
+  </footer>
+</div>
 </wicket:extend>

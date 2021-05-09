@@ -102,6 +102,11 @@
         </dependency>-->
         <!-- <dependency>
             <groupId>org.orienteer</groupId>
+            <artifactId>orienteer-metrics</artifactId>
+            <version>${dollar}{orienteer.version}</version>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>org.orienteer</groupId>
             <artifactId>orienteer-object</artifactId>
             <version>${dollar}{orienteer.version}</version>
         </dependency>-->

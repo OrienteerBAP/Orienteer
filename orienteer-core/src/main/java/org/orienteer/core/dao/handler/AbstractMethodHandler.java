@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import org.joor.Reflect;
 import org.orienteer.core.dao.DAO;
+import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.IMethodHandler;
 import org.orienteer.core.dao.IODocumentWrapper;
 
@@ -149,7 +150,12 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 				return prepareForJava((Iterable<ODocument>)result, requiredClass, genericType);
 			} else if(Collection.class.isAssignableFrom(requiredClass)) {
 				Reflect collection = onRealClass(requiredClass).create();
-				collection.call("addAll", result);
+				if(probe!=null) collection.call("addAll", result);
+				else {
+					Class<?> elementClass = typeToRequiredClass(genericType, requiredClass);
+					if(elementClass==null 
+							|| elementClass.getAnnotation(DAOOClass.class)==null) collection.call("addAll", result);
+				}
 				return collection.get();
 			}
 			else throw new IllegalStateException("Can't prepare required return class: "+requiredClass +" from "+result.getClass());
@@ -187,7 +193,7 @@ public abstract class AbstractMethodHandler<T> implements IMethodHandler<T>{
 		else {
 			List<Object> inner = new ArrayList<>();
 			for (ODocument oDocument : resultSet) {
-				inner.add(prepareForJava(oDocument, requiredSubType));
+				if(oDocument!=null) inner.add(prepareForJava(oDocument, requiredSubType));
 			}
 			ret = inner;
 		}

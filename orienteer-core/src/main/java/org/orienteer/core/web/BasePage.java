@@ -48,16 +48,16 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 {
 	private static final long serialVersionUID = 1L;
 
-	public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
+//	public static final CssResourceReference BOOTSTRAP_CSS = new WebjarsCssResourceReference("bootstrap/current/css/bootstrap.min.css");
 	public static final CssResourceReference FONT_AWESOME_CSS = new WebjarsCssResourceReference("font-awesome/current/css/font-awesome.min.css");
 	public static final CssResourceReference SIMPLE_LINE_ICONS_CSS = new WebjarsCssResourceReference("simple-line-icons/current/css/simple-line-icons.css");
-	public static final CssResourceReference COREUI_CSS = new WebjarsCssResourceReference("coreui__ajax/current/AJAX_Full_Project_GULP/src/css/style.min.css");
+	public static final CssResourceReference COREUI_CSS = new WebjarsCssResourceReference("coreui__coreui/current/dist/css/coreui.min.css");
 	public static final CssResourceReference ORIENTEER_COREUI_CSS = new CssResourceReference(BasePage.class, "orienteer-coreui.css");
 
-	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.bundle.min.js");
+//	public static final JavaScriptResourceReference BOOTSTRAP_JS = new WebjarsJavaScriptResourceReference("bootstrap/current/js/bootstrap.bundle.min.js");
 	public static final JavaScriptResourceReference TETHER_JS = new WebjarsJavaScriptResourceReference("tether/current/js/tether.min.js");
 	public static final JavaScriptResourceReference PACE_JS = new WebjarsJavaScriptResourceReference("pace/current/pace.min.js");
-	public static final JavaScriptResourceReference COREUI_JS = new WebjarsJavaScriptResourceReference("coreui__ajax/current/Static_Starter_GULP/src/js/app.js");
+	public static final JavaScriptResourceReference COREUI_JS = new WebjarsJavaScriptResourceReference("coreui__coreui/current/dist/js/coreui.bundle.min.js");
 
 
 	protected static final CssResourceReference BOOTSTRAP_DATE_PICKER_CSS       = new WebjarsCssResourceReference("bootstrap-datepicker/current/css/bootstrap-datepicker3.min.css");
@@ -126,22 +126,16 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 		body.add(new AttributeAppender("class", " "+getBodyAppSubClasses()));
 
 		if(get("title")==null) add(new Label("title", getTitleModel()).add(UpdateOnActionPerformedEventBehavior.INSTANCE_ALWAYS_FOR_CHANGING));
-		IModel<String> poweredByModel = new StringResourceModel("poweredby").setParameters(
-				OrienteerWebApplication.get().getVersion(), OrienteerWebSession.get().isSignedIn() ? OrienteerWebApplication.get().getLoadModeInfo() : "");
 		if(get("modulesFailed")==null) add(new OModulesLoadFailedPanel("modulesFailed"));
-		if(get("poweredBy")==null) add(new Label("poweredBy", poweredByModel).setEscapeModelStrings(false));
-		if(get("footer")==null) add(new Label("footer", new PropertyModel<List<ODocument>>(new PropertyModel<ODocument>(this, "perspective"), "footer"))
-									.setEscapeModelStrings(false).setRenderBodyOnly(true));
 		if(get("indicator")==null) add(new AjaxIndicator("indicator"));
 		//add(new BodyTagAttributeModifier("class", Model.of("sidebar"), this));
 	}
 
 	@Override
 	public void renderHead(IHeaderResponse response) {
-		response.render(new PriorityHeaderItem(CssHeaderItem.forReference(BOOTSTRAP_CSS)));
+		response.render(CssHeaderItem.forReference(COREUI_CSS));
 		response.render(CssHeaderItem.forReference(FONT_AWESOME_CSS));
 		response.render(CssHeaderItem.forReference(SIMPLE_LINE_ICONS_CSS));
-		response.render(CssHeaderItem.forReference(COREUI_CSS));
 		response.render(CssHeaderItem.forReference(ORIENTEER_COREUI_CSS));
 		super.renderHead(response);
 		addBootstrapDatepicker(response);
@@ -149,7 +143,6 @@ public abstract class BasePage<T> extends GenericWebPage<T>
 				getApplication().getJavaScriptLibrarySettings();
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem
 				.forReference(javaScriptSettings.getJQueryReference())));
-		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(BOOTSTRAP_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(TETHER_JS)));
 		response.render(new PriorityHeaderItem(JavaScriptHeaderItem.forReference(PACE_JS)));
 		response.render(JavaScriptHeaderItem.forReference(COREUI_JS).setDefer(true));
