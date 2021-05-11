@@ -6,6 +6,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.method.OFilter;
@@ -23,7 +24,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-@OMethod(order=900+70,filters={
+@OMethod(order=900+70, bootstrap = BootstrapType.LIGHT,
+	filters={
 		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
 })
 public class UnhideWidgetCommand<T> extends AbstractModalWindowCommand<ODocument> {

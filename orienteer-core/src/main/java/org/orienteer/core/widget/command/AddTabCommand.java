@@ -8,6 +8,7 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.string.Strings;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AbstractModalWindowCommand;
 import org.orienteer.core.component.property.DisplayMode;
@@ -27,7 +28,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  * @param <T> the type of main object for a {@link DashboardPanel}
  */
-@OMethod(order=900+50,
+@OMethod(order=900+50, bootstrap = BootstrapType.LIGHT,
 	filters={
 			@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
 	})

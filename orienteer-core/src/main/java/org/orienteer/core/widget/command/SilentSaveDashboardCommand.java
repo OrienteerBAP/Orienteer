@@ -3,6 +3,7 @@ package org.orienteer.core.widget.command;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.property.DisplayMode;
@@ -17,7 +18,8 @@ import java.util.Optional;
 /**
  * Command to save silently current dashboard
  */
-@OMethod(order=900+80,filters={
+@OMethod(order=900+80, bootstrap = BootstrapType.LIGHT,
+	filters={
 		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
 })
 public class SilentSaveDashboardCommand extends AjaxCommand<ODocument> {

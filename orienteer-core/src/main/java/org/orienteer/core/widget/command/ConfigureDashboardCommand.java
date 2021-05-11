@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.model.IModel;
+import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.command.AjaxCommand;
 import org.orienteer.core.component.property.DisplayMode;
@@ -20,7 +21,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * Command to enable modification of dashboard
  */
-@OMethod(order=900+100,filters={
+@OMethod(order=900+100, bootstrap = BootstrapType.LIGHT,
+	filters={
 		@OFilter(fClass = PlaceFilter.class, fData = "DASHBOARD_SETTINGS"),
 })
 public class ConfigureDashboardCommand extends AjaxCommand<ODocument> {

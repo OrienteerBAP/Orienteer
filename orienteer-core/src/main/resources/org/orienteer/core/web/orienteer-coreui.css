@@ -25,6 +25,10 @@ a.c-sidebar-brand {
     margin-right: unset !important;
 }
 
+.breadcrumb > .breadcrumb-menu > .btn-group > div {
+    padding-left:0.5em;
+}
+
 tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
 {
 	margin-right:0.5em;
