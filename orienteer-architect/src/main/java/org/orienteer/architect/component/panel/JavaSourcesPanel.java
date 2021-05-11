@@ -55,7 +55,7 @@ public class JavaSourcesPanel extends GenericPanel<List<OArchitectOClass>> {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.render(CssHeaderItem.forReference(BasePage.BOOTSTRAP_CSS));
+        response.render(CssHeaderItem.forReference(BasePage.COREUI_CSS));
         response.render(JavaScriptHeaderItem.forReference(COPY_JS));
 
         response.render(OnLoadHeaderItem.forScript(initCopyJs()));

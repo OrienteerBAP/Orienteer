@@ -5,12 +5,15 @@ package org.orienteer.core.component;
  */
 public enum BootstrapType
 {
-	DEFAULT("default", "btn-default"),
 	PRIMARY("primary", "btn-primary"),
+	SECONDARY("secondary", "btn-secondary"),
 	SUCCESS("success", "btn-success"),
 	INFO("info", "btn-info"),
 	WARNING("warning", "btn-warning"),
-	DANGER("danger", "btn-danger");
+	DANGER("danger", "btn-danger"),
+	LIGHT("light", "btn-light"),
+	DARK("dark", "btn-dark"),
+	LINL("link", "btn-link");
 	
 	private final String baseCssClass;
 	private final String btnCssClass;

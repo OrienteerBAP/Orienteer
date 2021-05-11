@@ -34,7 +34,7 @@ public @interface OMethod{
 	//visuals
 	public String titleKey() default "";
 	public FAIconType icon() default FAIconType.list;
-	public BootstrapType bootstrap() default BootstrapType.DEFAULT;
+	public BootstrapType bootstrap() default BootstrapType.PRIMARY;
 	public boolean changingDisplayMode() default false;
 	public boolean changingModel() default false;	
 	public int order() default 0;

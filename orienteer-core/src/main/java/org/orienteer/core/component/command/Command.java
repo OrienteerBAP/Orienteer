@@ -48,7 +48,7 @@ public abstract class Command<T> extends GenericPanel<T> implements IBootstrapAw
 	private String icon;
 	private AbstractLink link;
 	private String btnCssClass;
-	private BootstrapType bootstrapType = BootstrapType.DEFAULT;
+	private BootstrapType bootstrapType = BootstrapType.PRIMARY;
 	private BootstrapSize bootstrapSize = BootstrapSize.DEFAULT;
 	/**
 	 * If true - activate on event {@link UpdateOnActionPerformedEventBehavior} UpdateAlwaysOnActionPerformedEventBehavior/UpdateChangingOnActionPerformedEventBehavior 
