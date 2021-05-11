@@ -1,13 +1,13 @@
 <wicket:extend xmlns:wicket="http://www.w3.org/1999/xhtml">
 <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
-<div class="c-sidebar-brand d-lg-down-none">
-<svg class="c-sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
-<use xlink:href="assets/brand/coreui.svg#full"></use>
-</svg>
-<svg class="c-sidebar-brand-minimized" width="46" height="46" alt="CoreUI Logo">
-<use xlink:href="assets/brand/coreui.svg#signet"></use>
-</svg>
-</div>
+<a class="c-sidebar-brand d-lg-down-none" href="./home">
+
+<img class="img-logo mr-0" src="logo.png" wicket:message="src:logo.png.url"/>
+<span class="navbar-title c-sidebar-brand-full">
+  <wicket:message key="application.name">Orienteer</wicket:message>
+</span>
+	    
+</a>
 <ul class="c-sidebar-nav ps ps--active-y" wicket:id="perspectiveItems">
 </ul>
 <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
@@ -39,11 +39,11 @@
         <form wicket:id="searchForm" class="sidebar-search">
           <div class="input-group custom-search-form">
             <input type="text" class="form-control" placeholder="Search..." wicket:id="query">
-            <span class="input-group-btn">
-              <button class="btn btn-default" type="button" wicket:id="search">
+            <div class="input-group-append">
+              <button class="btn btn-default input-group-text" type="button" wicket:id="search">
                 <i class="fa fa-search"></i>
               </button>
-            </span>
+            </div>
           </div>
         </form>
       </li>
@@ -53,7 +53,7 @@
           <span wicket:id="name" class="d-md-down-none"></span>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="perspectiveMenuButton">
-          <div class="dropdown-header text-center">
+          <div class="dropdown-header bg-light py-2">
             <strong><wicket:message key="menu.perspective">Perspective</wicket:message></strong>
           </div>
           <div wicket:id="perspectives">
@@ -68,8 +68,8 @@
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountMenuButton">
 
-          <div class="dropdown-header text-center">
-            <strong><wicket:message key="menu.settings">Settings</wicket:message></strong>
+          <div class="dropdown-header bg-light py-2">
+            <strong><wicket:message key="menu.account">Account</wicket:message></strong>
           </div>
           <wicket:enclosure child="logout">
             <a class="dropdown-item" wicket:id="myProfile">

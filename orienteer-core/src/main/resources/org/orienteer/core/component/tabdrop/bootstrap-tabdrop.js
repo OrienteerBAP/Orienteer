@@ -57,11 +57,11 @@
 
         if (options.align === "left") {
             this.dropdown = $('<li class="dropdown d-none pull-left tabdrop nav-item">' +
-                '<a class="dropdown-toggle nav-link" data-toggle="dropdown" href="javascript:;">' +
+                '<a class="dropdown-toggle nav-link" data-toggle="dropdown">' +
                 '<span class="display-tab"></span><b class="caret"></b></a><ul class="dropdown-menu tabdrop-menu"></ul></li>');
         } else {
             this.dropdown = $('<li class="dropdown d-none pull-right tabdrop nav-item">' +
-                '<a class="dropdown-toggle nav-link" data-toggle="dropdown" href="javascript:;"><span class="display-tab">' +
+                '<a class="dropdown-toggle nav-link" data-toggle="dropdown"><span class="display-tab">' +
                 '</span><b class="caret"></b></a><ul class="dropdown-menu tabdrop-menu"></ul></li>');
         }
 

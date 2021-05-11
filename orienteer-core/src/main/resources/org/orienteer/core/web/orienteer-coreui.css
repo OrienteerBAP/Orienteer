@@ -1,3 +1,21 @@
+.c-header .img-logo, .c-sidebar-brand .img-logo {
+    width: 30px;
+    margin-right: 5px;
+    overflow: hidden;
+	float: left;
+	margin-top:3px;
+}
+
+.c-header .navbar-title, .c-sidebar-brand .navbar-title {
+	vertical-align: sub;
+	--display: inline;
+	margin-left: 0.5em;
+}
+
+a.c-sidebar-brand {
+	text-decoration: none;
+}
+
 .breadcrumb {
 	width: 100%;
 }
@@ -7,46 +25,20 @@
     margin-right: unset !important;
 }
 
-
-/*.app-header.navbar .navbar-brand .img-logo {
-    width: 30px;
-    margin-right: 5px;
-    overflow: hidden;
-	float: left;
-	margin-top:3px;
-}
-
-.brand-minimized .app-header.navbar .navbar-brand .img-logo {
-    display: none;
-}
-
-.brand-minimized .app-header.navbar .navbar-brand {
-    background-image:url(logo.png);
-}
-
-.brand-minimized .app-header.navbar .navbar-brand .navbar-title {
-    display: none;
-}
-
-.app-header.navbar .navbar-brand {
-    background-image: none;
-}
-
-.app-header.navbar .navbar-brand .navbar-title {
-	vertical-align: sub;
-	display: inline;
-}
-
-.navigatorLabel {
-    text-align: center;
-}
-
 tr.commandstoolbar a.btn, tr.commandstoolbar span.btn
 {
 	margin-right:0.5em;
 }
 
-//Checkbox column
+tr.commandstoolbar
+{
+	background: #f5f5f5;
+}
+
+tr.commandstoolbar div{
+	float:left;
+}
+
 td.cb-clmn
 {
 	width: 15px;
@@ -62,34 +54,25 @@ td.combobox-column
 	width: 70px;
 }
 
-tr.commandstoolbar
-{
-	background: #f5f5f5;
+.navigatorLabel {
+    text-align: center;
 }
 
-tr.commandstoolbar div{
-	float:left;
+li.strict caption {
+	display: none;
 }
 
-.btn-with-whitespace11::after{
-	display:block;
-	clear:both;
-	content:" ";
+li.strict caption {
+	display: none;
 }
 
-footer div.powered
-{
-	text-align:center;
-	width:100%;
+li.strict div.panel-body {
+    padding: 0;
 }
 
 td.st-label
 {
 	width: 30%;
-}
-
-.form-control {
-	display: inline-block;
 }
 
 td.st-label label{
@@ -125,17 +108,36 @@ td.st-value textarea
 	height: 12em;
 }
 
-//Only in widgets
-li.strict caption {
-	display: none;
+.st-value .table {
+	margin-bottom: 0;
 }
 
-//widgets headers
+.st-value .table  th {
+	border-top: 0;
+	border-bottom: 0;
+}
+
+
+.headers .sort {
+	padding-left: 0.5em;
+}
+
+footer div.powered
+{
+	text-align:center;
+	width:100%;
+}
+
+.card-header.tabs {
+	padding-bottom:0;
+	border-bottom:0;
+}
+
 .ui-sortable:not(.ui-sortable-disabled) .card-header {
     cursor: move;
 }
 
-//wicket modal window header fix
+
 div.wicket-modal h3.w_captionText {
     font-size: 16.3833px;
 }
@@ -168,6 +170,54 @@ li.fullscreen {
 	overflow-y: hidden !important;
 }
 
+
+
+/*
+
+.brand-minimized .app-header.navbar .navbar-brand .img-logo {
+    display: none;
+}
+
+.brand-minimized .app-header.navbar .navbar-brand {
+    background-image:url(logo.png);
+}
+
+.brand-minimized .app-header.navbar .navbar-brand .navbar-title {
+    display: none;
+}
+
+.app-header.navbar .navbar-brand {
+    background-image: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+.btn-with-whitespace11::after{
+	display:block;
+	clear:both;
+	content:" ";
+}
+
+
+.form-control {
+	display: inline-block;
+}
+
+
+
+
+
+
+
+
 .password-panel-field {
 	margin-bottom: 5px;
 }
@@ -180,13 +230,6 @@ li.fullscreen {
 	margin-bottom: 0 !important;
 }
 
-li.strict caption {
-	display: none;
-}
-
-li.strict div.panel-body {
-    padding: 0;
-}
 
 @media (max-width: 768px) {
 	.navbar-brand {

@@ -2,10 +2,21 @@
     display: inline-flex;
 }
 
-.input-group-addon {
+.bootstrap-data-picker .time > * {
+	display: inline-flex;
+}
+
+.time .time-separator {
+	font-size: inherit;
+	font-weight: bold;
+	margin-top: 0.5em;
+}
+
+.input-group-append {
     text-decoration: none !important;
 }
 
-.input-group-addon:hover {
+.input-group-append:hover {
     background-color: #4ebbb5 !important;
 }
+
