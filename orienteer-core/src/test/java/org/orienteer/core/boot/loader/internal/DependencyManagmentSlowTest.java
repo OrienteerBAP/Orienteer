@@ -3,6 +3,8 @@ package org.orienteer.core.boot.loader.internal;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.junit.Ignore;
@@ -18,6 +20,8 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(OrienteerTestRunner.class)
+@Singleton
 public class DependencyManagmentSlowTest {
 
 	@Inject
@@ -27,7 +31,7 @@ public class DependencyManagmentSlowTest {
     public void resolveDependencies() {
         String groupId = "org.orienteer";
         String artifactId = "orienteer-birt";
-        String version   = "1.3-SNAPSHOT";
+        String version   = "2.0-SNAPSHOT";
         String gav = String.format("%s:%s:%s", groupId, artifactId, version);
         List<Artifact> resolvedDependency = moduleManager.resolveAndGetArtifactDependencies(new DefaultArtifact(gav));
         assertTrue("resolved dependencies can't be 0", resolvedDependency.size() > 0);

@@ -76,7 +76,9 @@ class AetherUtils implements IReindexSupport {
             node = system.collectDependencies(session, collectRequest).getRoot();
         } catch (DependencyCollectionException e) {
             if (LOG.isDebugEnabled()) {
-                LOG.warn("Can't collect dependencies for: {}", dependency, e);
+                LOG.warn("Can't collect dependencies for `{}`", dependency, e);
+            } else {
+            	LOG.warn("Can't collect dependencies for `{}` due to: {}", dependency, e.getMessage());
             }
         }
         if (node != null) {
