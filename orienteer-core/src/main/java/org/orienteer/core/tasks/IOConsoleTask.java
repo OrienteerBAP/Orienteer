@@ -66,12 +66,13 @@ public interface IOConsoleTask extends IOTask<IOTaskSessionPersisted> {
 									}
 								}
 							});
-						BufferedReader reader =  new BufferedReader(new InputStreamReader(innerProcess.getInputStream(),charset));
-						String curOutString = "";
-							while ((curOutString = reader.readLine())!= null) {
-								runtime.incrementCurrentProgress();
-								runtime.getOTaskSessionPersisted().appendOutput(curOutString).persist();
-							}
+						try(BufferedReader reader =  new BufferedReader(new InputStreamReader(innerProcess.getInputStream(),charset))) {
+							String curOutString = "";
+								while ((curOutString = reader.readLine())!= null) {
+									runtime.incrementCurrentProgress();
+									runtime.getOTaskSessionPersisted().appendOutput(curOutString).persist();
+								}
+						} 
 					} catch (IOException e) {
 						runtime.getOTaskSessionPersisted().appendOutput(e.getMessage()).persist();
 					}	

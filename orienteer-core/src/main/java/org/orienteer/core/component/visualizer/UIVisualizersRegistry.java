@@ -26,7 +26,6 @@ public class UIVisualizersRegistry
 	public static final String VISUALIZER_PASSWORD = PasswordVisualizer.NAME;
 	public static final String VISUALIZER_HTML = HTMLVisualizer.NAME;
 	public static final String VISUALIZER_URL_LINK = UrlLinkVisualizer.NAME;
-	public static final String VISUALIZER_MARKDOWN = MarkDownVisualizer.NAME;
 	public static final String VISUALIZER_LOCALIZATION = LocalizationVisualizer.NAME;
 	public static final String VISUALIZER_IMAGE = ImageVisualizer.NAME;
 	public static final String VISUALIZER_SUGGEST = SuggestVisualizer.NAME;
@@ -52,7 +51,6 @@ public class UIVisualizersRegistry
 		registerUIComponentFactory(new PasswordVisualizer());
 		registerUIComponentFactory(new HTMLVisualizer());
 		registerUIComponentFactory(new UrlLinkVisualizer());
-		registerUIComponentFactory(new MarkDownVisualizer());
 		registerUIComponentFactory(new LocalizationVisualizer());
 		registerUIComponentFactory(new ImageVisualizer());
 		registerUIComponentFactory(new SuggestVisualizer());

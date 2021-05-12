@@ -2,7 +2,6 @@ package org.orienteer.core.model;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.model.IModel;
-import org.apache.xmpbox.schema.ExifSchema;
 
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 
