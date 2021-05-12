@@ -1,3 +1,7 @@
+.c-app {
+	background-color: #f0f0f0;
+}
+
 .c-header .img-logo, .c-sidebar-brand .img-logo {
     width: 30px;
     margin-right: 5px;
