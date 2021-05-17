@@ -61,7 +61,7 @@ public class ProcessDefinitionFormWidget extends AbstractFormWidget {
 
 	@Override
 	protected ODocument resolveODocument(FormKey formKey) {
-		return new ODocument(formKey.getSchemClassName());
+		return new ODocument(formKey.getSchemaClassName());
 	}
 
 }

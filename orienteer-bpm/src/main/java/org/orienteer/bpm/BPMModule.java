@@ -13,6 +13,7 @@ import org.orienteer.bpm.camunda.handler.HandlersManager;
 import org.orienteer.bpm.camunda.handler.IEntityHandler;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
@@ -62,6 +63,7 @@ public class BPMModule extends AbstractOrienteerModule{
 		app.registerWidgets("org.orienteer.bpm.component.widget");
 		
 		app.getOrientDbSettings().addORecordHooks(BpmnHook.class);
+		OMethodsManager.get().addModule(BPMModule.class);
 
 		processApplicationReference = deployApplication();
 	}
@@ -69,6 +71,7 @@ public class BPMModule extends AbstractOrienteerModule{
 	@Override
 	public void onDestroy(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onDestroy(app, db);
+		OMethodsManager.get().removeModule(BPMModule.class);
 		app.unregisterWidgets("org.orienteer.bpm.component.widget");
 		app.unmountPackage("org.orienteer.bpm.web");
 		app.getOrientDbSettings().removeORecordHooks(BpmnHook.class);

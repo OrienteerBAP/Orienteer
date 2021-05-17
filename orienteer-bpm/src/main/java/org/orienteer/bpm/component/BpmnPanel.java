@@ -108,6 +108,7 @@ public class BpmnPanel extends AbstractCommandsEnabledPanel<ODocument> {
 			
 			@Override
 			protected void onConfigure() {
+				super.onConfigure();
 				setVisible(!BpmnPanel.this.modeModel.getObject().canModify());
 				setEnabled(BpmnPanel.this.getModelObject()!=null);
 			};

@@ -44,7 +44,7 @@ public class FormKey implements IClusterable{
 		return ret;
 	}
 	
-	public String getSchemClassName() {
+	public String getSchemaClassName() {
 		return schemaClassName;
 	}
 

@@ -23,7 +23,7 @@ public class HistoricScopeInstanceEventHandler<T extends HistoricScopeInstanceEv
     	super.applySchema(helper);
         helper.oClass(OCLASS_NAME, HistoricEventHandler.OCLASS_NAME).domain(OClassDomain.SYSTEM)
                 .oProperty("durationInMillis", OType.LONG, 110)
-                .oProperty("startTime", OType.DATETIME, 120)
-                .oProperty("endTime", OType.DATETIME, 130);
+                .oProperty("startTime", OType.DATETIME, 120).markDisplayable()
+                .oProperty("endTime", OType.DATETIME, 130).markDisplayable();
     }
 }

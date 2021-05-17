@@ -146,9 +146,9 @@ public class OPersistenceSession extends AbstractPersistenceSession {
 
 	@Override
 	public void flush() {
-		/*boolean isInTransaction = db.getTransaction().isActive();
+		boolean isInTransaction = db.getTransaction().isActive();
 		db.commit();
-		if(isInTransaction) db.begin();*/
+		if(isInTransaction) db.begin();
 	}
 
 	@Override

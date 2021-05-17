@@ -18,6 +18,7 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.OCommandSQL;
+import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.query.OSQLSynchQuery;
 import org.apache.wicket.core.util.lang.PropertyResolver;
 import org.apache.wicket.core.util.lang.PropertyResolver.IGetAndSet;
@@ -331,8 +332,10 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	
 	protected T querySingle(OPersistenceSession session, String sql, Object... args) {
 		ODatabaseDocument db = session.getDatabase();
-		List<ODocument> ret = db.query(new OSQLSynchQuery<>(sql, 1), args);
-		return ret==null || ret.isEmpty()?null:mapToEntity(ret.get(0), null, session);
+		try(OResultSet rs = db.query(sql, args)) {
+			if(rs.hasNext()) return mapToEntity((ODocument)rs.next().getElement().orElse(null), null, session);
+			else return null;
+		}
 	}
 	
 	protected List<T> queryList(final OPersistenceSession session, String sql, Object... args) {
@@ -346,7 +349,7 @@ public abstract class AbstractEntityHandler<T extends DbEntity> implements IEnti
 	
 	protected void command(OPersistenceSession session, String sql, Object... args) {
 		ODatabaseDocument db = session.getDatabase();
-		db.command(new OCommandSQL(sql)).execute(args);
+		db.command(sql, args);
 	}
 	
 	protected List<T> query(final OPersistenceSession session, org.camunda.bpm.engine.query.Query<?, ? super T> query, String... ignoreFileds) {

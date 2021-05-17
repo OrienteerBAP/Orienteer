@@ -21,8 +21,10 @@ public class OPersistenceSessionFactory implements SessionFactory {
 	public Session openSession() {
 		OrienteerWebApplication app = OrienteerWebApplication.lookupApplication();
 		IOrientDbSettings settings = app.getOrientDbSettings();
-		ODatabaseSession db = settings.getContext().cachedPool(settings.getDbName(), settings.getAdminUserName(), settings.getAdminPassword())
-				.acquire();
+		/*ODatabaseSession db = settings.getContext().cachedPool(settings.getDbName(), settings.getAdminUserName(), settings.getAdminPassword())
+				.acquire(); */
+		ODatabaseSession db = settings.getContext().open(settings.getDbName(), settings.getAdminUserName(), settings.getAdminPassword());
+		if(db.isClosed()) throw new IllegalStateException("Obtained from cached pool ODatabaseSession is closed");
 		return new OPersistenceSession(db);
 	}
 
