@@ -25,6 +25,9 @@ import org.orienteer.core.web.ODocumentPage;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Method/Button to run new process per current process definition
+ */
 @OMethod(titleKey = "command.run", 
 		 icon = FAIconType.play,
 		 bootstrap = BootstrapType.SUCCESS,
