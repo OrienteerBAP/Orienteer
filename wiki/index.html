@@ -47,7 +47,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE." />
 <link id="faviconLink" rel="shortcut icon" href="favicon.ico">
-<title>Orienteer Wiki — </title>
+<title>Orienteer Wiki — Open Source Business Application Platform</title>
 <!--~~ This is a Tiddlywiki file. The points of interest in the file are marked with this pattern ~~-->
 
 <!--~~ Raw markup ~~-->
@@ -145,6 +145,8 @@ Error message and password prompt
 
 <li>$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/close-all</li>
 
+<li>$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/home</li>
+
 <li>$:/config/Plugins/Disabled/$:/plugins/tiddlywiki/github-fork-ribbon</li>
 
 <li>$:/config/plugins/menubar/MenuItems/Visibility/$:/plugins/tiddlywiki/menubar/items/pagecontrols</li>
@@ -171,6 +173,10 @@ Error message and password prompt
 
 <li>$:/isEncrypted</li>
 
+<li>$:/orienteer/doc-macros</li>
+
+<li>$:/orienteer/styles</li>
+
 <li>$:/palette</li>
 
 <li>$:/plugins/snowgoon88/edit-comptext</li>
@@ -186,6 +192,8 @@ Error message and password prompt
 <li>$:/plugins/tiddlywiki/markdown</li>
 
 <li>$:/plugins/tiddlywiki/menubar</li>
+
+<li>$:/plugins/tobibeer/plantuml</li>
 
 <li>$:/SiteSubtitle</li>
 
@@ -205,6 +213,8 @@ Error message and password prompt
 
 <li>$:/state/add-plugin-info/$:/temp/ServerConnection/https://tiddlywiki.com/library/v5.1.23/index.html/$:/temp/RemoteAssetInfo/https://tiddlywiki.com/library/v5.1.23/index.html/$:/plugins/tiddlywiki/tw5.com-docs</li>
 
+<li>$:/state/plugin-info--1890410626-$:/plugins/tiddlywiki/menubar--524028290</li>
+
 <li>$:/state/plugin-info--896887961-$:/plugins/tiddlywiki/github-fork-ribbon</li>
 
 <li>$:/state/plugin-info--896887961-$:/plugins/tiddlywiki/github-fork-ribbon--57095528</li>
@@ -221,6 +231,10 @@ Error message and password prompt
 
 <li>$:/state/plugin-info--896887961-$:/plugins/tiddlywiki/menubar--331413611</li>
 
+<li>$:/state/plugin-info--896887961-$:/plugins/tobibeer/plantuml</li>
+
+<li>$:/state/plugin-info--896887961-$:/plugins/tobibeer/plantuml---718886218</li>
+
 <li>$:/state/plugin-info-1856074772-$:/plugins/tiddlywiki/github-fork-ribbon--1537306773</li>
 
 <li>$:/state/showeditpreview</li>
@@ -233,6 +247,8 @@ Error message and password prompt
 
 <li>$:/state/tab-1749438307</li>
 
+<li>$:/state/tab/moresidebar-1850697562</li>
+
 <li>$:/state/tab/sidebar--595412856</li>
 
 <li>$:/state/toc/Content-Dev Documentation-117505069</li>
@@ -243,11 +259,25 @@ Error message and password prompt
 
 <li>$:/state/toc/Content-Getting Started-263827834</li>
 
+<li>$:/state/toc/Content-Guidebook-117505069</li>
+
+<li>$:/state/toc/Content-Guidebook-1252833741</li>
+
+<li>$:/state/toc/Content-Guidebook-255598929</li>
+
 <li>$:/state/toc/Content-HowTo-117505069</li>
 
 <li>$:/state/toc/Content-HowTo-1252833741</li>
 
 <li>$:/state/toc/Content-HowTo-263827834</li>
+
+<li>$:/state/toc/Content/Guidebook-Creating Your First Business Application-1252833741</li>
+
+<li>$:/state/toc/Content/Guidebook-Creating Your First Business Application-255598929</li>
+
+<li>$:/state/toc/Content/Guidebook-Getting Started-117505069</li>
+
+<li>$:/state/tree/$:/orienteer/</li>
 
 <li>$:/status/RequireReloadDueToPluginChange</li>
 
@@ -265,15 +295,21 @@ Error message and password prompt
 
 <li>Content</li>
 
+<li>Creating Your First Business Application</li>
+
 <li>Custom Guice Module</li>
 
 <li>Dashboard Scopes</li>
 
 <li>Dev Documentation</li>
 
+<li>Developing The Data Model</li>
+
 <li>External Resources</li>
 
 <li>Getting Started</li>
+
+<li>Guidebook</li>
 
 <li>Home</li>
 
@@ -292,6 +328,8 @@ Error message and password prompt
 <li>Key Benefits</li>
 
 <li>Naming Convention</li>
+
+<li>OrientDB</li>
 
 <li>Property Types Support</li>
 
@@ -324,6 +362,9 @@ Error message and password prompt
 </div>
 <div created="20210519193613830" modified="20210519193613830" title="$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/close-all">
 <pre>show</pre>
+</div>
+<div created="20210523001051870" modified="20210523001056738" title="$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/home">
+<pre>hide</pre>
 </div>
 <div created="20210521134356859" modified="20210521181332964" title="$:/config/Plugins/Disabled/$:/plugins/tiddlywiki/github-fork-ribbon">
 <pre>yes</pre>
@@ -10222,10 +10263,31 @@ Error message and password prompt
 <div status="complete" title="$:/Import">
 <pre>The following tiddlers were imported:
 
-# [[$:/plugins/sq/editor-autolist]]</pre>
+# [[$:/plugins/tobibeer/plantuml]]</pre>
 </div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
+</div>
+<div created="20210522173815311" modified="20210522174047641" tags="$:/tags/Macro" title="$:/orienteer/doc-macros" type="text/vnd.tiddlywiki">
+<pre>\define .tip(_) &lt;div class=&quot;doc-icon-block&quot;&gt;&lt;div class=&quot;doc-block-icon&quot;&gt;{{$:/core/images/tip}}&lt;/div&gt; $_$&lt;/div&gt;</pre>
+</div>
+<div created="20210522201557876" modified="20210522202255579" tags="$:/tags/Stylesheet" title="$:/orienteer/styles" type="text/css">
+<pre>.doc-icon-block {
+    border-left: 2px solid #e1e1e8;
+    margin-left: 3em;
+    padding-left: 0.6em;
+    position: relative;
+}
+
+.doc-block-icon {
+    position: absolute;
+    left: -3em;
+    top: 0.2em;
+}
+
+.doc-block-icon .tc-image-tip {
+    fill: #5778d8;
+}</pre>
 </div>
 <div created="20210519204641972" modified="20210519204747473" title="$:/palette">
 <pre>$:/palettes/Blue</pre>
@@ -10839,8 +10901,53 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20210519185914736" modified="20210519185914736" title="$:/SiteSubtitle">
-<pre></pre>
+<div author="Tobias Beer" bag="default" core-version="&gt;=5.1.9" dependents="" description="Render plantuml diagrams online as image or text" documentation="https://tobibeer.github.io/tw5-plantuml" list="readme" plugin-type="plugin" requires="" revision="0" source="https://github.com/tobibeer/tw5-plantuml" title="$:/plugins/tobibeer/plantuml" type="application/json" version="0.5.0">
+<pre>{
+    &quot;tiddlers&quot;: {
+        &quot;$:/plugins/tobibeer/plantuml/defaults/edit&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/defaults/edit&quot;,
+            &quot;text&quot;: &quot;true&quot;
+        },
+        &quot;$:/plugins/tobibeer/plantuml/lingo/edit&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/lingo/edit&quot;,
+            &quot;text&quot;: &quot;globally enable edit links for all output (\&quot;yes\&quot; or \&quot;true\&quot;)&quot;
+        },
+        &quot;$:/plugins/tobibeer/plantuml/lingo/edit-link&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/lingo/edit-link&quot;,
+            &quot;text&quot;: &quot;» edit:&quot;
+        },
+        &quot;$:/plugins/tobibeer/plantuml/readme&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/readme&quot;,
+            &quot;text&quot;: &quot;The plugin $:/plugins/tobibeer/plantuml provides:\n\n; `[[plantuml[&lt;uml&gt;]]]`\r\n: a widget to render [[PlantUML|http://plantuml.org]] diagrams online as either image or text\r\n: allows the same attributes as &lt;&lt;x \&quot;Images in WikiText\&quot;&gt;&gt;\n\n&lt;br&gt;\n\n; documentation / examples / demos...\r\n: http://tobibeer.github.io/tw5-plugins#plantuml&quot;
+        },
+        &quot;$:/plugins/tobibeer/plantuml/styles&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/styles&quot;,
+            &quot;tags&quot;: &quot;$:/tags/Stylesheet&quot;,
+            &quot;text&quot;: &quot;.tc-plantuml-txt {\r\n\tborder:0;\r\n\twidth:100%;\r\n\theight:400px;\r\n}\r\n.tc-plantuml-edit.tc-tiddlylink-external{\r\n    text-decoration:none;\r\n}&quot;
+        },
+        &quot;$:/plugins/tobibeer/plantuml/utils.js&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/utils.js&quot;,
+            &quot;text&quot;: &quot;/*\\\r\ntitle: $:/plugins/tobibeer/plantuml/utils.js\r\ntype: application/javascript\r\nmodule-type: utils\r\n\r\nUtility functions to handle plantuml...\r\n\r\n@preserve\r\n\\*/\n(function(){\&quot;use strict\&quot;;var r={encodePlantUML:function(r,e){return e===\&quot;src\&quot;?r:(e===\&quot;edit\&quot;?\&quot;http://www.planttext.com/planttext?text=\&quot;:\&quot;http://www.plantuml.com/plantuml/\&quot;+e+\&quot;/\&quot;)+this.encode64(this.deflate()(unescape(encodeURIComponent(r))))},encode64:function(r){var e,n=\&quot;\&quot;;for(e=0;e&lt;r.length;e+=3){if(e+2==r.length){n+=this.append3bytes(r.charCodeAt(e),r.charCodeAt(e+1),0)}else if(e+1==r.length){n+=this.append3bytes(r.charCodeAt(e),0,0)}else{n+=this.append3bytes(r.charCodeAt(e),r.charCodeAt(e+1),r.charCodeAt(e+2))}}return n},append3bytes:function(r,e,n){var a=\&quot;\&quot;,f=r&gt;&gt;2,i=(r&amp;3)&lt;&lt;4|e&gt;&gt;4,t=(e&amp;15)&lt;&lt;2|n&gt;&gt;6,l=n&amp;63;a+=this.encode6bit(f&amp;63);a+=this.encode6bit(i&amp;63);a+=this.encode6bit(t&amp;63);a+=this.encode6bit(l&amp;63);return a},encode6bit:function(r){if(r&lt;10){return String.fromCharCode(48+r)}r-=10;if(r&lt;26){return String.fromCharCode(65+r)}r-=26;if(r&lt;26){return String.fromCharCode(97+r)}r-=26;if(r===0){return\&quot;-\&quot;}if(r===1){return\&quot;_\&quot;}return\&quot;?\&quot;}};r.deflate=function(){var r=32768;var e=0;var n=1;var a=2;var f=6;var i=true;var t=32768;var l=64;var v=1024*8;var o=2*r;var u=3;var c=258;var s=16;var d=8192;var h=13;var w=d;var _=1&lt;&lt;h;var x=_-1;var y=r-1;var m=0;var A=4096;var p=c+u+1;var b=r-p;var g=1;var C=15;var I=7;var k=29;var S=256;var j=256;var z=S+1+k;var U=30;var L=19;var M=16;var P=17;var R=18;var q=2*z+1;var B=parseInt((h+u-1)/u);var D;var E,F;var G;var H=null;var J,K;var N;var O;var Q;var T;var V;var W;var X;var Y;var Z;var $;var rr;var er;var nr;var ar;var fr;var ir;var tr;var lr;var vr;var or;var ur;var cr;var sr;var dr;var hr;var wr;var _r;var xr;var yr;var mr;var Ar;var pr;var br;var gr;var Cr;var Ir;var kr;var Sr;var jr;var zr;var Ur;var Lr;var Mr;var Pr;var Rr;var qr;var Br;var Dr;var Er;var Fr;function Gr(){this.fc=0;this.dl=0}function Hr(){this.dyn_tree=null;this.static_tree=null;this.extra_bits=null;this.extra_base=0;this.elems=0;this.max_length=0;this.max_code=0}function Jr(r,e,n,a){this.good_length=r;this.max_lazy=e;this.nice_length=n;this.max_chain=a}function Kr(){this.next=null;this.len=0;this.ptr=new Array(v);this.off=0}var Nr=[0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0];var Or=[0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13];var Qr=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7];var Tr=[16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];var Vr=[new Jr(0,0,0,0),new Jr(4,4,8,4),new Jr(4,5,16,8),new Jr(4,6,32,32),new Jr(4,4,16,16),new Jr(8,16,32,32),new Jr(8,16,128,128),new Jr(8,32,128,256),new Jr(32,128,258,1024),new Jr(32,258,258,4096)];function Wr(r){var e;if(!r)r=f;else if(r&lt;1)r=1;else if(r&gt;9)r=9;ur=r;G=false;tr=false;if(H!=null)return;D=E=F=null;H=new Array(v);O=new Array(o);Q=new Array(w);T=new Array(t+l);V=new Array(1&lt;&lt;s);dr=new Array(q);for(e=0;e&lt;q;e++)dr[e]=new Gr;hr=new Array(2*U+1);for(e=0;e&lt;2*U+1;e++)hr[e]=new Gr;wr=new Array(z+2);for(e=0;e&lt;z+2;e++)wr[e]=new Gr;_r=new Array(U);for(e=0;e&lt;U;e++)_r[e]=new Gr;xr=new Array(2*L+1);for(e=0;e&lt;2*L+1;e++)xr[e]=new Gr;yr=new Hr;mr=new Hr;Ar=new Hr;pr=new Array(C+1);br=new Array(2*z+1);Ir=new Array(2*z+1);kr=new Array(c-u+1);Sr=new Array(512);jr=new Array(k);zr=new Array(U);Ur=new Array(parseInt(d/8))}function Xr(){D=E=F=null;H=null;O=null;Q=null;T=null;V=null;dr=null;hr=null;wr=null;_r=null;xr=null;yr=null;mr=null;Ar=null;pr=null;br=null;Ir=null;kr=null;Sr=null;jr=null;zr=null;Ur=null}function Yr(r){r.next=D;D=r}function Zr(){var r;if(D!=null){r=D;D=D.next}else r=new Kr;r.next=null;r.len=r.off=0;return r}function $r(e){return V[r+e]}function re(e,n){return V[r+e]=n}function ee(r){H[K+J++]=r;if(K+J==v)Pe()}function ne(r){r&amp;=65535;if(K+J&lt;v-2){H[K+J++]=r&amp;255;H[K+J++]=r&gt;&gt;&gt;8}else{ee(r&amp;255);ee(r&gt;&gt;&gt;8)}}function ae(){Z=(Z&lt;&lt;B^O[fr+u-1]&amp;255)&amp;x;$=$r(Z);V[fr&amp;y]=$;re(Z,fr)}function fe(r,e){Ue(e[r].fc,e[r].dl)}function ie(r){return(r&lt;256?Sr[r]:Sr[256+(r&gt;&gt;7)])&amp;255}function te(r,e,n){return r[e].fc&lt;r[n].fc||r[e].fc==r[n].fc&amp;&amp;Ir[e]&lt;=Ir[n]}function le(r,e,n){var a;for(a=0;a&lt;n&amp;&amp;Fr&lt;Er.length;a++)r[e+a]=Er.charCodeAt(Fr++)&amp;255;return a}function ve(){var e;for(e=0;e&lt;_;e++)V[r+e]=0;or=Vr[ur].max_lazy;cr=Vr[ur].good_length;if(!i)sr=Vr[ur].nice_length;vr=Vr[ur].max_chain;fr=0;Y=0;lr=le(O,0,2*r);if(lr&lt;=0){tr=true;lr=0;return}tr=false;while(lr&lt;p&amp;&amp;!tr)ue();Z=0;for(e=0;e&lt;u-1;e++){Z=(Z&lt;&lt;B^O[e]&amp;255)&amp;x}}function oe(r){var e=vr;var n=fr;var a;var f;var t=ar;var l=fr&gt;b?fr-b:m;var v=fr+c;var o=O[n+t-1];var u=O[n+t];if(ar&gt;=cr)e&gt;&gt;=2;do{a=r;if(O[a+t]!=u||O[a+t-1]!=o||O[a]!=O[n]||O[++a]!=O[n+1]){continue}n+=2;a++;do{}while(O[++n]==O[++a]&amp;&amp;O[++n]==O[++a]&amp;&amp;O[++n]==O[++a]&amp;&amp;O[++n]==O[++a]&amp;&amp;O[++n]==O[++a]&amp;&amp;O[++n]==O[++a]&amp;&amp;O[++n]==O[++a]&amp;&amp;O[++n]==O[++a]&amp;&amp;n&lt;v);f=c-(v-n);n=v-c;if(f&gt;t){ir=r;t=f;if(i){if(f&gt;=c)break}else{if(f&gt;=sr)break}o=O[n+t-1];u=O[n+t]}}while((r=V[r&amp;y])&gt;l&amp;&amp;--e!=0);return t}function ue(){var e,n;var a=o-lr-fr;if(a==-1){a--}else if(fr&gt;=r+b){for(e=0;e&lt;r;e++)O[e]=O[e+r];ir-=r;fr-=r;Y-=r;for(e=0;e&lt;_;e++){n=$r(e);re(e,n&gt;=r?n-r:m)}for(e=0;e&lt;r;e++){n=V[e];V[e]=n&gt;=r?n-r:m}a+=r}if(!tr){e=le(O,fr+lr,a);if(e&lt;=0)tr=true;else lr+=e}}function ce(){while(lr!=0&amp;&amp;E==null){var r;ae();if($!=m&amp;&amp;fr-$&lt;=b){nr=oe($);if(nr&gt;lr)nr=lr}if(nr&gt;=u){r=Se(fr-ir,nr-u);lr-=nr;if(nr&lt;=or){nr--;do{fr++;ae()}while(--nr!=0);fr++}else{fr+=nr;nr=0;Z=O[fr]&amp;255;Z=(Z&lt;&lt;B^O[fr+1]&amp;255)&amp;x}}else{r=Se(0,O[fr]&amp;255);lr--;fr++}if(r){ke(0);Y=fr}while(lr&lt;p&amp;&amp;!tr)ue()}}function se(){while(lr!=0&amp;&amp;E==null){ae();ar=nr;rr=ir;nr=u-1;if($!=m&amp;&amp;ar&lt;or&amp;&amp;fr-$&lt;=b){nr=oe($);if(nr&gt;lr)nr=lr;if(nr==u&amp;&amp;fr-ir&gt;A){nr--}}if(ar&gt;=u&amp;&amp;nr&lt;=ar){var r;r=Se(fr-1-rr,ar-u);lr-=ar-1;ar-=2;do{fr++;ae()}while(--ar!=0);er=0;nr=u-1;fr++;if(r){ke(0);Y=fr}}else if(er!=0){if(Se(0,O[fr-1]&amp;255)){ke(0);Y=fr}fr++;lr--}else{er=1;fr++;lr--}while(lr&lt;p&amp;&amp;!tr)ue()}}function de(){if(tr)return;W=0;X=0;_e();ve();E=null;J=0;K=0;if(ur&lt;=3){ar=u-1;nr=0}else{nr=u-1;er=0}N=false}function he(r,e,n){var a;if(!G){de();G=true;if(lr==0){N=true;return 0}}if((a=we(r,e,n))==n)return n;if(N)return a;if(ur&lt;=3)ce();else se();if(lr==0){if(er!=0)Se(0,O[fr-1]&amp;255);ke(1);N=true}return a+we(r,a+e,n-a)}function we(r,e,n){var a,f,i;a=0;while(E!=null&amp;&amp;a&lt;n){f=n-a;if(f&gt;E.len)f=E.len;for(i=0;i&lt;f;i++)r[e+a+i]=E.ptr[E.off+i];E.off+=f;E.len-=f;a+=f;if(E.len==0){var t;t=E;E=E.next;Yr(t)}}if(a==n)return a;if(K&lt;J){f=n-a;if(f&gt;J-K)f=J-K;for(i=0;i&lt;f;i++)r[e+a+i]=H[K+i];K+=f;a+=f;if(J==K)J=K=0}return a}function _e(){var r;var e;var n;var a;var f;if(_r[0].dl!=0)return;yr.dyn_tree=dr;yr.static_tree=wr;yr.extra_bits=Nr;yr.extra_base=S+1;yr.elems=z;yr.max_length=C;yr.max_code=0;mr.dyn_tree=hr;mr.static_tree=_r;mr.extra_bits=Or;mr.extra_base=0;mr.elems=U;mr.max_length=C;mr.max_code=0;Ar.dyn_tree=xr;Ar.static_tree=null;Ar.extra_bits=Qr;Ar.extra_base=0;Ar.elems=L;Ar.max_length=I;Ar.max_code=0;n=0;for(a=0;a&lt;k-1;a++){jr[a]=n;for(r=0;r&lt;1&lt;&lt;Nr[a];r++)kr[n++]=a}kr[n-1]=a;f=0;for(a=0;a&lt;16;a++){zr[a]=f;for(r=0;r&lt;1&lt;&lt;Or[a];r++){Sr[f++]=a}}f&gt;&gt;=7;for(;a&lt;U;a++){zr[a]=f&lt;&lt;7;for(r=0;r&lt;1&lt;&lt;Or[a]-7;r++)Sr[256+f++]=a}for(e=0;e&lt;=C;e++)pr[e]=0;r=0;while(r&lt;=143){wr[r++].dl=8;pr[8]++}while(r&lt;=255){wr[r++].dl=9;pr[9]++}while(r&lt;=279){wr[r++].dl=7;pr[7]++}while(r&lt;=287){wr[r++].dl=8;pr[8]++}Ae(wr,z+1);for(r=0;r&lt;U;r++){_r[r].dl=5;_r[r].fc=Le(r,5)}xe()}function xe(){var r;for(r=0;r&lt;z;r++)dr[r].fc=0;for(r=0;r&lt;U;r++)hr[r].fc=0;for(r=0;r&lt;L;r++)xr[r].fc=0;dr[j].fc=1;Br=Dr=0;Lr=Mr=Pr=0;Rr=0;qr=1}function ye(r,e){var n=br[e];var a=e&lt;&lt;1;while(a&lt;=gr){if(a&lt;gr&amp;&amp;te(r,br[a+1],br[a]))a++;if(te(r,n,br[a]))break;br[e]=br[a];e=a;a&lt;&lt;=1}br[e]=n}function me(r){var e=r.dyn_tree;var n=r.extra_bits;var a=r.extra_base;var f=r.max_code;var i=r.max_length;var t=r.static_tree;var l;var v,o;var u;var c;var s;var d=0;for(u=0;u&lt;=C;u++)pr[u]=0;e[br[Cr]].dl=0;for(l=Cr+1;l&lt;q;l++){v=br[l];u=e[e[v].dl].dl+1;if(u&gt;i){u=i;d++}e[v].dl=u;if(v&gt;f)continue;pr[u]++;c=0;if(v&gt;=a)c=n[v-a];s=e[v].fc;Br+=s*(u+c);if(t!=null)Dr+=s*(t[v].dl+c)}if(d==0)return;do{u=i-1;while(pr[u]==0)u--;pr[u]--;pr[u+1]+=2;pr[i]--;d-=2}while(d&gt;0);for(u=i;u!=0;u--){v=pr[u];while(v!=0){o=br[--l];if(o&gt;f)continue;if(e[o].dl!=u){Br+=(u-e[o].dl)*e[o].fc;e[o].fc=u}v--}}}function Ae(r,e){var n=new Array(C+1);var a=0;var f;var i;for(f=1;f&lt;=C;f++){a=a+pr[f-1]&lt;&lt;1;n[f]=a}for(i=0;i&lt;=e;i++){var t=r[i].dl;if(t==0)continue;r[i].fc=Le(n[t]++,t)}}function pe(r){var e=r.dyn_tree;var n=r.static_tree;var a=r.elems;var f,i;var t=-1;var l=a;gr=0;Cr=q;for(f=0;f&lt;a;f++){if(e[f].fc!=0){br[++gr]=t=f;Ir[f]=0}else e[f].dl=0}while(gr&lt;2){var v=br[++gr]=t&lt;2?++t:0;e[v].fc=1;Ir[v]=0;Br--;if(n!=null)Dr-=n[v].dl}r.max_code=t;for(f=gr&gt;&gt;1;f&gt;=1;f--)ye(e,f);do{f=br[g];br[g]=br[gr--];ye(e,g);i=br[g];br[--Cr]=f;br[--Cr]=i;e[l].fc=e[f].fc+e[i].fc;if(Ir[f]&gt;Ir[i]+1)Ir[l]=Ir[f];else Ir[l]=Ir[i]+1;e[f].dl=e[i].dl=l;br[g]=l++;ye(e,g)}while(gr&gt;=2);br[--Cr]=br[g];me(r);Ae(e,t)}function be(r,e){var n;var a=-1;var f;var i=r[0].dl;var t=0;var l=7;var v=4;if(i==0){l=138;v=3}r[e+1].dl=65535;for(n=0;n&lt;=e;n++){f=i;i=r[n+1].dl;if(++t&lt;l&amp;&amp;f==i)continue;else if(t&lt;v)xr[f].fc+=t;else if(f!=0){if(f!=a)xr[f].fc++;xr[M].fc++}else if(t&lt;=10)xr[P].fc++;else xr[R].fc++;t=0;a=f;if(i==0){l=138;v=3}else if(f==i){l=6;v=3}else{l=7;v=4}}}function ge(r,e){var n;var a=-1;var f;var i=r[0].dl;var t=0;var l=7;var v=4;if(i==0){l=138;v=3}for(n=0;n&lt;=e;n++){f=i;i=r[n+1].dl;if(++t&lt;l&amp;&amp;f==i){continue}else if(t&lt;v){do{fe(f,xr)}while(--t!=0)}else if(f!=0){if(f!=a){fe(f,xr);t--}fe(M,xr);Ue(t-3,2)}else if(t&lt;=10){fe(P,xr);Ue(t-3,3)}else{fe(R,xr);Ue(t-11,7)}t=0;a=f;if(i==0){l=138;v=3}else if(f==i){l=6;v=3}else{l=7;v=4}}}function Ce(){var r;be(dr,yr.max_code);be(hr,mr.max_code);pe(Ar);for(r=L-1;r&gt;=3;r--){if(xr[Tr[r]].dl!=0)break}Br+=3*(r+1)+5+5+4;return r}function Ie(r,e,n){var a;Ue(r-257,5);Ue(e-1,5);Ue(n-4,4);for(a=0;a&lt;n;a++){Ue(xr[Tr[a]].dl,3)}ge(dr,r-1);ge(hr,e-1)}function ke(r){var f,i;var t;var l;l=fr-Y;Ur[Pr]=Rr;pe(yr);pe(mr);t=Ce();f=Br+3+7&gt;&gt;3;i=Dr+3+7&gt;&gt;3;if(i&lt;=f)f=i;if(l+4&lt;=f&amp;&amp;Y&gt;=0){var v;Ue((e&lt;&lt;1)+r,3);Me();ne(l);ne(~l);for(v=0;v&lt;l;v++)ee(O[Y+v])}else if(i==f){Ue((n&lt;&lt;1)+r,3);je(wr,_r)}else{Ue((a&lt;&lt;1)+r,3);Ie(yr.max_code+1,mr.max_code+1,t+1);je(dr,hr)}xe();if(r!=0)Me()}function Se(r,e){T[Lr++]=e;if(r==0){dr[e].fc++}else{r--;dr[kr[e]+S+1].fc++;hr[ie(r)].fc++;Q[Mr++]=r;Rr|=qr}qr&lt;&lt;=1;if((Lr&amp;7)==0){Ur[Pr++]=Rr;Rr=0;qr=1}if(ur&gt;2&amp;&amp;(Lr&amp;4095)==0){var n=Lr*8;var a=fr-Y;var f;for(f=0;f&lt;U;f++){n+=hr[f].fc*(5+Or[f])}n&gt;&gt;=3;if(Mr&lt;parseInt(Lr/2)&amp;&amp;n&lt;parseInt(a/2))return true}return Lr==d-1||Mr==w}function je(r,e){var n;var a;var f=0;var i=0;var t=0;var l=0;var v;var o;if(Lr!=0)do{if((f&amp;7)==0)l=Ur[t++];a=T[f++]&amp;255;if((l&amp;1)==0){fe(a,r)}else{v=kr[a];fe(v+S+1,r);o=Nr[v];if(o!=0){a-=jr[v];Ue(a,o)}n=Q[i++];v=ie(n);fe(v,e);o=Or[v];if(o!=0){n-=zr[v];Ue(n,o)}}l&gt;&gt;=1}while(f&lt;Lr);fe(j,r)}var ze=16;function Ue(r,e){if(X&gt;ze-e){W|=r&lt;&lt;X;ne(W);W=r&gt;&gt;ze-X;X+=e-ze}else{W|=r&lt;&lt;X;X+=e}}function Le(r,e){var n=0;do{n|=r&amp;1;r&gt;&gt;=1;n&lt;&lt;=1}while(--e&gt;0);return n&gt;&gt;1}function Me(){if(X&gt;8){ne(W)}else if(X&gt;0){ee(W)}W=0;X=0}function Pe(){if(J!=0){var r,e;r=Zr();if(E==null)E=F=r;else F=F.next=r;r.len=J-K;for(e=0;e&lt;r.len;e++)r.ptr[e]=H[K+e];J=K=0}}return function Re(r,e){var n,a;Er=r;Fr=0;if(typeof e==\&quot;undefined\&quot;)e=f;Wr(e);var i=new Array(1024);var t=[];while((n=he(i,0,i.length))&gt;0){var l=new Array(n);for(a=0;a&lt;n;a++){l[a]=String.fromCharCode(i[a])}t[t.length]=l.join(\&quot;\&quot;)}Er=null;return t.join(\&quot;\&quot;)}};exports.plantuml=r})();&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;,
+            &quot;module-type&quot;: &quot;utils&quot;
+        },
+        &quot;$:/plugins/tobibeer/plantuml/widget.js&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/widget.js&quot;,
+            &quot;text&quot;: &quot;/*\\\r\ntitle: $:/plugins/tobibeer/plantuml/widget.js\r\ntype: application/javascript\r\nmodule-type: widget\r\n\r\nA widget to render plantuml\r\n\r\n@preserve\r\n\\*/\n(function(){\&quot;use strict\&quot;;var t=require(\&quot;$:/core/modules/widgets/widget.js\&quot;).widget;var e=function(t,e){this.initialise(t,e)};e.prototype=new t;e.prototype.render=function(t,e){this.parentDomNode=t;this.computeAttributes();this.execute();var i,s,u,r,a=this.node,l=[],n=function(t){var e=t;while(e){if(e.nodeName&amp;&amp;(e.nodeName===\&quot;a\&quot;||e.nodeName===\&quot;button\&quot;)){return 1}e=e.parentNode}return 0};switch(this.output){case\&quot;src\&quot;:a.type=\&quot;element\&quot;;a.tag=\&quot;pre\&quot;;a.children=[{type:\&quot;text\&quot;,text:this.source}];l.push(a);break;case\&quot;txt\&quot;:a.type=\&quot;element\&quot;;a.tag=\&quot;iframe\&quot;;a.attributes.src={type:\&quot;string\&quot;,value:$tw.utils.plantuml.encodePlantUML(this.source,this.output)};i=a.attributes[\&quot;class\&quot;]?a.attributes[\&quot;class\&quot;].value+\&quot; \&quot;:\&quot;\&quot;;a.attributes[\&quot;class\&quot;]={type:\&quot;string\&quot;,value:i+\&quot;tc-plantuml-txt\&quot;};s=a.attributes.height?\&quot;height:\&quot;+a.attributes.height.value+\&quot;;\&quot;:\&quot;\&quot;;r=a.attributes.width?\&quot;width:\&quot;+a.attributes.width.value+\&quot;;\&quot;:\&quot;\&quot;;if(s||r){a.attributes.style={type:\&quot;string\&quot;,value:s+r}}if(a.attributes.tooltip&amp;&amp;!this.edit){l.push({type:\&quot;element\&quot;,tag:\&quot;div\&quot;,attributes:{\&quot;class\&quot;:{type:\&quot;string\&quot;,value:\&quot;tc-plantuml-txt-title\&quot;}},children:[{type:\&quot;text\&quot;,text:a.attributes.tooltip.value}]})}l.push(a);break;default:a.attributes.source={type:\&quot;string\&quot;,value:$tw.utils.plantuml.encodePlantUML(this.source,this.output)};l.push(a)}if(this.edit&amp;&amp;!n(this.parentDomNode)){u={type:\&quot;element\&quot;,tag:\&quot;a\&quot;,attributes:{\&quot;class\&quot;:{type:\&quot;string\&quot;,value:\&quot;tc-plantuml-edit tc-tiddlylink-external\&quot;},target:{type:\&quot;string\&quot;,value:\&quot;_blank\&quot;},href:{type:\&quot;string\&quot;,value:$tw.utils.plantuml.encodePlantUML(this.source,\&quot;edit\&quot;)}}};if(this.output===\&quot;txt\&quot;){u.children=[{type:\&quot;text\&quot;,text:this.wiki.getTextReference(\&quot;$:/plugins/tobibeer/plantuml/lingo/edit-link\&quot;)+(a.attributes.tooltip?a.attributes.tooltip.value:\&quot;\&quot;)}];l.unshift(u)}else{u.children=l;l=[u]}}this.makeChildWidgets(l);this.renderChildren(this.parentDomNode,e)};e.prototype.execute=function(){var t=this;this.source=this.getAttribute(\&quot;source\&quot;,\&quot;\&quot;);this.output=this.getAttribute(\&quot;output\&quot;,\&quot;svg\&quot;);this.edit=this.getAttribute(\&quot;edit\&quot;);if(this.edit===undefined){this.edit=this.wiki.getTextReference(\&quot;$:/plugins/tobibeer/plantuml/defaults/edit\&quot;)}this.edit=[\&quot;yes\&quot;,\&quot;true\&quot;].indexOf((this.edit||\&quot;\&quot;).toLowerCase())&gt;=0;this.node={type:\&quot;image\&quot;,attributes:{}};[\&quot;width\&quot;,\&quot;height\&quot;,\&quot;class\&quot;,\&quot;tooltip\&quot;,\&quot;alt\&quot;].map(function(e){var i=t.getAttribute(e);if(i!==undefined){t.node.attributes[e]={type:\&quot;string\&quot;,value:i}}})};e.prototype.refresh=function(){var t=this.computeAttributes();if(t.source||t.width||t.height||t[\&quot;class\&quot;]||t.tooltip||t.output||t.edit){this.refreshSelf();return true}else{return false}};exports.plantuml=e})();&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;,
+            &quot;module-type&quot;: &quot;widget&quot;
+        },
+        &quot;$:/plugins/tobibeer/plantuml/wikirule.js&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/tobibeer/plantuml/wikirule.js&quot;,
+            &quot;text&quot;: &quot;/*\\\r\ntitle: $:/plugins/tobibeer/plantuml/wikirule.js\r\ntype: application/javascript\r\nmodule-type: wikirule\r\n\r\nWiki text inline rule for embedding plantuml from http://plantuml.org\r\n\r\n[[plantuml[&lt;uml&gt;]]]\r\n[[plantuml width=23 height=24 [&lt;uml&gt;]]]\r\n[[plantuml width={{!!width}} height={{!!height}} tooltip=\&quot;nice stuff\&quot;[&lt;uml&gt;]]]\r\n```\r\n\r\nThis widget is entirely modeled after the core ImageWidget\r\n\r\n@preserve\r\n\\*/\n(function(){\&quot;use strict\&quot;;exports.name=\&quot;plantuml\&quot;;exports.types={inline:true,block:true};exports.init=function(t){this.parser=t};exports.findNextMatch=function(t){this.nextPlantUML=this.findnextPlantUML(this.parser.source,t);return this.nextPlantUML?this.nextPlantUML.start:undefined};exports.parse=function(){this.parser.pos=this.nextPlantUML.end;return[this.nextPlantUML]};exports.findnextPlantUML=function(t,e){var n=/(\\[\\[plantuml)/g;n.lastIndex=e;var i=n.exec(t);while(i){var r=this.parsePlantUml(t,i.index);if(r){return r}n.lastIndex=i.index+1;i=n.exec(t)}return null};exports.parsePlantUml=function(t,e){var n,i={type:\&quot;plantuml\&quot;,start:e,attributes:{}};e=$tw.utils.skipWhiteSpace(t,e);n=$tw.utils.parseTokenString(t,e,\&quot;[[plantuml\&quot;);if(!n){return null}e=n.end;e=$tw.utils.skipWhiteSpace(t,e);if(t.charAt(e)!==\&quot;[\&quot;){var r=$tw.utils.parseAttribute(t,e);while(r){i.attributes[r.name]=r;e=r.end;e=$tw.utils.skipWhiteSpace(t,e);if(t.charAt(e)!==\&quot;[\&quot;){r=$tw.utils.parseAttribute(t,e)}else{r=null}}}e=$tw.utils.skipWhiteSpace(t,e);n=$tw.utils.parseTokenString(t,e,\&quot;[\&quot;);if(!n){return null}e=n.end;e=$tw.utils.skipWhiteSpace(t,e);n=$tw.utils.parseTokenRegExp(t,e,/([^]+?)\\]\\]\\]/gm);if(!n){return null}e=n.end;i.attributes.source={type:\&quot;string\&quot;,value:(n.match[1]||\&quot;\&quot;).trim()};i.end=e;return i}})();&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;,
+            &quot;module-type&quot;: &quot;wikirule&quot;
+        }
+    }
+}</pre>
+</div>
+<div created="20210519185914736" modified="20210522165412673" title="$:/SiteSubtitle">
+<pre>Open Source Business Application Platform</pre>
 </div>
 <div created="20210519185851185" modified="20210519185853435" title="$:/SiteTitle">
 <pre>Orienteer Wiki</pre>
@@ -10866,6 +10973,9 @@ Error message and password prompt
 <div created="20210521133736331" modified="20210521133739438" title="$:/state/add-plugin-info/$:/temp/ServerConnection/https://tiddlywiki.com/library/v5.1.23/index.html/$:/temp/RemoteAssetInfo/https://tiddlywiki.com/library/v5.1.23/index.html/$:/plugins/tiddlywiki/tw5.com-docs">
 <pre>no</pre>
 </div>
+<div created="20210522170628033" modified="20210522170628033" title="$:/state/plugin-info--1890410626-$:/plugins/tiddlywiki/menubar--524028290">
+<pre>config</pre>
+</div>
 <div created="20210521134009255" modified="20210521181729202" title="$:/state/plugin-info--896887961-$:/plugins/tiddlywiki/github-fork-ribbon">
 <pre>no</pre>
 </div>
@@ -10890,6 +11000,12 @@ Error message and password prompt
 <div created="20210521173043003" modified="20210521181107006" title="$:/state/plugin-info--896887961-$:/plugins/tiddlywiki/menubar--331413611">
 <pre>contents</pre>
 </div>
+<div created="20210522191127884" modified="20210522191127884" title="$:/state/plugin-info--896887961-$:/plugins/tobibeer/plantuml">
+<pre>yes</pre>
+</div>
+<div created="20210522191133288" modified="20210522191134899" title="$:/state/plugin-info--896887961-$:/plugins/tobibeer/plantuml---718886218">
+<pre>readme</pre>
+</div>
 <div created="20210521133910254" modified="20210521133910254" title="$:/state/plugin-info-1856074772-$:/plugins/tiddlywiki/github-fork-ribbon--1537306773">
 <pre>usage</pre>
 </div>
@@ -10905,26 +11021,38 @@ Error message and password prompt
 <div created="20210519194836629" modified="20210519194840562" title="$:/state/tab--86143343">
 <pre>$:/core/ui/ControlPanel/Plugins/Installed/Plugins</pre>
 </div>
-<div created="20210519191533815" modified="20210521133419593" title="$:/state/tab-1749438307">
+<div created="20210519191533815" modified="20210522170621618" title="$:/state/tab-1749438307">
 <pre>$:/core/ui/ControlPanel/Plugins</pre>
 </div>
-<div created="20210519190511074" modified="20210522002533659" title="$:/state/tab/sidebar--595412856">
-<pre>$:/core/ui/SideBar/Recent</pre>
+<div created="20210522173257557" modified="20210522230814212" title="$:/state/tab/moresidebar-1850697562">
+<pre>$:/core/ui/MoreSideBar/Missing</pre>
 </div>
-<div created="20210519195155870" modified="20210519195316393" title="$:/state/toc/Content-Dev Documentation-117505069">
-<pre>open</pre>
+<div created="20210519190511074" modified="20210523001114676" title="$:/state/tab/sidebar--595412856">
+<pre>Content</pre>
+</div>
+<div created="20210519195155870" modified="20210523001120714" title="$:/state/toc/Content-Dev Documentation-117505069">
+<pre>close</pre>
 </div>
 <div created="20210521173115328" modified="20210521173115328" title="$:/state/toc/Content-Dev Documentation-263827834">
 <pre>open</pre>
 </div>
-<div created="20210519201333974" modified="20210519201333974" title="$:/state/toc/Content-Getting Started-117505069">
-<pre>open</pre>
+<div created="20210519201333974" modified="20210523001121656" title="$:/state/toc/Content-Getting Started-117505069">
+<pre>close</pre>
 </div>
 <div created="20210521173117263" modified="20210521173117263" title="$:/state/toc/Content-Getting Started-263827834">
 <pre>open</pre>
 </div>
-<div created="20210519190532478" modified="20210519190532478" title="$:/state/toc/Content-HowTo-117505069">
+<div created="20210522170812372" modified="20210523001122409" title="$:/state/toc/Content-Guidebook-117505069">
+<pre>close</pre>
+</div>
+<div created="20210522201740419" modified="20210522201740419" title="$:/state/toc/Content-Guidebook-1252833741">
 <pre>open</pre>
+</div>
+<div created="20210522174119857" modified="20210522174119857" title="$:/state/toc/Content-Guidebook-255598929">
+<pre>open</pre>
+</div>
+<div created="20210519190532478" modified="20210523001123402" title="$:/state/toc/Content-HowTo-117505069">
+<pre>close</pre>
 </div>
 <div created="20210519191902759" modified="20210519192651766" title="$:/state/toc/Content-HowTo-1252833741">
 <pre>close</pre>
@@ -10932,13 +11060,25 @@ Error message and password prompt
 <div created="20210521173118701" modified="20210521173118701" title="$:/state/toc/Content-HowTo-263827834">
 <pre>open</pre>
 </div>
+<div created="20210522201742275" modified="20210522201742275" title="$:/state/toc/Content/Guidebook-Creating Your First Business Application-1252833741">
+<pre>open</pre>
+</div>
+<div created="20210522174121640" modified="20210522174121640" title="$:/state/toc/Content/Guidebook-Creating Your First Business Application-255598929">
+<pre>open</pre>
+</div>
+<div created="20210522170813847" modified="20210522170813847" title="$:/state/toc/Content/Guidebook-Getting Started-117505069">
+<pre>open</pre>
+</div>
+<div created="20210522174015903" modified="20210522174015903" title="$:/state/tree/$:/orienteer/">
+<pre>show</pre>
+</div>
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div list="Home" title="$:/StoryList">
+<div created="20210523001103316" list="Home" modified="20210523001103316" title="$:/StoryList">
 <pre></pre>
 </div>
-<div created="20210521181246401" list="$:/plugins/tiddlywiki/menubar/items/hamburger $:/plugins/tiddlywiki/menubar/items/topleftbar Home $:/plugins/tiddlywiki/menubar/items/contents $:/plugins/tiddlywiki/menubar/items/search $:/plugins/tiddlywiki/menubar/items/pagecontrols $:/plugins/tiddlywiki/menubar/items/server $:/plugins/tiddlywiki/menubar/items/toprightbar $:/plugins/tiddlywiki/menubar/items/sidebar" modified="20210521181254440" title="$:/tags/MenuBar">
+<div created="20210521181246401" list="$:/plugins/tiddlywiki/menubar/items/hamburger $:/plugins/tiddlywiki/menubar/items/topleftbar Home Guidebook $:/plugins/tiddlywiki/menubar/items/contents $:/plugins/tiddlywiki/menubar/items/search $:/plugins/tiddlywiki/menubar/items/pagecontrols $:/plugins/tiddlywiki/menubar/items/server $:/plugins/tiddlywiki/menubar/items/toprightbar $:/plugins/tiddlywiki/menubar/items/sidebar" modified="20210522170632697" title="$:/tags/MenuBar">
 <pre></pre>
 </div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="$:/themes/tiddlywiki/vanilla" description="Emphasises individual tiddlers" name="Snow White" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/snowwhite" type="application/json" version="5.1.23">
@@ -11061,6 +11201,13 @@ Error message and password prompt
 &lt;&lt;toc-selective-expandable 'Content'&gt;&gt;
 &lt;/div&gt;</pre>
 </div>
+<div created="20210522171849687" modified="20210522171919529" tags="Guidebook" title="Creating Your First Business Application">
+<pre>It's time to create your business application.
+
+This chapter will walk you through Orienteer configuration basics. We will build a basic CRM app that stores client names, contacts (like email, skype etc.) and the type of their interaction with the company (namely: interested, purchase, support).
+
+We will go through steps to create a minimal viable app. Advanced settings are available for you in next chapters.</pre>
+</div>
 <div created="20210519195728878" modified="20210519195927701" tags="[[Dev Documentation]]" title="Custom Guice Module">
 <pre>In your custom module you might want to use Guice. Orienteer allows easily pickup your custom injections into overall Guice config:
 
@@ -11084,18 +11231,107 @@ Error message and password prompt
 &lt;&lt;toc-selective-expandable 'Dev Documentation'&gt;&gt;
 &lt;/div&gt;</pre>
 </div>
+<div created="20210522171926477" modified="20210522231110348" tags="[[Creating Your First Business Application]]" title="Developing The Data Model">
+<pre>In this section, we build a simple data model and augment it, step by step.
+
+!Creating a Class
+&lt;&lt;.tip &quot;''This part will guide you through creating a class, its properties and creating an instance of the new class (a document).''&lt;br&gt;&lt;br&gt;&quot;&gt;&gt;
+
+
+We will start with the simplest model, with only one class, `CmsCustomer`. It will have properties Customer name, Contacts and Interaction.
+
+#Go to page `/schema`.
+#To create a new class, сlick ''Create''.
+#On the class page, set Name: `CmsCustomer` and click ''Save''.
+#On the widget Properties create three properties by clicking Create. Set their parameters:
+#* For the customerName property, set ''Name:'' `customerName`, ''Type:'' `String`.
+#* For the contact property, set ''Name:'' `contact`, ''Type:'' `String`.
+#* For the interaction property, set ''Name:'' `interaction`, ''Type:'' `String`.
+#* Then click ''Save''.
+#Specify which of the parameters will identify a document. In our case each document corresponds to a customer's name. So, in the class `CmsCustomer`, on the widget ''Configuration'', set ''Document Name Property'': `customerName`.
+
+Now we can create documents of the class `CmsCustomer`. Each document corresponds to a person.
+
+Once we want to add or edit a customer, we go to the list of class's documents.
+
+# Go to `/browse/CmsCustomer` (otherwise, on the `/schema` page, in the line `CmsCustomer`, on the right, click ''Browse Class'').
+# To create a new document, click ''Create''.
+# Now you can fill new client's data and save it.
+
+!Linking Classes, Managing Property Visualization
+&lt;&lt;.tip &quot;''This part will guide you through linking classes in Orienteer. You will also learn how to display properties on separate tabs and how to enable basic UI controls to manage properties of a document.''&quot;&gt;&gt;
+
+In the app we've just created, we store all contacts in a single plaintext field for skype, telephones, emails etc in bulk. Now we want each customer to have several separate contact records, each containing one contact. We also want contacts of each customer to show on a separate tab.
+
+Do the following:
+
+# From the class `CmsCustomer`, delete the property contact. We will store contacts in a different way.
+# Create a new class for storing contacts, `CmsContact`
+#* We want each customer's contact to be stored as a separate item. This is why we will create a separate class for contacts. We will be able to add as many documents of this class as needed to each customer.
+#Link the `CmsContact` and the `CmsCustomer` classes. For this, add special LINK properties to both classes:
+#*To the `CmsCustomer` class, add a property `linkToContacts` with parameters ''Type:'' LINKLIST, ''Linked Class:'' `CmsContact`.
+#*To the `CmsContact` class we add a property `Customer` with parameters:
+#** ''Type:'' LINK.
+#** ''Linked Class:'' `CmsCustomer`.
+#** ''Visualization:'' `listbox` (this will let the app user select a linked customer for a contact from a drop box).
+#** ''Inverse:'' 'linkToContacts' (here you choose a back link from the list of link type parameters of the linked class, `CmsCustomer`).
+#*Go back to the `CmsCustomer` class and edit the parameter `linkToContact`. Set its parameter Inverse similarly, by selecting the property Customer.
+#We want each customer's contacts to show on a separate tab. For this, in the class `CmsCustomer` edit the link property `linkToContacts`. Set the following parameters:
+#* ''Tab:'' `Contacts`. Now a separate tab named Contacts will show the list of contacts linked to the particular customer.
+#* ''Visualization:'' `table`. This enables UI elements like Create or Save buttons etc, that will be helpful to app users for creating and managing contacts.
+#In the previous step, we have changed the visualization of a property. When we look through the list of customers (the documents of the class `CmsCustomer` on the page `/browse/CmsCustomer`), this property, with its buttons and other elements, is not useful. We will hide it from the document list.
+#* To do this, for each property of the class `CmsCustomer` set its parameter Displayable. Check it for the properties `customerName` and interaction and uncheck it for the property `linkToContacts`.
+
+With this, we are done for this part. Now, when you create a customer, you do not give its contacts, only their name and stage of interaction. To add contacts, you will go to each customer's page and, on a separate tab `Contacts`, add as many contacts as you need.
+
+!Viewing the UML of the Data Model
+&lt;&lt;.tip &quot;''This part will help you to view the UML of your data model in Orienteer.''&quot;&gt;&gt;
+
+Now we have several classes implemented, and we can view them all on an UML diagram.
+
+To do this, on the schema page (/schema), check the classes `CmsCustomer` and `CmsContact`. Then click View UML. You will see the two classes with their links and properties on a UML diagram.
+
+[[plantuml[
+@startuml
+class CmsContact
+CmsContact  --&gt; CmsCustomer : linkToCustomer
+CmsCustomer --&gt; &quot;*&quot; CmsContact : linkToContacts
+@enduml
+]]]</pre>
+</div>
 <div created="20210519200035026" modified="20210519200442747" tags="Content" title="External Resources">
 <pre>* &lt;a href=&quot;https://orienteer.org&quot;&gt;Official Site&lt;/a&gt;
 * &lt;a href=&quot;https://orienteer.gitbooks.io/orienteer/content/&quot;&gt;User Guide&lt;/a&gt;
 * &lt;a href=&quot;http://www.javadoc.io/doc/org.orienteer/orienteer-core&quot;&gt;Java Docs&lt;/a&gt;
 </pre>
 </div>
-<div created="20210519201016673" modified="20210519202307632" tags="Content" title="Getting Started">
+<div created="20210519201016673" modified="20210522170808409" tags="Content Guidebook" title="Getting Started">
 <pre>There are 3 ways to start Orienteer:
 
 *[[Run Orienteer in Docker]]
 *[[Run Orienteer as WAR]] - web application on some J2EE application server
 * [[Run Orienteer as Standalone Application]]</pre>
+</div>
+<div caption="Guidebook" created="20210522170305598" modified="20210522170853213" tags="Content $:/tags/MenuBar" target="Guidebook" title="Guidebook">
+<pre>Orienteer is a flexible business application platform. It lets you build full-featured dedicated enterprise apps, like CRM, ERP, supply chain management apps etc. Orienteer provides flexible, scalable and extendable solutions.
+
+!This guide will help you
+
+*to install Orienteer,
+*to build and configure a business application,
+*to extend a business application with custom add-ons to cover 100% of your needs.
+
+!Audience
+
+This guide will be especially helpful:
+
+*to ''business owners and executive managers'', who will learn how Orienteer can enhance their business,
+*to ''integrators and developers'', who will learn how to configure and customize business applications on top of Orienteer
+*to ''system administrators'', who will find how to support and manage Orienteer and apps built on it.
+
+&lt;div class=&quot;tc-table-of-contents&quot;&gt;
+&lt;&lt;toc-selective-expandable 'Guidebook'&gt;&gt;
+&lt;/div&gt;</pre>
 </div>
 <div caption="Home" created="20210519190028889" modified="20210521181018608" tags="$:/tags/MenuBar" target="Home" title="Home">
 <pre>Welcome to the Orienteer Wiki!
@@ -11252,17 +11488,20 @@ instead of `select sum(a, b) as value from MyClass where @rid = ?`</pre>
 
 </pre>
 </div>
-<div created="20210519191139768" modified="20210519195207238" tags="[[Dev Documentation]]" title="Naming Convention">
+<div created="20210519191139768" modified="20210522230923530" tags="[[Dev Documentation]]" title="Naming Convention">
 <pre>#Name should reflect purpose of a class or property. Use whole words — avoid acronyms and abbreviations (unless the abbreviation is much more widely used than the long form, such as URL or HTML).
 #Class names should be nouns in `UpperCamelCase`, with the first letter of every word capitalized.
 #It's recommended to use some prefix for all classes for the specific data model
 #Property names should be in lowerCamelCase, with the first letter of every word capitalized.
 
 |!Type|!Wrong|!Good|!Explanation|
-|Class|~~My Class~~|MyClass| Spaces are not allowed|
-|Class|~~myClass~~|MyClass| Should be `UpperCamelCase`|
-|Class|~~Observe~~|Observation| Class name should noun|
-|Property|~~LongName~~|longName| Should be `lowerCamelCase`|</pre>
+|Class|~~`My Class`~~|`MyClass`| Spaces are not allowed|
+|Class|~~`myClass`~~|`MyClass`| Should be `UpperCamelCase`|
+|Class|~~`Observe`~~|`Observation`| Class name should noun|
+|Property|~~`LongName`~~|`longName`| Should be `lowerCamelCase`|</pre>
+</div>
+<div created="20210523000901991" modified="20210523001027320" title="OrientDB">
+<pre>OrientDB - the first Multi-Model Open Source ~NoSQL DBMS that brings together the power of graphs and the flexibility of documents into one scalable high-performance operational database. OrientDB is a heart of Orienteer.</pre>
 </div>
 <div created="20210519193357585" modified="20210519195225503" tags="[[Dev Documentation]]" title="Property Types Support">
 <pre>|!OType|!Vis.|!View|!Edit|!Comment|
@@ -11377,7 +11616,7 @@ services:
 
 See [[Dashboard Scopes]] for widgets scopes details</pre>
 </div>
-<div created="20210519195331022" modified="20210519195450998" tags="[[Dev Documentation]]" title="Testing Micro Framework">
+<div created="20210519195331022" modified="20210522231056238" tags="[[Dev Documentation]]" title="Testing Micro Framework">
 <pre>!Use Orienteer testing micro-framework
 
 There are 2 ways to enable Orienteer testing framework:
@@ -11395,7 +11634,7 @@ public class TestMyFunctionality
 }
 ```
 
-!!Use of OrienteerRule
+!!Use of `OrienteerRule`
 
 ```java
 public class TestMyFunctionality
