@@ -133,7 +133,12 @@ public class OClassIntrospector implements IOClassIntrospector
 					case LINKBAG:
 					case LINKSET:
 						Collection<OIdentifiable> collection =  (Collection<OIdentifiable>)value;
-						return !collection.isEmpty()?(ODocument)collection.iterator().next().getRecord():null;
+						if(collection!=null && !collection.isEmpty()) {
+							for (OIdentifiable i : collection) {
+								if(i!=null) return i.getRecord();
+							}
+						}
+						return null;
 					case LINKMAP:
 						Map<?, ?> map = (Map<?, ?>)value;
 						value = map.isEmpty()?null:map.values().iterator().next();
