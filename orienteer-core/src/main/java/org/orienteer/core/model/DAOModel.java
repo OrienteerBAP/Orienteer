@@ -23,6 +23,10 @@ public class DAOModel<T> implements IModel<T>, IObjectClassAwareModel<T>{
 	
 	private T object;
 	private boolean needToReload=false;
+	
+	public DAOModel(Class<T> clazz) {
+		this(DAO.create(clazz));
+	}
 
 	public DAOModel(T object) {
 		this.object = object;
@@ -66,6 +70,45 @@ public class DAOModel<T> implements IModel<T>, IObjectClassAwareModel<T>{
 	public Class<T> getObjectClass()
 	{
 		return object != null ? (Class<T>) object.getClass() : null;
+	}
+	
+	public IModel<ODocument> asODocumentModel() {
+		return new IModel<ODocument>() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public ODocument getObject() {
+				return DAO.asDocument(DAOModel.this.getObject());
+			}
+			
+			@Override
+			public void setObject(ODocument object) {
+				DAO.asWrapper(DAOModel.this.getObject()).fromStream(object);
+			}
+		};
+	}
+	
+	public static <E> IModel<ODocument> asODocumentModel(final IModel<E> model) {
+		if(model==null) return null;
+		else if(model instanceof DAOModel) return ((DAOModel<E>)model).asODocumentModel();
+		else return new IModel<ODocument>() {
+
+			@Override
+			public ODocument getObject() {
+				return DAO.asDocument(model.getObject());
+			}
+			
+			@Override
+			public void setObject(ODocument object) {
+				DAO.asWrapper(model.getObject()).fromStream(object);
+			}
+			
+			@Override
+			public void detach() {
+				model.detach();
+			}
+		};
 	}
 	
 	public static <T> IModel<T> of(Class<? extends T> clazz, ODocument doc) {
