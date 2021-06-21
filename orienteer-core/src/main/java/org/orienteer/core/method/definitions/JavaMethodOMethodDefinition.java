@@ -3,6 +3,7 @@ package org.orienteer.core.method.definitions;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.wicket.request.RequestHandlerExecutor.ReplaceHandlerException;
@@ -21,6 +22,10 @@ import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
+
 /**
  * 
  * {@link OMethod} definition for annotations on java methods.
@@ -33,6 +38,7 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 	
 	private String javaMethodName;
 	private Class<?> javaClass;
+	private transient Method javaMethod;
 	
 	public static boolean isSupportedClass(Class<? extends IMethod> methodClass){
 		return methodClass.isAnnotationPresent(OMethod.class);
@@ -64,10 +70,24 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 		return null;
 	}
 	
+	protected Method getJavaMethod() {
+		if(javaMethod==null) {
+			try {
+				javaMethod = javaClass.getMethod(javaMethodName, IMethodContext.class);
+			} catch (NoSuchMethodException 
+					| SecurityException  e) {
+				ReplaceHandlerException replaceHandlerException = Exceptions.findCause(e, ReplaceHandlerException.class);
+				if(replaceHandlerException!=null) throw replaceHandlerException;
+				else LOG.error("Java Method was not found", e);
+			}
+		}
+		return javaMethod;
+	}
+	
 	@Override
 	public void invokeLinkedFunction(IMethodContext dataObject,ODocument doc) {
 		try {
-			Method javaMethod = javaClass.getMethod(javaMethodName, IMethodContext.class);
+			Method javaMethod = getJavaMethod();
 			ODocument inputDoc = doc!=null?doc:(ODocument)dataObject.getDisplayObjectModel().getObject();
 			
 			Object instance = null;
@@ -82,12 +102,23 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 			}
 			javaMethod.invoke(instance, dataObject);
 		} catch (IllegalAccessException | IllegalArgumentException 
-				| InvocationTargetException | NoSuchMethodException 
+				| InvocationTargetException  
 				| SecurityException | InstantiationException e) {
 			ReplaceHandlerException replaceHandlerException = Exceptions.findCause(e, ReplaceHandlerException.class);
 			if(replaceHandlerException!=null) throw replaceHandlerException;
 			else LOG.error("Error during method invokation", e);
 		} 
+	}
+	
+	@Override
+	public HashMap<String, OrientPermission[]> getExtraPermissions() {
+		Method javaMethod = getJavaMethod();
+		RequiredOrientResource[] requiredResources=javaMethod.getAnnotationsByType(RequiredOrientResource.class);
+		if(requiredResources!=null && requiredResources.length>0) {
+			return OSecurityHelper.toSecureMap(requiredResources);
+		} else {
+			return null;
+		}
 	}
 
 	public String getJavaMethodName() {

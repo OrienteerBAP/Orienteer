@@ -1,6 +1,8 @@
 package org.orienteer.core.method.methods;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.Behavior;
@@ -15,6 +17,9 @@ import org.slf4j.LoggerFactory;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import ru.ydn.wicket.wicketorientdb.model.SimpleNamingModel;
+import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 /**
  * 
@@ -71,13 +76,22 @@ public abstract class AbstractOMethod implements Serializable,IMethod{
 		return commandComponent;
 	}
 	
+	protected Command<?> applySecuritySettings(Command<?> commandComponent) {
+		IMethodDefinition definition = getDefinition();
+		HashMap<String, OrientPermission[]> extraPermissions =  definition.getExtraPermissions();
+		if(extraPermissions!=null && !extraPermissions.isEmpty()) {
+			OSecurityHelper.secureComponent(commandComponent, extraPermissions);
+		}
+		return commandComponent;
+	}
+	
 	/**
 	 * Apply both visual settings and behavior 
 	 * @param commandComponent command to apply to
 	 * @return provided command
 	 */
 	protected Command<?> applySettings(Command<?> commandComponent) {
-		return applyBehaviors(applyVisualSettings(commandComponent));
+		return applySecuritySettings(applyBehaviors(applyVisualSettings(commandComponent)));
 	}
 	
 	protected void invoke(){

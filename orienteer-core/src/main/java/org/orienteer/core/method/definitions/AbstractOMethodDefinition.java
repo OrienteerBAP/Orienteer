@@ -2,6 +2,7 @@ package org.orienteer.core.method.definitions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.wicket.behavior.Behavior;
@@ -19,6 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 /**
  * 
@@ -80,6 +84,12 @@ public abstract class AbstractOMethodDefinition implements IMethodDefinition {
 	public String getPermission() {
 		return oMethod.permission();
 	}
+	
+	@Override
+	public HashMap<String, OrientPermission[]> getExtraPermissions() {
+		return null;
+	}
+	
 	@Override
 	public Class<? extends IMethod> getIMethodClass() {
 		return oMethod.methodClass();

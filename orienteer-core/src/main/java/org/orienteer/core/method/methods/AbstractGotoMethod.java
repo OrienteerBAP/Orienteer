@@ -20,8 +20,7 @@ public abstract class AbstractGotoMethod extends AbstractOMethod{
 			@Override
 			protected void onInitialize() {
 				super.onInitialize();
-				applyVisualSettings(this);
-				applyBehaviors(this);
+				applySettings(this);
 			}
 			
 			@Override

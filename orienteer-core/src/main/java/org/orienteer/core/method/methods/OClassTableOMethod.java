@@ -36,7 +36,7 @@ public class OClassTableOMethod extends AbstractOMethod{
 				@Override
 				protected void onInitialize() {
 					super.onInitialize();
-					applyVisualSettings(this);
+					applySettings(this);
 				}
 
 				@Override
@@ -49,7 +49,6 @@ public class OClassTableOMethod extends AbstractOMethod{
 					}
 				}
 			};
-			applyBehaviors(displayComponent);
 		}
 		
 		return displayComponent;

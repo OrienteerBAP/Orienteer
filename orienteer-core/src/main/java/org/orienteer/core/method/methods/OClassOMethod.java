@@ -27,14 +27,13 @@ public class OClassOMethod extends AbstractOMethod{
 				@Override
 				protected void onInitialize() {
 					super.onInitialize();
-					applyVisualSettings(this);
+					applySettings(this);
 				}
 				@Override
 				public void onClick(Optional<AjaxRequestTarget> target) {
 					invoke();
 				}
 			};
-			applyBehaviors(displayComponent);
 		}
 		return displayComponent;
 	}

@@ -1,12 +1,17 @@
 package org.orienteer.core.method;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.behavior.Behavior;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
+
+import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
+import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
 
 /**
  * 
@@ -22,6 +27,7 @@ public interface IMethodDefinition extends Serializable{
 	public int getOrder();
 	public String getSelector();
 	public String getPermission();
+	public HashMap<String, OrientPermission[]> getExtraPermissions();
 	public Class<? extends IMethod> getIMethodClass();
 	public Class<? extends IMethod> getTableIMethodClass();
 	public boolean isResetSelection();

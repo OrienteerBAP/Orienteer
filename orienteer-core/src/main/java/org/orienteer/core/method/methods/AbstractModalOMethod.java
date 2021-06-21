@@ -26,7 +26,7 @@ public abstract class AbstractModalOMethod extends AbstractOMethod{
 				@Override
 				protected void onInitialize() {
 					super.onInitialize();
-					applyVisualSettings(this);
+					applySettings(this);
 				}
 				@Override
 				protected void initializeContent(ModalWindow modal) {
@@ -38,7 +38,6 @@ public abstract class AbstractModalOMethod extends AbstractOMethod{
 					sendActionPerformed();					
 				}
 			};
-			applyBehaviors(displayComponent);
 		}
 		return displayComponent;
 	}
