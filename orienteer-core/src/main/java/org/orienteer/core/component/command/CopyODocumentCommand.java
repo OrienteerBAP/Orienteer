@@ -32,18 +32,12 @@ public class CopyODocumentCommand extends AbstractCopyCommand<ODocument> impleme
     public CopyODocumentCommand(OrienteerDataTable<ODocument, ?> table, IModel<OClass> classModel) {
         super(table);
         this.classModel = classModel;
+        setRequireExactOne(true).setRequireAtLeastOne(true);
     }
 
 
     @Override
     protected void performMultiAction(AjaxRequestTarget target, List<ODocument> objects) {
-        if(objects.size() > 1)
-        {
-            String message = getLocalizer().getString("alert.onlyoneshouldbeselected", this).replace("\"", "\\\"");
-            target.appendJavaScript("alert(\""+message+"\")");
-            return;
-        }
-
         super.performMultiAction(target, objects);
         getDatabaseSession().commit(true);
         getDatabaseSession().begin();
