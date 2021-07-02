@@ -101,6 +101,11 @@ public final class CustomAttribute implements Serializable
 	 * DAO InterfaceClass
 	 */
 	public static final CustomAttribute DAO_CLASS = create("orienteer.dao.class",OType.STRING,null,true, true);
+	
+	/**
+	 * Custom CSS Class(es) to be associated with OClass or OProperty
+	 */
+	public static final CustomAttribute CSS_CLASS = create("orienteer.cssclass", OType.STRING, null, true, true);
 
 	private final String name;
 	private final OType type;

@@ -20,6 +20,7 @@ import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.string.Strings;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.behavior.StyledComponentBehavior;
 import org.orienteer.core.component.ITooltipProvider;
 
 import ru.ydn.wicket.wicketorientdb.behavior.SyncVisibilityBehaviour;
@@ -75,6 +76,11 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 				label.add(new AttributeModifier("title", getTooltipModel(value, rowModel)));
 				item.add(label, value);
 			}
+			
+			@Override
+			protected ListItem<C> newItem(int index, IModel<C> itemModel) {
+				return newRowItem(index, itemModel);
+			}
 
 		};
 		listView.setReuseItems(true);
@@ -82,6 +88,12 @@ public abstract class StructureTable<T, C> extends GenericPanel<T>
 	}
 	
 	protected abstract Component getValueComponent(String id, IModel<C> rowModel);
+	
+	protected ListItem<C> newRowItem(int index, IModel<C> itemModel) {
+		ListItem<C> item = new ListItem<>(index, itemModel);
+		item.add(new StyledComponentBehavior());
+		return item;
+	}
 	
 	protected Component getLabelComponent(String id, IModel<C> rowModel, IModel<?> labelModel)
 	{

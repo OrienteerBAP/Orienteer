@@ -19,6 +19,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.visit.IVisit;
 import org.apache.wicket.util.visit.IVisitor;
+import org.orienteer.core.behavior.StyledComponentBehavior;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.AbstractCheckBoxEnabledCommand;
@@ -82,6 +83,8 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	protected NoRecordsToolbar noRecordsToolbar;
 
 	private IModel<String> captionModel;
+	
+	private StyledComponentBehavior styleComponentBehavior = new StyledComponentBehavior();
 	
 	public OrienteerDataTable(String id, List<? extends IColumn<T, S>> columns,
 			ISortableDataProvider<T, S> dataProvider, int rowsPerPage)
@@ -198,7 +201,9 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	@Override
 	protected Item<T> newRowItem(final String id, final int index, final IModel<T> model)
 	{
-		return new MetaContextItem<T, Object>(id, index, model);
+		Item<T> rowItem = new MetaContextItem<T, Object>(id, index, model);
+		rowItem.add(styleComponentBehavior);
+		return rowItem;
 	}
 
 	@Override

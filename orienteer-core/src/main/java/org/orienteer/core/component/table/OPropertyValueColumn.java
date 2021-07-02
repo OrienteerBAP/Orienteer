@@ -3,6 +3,7 @@ package org.orienteer.core.component.table;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.Component;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.IStyledColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.CustomAttribute;
@@ -85,5 +86,11 @@ public class OPropertyValueColumn extends AbstractModeMetaColumn<ODocument, Disp
 		} else {
 			return null;
 		}
+	}
+	
+	@Override
+	public String getCssClass() {
+		OProperty property = getCriteryModel().getObject();
+		return property!=null?CustomAttribute.CSS_CLASS.getValue(property):null;
 	}
 }

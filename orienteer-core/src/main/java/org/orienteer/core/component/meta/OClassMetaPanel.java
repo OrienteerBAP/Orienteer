@@ -75,6 +75,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
         OCLASS_ATTRS.add(CustomAttribute.SEARCH_QUERY.getName());
 		OCLASS_ATTRS.add(CustomAttribute.ON_CREATE_FIELDS.getName());
 		OCLASS_ATTRS.add(CustomAttribute.ON_CREATE_IDENTITY_TYPE.getName());
+		OCLASS_ATTRS.add(CustomAttribute.CSS_CLASS.getName());
 	}
 	
 	private static final Predicate<OProperty> IS_LINK_PROPERTY = new Predicate<OProperty>() {
@@ -268,7 +269,7 @@ public class OClassMetaPanel<V> extends AbstractComplexModeMetaPanel<OClass, Dis
 					return new SqlEditorPanel(id, (IModel<String>) getModel(), Model.of(mode))
 							.add(new PatternValidator("^(select|where)\\s.*", Pattern.CASE_INSENSITIVE));
                 }
-                else if (CustomAttribute.match(critery,CustomAttribute.TAB))
+                else if (CustomAttribute.match(critery,CustomAttribute.TAB, CustomAttribute.CSS_CLASS))
                 {
                     return new TextField<V>(id,getModel());
                 }
