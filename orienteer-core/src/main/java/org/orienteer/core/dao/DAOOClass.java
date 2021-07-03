@@ -28,4 +28,5 @@ public @interface DAOOClass {
 	String searchQuery() default "";
 	int orderOffset() default 0;
 	String[] displayable() default {};
+	String cssClass() default "";
 }

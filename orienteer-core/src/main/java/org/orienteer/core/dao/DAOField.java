@@ -36,4 +36,5 @@ public @interface DAOField {
 	boolean hidden() default false;
 	String script() default "";
 	String defaultValue() default "";
+	String cssClass() default "";
 }

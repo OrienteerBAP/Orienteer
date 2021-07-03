@@ -361,6 +361,8 @@ public final class DAO {
 		}
 		if(!Strings.isEmpty(daoOClass.searchQuery()))
 			CustomAttribute.SEARCH_QUERY.setValue(helper.getOClass(), daoOClass.searchQuery());
+		if(!Strings.isEmpty(daoOClass.cssClass()))
+			CustomAttribute.CSS_CLASS.setValue(helper.getOClass(), daoOClass.cssClass());
 		helper.switchDisplayable(true, daoOClass.displayable());
 	}
 	
@@ -377,6 +379,8 @@ public final class DAO {
 		helper.assignVisualization(daoField.visualization());
 		if(!Strings.isEmpty(daoField.feature()))
 			CustomAttribute.FEATURE.setValue(helper.getOProperty(), daoField.feature());
+		if(!Strings.isEmpty(daoField.cssClass()))
+			CustomAttribute.CSS_CLASS.setValue(helper.getOProperty(), daoField.cssClass());
 		helper.getOProperty().setMandatory(daoField.mandatory());
 		helper.getOProperty().setReadonly(daoField.readOnly());
 		CustomAttribute.UI_READONLY.setValue(helper.getOProperty(), daoField.uiReadOnly());
