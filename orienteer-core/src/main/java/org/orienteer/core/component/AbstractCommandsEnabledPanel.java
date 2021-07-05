@@ -6,13 +6,16 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 import org.orienteer.core.component.command.Command;
 
+import com.google.common.reflect.TypeToken;
+
 /**
  * Panel with Commands on top
  *
  * @param <T> the type of model object
  */
-public class AbstractCommandsEnabledPanel<T> extends GenericPanel<T>  implements ICommandsSupportComponent<T> {
+public abstract class AbstractCommandsEnabledPanel<T> extends GenericPanel<T>  implements ICommandsSupportComponent<T> {
 
+	private final TypeToken<T> typeToken = new TypeToken<T>(AbstractCommandsEnabledPanel.class) {};
 	protected final Form<T> form;
 	private RepeatingView commands;
 	
@@ -46,5 +49,10 @@ public class AbstractCommandsEnabledPanel<T> extends GenericPanel<T>  implements
 	@Override
 	public String newCommandId() {
 		return commands.newChildId();
+	}
+	
+	@Override
+	public TypeToken<T> getTypeToken() {
+		return typeToken;
 	}
 }

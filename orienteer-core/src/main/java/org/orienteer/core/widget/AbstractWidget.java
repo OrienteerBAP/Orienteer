@@ -1,9 +1,9 @@
 package org.orienteer.core.widget;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.reflect.TypeToken;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.apache.wicket.WicketRuntimeException;
@@ -49,6 +49,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private int loadedWidgetVersion=-1;
 	
+	private final TypeToken<T> typeToken = new TypeToken<T>(AbstractWidget.class) {};
 	protected RepeatingView commands;
 	
 	private IModel<ODocument> widgetDocumentModel;
@@ -146,6 +147,11 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	@Override
 	public String newCommandId() {
 		return commands.newChildId();
+	}
+	
+	@Override
+	public TypeToken<T> getTypeToken() {
+		return typeToken;
 	}
 
 	public DashboardPanel<T> getDashboardPanel() {

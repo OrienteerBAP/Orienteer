@@ -12,6 +12,9 @@ import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.component.ICommandsSupportComponent;
 import org.orienteer.core.component.command.Command;
 import org.orienteer.core.method.OMethodsManager;
+
+import com.google.common.reflect.TypeToken;
+
 import org.orienteer.core.method.MethodPlace;
 
 /**
@@ -23,6 +26,8 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 {
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
+	private final TypeToken<T> typeToken = new TypeToken<T>(DataTableCommandsToolbar.class) {};
+	
     public DataTableCommandsToolbar(DataTable<T, ?> table)
     {
         super(table);
@@ -48,6 +53,11 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	@Override
 	public String newCommandId() {
 		return commands.newChildId();
+	}
+	
+	@Override
+	public TypeToken<T> getTypeToken() {
+		return typeToken;
 	}
 
 	@SuppressWarnings("unchecked")

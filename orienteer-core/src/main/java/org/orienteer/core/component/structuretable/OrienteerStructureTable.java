@@ -11,6 +11,8 @@ import org.orienteer.core.component.command.Command;
 import org.orienteer.core.component.meta.AbstractMetaPanel;
 import org.orienteer.core.component.meta.IMetaContext;
 
+import com.google.common.reflect.TypeToken;
+
 /**
  * {@link StructureTable} which allow to use meta micro-framework ( {@link IMetaContext} )
  *
@@ -61,6 +63,11 @@ public abstract class OrienteerStructureTable<T, C> extends StructureTable<T, C>
 	@Override
 	public String newCommandId() {
 		return getCommandsToolbar().newCommandId();
+	}
+	
+	@Override
+	public TypeToken<T> getTypeToken() {
+		return getCommandsToolbar().getTypeToken();
 	}
 
 	@Override

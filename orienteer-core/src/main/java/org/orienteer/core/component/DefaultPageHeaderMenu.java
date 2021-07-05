@@ -1,27 +1,22 @@
 package org.orienteer.core.component;
 
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.event.IEvent;
 import org.apache.wicket.markup.html.panel.GenericPanel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.orienteer.core.component.command.Command;
-import org.orienteer.core.component.property.DisplayMode;
 import org.orienteer.core.event.ActionPerformedEvent;
 import org.orienteer.core.event.SwitchDashboardTabEvent;
 import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.OWidgetsModule;
-import org.orienteer.core.widget.IDashboardContainer;
-import org.orienteer.core.widget.command.ConfigureDashboardCommand;
-import org.orienteer.core.widget.command.KeepUnsavedDashboardCommand;
+
+import com.google.common.reflect.TypeToken;
+import com.orientechnologies.orient.core.record.impl.ODocument;
+
 import ru.ydn.wicket.wicketorientdb.model.ODocumentModel;
 import ru.ydn.wicket.wicketorientdb.security.OSecurityHelper;
 import ru.ydn.wicket.wicketorientdb.security.OrientPermission;
 import ru.ydn.wicket.wicketorientdb.security.RequiredOrientResource;
-
-import java.util.Optional;
 
 /**
  * 
@@ -75,6 +70,11 @@ public class DefaultPageHeaderMenu extends GenericPanel<ODocument> implements IC
 	@Override
 	public String newCommandId() {
 		return commands.newChildId();
+	}
+	
+	@Override
+	public TypeToken<ODocument> getTypeToken() {
+		return TypeToken.of(ODocument.class);
 	}
 	
 }

@@ -1,5 +1,7 @@
 package org.orienteer.core.component.table;
 
+import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -17,8 +19,6 @@ import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
-import org.apache.wicket.util.visit.IVisit;
-import org.apache.wicket.util.visit.IVisitor;
 import org.orienteer.core.behavior.StyledComponentBehavior;
 import org.orienteer.core.behavior.UpdateOnActionPerformedEventBehavior;
 import org.orienteer.core.component.ICommandsSupportComponent;
@@ -29,9 +29,10 @@ import org.orienteer.core.component.meta.IMetaContext;
 import org.orienteer.core.component.table.filter.IFilterSupportComponent;
 import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
 import org.orienteer.core.event.ActionPerformedEvent;
-import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
-import java.util.List;
+import com.google.common.reflect.TypeToken;
+
+import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 /**
  * Bootstrap enabled {@link DataTable}
@@ -149,6 +150,11 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 	@Override
 	public String newCommandId() {
 		return commandsToolbar.newCommandId();
+	}
+	
+	@Override
+	public TypeToken<T> getTypeToken() {
+		return commandsToolbar.getTypeToken();
 	}
 
 	@Override
