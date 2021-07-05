@@ -42,7 +42,7 @@ public class GraphNeighborsWidget extends AbstractWidget<ODocument> {
 
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         OQueryDataProvider<ODocument> provider = new OQueryDataProvider<ODocument>("select expand(both().asSet()) from "+getModelObject().getIdentity());
-        OClass commonParent = provider.probeOClass(20);
+        OClass commonParent = provider.getSchemaClass();
         if(commonParent==null) commonParent = getSchema().getClass("V");
         List<IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(commonParent, true, modeModel);
         GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<ODocument>("neighbors", columns, provider, 20);

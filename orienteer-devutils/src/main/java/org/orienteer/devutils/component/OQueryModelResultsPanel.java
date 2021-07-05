@@ -31,7 +31,7 @@ public class OQueryModelResultsPanel extends GenericPanel<List<ODocument>> {
 	public OQueryModelResultsPanel(String id, OQueryModel<ODocument> queryModel) {
 		super(id, queryModel);
 		
-		OClass oClass = queryModel.probeOClass(20);
+		OClass oClass = queryModel.getSchemaClass();
 		OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>(queryModel);
 		IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
 		List<? extends IColumn<ODocument, String>> columns = oClassIntrospector.getColumnsFor(oClass, true, modeModel);

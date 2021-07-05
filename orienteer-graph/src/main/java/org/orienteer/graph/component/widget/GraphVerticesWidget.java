@@ -52,7 +52,7 @@ public class GraphVerticesWidget extends AbstractWidget<ODocument> {
         IModel<DisplayMode> modeModel = DisplayMode.VIEW.asModel();
         String sql = "select expand(bothV()) from " + getModelObject().getIdentity();
         OQueryDataProvider<ODocument> provider = new OQueryDataProvider<>(sql);
-        OClass commonParent = provider.probeOClass(20);
+        OClass commonParent = provider.getSchemaClass();
         GenericTablePanel<ODocument> tablePanel = new GenericTablePanel<>("vertices",
                 createColumns(commonParent, modeModel),
                 provider, //setParameter does not work here

@@ -28,7 +28,7 @@ public class ODBScriptResultRenderer implements IScriptResultRenderer{
 		if(dataModel == null) return null;
 		else if(dataModel instanceof OQueryModel) {
 			OQueryModel<ODocument> queryModel = (OQueryModel<ODocument>) dataModel;
-			OClass oClass = queryModel.probeOClass(20);
+			OClass oClass = queryModel.getSchemaClass();
 			if(oClass!=null) {
 				return new OQueryModelResultsPanel(id, queryModel);
 			}

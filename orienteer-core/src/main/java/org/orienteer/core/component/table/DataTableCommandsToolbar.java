@@ -26,7 +26,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 {
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
-	private final TypeToken<T> typeToken = new TypeToken<T>(DataTableCommandsToolbar.class) {};
+	private transient TypeToken<T> typeToken;
 	
     public DataTableCommandsToolbar(DataTable<T, ?> table)
     {
@@ -57,6 +57,9 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	
 	@Override
 	public TypeToken<T> getTypeToken() {
+		if(typeToken==null) {
+			typeToken = new TypeToken<T>(DataTableCommandsToolbar.class) {};
+		}
 		return typeToken;
 	}
 

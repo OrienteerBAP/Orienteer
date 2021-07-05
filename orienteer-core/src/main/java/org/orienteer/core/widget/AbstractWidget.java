@@ -49,7 +49,7 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	private int loadedWidgetVersion=-1;
 	
-	private final TypeToken<T> typeToken = new TypeToken<T>(AbstractWidget.class) {};
+	private transient TypeToken<T> typeToken;
 	protected RepeatingView commands;
 	
 	private IModel<ODocument> widgetDocumentModel;
@@ -151,6 +151,9 @@ public abstract class AbstractWidget<T> extends GenericPanel<T> implements IComm
 	
 	@Override
 	public TypeToken<T> getTypeToken() {
+		if(typeToken==null) {
+			 typeToken = new TypeToken<T>(AbstractWidget.class) {};
+		}
 		return typeToken;
 	}
 

@@ -38,7 +38,7 @@ public class ODBScriptEngine implements IScriptEngine {
 				if(SELECT_FROM_PATTERN.matcher(command).find()
 						&& !ORDER_CHECK_PATTERN.matcher(command).find()) {
 					OQueryModel<ODocument> returnModel =  new OQueryModel<ODocument>(command);
-					returnModel.probeOClass(10);
+					returnModel.getSchemaClass(); //To check query to the DB
 					result.setResultModel(returnModel);
 				} else {
 					ODatabaseSession db = OrientDbWebSession.get().getDatabaseSession();

@@ -15,7 +15,7 @@ import com.google.common.reflect.TypeToken;
  */
 public abstract class AbstractCommandsEnabledPanel<T> extends GenericPanel<T>  implements ICommandsSupportComponent<T> {
 
-	private final TypeToken<T> typeToken = new TypeToken<T>(AbstractCommandsEnabledPanel.class) {};
+	private transient TypeToken<T> typeToken;
 	protected final Form<T> form;
 	private RepeatingView commands;
 	
@@ -53,6 +53,9 @@ public abstract class AbstractCommandsEnabledPanel<T> extends GenericPanel<T>  i
 	
 	@Override
 	public TypeToken<T> getTypeToken() {
+		if(typeToken==null) {
+			typeToken = new TypeToken<T>(AbstractCommandsEnabledPanel.class) {};
+		}
 		return typeToken;
 	}
 }

@@ -22,7 +22,7 @@ public class StructureTableCommandsToolbar<P> extends
 {
 	private static final long serialVersionUID = 1L;
 	private RepeatingView commands;
-	private final TypeToken<P> typeToken = new TypeToken<P>(StructureTableCommandsToolbar.class) {};
+	private transient TypeToken<P> typeToken;
 
 	public StructureTableCommandsToolbar(StructureTable<P, ?> table)
 	{
@@ -50,6 +50,9 @@ public class StructureTableCommandsToolbar<P> extends
 	
 	@Override
 	public TypeToken<P> getTypeToken() {
+		if(typeToken==null) {
+			typeToken = new TypeToken<P>(StructureTableCommandsToolbar.class) {};
+		}
 		return typeToken;
 	}
 

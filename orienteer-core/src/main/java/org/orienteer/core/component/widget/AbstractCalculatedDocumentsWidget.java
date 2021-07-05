@@ -16,6 +16,8 @@ import org.orienteer.core.component.table.OrienteerDataTable;
 import org.orienteer.core.component.table.component.GenericTablePanel;
 import org.orienteer.core.service.IOClassIntrospector;
 import org.orienteer.core.widget.AbstractWidget;
+
+import ru.ydn.wicket.wicketorientdb.model.IOClassAware;
 import ru.ydn.wicket.wicketorientdb.model.OClassModel;
 import ru.ydn.wicket.wicketorientdb.model.OQueryDataProvider;
 
@@ -81,7 +83,7 @@ public class AbstractCalculatedDocumentsWidget<T> extends AbstractWidget<T> {
 		String expectedClass =  getWidgetDocument().field("class");
 		OClass ret = expectedClass!=null?getSchema().getClass(expectedClass):null;
 		if(ret==null) {
-			ret = provider.probeOClass(20);
+			ret = provider.getSchemaClass();
 		}
 		return ret;
 	}
