@@ -48,8 +48,8 @@ public class OEntityFilter implements IMethodFilter {
 	}
 	
 	@Override
-	public boolean isSupportedMethod(IMethodContext dataObject) {
-		OClass oclass = getOClass(dataObject);
+	public boolean isSupportedMethod(IMethodContext ctx) {
+		OClass oclass = ctx.getSchemaClass();
 		if (oclass!=null){
 			for (OClass oClass : getOClasses()) {
 				if (oclass.isSubClassOf(oClass)){
@@ -60,15 +60,4 @@ public class OEntityFilter implements IMethodFilter {
 		return false;
 	}
 	
-	private OClass getOClass(IMethodContext dataObject){
-		if (dataObject.getDisplayObjectModel()!=null){
-			Object obj = dataObject.getDisplayObjectModel().getObject();
-			if (obj instanceof OClass){
-				return (OClass) obj;
-			}else if (obj instanceof ODocument){
-				return ((ODocument)obj).getSchemaClass();
-			}
-		}
-		return null;
-	}
 }

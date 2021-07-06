@@ -72,7 +72,7 @@ public class DataTableCommandsToolbar<T> extends AbstractToolbar implements ICom
 	@Override
     protected void onInitialize() {
     	super.onInitialize();
-    	OMethodsManager.get().populate(this, MethodPlace.DATA_TABLE, getDefaultModel(), getTable());
+    	OMethodsManager.get().populate(this, MethodPlace.DATA_TABLE, getTable().getDataProvider(), getTable());
     }
 
 	@Override

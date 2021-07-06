@@ -77,26 +77,26 @@ public class OMethodsManager {
 				.collect(Collectors.toList());
 	}
 	
-	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel) {
-		populateInternal(commandSupport, place, mainObjectModel, null, null, false);
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, Object dataSource) {
+		populateInternal(commandSupport, place, dataSource, null, null, false);
 	}
 	
-	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel,
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, Object dataSource,
 									Component relatedComponent) {
-		populateInternal(commandSupport, place, mainObjectModel, relatedComponent, null, false);
+		populateInternal(commandSupport, place, dataSource, relatedComponent, null, false);
 	}
 	
-	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, IModel<?> mainObjectModel,
+	public <T> void populate(ICommandsSupportComponent<T> commandSupport, MethodPlace place, Object dataSource,
 									Component relatedComponent, BootstrapType bootstrapType) {
-		populateInternal(commandSupport, place, mainObjectModel, relatedComponent, bootstrapType, true);
+		populateInternal(commandSupport, place, dataSource, relatedComponent, bootstrapType, true);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> void populateInternal(ICommandsSupportComponent<T> commandSupport, MethodPlace place, 
-										IModel<?> mainObjectModel, Component relatedComponent, 
+										Object dataSource, Component relatedComponent, 
 										BootstrapType bootstrapType, boolean overrideBootstrapType) {
 		AbstractWidget<?> widget = getWidget(commandSupport);
-		MethodContext ctx = new MethodContext(mainObjectModel, widget, place, relatedComponent);
+		MethodContext ctx = new MethodContext(dataSource, widget, place, relatedComponent);
 		List<IMethod> methods = getMethods(ctx);
 		for (IMethod method : methods) {
 			Command<T> component = (Command<T>) method.createCommand(commandSupport.newCommandId()); 

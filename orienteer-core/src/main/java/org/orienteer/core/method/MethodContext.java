@@ -18,14 +18,14 @@ public class MethodContext implements Serializable,IMethodContext{
 
 	private static final long serialVersionUID = 1L;
 	
-	private IModel<?> objModel;
+	private Object dataSource;
 	private AbstractWidget<?> widget;
 	private String widgetType;
 	private MethodPlace place;
 	private Component relatedComponent;
 	
-	public MethodContext(IModel<?> objModel,AbstractWidget<?> widget,MethodPlace place, Component relatedComponent) {
-		this.objModel = objModel;
+	public MethodContext(Object dataSource,AbstractWidget<?> widget,MethodPlace place, Component relatedComponent) {
+		this.dataSource = dataSource;
 		this.widget = widget;
 		if (widget!=null){
 			ODocument widgetDoc = widget.getWidgetDocument();
@@ -37,7 +37,12 @@ public class MethodContext implements Serializable,IMethodContext{
 
 	@Override
 	public IModel<?> getDisplayObjectModel() {
-		return objModel;
+		return dataSource instanceof IModel?(IModel<?>)dataSource:null;
+	}
+	
+	@Override
+	public Object getDataSource() {
+		return dataSource;
 	}
 
 	@Override

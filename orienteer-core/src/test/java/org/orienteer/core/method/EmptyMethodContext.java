@@ -30,4 +30,9 @@ public class EmptyMethodContext implements IMethodContext {
 	public Component getRelatedComponent() {
 		return null;
 	}
+
+	@Override
+	public Object getDataSource() {
+		return null;
+	}
 }

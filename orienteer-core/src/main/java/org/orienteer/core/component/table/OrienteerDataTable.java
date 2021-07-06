@@ -16,6 +16,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilt
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.ReuseIfModelsEqualStrategy;
+import org.apache.wicket.markup.repeater.data.IDataProvider;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Args;
@@ -31,7 +32,9 @@ import org.orienteer.core.component.table.navigation.OrienteerNavigationToolbar;
 import org.orienteer.core.event.ActionPerformedEvent;
 
 import com.google.common.reflect.TypeToken;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
 
+import ru.ydn.wicket.wicketorientdb.model.IOClassAware;
 import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
 
 /**
@@ -42,7 +45,7 @@ import ru.ydn.wicket.wicketorientdb.model.OQueryModel;
  * @param <S>
  *            the type of the sorting parameter
  */
-public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>, IFilterSupportComponent<T>
+public class OrienteerDataTable<T, S> extends DataTable<T, S> implements ICommandsSupportComponent<T>, IFilterSupportComponent<T>, IOClassAware
 {
 	/**
 	 * {@link Item} that allows every row to be an {@link IMetaContext}
@@ -234,5 +237,11 @@ public class OrienteerDataTable<T, S> extends DataTable<T, S> implements IComman
 			hideCheckboxes = noBulkCommands==null || noBulkCommands;
 		}
 		if(hideCheckboxes) tag.append("class", "no-checkboxes", " ");
+	}
+	
+	@Override
+	public OClass getSchemaClass() {
+		IDataProvider<T> provider = getDataProvider();
+		return provider instanceof IOClassAware ? ((IOClassAware)provider).getSchemaClass():null;
 	}
 }
