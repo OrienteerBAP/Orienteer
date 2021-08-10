@@ -53,6 +53,9 @@ public class OrienteerModuleTest {
 			Properties orienteerProperties = StartupPropertiesLoader.PROPERTIES_DEFAULT;
 			// putting all system properties to orienteer
 			orienteerProperties.putAll(System.getProperties());
+			//Root password was deleted due to security reason by OrientDB - we should do the same
+			orienteerProperties.remove("orientdb.root.password");
+			result.remove("orientdb.root.password");
 			assertEquals(orienteerProperties, result);
 			//loading from resources
 			System.setProperty(StartupPropertiesLoader.ORIENTEER_PROPERTIES_QUALIFIER_PROPERTY_NAME, "test-custom-startup-properties");
