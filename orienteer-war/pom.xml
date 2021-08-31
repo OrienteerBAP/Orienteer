@@ -93,6 +93,27 @@
 			    <skip>true</skip>
 			</configuration>
 		    </plugin>
+		<plugin>
+			<groupId>com.spotify</groupId>
+			<artifactId>dockerfile-maven-plugin</artifactId>
+			<version>1.4.10</version>
+			<executions>
+			    <execution>
+			      <id>default</id>
+			      <goals>
+				<goal>build</goal>
+				<goal>push</goal>
+			      </goals>
+			    </execution>
+			  </executions>
+			<configuration>
+				<repository>orienteer/orienteer</repository>
+				<tag>latest</tag>
+				<contextDirectory>..</contextDirectory>
+				<dockerfile>../Dockerfile.mvn</dockerfile>
+				<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+			</configuration>
+		</plugin>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
