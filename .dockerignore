@@ -20,3 +20,4 @@ build.cmd
 **/.idea/
 **/*.iml
 **/*.log
+!orienteer-war/target/orienteer.war
