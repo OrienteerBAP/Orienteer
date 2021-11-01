@@ -32,10 +32,7 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 
 		
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		
-		DAO.describe(helper, IOTask.class, IOTaskSessionPersisted.class, 
-										   IOConsoleTask.class);
+		DAO.define(IOTask.class, IOTaskSessionPersisted.class, IOConsoleTask.class);
 		return null;
 	}
 	

@@ -3,8 +3,8 @@ package org.orienteer.mail.task;
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.mail.model.OPreparedMail;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.tasks.IOTaskSessionPersisted;
 
@@ -18,7 +18,7 @@ import static org.orienteer.core.util.CommonUtils.mapIdentifiables;
  * Task session which prepared during application lifecycle and then used in {@link IOSendMailTask} for send mails
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOSendMailTaskSession.CLASS_NAME)
+@EntityType(IOSendMailTaskSession.CLASS_NAME)
 public interface IOSendMailTaskSession extends IOTaskSessionPersisted {
 
     /**
@@ -32,13 +32,13 @@ public interface IOSendMailTaskSession extends IOTaskSessionPersisted {
      */
     public static final String PROP_MAILS = "mails";
 
-    @DAOField(linkedClass = OPreparedMail.CLASS_NAME)
+    @EntityProperty(referencedType = OPreparedMail.CLASS_NAME)
     public List<OPreparedMail> getMails();
     public IOSendMailTaskSession setMails(List<OPreparedMail> mails);
 
-    @DAOField(value = "mails", linkedClass = OPreparedMail.CLASS_NAME)
+    @EntityProperty(value = "mails", referencedType = OPreparedMail.CLASS_NAME)
     public List<ODocument> getMailsAsDocuments();
-    @DAOField(value = "mails", linkedClass = OPreparedMail.CLASS_NAME)
+    @EntityProperty(value = "mails", referencedType = OPreparedMail.CLASS_NAME)
     public IOSendMailTaskSession setMailsAsDocuments(List<ODocument> mails);
     
     /**

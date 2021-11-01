@@ -9,16 +9,9 @@ import java.lang.annotation.Target;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.orienteer.core.OClassDomain;
 
-/**
- * Optional annotation to mark interfaces which can be wrapped for DAO
- */
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface DAOOClass {
-	String value();
-	String[] superClasses() default {};
-	boolean isAbstract() default false;
-	
+public @interface OrienteerOClass {
 	OClassDomain domain() default OClassDomain.BUSINESS;
 	String nameProperty() default "";
 	String parentProperty() default "";

@@ -3,10 +3,10 @@ package org.orienteer.core.dao.dm;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
 
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
@@ -16,12 +16,12 @@ import com.orientechnologies.orient.core.metadata.security.OSecurityShared;
  * Interface helper to simplify work with ORestricted 
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = OSecurityShared.RESTRICTED_CLASSNAME)
+@EntityType(value = OSecurityShared.RESTRICTED_CLASSNAME)
 public interface IORestricted extends IODocumentWrapper {
 	
-	@DAOField("_allow")
+	@EntityProperty("_allow")
 	public Set<OIdentifiable> getAllowAll();
-	@DAOField("_allow")
+	@EntityProperty("_allow")
 	public IORestricted setAllowAll(Set<OIdentifiable> identifiables);
 	
 	public default IORestricted addToAllowAll(OIdentifiable identifiable) {
@@ -32,9 +32,9 @@ public interface IORestricted extends IODocumentWrapper {
 		return setAllowAll(removeSafely(getAllowAll(), identifiable));
 	}
 	
-	@DAOField("_allowRead")
+	@EntityProperty("_allowRead")
 	public Set<OIdentifiable> getAllowRead();
-	@DAOField("_allowRead")
+	@EntityProperty("_allowRead")
 	public IORestricted setAllowRead(Set<OIdentifiable> identifiables);
 	
 	public default IORestricted addToAllowRead(OIdentifiable identifiable) {
@@ -45,9 +45,9 @@ public interface IORestricted extends IODocumentWrapper {
 		return setAllowRead(removeSafely(getAllowRead(), identifiable));
 	}
 	
-	@DAOField("_allowUpdate")
+	@EntityProperty("_allowUpdate")
 	public Set<OIdentifiable> getAllowUpdate();
-	@DAOField("_allowUpdate")
+	@EntityProperty("_allowUpdate")
 	public IORestricted setAllowUpdate(Set<OIdentifiable> identifiables);
 	
 	public default IORestricted addToAllowUpdate(OIdentifiable identifiable) {
@@ -58,9 +58,9 @@ public interface IORestricted extends IODocumentWrapper {
 		return setAllowUpdate(removeSafely(getAllowUpdate(), identifiable));
 	}
 	
-	@DAOField("_allowDelete")
+	@EntityProperty("_allowDelete")
 	public Set<OIdentifiable> getAllowDelete();
-	@DAOField("_allowDelete")
+	@EntityProperty("_allowDelete")
 	public IORestricted setAllowDelete(Set<OIdentifiable> identifiables);
 	
 	public default IORestricted addToAllowDelete(OIdentifiable identifiable) {

@@ -132,6 +132,11 @@
 			    <artifactId>wicket-core</artifactId>
 			    <version>${wicket.version}</version>
 		    </dependency>
+		    <dependency>
+		    	<groupId>org.orienteer.transponder</groupId>
+		    	<artifactId>transponder-orientdb</artifactId>
+		    	<version>1.0</version>
+		    </dependency>
 		    <!--  WICKET DEPENDENCIES -->
 		    <dependency>
 			    <groupId>org.apache.wicket</groupId>

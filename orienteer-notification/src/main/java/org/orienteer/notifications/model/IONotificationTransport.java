@@ -3,10 +3,10 @@ package org.orienteer.notifications.model;
 import com.google.common.base.Strings;
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.notifications.service.ITransport;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
  * Wrapper class for {@link IONotificationTransport#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IONotificationTransport.CLASS_NAME, isAbstract = true)
+@EntityType(value = IONotificationTransport.CLASS_NAME, isAbstract = true)
 public interface IONotificationTransport extends IODocumentWrapper {
 
   String CLASS_NAME = "ONotificationTransport";

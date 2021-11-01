@@ -7,6 +7,7 @@ import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.tasks.IOTaskSessionPersisted;
 import org.orienteer.mail.model.OMailAttachment;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
@@ -66,7 +67,7 @@ public class OMailModule extends AbstractOrienteerModule {
                 .oProperty(OPreparedMail.PROP_MAIL, OType.LINK, 70).notNull().linkedClass(OMail.CLASS_NAME)
                 .oProperty(OPreparedMail.PROP_SETTINGS, OType.LINK, 80).notNull().linkedClass(OMailSettings.CLASS_NAME);
 
-		helper.describeAndInstallSchema(IOSendMailTask.class, IOSendMailTaskSession.class);
+		DAO.define(IOSendMailTask.class, IOSendMailTaskSession.class);
 
 		return null;
 	}

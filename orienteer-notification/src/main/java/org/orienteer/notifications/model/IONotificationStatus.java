@@ -1,9 +1,9 @@
 package org.orienteer.notifications.model;
 
 import com.google.inject.ProvidedBy;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
 
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  * Wrapper class for {@link IONotificationStatus#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IONotificationStatus.CLASS_NAME)
+@EntityType(IONotificationStatus.CLASS_NAME)
 public interface IONotificationStatus extends IODocumentWrapper {
 
   String CLASS_NAME = "ONotificationStatus";

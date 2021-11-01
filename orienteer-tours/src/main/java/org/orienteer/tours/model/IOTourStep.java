@@ -5,10 +5,12 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOClass;
+import org.orienteer.core.dao.OrienteerOProperty;
 import org.orienteer.core.util.LocalizeFunction;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
 
 import com.google.inject.ProvidedBy;
 
@@ -16,15 +18,17 @@ import com.google.inject.ProvidedBy;
  * DocumentWrapper for steps 
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOTourStep.OCLASS_NAME, isAbstract = true, parentProperty = "tour")
+@EntityType(value = IOTourStep.OCLASS_NAME, isAbstract = true)
+@OrienteerOClass(parentProperty = "tour")
 public interface IOTourStep extends IOTourItem {
 	
 	public static final String OCLASS_NAME = "OTourStep";	
 	
-	@DAOField(order=30, inverse = "steps")
+	@OrienteerOProperty(order=30)
+	@EntityProperty(inverse = "steps")
 	public IOTour getTour();
 	
-	@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION, order=50)
+	@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION, order=50)
 	public Map<String, String> getContent();
 	
 	@XmlElement(name="content")
@@ -32,7 +36,7 @@ public interface IOTourStep extends IOTourItem {
 		return LocalizeFunction.getInstance().apply(getContent());
 	}
 	
-	@DAOField(displayable = true, order=40)
+	@OrienteerOProperty(displayable = true, order=40)
 	@XmlElement
 	public String getElement();
 	

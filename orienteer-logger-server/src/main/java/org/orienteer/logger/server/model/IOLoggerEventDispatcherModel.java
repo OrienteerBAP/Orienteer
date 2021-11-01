@@ -9,12 +9,14 @@ import org.apache.wicket.core.util.lang.WicketObjects;
 import org.joor.Reflect;
 import org.joor.ReflectException;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOFieldIndex;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOProperty;
 import org.orienteer.logger.IOLoggerEventDispatcher;
+import org.orienteer.transponder.annotation.EntityPropertyIndex;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.ODriver;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 
 import java.util.Collections;
 import java.util.Map;
@@ -23,21 +25,22 @@ import java.util.Map;
  * Wrapper for event dispatcher
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOLoggerEventDispatcherModel.CLASS_NAME)
+@EntityType(IOLoggerEventDispatcherModel.CLASS_NAME)
 public interface IOLoggerEventDispatcherModel extends IODocumentWrapper {
 
     public static final String CLASS_NAME = "OLoggerEventDispatcher";
 
-    @DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION, notNull = true)
+    @OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+    @OrientDBProperty(notNull = true)
     public Map<String,String> getName();
 	public IOLoggerEventDispatcherModel setName(Map<String,String> value);
 	
-	@DAOField(notNull = true)
-	@DAOFieldIndex(type = OClass.INDEX_TYPE.UNIQUE)
+	@OrientDBProperty(notNull = true)
+	@EntityPropertyIndex(type = ODriver.OINDEX_UNIQUE)
     public String getAlias();
 	public IOLoggerEventDispatcherModel setAlias(String value);
 	
-	@DAOField(notNull = true)
+	@OrientDBProperty(notNull = true)
 	public String getDispatcherClass();
 	public IOLoggerEventDispatcherModel setDispatcherClass(String value);
 	

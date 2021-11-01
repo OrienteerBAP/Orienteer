@@ -4,7 +4,7 @@ import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.dao.DAOProvider;
-import org.orienteer.core.dao.Query;
+import org.orienteer.transponder.annotation.Query;
 
 import java.util.List;
 

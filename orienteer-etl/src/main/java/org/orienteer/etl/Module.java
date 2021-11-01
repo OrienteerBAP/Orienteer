@@ -1,6 +1,7 @@
 package org.orienteer.etl;
 
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
@@ -31,7 +32,7 @@ public class Module extends AbstractOrienteerModule{
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
-		OSchemaHelper.bind(db).describeAndInstallSchema(IOETLConfig.class);
+		DAO.define(IOETLConfig.class);
 		return null;
 	}
 	

@@ -26,6 +26,10 @@
 		    <groupId>org.apache.wicket</groupId>
 		    <artifactId>wicket-core</artifactId>
 	    </dependency>
+	    <dependency>
+	    	<groupId>org.orienteer.transponder</groupId>
+	    	<artifactId>transponder-orientdb</artifactId>
+	    </dependency>
 	    <!--  WICKET DEPENDENCIES -->
 	    <dependency>
 		    <groupId>org.apache.wicket</groupId>

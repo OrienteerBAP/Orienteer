@@ -3,10 +3,11 @@ package org.orienteer.notifications.model;
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -16,7 +17,7 @@ import java.util.List;
  * Wrapper class for {@link IONotification#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IONotification.CLASS_NAME, isAbstract = true)
+@EntityType(value = IONotification.CLASS_NAME, isAbstract = true)
 public interface IONotification extends IODocumentWrapper {
 
   String CLASS_NAME = "ONotification";
@@ -24,19 +25,22 @@ public interface IONotification extends IODocumentWrapper {
   String getId();
   IONotification setId(String id);
 
-  @DAOField(notNull = true)
+  @OrientDBProperty(notNull = true)
   Date getCreated();
   IONotification setCreated(Date created);
 
-  @DAOField(linkedClass = IONotificationStatus.CLASS_NAME, type = OType.LINK, notNull = true)
+  @EntityProperty(referencedType = IONotificationStatus.CLASS_NAME)
+  @OrientDBProperty(type = OType.LINK, notNull = true)
   ODocument getStatus();
   IONotification setStatus(ODocument status);
 
-  @DAOField(linkedClass = IONotificationStatusHistory.CLASS_NAME, type = OType.LINKLIST, inverse = "notification")
+  @EntityProperty(referencedType = IONotificationStatusHistory.CLASS_NAME, inverse = "notification")
+  @OrientDBProperty(type = OType.LINKLIST)
   List<ODocument> getStatusHistories();
   IONotification setStatusHistories(List<ODocument> histories);
 
-  @DAOField(linkedClass = IONotificationTransport.CLASS_NAME, type = OType.LINK, notNull = true)
+  @EntityProperty(referencedType = IONotificationTransport.CLASS_NAME)
+  @OrientDBProperty(type = OType.LINK, notNull = true)
   ODocument getTransport();
   IONotification setTransport(ODocument transport);
 

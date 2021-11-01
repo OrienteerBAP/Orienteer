@@ -6,13 +6,14 @@ import org.apache.wicket.ThreadContext;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.OrienteerWebSession;
-import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOClass;
 import org.orienteer.core.tasks.IOTask;
 import org.orienteer.core.tasks.IOTaskSessionPersisted;
 import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.mail.model.OPreparedMail;
 import org.orienteer.mail.service.IOMailService;
+import org.orienteer.transponder.annotation.EntityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -26,7 +27,8 @@ import java.util.List;
  * Can be used for prepare mails during application lifecycle and send batch of mails in one place via this task
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOSendMailTask.CLASS_NAME, orderOffset = 50)
+@EntityType(IOSendMailTask.CLASS_NAME)
+@OrienteerOClass(orderOffset = 50)
 public interface IOSendMailTask extends IOTask {
 
     public static final Logger LOG = LoggerFactory.getLogger(IOSendMailTask.class);

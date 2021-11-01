@@ -11,11 +11,13 @@ import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOClass;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
+import org.orienteer.transponder.annotation.EntityType;
 
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -24,7 +26,8 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
  *
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOConsoleTask.CLASS_NAME, orderOffset = 50)
+@EntityType(value = IOConsoleTask.CLASS_NAME)
+@OrienteerOClass(orderOffset = 50)
 public interface IOConsoleTask extends IOTask<IOTaskSessionPersisted> {
 	public static final String CLASS_NAME = "OConsoleTask";
 	

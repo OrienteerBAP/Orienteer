@@ -4,6 +4,10 @@ import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import org.orienteer.core.dao.*;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 
 import java.util.Date;
 
@@ -11,7 +15,7 @@ import java.util.Date;
  * Wrapper class for {@link IONotificationStatusHistory#CLASS_NAME}
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IONotificationStatusHistory.CLASS_NAME)
+@EntityType(IONotificationStatusHistory.CLASS_NAME)
 public interface IONotificationStatusHistory extends IODocumentWrapper {
 
   String CLASS_NAME = "ONotificationStatusHistory";
@@ -19,11 +23,13 @@ public interface IONotificationStatusHistory extends IODocumentWrapper {
   Date getTimestamp();
   IONotificationStatusHistory setTimestamp(Date timestamp);
 
-  @DAOField(linkedClass = IONotification.CLASS_NAME, inverse = "statusHistories", type = OType.LINK)
+  @EntityProperty(referencedType = IONotification.CLASS_NAME, inverse = "statusHistories")
+  @OrientDBProperty(type = OType.LINK)
   ODocument getNotification();
   IONotificationStatusHistory setNotification(ODocument notification);
 
-  @DAOField(linkedClass = IONotificationStatus.CLASS_NAME, type = OType.LINK)
+  @EntityProperty(referencedType = IONotificationStatus.CLASS_NAME)
+  @OrientDBProperty(type = OType.LINK)
   ODocument getStatus();
   IONotificationStatusHistory setStatus(ODocument status);
 

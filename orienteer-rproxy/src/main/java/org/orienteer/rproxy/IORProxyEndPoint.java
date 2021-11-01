@@ -6,9 +6,10 @@ import java.util.Map;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOClass;
+import org.orienteer.core.dao.OrienteerOProperty;
+import org.orienteer.transponder.annotation.EntityType;
 
 import com.google.inject.ProvidedBy;
 
@@ -16,7 +17,8 @@ import com.google.inject.ProvidedBy;
  * DAO class for ORProxyEndPoint which holds configuration for reverse proxy end points
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IORProxyEndPoint.CLASS_NAME, nameProperty = "name")
+@EntityType(IORProxyEndPoint.CLASS_NAME)
+@OrienteerOClass(nameProperty = "name")
 public interface IORProxyEndPoint {
 	
 	public static final String CLASS_NAME = "ORProxyEndPoint";
@@ -36,7 +38,7 @@ public interface IORProxyEndPoint {
 	public String getUsername();
 	public void setUsername(String username);
 	
-	@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_PASSWORD)
+	@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_PASSWORD)
 	public String getPassword();
 	public void setPassword(String password);
 	

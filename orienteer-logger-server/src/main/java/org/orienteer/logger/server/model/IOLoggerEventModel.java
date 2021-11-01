@@ -13,19 +13,19 @@ import java.util.Date;
 import java.util.Optional;
 
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOHandler;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IMethodHandler;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
-import org.orienteer.core.dao.handler.InvocationChain;
+import org.orienteer.core.dao.OrienteerOClass;
+import org.orienteer.core.dao.OrienteerOProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 
 /**
  * Wrapper for logger event
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOLoggerEventModel.CLASS_NAME,
+@EntityType(IOLoggerEventModel.CLASS_NAME)
+@OrienteerOClass(
 			nameProperty = "dateTime",
 			displayable = {"application", "nodeId", "correlationId", "dateTime", "hostName", "summary"})
 public interface IOLoggerEventModel extends IODocumentWrapper {
@@ -65,7 +65,7 @@ public interface IOLoggerEventModel extends IODocumentWrapper {
     public String getCorrelationId();
     public IOLoggerEventModel setCorrelationId(String correlationId);
 
-    @DAOField(type=OType.DATETIME)
+    @OrientDBProperty(type=OType.DATETIME)
     public Date getDateTime();
     public IOLoggerEventModel setDateTime(Date datetime);
     
@@ -90,10 +90,10 @@ public interface IOLoggerEventModel extends IODocumentWrapper {
     public String getClientUrl();
     public IOLoggerEventModel setClientUrl(String clientUrl);
 
-    @DAOField(visualization = UIVisualizersRegistry.VISUALIZER_RESTRICTED_WIDTH)
+    @OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_RESTRICTED_WIDTH)
     public String getSummary();
 
-    @DAOField(visualization = UIVisualizersRegistry.VISUALIZER_CODE, uiReadOnly = true)
+    @OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_CODE, uiReadOnly = true)
     public String getMessage();
     public IOLoggerEventModel setMessage(String message);
 
@@ -104,7 +104,7 @@ public interface IOLoggerEventModel extends IODocumentWrapper {
     @DAOHandler(InvokeCheckSource.class)
     public IOLoggerEventModel setSource(String source);
     
-    @DAOField(type=OType.LINK)
+    @OrientDBProperty(type=OType.LINK)
     public ODocument getSourceDoc();
     public IOLoggerEventModel setSourceDoc(OIdentifiable source);
     

@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.camel.CamelContext;
 import org.orienteer.camel.tasks.IOIntegrationConfig;
 import org.orienteer.core.OrienteerWebApplication;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.method.OMethodsManager;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
@@ -57,8 +58,7 @@ public class Module extends AbstractOrienteerModule{
 	}
 	
 	private void makeSchema(OrienteerWebApplication app, ODatabaseSession db){
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.describeAndInstallSchema(IOIntegrationConfig.class);
+		DAO.define(IOIntegrationConfig.class);
 	}
 	
 	@Override

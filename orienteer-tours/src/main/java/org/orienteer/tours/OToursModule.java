@@ -12,6 +12,7 @@ import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.DefaultPageHeaderMenu;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.OSchemaHelper;
@@ -69,8 +70,7 @@ public class OToursModule extends AbstractOrienteerModule{
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		helper.describeAndInstallSchema(IOTour.class, IOTourStep.class);
+		DAO.define(IOTour.class, IOTourStep.class);
 		return null;
 	}
 	

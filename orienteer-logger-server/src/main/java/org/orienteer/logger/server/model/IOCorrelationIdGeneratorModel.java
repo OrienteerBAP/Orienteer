@@ -4,37 +4,42 @@ import java.util.Map;
 
 import org.apache.wicket.core.util.lang.WicketObjects;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOFieldIndex;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOProperty;
 import org.orienteer.logger.IOCorrelationIdGenerator;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityPropertyIndex;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.ODriver;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 
 import com.google.inject.ProvidedBy;
-import com.orientechnologies.orient.core.metadata.schema.OClass;
 
 /**
  * Wrapper for correlation id generator
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOCorrelationIdGeneratorModel.CLASS_NAME)
+@EntityType(value = IOCorrelationIdGeneratorModel.CLASS_NAME)
 public interface IOCorrelationIdGeneratorModel extends IODocumentWrapper {
 
     public static final String CLASS_NAME = "OCorrelationIdGenerator";
 
-    @DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION, notNull = true)
+    @OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+    @OrientDBProperty(notNull = true)
     public Map<String,String> getName();
 	public IOCorrelationIdGeneratorModel setName(Map<String,String> value);
 	
-	@DAOField(notNull = true)
-	@DAOFieldIndex(type=OClass.INDEX_TYPE.UNIQUE)
+	@OrientDBProperty(notNull = true)
+	@EntityPropertyIndex(type=ODriver.OINDEX_UNIQUE)
     public String getAlias();
 	public IOCorrelationIdGeneratorModel setAlias(String value);
 	
-	@DAOField(value = "class", notNull = true)
+	@EntityProperty("class")
+	@OrientDBProperty(notNull = true)
 	public String getCorrelationClassName();
-	@DAOField(value = "class", notNull = true)
+	@EntityProperty(value = "class")
+	@OrientDBProperty(notNull = true)
 	public IOCorrelationIdGeneratorModel setCorrelationClassName(String value);
 	
 

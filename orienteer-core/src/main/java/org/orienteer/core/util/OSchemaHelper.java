@@ -45,11 +45,6 @@ public class OSchemaHelper extends ru.ydn.wicket.wicketorientdb.utils.OSchemaHel
 		return new OSchemaHelper(db);
 	}
 	
-	public OSchemaHelper describeAndInstallSchema(Class<?>... classes) {
-		DAO.describe(this, classes);
-		return this;
-	}
-
 	@Override
 	public OSchemaHelper oClass(
 			String className, String... superClasses) {

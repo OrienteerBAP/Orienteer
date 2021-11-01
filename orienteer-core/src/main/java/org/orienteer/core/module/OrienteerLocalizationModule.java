@@ -22,16 +22,17 @@ import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAODefaultValue;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOFieldIndex;
-import org.orienteer.core.dao.DAOHandler;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
-import org.orienteer.core.dao.Query;
-import org.orienteer.core.dao.handler.extra.SudoMethodHandler;
+import org.orienteer.core.dao.OrienteerOClass;
+import org.orienteer.core.dao.OrienteerOProperty;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.transponder.annotation.DefaultValue;
+import org.orienteer.transponder.annotation.EntityPropertyIndex;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.annotation.Query;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.ODriver;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
@@ -61,7 +62,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		DAO.describe(helper, IOLocalization.class);
+		DAO.define(IOLocalization.class);
 		helper.oClass(OUser.CLASS_NAME).oProperty(PROP_OUSER_LOCALE, OType.STRING);
 		return null;
 	}
@@ -180,11 +181,12 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	 * DAO for OLocalization
 	 */
 	@ProvidedBy(ODocumentWrapperProvider.class)
-	@DAOOClass(value = IOLocalization.CLASS_NAME, nameProperty = "key")
+	@EntityType(value = IOLocalization.CLASS_NAME)
+	@OrienteerOClass(nameProperty = "key")
 	public static interface IOLocalization extends IODocumentWrapper {
 		public static final String CLASS_NAME = "OLocalization";
 		
-		@DAOFieldIndex(name = "key_index", type = OClass.INDEX_TYPE.NOTUNIQUE)
+		@EntityPropertyIndex(name = "key_index", type = ODriver.OINDEX_NOTUNIQUEN)
 		public String getKey();
 		public IOLocalization setKey(String value);
 		
@@ -197,12 +199,12 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 		public String getVariation();
 		public IOLocalization setVariation(String value);
 		
-		@DAOField(defaultValue = "false")
-		@DAODefaultValue(value = "false")
+		@OrientDBProperty(defaultValue = "false")
+		@DefaultValue("false")
 		public boolean isActive();
 		public IOLocalization setActive(boolean value);
 		
-		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_TEXTAREA)
+		@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_TEXTAREA)
 		public String getValue();
 		public IOLocalization setValue(String value);
 		

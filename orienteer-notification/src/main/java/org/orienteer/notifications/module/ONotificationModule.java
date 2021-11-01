@@ -36,9 +36,9 @@ public class ONotificationModule extends AbstractOrienteerModule {
   public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
 
-    DAO.describe(helper, IONotification.class, IONotificationStatus.class, IONotificationTransport.class, IONotificationStatusHistory.class);
-    DAO.describe(helper, IOMailNotification.class, IOMailNotificationTransport.class);
-    DAO.describe(helper, IOSmsNotification.class, IOSmsNotificationTransport.class);
+    DAO.define(IONotification.class, IONotificationStatus.class, IONotificationTransport.class, IONotificationStatusHistory.class,
+    		   IOMailNotification.class, IOMailNotificationTransport.class,
+    		   IOSmsNotification.class, IOSmsNotificationTransport.class);
 
     installNotificationStatus(helper);
 

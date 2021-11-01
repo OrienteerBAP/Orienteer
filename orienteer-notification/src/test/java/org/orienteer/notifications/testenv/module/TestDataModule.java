@@ -33,7 +33,7 @@ public class TestDataModule extends AbstractOrienteerModule {
   public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
     OSchemaHelper helper = OSchemaHelper.bind(db);
     ODocument mailSettings = installTestMailSettings(helper);
-    DAO.describe(helper, OTestNotification.class, OTestNotificationTransport.class);
+    DAO.define(OTestNotification.class, OTestNotificationTransport.class);
 
     installOMail(helper, mailSettings);
     installTestNotificationTransports(helper, mailSettings);

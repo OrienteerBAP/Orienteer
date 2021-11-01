@@ -1,15 +1,8 @@
 package org.orienteer.core.tasks;
 
-import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
-import com.orientechnologies.orient.core.record.impl.ODocument;
-import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
-
 import java.util.Date;
 
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAOHandler;
-import org.orienteer.core.dao.handler.extra.SudoMethodHandler;
 
 /**
  * Runtime object to hold and manage session status

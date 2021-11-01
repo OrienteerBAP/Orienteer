@@ -14,17 +14,20 @@ import org.orienteer.core.OClassDomain;
 import org.orienteer.core.component.BootstrapType;
 import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
-import org.orienteer.core.dao.DAODefaultValue;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOClass;
+import org.orienteer.core.dao.OrienteerOProperty;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.PlaceFilter;
 import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.core.web.ODocumentPage;
+import org.orienteer.transponder.annotation.DefaultValue;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +39,9 @@ import java.util.List;
  * @param <P> - type of a persisted version of a session
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOTask.CLASS_NAME, 
-			isAbstract = true,
-            displayable = {"name", "description"})
+@EntityType(value = IOTask.CLASS_NAME, 
+			isAbstract = true)
+@OrienteerOClass(displayable = {"name", "description"})
 public interface  IOTask<P extends IOTaskSessionPersisted> extends IODocumentWrapper {
 	public static final Logger LOG = LoggerFactory.getLogger(IOTask.class);
 	public static final String CLASS_NAME = "OTask";
@@ -47,12 +50,13 @@ public interface  IOTask<P extends IOTaskSessionPersisted> extends IODocumentWra
 	
 	public String getDescription();
 	
-	@DAOField(defaultValue = "false")
-	@DAODefaultValue("false")
+	@OrientDBProperty(defaultValue = "false")
+	@DefaultValue("false")
 	public boolean isAutodeleteSessions();
 	public IOTask<P> setAutodeleteSessions(boolean value);
 	
-	@DAOField(inverse = "task", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
+	@EntityProperty(inverse = "task")
+	@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
 	public List<IOTaskSessionPersisted> getSessions();
 	
 	public OTaskSessionRuntime<P> startNewSession();

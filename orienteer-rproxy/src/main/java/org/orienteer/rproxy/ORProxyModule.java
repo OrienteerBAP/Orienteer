@@ -23,8 +23,7 @@ public class ORProxyModule extends AbstractOrienteerModule{
 	@Override
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
-		OSchemaHelper helper = OSchemaHelper.bind(db);
-		DAO.describe(helper, IORProxyEndPoint.class);
+		DAO.define(IORProxyEndPoint.class);
 		return null;
 	}
 	

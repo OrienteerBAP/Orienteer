@@ -3,7 +3,7 @@ package org.orienteer.tours.model;
 import java.util.List;
 
 import org.orienteer.core.dao.DAOProvider;
-import org.orienteer.core.dao.Query;
+import org.orienteer.transponder.annotation.Query;
 
 import com.google.inject.ProvidedBy;
 

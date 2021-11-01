@@ -1,22 +1,21 @@
 package org.orienteer.logger.server.model;
 
-import com.google.inject.ProvidedBy;
-import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.record.impl.ODocument;
+import java.util.Set;
 
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.mail.model.OMail;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 
-import java.util.Collections;
-import java.util.Set;
+import com.google.inject.ProvidedBy;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 /**
  * Wrapper for mail dispatcher
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = IOLoggerEventMailDispatcherModel.CLASS_NAME)
+@EntityType(IOLoggerEventMailDispatcherModel.CLASS_NAME)
 public interface IOLoggerEventMailDispatcherModel extends IOLoggerEventFilteredDispatcherModel {
 
     public static final String CLASS_NAME = "OLoggerEventMailDispatcher";
@@ -33,12 +32,14 @@ public interface IOLoggerEventMailDispatcherModel extends IOLoggerEventFilteredD
     	return setMailAsDocument(mail != null ? mail.getDocument() : null);
     }
     
-    @DAOField(value = "mail", linkedClass = OMail.CLASS_NAME, notNull = true)
+    @EntityProperty(value = "mail", referencedType = OMail.CLASS_NAME)
+    @OrientDBProperty(notNull = true)
     public ODocument getMailAsDocument();
-    @DAOField(value = "mail", linkedClass = OMail.CLASS_NAME, notNull = true)
+    @EntityProperty(value = "mail", referencedType = OMail.CLASS_NAME)
+    @OrientDBProperty(notNull = true)
     public IOLoggerEventFilteredDispatcherModel setMailAsDocument(ODocument mail);
     
-    @DAOField(notNull = true)
+    @OrientDBProperty(notNull = true)
     public Set<String> getRecipients();
 	public IOLoggerEventMailDispatcherModel setRecipients(Set<String> value);
 

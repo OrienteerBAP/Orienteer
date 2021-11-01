@@ -4,11 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAOHandler;
 import org.orienteer.core.dao.DAOProvider;
-import org.orienteer.core.dao.Query;
-import org.orienteer.core.dao.handler.extra.SudoMethodHandler;
 import org.orienteer.logger.server.OLoggerModule;
+import org.orienteer.transponder.annotation.Query;
 
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;

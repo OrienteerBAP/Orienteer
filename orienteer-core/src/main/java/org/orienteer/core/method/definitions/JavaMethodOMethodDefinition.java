@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.wicket.request.RequestHandlerExecutor.ReplaceHandlerException;
 import org.apache.wicket.util.lang.Exceptions;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.method.IMethod;
 import org.orienteer.core.method.IMethodContext;
 import org.orienteer.core.method.IMethodFilter;
@@ -17,6 +16,7 @@ import org.orienteer.core.method.MethodPlace;
 import org.orienteer.core.method.OFilter;
 import org.orienteer.core.method.OMethod;
 import org.orienteer.core.method.filters.SelectorFilter;
+import org.orienteer.transponder.annotation.EntityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +92,7 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 			
 			Object instance = null;
 			if(javaClass.isInterface()) {
-				if(javaClass.isAnnotationPresent(DAOOClass.class))instance = DAO.provide(javaClass, inputDoc);
+				if(javaClass.isAnnotationPresent(EntityType.class))instance = DAO.provide(javaClass, inputDoc);
 			} else {
 				try {
 					instance = javaClass.getConstructor(ODocument.class).newInstance(inputDoc);
@@ -133,7 +133,7 @@ public class JavaMethodOMethodDefinition extends AbstractOMethodDefinition{
 	protected List<IMethodFilter> makeFilters(OFilter[] filters) {
 		List<IMethodFilter> ret = super.makeFilters(filters);
 		if(getSelector().isEmpty()) {
-			DAOOClass daoOClass = javaClass.getAnnotation(DAOOClass.class);
+			EntityType daoOClass = javaClass.getAnnotation(EntityType.class);
 			String selector = daoOClass!=null?daoOClass.value():javaClass.getSimpleName();
 			ret.add(new SelectorFilter().setFilterData(selector));
 		}

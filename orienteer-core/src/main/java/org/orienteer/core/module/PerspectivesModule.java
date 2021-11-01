@@ -24,15 +24,20 @@ import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOFieldIndex;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
-import org.orienteer.core.dao.Lookup;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOClass;
+import org.orienteer.core.dao.OrienteerOProperty;
 import org.orienteer.core.module.OrienteerLocalizationModule.IOLocalization;
 import org.orienteer.core.util.CommonUtils;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityPropertyIndex;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.annotation.Lookup;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.ODriver;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
+
 import ru.ydn.wicket.wicketorientdb.utils.DBClosure;
 import ru.ydn.wicket.wicketorientdb.utils.LombokExtensions;
 
@@ -69,7 +74,7 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		OSchemaHelper helper = OSchemaHelper.bind(db);
 
-		DAO.describe(helper, IOPerspective.class, IOPerspectiveItem.class);
+		DAO.define(IOPerspective.class, IOPerspectiveItem.class);
 
 		helper.oClass(OIdentity.CLASS_NAME)
 				.oProperty(PROP_PERSPECTIVE, OType.LINK)
@@ -248,17 +253,18 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	 * DAO for OPerspective
 	 */
 	@ProvidedBy(ODocumentWrapperProvider.class)
-	@DAOOClass(value = IOPerspective.CLASS_NAME, nameProperty = "name",
+	@EntityType(IOPerspective.CLASS_NAME)
+	@OrienteerOClass(nameProperty = "name",
 			displayable = {"name", "icon", "homeUrl"})
 	public static interface IOPerspective extends IODocumentWrapper {
 		public static final String CLASS_NAME = "OPerspective";
 		
-		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+		@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
 		public Map<String, String> getName();
 		public IOPerspective setName(Map<String, String> value);
 		
-		@DAOField(notNull = true)
-		@DAOFieldIndex(type = OClass.INDEX_TYPE.UNIQUE)
+		@OrientDBProperty(notNull = true)
+		@EntityPropertyIndex(type = ODriver.OINDEX_UNIQUE)
 		public String getAlias();
 		public IOPerspective setAlias(String value);
 		
@@ -268,20 +274,21 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		public String getHomeUrl();
 		public IOPerspective setHomeUrl(String value);
 		
-		@DAOField(value = "menu", inverse = "perspective", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
+		@EntityProperty(value = "menu", inverse = "perspective")
+		@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
 		public List<IOPerspectiveItem> getMenu();
 		public IOPerspective setMenu(List<IOPerspectiveItem> value);
 		
-		@DAOField(value = "menu")
+		@EntityProperty(value = "menu")
 		public List<ODocument> getMenuAsDocuments();
-		@DAOField(value = "menu")
+		@EntityProperty(value = "menu")
 		public IOPerspective setMenuAsDocuments(List<ODocument> value);
 		
-		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_TEXTAREA)
+		@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_TEXTAREA)
 		public String getFooter();
 		public void setFooter(String value);
 		
-		@DAOField(type=OType.EMBEDDEDSET)
+		@OrientDBProperty(type=OType.EMBEDDEDSET)
 		public Collection<String> getFeatures();
 		public IOPerspective setFeatures(Collection<String> features);
 		
@@ -331,16 +338,17 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		public static final String PROP_SUB_ITEMS        = "subItems";
 	 */
 	@ProvidedBy(ODocumentWrapperProvider.class)
-	@DAOOClass(value = IOPerspectiveItem.CLASS_NAME, nameProperty = "name",
+	@EntityType(IOPerspectiveItem.CLASS_NAME)
+	@OrienteerOClass(nameProperty = "name",
 					displayable = {"name", "icon", "url"})
 	public static interface IOPerspectiveItem extends IODocumentWrapper {
 		public static final String CLASS_NAME = "OPerspectiveItem";
 		
-		@DAOField(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
+		@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
 		public Map<String, String> getName();
 		public IOPerspectiveItem setName(Map<String, String> value);
 		
-		@DAOField(notNull = true)
+		@OrientDBProperty(notNull = true)
 		public String getAlias();
 		public IOPerspectiveItem setAlias(String value);
 		
@@ -350,27 +358,28 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 		public String getUrl();
 		public IOPerspectiveItem setUrl(String value);
 		
-		@DAOField(inverse = "menu")
+		@EntityProperty(inverse = "menu")
 		public IOPerspective getPerspective();
 		public IOPerspectiveItem setPerspective(IOPerspective value);
 		
-		@DAOField(value = "perspective")
+		@EntityProperty(value = "perspective")
 		public ODocument getPerspectiveAsDocument();
-		@DAOField(value = "perspective")
+		@EntityProperty(value = "perspective")
 		public IOPerspectiveItem setPerspectiveAsDocument(ODocument value);
 		
 		
-		@DAOField(inverse = "subItems")
+		@EntityProperty(inverse = "subItems")
 		public IOPerspectiveItem getPerspectiveItem();
 		public IOPerspectiveItem setPerspectiveItem(IOPerspectiveItem value);
 		
-		@DAOField(inverse = "perspectiveItem", visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
+		@EntityProperty(inverse = "perspectiveItem")
+		@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_TABLE)
 		public List<IOPerspectiveItem> getSubItems();
 		public IOPerspectiveItem setSubItems(List<IOPerspectiveItem> value);
 		
-		@DAOField(value = "subItems")
+		@EntityProperty(value = "subItems")
 		public List<ODocument> getSubItemsAsDocuments();
-		@DAOField(value = "subItems")
+		@EntityProperty(value = "subItems")
 		public IOPerspectiveItem setSubItemsAsDocuments(List<ODocument> value);
 		
 		@Lookup("select from "+CLASS_NAME+" where alias = :alias")
