@@ -11,11 +11,9 @@ import org.orienteer.core.OClassDomain;
 import org.orienteer.core.OrienteerWebApplication;
 import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAOField;
-import org.orienteer.core.dao.DAOOClass;
-import org.orienteer.core.dao.IODocumentWrapper;
-import org.orienteer.core.dao.Lookup;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
+import org.orienteer.core.dao.OrienteerOClass;
+import org.orienteer.core.dao.OrienteerOProperty;
 import org.orienteer.core.module.AbstractOrienteerModule;
 import org.orienteer.core.module.IOrienteerModule;
 import org.orienteer.core.util.CommonUtils;
@@ -40,6 +38,10 @@ import org.orienteer.logger.server.service.dispatcher.OLoggerEventDispatcher;
 import org.orienteer.logger.server.service.enhancer.OSeedClassEnhancer;
 import org.orienteer.logger.server.service.enhancer.OWebEnhancer;
 import org.orienteer.mail.OMailModule;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.annotation.Lookup;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,23 +81,23 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	public ODocument onInstall(OrienteerWebApplication app, ODatabaseSession db) {
 		super.onInstall(app, db);
 		OSchemaHelper helper = OSchemaHelper.bind(db);
-		installOLoggerEvent(helper);
+		installOLoggerEvent();
 		createDefaultOLoggerEventDispatcher(helper);
 		createDefaultCorrelationIdGenerators(helper);
 
 		return installModule(helper).getDocument();
 	}
 
-	private void installOLoggerEvent(OSchemaHelper helper) {
-		DAO.describe(helper, IOLoggerEventModel.class, 
-							 IOLoggerEventDispatcherModel.class,
-							 IOLoggerEventFilteredDispatcherModel.class,
-							 IOLoggerEventMailDispatcherModel.class,
-							 IOCorrelationIdGeneratorModel.class);
+	private void installOLoggerEvent() {
+		DAO.define(IOLoggerEventModel.class, 
+					 IOLoggerEventDispatcherModel.class,
+					 IOLoggerEventFilteredDispatcherModel.class,
+					 IOLoggerEventMailDispatcherModel.class,
+					 IOCorrelationIdGeneratorModel.class);
 	}
 
 	private ILoggerModuleConfiguration installModule(OSchemaHelper helper) {
-		DAO.describe(helper, ILoggerModuleConfiguration.class);
+		DAO.define(ILoggerModuleConfiguration.class);
 
 
 		IOLoggerEventDispatcherModel dispatcher = loggerDAO.getOLoggerEventDispatcher(DISPATCHER_DEFAULT);
@@ -207,7 +209,8 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	 * Wrapper for module {@link OLoggerModule}
 	 */
 	@ProvidedBy(ODocumentWrapperProvider.class)
-	@DAOOClass(value = ILoggerModuleConfiguration.CLASS_NAME, superClasses = {OMODULE_CLASS}, orderOffset = 50,
+	@EntityType(value = ILoggerModuleConfiguration.CLASS_NAME, superTypes = {OMODULE_CLASS})
+	@OrienteerOClass(orderOffset = 50,
 						domain = OClassDomain.SPECIFICATION)
 	public static interface ILoggerModuleConfiguration extends IODocumentWrapper {
 
@@ -216,11 +219,12 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		public String getCollectorUrl();
 		public ILoggerModuleConfiguration setCollectorUrl(String url);
 
-		@DAOField(notNull = true, visualization = UIVisualizersRegistry.VISUALIZER_LISTBOX)
+		@OrientDBProperty(notNull = true)
+		@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LISTBOX)
 		public IOLoggerEventDispatcherModel getLoggerEventDispatcher();
 		public ILoggerModuleConfiguration setLoggerEventDispatcher(IOLoggerEventDispatcherModel dispatcher);
 
-		@DAOField(notNull = true)
+		@OrientDBProperty(notNull = true)
 		public List<String> getLoggerEnhancers();
 		public ILoggerModuleConfiguration setLoggerEnhancers(List<String> enhancers);
 
@@ -237,7 +241,8 @@ public class OLoggerModule extends AbstractOrienteerModule{
 		public String getDomain();
         public ILoggerModuleConfiguration setDomain(String domain);
 
-        @DAOField(notNull = true, visualization = UIVisualizersRegistry.VISUALIZER_LISTBOX)
+        @OrientDBProperty(notNull = true)
+        @OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LISTBOX)
         public IOCorrelationIdGeneratorModel getCorrelationIdGenerator();
         public ILoggerModuleConfiguration setCorrelationIdGenerator(IOCorrelationIdGeneratorModel correlationIdGenerator);
 

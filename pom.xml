@@ -135,7 +135,7 @@
 		    <dependency>
 		    	<groupId>org.orienteer.transponder</groupId>
 		    	<artifactId>transponder-orientdb</artifactId>
-		    	<version>1.0</version>
+		    	<version>1.1-SNAPSHOT</version>
 		    </dependency>
 		    <!--  WICKET DEPENDENCIES -->
 		    <dependency>

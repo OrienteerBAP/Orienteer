@@ -1,14 +1,15 @@
 package org.orienteer.core.tasks;
 
-import org.orienteer.core.dao.DAOOClass;
+import org.orienteer.core.dao.DAO;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.transponder.annotation.EntityType;
 
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass(value = ITestTask.CLASS_NAME, orderOffset = 50)
+@EntityType(value = ITestTask.CLASS_NAME, orderOffset = 50)
 public interface ITestTask extends IOTask<IOTaskSessionPersisted> {
 	
 		public static final String CLASS_NAME = "TestTask";
@@ -31,7 +32,7 @@ public interface ITestTask extends IOTask<IOTaskSessionPersisted> {
 		}
 		
 		public static void init(ODatabaseSession session) {
-			OSchemaHelper.bind(session).describeAndInstallSchema(ITestTask.class);
+			DAO.define(ITestTask.class);
 		}
 		
 		public static void close(ODatabaseSession session) {

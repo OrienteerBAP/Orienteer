@@ -24,11 +24,11 @@ public interface IOTourStep extends IOTourItem {
 	
 	public static final String OCLASS_NAME = "OTourStep";	
 	
-	@OrienteerOProperty(order=30)
-	@EntityProperty(inverse = "steps")
+	@EntityProperty(inverse = "steps", order = 30)
 	public IOTour getTour();
 	
-	@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION, order=50)
+	@EntityProperty(order = 50)
+	@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION)
 	public Map<String, String> getContent();
 	
 	@XmlElement(name="content")
@@ -36,7 +36,8 @@ public interface IOTourStep extends IOTourItem {
 		return LocalizeFunction.getInstance().apply(getContent());
 	}
 	
-	@OrienteerOProperty(displayable = true, order=40)
+	@EntityProperty(order=40)
+	@OrienteerOProperty(displayable = true)
 	@XmlElement
 	public String getElement();
 	

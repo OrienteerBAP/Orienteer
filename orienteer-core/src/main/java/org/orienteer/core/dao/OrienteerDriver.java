@@ -7,10 +7,13 @@ import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.util.string.Strings;
 import org.orienteer.core.CustomAttribute;
 import org.orienteer.core.util.OSchemaHelper;
+import org.orienteer.transponder.CommonUtils;
 import org.orienteer.transponder.orientdb.ODriver;
 
+import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
+import com.orientechnologies.orient.core.record.impl.ODocument;
 
 public class OrienteerDriver extends ODriver {
 
@@ -24,9 +27,10 @@ public class OrienteerDriver extends ODriver {
 	@Override
 	public void createType(String typeName, boolean isAbstract, Class<?> mainWrapperClass, String... superTypes) {
 		super.createType(typeName, isAbstract, mainWrapperClass, superTypes);
+		OClass createdClass = getSchema().getClass(typeName);
+		CustomAttribute.DAO_CLASS.setValue(createdClass, mainWrapperClass.getName());
 		OrienteerOClass orienteer = mainWrapperClass.getAnnotation(OrienteerOClass.class);
 		if(orienteer!=null) {
-			OClass createdClass = getSchema().getClass(typeName);
 			CustomAttribute.DOMAIN.setValue(createdClass, orienteer.domain());
 			if(!Strings.isEmpty(orienteer.nameProperty()))
 				CustomAttribute.PROP_NAME.setValue(createdClass, orienteer.nameProperty());
@@ -42,17 +46,20 @@ public class OrienteerDriver extends ODriver {
 				CustomAttribute.SEARCH_QUERY.setValue(createdClass, orienteer.searchQuery());
 			if(!Strings.isEmpty(orienteer.cssClass()))
 				CustomAttribute.CSS_CLASS.setValue(createdClass, orienteer.cssClass());
-			//TODO: Support displayable! Transponder should invoke some code after creation of all properties
-			/*for(String field: orienteer.displayable())
-			{
-				OProperty oProperty = createdClass.getProperty(field);
-				if(oProperty!=null)
-				{
-					attr.setValue(oProperty, value);
-				}
+		}
+	}
+	
+	@Override
+	public void onPostCreateType(String typeName, Class<?> mainWrapperClass) {
+		super.onPostCreateType(typeName, mainWrapperClass);
+		
+		OrienteerOClass orienteer = mainWrapperClass.getAnnotation(OrienteerOClass.class);
+		if(orienteer!=null && orienteer.displayable().length>0) {
+			OClass createdClass = getSchema().getClass(typeName);
+			for (String propertyName : orienteer.displayable()) {
+				OProperty property=createdClass.getProperty(propertyName);
+				if(property!=null) CustomAttribute.DISPLAYABLE.setValue(property, true);
 			}
-			return
-			helper.switchDisplayable(true, orienteer.displayable());*/
 		}
 	}
 	
@@ -60,26 +67,37 @@ public class OrienteerDriver extends ODriver {
 	public void createProperty(String typeName, String propertyName, Type propertyType, String linkedClassName,
 			int order, AnnotatedElement annotations) {
 		super.createProperty(typeName, propertyName, propertyType, linkedClassName, order, annotations);
+		OProperty createdProperty = getSchema().getClass(typeName).getProperty(propertyName);
+		CustomAttribute.ORDER.setValue(createdProperty, order);
 		OrienteerOProperty orienteer = annotations.getAnnotation(OrienteerOProperty.class);
 		if(orienteer!=null){
-			OProperty createdProperty = getSchema().getClass(typeName).getProperty(propertyName);
-			OSchemaHelper helper = OSchemaHelper.bind(getSession());
 			if(!Strings.isEmpty(orienteer.tab()))
-				helper.assignTab(orienteer.tab());
-			helper.assignVisualization(orienteer.visualization());
+				CustomAttribute.TAB.setValue(createdProperty, orienteer.tab());
+			CustomAttribute.VISUALIZATION_TYPE.setValue(createdProperty, orienteer.visualization());
 			if(!Strings.isEmpty(orienteer.feature()))
-				CustomAttribute.FEATURE.setValue(helper.getOProperty(), orienteer.feature());
+				CustomAttribute.FEATURE.setValue(createdProperty, orienteer.feature());
 			if(!Strings.isEmpty(orienteer.cssClass()))
-				CustomAttribute.CSS_CLASS.setValue(helper.getOProperty(), orienteer.cssClass());
-			CustomAttribute.UI_READONLY.setValue(helper.getOProperty(), orienteer.uiReadOnly());
-			CustomAttribute.DISPLAYABLE.setValue(helper.getOProperty(), orienteer.displayable());
-			CustomAttribute.HIDDEN.setValue(helper.getOProperty(), orienteer.hidden());
+				CustomAttribute.CSS_CLASS.setValue(createdProperty, orienteer.cssClass());
+			CustomAttribute.UI_READONLY.setValue(createdProperty, orienteer.uiReadOnly());
+			CustomAttribute.DISPLAYABLE.setValue(createdProperty, orienteer.displayable());
+			CustomAttribute.HIDDEN.setValue(createdProperty, orienteer.hidden());
 			if(!Strings.isEmpty(orienteer.script())) {
-				helper.calculateBy(orienteer.script());
+				CustomAttribute.CALC_SCRIPT.setValue(createdProperty, orienteer.script());
+				CustomAttribute.CALCULABLE.setValue(createdProperty, true);
 			} else {
-				CustomAttribute.CALCULABLE.setValue(helper.getOProperty(), false);
+				CustomAttribute.CALCULABLE.setValue(createdProperty, false);
 			}
 		}
+	}
+	
+	@Override
+	public Class<?> getEntityMainClass(Object seed) {
+		if(seed==null) return null;
+		Class<?> mainClass = super.getEntityMainClass(seed);
+		return mainClass!=null
+				?mainClass
+				:CommonUtils.safeClassForName(
+						CustomAttribute.DAO_CLASS.getValue(((ODocument)((OIdentifiable)seed).getRecord()).getSchemaClass()));
 	}
 
 }

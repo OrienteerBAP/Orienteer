@@ -2,13 +2,19 @@ package org.orienteer.core.dao;
 
 import java.util.List;
 
+import org.orienteer.transponder.annotation.EntityIndex;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.ODriver;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
+
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass("DAOTestClassA")
-@DAOIndex(name="rootname", type=OClass.INDEX_TYPE.NOTUNIQUE, fields = {"name", "root"})
+@EntityType("DAOTestClassA")
+@EntityIndex(name="rootname", type=ODriver.OINDEX_NOTUNIQUE, properties = {"name", "root"})
 public interface IDAOTestClassA extends IDAOTestClassRoot{
 
 
@@ -17,16 +23,16 @@ public interface IDAOTestClassA extends IDAOTestClassRoot{
 	
 	public IDAOTestClassB getBSingle();
 	
-	@DAOField("bOtherField")
+	@EntityProperty("bOtherField")
 	public IDAOTestClassB getBOther();
 	
 	
 	public List<String> getEmbeddedStringList();
 	
-	@DAOField(linkedClass = "DAOTestClassB")
+	@EntityProperty(referencedType = "DAOTestClassB")
 	public ODocument getLinkAsDoc();
 	
-	@DAOField(linkedClass = "DAOTestClassB")
+	@EntityProperty(referencedType = "DAOTestClassB")
 	public List<ODocument> getLinkList();
 	public IDAOTestClassA getSelfType();
 }

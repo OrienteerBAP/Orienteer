@@ -100,6 +100,7 @@ public final class CustomAttribute implements Serializable
 	/**
 	 * DAO InterfaceClass
 	 */
+	@Deprecated
 	public static final CustomAttribute DAO_CLASS = create("orienteer.dao.class",OType.STRING,null,true, true);
 	
 	/**

@@ -14,11 +14,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
+
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass("DAOAllTypesTestClass")
+@EntityType("DAOAllTypesTestClass")
 public interface IDAOAllTypesTestClass {
 
-	@DAOField(linkedClass = "IDAODummyClass", type = OType.LINKLIST)
+	@EntityProperty(referencedType = "IDAODummyClass")
+	@OrientDBProperty(type = OType.LINKLIST)
 	public List<ODocument> getDocs();
 	public void setDocs(List<ODocument> val);
 
@@ -31,7 +36,7 @@ public interface IDAOAllTypesTestClass {
 	public boolean getBooleanPrimitive();
 	public void setBooleanPrimitive(boolean val);
 	
-	@DAOField(notNull = true)
+	@OrientDBProperty(notNull = true)
 	public Boolean getBooleanDeclared();
 	public void setBooleanDeclared(Boolean val);
 
@@ -94,14 +99,14 @@ public interface IDAOAllTypesTestClass {
 	/**
 	 * EMBEDDED("Embedded", 9, Object.class, new Class<?>[] { ODocumentSerializable.class, OSerializableStream.class }),
 	 */
-	@DAOField(embedded = true)
+	@OrientDBProperty(embedded = true)
 	public IDAODummyClass getEmbedded();
 	public void setEmbedded(IDAODummyClass val);
 
 	/**
 	 * EMBEDDEDLIST("EmbeddedList", 10, List.class, new Class<?>[] { List.class, OMultiCollectionIterator.class }),
 	 */
-	@DAOField(embedded = true)
+	@OrientDBProperty(embedded = true)
 	public List<IDAODummyClass> getEmbeddedList();
 	public void setEmbeddedList(List<IDAODummyClass> val);
 	
@@ -112,7 +117,7 @@ public interface IDAOAllTypesTestClass {
 	 * EMBEDDEDSET("EmbeddedSet", 11, Set.class, new Class<?>[] { Set.class }),
 	 */
 
-	@DAOField(embedded = true)
+	@OrientDBProperty(embedded = true)
 	public Set<IDAODummyClass> getEmbeddedSet();
 	public void setEmbeddedSet(Set<IDAODummyClass> val);
 	
@@ -121,7 +126,7 @@ public interface IDAOAllTypesTestClass {
 	/**
 	 * EMBEDDEDMAP("EmbeddedMap", 12, Map.class, new Class<?>[] { Map.class }),
 	 */
-	@DAOField(embedded = true)
+	@OrientDBProperty(embedded = true)
 	public Map<String, IDAODummyClass> getEmbeddedMap();
 	public void setEmbeddedMap(Map<String, IDAODummyClass> val);
 	
@@ -167,7 +172,7 @@ public interface IDAOAllTypesTestClass {
 	 * TRANSIENT("Transient", 18, null, new Class<?>[] {}),
 	 */
 	
-	@DAOField(type = OType.TRANSIENT)
+	@OrientDBProperty(type = OType.TRANSIENT)
 	public Object getTransient();
 	public void setTransient(Object val);
 
@@ -175,14 +180,14 @@ public interface IDAOAllTypesTestClass {
 	 * DATE("Date", 19, Date.class, new Class<?>[] { Number.class }),
 	 */
 	
-	@DAOField(type = OType.DATE)
+	@OrientDBProperty(type = OType.DATE)
 	public Date getDate();
 	public void setDate(Date val);
 
 	/**
 	 * CUSTOM("Custom", 20, OSerializableStream.class, new Class<?>[] { OSerializableStream.class, Serializable.class }),
 	 */
-	@DAOField(type = OType.CUSTOM)
+	@OrientDBProperty(type = OType.CUSTOM)
 	public Serializable getCustom();
 	public void setCustom(Serializable val);
 
@@ -197,14 +202,14 @@ public interface IDAOAllTypesTestClass {
 	 * LINKBAG("LinkBag", 22, ORidBag.class, new Class<?>[] { ORidBag.class }),
 	 */
 	
-	@DAOField(linkedClass = "IDAODummyClass")
+	@EntityProperty(referencedType = "IDAODummyClass")
 	public ORidBag getLinkBag();
 	public void setLinkBag(ORidBag val);
 
 	/**
 	 * ANY("Any", 23, null, new Class<?>[] {});
 	 */
-	@DAOField(type = OType.ANY)
+	@OrientDBProperty(type = OType.ANY)
 	public Object getAny();
 	public void setAny(Object val);
 	

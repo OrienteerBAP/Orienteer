@@ -27,9 +27,9 @@ public final class DAO {
 		
 	}
 	
-	public static IODocumentWrapper asWrapper(Object obj) {
+	public static ODocumentWrapper asWrapper(Object obj) {
 		if(obj==null) return null;
-		else if (obj instanceof IODocumentWrapper) return (IODocumentWrapper)obj;
+		else if (obj instanceof ODocumentWrapper) return (ODocumentWrapper)obj;
 		else throw new IllegalStateException("Object is not a wrapper. Object: "+obj);
 	}
 	
@@ -47,11 +47,11 @@ public final class DAO {
 	}
 	
 	public static <T> T save(T obj) {
-		return asWrapper(obj).save();
+		return (T) asWrapper(obj).save();
 	}
 	
 	public static <T> T reload(T obj) {
-		return asWrapper(obj).reload();
+		return (T) asWrapper(obj).reload();
 	}
 	
 	public static <T> T create(Class<T> interfaceClass, Class<?>... additionalInterfaces) {
@@ -64,23 +64,18 @@ public final class DAO {
 	
 	public static <T> T provide(Class<T> interfaceClass, ORID iRID, Class<?>... additionalInterfaces) {
 		if(iRID==null) throw new NullPointerException("ORID for DAO.provide(...) should not be null");
-		return provide(interfaceClass, new ODocumentWrapper(iRID), additionalInterfaces);
+		return provide(interfaceClass, (OIdentifiable)iRID, additionalInterfaces);
 	}
 	
 	public static <T> T provide(Class<T> interfaceClass, ODocument doc, Class<?>... additionalInterfaces) {
 		if(doc==null) throw new NullPointerException("Document for DAO.provide(...) should not be null");
-		return provide(interfaceClass, new ODocumentWrapper(doc), additionalInterfaces);
-	}
-	
-	public static <T> T provide(Class<T> interfaceClass, OIdentifiable id, Class<?>... additionalInterfaces) {
-		if(id instanceof ODocument) return provide(interfaceClass, (ODocument) id, additionalInterfaces);
-		else return provide(interfaceClass, id.getIdentity(), additionalInterfaces);
+		return provide(interfaceClass, (OIdentifiable)doc, additionalInterfaces);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T provide(Class<? extends T> interfaceClass, ODocumentWrapper docWrapper, Class<?>... additionalInterfaces) {
+	public static <T> T provide(Class<? extends T> interfaceClass, OIdentifiable id, Class<?>... additionalInterfaces) {
 		Args.notNull(ODatabaseRecordThreadLocal.instance().get(), "There is no DatabaseSession");
-		return TRANSPONDER.provide(docWrapper, interfaceClass, additionalInterfaces);
+		return TRANSPONDER.provide(id, interfaceClass, additionalInterfaces);
 	}
 	
 	/**public static <T> T updateBy(T proxy, Class<?>... additionalInterfaces) {

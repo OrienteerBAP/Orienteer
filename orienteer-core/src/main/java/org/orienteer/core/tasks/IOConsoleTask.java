@@ -5,22 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
-import org.orienteer.core.OClassDomain;
-import org.orienteer.core.component.BootstrapType;
-import org.orienteer.core.component.FAIconType;
 import org.orienteer.core.dao.DAO;
-import org.orienteer.core.dao.DAOOClass;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.dao.OrienteerOClass;
-import org.orienteer.core.method.OMethod;
-import org.orienteer.core.method.IMethodContext;
-import org.orienteer.core.method.OFilter;
-import org.orienteer.core.method.filters.PlaceFilter;
-import org.orienteer.core.method.filters.WidgetTypeFilter;
 import org.orienteer.transponder.annotation.EntityType;
 
 import com.google.inject.ProvidedBy;
-import com.orientechnologies.orient.core.record.impl.ODocument;
 /**
  * OTask class for system console commands
  *

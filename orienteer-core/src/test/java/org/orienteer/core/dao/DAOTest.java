@@ -33,6 +33,7 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.junit.OrienteerTestRunner;
 import org.orienteer.junit.OrienteerTester;
 import org.orienteer.junit.Sudo;
+import org.orienteer.transponder.CommonUtils;
 
 import com.google.inject.Singleton;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
@@ -172,7 +173,7 @@ public class DAOTest {
 	
 	@Test
 	public void testParentChildDefaultMethods() {
-		IDAOChild obj = DAO.create(IDAOChild.class);
+		IDAOChild obj = DAO.dao(IDAOChild.class);
 		assertEquals(-1, obj.methodWithNoBodyInParent());
 		assertEquals(IDAOChild.class, obj.methodWithDefaultBodyInParent());
 		obj.methodVoidWithException();
@@ -266,7 +267,7 @@ public class DAOTest {
 	public void testDescriber() {
 		OSchema schema = tester.getMetadata().getSchema();
 		try {
-			DAO.describe(OSchemaHelper.bind(tester.getDatabaseSession()), IDAOTestClassA.class);
+			DAO.define(IDAOTestClassA.class);
 			assertTrue(schema.existsClass("DAOTestClassRoot"));
 			assertTrue(schema.existsClass("DAOTestClassA"));
 			assertTrue(schema.existsClass("DAOTestClassB"));
@@ -309,7 +310,7 @@ public class DAOTest {
 	public void testProperMethodListOrder() throws Exception {
 		Class<?> type = IDAOTestClassA.class;
 		
-		List<Method> methods = DAO.listMethods(type);
+		List<Method> methods = CommonUtils.listDeclaredMethods(type);
 		assertEquals("getName", methods.get(0).getName());
 		assertEquals("setName", methods.get(1).getName());
 	}
@@ -319,7 +320,7 @@ public class DAOTest {
 	public void testDescribeAllTypes() {
 		OSchema schema = tester.getMetadata().getSchema();
 		try {
-			DAO.describe(OSchemaHelper.bind(tester.getDatabaseSession()), IDAOAllTypesTestClass.class);
+			DAO.define(IDAOAllTypesTestClass.class);
 			assertTrue(schema.existsClass("DAOAllTypesTestClass"));
 			assertTrue(schema.existsClass("IDAODummyClass"));
 			OClass oClass = schema.getClass("DAOAllTypesTestClass");
@@ -404,7 +405,7 @@ public class DAOTest {
 	public void testInheritedClass() {
 		OSchema schema = tester.getMetadata().getSchema();
 		try {
-			DAO.describe(OSchemaHelper.bind(tester.getDatabaseSession()), IDAOTestClassA.class);
+			DAO.define( IDAOTestClassA.class);
 			IDAOTestClassA obj = DAO.create(IDAOTestClassA.class);
 			obj.setName("TestInheritedClass");
 			DAO.save(obj);
@@ -427,7 +428,7 @@ public class DAOTest {
 	@Sudo
 	public void testPerspectiveCreation() {
 		OSchemaHelper helper = OSchemaHelper.bind(tester.getDatabaseSession());
-		DAO.describe(helper, IOPerspective.class);
+		DAO.define(IOPerspective.class);
 		OClass perspectiveClass = tester.getSchema().getClass(IOPerspective.CLASS_NAME);
 		OClass perspectiveItemClass = tester.getSchema().getClass(IOPerspectiveItem.CLASS_NAME);
 		assertProperty(perspectiveClass, "menu", OType.LINKLIST, null, perspectiveItemClass, "perspective");

@@ -11,7 +11,6 @@ import com.orientechnologies.orient.core.metadata.schema.OType;
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface OrienteerOProperty {
-	int order() default -1; 
 	String tab() default "";
 	String visualization() default "default";
 	String feature() default "";

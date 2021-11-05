@@ -34,6 +34,7 @@ import org.orienteer.core.util.OSchemaHelper;
 import org.orienteer.core.web.SearchPage;
 import org.orienteer.core.web.schema.SchemaPage;
 import org.orienteer.mail.OMailModule;
+import org.orienteer.transponder.Transponder;
 import org.orienteer.users.component.visualizer.OAuth2ProviderVisualizer;
 import org.orienteer.users.hook.OrienteerUserHook;
 import org.orienteer.users.hook.OrienteerUserRoleHook;
@@ -223,9 +224,9 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
         db.command(String.format("alter role %s set policy default_2 on database.class.OUser", role.getName()));
 
-        DAO.upgradeTo(perspective, IORestricted.class)
-        		.addToAllowRead(role.getDocument())
-        		.save();
+        Transponder.rewrap(perspective, IORestricted.class)
+				.addToAllowRead(role.getDocument())
+				.save();
     }
 
     private void updateReaderPermissions(ODatabaseDocument db, ODocument reader, IOPerspective perspective) {
@@ -241,8 +242,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
         role.getDocument().field(PerspectivesModule.PROP_PERSPECTIVE, perspective.getDocument());
 
         role.save();
-
-        DAO.upgradeTo(perspective, IORestricted.class)
+        Transponder.rewrap(perspective, IORestricted.class)
         		.addToAllowRead(role.getDocument())
         		.save();
     }

@@ -16,9 +16,12 @@ import org.orienteer.core.component.visualizer.UIVisualizersRegistry;
 import org.orienteer.core.dao.ODocumentWrapperProvider;
 import org.orienteer.core.dao.OrienteerOClass;
 import org.orienteer.core.dao.OrienteerOProperty;
+import org.orienteer.transponder.annotation.AdviceAnnotation;
 import org.orienteer.transponder.annotation.EntityType;
 import org.orienteer.transponder.orientdb.IODocumentWrapper;
 import org.orienteer.transponder.orientdb.OrientDBProperty;
+
+import net.bytebuddy.asm.Advice;
 
 /**
  * Wrapper for logger event
@@ -41,16 +44,13 @@ public interface IOLoggerEventModel extends IODocumentWrapper {
     /**
      * {@link IMethodHandler} to check that source contains link to a ODocument
      */
-    public static class InvokeCheckSource implements IMethodHandler<ODocumentWrapper> {
-
-		@Override
-		public Optional<Object> handle(ODocumentWrapper target, Object proxy, Method method, Object[] args,
-				InvocationChain<ODocumentWrapper> chain) throws Throwable {
-			Optional<Object> ret = chain.handle(target, proxy, method, args);
-			((IOLoggerEventModel) proxy).checkForSourceDoc();
-			return ret;
-		}
+    public static class InvokeCheckSource {
     	
+    	@Advice.OnMethodExit
+    	public static void postCall(@Advice.This IOLoggerEventModel proxy ) {
+    		proxy.checkForSourceDoc();
+    	}
+
     }
 
     public String getEventId();
@@ -101,7 +101,7 @@ public interface IOLoggerEventModel extends IODocumentWrapper {
     public IOLoggerEventModel setSeedClass(String seedClass);
     
     public String getSource();
-    @DAOHandler(InvokeCheckSource.class)
+    @AdviceAnnotation(InvokeCheckSource.class)
     public IOLoggerEventModel setSource(String source);
     
     @OrientDBProperty(type=OType.LINK)

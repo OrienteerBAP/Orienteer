@@ -3,33 +3,40 @@ package org.orienteer.core.dao;
 import java.util.List;
 import java.util.Map;
 
-import org.orienteer.core.dao.handler.extra.LogMethodHandler;
+import org.orienteer.transponder.annotation.AdviceAnnotation;
+import org.orienteer.transponder.annotation.DefaultValue;
+import org.orienteer.transponder.annotation.EntityProperty;
+import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.annotation.Lookup;
+import org.orienteer.transponder.annotation.Query;
+import org.orienteer.transponder.orientdb.IODocumentWrapper;
+import org.orienteer.transponder.orientdb.OrientDBProperty;
 
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 @ProvidedBy(ODocumentWrapperProvider.class)
-@DAOOClass("DAOTestClass")
+@EntityType("DAOTestClass")
 public interface IDAOTestClass extends IODocumentWrapper {
 	public String getName();
 	public List<IDAOTestClass> getChild();
 	public IDAOTestClass setChild(List<IDAOTestClass> childs);
 	
-	@DAOField("name")
+	@EntityProperty("name")
 	public String getNameSynonymMethod();
 	
 	public Map<String, IDAOTestClass> getLinkMap();
 	public IDAOTestClass setLinkMap(Map<String, IDAOTestClass> map);
 	
-	@DAOField(value = "linkMap", linkedClass = "DAOTestClass")
+	@EntityProperty(value = "linkMap", referencedType = "DAOTestClass")
 	public Map<String, ODocument> getLinkMapAsDocuments();
 	public IDAOTestClass setLinkMapAsDocuments(Map<String, ODocument> val);
 	
-	@DAOField(value = "child", linkedClass = "DAOTestClass")
+	@EntityProperty(value = "child", referencedType = "DAOTestClass")
 	public List<ODocument> getChildAsDocuments();
 	public IDAOTestClass setChildAsDocuments(List<ODocument> val);
 	
-	@DAOField(defaultValue = "true")
+	@OrientDBProperty(defaultValue = "true")
 	public boolean isPrimitiveSupported();
 	public void setPrimitiveSupported(boolean value);
 	
@@ -47,7 +54,6 @@ public interface IDAOTestClass extends IODocumentWrapper {
 	}
 	
 	@Lookup("select from DAOTestClass where name = :name")
-	@DAOHandler(LogMethodHandler.class)
 	public boolean lookupToBoolean(String name);
 	
 	@Lookup("select from DAOTestClass where name = :name")
@@ -56,12 +62,12 @@ public interface IDAOTestClass extends IODocumentWrapper {
 	@Query("select expand(child) from DAOTestClass where @rid = :target")
 	public List<ODocument> listAllChild();
 	
-	@DAOHandler(TestDAOMethodHandler.class)
+	@AdviceAnnotation(TestDAOMethodHandler.class)
 	public default Integer interceptedInvocation() {
 		return 0;
 	}
 	
-	@DAODefaultValue("-100")
+	@DefaultValue("-100")
 	public default Integer returnDefaultValue() {
 		return null;
 	}

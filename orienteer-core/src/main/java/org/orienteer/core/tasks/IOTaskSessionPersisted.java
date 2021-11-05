@@ -22,6 +22,7 @@ import org.orienteer.core.tasks.behavior.OTaskSessionInterruptBehavior;
 import org.orienteer.transponder.annotation.DefaultValue;
 import org.orienteer.transponder.annotation.EntityProperty;
 import org.orienteer.transponder.annotation.EntityType;
+import org.orienteer.transponder.annotation.common.Sudo;
 import org.orienteer.transponder.orientdb.IODocumentWrapper;
 import org.orienteer.transponder.orientdb.OrientDBProperty;
 import org.slf4j.Logger;
@@ -160,7 +161,7 @@ public interface IOTaskSessionPersisted extends ITaskSession, IODocumentWrapper 
 		return this;
 	}
 	
-	@DAOHandler(SudoMethodHandler.class)
+	@Sudo
 	public default void persist() {
 		save();
 	}
@@ -176,7 +177,7 @@ public interface IOTaskSessionPersisted extends ITaskSession, IODocumentWrapper 
 		return this;
 	}
 	
-	@DAOHandler(SudoMethodHandler.class)
+	@Sudo
 	public default void delete() {
 		getDocument().delete();
 	}

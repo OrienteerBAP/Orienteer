@@ -30,6 +30,7 @@ import org.orienteer.transponder.annotation.DefaultValue;
 import org.orienteer.transponder.annotation.EntityPropertyIndex;
 import org.orienteer.transponder.annotation.EntityType;
 import org.orienteer.transponder.annotation.Query;
+import org.orienteer.transponder.annotation.common.Sudo;
 import org.orienteer.transponder.orientdb.IODocumentWrapper;
 import org.orienteer.transponder.orientdb.ODriver;
 import org.orienteer.transponder.orientdb.OrientDBProperty;
@@ -186,7 +187,7 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 	public static interface IOLocalization extends IODocumentWrapper {
 		public static final String CLASS_NAME = "OLocalization";
 		
-		@EntityPropertyIndex(name = "key_index", type = ODriver.OINDEX_NOTUNIQUEN)
+		@EntityPropertyIndex(name = "key_index", type = ODriver.OINDEX_NOTUNIQUE)
 		public String getKey();
 		public IOLocalization setKey(String value);
 		
@@ -236,15 +237,15 @@ public class OrienteerLocalizationModule extends AbstractOrienteerModule {
 		}
 		
 		
+		@Sudo
 		@Query("select from "+CLASS_NAME+" where key = :key")
-		@DAOHandler(SudoMethodHandler.class)
 		public List<IOLocalization> queryByKey(String key);
 		
 		public default List<IOLocalization> queryOthersWithTheSameKey() {
 			return queryByKey(getKey());
 		}
 		
-		@DAOHandler(SudoMethodHandler.class)
+		@Sudo
 		public default IOLocalization sudoSave() {
 			save();
 			return this;

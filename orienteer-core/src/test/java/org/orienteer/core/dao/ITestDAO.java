@@ -2,6 +2,8 @@ package org.orienteer.core.dao;
 
 import java.util.List;
 
+import org.orienteer.transponder.annotation.Query;
+
 import com.google.inject.ProvidedBy;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 

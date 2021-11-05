@@ -1,18 +1,15 @@
 package org.orienteer.core.dao;
 
-import java.lang.reflect.Method;
-import java.util.Optional;
+import net.bytebuddy.asm.Advice;
 
-import org.orienteer.core.dao.handler.InvocationChain;
-
-public class TestDAOMethodHandler<T> implements IMethodHandler<T>{
+public class TestDAOMethodHandler{
 	
-	public static final Object RETURN = Integer.valueOf(9999);
-
-	@Override
-	public Optional<Object> handle(T target, Object proxy, Method method, Object[] args, InvocationChain<T> chain)
-			throws Throwable {
-		return Optional.of(RETURN);
+	public static final Integer RETURN = Integer.valueOf(9999);
+	
+	@Advice.OnMethodExit
+	public static void onReturn(@Advice.Return(readOnly = false) Integer ret) {
+		ret = RETURN;
 	}
+
 
 }

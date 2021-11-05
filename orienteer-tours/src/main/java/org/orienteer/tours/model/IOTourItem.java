@@ -31,8 +31,7 @@ public interface IOTourItem {
 	public static final String OCLASS_NAME = "OTourItem";
 	
 	@OrienteerOProperty(visualization = UIVisualizersRegistry.VISUALIZER_LOCALIZATION,
-			  displayable = true,
-			  order = 0)
+			  displayable = true)
 	public Map<String, String> getTitle();
 	
 	@XmlElement(name = "title")
@@ -40,12 +39,12 @@ public interface IOTourItem {
 		return LocalizeFunction.getInstance().apply(getTitle());
 	}
 	
-	@OrienteerOProperty(order = 10, displayable = true)
+	@OrienteerOProperty(displayable = true)
 	@OrientDBProperty(notNull = true)
 	@XmlElement
 	public String getAlias();
 	
-	@OrienteerOProperty(order = 20, displayable = true)
+	@OrienteerOProperty(displayable = true)
 	@XmlElement
 	public String getPath();
 	
