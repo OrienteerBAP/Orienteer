@@ -27,8 +27,7 @@ import java.util.List;
  * Can be used for prepare mails during application lifecycle and send batch of mails in one place via this task
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@EntityType(IOSendMailTask.CLASS_NAME)
-@OrienteerOClass(orderOffset = 50)
+@EntityType(value = IOSendMailTask.CLASS_NAME, orderOffset = 50)
 public interface IOSendMailTask extends IOTask {
 
     public static final Logger LOG = LoggerFactory.getLogger(IOSendMailTask.class);

@@ -15,6 +15,9 @@ import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
+/**
+ * Orienteer specific Transponder driver
+ */
 public class OrienteerDriver extends ODriver {
 
 	public OrienteerDriver() {

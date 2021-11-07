@@ -29,8 +29,7 @@ import com.orientechnologies.orient.core.id.ORID;
  *
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@EntityType(IOIntegrationConfig.CLASS_NAME)
-@OrienteerOClass(orderOffset = 50)
+@EntityType(value = IOIntegrationConfig.CLASS_NAME, orderOffset = 50)
 public interface IOIntegrationConfig extends IOTask<IOTaskSessionPersisted> {
     public static final Logger LOG = LoggerFactory.getLogger(IOIntegrationConfig.class);
 	public static final String CLASS_NAME = "OIntegrationConfig";

@@ -9,6 +9,10 @@ import java.lang.annotation.Target;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.orienteer.core.OClassDomain;
 
+/**
+ * Additional annotation for Transponder defined data models.
+ * Contains Orienteer specific
+ */
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface OrienteerOClass {
@@ -19,7 +23,6 @@ public @interface OrienteerOClass {
 	String sortProperty() default "";
 	SortOrder sortOrder() default SortOrder.NONE;
 	String searchQuery() default "";
-	int orderOffset() default 0;
 	String[] displayable() default {};
 	String cssClass() default "";
 }

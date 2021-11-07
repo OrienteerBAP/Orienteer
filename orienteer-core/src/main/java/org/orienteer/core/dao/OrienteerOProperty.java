@@ -8,6 +8,9 @@ import java.lang.annotation.Target;
 
 import com.orientechnologies.orient.core.metadata.schema.OType;
 
+/**
+ * Orienteer specific annotation for properties for Transponder
+ */
 @Retention(RUNTIME)
 @Target(METHOD)
 public @interface OrienteerOProperty {

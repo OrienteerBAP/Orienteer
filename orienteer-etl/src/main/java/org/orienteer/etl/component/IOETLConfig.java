@@ -21,8 +21,7 @@ import com.orientechnologies.orient.etl.OETLProcessor;
  *
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@EntityType(value = IOETLConfig.CLASS_NAME)
-@OrienteerOClass(orderOffset = 50)
+@EntityType(value = IOETLConfig.CLASS_NAME, orderOffset = 50)
 public interface IOETLConfig extends IOTask<IOTaskSessionPersisted> {
 	
 	public static final Logger LOG = LoggerFactory.getLogger(IOTask.class);

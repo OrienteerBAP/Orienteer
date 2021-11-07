@@ -209,9 +209,8 @@ public class OLoggerModule extends AbstractOrienteerModule{
 	 * Wrapper for module {@link OLoggerModule}
 	 */
 	@ProvidedBy(ODocumentWrapperProvider.class)
-	@EntityType(value = ILoggerModuleConfiguration.CLASS_NAME, superTypes = {OMODULE_CLASS})
-	@OrienteerOClass(orderOffset = 50,
-						domain = OClassDomain.SPECIFICATION)
+	@EntityType(value = ILoggerModuleConfiguration.CLASS_NAME, superTypes = {OMODULE_CLASS}, orderOffset = 50)
+	@OrienteerOClass(domain = OClassDomain.SPECIFICATION)
 	public static interface ILoggerModuleConfiguration extends IODocumentWrapper {
 
 		public static final String CLASS_NAME = "OLoggerModule";

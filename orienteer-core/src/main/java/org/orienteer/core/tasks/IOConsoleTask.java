@@ -16,8 +16,7 @@ import com.google.inject.ProvidedBy;
  *
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
-@EntityType(value = IOConsoleTask.CLASS_NAME)
-@OrienteerOClass(orderOffset = 50)
+@EntityType(value = IOConsoleTask.CLASS_NAME, orderOffset = 50)
 public interface IOConsoleTask extends IOTask<IOTaskSessionPersisted> {
 	public static final String CLASS_NAME = "OConsoleTask";
 	
