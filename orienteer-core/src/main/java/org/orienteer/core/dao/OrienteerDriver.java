@@ -91,6 +91,14 @@ public class OrienteerDriver extends ODriver {
 	}
 	
 	@Override
+	public void setupRelationship(String type1Name, String property1Name, String type2Name, String property2Name) {
+		super.setupRelationship(type1Name, property1Name, type2Name, property2Name);
+		if(property1Name!=null && property2Name!=null)
+			OSchemaHelper.bind(getSession())
+				.setupRelationship(type1Name, property1Name, type2Name, property2Name);
+	}
+	
+	@Override
 	public Class<?> getEntityMainClass(Object seed) {
 		if(seed==null) return null;
 		Class<?> mainClass = super.getEntityMainClass(seed);

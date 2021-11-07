@@ -15,12 +15,9 @@ import com.orientechnologies.orient.core.type.ODocumentWrapper;
 
 /**
  * Utility class for creating implementations for required interfaces
- * @deprecated Use Transponder directly
  */
-@Deprecated
 public final class DAO {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(DAO.class);
 	public static final Transponder TRANSPONDER = new Transponder(new OrienteerDriver(true));
 	
 	private DAO() {
@@ -78,55 +75,12 @@ public final class DAO {
 		return TRANSPONDER.provide(id, interfaceClass, additionalInterfaces);
 	}
 	
-	/**public static <T> T updateBy(T proxy, Class<?>... additionalInterfaces) {
-		if(additionalInterfaces==null 
-				|| additionalInterfaces.length==0 
-				|| compatible(proxy, additionalInterfaces)) return (T) proxy;
-		else {
-			ClassLoader classLoader = additionalInterfaces[0].getClassLoader();
-			InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
-			Set<Class<?>> interfaces = new HashSet<Class<?>>();
-			interfaces.addAll(Arrays.asList(additionalInterfaces));
-			interfaces.addAll(Arrays.asList(proxy.getClass().getInterfaces()));
-			return (T) Proxy.newProxyInstance(classLoader, interfaces.toArray(new Class[interfaces.size()]),  invocationHandler);
-		}
-	}**/
-	
-	/**public static <T> T upgradeTo(Object proxy, Class<? extends T> interfaceClass, Class<?>... additionalInterfaces) {
-		if(compatible(proxy, interfaceClass) && compatible(proxy, additionalInterfaces)) return (T) proxy;
-		else {
-			ClassLoader classLoader = interfaceClass.getClassLoader();
-			InvocationHandler invocationHandler = Proxy.getInvocationHandler(proxy);
-			Set<Class<?>> interfaces = new HashSet<Class<?>>();
-			interfaces.add(interfaceClass);
-			interfaces.addAll(Arrays.asList(additionalInterfaces));
-			interfaces.addAll(Arrays.asList(proxy.getClass().getInterfaces()));
-			return (T) Proxy.newProxyInstance(classLoader, interfaces.toArray(new Class[interfaces.size()]),  invocationHandler);
-		}
-	}**/
-	
 	public static boolean compatible(Object proxy, Class<?>... interfaces) {
 		for (Class<?> inter : interfaces) {
 			if(!inter.isInstance(proxy)) return false;
 		}
 		return true;
 	}
-	
-	/*private static <T> Class<? extends T> tryToGetInheritedInterface(Class<? extends T> clazz, ODocumentWrapper docWrapper) {
-		ODocument doc = docWrapper.getDocument();
-		if(doc!=null) {
-			String daoClassName = CustomAttribute.DAO_CLASS.getValue(doc.getSchemaClass());
-			if(daoClassName!=null) {
-				try {
-					Class<? extends T> daoClass = (Class<? extends T>)Class.forName(daoClassName);
-					if(clazz.isAssignableFrom(daoClass)) return daoClass;
-				} catch (ClassNotFoundException e) {
-					//NOP
-				}
-			}
-		}
-		return clazz;
-	}*/
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T dao(Class<T> interfaceClass, Class<?>... additionalInterfaces) {
