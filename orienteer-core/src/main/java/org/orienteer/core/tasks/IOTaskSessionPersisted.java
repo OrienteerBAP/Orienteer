@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 @ProvidedBy(ODocumentWrapperProvider.class)
 @EntityType(value = IOTaskSessionPersisted.CLASS_NAME)
-@OrienteerOClass(nameProperty = "threadName")
+@OrienteerOClass(nameProperty = "threadName", parentProperty = "task")
 public interface IOTaskSessionPersisted extends ITaskSession, IODocumentWrapper {
 	static final Logger LOG = LoggerFactory.getLogger(IOTaskSessionPersisted.class);
 	public static final String CLASS_NAME = "OTaskSession";
