@@ -32,6 +32,6 @@ public interface IOEnum {
 	public String getAlias();
 	public IOEnum setAlias(String value);
 	
-	@Lookup("select from :daoClass where alias = :alias")
+	@Lookup("select from :targetType where alias = :alias")
 	public boolean lookupByAlias(String alias);
 }
