@@ -40,13 +40,13 @@
 		<fileSet filtered="true" packaged="false" encoding="UTF-8">
 			<directory>src/main/resources</directory>
 			<includes>
-				<include>log4j.properties</include>
+				<include>log4j2.xml</include>
 			</includes>
 		</fileSet>
 		<fileSet filtered="true" packaged="true" encoding="UTF-8">
 			<directory>src/main/resources</directory>
 			<excludes>
-				<exclude>log4j.properties</exclude>
+				<exclude>log4j2.xml</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet filtered="true" packaged="false" encoding="UTF-8">
