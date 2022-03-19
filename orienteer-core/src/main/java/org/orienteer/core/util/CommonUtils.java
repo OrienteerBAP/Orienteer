@@ -33,7 +33,7 @@ import java.lang.reflect.Method;
  */
 public class CommonUtils {
 	
-	public static final String[] DEFAULT_LANGUAGE_TAGS = {"en", "ru", "uk"};
+	public static String[] defaultLanguageTags = {"en", "ru", "uk"};
 	
 	private CommonUtils() {
 		
@@ -376,7 +376,7 @@ public class CommonUtils {
 	}
 	
 	public static Map<String, String> getLocalizedStrings(String key) {
-		return getLocalizedStrings(key, DEFAULT_LANGUAGE_TAGS);
+		return getLocalizedStrings(key, defaultLanguageTags);
 	}
 	
 	public static Map<String, String> getLocalizedStrings(String key, String... languageTags) {
