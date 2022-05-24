@@ -11,6 +11,8 @@ import org.orienteer.core.tasks.OTaskSessionRuntime;
 import org.orienteer.core.util.OSchemaHelper;
 
 import com.orientechnologies.orient.core.db.ODatabaseSession;
+import com.orientechnologies.orient.core.metadata.schema.OClass;
+import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -22,7 +24,7 @@ import com.orientechnologies.orient.core.record.impl.ODocument;
 public class TaskManagerModule extends AbstractOrienteerModule {
 	
     public static final String NAME = "task-manager";
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
     
     TaskManagerModule(){
     	super(NAME, VERSION);
@@ -44,5 +46,15 @@ public class TaskManagerModule extends AbstractOrienteerModule {
 			if(schema.getClass("OConsoleTaskSession")!=null) schema.dropClass("OConsoleTaskSession");
 		}
 		onInstall(app, db);
+		if(oldVersion<=4) {
+			OSchema schema = db.getMetadata().getSchema();
+			OClass taskSessionClass = schema.getClass(IOTaskSessionPersisted.CLASS_NAME);
+			OProperty toDelete = taskSessionClass.getProperty("isStopable");
+			OProperty toKeep = taskSessionClass.getProperty("stopable");
+			if(toDelete!=null && toKeep!=null) {
+				db.execute("sql", "update "+IOTaskSessionPersisted.CLASS_NAME+" set stopable = isStopable").close();
+				taskSessionClass.dropProperty("isStopable");
+			}
+		}
 	}
 }

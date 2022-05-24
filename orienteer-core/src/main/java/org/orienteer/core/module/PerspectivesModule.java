@@ -219,16 +219,17 @@ public class PerspectivesModule extends AbstractOrienteerModule {
 	}
 	
 	public ODocument getPerspectiveForORole(OSecurityRole role) {
-		if (role == null) {
+		ODocument roleDoc = role.getDocument();
+		if (roleDoc==null) {
 			return null;
 		}
 
-		if (role.getDocument().field(PROP_PERSPECTIVE) != null) {
-			return ((OIdentifiable) role.getDocument().field(PROP_PERSPECTIVE)).getRecord();
+		if (roleDoc.field(PROP_PERSPECTIVE) != null) {
+			return ((OIdentifiable) roleDoc.field(PROP_PERSPECTIVE)).getRecord();
 		}
 
 		OSecurityRole parentRole = role.getParentRole();
-		return parentRole != null && !parentRole.equals(role) ? getPerspectiveForORole(role) : null;
+		return parentRole != null && !parentRole.equals(role) ? getPerspectiveForORole(parentRole) : null;
 	}
 
 	public void updateUserPerspective(ODocument user, ODocument perspective) {

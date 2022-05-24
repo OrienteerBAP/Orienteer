@@ -83,7 +83,6 @@ public interface IOTaskSessionPersisted extends ITaskSession, IODocumentWrapper 
 	@OrientDBProperty(notNull = false)
 	public IOTaskSessionPersisted setFinalProgress(double value);
 	
-	@EntityProperty("isStoppable")
 	@OrientDBProperty(notNull = false)
 	@DefaultValue("false")
 	public boolean isStopable();
@@ -115,7 +114,7 @@ public interface IOTaskSessionPersisted extends ITaskSession, IODocumentWrapper 
 	
 	public default IOTaskSessionPersisted appendError(String add) {
 		String error = getError();
-		setOutput(error!=null?error+"\n"+add:add);
+		setError(error!=null?error+"\n"+add:add);
 		return this;
 	}
 	
