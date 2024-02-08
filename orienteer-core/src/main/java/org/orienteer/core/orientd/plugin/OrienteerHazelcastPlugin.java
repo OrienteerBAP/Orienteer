@@ -16,6 +16,7 @@ public class OrienteerHazelcastPlugin extends OHazelcastPlugin {
         super();
     }
 
+    /*
     @Override
     protected HazelcastInstance configureHazelcast() throws FileNotFoundException {
 
@@ -25,7 +26,7 @@ public class OrienteerHazelcastPlugin extends OHazelcastPlugin {
             hazelcastConfig.setClassLoader(this.getClass().getClassLoader());
         }
         return Hazelcast.getOrCreateHazelcastInstance(hazelcastConfig);
-    }
+    }*/
 
 
 }

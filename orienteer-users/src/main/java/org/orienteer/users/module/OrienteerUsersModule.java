@@ -168,7 +168,7 @@ public class OrienteerUsersModule extends AbstractOrienteerModule {
 
     private OClass updateUserOClass(OSchemaHelper helper) {
         helper.oClass(OUser.CLASS_NAME)
-                .oProperty(OrienteerUser.PROP_ID, OType.STRING).notNull()
+                .oProperty(OrienteerUser.PROP_ID, OType.STRING)//.notNull()
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, true)
                 .oProperty(OrienteerUser.PROP_RESTORE_ID, OType.STRING)
                     .updateCustomAttribute(CustomAttribute.UI_READONLY, true)

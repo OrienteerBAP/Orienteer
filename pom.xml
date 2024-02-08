@@ -70,9 +70,9 @@
 
 	<properties>
         <java.version>1.8</java.version>
-		<wicket.version>8.11.0</wicket.version>
-		<wicketstuff.version>8.11.0</wicketstuff.version>
-		<orientdb.version>3.1.10</orientdb.version>
+		<wicket.version>8.15.0</wicket.version>
+		<wicketstuff.version>8.15.0</wicketstuff.version>
+		<orientdb.version>3.2.27</orientdb.version>
 		<guice.version>4.2.0</guice.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
@@ -500,7 +500,7 @@
 			</activation>
 			<modules>
 				<module>orienteer-birt</module>
-				<module>orienteer-bpm</module>
+				<!--<module>orienteer-bpm</module>-->
 				<module>orienteer-camel</module>
 				<module>orienteer-core</module>
 				<module>orienteer-devutils</module>
@@ -518,7 +518,7 @@
 				<module>orienteer-mail</module>
 				<module>orienteer-metrics</module>
 				<module>orienteer-users</module>
-				<module>orienteer-tours</module>
+				<!--<module>orienteer-tours</module>-->
 				<module>orienteer-notification</module>
 				<module>orienteer-twilio</module>
 				<module>orienteer-rproxy</module>

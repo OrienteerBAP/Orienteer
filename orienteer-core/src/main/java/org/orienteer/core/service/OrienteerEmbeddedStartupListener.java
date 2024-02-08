@@ -1,9 +1,12 @@
 package org.orienteer.core.service;
 
 import com.orientechnologies.orient.core.command.script.OScriptManager;
+import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.db.ODatabasePool;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
+import com.orientechnologies.orient.core.db.OrientDBConfig;
+import com.orientechnologies.orient.core.db.OrientDBConfigBuilder;
 import com.orientechnologies.orient.core.db.OrientDBInternal;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.metadata.security.OUser;
@@ -64,7 +67,10 @@ public class OrienteerEmbeddedStartupListener extends EmbeddOrientDbApplicationL
             throws Exception {
         IOrientDbSettings settings = app.getOrientDbSettings();
         OrientDB orientDB = app.getServer().getContext();
-        if (orientDB.createIfNotExists(settings.getDbName(), settings.getDbType())) {
+        if (orientDB.createIfNotExists(settings.getDbName(), settings.getDbType(),
+        		OrientDBConfig.builder()
+        			.addConfig(OGlobalConfiguration.CREATE_DEFAULT_USERS, true)
+        			.build())) {
         	try(ODatabaseSession session = orientDB.open(settings.getDbName(), OrientDbSettings.ADMIN_DEFAULT_USERNAME, OrientDbSettings.ADMIN_DEFAULT_PASSWORD)){
         		onDbCreated(session, settings);
         	}

@@ -12,6 +12,7 @@ import com.orientechnologies.orient.etl.OETLComponentFactory;
 import com.orientechnologies.orient.etl.OETLProcessor;
 import com.orientechnologies.orient.etl.OETLProcessor.LOG_LEVELS;
 import com.orientechnologies.orient.etl.OETLProcessorConfigurator;
+import com.orientechnologies.orient.etl.context.OETLContext;
 import com.orientechnologies.orient.etl.context.OETLContextWrapper;
 import com.orientechnologies.orient.etl.loader.OETLOrientDBLoader;
 
@@ -36,7 +37,7 @@ public class OrienteerETLProcessorConfigurator extends OETLProcessorConfigurator
 	}
 
 	public OETLProcessor parseConfigRecord(OTaskSessionRuntime<IOTaskSessionPersisted> taskSession,String config){
-	    final OCommandContext context = createDefaultContext();
+	    final OETLContext context = createDefaultContext();
 	    ODocument configuration = new ODocument().fromJSON("{}");
 	    
         configuration.merge(new ODocument().fromJSON(config, "noMap"), true, true);
@@ -53,7 +54,7 @@ public class OrienteerETLProcessorConfigurator extends OETLProcessorConfigurator
 	}
 	
 	@Override
-	protected void configureComponent(OETLComponent iComponent, ODocument iCfg, OCommandContext iContext) {
+	protected <C extends OETLComponent> C configureComponent(C iComponent, ODocument iCfg, OCommandContext iContext) {
 		if(iComponent instanceof OETLOrientDBLoader) {
 			//TODO: reimplement - it should use current user rights
 			OrienteerWebApplication app = OrienteerWebApplication.get();
@@ -64,6 +65,6 @@ public class OrienteerETLProcessorConfigurator extends OETLProcessorConfigurator
 			iCfg.field("dbUser", settings.getAdminUserName());
 			iCfg.field("dbPassword", settings.getAdminPassword());
 		}
-		super.configureComponent(iComponent, iCfg, iContext);
+		return super.configureComponent(iComponent, iCfg, iContext);
 	}
 }
