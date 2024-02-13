@@ -23,7 +23,7 @@
 
     <properties>
         <camel.version>2.25.2</camel.version>
-        <camel.core.version>2.25.2</camel.core.version>
+        <camel.core.version>3.2.0</camel.core.version>
         <camel.deprecated.version>2.23.4</camel.deprecated.version>
     </properties>
 
