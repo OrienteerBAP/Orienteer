@@ -61,7 +61,7 @@ P3, P5, P6. Until they are released, build them locally with `mvn install` (P1).
 
 | Library (coordinates) | Current in Orienteer | On Central today | Used by | Stage A — P3 (Java 21, javax, Wicket 8) | Stage B — P5 (Wicket 9) | Stage C — P6 (Wicket 10, jakarta) |
 |---|---|---|---|---|---|---|
-| `ru.ydn.wicket.wicket-orientdb:wicket-orientdb` (+ `test-jar`) | 2.0-SNAPSHOT | 1.5 (2020) | **everything** (core): `OrientDbWebApplication`, REST (`mountOrientDbRestApi`), `ReverseProxyResource` (rproxy), security annotations, prototypes, `LombokExtensions`, `WicketOrientDbTester` | builds & runs on JDK 21 with Wicket 8.15 + OrientDB 3.2.56; Lombok ≥1.18.48; release (or a published snapshot) | ported to Wicket 9.x (page store, lambdas, `java.time`) | ported to Wicket 10.x, `jakarta.servlet` 6, Guice 7/`jakarta.inject` if used, `wicket-tester`; okhttp current |
+| `ru.ydn.wicket.wicket-orientdb:wicket-orientdb` (+ `test-jar`) | 2.0-SNAPSHOT | 1.5 (2020) | **everything** (core): `OrientDbWebApplication`, REST (`mountOrientDbRestApi`), `ReverseProxyResource` (rproxy), security annotations, prototypes, `LombokExtensions`, `WicketOrientDbTester` | builds & runs on JDK 21 with Wicket 8.15 + OrientDB 3.2.56; Lombok ≥1.18.48; release (or a published snapshot) | ported to Wicket 9.x: `WicketOrientDbTesterScope` (uses the removed `WicketTesterScope`), JUnit 5 for the tester, Servlet 3.1 `ServletInputStream` methods. Estimated at 0.5–1 day | ported to Wicket 10.x, `jakarta.servlet` 6 (`ReverseProxyResource`, `LombokExtensions.asHttpServletRequest` (public API), `WicketOrientDbTester`), `wicket-tester`, OkHttp current (drop the internal `okhttp3.internal.http.HttpMethod`). No Guice/`javax.inject` in the library. Estimated at 1–2 days |
 | `org.orienteer.transponder:transponder-orientdb` | 1.1-SNAPSHOT | 1.0 (2021) | core DAO layer (`core.dao`), every module with DAO interfaces | JDK 21 build; bytecode generation lib supports Java 21/25 class files; OrientDB 3.2.56; release | — | — (no servlet coupling expected; verify no `javax.*`) |
 | `ru.ydn.wicket.wicket-console:wicket-console` | 1.4-SNAPSHOT | 1.3 (2019) | devutils (→ users, logger-server, standalone) | JDK 21 build on Wicket 8; script engines work without Nashorn | Wicket 9 port | Wicket 10 / jakarta port |
 | `org.orienteer:logger` | 1.4-SNAPSHOT | 1.3 (2020) | logger-server | JDK 21 build; release | — | jakarta if it touches servlet/mail APIs |
@@ -71,6 +71,7 @@ P3, P5, P6. Until they are released, build them locally with `mvn install` (P1).
 | `org.orienteer.camel.component:camel-orientdb` | 1.1 (OrientDB 2.2) | 1.1 | camel (parked) | only if P8 keeps camel: Camel 4 + OrientDB 3.2 | — | — |
 
 - [ ] Stage A delivered: wicket-orientdb, transponder-orientdb, wicket-console, logger resolvable from a real repo (Central or Central Portal snapshots)
+  - wicket-orientdb: Stage A in progress (own opencode session, started 2026-09-24). Plan approved: Lombok 1.18.48, JAXB → `HexFormat`, OrientDB 3.2.56, Checkstyle 14, OkHttp stays on 4.9.0 until Stage C, OSSRH repository removed from its parent pom. Exit check runs on JDK 21 and 25
 - [ ] Stage B delivered: wicket-orientdb, wicket-console on Wicket 9
 - [ ] Stage C delivered: wicket-orientdb, wicket-console (+ logger if needed) on Wicket 10 / jakarta
 
@@ -169,7 +170,8 @@ https://cwiki.apache.org/confluence/display/WICKET/Migration+to+Wicket+9.0
 - [ ] Prerequisite: external Stage B (wicket-orientdb, wicket-console on Wicket 9)
 - [ ] Wicket 8.15 → 9.24; wicketstuff-select2 → 9.x; wicket-webjars 2.0.15 → 3.0.x
 - [ ] Page store rewrite for the new Wicket 9 `IPageStore` chain: `core/wicket/pageStore/*` (`HazelcastPageStore`, `HazelcastPagesCache`, `OrientDbDataStore`) and the `PageManagerProvider` in `OrienteerWebApplication` (or drop it — see open question on distributed mode)
-- [ ] Replace `org.danekja` serializable lambdas (10 files in core) with Wicket 9 `org.apache.wicket.lambda` / `SerializableFunction`/`SerializableConsumer`
+- [ ] `org.danekja` serializable lambdas (14 files): **no migration required**. wicket-core 9.24 and 10.11 still depend on `org.danekja:jdk-serializable-functional` (verified on Central, 2026-09-24). Just check that the imports compile; switching to `org.apache.wicket.lambda` is optional cleanup
+- [ ] Wicket 9's `WicketTester` asserts with JUnit 5: put `junit-jupiter-api` on the test classpath (the tests still run under the JUnit 4 `OrienteerTestRunner` via vintage). `WicketTesterScope` is removed in 9, but Orienteer doesn't use it (only `WicketOrientDbTester`)
 - [ ] `org.apache.wicket.util.time.Duration`/`Time` → `java.time` (core `OrienteerWebjarsSettings`, `OContentShareResource`; metrics `OMetricsResource`; users `RestorePasswordResource`)
 - [ ] `ModalWindow` → `ModalDialog` (deprecated in 9, **removed in 10**): introduce the replacement in `AbstractModalWindowCommand`, then migrate core (27 files), architect, users, graph
 - [ ] CSP (Wicket 9 enables a strict CSP by default): decide the policy (open question), relax temporarily if needed, then fix inline scripts/`eval` and re-tighten

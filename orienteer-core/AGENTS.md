@@ -57,7 +57,7 @@ It also publishes a **test-jar** (`org.orienteer.junit`) that all module tests u
 This module takes almost every item in plan P3–P7:
 - Lombok, Guice, Reflections and Nashorn (P3)
 - Aether → Maven Resolver and the dead loader URLs (P4)
-- Wicket 9 page store, serializable lambdas and `Duration`/`Time` (P5)
+- Wicket 9 page store and `Duration`/`Time` (P5). The `org.danekja` lambdas can stay: Wicket 9/10 still ship them
 - javax → jakarta across 13 servlet files and `javax.inject` (P6)
 - `ModalWindow` in 27 files, removed in Wicket 10 (P5/P6)
 - CoreUI 3 → 5 markup (P7)
