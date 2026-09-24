@@ -45,6 +45,8 @@ every phase (`./mvnw versions:display-dependency-updates versions:display-plugin
 | D5 | 2026-09-24 | Go Wicket 8 → 9 → 10 in two steps (P5, P6) so there is a green javax-only intermediate state. P5 and P6 may be merged if wicket-orientdb jumps straight to Wicket 10. | proposed |
 | D6 | 2026-09-24 | Stay on OrientDB 3.2.x (still maintained: 3.2.56 released 2026-09-02). A DB change (YouTrackDB, ArcadeDB…) is out of scope. | proposed |
 | D7 | 2026-09-24 | No pre-upgrade JDK 8 test run; the static test inventory (Appendix C) is the reference, and the first real test run is the P3 exit criterion. | accepted |
+| D8 | 2026-09-24 | **GraalJS replaces the old GraalVM that OrientDB brings.** OrientDB 3.2.x pulls GraalVM/Truffle 21.3.5, which crashes every embedded OrientDB start on JDK 22+ (`NoSuchMethodError: sun.misc.Unsafe.ensureClassInitialized`). Exclude `org.graalvm.{sdk,truffle,js,tools}` and declare GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom runtime). This is the same as wicket-orientdb D11, and it also settles the Nashorn replacement (P3). Revisit when OrientDB upgrades Graal. | accepted (owner to confirm) |
+| D9 | 2026-09-24 | While Orienteer consumes a library's Stage A, that library's Stage B/C work must not overwrite the same snapshot in `~/.m2`. Do it on a branch with a distinct version (e.g. wicket-orientdb 2.1-SNAPSHOT for Wicket 9, 3.0-SNAPSHOT for Wicket 10), or release Stage A first. | proposed |
 
 ### Open questions (decide when the phase starts; record the answer above)
 
@@ -71,7 +73,8 @@ P3, P5, P6. Until they are released, build them locally with `mvn install` (P1).
 | `org.orienteer.camel.component:camel-orientdb` | 1.1 (OrientDB 2.2) | 1.1 | camel (parked) | only if P8 keeps camel: Camel 4 + OrientDB 3.2 | — | — |
 
 - [ ] Stage A delivered: wicket-orientdb, transponder-orientdb, wicket-console, logger resolvable from a real repo (Central or Central Portal snapshots)
-  - wicket-orientdb: Stage A in progress (own opencode session, started 2026-09-24). Plan approved: Lombok 1.18.48, JAXB → `HexFormat`, OrientDB 3.2.56, Checkstyle 14, OkHttp stays on 4.9.0 until Stage C, OSSRH repository removed from its parent pom. Exit check runs on JDK 21 and 25
+  - wicket-orientdb: **Stage A done locally** (2026-09-24, 14 local commits on its `master`, not pushed, not published). Installed in `~/.m2`: parent pom, jar and test-jar `2.0-SNAPSHOT`, Java 21 bytecode. Built against Wicket 8.15, OrientDB 3.2.56, GraalJS 25.0.4, OkHttp 4.9.0, Lombok 1.18.48. 103 tests run, 0 failures, 17 skipped (pre-existing `@Ignore`) on JDK 21 and 25; the JDK 25 run was re-checked independently. No public API changes. Also fixes empty query-backed data providers on OrientDB 3.2.56 (`OQueryModel.iterator`). Full handoff: the "Handoff to Orienteer" section of its `REFRESH_PLAN.md`; the consequences for Orienteer are D8 and P3. Still to do: publishing it (its phase R)
+  - transponder-orientdb, wicket-console, logger: not started
 - [ ] Stage B delivered: wicket-orientdb, wicket-console on Wicket 9
 - [ ] Stage C delivered: wicket-orientdb, wicket-console (+ logger if needed) on Wicket 10 / jakarta
 
@@ -90,7 +93,7 @@ P3, P5, P6. Until they are released, build them locally with `mvn install` (P1).
 Goal: every non-parked module resolves its dependencies (`./mvnw -q validate dependency:resolve`), and nothing
 in the repo points at dead infrastructure. The build is not expected to compile on JDK 21 yet (that is P3).
 
-- [ ] Build and `mvn install` the external libraries locally (owner, outside this repo): wicket-orientdb 2.0-SNAPSHOT, transponder-orientdb 1.1-SNAPSHOT, wicket-console 1.4-SNAPSHOT, logger 1.4-SNAPSHOT
+- [ ] Build and `mvn install` the external libraries locally (owner, outside this repo): wicket-orientdb 2.0-SNAPSHOT (done 2026-09-24, Stage A), transponder-orientdb 1.1-SNAPSHOT, wicket-console 1.4-SNAPSHOT, logger 1.4-SNAPSHOT
 - [ ] Move the transponder version into a root property (`transponder.version`) next to `wicket.orientdb.version`
 - [ ] Remove dead repositories from the root pom: `bintray` (jcenter) and `oss.sonatype.org` snapshots; add `https://central.sonatype.com/repository/maven-snapshots/` (snapshots only) if the external libs publish snapshots there
 - [ ] Park modules (D3): move `orienteer-birt`, `orienteer-camel`, `orienteer-taucharts`, `orienteer-graph` out of the `default-modules` profile into a new opt-in profile `parked` together with `orienteer-bpm` and `orienteer-tours` (so `./mvnw -Pparked …` can still try them)
@@ -126,13 +129,15 @@ Goal: `./mvnw verify` green on JDK 21 **and** 25, app starts with `jetty:run`. F
 - [ ] Lombok 1.18.16 → latest (≥1.18.48); declare it in `maven-compiler-plugin` `annotationProcessorPaths` (required from JDK 23, harmless before); add root `lombok.config` (`config.stopBubbling = true`, `lombok.addLombokGeneratedAnnotation = true`)
 - [ ] Guice 4.2.0 → 6.0.0 (+ `guice-servlet` 6.0.0): no cglib, still `javax.inject`/`javax.servlet`; fix `core/dao/AbstractDynamicProvider` (jOOR access to Guice internals `InjectorImpl.enterContext`)
 - [ ] Wicket 8 IoC lazy proxies (cglib) on JDK 17+: check whether they need `--add-opens` and add them (goes away with Wicket 9/ByteBuddy in P5)
-- [ ] Remove the ASM 7.1 pin (check who needs it: `./mvnw dependency:tree -Dincludes=org.ow2.asm`) or bump to 9.x
+- [ ] Remove the ASM 7.1 pin (check who needs it: `./mvnw dependency:tree -Dincludes=org.ow2.asm`) or bump to ≥9.8. ASM 7.1 can't read Java 21+ class files (e.g. BouncyCastle 1.85, which OrientDB 3.2.56 brings)
+- [ ] Align OrientDB with wicket-orientdb Stage A: 3.2.27 → **3.2.56** in P3 (not P4), because that's what the library is built and tested against. Transitive changes: `commons-lang` 2.6 dropped, lz4 moves to `at.yawk.lz4` 1.11.0 (same packages), BouncyCastle 1.85 added, jackson-core 2.22. Breaking behavior: a closed `OResultSet` now yields nothing, so always collect before the try-with-resources closes it (wicket-orientdb checked the 12 Orienteer files that use `OResultSet` and found no such pattern; re-check when writing new code)
+- [ ] GraalJS per D8: add the `org.graalvm.{sdk,truffle,js,tools}` exclusions to the direct `orientdb-core` declaration in root `dependencyManagement`, and manage GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom). Then check that `./mvnw dependency:tree -Dincludes='org.graalvm*'` shows only 25.0.4; other OrientDB artifacts (server, distributed, tools, etl, graphdb) may need the same exclusions
 - [ ] Mockito 2.22 → 5.x; JUnit 4.13.1 → 4.13.2
 - [ ] Surefire 3.x `argLine` with the empirically required `--add-opens`/`--add-exports` (OrientDB, Hazelcast, cglib); mirror them in the Jetty plugin JVM args and Docker `JAVA_OPTIONS`; document the list in root `AGENTS.md`
 - [ ] JDK 24+: check `sun.misc.Unsafe` memory-access warnings from OrientDB/Hazelcast/Netty; add `--sun-misc-unsafe-memory-access=allow` where needed and note it
 - [ ] Reflections 0.9.10 → ClassGraph (preferred) or Reflections 0.10.2 in `core/method/MethodStorage`; remove `Reflections.log = null` in `OrienteerWebApplication`
-- [ ] Nashorn replacement: decide GraalJS (already shipped by OrientDB 3.2, GraalVM 21.3.5) vs `org.openjdk.nashorn:nashorn-core` 15.x; fix `OrienteerEmbeddedStartupListener`; verify pages and devutils scripting
-- [ ] Jetty 9.4.12 → last 9.4.x (9.4.58) as a stopgap for the dev plugin and standalone until P6
+- [ ] Nashorn replacement: settled by D8 (GraalJS 25.0.4). Remove or adapt the Nashorn registration in `OrienteerEmbeddedStartupListener`; verify server-side JS in pages, devutils consoles and OrientDB JS functions
+- [ ] Jetty 9.4.12 → last 9.4.x (9.4.58) as a stopgap for the dev plugin and standalone until P6. On JDK 25 the plugin also needs `org.ow2.asm:asm` ≥9.8 (wicket-orientdb uses 9.10.1) as a plugin dependency; otherwise annotation scanning fails on Java 25 class files
 - [ ] Compiler: `maven.compiler.release=21` (replace `source/target`), keep `-parameters`; remove module overrides (metrics, rproxy, tours hardcode 1.8)
 - [ ] Declare used-but-undeclared deps (`./mvnw dependency:analyze`): replace `org.apache.http.util.Args` (core ×12, architect ×7, notification) with Wicket `Args`/`Objects`; declare commons-io/lang3/collections4, okhttp where used directly
 - [ ] Add JUnit Jupiter + `junit-vintage-engine` so new tests can use Jupiter while `OrienteerTestRunner` tests keep running
@@ -145,7 +150,7 @@ Goal: `./mvnw verify` green on JDK 21 **and** 25, app starts with `jetty:run`. F
 
 Goal: everything that doesn't require jakarta or a Wicket major is current.
 
-- [ ] OrientDB 3.2.27 → latest 3.2.x (3.2.56); re-test etl (subclasses ETL internals), pages (`OrientDBInternal` script manager), hooks, `CallbackHook` private-field access
+- [ ] OrientDB: the move to 3.2.56 happens in P3 (alignment with wicket-orientdb). Here, take newer 3.2.x patches if any; re-test etl (subclasses ETL internals), pages (`OrientDBInternal` script manager), hooks, `CallbackHook` private-field access
 - [ ] Hazelcast (via OrientDB distributed, 3.12.13): update `orienteer-core/config/hazelcast*.xml` schema 3.9 → 3.12; replace deprecated `ILock` in `ReloadOrienteerTask`; decide on the Swarm discovery config (its SPI dependency is commented out)
 - [ ] Log4j 2.17.1 → 2.26.x via BOM; `log4j-slf4j-impl` → `log4j-slf4j2-impl` + SLF4J 2.x; stop shipping `log4j2.xml` and the logging binding in library jars (keep them only in war, standalone and test scope)
 - [ ] Jackson 2.12.1 → 2.22.x (BOM)
@@ -295,16 +300,16 @@ Fill in the decision column when the module is picked up; record it in the decis
 | Guice / guice-servlet | 4.2.0 | 7.0.0 | 6.0.0 (P3) → 7.0.0 (P6) | P3/P6 |
 | Servlet API | javax 3.0.1 / 3.1.0 | jakarta 6.1.0 | jakarta 6.0 (Wicket 10 baseline) | P6 |
 | Jetty (plugin, standalone) | 9.4.12.v20180830 | 12.1.13 (9.4.58 last 9.4) | 9.4.58 stopgap → 12.1.x ee10 | P3/P6 |
-| OrientDB (core, client, server, distributed, tools, etl, graphdb) | 3.2.27 | 3.2.56 | latest 3.2.x | P4 |
+| OrientDB (core, client, server, distributed, tools, etl, graphdb) | 3.2.27 | 3.2.56 | 3.2.56 (aligned with wicket-orientdb), later patches in P4 | P3/P4 |
 | Hazelcast | 3.x via OrientDB (property says 3.9.4) | pinned 3.12.13 by OrientDB 3.2.56 | follow OrientDB | P4 |
-| GraalJS (via OrientDB) | 21.3.5 | — | follow OrientDB | P3 |
+| GraalVM/GraalJS (via OrientDB) | 21.3.5 (crashes on JDK 22+) | 25.0.4 | 25.0.4 via exclusions (D8) | P3 |
 | Log4j 2 | 2.17.1 | 2.26.1 | latest 2.x, `log4j-slf4j2-impl` | P4 |
 | SLF4J | 1.7 (transitive) | 2.0.20 | 2.0.x | P4 |
 | Jackson | 2.12.1 | 2.22.3 | latest 2.x via BOM | P4 |
 | Lombok | 1.18.16 | 1.18.48 | latest | P3 |
 | JUnit 4 / Jupiter | 4.13.1 / — | 4.13.2 / 6.1.3 (+ vintage 6.1.3) | 4.13.2 + Jupiter/vintage | P3 |
 | Mockito | 2.22.0 | 5.24.0 | 5.x | P3 |
-| ASM (pin) | 7.1 | — | remove pin / 9.x | P3 |
+| ASM (pin) | 7.1 | 9.10.1 | remove pin / ≥9.8 (also a Jetty 9.4 plugin dependency on JDK 25) | P3 |
 | Reflections | 0.9.10 | 0.10.2 (unmaintained) | ClassGraph 4.8.x | P3 |
 | Nashorn | JDK built-in (gone since 15) | nashorn-core 15.7 | GraalJS or nashorn-core | P3 |
 | jOOR | joor-java-8 0.9.12 | joor 0.9.15 | joor or remove | P4 |
