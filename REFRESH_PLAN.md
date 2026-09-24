@@ -45,8 +45,8 @@ every phase (`./mvnw versions:display-dependency-updates versions:display-plugin
 | D5 | 2026-09-24 | Go Wicket 8 → 9 → 10 in two steps (P5, P6) so there is a green javax-only intermediate state. P5 and P6 may be merged if wicket-orientdb jumps straight to Wicket 10. | proposed |
 | D6 | 2026-09-24 | Stay on OrientDB 3.2.x (still maintained: 3.2.56 released 2026-09-02). A DB change (YouTrackDB, ArcadeDB…) is out of scope. | proposed |
 | D7 | 2026-09-24 | No pre-upgrade JDK 8 test run; the static test inventory (Appendix C) is the reference, and the first real test run is the P3 exit criterion. | accepted |
-| D8 | 2026-09-24 | **GraalJS replaces the old GraalVM that OrientDB brings.** OrientDB 3.2.x pulls GraalVM/Truffle 21.3.5, which crashes every embedded OrientDB start on JDK 22+ (`NoSuchMethodError: sun.misc.Unsafe.ensureClassInitialized`). Exclude `org.graalvm.{sdk,truffle,js,tools}` and declare GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom runtime). This is the same as wicket-orientdb D11, and it also settles the Nashorn replacement (P3). Revisit when OrientDB upgrades Graal. | accepted (owner to confirm) |
-| D9 | 2026-09-24 | While Orienteer consumes a library's Stage A, that library's Stage B/C work must not overwrite the same snapshot in `~/.m2`. Do it on a branch with a distinct version (e.g. wicket-orientdb 2.1-SNAPSHOT for Wicket 9, 3.0-SNAPSHOT for Wicket 10), or release Stage A first. | proposed |
+| D8 | 2026-09-24 | **GraalJS replaces the old GraalVM that OrientDB brings.** OrientDB 3.2.x pulls GraalVM/Truffle 21.3.5, which crashes every embedded OrientDB start on JDK 22+ (`NoSuchMethodError: sun.misc.Unsafe.ensureClassInitialized`). Exclude `org.graalvm.{sdk,truffle,js,tools}` and declare GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom runtime). This is the same as wicket-orientdb D11, and it also settles the Nashorn replacement (P3). Revisit when OrientDB upgrades Graal. | accepted (owner, 2026-09-24) |
+| D9 | 2026-09-24 | **Versioning and publishing of the external libraries** (the owner delegated the decision). (1) Each library publishes its Stage A as the current snapshot (e.g. wicket-orientdb `2.0-SNAPSHOT`) to the Central Portal snapshots repository, so Orienteer and its CI resolve it without local installs. (2) The library releases that version (e.g. `2.0`) only after Orienteer's P3 build is green against it; fixes found in P3 go into the snapshot first. Orienteer then pins the release. (3) After the release, the library's `master` moves to the next line for Stage B (wicket-orientdb `2.1-SNAPSHOT`); Stage C, being jakarta and API-breaking, gets a new major (wicket-orientdb `3.0`). (4) Stage B/C work before the Stage A release goes on a branch with its own version and never overwrites the snapshot Orienteer uses. Same scheme for transponder (1.1), wicket-console (1.4) and logger (1.4). Namespaces `ru.ydn` and `org.orienteer` must be verified on the Central Portal, with SNAPSHOTs enabled (owner: `ru.ydn` is verified). | accepted (2026-09-24) |
 
 ### Open questions (decide when the phase starts; record the answer above)
 
@@ -59,7 +59,7 @@ every phase (`./mvnw versions:display-dependency-updates versions:display-plugin
 ## External dependency requirements (not done in this repo)
 
 Orienteer cannot progress past the stages below until the owning repos deliver. "Stage A/B/C" correspond to
-P3, P5, P6. Until they are released, build them locally with `mvn install` (P1).
+P3, P5, P6. Until they are published (D9: Central Portal snapshot, then a release after Orienteer P3), build them locally with `mvn install` (P1).
 
 | Library (coordinates) | Current in Orienteer | On Central today | Used by | Stage A — P3 (Java 21, javax, Wicket 8) | Stage B — P5 (Wicket 9) | Stage C — P6 (Wicket 10, jakarta) |
 |---|---|---|---|---|---|---|
@@ -74,6 +74,7 @@ P3, P5, P6. Until they are released, build them locally with `mvn install` (P1).
 
 - [ ] Stage A delivered: wicket-orientdb, transponder-orientdb, wicket-console, logger resolvable from a real repo (Central or Central Portal snapshots)
   - wicket-orientdb: **Stage A done locally** (2026-09-24, 14 local commits on its `master`, not pushed, not published). Installed in `~/.m2`: parent pom, jar and test-jar `2.0-SNAPSHOT`, Java 21 bytecode. Built against Wicket 8.15, OrientDB 3.2.56, GraalJS 25.0.4, OkHttp 4.9.0, Lombok 1.18.48. 103 tests run, 0 failures, 17 skipped (pre-existing `@Ignore`) on JDK 21 and 25; the JDK 25 run was re-checked independently. No public API changes. Also fixes empty query-backed data providers on OrientDB 3.2.56 (`OQueryModel.iterator`). Full handoff: the "Handoff to Orienteer" section of its `REFRESH_PLAN.md`; the consequences for Orienteer are D8 and P3. Still to do: publishing it (its phase R)
+  - wicket-orientdb decisions (owner, 2026-09-24): GraalJS swap accepted; versioning per D9; demo module kept after Stage C; stale remote branches kept for now. Next: its phase R, publishing config prepared locally. Uploading, pushing and tagging wait for the owner's credentials and approval (Central Portal token, SNAPSHOTs enabled for `ru.ydn`, GPG key for the release)
   - transponder-orientdb, wicket-console, logger: not started
 - [ ] Stage B delivered: wicket-orientdb, wicket-console on Wicket 9
 - [ ] Stage C delivered: wicket-orientdb, wicket-console (+ logger if needed) on Wicket 10 / jakarta
@@ -95,7 +96,7 @@ in the repo points at dead infrastructure. The build is not expected to compile 
 
 - [ ] Build and `mvn install` the external libraries locally (owner, outside this repo): wicket-orientdb 2.0-SNAPSHOT (done 2026-09-24, Stage A), transponder-orientdb 1.1-SNAPSHOT, wicket-console 1.4-SNAPSHOT, logger 1.4-SNAPSHOT
 - [ ] Move the transponder version into a root property (`transponder.version`) next to `wicket.orientdb.version`
-- [ ] Remove dead repositories from the root pom: `bintray` (jcenter) and `oss.sonatype.org` snapshots; add `https://central.sonatype.com/repository/maven-snapshots/` (snapshots only) if the external libs publish snapshots there
+- [ ] Remove dead repositories from the root pom: `bintray` (jcenter) and `oss.sonatype.org` snapshots; add `https://central.sonatype.com/repository/maven-snapshots/` (snapshots only, releases disabled), where the external libraries publish their Stage A snapshots (D9)
 - [ ] Park modules (D3): move `orienteer-birt`, `orienteer-camel`, `orienteer-taucharts`, `orienteer-graph` out of the `default-modules` profile into a new opt-in profile `parked` together with `orienteer-bpm` and `orienteer-tours` (so `./mvnw -Pparked …` can still try them)
 - [ ] `orienteer-standalone`: drop the dependencies on parked modules (`orienteer-bpm`, `orienteer-graph`)
 - [ ] Remove broken scripts and images: `build.sh`, `run.sh`, `Dockerfile_ibmjdk` (they reference the removed `orienteer-object` and the no-longer-produced `jetty-runner.jar`)
