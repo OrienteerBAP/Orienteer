@@ -1,0 +1,18 @@
+# Minimal settings. Indentation is deliberately NOT set: the code mixes tabs and spaces
+# (most Java uses tabs; most XML, HTML and JS use spaces). Match the surrounding file, and don't reformat.
+# Trailing whitespace and final newlines are not enforced either.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+
+[*.{java,xml,html,js,css}]
+tab_width = 4
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.cmd]
+end_of_line = crlf

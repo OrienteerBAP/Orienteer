@@ -11,16 +11,24 @@ release.properties
 .settings/
 build.cmd
 databases/
+/runtime/
 */runtime/
 /Orienteer/
 /Orienteer.*/
 /*/Orienteer/
 /*/Orienteer.*/
+/libs/
 /*/libs/
 */app/
 .idea/
+.vscode/
+.DS_Store
 *.iml
 *.log
 *.tar.gz
+# Local configs are ignored everywhere, except the root dev/test defaults, which are tracked on purpose
+# (dev-only credentials, no real secrets). See REFRESH_PLAN.md D10.
 orienteer.properties
 orienteer-test.properties
+!/orienteer.properties
+!/orienteer-test.properties
