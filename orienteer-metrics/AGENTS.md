@@ -14,8 +14,6 @@ Prometheus endpoint at `/metrics` (`OMetricsResource`, `@MountPath`). It exposes
 
 ## Pitfalls
 
-- The pom hardcodes `maven-compiler-plugin` 3.7.0 with source/target 1.8 and **no `-parameters`**, plus surefire 2.22.1.
-  Remove these overrides so the module inherits from root (P2).
 - The pom has a large block of commented-out dependencies copied from tours. Delete it (P10).
 - There's a TODO waiting on OrientDB issue #9169.
 

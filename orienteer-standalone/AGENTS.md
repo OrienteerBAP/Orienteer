@@ -9,7 +9,7 @@ Executable uber-jar that runs Orienteer on embedded Jetty 9.4. Run it with
 - `jetty-all:uber` (9.4.12) and `javax.servlet-api` 3.1.0 are compile scope.
 - `src/main/resources/WEB-INF/web.xml` (Servlet 2.5, `OrienteerFilter`) and
   `src/main/resources/org/orienteer/standalone/standalone.properties`.
-- Packaging: `maven-assembly-plugin` 2.5.3 with `src/assembly/uberjar.xml`.
+- Packaging: `maven-assembly-plugin` (3.8.0 from the root pom since P2; not yet verified by a real build) with `src/assembly/uberjar.xml`.
   Jetty and the servlet API are unpacked into the jar root; everything else goes into `WEB-INF\lib` (Windows backslashes).
 - No tests.
 

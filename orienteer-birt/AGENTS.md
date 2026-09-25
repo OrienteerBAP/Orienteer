@@ -20,7 +20,7 @@ Eclipse BIRT report widgets.
 - `AbstractBirtReportPanel.updateDBUriToLocal` writes the session username and password into the report datasource.
 - `new_report.rptdesign` sits oddly under `src/main/resources/META-INF/services/org/orienteer/birt/`.
   A dead duplicate `IInitializer` sits under `src/main/resources/org/orienteer/birt/META-INF/services/`.
-- The module pom overrides `maven-bundle-plugin` (2.3.6) and copies the driver jar at the `install` phase.
+- The module pom copies the driver jar at the `install` phase (maven-dependency-plugin, version from the root pom).
 
 ## Upgrade risk: HIGH
 

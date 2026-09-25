@@ -23,7 +23,6 @@ Guided tours of the UI.
 ## Pitfalls
 
 - Imports `javax.ws.rs`, `javax.xml.bind` (JAXB is not in the JDK since 11) and `javax.inject`.
-- The pom hardcodes old plugin versions and Java 1.8.
 - The pom has a long list of commented-out dependencies on other Orienteer modules, including the removed `orienteer-object`.
 
 ## Upgrade risk: HIGH

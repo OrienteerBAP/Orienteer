@@ -12,7 +12,7 @@ Maven archetype that generates a new **Orienteer module jar**.
   - `TestModule` (uses `OrienteerTestRunner`)
 - **Integration test:** `src/test/resources/projects/simple-test/` generates a project and runs its tests.
   The `skip-integration-tests` profile is used for releases.
-- **Build:** `maven-archetype-plugin` and the `archetype-packaging` extension, both 3.0.1.
+- **Build:** `maven-archetype-plugin` and the `archetype-packaging` extension, both `${archetype.version}` (3.4.1) from the root pom.
 
 ## Pitfalls
 

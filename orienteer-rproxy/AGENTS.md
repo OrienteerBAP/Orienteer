@@ -16,7 +16,6 @@ Built-in reverse proxy for external REST APIs.
 
 - **Bug:** in the `ORProxyResource` constructor, configured headers are put into `cookies` instead of `headers` (P10).
 - A stray duplicate `IInitializer` service file sits at `src/main/resources/org/orienteer/rproxy/META-INF/services/`. It has no effect.
-- The pom hardcodes compiler 1.8 without `-parameters`, and surefire 2.22.1. Remove these overrides (P2).
 
 ## Upgrade risk: MEDIUM
 

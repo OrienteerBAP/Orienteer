@@ -82,6 +82,8 @@ cd orienteer-<module> && ../mvnw jetty:run             # run Orienteer + that mo
 - Logging: SLF4J `private static final Logger LOG = LoggerFactory.getLogger(X.class);`.
 - i18n: `<Name>.properties` + `<Name>_ru.utf8.properties` + `<Name>_uk.utf8.properties`; add keys to all three.
 - Lombok is available (provided scope) but used sparingly — don't spread it.
+- Maven: **all plugin and third-party versions live in the root pom** (`pluginManagement` / `dependencyManagement`, properties);
+  module poms declare no versions. Parked modules keep their own until P8. `./mvnw -Pconvergence validate` reports conflicts.
 
 ## Testing
 

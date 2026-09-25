@@ -13,7 +13,7 @@ every phase (`./mvnw versions:display-dependency-updates versions:display-plugin
 |---|---|---|---|
 | P0 | AI initialization: AGENTS.md files + this plan | — | done |
 | P1 | Baseline: dependencies resolve, reactor consistent, dead scripts removed | external libs (owner) | in progress: done except the 3 external snapshots |
-| P2 | Build tooling & Maven hygiene (modern plugins, still Java 8 source) | P1 | todo |
+| P2 | Build tooling & Maven hygiene (modern plugins, still Java 8 source) | P1 | done (2026-09-25) |
 | P3 | Java 21 on the current stack (javax, Wicket 8) — **first green build** | P2, external Stage A | todo |
 | P4 | Non-jakarta dependency upgrades (OrientDB, Log4j, Jackson, Tika, Resolver…) | P3 | todo |
 | P5 | Wicket 8 → 9 (still javax) | P4, external Stage B | todo |
@@ -115,18 +115,18 @@ in the repo points at dead infrastructure. The build is not expected to compile 
 
 Goal: modern, centrally managed plugins that also work on JDK 21, without changing the Java level yet.
 
-- [ ] Pin every plugin in root `<pluginManagement>` at current versions (Appendix B); remove per-module plugin/version overrides (compiler/surefire/jar in etl, metrics, rproxy, taucharts, tours; assembly/jar/deploy in standalone; war/deploy in war; bundle 2.3.6 in 14 modules)
-- [ ] Remove dead plugins: `maven-eclipse-plugin` (root + 14 modules), `org.eclipse.m2e:lifecycle-mapping`, `cobertura-maven-plugin`, `coveralls-maven-plugin` — cobertura 2.7 also blocks `dependency:go-offline` on JDK 9+ (needs `com.sun:tools`)
-- [ ] Drop `<type>bundle</type>` from the OrientDB dependencies and remove the `maven-bundle-plugin` build extension (verify the artifacts resolve as plain jars)
-- [ ] Import BOMs in `dependencyManagement`: `jackson-bom`, `log4j-bom`, `junit-bom`, `mockito-bom` (Jetty BOM comes in P6)
-- [ ] Move module-local third-party versions into root properties/`dependencyManagement` (scribejava, prometheus, retrofit, rxjava, mxgraph, pivottable/d3/c3, taucharts, POI, Camel…)
-- [ ] Remove unused properties: `hazelcast.version` (overridden transitively by OrientDB), `hazelcast-wm.version`, `docker-client.version`, `wtp.version`, `twilio.version` (twilio module); remove unused managed deps (`docker-client`, `hazelcast-docker-swarm-discovery-spi`) or move them next to their use
-- [ ] Add `maven-enforcer-plugin`: `requireMavenVersion [3.9,)`, `requireJavaVersion [21,)` (enable in P3), `banDuplicatePomDependencyVersions`, `dependencyConvergence` (report-only first)
-- [ ] Checkstyle: plugin 3.6.x + current Checkstyle; migrate `check_style.xml` (DTD 1.3, move `LineLength` out of `TreeWalker`, `JavadocMethod` `scope` → `accessModifiers`); keep `failOnViolation`
-- [ ] Add `jacoco-maven-plugin` (report only, no thresholds yet)
-- [ ] Fix the `fulltest` profile so it really includes `*Slow*` tests (override the inherited `excludes`)
-- [ ] Configure `versions-maven-plugin` with a rules file that ignores alpha/beta/RC/milestone versions
-- [ ] Exit check: same modules build and test as before P2 (on whichever JDK P1 used), with no plugin warnings about JDK incompatibility
+- [x] Pin every plugin in root `<pluginManagement>` at current versions (Appendix B); remove per-module plugin/version overrides (compiler/surefire/jar in etl, metrics, rproxy, taucharts, tours; assembly/jar/deploy in standalone; war/deploy in war; bundle 2.3.6 in 14 modules) — 2026-09-25. Exceptions left for their phases: jetty-maven-plugin 9.4.12 (P3/P6), the release-profile plugins and maven-release-plugin 2.5.3 (P9), dockerfile-maven-plugin (P9)
+- [x] Remove dead plugins: `maven-eclipse-plugin` (root + 14 modules), `org.eclipse.m2e:lifecycle-mapping`, `cobertura-maven-plugin`, `coveralls-maven-plugin` — cobertura 2.7 also blocks `dependency:go-offline` on JDK 9+ (needs `com.sun:tools`) — 2026-09-25; `dependency:resolve-plugins` now passes
+- [x] Drop `<type>bundle</type>` from the OrientDB dependencies and remove the `maven-bundle-plugin` build extension (verify the artifacts resolve as plain jars) — 2026-09-25; the full dependency tree of all 18 projects is identical before and after (2275 lines, 0 diffs)
+- [x] Import BOMs in `dependencyManagement`: `log4j-bom` done 2026-09-25. Deferred on purpose: `jackson-bom` to P4 (importing it at 2.12.1 would downgrade jackson-core 2.15 that OrientDB brings), `junit-bom`/`mockito-bom` to P3 (JUnit 4 isn't in `junit-bom`; Mockito 2 has no BOM). Jetty BOM comes in P6
+- [x] Move module-local third-party versions into root properties/`dependencyManagement` (scribejava, prometheus, retrofit, rxjava, mxgraph, pivottable/d3/c3, taucharts, POI, Camel…) — 2026-09-25 for all default modules (35 managed entries; new properties for wicket-console, logger, aether, prometheus, scribejava, retrofit, rxjava2). Parked modules keep theirs until P8. Left in modules: standalone's `javax.servlet-api` 3.1.0 (differs from the managed 3.0.1, goes in P6), metrics' commented-out block (P10)
+- [x] Remove unused properties: `hazelcast-wm.version`, `docker-client.version`, `wtp.version` (root and birt), `twilio.version` (twilio); unused managed deps `docker-client`, `hazelcast-docker-swarm-discovery-spi`, `hazelcast-wm` removed — 2026-09-25. **Correction:** `hazelcast.version` is NOT unused: its managed 3.9.4 overrides the Hazelcast 3.12.13 that OrientDB distributed 3.2.27 is built against (all 15 projects get 3.9.4). Kept, with a comment; fix in P3
+- [x] Add `maven-enforcer-plugin`: `requireMavenVersion [3.9,)`, `requireJavaVersion [21,)`, `banDuplicatePomDependencyVersions` in every build; `dependencyConvergence` report-only in profile `convergence` (`./mvnw -Pconvergence validate`) — 2026-09-25. `requireJavaVersion [21,)` is enabled already: JDK 21 is the only JDK used to build now. Baseline: 9 convergence conflicts in orienteer-core (Guava, ASM, GraalVM, …), input for P3
+- [x] Checkstyle: plugin 3.6.x + current Checkstyle; migrate `check_style.xml` (DTD 1.3, move `LineLength` out of `TreeWalker`, `JavadocMethod` `scope` → `accessModifiers`); keep `failOnViolation` — 2026-09-25: plugin 3.6.0 + Checkstyle 14.1.0, same rules and severities (missing method Javadoc stays a warning, missing type Javadoc an error). 0 errors on all 18 projects and on the parked ones; about 2000 warnings (mostly missing method Javadoc)
+- [x] Add `jacoco-maven-plugin` (report only, no thresholds yet) — 2026-09-25: 0.8.15. The agent is prepended to surefire's `argLine`; P3 must keep `@{argLine}` when it adds `--add-opens`
+- [x] Fix the `fulltest` profile so it really includes `*Slow*` tests (override the inherited `excludes`) — 2026-09-25 (`combine.self="override"`)
+- [x] Configure `versions-maven-plugin` with a rules file that ignores alpha/beta/RC/milestone versions — 2026-09-25: 2.22.0 + `versions-rules.xml`
+- [x] Exit check: same modules build and test as before P2 (on whichever JDK P1 used), with no plugin warnings about JDK incompatibility — 2026-09-25 on JDK 21: `validate` green (default and `-Pparked`), dependency trees identical, `checkstyle:check` green everywhere, all plugins resolve, both archetypes package. Compiling and testing are still blocked (the Transponder snapshot, and P3's JDK fixes), as before P2; standalone's assembly 2.5.3 → 3.8.0 is verified by the first real P3 build
 
 ## P3 — Java 21 on the current stack (javax, Wicket 8)
 
@@ -136,11 +136,13 @@ Goal: `./mvnw verify` green on JDK 21 **and** 25, app starts with `jetty:run`. F
 - [ ] Guice 4.2.0 → 6.0.0 (+ `guice-servlet` 6.0.0): no cglib, still `javax.inject`/`javax.servlet`; fix `core/dao/AbstractDynamicProvider` (jOOR access to Guice internals `InjectorImpl.enterContext`)
 - [ ] Wicket 8 IoC lazy proxies (cglib) on JDK 17+: check whether they need `--add-opens` and add them (goes away with Wicket 9/ByteBuddy in P5)
 - [ ] Remove the ASM 7.1 pin (check who needs it: `./mvnw dependency:tree -Dincludes=org.ow2.asm`) or bump to ≥9.8. ASM 7.1 can't read Java 21+ class files (e.g. BouncyCastle 1.85, which OrientDB 3.2.56 brings)
+- [ ] Hazelcast: remove the `hazelcast.version` 3.9.4 pin from root `dependencyManagement`, or set it to OrientDB's `hz.version` (3.12.13), so OrientDB distributed gets the Hazelcast it was built against. Check `ReloadOrienteerTask` / `OrienteerClusterListener` / the page store still compile
+- [ ] Standalone: first real build with maven-assembly-plugin 3.8.0 (was 2.5.3); check the uber-jar layout (`src/assembly/uberjar.xml` uses Windows backslashes) and that `java -jar` starts
 - [ ] Align OrientDB with wicket-orientdb Stage A: 3.2.27 → **3.2.56** in P3 (not P4), because that's what the library is built and tested against. Transitive changes: `commons-lang` 2.6 dropped, lz4 moves to `at.yawk.lz4` 1.11.0 (same packages), BouncyCastle 1.85 added, jackson-core 2.22. Breaking behavior: a closed `OResultSet` now yields nothing, so always collect before the try-with-resources closes it (wicket-orientdb checked the 12 Orienteer files that use `OResultSet` and found no such pattern; re-check when writing new code)
 - [ ] GraalJS per D8: add the `org.graalvm.{sdk,truffle,js,tools}` exclusions to the direct `orientdb-core` declaration in root `dependencyManagement`, and manage GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom). Then check that `./mvnw dependency:tree -Dincludes='org.graalvm*'` shows only 25.0.4; other OrientDB artifacts (server, distributed, tools, etl, graphdb) may need the same exclusions
 - [ ] Mockito 2.22 → 5.x; JUnit 4.13.1 → 4.13.2
 - [ ] Pin `net.bytebuddy:byte-buddy` and `byte-buddy-agent` in root `dependencyManagement` at Transponder's version (1.18.x). Today Mockito 2.22 can drag Byte Buddy 1.8.21 onto the classpath through Maven's nearest-wins rule, and Transponder's proxies need a Byte Buddy that supports Java 21/25. Check with `./mvnw dependency:tree -Dincludes=net.bytebuddy`
-- [ ] Surefire 3.x `argLine` with the empirically required `--add-opens`/`--add-exports` (OrientDB, Hazelcast, cglib); mirror them in the Jetty plugin JVM args and Docker `JAVA_OPTIONS`; document the list in root `AGENTS.md`
+- [ ] Surefire 3.x `argLine` (start it with `@{argLine}` so the JaCoCo agent from P2 is kept) with the empirically required `--add-opens`/`--add-exports` (OrientDB, Hazelcast, cglib); mirror them in the Jetty plugin JVM args and Docker `JAVA_OPTIONS`; document the list in root `AGENTS.md`
 - [ ] JDK 24+: check `sun.misc.Unsafe` memory-access warnings from OrientDB/Hazelcast/Netty; add `--sun-misc-unsafe-memory-access=allow` where needed and note it
 - [ ] Reflections 0.9.10 → ClassGraph (preferred) or Reflections 0.10.2 in `core/method/MethodStorage`; remove `Reflections.log = null` in `OrienteerWebApplication`
 - [ ] Nashorn replacement: settled by D8 (GraalJS 25.0.4). Remove or adapt the Nashorn registration in `OrienteerEmbeddedStartupListener`; verify server-side JS in pages, devutils consoles and OrientDB JS functions
@@ -342,33 +344,34 @@ Fill in the decision column when the module is picked up; record it in the decis
 | taucharts (taucharts) | 1.2.2 | abandoned | P8 decision (e.g. ECharts 6.x) | P8 |
 | pivottable / d3 / c3 | 2.4.0 / 3.5.17 / 0.4.11 | 2.23 / … | P8 | P8 |
 
-## Appendix B — Maven plugins (current → latest seen 2026-09-24)
+## Appendix B — Maven plugins (current → latest seen 2026-09-24; "current" updated after P2)
 
 | Plugin | Current | Latest seen | Action (phase) |
 |---|---|---|---|
-| maven-compiler-plugin | 3.7.0 | 3.16.0 | bump, `release` (P2/P3) |
-| maven-surefire-plugin | 2.20 / 2.22.1 | 3.6.0 | bump (P2) |
-| maven-jar-plugin | 3.0.2 / 2.5 | 3.5.1 | bump (P2) |
-| maven-war-plugin | 3.1.0 | 3.5.1 | bump — <3.3.1 fails on JDK 16+ (P2) |
-| maven-assembly-plugin (standalone) | 2.5.3 | 3.8.0 | bump or replace with shade 3.6.2 (P2/P6) |
-| maven-deploy-plugin | 2.7 | 3.2.0 | bump (P2) |
+| maven-compiler-plugin | 3.16.0 (P2) | 3.16.0 | done; `release` in P3 |
+| maven-clean-plugin / maven-resources-plugin / maven-install-plugin | 3.5.0 / 3.5.0 / 3.2.0 (P2) | same | done (previously Maven defaults) |
+| maven-surefire-plugin | 3.6.0 (P2) | 3.6.0 | done |
+| maven-jar-plugin | 3.5.1 (P2) | 3.5.1 | done |
+| maven-war-plugin | 3.5.1 (P2) | 3.5.1 | done |
+| maven-assembly-plugin (standalone) | 3.8.0 (P2) | 3.8.0 | done; verify in P3, maybe shade in P6 |
+| maven-deploy-plugin | 3.2.0 (P2) | 3.2.0 | done |
 | maven-release-plugin | 2.5.3 | 3.3.1 | bump (P9) |
 | maven-source-plugin | 3.0.0 | 3.4.0 | bump (P9) |
 | maven-javadoc-plugin | 2.10.3 | 3.12.0 | bump (P9) |
 | maven-gpg-plugin | 1.6 | 3.2.8 | bump (P9) |
-| maven-checkstyle-plugin | 3.0.0 | 3.6.0 (Checkstyle 14.x) | bump + config migration (P2) |
-| maven-archetype-plugin / archetype-packaging | 3.0.1 & 2.3 / 3.0.1 & 2.2 | 3.4.1 | align (P2/P9) |
-| maven-dependency-plugin (birt) | unversioned | — | pin (P2) |
-| maven-enforcer-plugin | — | 3.6.3 | add (P2) |
-| jacoco-maven-plugin | — | 0.8.15 | add (P2) |
-| versions-maven-plugin | — | 2.22.0 | add config (P2) |
-| maven-wrapper-plugin | — | 3.3.4 | wrapper (P1) |
-| org.apache.felix:maven-bundle-plugin | 3.0.1 / 2.3.6 | 6.2.0 | remove with `type=bundle` (P2) |
+| maven-checkstyle-plugin | 3.6.0 + Checkstyle 14.1.0 (P2) | 3.6.0 | done |
+| maven-archetype-plugin / archetype-packaging | 3.4.1 (P2) | 3.4.1 | done |
+| maven-dependency-plugin | 3.11.0 (P2) | 3.11.0 | done |
+| maven-enforcer-plugin | 3.6.3 (P2) | 3.6.3 | done |
+| jacoco-maven-plugin | 0.8.15 (P2) | 0.8.15 | done |
+| versions-maven-plugin | 2.22.0 (P2) | 2.22.0 | done |
+| maven-wrapper-plugin | 3.3.4 (P1) | 3.3.4 | done |
+| org.apache.felix:maven-bundle-plugin | removed (P2) | — | done |
 | jetty-maven-plugin | 9.4.12 | → jetty-ee10-maven-plugin 12.1.13 | replace (P6) |
-| maven-eclipse-plugin | 2.10 / 2.9 | retired | remove (P2) |
-| m2e lifecycle-mapping | 1.0.0 | IDE-only | remove (P2) |
-| cobertura-maven-plugin | 2.7 | dead | remove → JaCoCo (P2) |
-| coveralls-maven-plugin | 4.2.0 | abandoned | remove (P2) |
+| maven-eclipse-plugin | removed (P2) | — | done |
+| m2e lifecycle-mapping | removed (P2) | — | done |
+| cobertura-maven-plugin | removed (P2) | — | done (JaCoCo) |
+| coveralls-maven-plugin | removed (P2) | — | done |
 | nexus-staging-maven-plugin | 1.6.7 | OSSRH gone | → central-publishing-maven-plugin 0.11.0 (P9) |
 | com.spotify:dockerfile-maven-plugin | 1.4.10 | archived | remove (P9) |
 | rewrite-maven-plugin (+ rewrite-migrate-java) | — | 6.46.1 (3.42.1) | use ad hoc (P3/P6) |

@@ -13,7 +13,7 @@ Maven archetype that generates a **custom Orienteer-based WAR application**.
   - `.dockerignore`
   - `TestMyWebApplication`, plus a test keystore
 - **Integration test:** `src/test/resources/projects/`.
-- **Build:** `maven-archetype-plugin` **2.3** and `archetype-packaging` **2.2**. They don't match the jar archetype, which uses 3.0.1.
+- **Build:** `maven-archetype-plugin` and `archetype-packaging` at `${archetype.version}` (3.4.1) from the root pom, the same as the jar archetype.
 
 ## Pitfalls
 

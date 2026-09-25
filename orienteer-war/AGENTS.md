@@ -6,7 +6,7 @@ Deployable `orienteer.war` (core only, no Java code). It is also the payload of 
   It uses the Servlet **2.5** schema.
   - This descriptor is shared: most modules' `jetty-maven-plugin` point at it with `../orienteer-war/...`.
 - `WEB-INF/jetty.xml` is empty (`configure_9_3.dtd`). `WEB-INF/jboss-web.xml` sets context root `/`.
-- Build: `maven-war-plugin` 3.1.0 with `finalName=orienteer`, producing `target/orienteer.war`.
+- Build: `maven-war-plugin` (version from the root pom) with `finalName=orienteer`, producing `target/orienteer.war`.
 - `com.spotify:dockerfile-maven-plugin` 1.4.10 is bound to `deploy` and pushes `orienteer/orienteer:latest`.
   CI skips it with `-Ddockerfile.skip`, because CI builds the image with buildx and `../Dockerfile.mvn`.
 - Profile `dockerbuild` (`-Ddocker-build`) builds only core + war.
@@ -16,7 +16,6 @@ Deployable `orienteer.war` (core only, no Java code). It is also the payload of 
 - `jetty-maven-plugin` here references `${project.build.testOutputDirectory}/jetty-context.xml`.
   That file exists only in orienteer-core, so `mvn jetty:run` in this module likely fails.
   Run Orienteer from `orienteer-core` or a feature module instead.
-- `maven-war-plugin` below 3.3.1 fails on JDK 16+ (plan P2).
 
 ## Upgrade risk: MEDIUM
 
