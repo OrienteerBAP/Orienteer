@@ -22,9 +22,6 @@
 	<packaging>maven-archetype</packaging>
 	<description>An maven archetype for custom Orienteer jar modules</description>
 
-	<properties>
-        <java.version>1.8</java.version>
-    </properties>
 
 	<build>
 		<resources>
