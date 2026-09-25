@@ -99,8 +99,9 @@
 		<asm.version>9.10.1</asm.version>
 		<jetty.port>8080</jetty.port>
 		<!-- JVM flags Orienteer needs on JDK 21+ (tests, jetty:run, standalone, Docker). Keep in sync with .mvn/jvm.config and AGENTS.md.
-		     java.lang: Wicket 8's cglib proxies (@Inject in components) call ClassLoader.defineClass reflectively. -->
-		<orienteer.jvm.args>--add-opens java.base/java.lang=ALL-UNNAMED</orienteer.jvm.args>
+		     java.lang: Wicket 8's cglib proxies (@Inject in components) call ClassLoader.defineClass reflectively.
+		     native access: GraalJS/Truffle loads a native library (a warning on JDK 25, blocked in a future JDK). -->
+		<orienteer.jvm.args>--add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED</orienteer.jvm.args>
 		<!-- Filled by the JaCoCo agent (prepare-agent); empty default so @{argLine} also works with -Djacoco.skip -->
 		<argLine></argLine>
 	</properties>
