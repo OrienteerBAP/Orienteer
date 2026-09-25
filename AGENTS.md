@@ -20,9 +20,9 @@ The code was dormant from Feb 2024 to Sep 2026 and is being modernized.
 ## Build status — read first
 
 - Dependency resolution: the root pom uses Maven Central plus the **Central Portal snapshots** repository, where the
-  external Orienteer libraries publish their snapshots (plan D9). `wicket-orientdb:2.0-SNAPSHOT` is published there.
-  Still **unresolvable**: `transponder-orientdb:1.1-SNAPSHOT` (core, so everything), `wicket-console:1.4-SNAPSHOT`
-  (devutils) and `logger:1.4-SNAPSHOT` (logger-server). They come from their own repos; this repo doesn't own them.
+  external Orienteer libraries publish their snapshots (plan D9). Only `wicket-orientdb:2.0-SNAPSHOT` is published so far;
+  `transponder-orientdb:1.1-SNAPSHOT`, `wicket-console:1.4-SNAPSHOT` and `logger:1.4-SNAPSHOT` resolve only after a local
+  `./mvnw install` in their repos (~/Development/Transponder, wicket-console, orienteer-logger), until they're deployed.
 - The poms will not compile on JDK 17+ until plan phase P3 (Lombok 1.18.16, Guice 4.2/cglib, old plugins).
   Dev machine: Temurin 21 via SDKMAN (`.sdkmanrc`), Temurin 25 also installed; use `./mvnw` (Maven 3.9.16).
   Homebrew JDK 27 is non-LTS: don't target it.
