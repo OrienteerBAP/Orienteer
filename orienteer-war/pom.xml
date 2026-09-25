@@ -114,41 +114,18 @@
 			</configuration>
 		</plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                    <contextXml>${project.build.testOutputDirectory}/jetty-context.xml</contextXml>
-                    <jettyXml>src/main/webapp/WEB-INF/jetty.xml</jettyXml>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>orienteer.loader.repository.local</name>
-                            <value>${settings.localRepository}</value>
-                        </systemProperty>
-                    </systemProperties>
-                    <supportedPackagings>
-                        <supportedPackaging>jar</supportedPackaging>
-                    </supportedPackagings>
-                    <webApp>
-                        <descriptor>src/main/webapp/WEB-INF/web.xml</descriptor>
-                        <resourceBase>src/main/resources</resourceBase>
-                        <contextPath>/</contextPath>
-                        <containerIncludeJarPattern>^$</containerIncludeJarPattern>
-                        <webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
-                    </webApp>
-                    <httpConnector>
-                        <name>org.eclipse.jetty.server.nio.SelectChannelConnector</name>
-                        <port>8080</port>
-                        <idleTimeout>3600000</idleTimeout>
-                    </httpConnector>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.eclipse.jetty</groupId>
-                        <artifactId>jetty-hazelcast</artifactId>
-                        <version>${jetty.version}</version>
-                    </dependency>
-                </dependencies>
+            	<groupId>org.eclipse.jetty</groupId>
+            	<artifactId>jetty-maven-plugin</artifactId>
+            	<configuration>
+            		<jettyXml>${project.basedir}/src/main/webapp/WEB-INF/jetty.xml</jettyXml>
+            	</configuration>
+            	<dependencies>
+            		<dependency>
+            			<groupId>org.eclipse.jetty</groupId>
+            			<artifactId>jetty-hazelcast</artifactId>
+            			<version>${jetty.version}</version>
+            		</dependency>
+            	</dependencies>
             </plugin>
 		</plugins>
 	</build>

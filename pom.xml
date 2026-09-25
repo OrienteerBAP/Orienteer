@@ -77,7 +77,7 @@
 		<!-- GraalJS replacing the GraalVM 21.3.5 that orientdb-core brings, which fails on JDK 22+ (D8) -->
 		<graalvm.version>25.0.4</graalvm.version>
 		<guice.version>6.0.0</guice.version>
-		<jetty.version>9.4.12.v20180830</jetty.version>
+		<jetty.version>9.4.58.v20250814</jetty.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
 		<transponder.version>1.1-SNAPSHOT</transponder.version>
 		<wicket.console.version>1.4-SNAPSHOT</wicket.console.version>
@@ -97,6 +97,7 @@
 		<junit.jupiter.version>5.14.4</junit.jupiter.version>
 		<archetype.version>3.4.1</archetype.version>
 		<asm.version>9.10.1</asm.version>
+		<jetty.port>8080</jetty.port>
 		<!-- JVM flags Orienteer needs on JDK 21+ (tests, jetty:run, standalone, Docker). Keep in sync with .mvn/jvm.config and AGENTS.md.
 		     java.lang: Wicket 8's cglib proxies (@Inject in components) call ClassLoader.defineClass reflectively. -->
 		<orienteer.jvm.args>--add-opens java.base/java.lang=ALL-UNNAMED</orienteer.jvm.args>
@@ -755,6 +756,50 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-archetype-plugin</artifactId>
 					<version>${archetype.version}</version>
+				</plugin>
+				<plugin>
+					<!-- Shared config for `../mvnw jetty:run` in any module (REFRESH_PLAN.md P3). Modules only declare the plugin.
+					     It runs inside the Maven JVM, so the JVM flags come from .mvn/jvm.config. Jetty 12 (ee10) in P6. -->
+					<groupId>org.eclipse.jetty</groupId>
+					<artifactId>jetty-maven-plugin</artifactId>
+					<version>${jetty.version}</version>
+					<configuration>
+						<systemProperties>
+							<systemProperty>
+								<name>orienteer.loader.repository.local</name>
+								<value>${settings.localRepository}</value>
+							</systemProperty>
+						</systemProperties>
+						<supportedPackagings>
+							<supportedPackaging>jar</supportedPackaging>
+						</supportedPackagings>
+						<webApp>
+							<descriptor>${maven.multiModuleProjectDirectory}/orienteer-war/src/main/webapp/WEB-INF/web.xml</descriptor>
+							<resourceBase>${project.basedir}/src/main/resources</resourceBase>
+							<contextPath>/</contextPath>
+							<containerIncludeJarPattern>^$</containerIncludeJarPattern>
+							<webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
+						</webApp>
+						<httpConnector>
+							<port>${jetty.port}</port>
+							<idleTimeout>3600000</idleTimeout>
+						</httpConnector>
+					</configuration>
+					<dependencies>
+						<!-- No jetty-all:uber here (the 18 modules used to add it): its JASPI module fails the webapp start on 9.4.58
+						     (ClassNotFoundException: org.apache.geronimo.components.jaspi.AuthConfigFactoryImpl) -->
+						<!-- Jetty 9.4's bundled ASM can't read Java 25 class files (e.g. BouncyCastle 1.85 via OrientDB) -->
+						<dependency>
+							<groupId>org.ow2.asm</groupId>
+							<artifactId>asm</artifactId>
+							<version>${asm.version}</version>
+						</dependency>
+						<dependency>
+							<groupId>org.ow2.asm</groupId>
+							<artifactId>asm-commons</artifactId>
+							<version>${asm.version}</version>
+						</dependency>
+					</dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
