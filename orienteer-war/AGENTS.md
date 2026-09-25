@@ -4,7 +4,7 @@ Deployable `orienteer.war` (core only, no Java code). It is also the payload of 
 
 - `src/main/webapp/WEB-INF/web.xml` maps `org.orienteer.core.OrienteerFilter` on `/*` (REQUEST, ERROR) plus 404/403 error pages.
   It uses the Servlet **2.5** schema.
-  - This descriptor is shared: most modules' `jetty-maven-plugin` point at it with `../orienteer-war/...`.
+  - This descriptor is shared: the root pom's `jetty-maven-plugin` config points every module's `jetty:run` at it.
 - `WEB-INF/jetty.xml` is empty (`configure_9_3.dtd`). `WEB-INF/jboss-web.xml` sets context root `/`.
 - Build: `maven-war-plugin` (version from the root pom) with `finalName=orienteer`, producing `target/orienteer.war`.
 - `com.spotify:dockerfile-maven-plugin` 1.4.10 is bound to `deploy` and pushes `orienteer/orienteer:latest`.
@@ -13,9 +13,7 @@ Deployable `orienteer.war` (core only, no Java code). It is also the payload of 
 
 ## Pitfalls
 
-- `jetty-maven-plugin` here references `${project.build.testOutputDirectory}/jetty-context.xml`.
-  That file exists only in orienteer-core, so `mvn jetty:run` in this module likely fails.
-  Run Orienteer from `orienteer-core` or a feature module instead.
+- `../mvnw jetty:run` works here too (war packaging is allowed in this module's plugin block; shared config in the root pom).
 
 ## Upgrade risk: MEDIUM
 

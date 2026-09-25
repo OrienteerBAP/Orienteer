@@ -11,7 +11,7 @@ Generic notification framework:
   - Note the plural Java package (`notifications`) vs the singular artifactId.
 - **Packages:** `hook`, `model`, `module`, `repository`, `resource`, `scheduler`, `service`, `task`.
 - **Key deps:** only orienteer-core, orienteer-mail and orienteer-twilio.
-  It also uses `javax.mail`, okhttp3 and `org.apache.http.util.Args`, the last two only transitively.
+  It also uses `javax.mail`, and okhttp3 only transitively.
 - **Tests:** 12 files but only 5 `@Test`, 4 of them `@Ignore`d.
   - Only `TestNotificationLifecycle` runs.
   - Has a sizeable `testenv/` with test transports and factories, and a test `IInitializer`.
@@ -19,7 +19,7 @@ Generic notification framework:
 ## Pitfalls
 
 - Not listed in root `modules.xml`, so the dynamic loader UI doesn't offer it (P10).
-- Declare the transitive okhttp and httpcore usages explicitly, or replace them (P3).
+- Declare the transitive okhttp usage explicitly, or replace it (P4, together with twilio's HTTP client).
 
 ## Upgrade risk: LOW–MEDIUM
 

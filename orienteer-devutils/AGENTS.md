@@ -21,8 +21,8 @@ Developer tools:
 ## Pitfalls
 
 - logger-server, users, standalone (and the parked bpm) depend on this module. Keep its API stable.
-- `wicket-console` finds engines through `javax.script`. Nashorn is gone from JDK 15+, so a JS console
-  exists only if GraalJS (which OrientDB brings) or `nashorn-core` is on the classpath.
+- `wicket-console` finds engines through `javax.script`. The JS console runs on GraalJS 25.0.4 (managed in the root pom,
+  D8); wicket-console 1.4 keeps engine state between commands and allows Java access for its own GraalJS engines.
 - Uses the deprecated `ODatabaseDocumentTx` and `ODatabaseRecordThreadLocal`.
 
 ## Upgrade risk: MEDIUM

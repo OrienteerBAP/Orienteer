@@ -14,7 +14,7 @@ It also publishes a **test-jar** (`org.orienteer.junit`) that all module tests u
 | `dao` | Transponder integration: `DAO`, `OrienteerDriver`, `@OrienteerOClass` / `@OrienteerOProperty`; `dao.dm` holds `IOEnum` and `IORestricted` |
 | `component` | commands, meta-panels, property editors/viewers, tables, filters, visualizers (`UIVisualizersRegistry`), 31 widgets |
 | `widget` | dashboard framework: `@Widget`, `AbstractWidget`, `DashboardPanel`; `support.jquery` (default) and `support.gridster` |
-| `method` | `@OMethod` / `@OFilter`: turns annotated code into UI commands (`OMethodsManager`, uses Reflections) |
+| `method` | `@OMethod` / `@OFilter`: turns annotated code into UI commands (`OMethodsManager`; `MethodStorage` scans with ClassGraph) |
 | `web`, `web.schema` | pages (`@MountPath`): Home, Login, Browse, ODocument(s), Schema/OClass/OProperty/OIndex |
 | `tasks` | task framework (`IOTask`, `OTaskManager`, console tasks) |
 | `hook` | OrientDB hooks: calculable properties, reference consistency, callbacks |
@@ -37,25 +37,25 @@ It also publishes a **test-jar** (`org.orienteer.junit`) that all module tests u
 - `src/test/resources/META-INF/services/com.google.inject.Module` registers test overrides,
   including `FakeHazelcastInitModule`, which uses Mockito.
 - About 65 tests. `DependencyManagmentSlowTest` hits the network and is excluded by default.
-- Run: `mvn -pl orienteer-core test`, or one class with `-Dtest=DAOTest`.
+- Run: `./mvnw -pl orienteer-core test`, or one class with `-Dtest=DAOTest`.
 
 ## Pitfalls
 
 - Changing public APIs here affects every module. Grep the other modules before renaming or removing anything.
-- Don't touch `jetty-maven-plugin` config piecemeal. It points at `../orienteer-war/.../web.xml` and
-  `jetty.xml` and moves to Jetty 12 in plan P6.
-- `dao/AbstractDynamicProvider` calls Guice internals via jOOR, and `hook/CallbackHook` writes a private
-  ODocument field. Both are fragile when upgrading Guice or OrientDB.
-- `OrienteerEmbeddedStartupListener` registers the Nashorn engine, which is gone since JDK 15, so the code silently does nothing.
-- `OrienteerWebApplication.init()` sets `Reflections.log = null`. That field no longer exists in Reflections 0.10+.
-- Uses `org.apache.http.util.Args` and commons-* only transitively. Declare them explicitly, or replace them.
+- `jetty-maven-plugin` config lives in the root pom's `pluginManagement` (shared `web.xml` from orienteer-war);
+  core only adds `contextXml` (test `jetty-context.xml`) and `jettyXml`. Jetty 12 in plan P6.
+- `dao/AbstractDynamicProvider` gets the required type from a `ProvisionListener` bound by
+  `AbstractDynamicProvider.bindProvisionListener(binder)` (in `OModulesInitModule` and `OrienteerModule`). A new injector
+  that creates `@ProvidedBy(DAOProvider/ODocumentWrapperProvider)` bindings needs that call too.
+- `hook/CallbackHook` writes a private ODocument field via jOOR: fragile when upgrading OrientDB.
+- Server-side JS runs on GraalJS 25.0.4 (D8); `ServerSideJavaScriptTest` covers commands and stored functions.
 - Known bugs are listed in `REFRESH_PLAN.md` P10.
   - Example: `OrienteerInitModule` checks `isAssignableFrom(appClass)` instead of `customAppClass`.
 
 ## Upgrade risk: HIGH
 
 This module takes almost every item in plan P3–P7:
-- Lombok, Guice, Reflections and Nashorn (P3)
+- ~~Lombok, Guice, Reflections and Nashorn (P3)~~ done in P3
 - Aether → Maven Resolver and the dead loader URLs (P4)
 - Wicket 9 page store and `Duration`/`Time` (P5). The `org.danekja` lambdas can stay: Wicket 9/10 still ship them
 - javax → jakarta across 13 servlet files and `javax.inject` (P6)

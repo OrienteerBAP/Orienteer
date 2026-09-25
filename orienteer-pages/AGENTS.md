@@ -17,7 +17,7 @@ A small CMS.
 
 - `PageDelegate` uses OrientDB **internals** (`OrientDBInternal.extract(...).getScriptManager()`, `acquireDatabaseEngine`).
   These already broke between 3.1 and 3.2 (patched in `b39de728`); re-test on every OrientDB bump.
-- Server-side JS runs on OrientDB's bundled GraalJS (Nashorn is gone). `javax.script` is still used.
+- Server-side JS runs on GraalJS 25.0.4 (OrientDB's own 21.3.5 is excluded, D8). `javax.script` is still used.
 - Uses the legacy `OSQLSynchQuery` (`repository/ODocumentAliasRepository`).
 
 ## Upgrade risk: MEDIUM

@@ -6,11 +6,12 @@ Executable uber-jar that runs Orienteer on embedded Jetty 9.4. Run it with
 - **Entry point:** `org.orienteer.standalone.StartStandalone#main` (CLI parsing).
   `ServerRunner` builds `Server`, `ServerConnector` and a `WebAppContext` whose WAR is the jar itself.
 - Bundles core, devutils, pages and pivottable. graph and bpm were dropped when they were parked (plan P1); re-add them if P8 keeps them.
-- `jetty-all:uber` (9.4.12) and `javax.servlet-api` 3.1.0 are compile scope.
+- `jetty-webapp` (9.4.58; `jetty-all:uber` was dropped in P3, its JASPI module broke the start) and `javax.servlet-api` 3.1.0, compile scope.
 - `src/main/resources/WEB-INF/web.xml` (Servlet 2.5, `OrienteerFilter`) and
   `src/main/resources/org/orienteer/standalone/standalone.properties`.
-- Packaging: `maven-assembly-plugin` (3.8.0 from the root pom since P2; not yet verified by a real build) with `src/assembly/uberjar.xml`.
-  Jetty and the servlet API are unpacked into the jar root; everything else goes into `WEB-INF\lib` (Windows backslashes).
+- Packaging: `maven-assembly-plugin` 3.8.0 with `src/assembly/uberjar.xml`: Jetty and the servlet API are unpacked into the jar
+  root, everything else goes into `WEB-INF/lib`. Verified in P3: starts on JDK 21 and serves the login page.
+- Run with the JVM flags from the root `AGENTS.md`: `java --add-opens java.base/java.lang=ALL-UNNAMED --enable-native-access=ALL-UNNAMED -jar ...`.
 - No tests.
 
 ## Pitfalls

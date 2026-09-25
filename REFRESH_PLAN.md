@@ -14,7 +14,7 @@ every phase (`./mvnw versions:display-dependency-updates versions:display-plugin
 | P0 | AI initialization: AGENTS.md files + this plan | — | done |
 | P1 | Baseline: dependencies resolve, reactor consistent, dead scripts removed | external libs (owner) | done (2026-09-25) locally; CI needs the 3 remaining snapshot deploys |
 | P2 | Build tooling & Maven hygiene (modern plugins, still Java 8 source) | P1 | done (2026-09-25) |
-| P3 | Java 21 on the current stack (javax, Wicket 8) — **first green build** | P2, external Stage A | todo |
+| P3 | Java 21 on the current stack (javax, Wicket 8) — **first green build** | P2, external Stage A | done (2026-09-25) |
 | P4 | Non-jakarta dependency upgrades (OrientDB, Log4j, Jackson, Tika, Resolver…) | P3 | todo |
 | P5 | Wicket 8 → 9 (still javax) | P4, external Stage B | todo |
 | P6 | jakarta: Wicket 10, Guice 7, Jetty 12 (ee10), Servlet 6, jakarta.mail | P5, external Stage C | todo |
@@ -132,28 +132,28 @@ Goal: modern, centrally managed plugins that also work on JDK 21, without changi
 
 Goal: `./mvnw verify` green on JDK 21 **and** 25, app starts with `jetty:run`. First real test run.
 
-- [ ] Lombok 1.18.16 → latest (≥1.18.48); declare it in `maven-compiler-plugin` `annotationProcessorPaths` (required from JDK 23, harmless before); add root `lombok.config` (`config.stopBubbling = true`, `lombok.addLombokGeneratedAnnotation = true`)
-- [ ] Guice 4.2.0 → 6.0.0 (+ `guice-servlet` 6.0.0): no cglib, still `javax.inject`/`javax.servlet`; fix `core/dao/AbstractDynamicProvider` (jOOR access to Guice internals `InjectorImpl.enterContext`)
-- [ ] Wicket 8 IoC lazy proxies (cglib) on JDK 17+: check whether they need `--add-opens` and add them (goes away with Wicket 9/ByteBuddy in P5)
-- [ ] Remove the ASM 7.1 pin (check who needs it: `./mvnw dependency:tree -Dincludes=org.ow2.asm`) or bump to ≥9.8. ASM 7.1 can't read Java 21+ class files (e.g. BouncyCastle 1.85, which OrientDB 3.2.56 brings)
-- [ ] Hazelcast: remove the `hazelcast.version` 3.9.4 pin from root `dependencyManagement`, or set it to OrientDB's `hz.version` (3.12.13), so OrientDB distributed gets the Hazelcast it was built against. Check `ReloadOrienteerTask` / `OrienteerClusterListener` / the page store still compile
-- [ ] Standalone: first real build with maven-assembly-plugin 3.8.0 (was 2.5.3); check the uber-jar layout (`src/assembly/uberjar.xml` uses Windows backslashes) and that `java -jar` starts
-- [ ] Align OrientDB with wicket-orientdb Stage A: 3.2.27 → **3.2.56** in P3 (not P4), because that's what the library is built and tested against. Transitive changes: `commons-lang` 2.6 dropped, lz4 moves to `at.yawk.lz4` 1.11.0 (same packages), BouncyCastle 1.85 added, jackson-core 2.22. Breaking behavior: a closed `OResultSet` now yields nothing, so always collect before the try-with-resources closes it (wicket-orientdb checked the 12 Orienteer files that use `OResultSet` and found no such pattern; re-check when writing new code)
-- [ ] GraalJS per D8: add the `org.graalvm.{sdk,truffle,js,tools}` exclusions to the direct `orientdb-core` declaration in root `dependencyManagement`, and manage GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom). Then check that `./mvnw dependency:tree -Dincludes='org.graalvm*'` shows only 25.0.4; other OrientDB artifacts (server, distributed, tools, etl, graphdb) may need the same exclusions
-- [ ] Mockito 2.22 → 5.x; JUnit 4.13.1 → 4.13.2
-- [ ] Pin `net.bytebuddy:byte-buddy` **and** `byte-buddy-agent` in root `dependencyManagement` at Transponder's version (≥1.18.14; it must stay ≥1.18.14 through P5, because Wicket 9's `wicket-ioc` brings 1.14.12). Transponder measured it: with orienteer-core's declaration order `byte-buddy` already resolves to 1.18.14, but `byte-buddy-agent` resolves to Mockito 2.22's 1.8.21, a mismatched pair. Today Mockito 2.22 can drag Byte Buddy 1.8.21 onto the classpath through Maven's nearest-wins rule, and Transponder's proxies need a Byte Buddy that supports Java 21/25. Check with `./mvnw dependency:tree -Dincludes=net.bytebuddy`
-- [ ] Surefire 3.x `argLine` (start it with `@{argLine}` so the JaCoCo agent from P2 is kept) with the empirically required `--add-opens`/`--add-exports` (OrientDB, Hazelcast, cglib); mirror them in the Jetty plugin JVM args and Docker `JAVA_OPTIONS`; document the list in root `AGENTS.md`
-- [ ] JDK 24+: check `sun.misc.Unsafe` memory-access warnings from OrientDB/Hazelcast/Netty; add `--sun-misc-unsafe-memory-access=allow` where needed and note it
-- [ ] Reflections 0.9.10 → ClassGraph (preferred) or Reflections 0.10.2 in `core/method/MethodStorage`; remove `Reflections.log = null` in `OrienteerWebApplication`
-- [ ] Nashorn replacement: settled by D8 (GraalJS 25.0.4). Remove or adapt the Nashorn registration in `OrienteerEmbeddedStartupListener`; verify server-side JS in pages, devutils consoles and OrientDB JS functions
-- [ ] Jetty 9.4.12 → last 9.4.x (9.4.58) as a stopgap for the dev plugin and standalone until P6. On JDK 25 the plugin also needs `org.ow2.asm:asm` ≥9.8 (wicket-orientdb uses 9.10.1) as a plugin dependency; otherwise annotation scanning fails on Java 25 class files
-- [ ] Compiler: `maven.compiler.release=21` (replace `source/target`), keep `-parameters`; remove module overrides (metrics, rproxy, tours hardcode 1.8)
-- [ ] Declare used-but-undeclared deps (`./mvnw dependency:analyze`): replace `org.apache.http.util.Args` (core ×12, architect ×7, notification) with Wicket `Args`/`Objects`; declare commons-io/lang3/collections4, okhttp where used directly
-- [ ] Add JUnit Jupiter + `junit-vintage-engine` so new tests can use Jupiter while `OrienteerTestRunner` tests keep running
-- [ ] Minimal CI (full CI/CD is P9): GitHub Actions on push + PR, matrix JDK 21/25, `./mvnw -B verify`
-- [ ] Enable enforcer `requireJavaVersion [21,)`
-- [ ] Update root `AGENTS.md` (build status, Java level, conventions: modern Java allowed)
-- [ ] Exit check: `./mvnw verify` green on 21 and 25; test results match Appendix C (differences explained); `jetty:run` in core shows the login page and the embedded DB starts
+- [x] Lombok 1.18.16 → latest (≥1.18.48); declare it in `maven-compiler-plugin` `annotationProcessorPaths` (required from JDK 23, harmless before); add root `lombok.config` (`config.stopBubbling = true`, `lombok.addLombokGeneratedAnnotation = true`) — 2026-09-25: done: 1.18.48
+- [x] Guice 4.2.0 → 6.0.0 (+ `guice-servlet` 6.0.0): no cglib, still `javax.inject`/`javax.servlet`; fix `core/dao/AbstractDynamicProvider` (jOOR access to Guice internals `InjectorImpl.enterContext`) — 2026-09-25: done. The jOOR hack returned null on Guice 6 (7 DAOTest errors); replaced with a public `ProvisionListener` (`AbstractDynamicProvider.bindProvisionListener`, bound in `OModulesInitModule` and `OrienteerModule`), no Guice internals any more
+- [x] Wicket 8 IoC lazy proxies (cglib) on JDK 17+: check whether they need `--add-opens` and add them (goes away with Wicket 9/ByteBuddy in P5) — 2026-09-25: done: yes, `--add-opens java.base/java.lang=ALL-UNNAMED` (otherwise every page with `@Inject` fields fails: `InaccessibleObjectException` on `ClassLoader.defineClass`)
+- [x] Remove the ASM 7.1 pin (check who needs it: `./mvnw dependency:tree -Dincludes=org.ow2.asm`) or bump to ≥9.8. ASM 7.1 can't read Java 21+ class files (e.g. BouncyCastle 1.85, which OrientDB 3.2.56 brings) — 2026-09-25: done: `asm-bom` 9.10.1 (users: Wicket 8 `wicket-ioc`, jnr-posix); core's unused direct ASM dependencies removed
+- [x] Hazelcast: remove the `hazelcast.version` 3.9.4 pin from root `dependencyManagement`, or set it to OrientDB's `hz.version` (3.12.13), so OrientDB distributed gets the Hazelcast it was built against. Check `ReloadOrienteerTask` / `OrienteerClusterListener` / the page store still compile — 2026-09-25: done: pin removed, all modules get 3.12.13; everything compiles and the distributed-loader tests pass
+- [x] Standalone: first real build with maven-assembly-plugin 3.8.0 (was 2.5.3); check the uber-jar layout (`src/assembly/uberjar.xml` uses Windows backslashes) and that `java -jar` starts — 2026-09-25: done: the start failed on Jetty 9.4.58 (`jetty-all:uber`'s JASPI module: `NoClassDefFoundError javax/security/auth/message/AuthException`); now `jetty-webapp` only, forward slashes in `uberjar.xml`. The jar (98 MB, 140 libs) starts on JDK 21 in ~18 s and serves the login and Schema pages
+- [x] Align OrientDB with wicket-orientdb Stage A: 3.2.27 → **3.2.56** in P3 (not P4), because that's what the library is built and tested against. Transitive changes: `commons-lang` 2.6 dropped, lz4 moves to `at.yawk.lz4` 1.11.0 (same packages), BouncyCastle 1.85 added, jackson-core 2.22. Breaking behavior: a closed `OResultSet` now yields nothing, so always collect before the try-with-resources closes it (wicket-orientdb checked the 12 Orienteer files that use `OResultSet` and found no such pattern; re-check when writing new code) — 2026-09-25: done
+- [x] GraalJS per D8: add the `org.graalvm.{sdk,truffle,js,tools}` exclusions to the direct `orientdb-core` declaration in root `dependencyManagement`, and manage GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom). Then check that `./mvnw dependency:tree -Dincludes='org.graalvm*'` shows only 25.0.4; other OrientDB artifacts (server, distributed, tools, etl, graphdb) may need the same exclusions — 2026-09-25: done: only 25.0.4 in every module; the other OrientDB 3.2.56 artifacts have no GraalVM dependency, so no further exclusions
+- [x] Mockito 2.22 → 5.x; JUnit 4.13.1 → 4.13.2 — 2026-09-25: done: Mockito 5.24.0
+- [x] Pin `net.bytebuddy:byte-buddy` **and** `byte-buddy-agent` in root `dependencyManagement` at Transponder's version (≥1.18.14; it must stay ≥1.18.14 through P5, because Wicket 9's `wicket-ioc` brings 1.14.12). Transponder measured it: with orienteer-core's declaration order `byte-buddy` already resolves to 1.18.14, but `byte-buddy-agent` resolves to Mockito 2.22's 1.8.21, a mismatched pair. Today Mockito 2.22 can drag Byte Buddy 1.8.21 onto the classpath through Maven's nearest-wins rule, and Transponder's proxies need a Byte Buddy that supports Java 21/25. Check with `./mvnw dependency:tree -Dincludes=net.bytebuddy` — 2026-09-25: done: both 1.18.14 (property `bytebuddy.version`)
+- [x] Surefire 3.x `argLine` (start it with `@{argLine}` so the JaCoCo agent from P2 is kept) with the empirically required `--add-opens`/`--add-exports` (OrientDB, Hazelcast, cglib); mirror them in the Jetty plugin JVM args and Docker `JAVA_OPTIONS`; document the list in root `AGENTS.md` — 2026-09-25: done: `@{argLine} ${orienteer.jvm.args}`; only `--add-opens java.base/java.lang` and `--enable-native-access` were needed, OrientDB/Hazelcast needed nothing. Mirrored in `.mvn/jvm.config` and `AGENTS.md`; Docker follows in P9
+- [x] JDK 24+: check `sun.misc.Unsafe` memory-access warnings from OrientDB/Hazelcast/Netty; add `--sun-misc-unsafe-memory-access=allow` where needed and note it — 2026-09-25: done: on JDK 25 only warnings (Guava's `AbstractFuture`, Lombok at compile time), nothing fails. The flag is NOT added: JDK 21 refuses to start with it. `--enable-native-access=ALL-UNNAMED` added for GraalJS/Truffle (both JDKs accept it)
+- [x] Reflections 0.9.10 → ClassGraph (preferred) or Reflections 0.10.2 in `core/method/MethodStorage`; remove `Reflections.log = null` in `OrienteerWebApplication` — 2026-09-25: done: ClassGraph 4.8.196 (`MethodsTest` green)
+- [x] Nashorn replacement: settled by D8 (GraalJS 25.0.4). Remove or adapt the Nashorn registration in `OrienteerEmbeddedStartupListener`; verify server-side JS in pages, devutils consoles and OrientDB JS functions — 2026-09-25: done: dead registration removed; new `ServerSideJavaScriptTest` (JS command + stored JS function) green on 21 and 25; `OPagesTest` and devutils tests green; the console's GraalJS fixes are in wicket-console 1.4
+- [x] Jetty 9.4.12 → last 9.4.x (9.4.58) as a stopgap for the dev plugin and standalone until P6. On JDK 25 the plugin also needs `org.ow2.asm:asm` ≥9.8 (wicket-orientdb uses 9.10.1) as a plugin dependency; otherwise annotation scanning fails on Java 25 class files — 2026-09-25: done: 9.4.58 + ASM 9.10.1 as plugin dependencies; the 20 plugin blocks now share one config in root `pluginManagement` (`-Djetty.port`); `jetty-all:uber` dropped from the plugin (JASPI start failure). `jetty:run` verified in core, users and war (login page 200); core's `jetty-context.xml` got its DOCTYPE (9.4.58 validates it)
+- [x] Compiler: `maven.compiler.release=21` (replace `source/target`), keep `-parameters`; remove module overrides (metrics, rproxy, tours hardcode 1.8) — 2026-09-25: done (module overrides already removed in P2)
+- [x] Declare used-but-undeclared deps (`./mvnw dependency:analyze`): replace `org.apache.http.util.Args` (core ×12, architect ×7, notification) with Wicket `Args`/`Objects`; declare commons-io/lang3/collections4, okhttp where used directly — 2026-09-25: done for the risky ones: 22 files → Wicket `Args`, twilio's `HttpStatus` → `HttpURLConnection.HTTP_OK`; core declares commons-lang3 and guava (brought only by maven-aether-provider / wicket-orientdb). The rest of `dependency:analyze` (APIs that modules use via core, e.g. wicket-core, orientdb-core, guice, okhttp in rproxy/notification) stays as is: they come from core, which declares them
+- [x] Add JUnit Jupiter + `junit-vintage-engine` so new tests can use Jupiter while `OrienteerTestRunner` tests keep running — 2026-09-25: done: Jupiter 5.14.4 + vintage via `junit-bom` (5.x, not 6: JUnit 6 deprecates vintage). Same 102 tests run / 16 skipped before and after the switch
+- [x] Minimal CI (full CI/CD is P9): GitHub Actions on push + PR, matrix JDK 21/25, `./mvnw -B verify` — 2026-09-25: done: `.github/workflows/ci.yml` (`clean install`, needed for the archetype ITs); the old OSSRH deploy + Docker push `maven.yml` removed. It stays red until transponder, wicket-console and logger snapshots are deployed
+- [x] Enable enforcer `requireJavaVersion [21,)` — 2026-09-25: done (already in P2)
+- [x] Update root `AGENTS.md` (build status, Java level, conventions: modern Java allowed) — 2026-09-25: done
+- [x] Exit check: `./mvnw verify` green on 21 and 25; test results match Appendix C (differences explained); `jetty:run` in core shows the login page and the embedded DB starts — 2026-09-25: done: `./mvnw clean install` green on JDK 21 (174 s) and 25 (172 s): 18/18 projects, 104 tests run, 0 failures, 16 skipped, both archetype ITs, Checkstyle clean. Differences to Appendix C are explained there
 
 ## P4 — Non-jakarta dependency upgrades
 
@@ -167,6 +167,7 @@ Goal: everything that doesn't require jakarta or a Wicket major is current.
 - [ ] Dynamic loader: Eclipse Aether 1.1.0 + `maven-aether-provider` 3.3.9 → Maven Resolver 2.x (`maven-resolver-supplier-mvn3`); drop plexus deps
 - [ ] Loader defaults in `orienteer-default.properties`: `http://repo1.maven.org` → `https://repo.maven.apache.org/maven2/`; remove the OSSRH entries; reconsider jitpack
 - [ ] XXE hardening in `core/boot/loader/internal/AbstractXmlHandler` (disallow DOCTYPE / external entities)
+- [ ] Make the 5 loader tests hermetic and un-ignore them (`TestModuleManager` ×3, `TestAddModulesToMetadataTasks` ×2): they resolve `org.orienteer:orienteer-birt:2.0-SNAPSHOT` from remote repositories, which no longer works. Use a local file-repository fixture, or an artifact that exists (ignored in P3)
 - [ ] Move `orientqb` from core to bpm (only bpm uses it)
 - [ ] Mail interim: `javax.mail:mail` 1.4.7 → `com.sun.mail:javax.mail` 1.6.2 (same `javax.mail` package; jakarta in P6)
 - [ ] twilio: Retrofit 2.7.2 → 2.12/3.x, RxJava 2 → 3 (or drop Rx), OkHttp 4+
@@ -283,7 +284,7 @@ Fill in the decision column when the module is picked up; record it in the decis
 - [ ] rproxy `ORProxyResource` constructor puts configured headers into `cookies`
 - [ ] standalone `StartStandalone` `--wait` loop never re-reads `line`
 - [ ] graph pom `<finalName>orienteer</finalName>` (copy-paste)
-- [ ] war `jetty:run` references a `jetty-context.xml` that only exists in core
+- [x] war `jetty:run` references a `jetty-context.xml` that only exists in core — 2026-09-25 (P3): the shared Jetty config no longer needs it; war allows war packaging; verified
 
 ### Security
 - [ ] taucharts: `eval()` of stored config/data and verbatim `postProcess` JS (stored XSS)
@@ -377,31 +378,33 @@ Fill in the decision column when the module is picked up; record it in the decis
 | com.spotify:dockerfile-maven-plugin | 1.4.10 | archived | remove (P9) |
 | rewrite-maven-plugin (+ rewrite-migrate-java) | — | 6.46.1 (3.42.1) | use ad hoc (P3/P6) |
 
-## Appendix C — Test inventory (static analysis, 2026-09-24; confirm in P1/P3)
+## Appendix C — Test inventory (measured by surefire in P3, 2026-09-25)
 
-| Module | Test classes | `@Test` | `@Ignore` | Notes |
-|---|---|---|---|---|
-| core | 20 | 65 | 4 | `DependencyManagmentSlowTest` excluded (network) |
-| architect | 3 (+2 helpers) | 7 | 0 | 6 plain JUnit, 1 integration |
-| birt | 1 | 1 | 0 | golden-HTML compare (parked) |
-| bpm | 1 (+1 helper) | 14 | 0 | disabled |
-| camel | 1 | 1 | 0 | smoke (parked) |
-| devutils | 1 | 3 | 0 | |
-| etl | 1 | 1 | 0 | smoke |
-| graph | 0 | 0 | 0 | **no tests** (parked) |
-| logger-server | 4 (+2 helpers) | 7 | 0 | |
-| mail | 2 (+2 helpers) | 6 | 3 | |
-| metrics | 1 | 1 | 0 | smoke |
-| notification | 4 (+8 helpers) | 5 | 4 | only `TestNotificationLifecycle` runs |
-| pages | 1 | 1 | 0 | |
-| pivottable | 1 | 1 | 0 | smoke |
-| rproxy | 1 | 1 | 0 | smoke |
-| taucharts | 1 | 1 | 0 | smoke (parked) |
-| tours | 1 | 1 | 0 | disabled |
-| twilio | 1 | 1 | 1 | live API |
-| users | 4 (+2 helpers) | 7 | 1 | |
-| archetype-jar / archetype-war | 1 IT each | 1 each (generated) | 0 | |
-| standalone / war | 0 | 0 | 0 | no tests |
+Default build on JDK 21 and 25 (identical results): **104 tests run, 0 failures, 0 errors, 16 skipped**, plus 2 archetype ITs.
+"Run" includes skipped tests. Parked modules aren't built (their static counts are kept below for P8).
+
+| Module | Run | Skipped | Notes |
+|---|---|---|---|
+| core | 63 | 7 | 2 new in P3 (`ServerSideJavaScriptTest`). Skipped: 2 pre-existing `@Ignore` in `OTasksTest`; **5 new in P3**: `TestModuleManager` ×3, `TestAddModulesToMetadataTasks` ×2 (download `orienteer-birt:2.0-SNAPSHOT` from dead remote repos → P4). Not run by default: `DependencyManagmentSlowTest` (5 `@Test`, `*Slow*`, network) and `DistributedTestModuleManager` (1, name doesn't match surefire's pattern); `-Pfulltest` runs them |
+| architect | 7 | 0 | |
+| devutils | 3 | 0 | |
+| etl | 1 | 0 | smoke |
+| logger-server | 7 | 0 | |
+| mail | 6 | 3 | pre-existing `@Ignore` (send real mail) |
+| metrics | 1 | 0 | smoke |
+| notification | 5 | 4 | pre-existing `@Ignore`; only `TestNotificationLifecycle` runs |
+| pages | 1 | 0 | |
+| pivottable | 1 | 0 | smoke |
+| rproxy | 1 | 0 | smoke |
+| twilio | 1 | 1 | pre-existing `@Ignore` (live API) |
+| users | 7 | 1 | pre-existing `@Ignore` |
+| archetype-jar / archetype-war | 1 IT each | 0 | generated project builds and its test passes |
+| standalone / war | 0 | 0 | no tests; smoke-tested manually in P3 (login page) |
+| **total** | **104** | **16** | |
+
+Parked (static count, 2026-09-24): birt 1, bpm 14, camel 1, graph 0 (**no tests**), taucharts 1, tours 1.
+The earlier static count for core (65 `@Test`) differed because it included the 5 `*Slow*` and 1 `DistributedTestModuleManager` tests
+that surefire doesn't pick up, and counted `TestOrineteerTestRunner` (2 `@Test`, run twice through a subclass) once.
 
 ## Appendix D — Useful commands
 

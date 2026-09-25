@@ -17,7 +17,6 @@ from the diagram. User guide: the GitHub wiki page "Orienteer-Architect-User-Gui
 
 ## Pitfalls
 
-- Uses `org.apache.http.util.Args` in 7 files, available only transitively. Replace it with Wicket `Args` or `Objects` (P3).
 - JS talks to Java through 7 `AbstractDefaultAjaxBehavior` callbacks. Keep the JS and Java sides in sync.
 
 ## Upgrade risk: MEDIUM
