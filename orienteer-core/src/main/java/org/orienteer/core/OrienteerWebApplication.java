@@ -59,7 +59,6 @@ import org.orienteer.core.web.UnauthorizedPage;
 import org.orienteer.core.wicket.pageStore.HazelcastPageStore;
 import org.orienteer.core.wicket.pageStore.OrientDbDataStore;
 import org.orienteer.core.widget.IWidgetTypesRegistry;
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.ydn.wicket.wicketorientdb.IOrientDbSettings;
@@ -172,7 +171,6 @@ public class OrienteerWebApplication extends OrientDbWebApplication
 	@Override
 	public void init() {
 		super.init();
-		Reflections.log = null; // Disable logging in reflections lib everywhere
 
 		initListeners();
 

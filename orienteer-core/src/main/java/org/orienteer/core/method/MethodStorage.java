@@ -5,10 +5,11 @@ import java.util.Set;
 
 import org.orienteer.core.boot.loader.OrienteerClassLoader;
 import org.orienteer.core.component.command.Command;
-import org.reflections.Reflections;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
+
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.MethodInfo;
+import io.github.classgraph.ScanResult;
 
 /**
  * 
@@ -31,15 +32,30 @@ public class MethodStorage {
 	}
 	
 	public void reload(){
-		Reflections reflections = new Reflections(paths,
-												  OrienteerClassLoader.getClassLoader(),
-												  new MethodAnnotationsScanner(),
-												  new TypeAnnotationsScanner(),
-												  new SubTypesScanner());
-		methodFields = reflections.getMethodsAnnotatedWith(OMethod.class);
-		
-		methodClasses = reflections.getTypesAnnotatedWith(OMethod.class);
-		methodClasses.removeIf(c -> !IMethod.class.isAssignableFrom(c) && !Command.class.isAssignableFrom(c));
+		Set<java.lang.reflect.Method> newMethodFields = new HashSet<>();
+		Set<Class<?>> newMethodClasses = new HashSet<>();
+		String annotation = OMethod.class.getName();
+		try(ScanResult scan = new ClassGraph()
+									.overrideClassLoaders(OrienteerClassLoader.getClassLoader())
+									.acceptPackages(paths.toArray(new String[0]))
+									.enableClassInfo()
+									.enableMethodInfo()
+									.enableAnnotationInfo()
+									.ignoreClassVisibility()
+									.ignoreMethodVisibility()
+									.scan()) {
+			for(ClassInfo classInfo : scan.getClassesWithMethodAnnotation(annotation)) {
+				for(MethodInfo methodInfo : classInfo.getDeclaredMethodInfo()) {
+					if(methodInfo.hasAnnotation(annotation)) newMethodFields.add(methodInfo.loadClassAndGetMethod());
+				}
+			}
+			for(ClassInfo classInfo : scan.getClassesWithAnnotation(annotation)) {
+				newMethodClasses.add(classInfo.loadClass());
+			}
+		}
+		newMethodClasses.removeIf(c -> !IMethod.class.isAssignableFrom(c) && !Command.class.isAssignableFrom(c));
+		methodFields = newMethodFields;
+		methodClasses = newMethodClasses;
 	}
 	
 	public void addPath(String path) {
