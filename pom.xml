@@ -73,7 +73,9 @@
 		<lombok.version>1.18.48</lombok.version>
 		<wicket.version>8.15.0</wicket.version>
 		<wicketstuff.version>8.15.0</wicketstuff.version>
-		<orientdb.version>3.2.27</orientdb.version>
+		<orientdb.version>3.2.56</orientdb.version>
+		<!-- GraalJS replacing the GraalVM 21.3.5 that orientdb-core brings, which fails on JDK 22+ (D8) -->
+		<graalvm.version>25.0.4</graalvm.version>
 		<guice.version>4.2.0</guice.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
@@ -88,8 +90,6 @@
 		<log4j2.version>2.17.1</log4j2.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- NOT unused: this pins Hazelcast below what OrientDB distributed expects (3.12.x); revisit with OrientDB 3.2.56 in P3 -->
-		<hazelcast.version>3.9.4</hazelcast.version>
 		<mockito.version>2.22.0</mockito.version>
 		<archetype.version>3.4.1</archetype.version>
 	</properties>
@@ -155,6 +155,43 @@
 			    <groupId>com.orientechnologies</groupId>
 			    <artifactId>orientdb-core</artifactId>
 			    <version>${orientdb.version}</version>
+			    <!-- OrientDB 3.2.x brings GraalVM/Truffle 21.3.5, which crashes the embedded server on JDK 22+
+			         (it calls the removed sun.misc.Unsafe.ensureClassInitialized). Replaced by GraalJS below (D8). -->
+			    <exclusions>
+				    <exclusion>
+					    <groupId>org.graalvm.sdk</groupId>
+					    <artifactId>*</artifactId>
+				    </exclusion>
+				    <exclusion>
+					    <groupId>org.graalvm.truffle</groupId>
+					    <artifactId>*</artifactId>
+				    </exclusion>
+				    <exclusion>
+					    <groupId>org.graalvm.js</groupId>
+					    <artifactId>*</artifactId>
+				    </exclusion>
+				    <exclusion>
+					    <groupId>org.graalvm.tools</groupId>
+					    <artifactId>*</artifactId>
+				    </exclusion>
+			    </exclusions>
+		    </dependency>
+		    <!-- GraalJS for OrientDB's JavaScript functions and scripts (same artifacts and scopes as wicket-orientdb) -->
+		    <dependency>
+			    <groupId>org.graalvm.polyglot</groupId>
+			    <artifactId>polyglot</artifactId>
+			    <version>${graalvm.version}</version>
+		    </dependency>
+		    <dependency>
+			    <groupId>org.graalvm.js</groupId>
+			    <artifactId>js-scriptengine</artifactId>
+			    <version>${graalvm.version}</version>
+		    </dependency>
+		    <dependency>
+			    <groupId>org.graalvm.js</groupId>
+			    <artifactId>js</artifactId>
+			    <version>${graalvm.version}</version>
+			    <type>pom</type>
 		    </dependency>
             <dependency>
 			    <groupId>com.orientechnologies</groupId>
@@ -264,11 +301,6 @@
 				<scope>import</scope>
 			</dependency>
 
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast</artifactId>
-                <version>${hazelcast.version}</version>
-            </dependency>
 
 			<!-- Versions used by single modules, kept here so every version lives in one place (P2) -->
 			<dependency>
