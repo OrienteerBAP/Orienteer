@@ -76,7 +76,7 @@
 		<orientdb.version>3.2.56</orientdb.version>
 		<!-- GraalJS replacing the GraalVM 21.3.5 that orientdb-core brings, which fails on JDK 22+ (D8) -->
 		<graalvm.version>25.0.4</graalvm.version>
-		<guice.version>4.2.0</guice.version>
+		<guice.version>6.0.0</guice.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
 		<transponder.version>1.1-SNAPSHOT</transponder.version>
