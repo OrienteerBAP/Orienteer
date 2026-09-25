@@ -523,6 +523,7 @@
 			    <artifactId>jetty-webapp</artifactId>
 			    <version>${jetty.version}</version>
 		    </dependency>
+		    <!-- Only used by the parked birt module now -->
 		    <dependency>
 			    <groupId>org.eclipse.jetty.aggregate</groupId>
 			    <artifactId>jetty-all</artifactId>
