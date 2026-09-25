@@ -3,6 +3,7 @@ package org.orienteer.core.boot.loader.distributed;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
@@ -41,6 +42,7 @@ public class TestModuleManager extends AbstractModulesTest {
     }
 
     @Test
+    @Ignore("Downloads org.orienteer:orienteer-birt:2.0-SNAPSHOT from a remote repository, which no longer resolves (birt is parked, OSSRH is gone). Make hermetic with a local file-repository fixture: REFRESH_PLAN.md P4")
     public void testAddArtifacts() {
         manager.addArtifacts(artifacts);
         Set<OArtifact> artifactsInMetadata = moduleManager.getOArtifactsMetadataAsSet();
@@ -49,6 +51,7 @@ public class TestModuleManager extends AbstractModulesTest {
     }
 
     @Test
+    @Ignore("Downloads org.orienteer:orienteer-birt:2.0-SNAPSHOT from a remote repository, which no longer resolves (birt is parked, OSSRH is gone). Make hermetic with a local file-repository fixture: REFRESH_PLAN.md P4")
     public void testDeleteArtifact() {
         manager.addArtifacts(artifacts);
 
@@ -66,6 +69,7 @@ public class TestModuleManager extends AbstractModulesTest {
     }
 
     @Test
+    @Ignore("Downloads org.orienteer:orienteer-birt:2.0-SNAPSHOT from a remote repository, which no longer resolves (birt is parked, OSSRH is gone). Make hermetic with a local file-repository fixture: REFRESH_PLAN.md P4")
     public void testDeleteArtifacts() {
         manager.addArtifacts(artifacts);
 

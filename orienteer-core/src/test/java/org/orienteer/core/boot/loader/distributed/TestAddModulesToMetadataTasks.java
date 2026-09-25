@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IExecutorService;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
@@ -37,12 +38,14 @@ public class TestAddModulesToMetadataTasks extends AbstractModulesTest {
     private InternalOModuleManager moduleManager;
 
     @Test
+    @Ignore("Downloads org.orienteer:orienteer-birt:2.0-SNAPSHOT from a remote repository, which no longer resolves (birt is parked, OSSRH is gone). Make hermetic with a local file-repository fixture: REFRESH_PLAN.md P4")
     public void testUpdateTask() throws IOException {
         updateArtifacts();
         assertMetadataUpdated();
     }
 
     @Test
+    @Ignore("Downloads org.orienteer:orienteer-birt:2.0-SNAPSHOT from a remote repository, which no longer resolves (birt is parked, OSSRH is gone). Make hermetic with a local file-repository fixture: REFRESH_PLAN.md P4")
     public void testDownloadArtifactsTask() throws Exception {
         updateArtifacts();
         DownloadArtifactsTask task = new DownloadArtifactsTask(artifacts);
