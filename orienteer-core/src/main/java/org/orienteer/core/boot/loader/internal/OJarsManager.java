@@ -2,7 +2,7 @@ package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

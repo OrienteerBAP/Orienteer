@@ -1,7 +1,7 @@
 package org.orienteer.notifications.service;
 
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.dao.DAO;
 import org.orienteer.notifications.model.IOMailNotification;
 import org.orienteer.notifications.model.IONotification;

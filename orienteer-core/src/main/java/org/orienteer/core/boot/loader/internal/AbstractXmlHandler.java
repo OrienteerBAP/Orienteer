@@ -1,6 +1,6 @@
 package org.orienteer.core.boot.loader.internal;
 
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

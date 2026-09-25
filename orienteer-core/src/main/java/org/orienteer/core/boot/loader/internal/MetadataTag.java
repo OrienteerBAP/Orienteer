@@ -1,6 +1,6 @@
 package org.orienteer.core.boot.loader.internal;
 
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 
 /**
  * Contains xml tags for work with metadata.xml

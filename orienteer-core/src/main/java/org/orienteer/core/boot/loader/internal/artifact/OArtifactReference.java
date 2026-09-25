@@ -2,7 +2,7 @@ package org.orienteer.core.boot.loader.internal.artifact;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 

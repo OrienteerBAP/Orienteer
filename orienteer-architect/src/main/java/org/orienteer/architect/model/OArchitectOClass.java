@@ -1,6 +1,6 @@
 package org.orienteer.architect.model;
 
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.io.IClusterable;
 
 import java.util.Collections;

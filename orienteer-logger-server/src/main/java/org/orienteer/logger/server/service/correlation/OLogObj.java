@@ -1,6 +1,6 @@
 package org.orienteer.logger.server.service.correlation;
 
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 
 import java.io.Serializable;
 import java.util.Objects;

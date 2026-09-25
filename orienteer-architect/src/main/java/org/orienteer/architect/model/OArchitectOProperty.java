@@ -3,7 +3,7 @@ package org.orienteer.architect.model;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OProperty;
 import com.orientechnologies.orient.core.metadata.schema.OType;
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.util.io.IClusterable;
 import org.orienteer.core.CustomAttribute;
 

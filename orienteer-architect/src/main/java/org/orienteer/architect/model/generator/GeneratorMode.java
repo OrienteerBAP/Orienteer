@@ -1,6 +1,6 @@
 package org.orienteer.architect.model.generator;
 
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.orienteer.architect.service.generator.IGeneratorStrategy;
 import org.orienteer.architect.service.generator.ModuleGeneratorStrategy;
 

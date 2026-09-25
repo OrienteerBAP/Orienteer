@@ -1,6 +1,6 @@
 package org.orienteer.twilio.resource;
 
-import org.apache.http.HttpStatus;
+import java.net.HttpURLConnection;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.request.resource.AbstractResource;
 import org.orienteer.core.MountPath;
@@ -26,7 +26,7 @@ public class TwilioSmsCallbackResource extends AbstractResource {
 
       parameters.getNamedKeys().forEach(key -> LOG.info("{} -> {}", key, parameters.get(key).toOptionalString()));
 
-      response.setStatusCode(HttpStatus.SC_OK);
+      response.setStatusCode(HttpURLConnection.HTTP_OK);
     }
     return response;
   }

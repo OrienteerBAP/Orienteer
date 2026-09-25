@@ -1,6 +1,6 @@
 package org.orienteer.architect.event;
 
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;

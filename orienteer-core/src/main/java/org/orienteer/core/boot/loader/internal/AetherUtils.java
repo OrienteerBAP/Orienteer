@@ -2,7 +2,7 @@ package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;

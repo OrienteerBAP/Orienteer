@@ -1,7 +1,7 @@
 package org.orienteer.core.boot.loader.internal;
 
 import com.google.common.collect.Lists;
-import org.apache.http.util.Args;
+import org.apache.wicket.util.lang.Args;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifact;
 import org.orienteer.core.boot.loader.internal.artifact.OArtifactReference;
 import org.w3c.dom.Document;
