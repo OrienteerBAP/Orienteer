@@ -90,7 +90,9 @@
 		<log4j2.version>2.17.1</log4j2.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<mockito.version>2.22.0</mockito.version>
+		<mockito.version>5.24.0</mockito.version>
+		<!-- Byte Buddy for Transponder's proxies and Mockito: both artifacts pinned, >= 1.18.14 (Java 25 class files) -->
+		<bytebuddy.version>1.18.14</bytebuddy.version>
 		<archetype.version>3.4.1</archetype.version>
 	</properties>
 
@@ -483,7 +485,7 @@
 		    <dependency>
 			    <groupId>junit</groupId>
 			    <artifactId>junit</artifactId>
-			    <version>4.13.1</version>
+			    <version>4.13.2</version>
 			    <scope>test</scope>
 		    </dependency>
 
@@ -506,6 +508,16 @@
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy</artifactId>
+				<version>${bytebuddy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>net.bytebuddy</groupId>
+				<artifactId>byte-buddy-agent</artifactId>
+				<version>${bytebuddy.version}</version>
 			</dependency>
 
 		</dependencies>
