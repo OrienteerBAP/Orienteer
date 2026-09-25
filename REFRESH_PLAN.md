@@ -12,7 +12,7 @@ every phase (`./mvnw versions:display-dependency-updates versions:display-plugin
 | Phase | Goal | Depends on | Status |
 |---|---|---|---|
 | P0 | AI initialization: AGENTS.md files + this plan | — | done |
-| P1 | Baseline: dependencies resolve, reactor consistent, dead scripts removed | external libs (owner) | todo |
+| P1 | Baseline: dependencies resolve, reactor consistent, dead scripts removed | external libs (owner) | in progress: done except the 3 external snapshots |
 | P2 | Build tooling & Maven hygiene (modern plugins, still Java 8 source) | P1 | todo |
 | P3 | Java 21 on the current stack (javax, Wicket 8) — **first green build** | P2, external Stage A | todo |
 | P4 | Non-jakarta dependency upgrades (OrientDB, Log4j, Jackson, Tika, Resolver…) | P3 | todo |
@@ -47,12 +47,13 @@ every phase (`./mvnw versions:display-dependency-updates versions:display-plugin
 | D7 | 2026-09-24 | No pre-upgrade JDK 8 test run; the static test inventory (Appendix C) is the reference, and the first real test run is the P3 exit criterion. | accepted |
 | D8 | 2026-09-24 | **GraalJS replaces the old GraalVM that OrientDB brings.** OrientDB 3.2.x pulls GraalVM/Truffle 21.3.5, which crashes every embedded OrientDB start on JDK 22+ (`NoSuchMethodError: sun.misc.Unsafe.ensureClassInitialized`). Exclude `org.graalvm.{sdk,truffle,js,tools}` and declare GraalJS 25.0.4 (`polyglot`, `js-scriptengine`, `js` pom runtime). This is the same as wicket-orientdb D11, and it also settles the Nashorn replacement (P3). Revisit when OrientDB upgrades Graal. | accepted (owner, 2026-09-24) |
 | D9 | 2026-09-24 | **Versioning and publishing of the external libraries** (the owner delegated the decision). (1) Each library publishes its Stage A as the current snapshot (e.g. wicket-orientdb `2.0-SNAPSHOT`) to the Central Portal snapshots repository, so Orienteer and its CI resolve it without local installs. (2) The library releases that version (e.g. `2.0`) only after Orienteer's P3 build is green against it; fixes found in P3 go into the snapshot first. Orienteer then pins the release. (3) After the release, the library's `master` moves to the next line for Stage B (wicket-orientdb `2.1-SNAPSHOT`); Stage C, being jakarta and API-breaking, gets a new major (wicket-orientdb `3.0`). (4) Stage B/C work before the Stage A release goes on a branch with its own version and never overwrites the snapshot Orienteer uses. Same scheme for transponder (1.1), wicket-console (1.4) and logger (1.4). Namespaces `ru.ydn` and `org.orienteer` must be verified on the Central Portal, with SNAPSHOTs enabled (owner: `ru.ydn` is verified). | accepted (2026-09-24) |
+| D10 | 2026-09-25 | Root `orienteer.properties` and `orienteer-test.properties` stay **tracked** (dev/test defaults, dev-only credentials, no real secrets). `.gitignore` re-includes them explicitly and keeps ignoring copies anywhere else. | accepted |
 
 ### Open questions (decide when the phase starts; record the answer above)
 
 - [ ] **Distributed mode:** keep OrientDB distributed + Hazelcast 3.12 (EOL) + Hazelcast page store/session filter, or declare single-node only? (affects P4, P5, P6)
 - [ ] **CSP policy** for Wicket 9/10: strict nonce-based by default vs. relaxed; how to handle user-supplied JS/markup (pages, taucharts, BIRT). (P5)
-- [ ] **Tracked config files:** keep `orienteer.properties` / `orienteer-test.properties` tracked (and fix `.gitignore`) or untrack them and ship `*.sample`? (P1)
+- [x] **Tracked config files:** keep `orienteer.properties` / `orienteer-test.properties` tracked (and fix `.gitignore`) or untrack them and ship `*.sample`? (P1) — 2026-09-25: keep tracked → D10
 - [ ] **Versioning:** release as `2.0.0` after P6? Keep `groupId org.orienteer`? (P9)
 - [ ] **Dynamic module loader:** keep runtime download of modules from Maven repos (security, complexity) or restrict it to a local folder? (P4/P10)
 
@@ -91,27 +92,27 @@ P3, P5, P6. Until they are published (D9: Central Portal snapshot, then a releas
 
 ## P1 — Baseline: make the reactor resolvable and consistent
 
-Goal: every non-parked module resolves its dependencies (`./mvnw -q validate dependency:resolve`), and nothing
+Goal: every non-parked module resolves its dependencies (`./mvnw dependency:tree` reports no missing POMs), and nothing
 in the repo points at dead infrastructure. The build is not expected to compile on JDK 21 yet (that is P3).
 
-- [ ] Build and `mvn install` the external libraries locally (owner, outside this repo): wicket-orientdb 2.0-SNAPSHOT (done 2026-09-24, Stage A), transponder-orientdb 1.1-SNAPSHOT, wicket-console 1.4-SNAPSHOT, logger 1.4-SNAPSHOT
-- [ ] Move the transponder version into a root property (`transponder.version`) next to `wicket.orientdb.version`
-- [ ] Remove dead repositories from the root pom: `bintray` (jcenter) and `oss.sonatype.org` snapshots; add `https://central.sonatype.com/repository/maven-snapshots/` (snapshots only, releases disabled), where the external libraries publish their Stage A snapshots (D9)
-- [ ] Park modules (D3): move `orienteer-birt`, `orienteer-camel`, `orienteer-taucharts`, `orienteer-graph` out of the `default-modules` profile into a new opt-in profile `parked` together with `orienteer-bpm` and `orienteer-tours` (so `./mvnw -Pparked …` can still try them)
-- [ ] `orienteer-standalone`: drop the dependencies on parked modules (`orienteer-bpm`, `orienteer-graph`)
-- [ ] Remove broken scripts and images: `build.sh`, `run.sh`, `Dockerfile_ibmjdk` (they reference the removed `orienteer-object` and the no-longer-produced `jetty-runner.jar`)
-- [ ] Add the Maven Wrapper (`mvn wrapper:wrapper -Dmaven=3.9.x`), commit `mvnw`, `mvnw.cmd`, `.mvn/wrapper/`
-- [ ] Add `.sdkmanrc` (`java=21.0.11-tem`, the locally installed Temurin 21) and a minimal `.editorconfig` (UTF-8, LF; tabs for `*.java`/`*.html`/`*.xml` per current majority — **no mass reformat**)
-- [ ] `.gitignore`: resolve the open question on tracked properties; add `.DS_Store`, `.vscode/`, `runtime/`, `libs/`
-- [ ] Confirm the test inventory (Appendix C) by listing tests per module (`@Test` / `@Ignore` counts)
-- [ ] Exit check: `./mvnw -q validate dependency:resolve` succeeds for all non-parked modules
+- [ ] Make the external libraries resolvable (outside this repo, D9): wicket-orientdb 2.0-SNAPSHOT (done 2026-09-24: Stage A, published to the Central Portal snapshots), transponder-orientdb 1.1-SNAPSHOT, wicket-console 1.4-SNAPSHOT, logger 1.4-SNAPSHOT
+- [x] Move the transponder version into a root property (`transponder.version`) next to `wicket.orientdb.version`
+- [x] Remove dead repositories from the root pom: `bintray` (jcenter) and `oss.sonatype.org` snapshots; add `https://central.sonatype.com/repository/maven-snapshots/` (snapshots only, releases disabled), where the external libraries publish their Stage A snapshots (D9) — 2026-09-25. The OSSRH `distributionManagement`/nexus-staging (P9) and the archetype-war template repository (P9) remain
+- [x] Park modules (D3): move `orienteer-birt`, `orienteer-camel`, `orienteer-taucharts`, `orienteer-graph` out of the `default-modules` profile into a new opt-in profile `parked` together with `orienteer-bpm` and `orienteer-tours` (so `./mvnw -Pparked …` can still try them) — 2026-09-25; `./mvnw -Pparked validate` passes
+- [x] `orienteer-standalone`: drop the dependencies on parked modules (`orienteer-bpm`, `orienteer-graph`) — 2026-09-25; no other default module depends on a parked one
+- [x] Remove broken scripts and images: `build.sh`, `run.sh`, `Dockerfile_ibmjdk` (they reference the removed `orienteer-object` and the no-longer-produced `jetty-runner.jar`) — 2026-09-25
+- [x] Add the Maven Wrapper (`mvn wrapper:wrapper -Dmaven=3.9.x`), commit `mvnw`, `mvnw.cmd`, `.mvn/wrapper/` — 2026-09-25: wrapper 3.3.4, Maven 3.9.16, script-only
+- [x] Add `.sdkmanrc` (`java=21.0.11-tem`, the locally installed Temurin 21) and a minimal `.editorconfig` (UTF-8, LF — **no mass reformat**) — 2026-09-25. No indent style is set: measured, Java is 556 tab / 447 space files and XML/HTML/JS are mostly spaces, so there is no majority to enforce
+- [x] `.gitignore`: resolve the open question on tracked properties; add `.DS_Store`, `.vscode/`, `runtime/`, `libs/` — 2026-09-25: root properties re-included explicitly (D10)
+- [x] Confirm the test inventory (Appendix C) by listing tests per module (`@Test` / `@Ignore` counts) — 2026-09-24 (counted with `rg`)
+- [ ] Exit check: `./mvnw -fn dependency:tree` reports no missing POM for any non-parked module. Status 2026-09-25: all 18 reactor projects pass `validate`; `dependency:tree` reports exactly 3 missing POMs: `transponder-orientdb:1.1-SNAPSHOT`, `wicket-console:1.4-SNAPSHOT`, `logger:1.4-SNAPSHOT`. `dependency:go-offline` / `resolve-plugins` can't run until P2 removes cobertura 2.7, which needs JDK 8's `tools.jar`
 
 ## P2 — Build tooling & Maven hygiene
 
 Goal: modern, centrally managed plugins that also work on JDK 21, without changing the Java level yet.
 
 - [ ] Pin every plugin in root `<pluginManagement>` at current versions (Appendix B); remove per-module plugin/version overrides (compiler/surefire/jar in etl, metrics, rproxy, taucharts, tours; assembly/jar/deploy in standalone; war/deploy in war; bundle 2.3.6 in 14 modules)
-- [ ] Remove dead plugins: `maven-eclipse-plugin` (root + 14 modules), `org.eclipse.m2e:lifecycle-mapping`, `cobertura-maven-plugin`, `coveralls-maven-plugin`
+- [ ] Remove dead plugins: `maven-eclipse-plugin` (root + 14 modules), `org.eclipse.m2e:lifecycle-mapping`, `cobertura-maven-plugin`, `coveralls-maven-plugin` — cobertura 2.7 also blocks `dependency:go-offline` on JDK 9+ (needs `com.sun:tools`)
 - [ ] Drop `<type>bundle</type>` from the OrientDB dependencies and remove the `maven-bundle-plugin` build extension (verify the artifacts resolve as plain jars)
 - [ ] Import BOMs in `dependencyManagement`: `jackson-bom`, `log4j-bom`, `junit-bom`, `mockito-bom` (Jetty BOM comes in P6)
 - [ ] Move module-local third-party versions into root properties/`dependencyManagement` (scribejava, prometheus, retrofit, rxjava, mxgraph, pivottable/d3/c3, taucharts, POI, Camel…)

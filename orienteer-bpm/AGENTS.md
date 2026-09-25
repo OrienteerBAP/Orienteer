@@ -1,7 +1,8 @@
-# orienteer-bpm — DISABLED
+# orienteer-bpm — PARKED
 
-**Not in the build.** It was commented out of the root `<modules>` in `b39de728` (2024-02-08,
-"Disable BPM and tours temporary"); no reason was recorded. `orienteer-standalone` still depends on it (plan P1).
+**Not in the default build.** It was commented out of the root `<modules>` in `b39de728` (2024-02-08,
+"Disable BPM and tours temporary"); no reason was recorded. Now it's in the opt-in profile `parked` (plan D3):
+`./mvnw -Pparked -pl orienteer-bpm -am verify`.
 
 Business Process Management on **Camunda 7.5**.
 - A custom persistence layer stores all Camunda entities in OrientDB instead of SQL/MyBatis.
@@ -33,4 +34,4 @@ Effectively a rewrite. P8 options:
 2. rewrite on another engine (Flowable, Camunda 8/Zeebe via API)
 3. build native Orienteer workflows
 
-Until then, keep it out of the build.
+Until then, it stays parked.

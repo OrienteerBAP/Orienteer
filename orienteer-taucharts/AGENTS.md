@@ -23,4 +23,4 @@ Chart widgets (line, bar, scatter and others, with plugins) built on Taucharts.
 
 - The Java side is trivial, but the JS library is dead.
 - The P8 decision is probably to **replace** it with a maintained chart library such as ECharts or Chart.js, or to drop it.
-- **Parked candidate** (plan P1/P8).
+- **Parked** (profile `parked`, plan D3): `./mvnw -Pparked -pl orienteer-taucharts -am verify`.

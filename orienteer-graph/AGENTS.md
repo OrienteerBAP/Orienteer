@@ -14,7 +14,6 @@ vertices and edges.
   - jettison 1.3.3 (CVEs)
   - commons-configuration 1.6
 - **Tests:** **none**.
-- `orienteer-standalone` depends on this module.
 
 ## Pitfalls
 
@@ -27,4 +26,4 @@ vertices and edges.
   That drops orientdb-graphdb, Groovy and jettison.
 - `CreateVertexCommand`/`CreateEdgeCommand` use `ModalWindow` via core (removed in Wicket 10).
 - guice-servlet's `@RequestScoped` moves to jakarta in Guice 7.
-- **Parked candidate** (plan P1/P8).
+- **Parked** (profile `parked`, plan D3): `./mvnw -Pparked -pl orienteer-graph -am verify`. It was removed from standalone; re-add it there if P8 keeps it.

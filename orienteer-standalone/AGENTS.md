@@ -5,7 +5,7 @@ Executable uber-jar that runs Orienteer on embedded Jetty 9.4. Run it with
 
 - **Entry point:** `org.orienteer.standalone.StartStandalone#main` (CLI parsing).
   `ServerRunner` builds `Server`, `ServerConnector` and a `WebAppContext` whose WAR is the jar itself.
-- Bundles core, devutils, graph, pages, pivottable and **bpm**.
+- Bundles core, devutils, pages and pivottable. graph and bpm were dropped when they were parked (plan P1); re-add them if P8 keeps them.
 - `jetty-all:uber` (9.4.12) and `javax.servlet-api` 3.1.0 are compile scope.
 - `src/main/resources/WEB-INF/web.xml` (Servlet 2.5, `OrienteerFilter`) and
   `src/main/resources/org/orienteer/standalone/standalone.properties`.
@@ -15,7 +15,6 @@ Executable uber-jar that runs Orienteer on embedded Jetty 9.4. Run it with
 
 ## Pitfalls
 
-- **Build is broken today**: it depends on `orienteer-bpm`, which is commented out of the root modules (plan P1).
 - The `--wait` loop in `StartStandalone` never re-reads `line`.
 - `StartStandalone.main` is whitelisted in Checkstyle `UncommentedMain`. Keep the class name if you rename things.
 - `Procfile` (Heroku) references this jar. Heroku support is dead (plan P10).

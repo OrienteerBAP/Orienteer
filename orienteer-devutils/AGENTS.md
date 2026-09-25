@@ -20,7 +20,7 @@ Developer tools:
 
 ## Pitfalls
 
-- bpm, logger-server, users and standalone all depend on this module. Keep its API stable.
+- logger-server, users, standalone (and the parked bpm) depend on this module. Keep its API stable.
 - `wicket-console` finds engines through `javax.script`. Nashorn is gone from JDK 15+, so a JS console
   exists only if GraalJS (which OrientDB brings) or `nashorn-core` is on the classpath.
 - Uses the deprecated `ODatabaseDocumentTx` and `ODatabaseRecordThreadLocal`.

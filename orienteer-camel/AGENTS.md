@@ -33,4 +33,4 @@ The code is small (about 390 lines), but Java 21 and jakarta mean Camel 4:
 - no xmljson
 - `camel-orientdb` must be rewritten or replaced
 
-**Parked** in plan P1. Keep, rewrite or drop is decided in P8.
+**Parked** (profile `parked`, plan D3): `./mvnw -Pparked -pl orienteer-camel -am verify`. Keep, rewrite or drop is decided in P8.

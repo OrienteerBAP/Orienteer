@@ -19,26 +19,27 @@ The code was dormant from Feb 2024 to Sep 2026 and is being modernized.
 
 ## Build status — read first
 
-- `mvn clean install` currently **fails at dependency resolution**: `wicket-orientdb:2.0-SNAPSHOT`,
-  `transponder-orientdb:1.1-SNAPSHOT` (plus module-specific `wicket-console`, `logger`, `birt.orientdb`
-  snapshots) exist in no reachable repo (OSSRH shut down in 2025; bintray/jcenter is gone). They must be
-  built and `mvn install`-ed from their own repos first — this repo does not own them.
-- The current poms will not build on JDK 17+ until plan phase P3 (Lombok 1.18.16, Guice 4.2/cglib, old plugins).
-  Dev machine: Maven 3.9 (Homebrew), Temurin 21 via SDKMAN (default `java`), Homebrew JDK 27 (non-LTS, don't target).
-- `orienteer-bpm` and `orienteer-tours` are commented out of the root `<modules>`, yet
-  `orienteer-standalone` still depends on `orienteer-bpm`.
-- `build.sh`, `run.sh`, `Dockerfile_ibmjdk` are broken (removed module `orienteer-object`, no more `jetty-runner.jar`).
-  `.travis.yml`, `PITCHME.*`, `Procfile`, `system.properties` are dead leftovers.
+- Dependency resolution: the root pom uses Maven Central plus the **Central Portal snapshots** repository, where the
+  external Orienteer libraries publish their snapshots (plan D9). `wicket-orientdb:2.0-SNAPSHOT` is published there.
+  Still **unresolvable**: `transponder-orientdb:1.1-SNAPSHOT` (core, so everything), `wicket-console:1.4-SNAPSHOT`
+  (devutils) and `logger:1.4-SNAPSHOT` (logger-server). They come from their own repos; this repo doesn't own them.
+- The poms will not compile on JDK 17+ until plan phase P3 (Lombok 1.18.16, Guice 4.2/cglib, old plugins).
+  Dev machine: Temurin 21 via SDKMAN (`.sdkmanrc`), Temurin 25 also installed; use `./mvnw` (Maven 3.9.16).
+  Homebrew JDK 27 is non-LTS: don't target it.
+- **Parked modules** (plan D3/P8): birt, bpm, camel, graph, taucharts and tours are only in the opt-in profile
+  `parked` and are not built by default.
+- `.travis.yml`, `PITCHME.*`, `Procfile`, `system.properties` are dead leftovers (removed in P9/P10).
 
 ## Commands (once dependencies resolve)
 
 ```bash
-mvn clean install                                   # full build, tests, checkstyle (verify, failOnViolation)
-mvn -DskipTests install                             # fast build
-mvn -pl orienteer-core -am -DskipTests install      # one module + what it needs
-mvn -pl orienteer-mail test -Dtest=TestOMailModule  # single test class
-mvn -Ddocker-build package                          # profile `dockerbuild`: core + war only
-cd orienteer-<module> && mvn jetty:run              # run Orienteer + that module on :8080, embedded OrientDB
+./mvnw clean install                                   # full build, tests, checkstyle (verify, failOnViolation)
+./mvnw -DskipTests install                             # fast build
+./mvnw -pl orienteer-core -am -DskipTests install      # one module + what it needs
+./mvnw -pl orienteer-mail test -Dtest=TestOMailModule  # single test class
+./mvnw -Pparked -pl orienteer-graph -am verify         # try a parked module
+./mvnw -Ddocker-build package                          # profile `dockerbuild`: core + war only
+cd orienteer-<module> && ../mvnw jetty:run             # run Orienteer + that module on :8080, embedded OrientDB
 ```
 
 ## Layout
@@ -46,8 +47,8 @@ cd orienteer-<module> && mvn jetty:run              # run Orienteer + that modul
 - `orienteer-core` — the platform; every module depends on it. Also publishes a **test-jar** (test infra).
 - `orienteer-war` (deployable WAR / Docker payload), `orienteer-standalone` (embedded-Jetty uber-jar),
   `orienteer-archetype-jar|war` (Maven archetypes).
-- Feature modules: architect, birt, bpm*, camel, devutils, etl, graph, logger-server, mail, metrics,
-  notification, pages, pivottable, rproxy, taucharts, tours*, twilio, users (* = disabled).
+- Feature modules: architect, birt*, bpm*, camel*, devutils, etl, graph*, logger-server, mail, metrics,
+  notification, pages, pivottable, rproxy, taucharts*, tours*, twilio, users (* = parked, profile `parked`).
 - **Each module has its own `AGENTS.md`** (purpose, entry points, deps, pitfalls, upgrade risk) — read it first.
 - `modules.xml` — catalog read at runtime by the dynamic loader (from the GitHub raw URL); out of sync.
 - Root `orienteer.properties` / `orienteer-test.properties` — dev/test config (tracked despite `.gitignore`).
@@ -95,5 +96,6 @@ cd orienteer-<module> && mvn jetty:run              # run Orienteer + that modul
 - Don't bump one library in isolation: Wicket/Guice/servlet/Jetty/jakarta move together (plan P5–P6), and
   Hazelcast is pinned to 3.12.x by OrientDB distributed.
 - Running or testing creates `runtime/`, `databases/`, `Orienteer/`, `libs/` in the working dir — never commit them.
+- Until P3, `orienteer-core` gets two GraalVM lines (25.0.4 via wicket-orientdb, 21.3.5 via `orientdb-core`); 21.3.5 crashes on JDK 22+ (D8).
 - `log4j2.xml` ships inside core and every module jar; loader defaults in `orienteer-default.properties` use dead/HTTP repo URLs.
 - No real credentials in committed files; the tracked properties hold dev defaults only.

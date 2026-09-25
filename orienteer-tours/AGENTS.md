@@ -1,6 +1,7 @@
-# orienteer-tours — DISABLED
+# orienteer-tours — PARKED
 
-**Not in the build.** It was commented out of the root `<modules>` in `b39de728` (2024-02-08).
+**Not in the default build.** It was commented out of the root `<modules>` in `b39de728` (2024-02-08); now it's in the
+opt-in profile `parked` (plan D3): `./mvnw -Pparked -pl orienteer-tours -am verify`.
 The same commit bumped `jersey-media-*` 2.32 → 3.0.2. Jersey 3.x is jakarta-based, which conflicts with the module's
 javax code and with `wicket-jersey:1.0` (Jersey 2.32).
 

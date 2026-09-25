@@ -28,4 +28,4 @@ Eclipse BIRT report widgets.
 - The OrientDB ODA driver must be rebuilt.
 - The dependency tree is CVE-heavy.
 
-**Parked** in plan P1. Upgrade, replace (e.g. JasperReports) or drop is decided in P8.
+**Parked** (profile `parked`, plan D3): `./mvnw -Pparked -pl orienteer-birt -am verify`. Upgrade, replace (e.g. JasperReports) or drop is decided in P8.
