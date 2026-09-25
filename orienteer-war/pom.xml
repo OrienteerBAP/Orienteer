@@ -118,6 +118,9 @@
             	<artifactId>jetty-maven-plugin</artifactId>
             	<configuration>
             		<jettyXml>${project.basedir}/src/main/webapp/WEB-INF/jetty.xml</jettyXml>
+            		<supportedPackagings combine.self="override">
+            			<supportedPackaging>war</supportedPackaging>
+            		</supportedPackagings>
             	</configuration>
             	<dependencies>
             		<dependency>
