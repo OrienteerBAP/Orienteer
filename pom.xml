@@ -76,6 +76,7 @@
 		<guice.version>4.2.0</guice.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
+		<transponder.version>1.1-SNAPSHOT</transponder.version>
 		<log4j2.version>2.17.1</log4j2.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,29 +88,20 @@
 		<mockito.version>2.22.0</mockito.version>
 	</properties>
 
-     <repositories>
-		 <repository>
-			 <id>snapshots-repo</id>
-			 <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-             <releases>
-                 <enabled>false</enabled>
-             </releases>
-             <snapshots>
-                 <enabled>true</enabled>
-             </snapshots>
-         </repository>
-	 <repository>
-		<id>bintray</id>
-		<name>bintray</name>
-		<url>https://jcenter.bintray.com</url>
-		<releases>
-        <enabled>true</enabled>
-      </releases>
-		<snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-	 </repository>
-     </repositories>
+	<repositories>
+		<!-- Snapshots of the external Orienteer libraries (wicket-orientdb, transponder, ...) are published here.
+		     Releases come from Maven Central. See REFRESH_PLAN.md, decision D9. -->
+		<repository>
+			<id>central-portal-snapshots</id>
+			<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 	<!-- IMPORTANT: to support quick docker builds: modules were moved to default profile below -->
 	<dependencyManagement>
@@ -135,7 +127,7 @@
 		    <dependency>
 		    	<groupId>org.orienteer.transponder</groupId>
 		    	<artifactId>transponder-orientdb</artifactId>
-		    	<version>1.1-SNAPSHOT</version>
+		    	<version>${transponder.version}</version>
 		    </dependency>
 		    <!--  WICKET DEPENDENCIES -->
 		    <dependency>
@@ -498,18 +490,14 @@
 					<name>!docker-build</name>
 				</property>
 			</activation>
+			<!-- Modules on dead or end-of-life libraries are in the opt-in profile `parked` below (REFRESH_PLAN.md D3, P8) -->
 			<modules>
-				<module>orienteer-birt</module>
-				<!--<module>orienteer-bpm</module>-->
-				<module>orienteer-camel</module>
 				<module>orienteer-core</module>
 				<module>orienteer-devutils</module>
-				<module>orienteer-graph</module>
 				<module>orienteer-logger-server</module>
 				<module>orienteer-pages</module>
 				<module>orienteer-pivottable</module>
 				<module>orienteer-etl</module>
-				<module>orienteer-taucharts</module>
 				<module>orienteer-standalone</module>
 				<module>orienteer-war</module>
 				<module>orienteer-archetype-jar</module>
@@ -518,10 +506,22 @@
 				<module>orienteer-mail</module>
 				<module>orienteer-metrics</module>
 				<module>orienteer-users</module>
-				<!--<module>orienteer-tours</module>-->
 				<module>orienteer-notification</module>
 				<module>orienteer-twilio</module>
 				<module>orienteer-rproxy</module>
+			</modules>
+		</profile>
+		<profile>
+			<!-- Parked modules (REFRESH_PLAN.md D3): not built by default; the keep/replace/drop decision is P8.
+			     Try one with: ./mvnw -Pparked -pl orienteer-graph -am verify -->
+			<id>parked</id>
+			<modules>
+				<module>orienteer-birt</module>
+				<module>orienteer-bpm</module>
+				<module>orienteer-camel</module>
+				<module>orienteer-graph</module>
+				<module>orienteer-taucharts</module>
+				<module>orienteer-tours</module>
 			</modules>
 		</profile>
 	    <profile> 
