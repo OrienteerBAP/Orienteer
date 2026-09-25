@@ -93,6 +93,8 @@
 		<mockito.version>5.24.0</mockito.version>
 		<!-- Byte Buddy for Transponder's proxies and Mockito: both artifacts pinned, >= 1.18.14 (Java 25 class files) -->
 		<bytebuddy.version>1.18.14</bytebuddy.version>
+		<!-- 5.x (not 6.x): JUnit 6 deprecates the vintage engine, which the JUnit 4 tests still need -->
+		<junit.jupiter.version>5.14.4</junit.jupiter.version>
 		<archetype.version>3.4.1</archetype.version>
 		<asm.version>9.10.1</asm.version>
 		<!-- JVM flags Orienteer needs on JDK 21+ (tests, jetty:run, standalone, Docker). Keep in sync with .mvn/jvm.config and AGENTS.md.
@@ -498,6 +500,14 @@
 			</dependency>
 
 		    <!--  JUNIT DEPENDENCY FOR TESTING -->
+		    <!-- JUnit Platform: new tests may use Jupiter; existing JUnit 4 tests (OrienteerTestRunner) run on the vintage engine -->
+		    <dependency>
+			    <groupId>org.junit</groupId>
+			    <artifactId>junit-bom</artifactId>
+			    <version>${junit.jupiter.version}</version>
+			    <type>pom</type>
+			    <scope>import</scope>
+		    </dependency>
 		    <dependency>
 			    <groupId>junit</groupId>
 			    <artifactId>junit</artifactId>
@@ -544,6 +554,16 @@
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
