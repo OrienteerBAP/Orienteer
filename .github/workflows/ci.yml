@@ -1,0 +1,60 @@
+# Build and test on every push and pull request (REFRESH_PLAN.md P3; full CI/CD, publishing and Docker are P9).
+# Nothing is published or pushed from here.
+# Needs the external libraries' snapshots on the Central Portal (REFRESH_PLAN.md D9): until transponder, wicket-console
+# and logger are deployed there, dependency resolution fails.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (JDK ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['21', '25']
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      # `install`, not `verify`: the archetype integration tests generate projects that resolve
+      # orienteer-core:2.0-SNAPSHOT from the local repository.
+      # Tests start an embedded OrientDB server (ports 2424+, 2480+); each matrix job runs on its own runner.
+      - name: Build and test
+        run: ./mvnw -B -ntp clean install
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-reports-jdk${{ matrix.java }}
+          path: '**/target/surefire-reports/'
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload coverage reports
+        if: matrix.java == '21'
+        uses: actions/upload-artifact@v7
+        with:
+          name: jacoco-reports
+          path: '**/target/site/jacoco/'
+          if-no-files-found: ignore
+          retention-days: 14
