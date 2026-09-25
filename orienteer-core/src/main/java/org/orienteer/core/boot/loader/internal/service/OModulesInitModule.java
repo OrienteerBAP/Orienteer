@@ -1,6 +1,7 @@
 package org.orienteer.core.boot.loader.internal.service;
 
 import com.google.inject.AbstractModule;
+import org.orienteer.core.dao.AbstractDynamicProvider;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import org.orienteer.core.boot.loader.internal.InternalOModuleManager;
@@ -17,6 +18,12 @@ public class OModulesInitModule extends AbstractModule {
 
     public OModulesInitModule(Properties properties) {
         this.properties = properties;
+    }
+
+    @Override
+    protected void configure() {
+        // This is the parent injector: just-in-time @ProvidedBy bindings are usually created here
+        AbstractDynamicProvider.bindProvisionListener(binder());
     }
 
     @Provides

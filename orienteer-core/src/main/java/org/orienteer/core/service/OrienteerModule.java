@@ -1,5 +1,6 @@
 package org.orienteer.core.service;
 
+import org.orienteer.core.dao.AbstractDynamicProvider;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provider;
@@ -73,6 +74,7 @@ public class OrienteerModule extends AbstractModule {
 		Provider<ODatabaseDocumentInternal> dbProvider = binder().getProvider(ODatabaseDocumentInternal.class);
 		bind(ODatabaseSession.class).toProvider(dbProvider);
 		bind(ODatabaseDocument.class).toProvider(dbProvider);
+		AbstractDynamicProvider.bindProvisionListener(binder());
 	}
 	
 	@Provides
