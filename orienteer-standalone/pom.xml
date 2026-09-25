@@ -51,11 +51,11 @@
             <artifactId>orienteer-devutils</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+	    <!-- Only the Jetty modules ServerRunner needs. jetty-all:uber is gone: its JASPI module fails the start on Jetty 9.4.58
+	         (NoClassDefFoundError javax/security/auth/message/AuthException), and Jetty 10+ has no aggregate anyway -->
 	    <dependency>
-			<groupId>org.eclipse.jetty.aggregate</groupId>
-			<artifactId>jetty-all</artifactId>
-		        <classifier>uber</classifier>
-			<scope>compile</scope>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-webapp</artifactId>
 	    </dependency>
 	    <dependency>
 			<groupId>javax.servlet</groupId>

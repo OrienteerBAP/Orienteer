@@ -519,6 +519,11 @@
 
 		    <!--  JETTY DEPENDENCIES FOR TESTING  -->
 		    <dependency>
+			    <groupId>org.eclipse.jetty</groupId>
+			    <artifactId>jetty-webapp</artifactId>
+			    <version>${jetty.version}</version>
+		    </dependency>
+		    <dependency>
 			    <groupId>org.eclipse.jetty.aggregate</groupId>
 			    <artifactId>jetty-all</artifactId>
 			    <classifier>uber</classifier>
