@@ -128,14 +128,6 @@
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>codemirror</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-commons</artifactId>
-		</dependency>
 
 		<!-- ECLIPSE AETHER -->
 		<dependency>

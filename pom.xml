@@ -94,6 +94,7 @@
 		<!-- Byte Buddy for Transponder's proxies and Mockito: both artifacts pinned, >= 1.18.14 (Java 25 class files) -->
 		<bytebuddy.version>1.18.14</bytebuddy.version>
 		<archetype.version>3.4.1</archetype.version>
+		<asm.version>9.10.1</asm.version>
 	</properties>
 
 	<repositories>
@@ -283,15 +284,13 @@
 				<artifactId>jackson-databind</artifactId>
 				<version>2.12.1</version>
 			</dependency>
+			<!-- ASM (via Wicket 8 wicket-ioc, jnr-posix, ...): one version that reads Java 21/25 class files -->
 			<dependency>
 				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm</artifactId>
-				<version>7.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-commons</artifactId>
-				<version>7.1</version>
+				<artifactId>asm-bom</artifactId>
+				<version>${asm.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
 			<!-- LOGGING DEPENDENCIES - LOG4J -->
