@@ -8,11 +8,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>orienteer-twilio</artifactId>
-    <properties>
-        <twilio.version>7.40.0</twilio.version>
-        <retrofit.version>2.7.2</retrofit.version>
-        <rx.java.version>2.2.19</rx.java.version>
-    </properties>
 
     <dependencies>
         <dependency>
@@ -23,22 +18,18 @@
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
-            <version>${retrofit.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-jackson</artifactId>
-            <version>${retrofit.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>adapter-rxjava2</artifactId>
-            <version>${retrofit.version}</version>
         </dependency>
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
-            <version>${rx.java.version}</version>
         </dependency>
         <!-- ORIENTEER TESTS for TESTING -->
         <dependency>
@@ -51,7 +42,6 @@
         <dependency>
             <groupId>ru.ydn.wicket.wicket-orientdb</groupId>
             <artifactId>wicket-orientdb</artifactId>
-            <version>${wicket.orientdb.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -59,13 +49,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -100,42 +88,6 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.6</version>
-                <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                    <wtpversion>${wtp.version}</wtpversion>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <orienteer.loader.repository.local>${settings.localRepository}</orienteer.loader.repository.local>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>

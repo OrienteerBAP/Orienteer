@@ -77,15 +77,20 @@
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<wicket.orientdb.version>2.0-SNAPSHOT</wicket.orientdb.version>
 		<transponder.version>1.1-SNAPSHOT</transponder.version>
+		<wicket.console.version>1.4-SNAPSHOT</wicket.console.version>
+		<orienteer.logger.version>1.4-SNAPSHOT</orienteer.logger.version>
+		<aether.version>1.1.0</aether.version>
+		<prometheus.simpleclient.version>0.8.1</prometheus.simpleclient.version>
+		<scribejava.version>6.5.1</scribejava.version>
+		<retrofit.version>2.7.2</retrofit.version>
+		<rxjava2.version>2.2.19</rxjava2.version>
 		<log4j2.version>2.17.1</log4j2.version>
 		<enableAssertions>false</enableAssertions>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
-		<wtp.version>none</wtp.version>
+		<!-- NOT unused: this pins Hazelcast below what OrientDB distributed expects (3.12.x); revisit with OrientDB 3.2.56 in P3 -->
 		<hazelcast.version>3.9.4</hazelcast.version>
-		<docker-client.version>8.14.5</docker-client.version>
-        <hazelcast-wm.version>3.8.3</hazelcast-wm.version>
 		<mockito.version>2.22.0</mockito.version>
+		<archetype.version>3.4.1</archetype.version>
 	</properties>
 
 	<repositories>
@@ -149,19 +154,16 @@
 			    <groupId>com.orientechnologies</groupId>
 			    <artifactId>orientdb-core</artifactId>
 			    <version>${orientdb.version}</version>
-			    <type>bundle</type>
 		    </dependency>
             <dependency>
 			    <groupId>com.orientechnologies</groupId>
 			    <artifactId>orientdb-server</artifactId>
 			    <version>${orientdb.version}</version>
-			    <type>bundle</type>
 		    </dependency>
 		    <dependency>
 			    <groupId>com.orientechnologies</groupId>
 			    <artifactId>orientdb-graphdb</artifactId>
 			    <version>${orientdb.version}</version>
-			    <type>bundle</type>
 		    </dependency>
 		    <!-- INCLUDE THIS IF YOU'RE CONNECTING TO THE SERVER THROUGH THE REMOTE 
 			    ENGINE -->
@@ -169,7 +171,6 @@
 			    <groupId>com.orientechnologies</groupId>
 			    <artifactId>orientdb-client</artifactId>
 			    <version>${orientdb.version}</version>
-			    <type>bundle</type>
 		    </dependency>
 		    <dependency>
 			    <groupId>com.google.inject</groupId>
@@ -256,40 +257,194 @@
 			<!-- LOGGING DEPENDENCIES - LOG4J -->
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
+				<artifactId>log4j-bom</artifactId>
 				<version>${log4j2.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>${log4j2.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j2.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
-            <dependency>
-                <groupId>org.bitsofinfo</groupId>
-                <artifactId>hazelcast-docker-swarm-discovery-spi</artifactId>
-                <version>1.0-RC14</version>
-            </dependency>
-            <dependency>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-client</artifactId>
-                <version>${docker-client.version}</version>
-            </dependency>
             <dependency>
                 <groupId>com.hazelcast</groupId>
                 <artifactId>hazelcast</artifactId>
                 <version>${hazelcast.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast-wm</artifactId>
-                <version>${hazelcast-wm.version}</version>
-            </dependency>
+
+			<!-- Versions used by single modules, kept here so every version lives in one place (P2) -->
+			<dependency>
+				<groupId>com.orientechnologies</groupId>
+				<artifactId>orientdb-distributed</artifactId>
+				<version>${orientdb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.orientechnologies</groupId>
+				<artifactId>orientdb-etl</artifactId>
+				<version>${orientdb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.wicket</groupId>
+				<artifactId>wicket-devutils</artifactId>
+				<version>${wicket.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ru.ydn.wicket.wicket-console</groupId>
+				<artifactId>wicket-console</artifactId>
+				<version>${wicket.console.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.orienteer</groupId>
+				<artifactId>logger</artifactId>
+				<version>${orienteer.logger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tika</groupId>
+				<artifactId>tika-core</artifactId>
+				<version>1.22</version>
+			</dependency>
+			<dependency>
+				<groupId>org.reflections</groupId>
+				<artifactId>reflections</artifactId>
+				<version>0.9.10</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jooq</groupId>
+				<artifactId>joor-java-8</artifactId>
+				<version>0.9.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars.npm</groupId>
+				<artifactId>codemirror</artifactId>
+				<version>5.27.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-aether-provider</artifactId>
+				<version>3.3.9</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-component-api</artifactId>
+				<version>1.0-alpha-33</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.aether</groupId>
+				<artifactId>aether-api</artifactId>
+				<version>${aether.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.aether</groupId>
+				<artifactId>aether-connector-basic</artifactId>
+				<version>${aether.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.aether</groupId>
+				<artifactId>aether-impl</artifactId>
+				<version>${aether.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.aether</groupId>
+				<artifactId>aether-spi</artifactId>
+				<version>${aether.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.aether</groupId>
+				<artifactId>aether-transport-file</artifactId>
+				<version>${aether.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.aether</groupId>
+				<artifactId>aether-util</artifactId>
+				<version>${aether.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.aether</groupId>
+				<artifactId>aether-transport-http</artifactId>
+				<version>${aether.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.codehaus.plexus</groupId>
+				<artifactId>plexus-utils</artifactId>
+				<version>3.0.24</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.raymanrt</groupId>
+				<artifactId>orientqb</artifactId>
+				<version>0.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>net.coobird</groupId>
+				<artifactId>thumbnailator</artifactId>
+				<version>0.4.14</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars.bower</groupId>
+				<artifactId>pivottable</artifactId>
+				<version>2.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars.bower</groupId>
+				<artifactId>d3</artifactId>
+				<version>3.5.17</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars.bower</groupId>
+				<artifactId>c3</artifactId>
+				<version>0.4.11</version>
+			</dependency>
+			<dependency>
+				<groupId>org.webjars.bower</groupId>
+				<artifactId>mxgraph</artifactId>
+				<version>3.7.4</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.mail</groupId>
+				<artifactId>mail</artifactId>
+				<version>1.4.7</version>
+			</dependency>
+			<dependency>
+				<groupId>io.prometheus</groupId>
+				<artifactId>simpleclient</artifactId>
+				<version>${prometheus.simpleclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.prometheus</groupId>
+				<artifactId>simpleclient_common</artifactId>
+				<version>${prometheus.simpleclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.prometheus</groupId>
+				<artifactId>simpleclient_hotspot</artifactId>
+				<version>${prometheus.simpleclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.scribejava</groupId>
+				<artifactId>scribejava-apis</artifactId>
+				<version>${scribejava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.scribejava</groupId>
+				<artifactId>scribejava-core</artifactId>
+				<version>${scribejava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.retrofit2</groupId>
+				<artifactId>retrofit</artifactId>
+				<version>${retrofit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.retrofit2</groupId>
+				<artifactId>converter-jackson</artifactId>
+				<version>${retrofit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.retrofit2</groupId>
+				<artifactId>adapter-rxjava2</artifactId>
+				<version>${retrofit.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.reactivex.rxjava2</groupId>
+				<artifactId>rxjava</artifactId>
+				<version>${rxjava2.version}</version>
+			</dependency>
 
 		    <!--  JUNIT DEPENDENCY FOR TESTING -->
 		    <dependency>
@@ -333,12 +488,29 @@
 
 	<build>
 		<plugins>
-		    <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.0.1</version>
-                <extensions>true</extensions>
-		    </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-build-environment</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.9,)</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>[21,)</version>
+								</requireJavaVersion>
+								<banDuplicatePomDependencyVersions/>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		    <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -351,42 +523,9 @@
                     <arguments>-Pskip-integration-tests</arguments>
                 </configuration>
 		    </plugin>
-		    <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>4.2.0</version>
-                <configuration>
-                    <sourceEncoding>UTF8</sourceEncoding>
-                </configuration>
-		    </plugin>
-		    <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <formats>
-                        <format>html</format>
-                        <format>xml</format>
-                    </formats>
-                    <maxmem>256m</maxmem>
-                    <!-- aggregated reports for multi-module projects -->
-                    <aggregate>true</aggregate>
-                    <check/>
-                </configuration>
-		    </plugin>
-		    <plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-eclipse-plugin</artifactId>
-			    <version>2.10</version>
-			    <configuration>
-				    <downloadSources>true</downloadSources>
-				    <wtpversion>${wtp.version}</wtpversion>
-			    </configuration>
-		    </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
                 <configuration>
                     <configLocation>check_style.xml</configLocation>
                     <failOnViolation>true</failOnViolation>
@@ -402,45 +541,43 @@
                     </execution>
                 </executions>
             </plugin>
+			<plugin>
+				<!-- Coverage report only, no thresholds (replaces cobertura/coveralls) -->
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
+			<!-- All plugin versions live here (REFRESH_PLAN.md P2, Appendix B). Modules don't declare plugin versions. -->
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-checkstyle-plugin
-										</artifactId>
-										<versionRange>
-											[2.15,)
-										</versionRange>
-										<goals>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore/>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>3.5.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>3.5.0</version>
 				</plugin>
 			    <plugin>
-				    <inherited>true</inherited>
 				    <groupId>org.apache.maven.plugins</groupId>
 				    <artifactId>maven-compiler-plugin</artifactId>
-				    <version>3.7.0</version>
+				    <version>3.16.0</version>
 				    <configuration>
 					    <source>${java.version}</source>
 					    <target>${java.version}</target>
@@ -455,7 +592,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.20</version>
+					<version>3.6.0</version>
 					<configuration>
 						<systemPropertyVariables>
 							<orienteer.loader.repository.local>${settings.localRepository}</orienteer.loader.repository.local>
@@ -468,7 +605,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.5.1</version>
 					<configuration>
 						<archive>
 							<manifest>
@@ -476,6 +613,72 @@
 								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
 							</manifest>
 						</archive>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.5.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.8.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>3.11.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>3.6.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>3.6.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>14.1.0</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>0.8.15</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-archetype-plugin</artifactId>
+					<version>${archetype.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-wrapper-plugin</artifactId>
+					<version>3.3.4</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.22.0</version>
+					<configuration>
+						<!-- Ignore alpha/beta/RC/milestone versions in versions:display-*-updates -->
+						<rulesUri>file://${maven.multiModuleProjectDirectory}/versions-rules.xml</rulesUri>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -523,6 +726,32 @@
 				<module>orienteer-taucharts</module>
 				<module>orienteer-tours</module>
 			</modules>
+		</profile>
+		<profile>
+			<!-- Report (don't fail) dependency version conflicts: ./mvnw -Pconvergence validate -->
+			<id>convergence</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>report-dependency-convergence</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<dependencyConvergence/>
+									</rules>
+									<fail>false</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	    <profile> 
 		<id>release</id>
@@ -593,6 +822,10 @@
 				    <includes>
 					<include>**/**</include>
 				    </includes>
+				    <!-- override the inherited **/*Slow* exclude, keep surefire's default inner-class exclude -->
+				    <excludes combine.self="override">
+					<exclude>**/*$*</exclude>
+				    </excludes>
 				</configuration>
 			    </plugin>
 			</plugins>

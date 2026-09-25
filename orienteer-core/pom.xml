@@ -46,22 +46,18 @@
 	    <dependency>
 		    <groupId>com.orientechnologies</groupId>
 		    <artifactId>orientdb-core</artifactId>
-		    <type>bundle</type>
 	    </dependency>
 		<dependency>
 			<groupId>com.orientechnologies</groupId>
 			<artifactId>orientdb-distributed</artifactId>
-			<version>${orientdb.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.orientechnologies</groupId>
 		    <artifactId>orientdb-server</artifactId>
-		    <version>${orientdb.version}</version>
 	    </dependency>
 	    <dependency>
 		    <groupId>com.orientechnologies</groupId>
 		    <artifactId>orientdb-client</artifactId>
-		    <type>bundle</type>
 	    </dependency>
 	    <dependency>
 		    <groupId>com.google.inject</groupId>
@@ -74,17 +70,14 @@
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
-			<version>1.22</version>
 		</dependency>
 		<dependency>
     		<groupId>org.reflections</groupId>
  			<artifactId>reflections</artifactId>
-    		<version>0.9.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jooq</groupId>
 			<artifactId>joor-java-8</artifactId>
-			<version>0.9.12</version>
 		</dependency>
 		<!-- WEB JARS -->
 		<dependency>
@@ -134,7 +127,6 @@
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>codemirror</artifactId>
-			<version>5.27.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
@@ -149,52 +141,42 @@
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-aether-provider</artifactId>
-			<version>3.3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-component-api</artifactId>
-			<version>1.0-alpha-33</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-api</artifactId>
-			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-connector-basic</artifactId>
-			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-impl</artifactId>
-			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-spi</artifactId>
-			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-transport-file</artifactId>
-			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-util</artifactId>
-			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.aether</groupId>
 			<artifactId>aether-transport-http</artifactId>
-			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-utils</artifactId>
-			<version>3.0.24</version>
 		</dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -247,13 +229,11 @@
 		<dependency>
 			<groupId>com.github.raymanrt</groupId>
 			<artifactId>orientqb</artifactId>
-			<version>0.2.0</version>
 		</dependency>
 		<!-- Thumbnailing  -->
 		<dependency>
 			<groupId>net.coobird</groupId>
 			<artifactId>thumbnailator</artifactId>
-			<version>0.4.14</version>
 		</dependency>
 	</dependencies>
 

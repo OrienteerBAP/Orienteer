@@ -42,7 +42,6 @@
         <dependency>
             <groupId>ru.ydn.wicket.wicket-orientdb</groupId>
             <artifactId>wicket-orientdb</artifactId>
-            <version>${wicket.orientdb.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
